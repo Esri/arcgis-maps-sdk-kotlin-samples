@@ -14,9 +14,3 @@ dependencyResolutionManagement {
         maven { url 'https://olympus.esri.com/artifactory/arcgisruntime-repo/' }
     }
 }
-include ':add-point-scene-layer',
-        ':arcgis-map-image-layer-url',
-        ':display-map',
-        ':display-annotation',
-        ':display-feature-layers'
-
