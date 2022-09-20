@@ -16,7 +16,6 @@
 
 package com.esri.arcgisruntime.sample.displaymap
 
-
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -37,10 +36,11 @@ class MainActivity : AppCompatActivity() {
         // required to access basemaps and other location services
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
+        // set up data binding for the activity
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         lifecycle.addObserver(activityMainBinding.mapView)
 
-        // create and add a map with a navigation night basemap
+        // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         activityMainBinding.mapView.map = map
     }

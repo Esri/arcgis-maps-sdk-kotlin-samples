@@ -37,7 +37,6 @@ import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
 import com.esri.arcgisruntime.sample.clipgeometry.databinding.ActivityMainBinding
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var activityMainBinding: ActivityMainBinding
@@ -48,16 +47,19 @@ class MainActivity : AppCompatActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
+        // set up data binding for the activity
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        lifecycle.addObserver(activityMainBinding.mapView)
-
-        activityMainBinding.mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
-        activityMainBinding.mapView.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
+        // get the MapView instance from the data binding
+        val mapView = activityMainBinding.mapView
+        lifecycle.addObserver(mapView)
+        // create and add a map with a topographic basemap style
+        mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+        // set the viewpoint of the MapView
+        mapView.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
 
         // create a graphics overlay to contain the geometry to clip
         val graphicsOverlay = GraphicsOverlay()
-        activityMainBinding.mapView.graphicsOverlays.add(graphicsOverlay)
+        mapView.graphicsOverlays.add(graphicsOverlay)
 
         // create a blue graphic of Colorado
         val colorado = Envelope(
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
         // create a graphics overlay to contain the clipping envelopes
         val envelopesOverlay = GraphicsOverlay()
-        activityMainBinding.mapView.graphicsOverlays.add(envelopesOverlay)
+        mapView.graphicsOverlays.add(envelopesOverlay)
 
         // create a dotted red outline symbol
         val redOutline = SimpleLineSymbol(SimpleLineSymbolStyle.Dot, Color.RED, 3f)
@@ -105,14 +107,15 @@ class MainActivity : AppCompatActivity() {
 
         // create a graphics overlay to contain the clipped areas
         val clipAreasOverlay = GraphicsOverlay()
-        activityMainBinding.mapView.graphicsOverlays.add(clipAreasOverlay)
+        mapView.graphicsOverlays.add(clipAreasOverlay)
 
         // create a button to perform the clip operation
         val clipButton: Button = findViewById(R.id.clipButton)
         clipButton.setOnClickListener {
             // disable button
             clipButton.isEnabled = false
-            // for each envelope, clip the Colorado geometry and show the result, replacing the original Colorado graphic
+            // for each envelope, clip the Colorado geometry and show the result,
+            // replacing the original Colorado graphic
             coloradoGraphic.isVisible = false
             for (graphic in envelopesOverlay.graphics) {
                 val geometry =
