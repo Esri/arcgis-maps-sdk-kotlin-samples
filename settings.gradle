@@ -14,3 +14,10 @@ dependencyResolutionManagement {
         maven { url 'https://olympus.esri.com/artifactory/arcgisruntime-repo/' }
     }
 }
+
+// dynamically include all samples
+rootDir.listFiles().each {
+    if (it.directory && new File(it, 'build.gradle').exists()) {
+        include ":${it.name}"
+    }
+}

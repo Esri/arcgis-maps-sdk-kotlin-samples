@@ -1,7 +1,7 @@
-apply from: '../version.gradle'
+apply from: 'version.gradle'
 
 buildscript {
-    apply from: '../version.gradle'
+    apply from: 'version.gradle'
     repositories {
         google()
         mavenCentral()
