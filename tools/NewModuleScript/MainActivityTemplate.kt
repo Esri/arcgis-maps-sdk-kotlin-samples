@@ -1,4 +1,4 @@
-/* Copyright 2017 Esri
+/* Copyright 2022 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,19 @@ package com.esri.arcgisruntime.sample.displaymap
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
-import com.esri.arcgisruntime.mapping.ArcGISMap
-import com.esri.arcgisruntime.mapping.BasemapStyle
-import com.esri.arcgisruntime.mapping.Viewpoint
-import com.esri.arcgisruntime.mapping.view.MapView
+import androidx.databinding.DataBindingUtil
+import arcgisruntime.ApiKey
+import arcgisruntime.ArcGISRuntimeEnvironment
+import arcgisruntime.mapping.ArcGISMap
+import arcgisruntime.mapping.BasemapStyle
+import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.displaymap.databinding.ActivityMainBinding
-
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    private val activityMainBinding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
-    }
+    private lateinit var activityMainBinding: ActivityMainBinding
 
     private val mapView: MapView by lazy {
         activityMainBinding.mapView
@@ -40,33 +38,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(activityMainBinding.root)
 
-        // authentication with an API key or named user is required to access basemaps and other
-        // location services
-        ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY)
+        // authentication with an API key or named user is
+        // required to access basemaps and other location services
+        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
-        // create a map with the BasemapType topographic
-        val map = ArcGISMap(BasemapStyle.ARCGIS_NAVIGATION_NIGHT)
+        // set up data binding for the activity
+        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        lifecycle.addObserver(mapView)
 
-        // set the map to be displayed in the layout's MapView
-        mapView.map = map
-
-        mapView.setViewpoint(Viewpoint(34.056295, -117.195800, 10000.0))
-    }
-
-    override fun onPause() {
-        mapView.pause()
-        super.onPause()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mapView.resume()
-    }
-
-    override fun onDestroy() {
-        mapView.dispose()
-        super.onDestroy()
+        // create and add a map with a navigation night basemap style
+        val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+        activityMainBinding.mapView.map = map
     }
 }
