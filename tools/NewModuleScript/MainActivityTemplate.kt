@@ -49,6 +49,6 @@ class MainActivity : AppCompatActivity() {
 
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-        activityMainBinding.mapView.map = map
+        mapView.map = map
     }
 }
