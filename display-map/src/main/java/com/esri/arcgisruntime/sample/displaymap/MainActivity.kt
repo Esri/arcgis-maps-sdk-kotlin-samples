@@ -27,8 +27,6 @@ import com.esri.arcgisruntime.sample.displaymap.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var activityMainBinding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,7 +35,8 @@ class MainActivity : AppCompatActivity() {
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         // set up data binding for the activity
-        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val activityMainBinding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
         lifecycle.addObserver(activityMainBinding.mapView)
 
         // create and add a map with a navigation night basemap style

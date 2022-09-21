@@ -39,8 +39,6 @@ import com.esri.arcgisruntime.sample.clipgeometry.databinding.ActivityMainBindin
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var activityMainBinding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -48,7 +46,8 @@ class MainActivity : AppCompatActivity() {
         // required to access basemaps and other location services
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         // set up data binding for the activity
-        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val activityMainBinding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
         // get the MapView instance from the data binding
         val mapView = activityMainBinding.mapView
         lifecycle.addObserver(mapView)
