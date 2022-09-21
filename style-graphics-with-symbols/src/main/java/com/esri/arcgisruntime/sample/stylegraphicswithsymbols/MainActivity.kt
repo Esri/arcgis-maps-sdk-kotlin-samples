@@ -85,6 +85,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Create Graphics for some points.
+     *
+     * @return a new graphic
+     */
+    private fun createBuoyGraphics(): Array<Graphic> {
+        // define the buoy locations
+        val buoy1Loc = Point(-2.712642647560347, 56.06281256681154, wgs84)
+        val buoy2Loc = Point(-2.690841695957230, 56.06444173689877, wgs84)
+        val buoy3Loc = Point(-2.669727388499094, 56.06425007340287, wgs84)
+        val buoy4Loc = Point(-2.639515046119973, 56.06127916736989, wgs84)
+
+        // create a marker symbol
+        val buoyMarker =
+            SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.RED, 10.0f)
+
+        // create graphics
+        return arrayOf(
+            Graphic(buoy1Loc, buoyMarker),
+            Graphic(buoy2Loc, buoyMarker),
+            Graphic(buoy3Loc, buoyMarker),
+            Graphic(buoy4Loc, buoyMarker)
+        )
+    }
+
+    /**
      * Create graphics which display text at specific locations.
      *
      * @return a new graphic
@@ -160,7 +185,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getBoatTripGeometry(): Polyline {
         // a new point collection to make up the polyline
-        val boatPositions = MutablePointCollection(wgs84).apply {
+        val boatPositionsPolylineBuilder = PolylineBuilder(wgs84).apply {
             // add positions to the point collection
             addPoint(Point(-2.718479122792677, 56.06147084563517))
             addPoint(Point(-2.719680750046392, 56.06147084563517))
@@ -223,7 +248,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // create the polyline from the point collection
-        return PolylineBuilder(boatPositions)
+        return boatPositionsPolylineBuilder.toGeometry() as Polyline
     }
 
     /**
@@ -233,36 +258,36 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getNestingGroundGeometry(): Polygon {
         // a new point collection to make up the polygon
-        val points = PointCollection(wgs84).apply {
+        val pointsPolygonBuilder = PolygonBuilder(wgs84).apply {
             // add points to the point collection
-            add(Point(-2.643077012566659, 56.07712534604447))
-            add(Point(-2.642819521015944, 56.07717324600376))
-            add(Point(-2.642540571836003, 56.07774804087097))
-            add(Point(-2.642712232869812, 56.07792766250863))
-            add(Point(-2.642454741319098, 56.07829887790651))
-            add(Point(-2.641853927700763, 56.07852639525372))
-            add(Point(-2.640974164902487, 56.07880180919243))
-            add(Point(-2.639987113958079, 56.07881378366685))
-            add(Point(-2.639407757968971, 56.07908919555142))
-            add(Point(-2.638764029092183, 56.07917301616904))
-            add(Point(-2.638485079912242, 56.07896945149566))
-            add(Point(-2.638570910429147, 56.07820308072684))
-            add(Point(-2.638785486721410, 56.07756841839600))
-            add(Point(-2.639193181676709, 56.07719719596109))
-            add(Point(-2.639944198699627, 56.07675411934114))
-            add(Point(-2.640652300464093, 56.07673016910844))
-            add(Point(-2.640673758093319, 56.07632301287509))
-            add(Point(-2.640180232621116, 56.07599967986049))
-            add(Point(-2.640244605508794, 56.07584400003405))
-            add(Point(-2.640416266542604, 56.07578412301025))
-            add(Point(-2.640888334385582, 56.07580807383093))
-            add(Point(-2.641768097183858, 56.07623918605773))
-            add(Point(-2.642197249768383, 56.07625116132851))
-            add(Point(-2.642840978645171, 56.07661041772168))
-            add(Point(-2.643077012566659, 56.07712534604447))
+            addPoint(Point(-2.643077012566659, 56.07712534604447))
+            addPoint(Point(-2.642819521015944, 56.07717324600376))
+            addPoint(Point(-2.642540571836003, 56.07774804087097))
+            addPoint(Point(-2.642712232869812, 56.07792766250863))
+            addPoint(Point(-2.642454741319098, 56.07829887790651))
+            addPoint(Point(-2.641853927700763, 56.07852639525372))
+            addPoint(Point(-2.640974164902487, 56.07880180919243))
+            addPoint(Point(-2.639987113958079, 56.07881378366685))
+            addPoint(Point(-2.639407757968971, 56.07908919555142))
+            addPoint(Point(-2.638764029092183, 56.07917301616904))
+            addPoint(Point(-2.638485079912242, 56.07896945149566))
+            addPoint(Point(-2.638570910429147, 56.07820308072684))
+            addPoint(Point(-2.638785486721410, 56.07756841839600))
+            addPoint(Point(-2.639193181676709, 56.07719719596109))
+            addPoint(Point(-2.639944198699627, 56.07675411934114))
+            addPoint(Point(-2.640652300464093, 56.07673016910844))
+            addPoint(Point(-2.640673758093319, 56.07632301287509))
+            addPoint(Point(-2.640180232621116, 56.07599967986049))
+            addPoint(Point(-2.640244605508794, 56.07584400003405))
+            addPoint(Point(-2.640416266542604, 56.07578412301025))
+            addPoint(Point(-2.640888334385582, 56.07580807383093))
+            addPoint(Point(-2.641768097183858, 56.07623918605773))
+            addPoint(Point(-2.642197249768383, 56.07625116132851))
+            addPoint(Point(-2.642840978645171, 56.07661041772168))
+            addPoint(Point(-2.643077012566659, 56.07712534604447))
         }
 
         // create a polygon from the point collection
-        return Polygon(points)
+        return pointsPolygonBuilder.toGeometry() as Polygon
     }
 }
