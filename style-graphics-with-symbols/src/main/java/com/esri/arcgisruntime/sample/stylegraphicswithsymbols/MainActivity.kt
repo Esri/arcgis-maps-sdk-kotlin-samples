@@ -55,8 +55,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val wgs84 = SpatialReference.wgs84()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -103,10 +101,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createBuoyGraphics(): Array<Graphic> {
         // define the buoy locations
-        val buoy1Loc = Point(-2.712642647560347, 56.06281256681154, wgs84)
-        val buoy2Loc = Point(-2.690841695957230, 56.06444173689877, wgs84)
-        val buoy3Loc = Point(-2.669727388499094, 56.06425007340287, wgs84)
-        val buoy4Loc = Point(-2.639515046119973, 56.06127916736989, wgs84)
+        val buoy1Loc = Point(-2.712642647560347, 56.06281256681154, SpatialReference.wgs84())
+        val buoy2Loc = Point(-2.690841695957230, 56.06444173689877, SpatialReference.wgs84())
+        val buoy3Loc = Point(-2.669727388499094, 56.06425007340287, SpatialReference.wgs84())
+        val buoy4Loc = Point(-2.639515046119973, 56.06127916736989, SpatialReference.wgs84())
 
         // create a marker symbol
         val buoyMarker =
@@ -129,20 +127,20 @@ class MainActivity : AppCompatActivity() {
     private fun createTextGraphics(): Array<Graphic> {
         // create a point geometry
         val bassLocation =
-            Point(-2.640631, 56.078083, wgs84)
+            Point(-2.640631, 56.078083, SpatialReference.wgs84())
         val craigleithLocation =
-            Point(-2.720324, 56.073569, wgs84)
+            Point(-2.720324, 56.073569, SpatialReference.wgs84())
 
         // create text symbols
         val bassRockSymbol = TextSymbol(
             getString(R.string.bassrock),
-            Color.rgb(0, 0, 230),
+            Color.BLUE,
             10.0f,
             HorizontalAlignment.Left, VerticalAlignment.Bottom
         )
         val craigleithSymbol = TextSymbol(
             getString(R.string.craigleith),
-            Color.rgb(0, 0, 230),
+            Color.BLUE,
             10.0f,
             HorizontalAlignment.Right, VerticalAlignment.Top
         )
@@ -164,7 +162,7 @@ class MainActivity : AppCompatActivity() {
         val boatRoute: Polyline = getBoatTripGeometry()
         // define a line symbol
         val lineSymbol =
-            SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.rgb(128, 0, 128), 4.0f)
+            SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.MAGENTA, 4.0f)
 
         // create and return a new graphic
         return Graphic(boatRoute, lineSymbol)
@@ -180,9 +178,9 @@ class MainActivity : AppCompatActivity() {
         val nestingGround = getNestingGroundGeometry()
         // define the fill symbol and outline
         val outlineSymbol =
-            SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.rgb(0, 0, 128), 1.0f)
+            SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.BLUE, 1.0f)
         val fillSymbol = SimpleFillSymbol(
-            SimpleFillSymbolStyle.DiagonalCross, Color.rgb(0, 80, 0),
+            SimpleFillSymbolStyle.DiagonalCross, Color.GREEN,
             outlineSymbol
         )
 
@@ -197,7 +195,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getBoatTripGeometry(): Polyline {
         // a new point collection to make up the polyline
-        val boatPositionsPolylineBuilder = PolylineBuilder(wgs84).apply {
+        val boatPositionsPolylineBuilder = PolylineBuilder(SpatialReference.wgs84()).apply {
             // add positions to the point collection
             addPoint(Point(-2.718479122792677, 56.06147084563517))
             addPoint(Point(-2.719680750046392, 56.06147084563517))
@@ -270,7 +268,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getNestingGroundGeometry(): Polygon {
         // a new point collection to make up the polygon
-        val pointsPolygonBuilder = PolygonBuilder(wgs84).apply {
+        val pointsPolygonBuilder = PolygonBuilder(SpatialReference.wgs84()).apply {
             // add points to the point collection
             addPoint(Point(-2.643077012566659, 56.07712534604447))
             addPoint(Point(-2.642819521015944, 56.07717324600376))
