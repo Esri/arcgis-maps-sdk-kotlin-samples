@@ -14,7 +14,13 @@
         "marker",
         "overlay",
         "point",
-        "symbol"
+        "symbol",
+        "Geometry",	
+        "Graphic",	
+        "GraphicsOverlay",	
+        "SimpleFillSymbol",	
+        "SimpleLineSymbol",	
+        "SimpleMarkerSymbol"
     ],
     "language": "kotlin",
     "redirect_from": [
@@ -31,5 +37,5 @@
     "snippets": [
         "src/main/java/com/esri/arcgisruntime/sample/stylegraphicswithsymbols/MainActivity.kt"
     ],
-    "title": "Add graphics with symbols"
+    "title": "Style graphics with symbols"
 }
