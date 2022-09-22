@@ -1,2 +1,35 @@
 {
+    "category": "Visualization",
+    "description": "Use a symbol style to display a graphic on a graphics overlay.",
+    "formal_name": "StyleGraphicsWithSymbols",
+    "ignore": false,
+    "images": [
+        "style-graphics-with-symbols.png"
+    ],
+    "keywords": [
+        "display",
+        "fill",
+        "graphics",
+        "line",
+        "marker",
+        "overlay",
+        "point",
+        "symbol"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "/android/latest/sample-code/style-graphics-with-symbols.htm"
+    ],
+    "relevant_apis": [
+        "Geometry",
+        "Graphic",
+        "GraphicsOverlay",
+        "SimpleFillSymbol",
+        "SimpleLineSymbol",
+        "SimpleMarkerSymbol"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgisruntime/sample/stylegraphicswithsymbols/MainActivity.kt"
+    ],
+    "title": "Add graphics with symbols"
 }
