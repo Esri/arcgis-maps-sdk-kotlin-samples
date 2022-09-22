@@ -6,9 +6,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.esri.arcgisruntime.sample.maprotation.MainActivity">
-
-        <!-- MapView -->
+        tools:context="com.esri.arcgisruntime.sample.setviewpointrotation.MainActivity">
+        
         <arcgisruntime.mapping.view.MapView
             android:id="@+id/mapView"
             android:layout_width="0dp"
