@@ -28,11 +28,16 @@ import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.Viewpoint
 import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.maprotation.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
+    private val scope = CoroutineScope(Dispatchers.Main + CoroutineName(TAG))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +64,9 @@ class MainActivity : AppCompatActivity() {
                 // set the text to the value
                 rotationValueText.text = angle.toString()
                 // rotate map view to the progress angle
-                mapView.awaitSetViewpointRotation(angle.toDouble())
+                scope.launch {
+                    mapView.awaitSetViewpointRotation(angle.toDouble())
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
