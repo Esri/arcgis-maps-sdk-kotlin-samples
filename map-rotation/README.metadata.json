@@ -12,6 +12,9 @@
     "viewpoint"
   ],
   "language": "kotlin",
+  "redirect_from": [
+    "/android/latest/sample-code/map-rotation.htm"
+  ],
   "relevant_apis": [
     "ArcGISMap",
     "MapView"
