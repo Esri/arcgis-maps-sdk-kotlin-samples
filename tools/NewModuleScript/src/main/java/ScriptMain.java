@@ -46,7 +46,7 @@ public class ScriptMain {
             createFilesAndFolders();
             deleteUnwantedFiles();
             updateSampleContent();
-            updateSettingsGradle();    
+            //updateSettingsGradle();
         }catch (Exception e){
             exitProgram(e);
         }
@@ -59,10 +59,10 @@ public class ScriptMain {
      * when createFilesAndFolders() is called
      */
     private void deleteUnwantedFiles() {
-        File buildFolder = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/build");
+        File buildFolder = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build");
         File displayMapKotlinFolder = new File(
-                samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/displaymap");
-        File image = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/display-map.png");
+                samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/displaymap");
+        File image = new File(samplesRepoPath + "/" + sampleWithHyphen + "/display-map.png");
         try {
             FileUtils.deleteDirectory(buildFolder);
             FileUtils.deleteDirectory(displayMapKotlinFolder);
@@ -78,10 +78,10 @@ public class ScriptMain {
      */
     private void createFilesAndFolders() {
         // Create the sample resource folders
-        File destinationResDirectory = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen);
+        File destinationResDirectory = new File(samplesRepoPath + "/" + sampleWithHyphen);
         destinationResDirectory.mkdirs();
         // Display Map's res directory to copy over to new sample
-        File sourceResDirectory = new File(samplesRepoPath + "/kotlin/display-map/");
+        File sourceResDirectory = new File(samplesRepoPath + "/display-map/");
 
         // Perform copy of the Android res folders from display-map sample.
         try {
@@ -92,7 +92,7 @@ public class ScriptMain {
         }
 
         // Create the sample package directory in the source folder
-        File packageDirectory = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/" + sampleWithoutSpaces);
+        File packageDirectory = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/" + sampleWithoutSpaces);
         if(!packageDirectory.exists()){
             packageDirectory.mkdirs();
         }else{
@@ -132,7 +132,7 @@ public class ScriptMain {
     private void updateSampleContent() {
 
         //Update README.md
-        File file = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/README.md");
+        File file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/README.md");
         try {
             FileUtils.write(file,"# " + sampleName, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -141,7 +141,7 @@ public class ScriptMain {
         }
 
         //Update README.metadata.json
-        file = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/README.metadata.json");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/README.metadata.json");
         try {
             FileUtils.write(file,"{\n}", StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -150,7 +150,7 @@ public class ScriptMain {
         }
 
         //Update build.gradle
-        file = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/build.gradle");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build.gradle");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("demos.displaymap", "sample." + sampleWithoutSpaces);
@@ -161,7 +161,7 @@ public class ScriptMain {
         }
 
         //Update AndroidManifest.xml
-        file = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/src/main/AndroidManifest.xml");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/AndroidManifest.xml");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("displaymap", sampleWithoutSpaces);
@@ -172,7 +172,7 @@ public class ScriptMain {
         }
 
         //Update activity_main.xml
-        file = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/src/main/res/layout/activity_main.xml");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/res/layout/activity_main.xml");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("displaymap", sampleWithoutSpaces);
@@ -183,7 +183,7 @@ public class ScriptMain {
         }
 
         //Update strings.xml
-        file = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/src/main/res/values/strings.xml");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/res/values/strings.xml");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace(
@@ -196,7 +196,7 @@ public class ScriptMain {
         }
 
         //Update MainActivity.kt
-        file = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/"+sampleWithoutSpaces+"/MainActivity.kt");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/"+sampleWithoutSpaces+"/MainActivity.kt");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("Copyright 2017", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
@@ -234,7 +234,7 @@ public class ScriptMain {
      * Needed only for debugging purposes
      */
     private void resetProgram() {
-        File toDelete = new File(samplesRepoPath + "/kotlin/" + sampleWithHyphen);
+        File toDelete = new File(samplesRepoPath + "/" + sampleWithHyphen);
         try {
             FileUtils.deleteDirectory(toDelete);
         } catch (IOException e) {
