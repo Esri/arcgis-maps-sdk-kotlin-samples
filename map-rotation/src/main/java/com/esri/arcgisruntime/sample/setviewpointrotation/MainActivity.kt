@@ -14,11 +14,10 @@
  *
  */
 
-package com.esri.arcgisruntime.sample.maprotation
+package com.esri.arcgisruntime.sample.setviewpointrotation
 
 import android.os.Bundle
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import arcgisruntime.ApiKey
@@ -26,13 +25,11 @@ import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.Viewpoint
-import arcgisruntime.mapping.view.MapView
-import com.esri.arcgisruntime.sample.maprotation.databinding.ActivityMainBinding
+import com.esri.arcgisruntime.sample.setviewpointrotation.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,7 +44,8 @@ class MainActivity : AppCompatActivity() {
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         // set up data binding for the activity
-        val activityMainBinding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val activityMainBinding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
         val mapView = activityMainBinding.mapView
         val rotationSeekBar = activityMainBinding.rotationSeekBar
         val rotationValueText = activityMainBinding.rotationValueText
