@@ -6,122 +6,123 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity"
-        tools:layout_editor_absoluteY="81dp">
+        tools:context=".MainActivity">
 
         <arcgisruntime.mapping.view.MapView
             android:id="@+id/mapView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:paddingTop="40dp"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/bufferInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/Enter_miles_string"
-            android:inputType="number"
-            android:text="@string/default_buffer_distance"
-            app:layout_constraintEnd_toStartOf="@id/unitsDisplay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/unitsDisplay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/units"
-            android:textColor="@android:color/darker_gray"
-            app:layout_constraintBaseline_toBaselineOf="@+id/bufferInput"
-            app:layout_constraintEnd_toEndOf="parent" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/mapView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bufferInput">
+            app:layout_constraintStart_toStartOf="parent">
 
-            <View
-                android:id="@+id/geodesicSwatch2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/geodesic_swatch"
-                app:layout_constraintBottom_toBottomOf="@+id/planarSwatch"
-                app:layout_constraintEnd_toEndOf="@+id/planarSwatch"
-                app:layout_constraintStart_toStartOf="@+id/planarSwatch"
-                app:layout_constraintTop_toTopOf="@+id/planarSwatch" />
-
-            <View
-                android:id="@+id/geodesicSwatch"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/geodesic_swatch"
+            <EditText
+                android:id="@+id/bufferInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/Enter_miles_string"
+                android:inputType="number"
+                android:text="@string/default_buffer_distance"
+                app:layout_constraintEnd_toStartOf="@id/unitsDisplay"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/geodesicBufferTextView"
+                android:id="@+id/unitsDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:text="@string/geodesic_buffer"
-                app:layout_constraintBottom_toBottomOf="@+id/geodesicSwatch"
-                app:layout_constraintStart_toEndOf="@+id/geodesicSwatch"
-                app:layout_constraintTop_toTopOf="@+id/geodesicSwatch" />
+                android:layout_marginEnd="24dp"
+                android:text="@string/units"
+                android:textColor="@android:color/darker_gray"
+                app:layout_constraintBaseline_toBaselineOf="@+id/bufferInput"
+                app:layout_constraintEnd_toStartOf="@id/clearButton" />
 
-            <View
-                android:id="@+id/planarSwatch"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginLeft="32dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/planar_swatch"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/geodesicBufferTextView"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/clearButton">
 
-            <TextView
-                android:id="@+id/planarBufferTextView"
+                <View
+                    android:id="@+id/geodesicSwatch2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/geodesic_swatch"
+                    app:layout_constraintBottom_toBottomOf="@+id/planarSwatch"
+                    app:layout_constraintEnd_toEndOf="@+id/planarSwatch"
+                    app:layout_constraintStart_toStartOf="@+id/planarSwatch"
+                    app:layout_constraintTop_toTopOf="@+id/planarSwatch" />
+
+                <View
+                    android:id="@+id/geodesicSwatch"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/geodesic_swatch"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/geodesicBufferTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/geodesic_buffer"
+                    app:layout_constraintBottom_toBottomOf="@+id/geodesicSwatch"
+                    app:layout_constraintStart_toEndOf="@+id/geodesicSwatch"
+                    app:layout_constraintTop_toTopOf="@+id/geodesicSwatch" />
+
+                <View
+                    android:id="@+id/planarSwatch"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/planar_swatch"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/geodesicBufferTextView"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/planarBufferTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/planar_buffer"
+                    app:layout_constraintBottom_toBottomOf="@+id/planarSwatch"
+                    app:layout_constraintStart_toEndOf="@+id/planarSwatch"
+                    app:layout_constraintTop_toTopOf="@+id/planarSwatch" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/clearButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="@string/planar_buffer"
-                app:layout_constraintBottom_toBottomOf="@+id/planarSwatch"
+                android:layout_marginEnd="32dp"
+                android:text="@string/clear"
+                android:textAllCaps="false"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/planarSwatch"
-                app:layout_constraintTop_toTopOf="@+id/planarSwatch" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:id="@+id/clearButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:text="@string/clear"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

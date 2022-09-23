@@ -119,8 +119,8 @@ class MainActivity : AppCompatActivity() {
         // create a buffer around the clicked location
         scope.launch {
             mapView.onSingleTapConfirmed.collect { event ->
-                // get map point tapped
-                val mapPoint = event.mapPoint
+                // get map point tapped, return if null
+                val mapPoint = event.mapPoint ?: return@collect
 
                 // only draw a buffer if a value was entered
                 if (bufferInput.text.toString().isNotEmpty()) {
@@ -131,17 +131,15 @@ class MainActivity : AppCompatActivity() {
                     val bufferInMeters = bufferInMiles * 1609.34
 
                     // create a planar buffer graphic around the input location at the specified distance
-                    val bufferGeometryPlanar =
-                        mapPoint?.let { GeometryEngine.buffer(it, bufferInMeters) }
+                    val bufferGeometryPlanar = GeometryEngine.buffer(mapPoint, bufferInMeters)
                     val planarBufferGraphic = Graphic(bufferGeometryPlanar)
 
                     // create a geodesic buffer graphic using the same location and distance
-                    val bufferGeometryGeodesic = mapPoint?.let {
+                    val bufferGeometryGeodesic =
                         GeometryEngine.bufferGeodetic(
-                            it, bufferInMeters,
+                            mapPoint, bufferInMeters,
                             LinearUnit(LinearUnitId.Meters), Double.NaN, GeodeticCurveType.Geodesic
                         )
-                    }
                     val geodesicBufferGraphic = Graphic(bufferGeometryGeodesic)
 
                     // create a graphic for the user tap location
