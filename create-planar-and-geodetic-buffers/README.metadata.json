@@ -12,7 +12,10 @@
     "euclidean",
     "geodesic",
     "geometry",
-    "planar"
+    "planar",
+    "GeometryEngine.buffer",
+    "GeometryEngine.bufferGeodetic",
+    "GraphicsOverlay"
   ],
   "language": "kotlin",
   "redirect_from": [
