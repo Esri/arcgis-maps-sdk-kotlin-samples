@@ -20,21 +20,16 @@ import android.os.Bundle
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.Viewpoint
 import com.esri.arcgisruntime.sample.setviewpointrotation.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.simpleName
-    private val scope = CoroutineScope(Dispatchers.Main + CoroutineName(TAG))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,11 +57,10 @@ class MainActivity : AppCompatActivity() {
                 // set the text to the value
                 rotationValueText.text = angle.toString()
                 // rotate map view to the progress angle
-                scope.launch {
-                    mapView.awaitSetViewpointRotation(angle.toDouble())
+                lifecycleScope.launch {
+                    mapView.setViewpointRotation(angle.toDouble())
                 }
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
