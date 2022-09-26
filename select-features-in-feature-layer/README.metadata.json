@@ -11,7 +11,10 @@
     "layers",
     "select",
     "selection",
-    "tolerance"
+    "tolerance",
+    "Feature",
+    "FeatureLayer",
+    "ServiceFeatureTable"
   ],
   "language": "kotlin",
   "redirect_from": [
