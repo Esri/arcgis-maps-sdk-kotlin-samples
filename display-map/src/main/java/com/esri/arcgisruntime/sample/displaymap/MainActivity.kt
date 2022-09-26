@@ -27,8 +27,6 @@ import com.esri.arcgisruntime.sample.displaymap.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    data class SampleViewModel(val map: ArcGISMap)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,6 +41,6 @@ class MainActivity : AppCompatActivity() {
 
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-        activityMainBinding.sampleViewModel = SampleViewModel(map)
+        activityMainBinding.mapView.map = map
     }
 }
