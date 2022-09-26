@@ -17,6 +17,7 @@
 package com.esri.arcgisruntime.sample.showresultofspatialoperations
 
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import arcgisruntime.ApiKey
@@ -30,12 +31,6 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    private lateinit var activityMainBinding: ActivityMainBinding
-
-    private val mapView: MapView by lazy {
-        activityMainBinding.mapView
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,11 +39,17 @@ class MainActivity : AppCompatActivity() {
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         // set up data binding for the activity
-        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val activityMainBinding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val mapView = activityMainBinding.mapView
+
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         mapView.map = map
+
+        val feelings = resources.getStringArray(R.array.operation)
+        val arrayAdapter = ArrayAdapter(this, R.layout.dropdown_item, feelings)
+        activityMainBinding.autoCompleteTextView.setAdapter(arrayAdapter)
     }
 }
