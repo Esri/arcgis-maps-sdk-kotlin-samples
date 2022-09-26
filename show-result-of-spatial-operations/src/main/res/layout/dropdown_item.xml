@@ -4,7 +4,5 @@
     android:id="@+id/textOption"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp"
-    android:text="TextView"
-    android:textSize="18sp"
-    android:textStyle="bold" />
+    android:padding="10dp"
+    android:textSize="15sp" />

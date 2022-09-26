@@ -29,7 +29,7 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <AutoCompleteTextView
-                android:id="@+id/autoCompleteTextView"
+                android:id="@+id/selector"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:labelFor="@id/textInputLayout"
