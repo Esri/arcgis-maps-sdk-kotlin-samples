@@ -18,7 +18,6 @@ package com.esri.arcgisruntime.sample.createplanarandgeodeticbuffers
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -40,19 +39,10 @@ import arcgisruntime.mapping.symbology.SimpleMarkerSymbolStyle
 import arcgisruntime.mapping.symbology.SimpleRenderer
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
-import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.createplanarandgeodeticbuffers.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.simpleName
-
-    private val scope = CoroutineScope(Dispatchers.Main + CoroutineName(TAG))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -76,27 +76,35 @@ class MainActivity : AppCompatActivity() {
         )
         graphicsOverlay.graphics.add(polylineGraphic)
         // zoom to show the polygon graphic
-        mapView.setViewpoint(Viewpoint(polygonGraphic.geometry!!))
+        polygonGraphic.geometry?.let { graphicGeometry ->
+            mapView.setViewpoint(Viewpoint(graphicGeometry))
+        }
 
         activityMainBinding.cutButton.setOnClickListener {
-            val parts: List<Geometry> =
-                GeometryEngine.cut(polygonGraphic.geometry!!, polylineGraphic.geometry as Polyline)
+            polygonGraphic.geometry?.let { graphicGeometry ->
+                val parts: List<Geometry> =
+                    GeometryEngine.cut(
+                        graphicGeometry,
+                        polylineGraphic.geometry as Polyline
+                    )
 
-            // create graphics for the US and Canada sides
-            val canadaSide = Graphic(
-                parts[0], SimpleFillSymbol(
-                    SimpleFillSymbolStyle.BackwardDiagonal,
-                    -0xff0100, SimpleLineSymbol(SimpleLineSymbolStyle.Null, -0x1, 0F)
+                // create graphics for the US and Canada sides
+                val canadaSide = Graphic(
+                    parts[0], SimpleFillSymbol(
+                        SimpleFillSymbolStyle.BackwardDiagonal,
+                        -0xff0100, SimpleLineSymbol(SimpleLineSymbolStyle.Null, -0x1, 0F)
+                    )
                 )
-            )
-            val usSide = Graphic(
-                parts[1], SimpleFillSymbol(
-                    SimpleFillSymbolStyle.ForwardDiagonal,
-                    -0x100, SimpleLineSymbol(SimpleLineSymbolStyle.Null, -0x1, 0F)
+                val usSide = Graphic(
+                    parts[1], SimpleFillSymbol(
+                        SimpleFillSymbolStyle.ForwardDiagonal,
+                        -0x100, SimpleLineSymbol(SimpleLineSymbolStyle.Null, -0x1, 0F)
+                    )
                 )
-            )
-            graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
-            activityMainBinding.cutButton.isEnabled = false
+
+                graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
+                activityMainBinding.cutButton.isEnabled = false
+            }
         }
     }
 

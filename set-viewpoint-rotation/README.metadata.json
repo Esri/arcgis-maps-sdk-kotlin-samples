@@ -1,0 +1,28 @@
+{
+  "category": "MapViews, SceneViews and UI",
+  "description": "Rotate a map.",
+  "formal_name": "SetViewpointRotation",
+  "ignore": false,
+  "images": [
+    "set-viewpoint-rotation.png"
+  ],
+  "keywords": [
+    "rotate",
+    "rotation",
+    "viewpoint",
+    "ArcGISMap",
+    "MapView"
+  ],
+  "language": "kotlin",
+  "redirect_from": [
+    "/android/latest/sample-code/map-rotation.htm"
+  ],
+  "relevant_apis": [
+    "ArcGISMap",
+    "MapView"
+  ],
+  "snippets": [
+    "src/main/java/com/esri/arcgisruntime/sample/setviewpointrotation/MainActivity.kt"
+  ],
+  "title": "Set viewpoint rotation"
+}
