@@ -22,7 +22,7 @@ import androidx.databinding.DataBindingUtil
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.geometry.*
-import arcgisruntime.geometry.GeometryEngine.cut
+import arcgisruntime.geometry.GeometryEngine
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.Viewpoint
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
 
         // create a graphic overlay
-        val graphicsOverlay = GraphicsOverlay
+        val graphicsOverlay = GraphicsOverlay()
         mapView.graphicsOverlays.add(graphicsOverlay)
 
         // create a blue polygon graphic to cut
@@ -78,12 +78,9 @@ class MainActivity : AppCompatActivity() {
         // zoom to show the polygon graphic
         mapView.setViewpoint(Viewpoint(polygonGraphic.geometry!!))
 
-        val cutButton = activityMainBinding.cutButton
-
-        // create a button to perform the cut operation
-        cutButton.setOnClickListener {
+        activityMainBinding.cutButton.setOnClickListener {
             val parts: List<Geometry> =
-                cut(polygonGraphic.geometry!!, polylineGraphic.geometry as Polyline)
+                GeometryEngine.cut(polygonGraphic.geometry!!, polylineGraphic.geometry as Polyline)
 
             // create graphics for the US and Canada sides
             val canadaSide = Graphic(
@@ -99,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 )
             )
             graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
-            cutButton.isEnabled = false
+            activityMainBinding.cutButton.isEnabled = false
         }
     }
 
@@ -109,16 +106,16 @@ class MainActivity : AppCompatActivity() {
      * @return polyline
      */
     private fun createBorder(): Polyline {
-        val points = PointCollection(SpatialReference.webMercator()).apply {
-            add(Point(-9981328.687124, 6111053.281447))
-            add(Point(-9946518.044066, 6102350.620682))
-            add(Point(-9872545.427566, 6152390.920079))
-            add(Point(-9838822.617103, 6157830.083057))
-            add(Point(-9446115.050097, 5927209.572793))
-            add(Point(-9430885.393759, 5876081.440801))
-            add(Point(-9415655.737420, 5860851.784463))
+        val borderPolylineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
+            addPoint(Point(-9981328.687124, 6111053.281447))
+            addPoint(Point(-9946518.044066, 6102350.620682))
+            addPoint(Point(-9872545.427566, 6152390.920079))
+            addPoint(Point(-9838822.617103, 6157830.083057))
+            addPoint(Point(-9446115.050097, 5927209.572793))
+            addPoint(Point(-9430885.393759, 5876081.440801))
+            addPoint(Point(-9415655.737420, 5860851.784463))
         }
-        return Polyline(points)
+        return borderPolylineBuilder.toGeometry() as Polyline
     }
 
     /**
@@ -127,38 +124,38 @@ class MainActivity : AppCompatActivity() {
      * @return polygon
      */
     private fun createLakeSuperiorPolygon(): Polygon {
-        val points = PointCollection(SpatialReference.webMercator()).apply {
-            add(Point(-10254374.668616, 5908345.076380))
-            add(Point(-10178382.525314, 5971402.386779))
-            add(Point(-10118558.923141, 6034459.697178))
-            add(Point(-9993252.729399, 6093474.872295))
-            add(Point(-9882498.222673, 6209888.368416))
-            add(Point(-9821057.766387, 6274562.532928))
-            add(Point(-9690092.583250, 6241417.023616))
-            add(Point(-9605207.742329, 6206654.660191))
-            add(Point(-9564786.389509, 6108834.986367))
-            add(Point(-9449989.747500, 6095091.726408))
-            add(Point(-9462116.153346, 6044160.821855))
-            add(Point(-9417652.665244, 5985145.646738))
-            add(Point(-9438671.768711, 5946341.148031))
-            add(Point(-9398250.415891, 5922088.336339))
-            add(Point(-9419269.519357, 5855797.317714))
-            add(Point(-9467775.142741, 5858222.598884))
-            add(Point(-9462924.580403, 5902686.086985))
-            add(Point(-9598740.325877, 5884092.264688))
-            add(Point(-9643203.813979, 5845287.765981))
-            add(Point(-9739406.633691, 5879241.702350))
-            add(Point(-9783061.694736, 5922896.763395))
-            add(Point(-9844502.151022, 5936640.023354))
-            add(Point(-9773360.570059, 6019099.583107))
-            add(Point(-9883306.649729, 5968977.105610))
-            add(Point(-9957681.938918, 5912387.211662))
-            add(Point(-10055501.612742, 5871965.858842))
-            add(Point(-10116942.069028, 5884092.264688))
-            add(Point(-10111283.079633, 5933406.315128))
-            add(Point(-10214761.742852, 5888134.399970))
-            add(Point(-10254374.668616, 5901877.659929))
+        val lakeSuperiorPolygonBuilder = PolygonBuilder(SpatialReference.webMercator()).apply {
+            addPoint(Point(-10254374.668616, 5908345.076380))
+            addPoint(Point(-10178382.525314, 5971402.386779))
+            addPoint(Point(-10118558.923141, 6034459.697178))
+            addPoint(Point(-9993252.729399, 6093474.872295))
+            addPoint(Point(-9882498.222673, 6209888.368416))
+            addPoint(Point(-9821057.766387, 6274562.532928))
+            addPoint(Point(-9690092.583250, 6241417.023616))
+            addPoint(Point(-9605207.742329, 6206654.660191))
+            addPoint(Point(-9564786.389509, 6108834.986367))
+            addPoint(Point(-9449989.747500, 6095091.726408))
+            addPoint(Point(-9462116.153346, 6044160.821855))
+            addPoint(Point(-9417652.665244, 5985145.646738))
+            addPoint(Point(-9438671.768711, 5946341.148031))
+            addPoint(Point(-9398250.415891, 5922088.336339))
+            addPoint(Point(-9419269.519357, 5855797.317714))
+            addPoint(Point(-9467775.142741, 5858222.598884))
+            addPoint(Point(-9462924.580403, 5902686.086985))
+            addPoint(Point(-9598740.325877, 5884092.264688))
+            addPoint(Point(-9643203.813979, 5845287.765981))
+            addPoint(Point(-9739406.633691, 5879241.702350))
+            addPoint(Point(-9783061.694736, 5922896.763395))
+            addPoint(Point(-9844502.151022, 5936640.023354))
+            addPoint(Point(-9773360.570059, 6019099.583107))
+            addPoint(Point(-9883306.649729, 5968977.105610))
+            addPoint(Point(-9957681.938918, 5912387.211662))
+            addPoint(Point(-10055501.612742, 5871965.858842))
+            addPoint(Point(-10116942.069028, 5884092.264688))
+            addPoint(Point(-10111283.079633, 5933406.315128))
+            addPoint(Point(-10214761.742852, 5888134.399970))
+            addPoint(Point(-10254374.668616, 5901877.659929))
         }
-        return Polygon(points)
+        return lakeSuperiorPolygonBuilder.toGeometry() as Polygon
     }
 }
