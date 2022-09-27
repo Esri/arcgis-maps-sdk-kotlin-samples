@@ -96,7 +96,6 @@ class MainActivity : AppCompatActivity() {
                     // get the tapped coordinate
                     val screenCoordinate = tapEvent.screenCoordinate
                     getSelectedFeatureLayer(screenCoordinate)
-
                 }
             }
         }
