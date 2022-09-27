@@ -22,6 +22,7 @@ import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.geometry.GeodeticCurveType
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         // create a buffer around the clicked location
-        scope.launch {
+        lifecycleScope.launch {
             mapView.onSingleTapConfirmed.collect { event ->
                 // get map point tapped, return if null
                 val mapPoint = event.mapPoint ?: return@collect
