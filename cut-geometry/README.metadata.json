@@ -1,0 +1,27 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Cut a geometry along a polyline.",
+    "formal_name": "CutGeometry",
+    "ignore": false,
+    "images": [
+        "cut-geometry.png"
+    ],
+    "keywords": [
+        "cut",
+        "geometry",
+        "split"
+    ],
+    "language": "java",
+    "redirect_from": [
+        "/android/latest/sample-code/cut-geometry.htm"
+    ],
+    "relevant_apis": [
+        "GeometryEngine",
+        "Polygon",
+        "Polyline"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgisruntime/sample/cutgeometry/MainActivity.java"
+    ],
+    "title": "Cut geometry"
+}
