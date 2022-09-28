@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                 val canadaSide = Graphic(
                     parts[0], SimpleFillSymbol(
                         SimpleFillSymbolStyle.BackwardDiagonal,
-                        -0xff0100, SimpleLineSymbol(SimpleLineSymbolStyle.Null, -0x1, 0F)
+                        Color.GREEN, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.BLUE, 0F)
                     )
                 )
                 val usSide = Graphic(
