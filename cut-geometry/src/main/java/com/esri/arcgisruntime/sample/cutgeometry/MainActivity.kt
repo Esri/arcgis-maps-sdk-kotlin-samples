@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                 val usSide = Graphic(
                     parts[1], SimpleFillSymbol(
                         SimpleFillSymbolStyle.ForwardDiagonal,
-                        -0x100, SimpleLineSymbol(SimpleLineSymbolStyle.Null, -0x1, 0F)
+                        Color.YELLOW, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.BLUE, 0F)
                     )
                 )
 
