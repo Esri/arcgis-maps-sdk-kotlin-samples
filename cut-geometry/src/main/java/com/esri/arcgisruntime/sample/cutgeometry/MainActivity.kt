@@ -16,13 +16,21 @@
 
 package com.esri.arcgisruntime.sample.cutgeometry
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.geometry.*
+import arcgisruntime.geometry.Geometry
 import arcgisruntime.geometry.GeometryEngine
+import arcgisruntime.geometry.Point
+import arcgisruntime.geometry.Polygon
+import arcgisruntime.geometry.PolygonBuilder
+import arcgisruntime.geometry.Polyline
+import arcgisruntime.geometry.PolylineBuilder
+import arcgisruntime.geometry.SpatialReference
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.Viewpoint
@@ -32,6 +40,7 @@ import arcgisruntime.mapping.symbology.SimpleLineSymbol
 import arcgisruntime.mapping.symbology.SimpleLineSymbolStyle
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
+import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.cutgeometry.databinding.ActivityMainBinding
 
 
@@ -57,28 +66,7 @@ class MainActivity : AppCompatActivity() {
         val graphicsOverlay = GraphicsOverlay()
         mapView.graphicsOverlays.add(graphicsOverlay)
 
-        // create a blue polygon graphic to cut
-        val polygonGraphic = Graphic(
-            createLakeSuperiorPolygon(),
-            SimpleFillSymbol(
-                SimpleFillSymbolStyle.Solid, 0x220000FF,
-                SimpleLineSymbol(SimpleLineSymbolStyle.Solid, -0xffff01, 2F)
-            )
-        )
-        graphicsOverlay.graphics.add(polygonGraphic)
-
-        // create a red polyline graphic to cut the polygon
-        val polylineGraphic = Graphic(
-            createBorder(), SimpleLineSymbol(
-                SimpleLineSymbolStyle.Dot,
-                -0x10000, 3F
-            )
-        )
-        graphicsOverlay.graphics.add(polylineGraphic)
-        // zoom to show the polygon graphic
-        polygonGraphic.geometry?.let { graphicGeometry ->
-            mapView.setViewpoint(Viewpoint(graphicGeometry))
-        }
+        val (polygonGraphic, polylineGraphic) = createGraphics(graphicsOverlay, mapView)
 
         activityMainBinding.cutButton.setOnClickListener {
             // cut the graphic along the polyline to create 2 graphic parts
@@ -102,11 +90,58 @@ class MainActivity : AppCompatActivity() {
                         Color.YELLOW, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.BLUE, 0F)
                     )
                 )
-
+                // add the graphics to the graphics overlay
                 graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
-                activityMainBinding.cutButton.isEnabled = false
+
+                // swap button visibility
+                activityMainBinding.cutButton.visibility = View.GONE
+                activityMainBinding.resetButton.visibility = View.VISIBLE
             }
         }
+
+        activityMainBinding.resetButton.setOnClickListener {
+            // clear existing graphics
+            graphicsOverlay.graphics.clear()
+
+            // recreate original graphics
+            createGraphics(graphicsOverlay, mapView)
+
+            // swap button visibility
+            activityMainBinding.cutButton.visibility = View.VISIBLE
+            activityMainBinding.resetButton.visibility = View.GONE
+        }
+
+    }
+
+    /**
+     * Create polygon and polyline graphics.
+     *
+     * @return polygon and polyline graphics
+     */
+    private fun createGraphics(graphicsOverlay: GraphicsOverlay, mapView: MapView): Pair<Graphic, Graphic> {
+        // create a blue polygon graphic to cut
+        val polygonGraphic = Graphic(
+            createLakeSuperiorPolygon(),
+            SimpleFillSymbol(
+                SimpleFillSymbolStyle.Solid, getColor(R.color.transparentBlue),
+                SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.BLUE, 2F)
+            )
+        )
+        graphicsOverlay.graphics.add(polygonGraphic)
+
+        // create a red polyline graphic to cut the polygon
+        val polylineGraphic = Graphic(
+            createLakeSuperiorBorder(), SimpleLineSymbol(
+                SimpleLineSymbolStyle.Dot,
+                Color.RED, 3F
+            )
+        )
+        graphicsOverlay.graphics.add(polylineGraphic)
+        // zoom to show the polygon graphic
+        polygonGraphic.geometry?.let { graphicGeometry ->
+            mapView.setViewpoint(Viewpoint(graphicGeometry))
+        }
+        return Pair(polygonGraphic, polylineGraphic)
     }
 
     /**
@@ -114,7 +149,7 @@ class MainActivity : AppCompatActivity() {
      *
      * @return polyline
      */
-    private fun createBorder(): Polyline {
+    private fun createLakeSuperiorBorder(): Polyline {
         val borderPolylineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
             addPoint(Point(-9981328.687124, 6111053.281447))
             addPoint(Point(-9946518.044066, 6102350.620682))
