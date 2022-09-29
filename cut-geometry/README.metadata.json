@@ -21,7 +21,7 @@
         "Polyline"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgisruntime/sample/cutgeometry/MainActivity.java"
+        "src/main/java/com/esri/arcgisruntime/sample/cutgeometry/MainActivity.kt"
     ],
     "title": "Cut geometry"
 }
