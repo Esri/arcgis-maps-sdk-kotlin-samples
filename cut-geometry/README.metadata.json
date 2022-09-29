@@ -9,7 +9,10 @@
     "keywords": [
         "cut",
         "geometry",
-        "split"
+        "split",
+        "GeometryEngine",	
+        "Polygon",	
+        "Polyline"
     ],
     "language": "java",
     "redirect_from": [
