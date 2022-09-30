@@ -105,6 +105,8 @@ class MainActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         val mapView = activityMainBinding.mapView
         lifecycle.addObserver(mapView)
+        val cutButton = activityMainBinding.cutButton
+        val resetButton = activityMainBinding.resetButton
 
         // set the map to be displayed in this view
         mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
@@ -114,9 +116,6 @@ class MainActivity : AppCompatActivity() {
         mapView.graphicsOverlays.add(graphicsOverlay)
 
         val (polygonGraphic, polylineGraphic) = createGraphics(graphicsOverlay, mapView)
-
-        val cutButton = activityMainBinding.cutButton
-        val resetButton = activityMainBinding.resetButton
 
        cutButton.setOnClickListener {
             // cut the graphic along the polyline to create 2 graphic parts
