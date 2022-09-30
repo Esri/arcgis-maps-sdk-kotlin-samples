@@ -46,129 +46,8 @@ import com.esri.arcgisruntime.sample.cutgeometry.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
-        // set up data binding for the activity
-        val activityMainBinding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
-        val mapView = activityMainBinding.mapView
-        lifecycle.addObserver(mapView)
-
-        // set the map to be displayed in this view
-        mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
-
-        // create a graphic overlay
-        val graphicsOverlay = GraphicsOverlay()
-        mapView.graphicsOverlays.add(graphicsOverlay)
-
-        val (polygonGraphic, polylineGraphic) = createGraphics(graphicsOverlay, mapView)
-
-        activityMainBinding.cutButton.setOnClickListener {
-            // cut the graphic along the polyline to create 2 graphic parts
-            polygonGraphic.geometry?.let { graphicGeometry ->
-                val parts: List<Geometry> =
-                    GeometryEngine.cut(
-                        graphicGeometry,
-                        polylineGraphic.geometry as Polyline
-                    )
-
-                // create graphics for the US and Canada sides
-                val canadaSide = Graphic(
-                    parts[0], SimpleFillSymbol(
-                        SimpleFillSymbolStyle.BackwardDiagonal,
-                        Color.GREEN, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.BLUE, 0F)
-                    )
-                )
-                val usSide = Graphic(
-                    parts[1], SimpleFillSymbol(
-                        SimpleFillSymbolStyle.ForwardDiagonal,
-                        Color.YELLOW, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.BLUE, 0F)
-                    )
-                )
-                // add the graphics to the graphics overlay
-                graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
-
-                // swap button visibility
-                activityMainBinding.cutButton.visibility = View.GONE
-                activityMainBinding.resetButton.visibility = View.VISIBLE
-            }
-        }
-
-        activityMainBinding.resetButton.setOnClickListener {
-            // clear existing graphics
-            graphicsOverlay.graphics.clear()
-
-            // recreate original graphics
-            createGraphics(graphicsOverlay, mapView)
-
-            // swap button visibility
-            activityMainBinding.cutButton.visibility = View.VISIBLE
-            activityMainBinding.resetButton.visibility = View.GONE
-        }
-
-    }
-
-    /**
-     * Create polygon and polyline graphics.
-     *
-     * @return polygon and polyline graphics
-     */
-    private fun createGraphics(graphicsOverlay: GraphicsOverlay, mapView: MapView): Pair<Graphic, Graphic> {
-        // create a blue polygon graphic to cut
-        val polygonGraphic = Graphic(
-            createLakeSuperiorPolygon(),
-            SimpleFillSymbol(
-                SimpleFillSymbolStyle.Solid, getColor(R.color.transparentBlue),
-                SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.BLUE, 2F)
-            )
-        )
-        graphicsOverlay.graphics.add(polygonGraphic)
-
-        // create a red polyline graphic to cut the polygon
-        val polylineGraphic = Graphic(
-            createLakeSuperiorBorder(), SimpleLineSymbol(
-                SimpleLineSymbolStyle.Dot,
-                Color.RED, 3F
-            )
-        )
-        graphicsOverlay.graphics.add(polylineGraphic)
-        // zoom to show the polygon graphic
-        polygonGraphic.geometry?.let { graphicGeometry ->
-            mapView.setViewpoint(Viewpoint(graphicGeometry))
-        }
-        return Pair(polygonGraphic, polylineGraphic)
-    }
-
-    /**
-     * Creates a polyline along the US/Canada border over Lake Superior.
-     *
-     * @return polyline
-     */
-    private fun createLakeSuperiorBorder(): Polyline {
-        val borderPolylineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
-            addPoint(Point(-9981328.687124, 6111053.281447))
-            addPoint(Point(-9946518.044066, 6102350.620682))
-            addPoint(Point(-9872545.427566, 6152390.920079))
-            addPoint(Point(-9838822.617103, 6157830.083057))
-            addPoint(Point(-9446115.050097, 5927209.572793))
-            addPoint(Point(-9430885.393759, 5876081.440801))
-            addPoint(Point(-9415655.737420, 5860851.784463))
-        }
-        return borderPolylineBuilder.toGeometry() as Polyline
-    }
-
-    /**
-     * Creates a polygon of points around Lake Superior.
-     *
-     * @return polygon
-     */
-    private fun createLakeSuperiorPolygon(): Polygon {
-        val lakeSuperiorPolygonBuilder = PolygonBuilder(SpatialReference.webMercator()).apply {
+    private val lakeSuperiorPolygon by lazy {
+        PolygonBuilder(SpatialReference.webMercator()).apply {
             addPoint(Point(-10254374.668616, 5908345.076380))
             addPoint(Point(-10178382.525314, 5971402.386779))
             addPoint(Point(-10118558.923141, 6034459.697178))
@@ -199,7 +78,122 @@ class MainActivity : AppCompatActivity() {
             addPoint(Point(-10111283.079633, 5933406.315128))
             addPoint(Point(-10214761.742852, 5888134.399970))
             addPoint(Point(-10254374.668616, 5901877.659929))
+        }.toGeometry() as Polygon
+    }
+
+    private val borderPolyline by lazy {
+        PolylineBuilder(SpatialReference.webMercator()).apply {
+            addPoint(Point(-9981328.687124, 6111053.281447))
+            addPoint(Point(-9946518.044066, 6102350.620682))
+            addPoint(Point(-9872545.427566, 6152390.920079))
+            addPoint(Point(-9838822.617103, 6157830.083057))
+            addPoint(Point(-9446115.050097, 5927209.572793))
+            addPoint(Point(-9430885.393759, 5876081.440801))
+            addPoint(Point(-9415655.737420, 5860851.784463))
+        }.toGeometry() as Polyline
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // authentication with an API key or named user is
+        // required to access basemaps and other location services
+        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+
+        // set up data binding for the activity
+        val activityMainBinding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val mapView = activityMainBinding.mapView
+        lifecycle.addObserver(mapView)
+
+        // set the map to be displayed in this view
+        mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+
+        // create a graphic overlay
+        val graphicsOverlay = GraphicsOverlay()
+        mapView.graphicsOverlays.add(graphicsOverlay)
+
+        val (polygonGraphic, polylineGraphic) = createGraphics(graphicsOverlay, mapView)
+
+        val cutButton = activityMainBinding.cutButton
+        val resetButton = activityMainBinding.resetButton
+
+       cutButton.setOnClickListener {
+            // cut the graphic along the polyline to create 2 graphic parts
+            polygonGraphic.geometry?.let { graphicGeometry ->
+                val parts: List<Geometry> =
+                    GeometryEngine.cut(
+                        graphicGeometry,
+                        polylineGraphic.geometry as Polyline
+                    )
+
+                // create graphics for the US and Canada sides
+                val canadaSide = Graphic(
+                    parts[0], SimpleFillSymbol(
+                        SimpleFillSymbolStyle.BackwardDiagonal,
+                        Color.GREEN, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.BLUE, 0F)
+                    )
+                )
+                val usSide = Graphic(
+                    parts[1], SimpleFillSymbol(
+                        SimpleFillSymbolStyle.ForwardDiagonal,
+                        Color.YELLOW, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.BLUE, 0F)
+                    )
+                )
+                // add the graphics to the graphics overlay
+                graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
+
+                // swap button visibility
+                cutButton.visibility = View.GONE
+                resetButton.visibility = View.VISIBLE
+            }
         }
-        return lakeSuperiorPolygonBuilder.toGeometry() as Polygon
+
+        resetButton.setOnClickListener {
+            // clear existing graphics
+            graphicsOverlay.graphics.clear()
+
+            // recreate original graphics
+            createGraphics(graphicsOverlay, mapView)
+
+            // swap button visibility
+            cutButton.visibility = View.VISIBLE
+            resetButton.visibility = View.GONE
+        }
+
+    }
+
+    /**
+     * Create polygon and polyline graphics.
+     *
+     * @return polygon and polyline graphics
+     */
+    private fun createGraphics(
+        graphicsOverlay: GraphicsOverlay,
+        mapView: MapView
+    ): Pair<Graphic, Graphic> {
+        // create a blue polygon graphic to cut
+        val polygonGraphic = Graphic(
+            lakeSuperiorPolygon,
+            SimpleFillSymbol(
+                SimpleFillSymbolStyle.Solid, getColor(R.color.transparentBlue),
+                SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.BLUE, 2F)
+            )
+        )
+        graphicsOverlay.graphics.add(polygonGraphic)
+
+        // create a red polyline graphic to cut the polygon
+        val polylineGraphic = Graphic(
+            borderPolyline, SimpleLineSymbol(
+                SimpleLineSymbolStyle.Dot,
+                Color.RED, 3F
+            )
+        )
+        graphicsOverlay.graphics.add(polylineGraphic)
+        // zoom to show the polygon graphic
+        polygonGraphic.geometry?.let { graphicGeometry ->
+            mapView.setViewpoint(Viewpoint(graphicGeometry))
+        }
+        return Pair(polygonGraphic, polylineGraphic)
     }
 }
