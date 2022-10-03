@@ -3,6 +3,7 @@ package com.esri.arcgisruntime.sample.sampleslib
 import android.app.ProgressDialog
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -115,6 +116,13 @@ abstract class SampleActivity : AppCompatActivity() {
 
             // show the loading dialog
             val loadingDialog = loadingBuilder.show()
+            // set cancel button for the loading dialog
+            val cancelButton = dialogView.findViewById<View>(R.id.cancelButton)
+            cancelButton.setOnClickListener {
+                loadingDialog.dismiss()
+                //re-start sample to show the dialog again
+                this@SampleActivity.recreate()
+            }
             // delete folder/file prior to downloading dta
             provisionLocation.deleteRecursively()
             // get the PortalItem using the provision URL

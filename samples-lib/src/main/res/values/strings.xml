@@ -6,4 +6,5 @@
         sample.
     </string>
     <string name="downloading_data">Downloading data...</string>
+    <string name="cancel">Cancel</string>
 </resources>
