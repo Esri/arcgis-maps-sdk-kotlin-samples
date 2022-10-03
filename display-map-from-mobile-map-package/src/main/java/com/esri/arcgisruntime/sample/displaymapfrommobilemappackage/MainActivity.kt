@@ -18,17 +18,23 @@ package com.esri.arcgisruntime.sample.displaymapfrommobilemappackage
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
+import arcgisruntime.LoadStatus
 import arcgisruntime.mapping.MobileMapPackage
+import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.displaymapfrommobilemappackage.databinding.ActivityMainBinding
+import com.esri.arcgisruntime.sample.sampleslib.SampleActivity
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : SampleActivity() {
 
+    private val provisionURL: String =
+        "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
     private val TAG = MainActivity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,21 +53,37 @@ class MainActivity : AppCompatActivity() {
         // get the file path of the
         val filePath = getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk)
 
-        // create the mobile map package
-        val mapPackage = MobileMapPackage(filePath)
         lifecycleScope.launch {
-            // load the mobile map package
-            val loadResult = mapPackage.load()
-            // add done listener which will invoke when mobile map package has loaded
-            loadResult.apply {
-                onSuccess {
-                    // add the map from the mobile map package to the MapView
-                    mapView.map = mapPackage.maps[0]
-                }
-                onFailure { throwable ->
-                    Log.e(TAG, throwable.message.toString())
+            downloadManager(provisionURL, filePath).collect { downloadStatus ->
+                if (downloadStatus == LoadStatus.Loaded) {
+                    openMobileMapPackage(mapView, filePath)
+                } else if (downloadStatus is LoadStatus.FailedToLoad) {
+                    showError(downloadStatus.error.message.toString(), mapView)
                 }
             }
         }
+
+    }
+
+    private suspend fun openMobileMapPackage(mapView: MapView, filePath: String) {
+        // create the mobile map package
+        val mapPackage = MobileMapPackage(filePath)
+        // load the mobile map package
+        val loadResult = mapPackage.load()
+        // add done listener which will invoke when mobile map package has loaded
+        loadResult.apply {
+            onSuccess {
+                // add the map from the mobile map package to the MapView
+                mapView.map = mapPackage.maps[0]
+            }
+            onFailure { throwable ->
+                showError(throwable.message.toString(), mapView)
+            }
+        }
+    }
+
+    private fun showError(message: String, view: View) {
+        Log.e(TAG, message)
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }

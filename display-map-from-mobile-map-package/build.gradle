@@ -28,4 +28,6 @@ android {
 dependencies {
     // lib dependencies from rootProject build.gradle
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
+    implementation project(path: ':samples-lib')
+    implementation "com.google.android.material:material:$materialVersion"
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="requires_provisioning">This sample requires local data to be provisioned to the device.
+        Click continue to download the required data and start the sample.</string>
+    <string name="already_provisioned">This device has been provisioned with the required data required to run this
+        sample.
+    </string>
+    <string name="downloading_data">Downloading data...</string>
+</resources>
