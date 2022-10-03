@@ -1,9 +1,6 @@
 package com.esri.arcgisruntime.sample.sampleslib
 
-import android.app.ProgressDialog
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope

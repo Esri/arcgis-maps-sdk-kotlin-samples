@@ -33,9 +33,10 @@ import kotlinx.coroutines.launch
 
 class MainActivity : SampleActivity() {
 
-    private val provisionURL: String =
-        "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
     private val TAG = MainActivity::class.java.simpleName
+
+    // ArcGIS Portal item containing the .mmpk mobile map package
+    private val provisionURL: String = "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,17 +48,22 @@ class MainActivity : SampleActivity() {
         // set up data binding for the activity
         val activityMainBinding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
+        // create and add the MapView to the lifecycle
         val mapView = activityMainBinding.mapView
         lifecycle.addObserver(mapView)
 
-        // get the file path of the
+        // get the file path of the (.mmpk) file
         val filePath = getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk)
 
         lifecycleScope.launch {
+            // start the download manager to automatically add the .mmpk file to the app
+            // alternatively, you can use ADB/Device File Explorer
             downloadManager(provisionURL, filePath).collect { downloadStatus ->
                 if (downloadStatus == LoadStatus.Loaded) {
+                    // download complete, resuming sample
                     openMobileMapPackage(mapView, filePath)
                 } else if (downloadStatus is LoadStatus.FailedToLoad) {
+                    // failed to download provision data
                     showError(downloadStatus.error.message.toString(), mapView)
                 }
             }
@@ -65,12 +71,15 @@ class MainActivity : SampleActivity() {
 
     }
 
+    /**
+     * Sets the [mapView] to display a map using the .mmpk
+     * file located at [filePath]
+     */
     private suspend fun openMobileMapPackage(mapView: MapView, filePath: String) {
         // create the mobile map package
         val mapPackage = MobileMapPackage(filePath)
         // load the mobile map package
         val loadResult = mapPackage.load()
-        // add done listener which will invoke when mobile map package has loaded
         loadResult.apply {
             onSuccess {
                 // add the map from the mobile map package to the MapView
