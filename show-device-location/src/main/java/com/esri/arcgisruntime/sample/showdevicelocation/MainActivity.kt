@@ -32,14 +32,23 @@ import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.location.LocationDisplayAutoPanMode
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
-import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.showdevicelocation.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
+
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
+
+    // set up data binding for the activity
+    private val activityMainBinding: ActivityMainBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.activity_main)
+    }
+
+    private val mapView by lazy {
+        activityMainBinding.mapView
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,11 +59,7 @@ class MainActivity : AppCompatActivity() {
         // some parts of the API require an Android Context to properly interact with Android system
         // features, such as LocationProvider and application resources
         ArcGISRuntimeEnvironment.applicationContext = applicationContext
-
-        // set up data binding for the activity
-        val activityMainBinding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
-        val mapView = activityMainBinding.mapView
+        
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
@@ -68,7 +73,7 @@ class MainActivity : AppCompatActivity() {
             locationDisplay.dataSource.start().also {
                 // check permissions to see if failure may be due to lack of permissions
                 runOnUiThread {
-                    requestPermissions(mapView)
+                    requestPermissions()
                     locationDisplay.dataSource.status
                 }
             }
@@ -123,7 +128,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Request fine and coarse location permissions for API level 23+.
      */
-    private fun requestPermissions(mapView: MapView) {
+    private fun requestPermissions() {
         // coarse location permission
         val permissionCheckCoarseLocation =
             ContextCompat.checkSelfPermission(this@MainActivity, ACCESS_COARSE_LOCATION) ==
@@ -133,11 +138,44 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.checkSelfPermission(this@MainActivity, ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED
         if (!(permissionCheckCoarseLocation && permissionCheckFineLocation)) { // if permissions are not already granted, request permission from the user
-            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION), 2)
+            ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION),
+                2
+            )
         } else {
-            Snackbar.make(mapView, "Location permissions required to run this sample!", Snackbar.LENGTH_LONG).show()
+            // permission already granted, so start the location display
+            lifecycleScope.launch {
+                mapView.locationDisplay.dataSource.start().onSuccess {
+                    activityMainBinding.spinner.setSelection(1, true)
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle the permissions request response.
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            lifecycleScope.launch {
+                mapView.locationDisplay.dataSource.start().onSuccess {
+                    activityMainBinding.spinner.setSelection(1, true)
+                }
+            }
+        } else {
+            Snackbar.make(
+                mapView,
+                "Location permissions required to run this sample!",
+                Snackbar.LENGTH_LONG
+            ).show()
             // update UI to reflect that the location display did not actually start
-            spinner.setSelection(0, true)
+            activityMainBinding.spinner.setSelection(0, true)
         }
     }
 }

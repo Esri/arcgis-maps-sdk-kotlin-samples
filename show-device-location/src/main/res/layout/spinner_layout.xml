@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.9"
             android:gravity="end"
-            android:paddingTop="5dp"
+            android:padding="10dp"
             android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold|normal" />
