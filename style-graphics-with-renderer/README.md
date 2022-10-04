@@ -1,0 +1,1 @@
+# Style graphics with renderer
