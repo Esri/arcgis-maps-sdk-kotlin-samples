@@ -1,6 +1,8 @@
 package com.esri.arcgisruntime.sample.sampleslib
 
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -22,10 +24,10 @@ abstract class SampleActivity : AppCompatActivity() {
      * at the [destinationPath]. The downloadManager clears the directory if user chooses
      * to re-download the provisioned data.
      */
-    suspend fun downloadManager(
+    suspend fun sampleDownloadManager(
         provisionURL: String,
         destinationPath: String
-    ): Flow<LoadStatus> = callbackFlow {
+    ): Flow<Unit> = callbackFlow {
 
         // set up the alert dialog builder
         val provisionQuestionDialog = AlertDialog.Builder(this@SampleActivity)
@@ -45,10 +47,10 @@ abstract class SampleActivity : AppCompatActivity() {
                     downloadPortalItem(provisionURL, provisionFile).collect {
                         if (it == LoadStatus.Loaded) {
                             // send load status
-                            trySend(it)
+                            trySend(Unit)
                         } else if (it is LoadStatus.FailedToLoad) {
-                            // send load status
-                            trySend(it)
+                            // display error
+                            showError(it.error.message.toString())
                         }
                     }
                 }
@@ -58,7 +60,7 @@ abstract class SampleActivity : AppCompatActivity() {
                 // dismiss the provision question dialog
                 dialog.dismiss()
                 // send Loaded status as file exists
-                trySend(LoadStatus.Loaded)
+                trySend(Unit)
             }
         }
         // if file does not exist, ask for download permission
@@ -74,10 +76,10 @@ abstract class SampleActivity : AppCompatActivity() {
                     downloadPortalItem(provisionURL, provisionFile).collect {
                         if (it == LoadStatus.Loaded) {
                             // send load status
-                            trySend(it)
+                            trySend(Unit)
                         } else if (it is LoadStatus.FailedToLoad) {
-                            // send load status
-                            trySend(it)
+                            // display error
+                            showError(it.error.message.toString())
                         }
                     }
                 }
@@ -95,7 +97,7 @@ abstract class SampleActivity : AppCompatActivity() {
     }
 
     /**
-     * Handles the download process using the [provisionURL] at the [destinationPath].
+     * Handles the download process using the [provisionURL] at the [provisionLocation].
      *
      */
     private fun downloadPortalItem(
@@ -160,4 +162,9 @@ abstract class SampleActivity : AppCompatActivity() {
                 }
             }
         }
+
+    private fun showError(message: String) {
+        Log.e(this.packageName, message)
+        Toast.makeText(this@SampleActivity, message, Toast.LENGTH_SHORT).show()
+    }
 }

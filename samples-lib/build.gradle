@@ -19,6 +19,8 @@ android {
 }
 
 dependencies {
+    // lib dependencies from rootProject build.gradle
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$ktxLifecycle"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
+    implementation "com.google.android.material:material:$materialVersion"
 }

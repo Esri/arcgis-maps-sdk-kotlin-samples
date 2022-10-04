@@ -17,7 +17,7 @@ When the sample opens, it will automatically display the map in the mobile map p
 
 1. Create a `MobileMapPackage` specifying the path to the .mmpk file.
 2. Load the mobile map package with `mapPackage.load()`.
-3. After it successfully loads, get the map from the ".mmpk" and add it to the map view: `mapView.map = mapPackage.maps[0]`.
+3. After it successfully loads, get the map from the ".mmpk" and add it to the map view: `mapView.map = mapPackage.maps.first()`.
 
 ## Relevant API
 
