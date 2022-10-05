@@ -19,6 +19,7 @@ package com.esri.arcgisruntime.sample.displaymapfrommobilemappackage
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
@@ -30,13 +31,12 @@ import com.esri.arcgisruntime.sample.sampleslib.SampleActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : SampleActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
     // ArcGIS Portal item containing the .mmpk mobile map package
-    private val provisionURL: String =
-        "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
+    val provisionURL: String = "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,35 +55,23 @@ class MainActivity : SampleActivity() {
         // get the file path of the (.mmpk) file
         val filePath = getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk)
 
-        // start the download manager to automatically add the .mmpk file to the app
-        // alternatively, you can use ADB/Device File Explorer
-        lifecycleScope.launch {
-            sampleDownloadManager(provisionURL, filePath).collect {
-                // download complete, resuming sample
-                openMobileMapPackage(mapView, filePath)
-            }
-        }
-
-    }
-
-    /**
-     * Sets the [mapView] to display the first map in the .mmpk
-     * file located at [filePath]
-     */
-    private suspend fun openMobileMapPackage(mapView: MapView, filePath: String) {
         // create the mobile map package
         val mapPackage = MobileMapPackage(filePath)
-        // load the mobile map package
-        val loadResult = mapPackage.load()
-        loadResult.apply {
-            onSuccess {
-                // add the map from the mobile map package to the MapView
-                mapView.map = mapPackage.maps.first()
-            }
-            onFailure { throwable ->
-                showError(throwable.message.toString(), mapView)
+
+        lifecycleScope.launch {
+            // load the mobile map package
+            val loadResult = mapPackage.load()
+            loadResult.apply {
+                onSuccess {
+                    // add the map from the mobile map package to the MapView
+                    mapView.map = mapPackage.maps.first()
+                }
+                onFailure { throwable ->
+                    showError(throwable.message.toString(), mapView)
+                }
             }
         }
+
     }
 
     private fun showError(message: String, view: View) {
