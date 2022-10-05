@@ -13,16 +13,16 @@ When using a map within a GIS, it may be helpful for a user to know their own lo
 Tap the button in the lower right (which starts in Stop mode). A menu will appear with the following options:
 
 * Stop - Stops the location display.
-* On - Starts the location display with no `AutoPanMode` mode set.
-* Re-Center - Starts the location display with `AutoPanMode` set to `Recenter`.
-* Navigation - Starts the location display with `AutoPanMode` set to `Navigation`.
-* Compass - Starts the location display with `AutoPanMode` set to `CompassNavigation`.
+* On - Starts the location display with no `LocationDisplayAutoPanMode` mode set.
+* Re-Center - Starts the location display with `LocationDisplayAutoPanMode` set to `Recenter`.
+* Navigation - Starts the location display with `LocationDisplayAutoPanMode` set to `Navigation`.
+* Compass - Starts the location display with `LocationDisplayAutoPanMode` set to `CompassNavigation`.
 
 ## How it works
 
 1. Create a `MapView`.
 2. Get the `LocationDisplay.dataSource` from the `MapView` with `mapView.locationDisplay.dataSource`.
-3. Use `start()` and `stop()` on the `LocationDisplay` as necessary.
+3. Use `start()` and `stop()` on the `LocationDataSource` as necessary.
 
 ## Relevant API
 

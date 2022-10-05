@@ -39,8 +39,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -59,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         // some parts of the API require an Android Context to properly interact with Android system
         // features, such as LocationProvider and application resources
         ArcGISRuntimeEnvironment.applicationContext = applicationContext
-        
+
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
@@ -70,25 +68,28 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             // listen to changes in the status of the location data source
-            locationDisplay.dataSource.start().also {
-                // check permissions to see if failure may be due to lack of permissions
-                runOnUiThread {
+            locationDisplay.dataSource.start().apply {
+                onSuccess {
+                    // permission already granted, so start the location display
+                    activityMainBinding.spinner.setSelection(1, true)
+                }
+                onFailure {
+                    // check permissions to see if failure may be due to lack of permissions
                     requestPermissions()
-                    locationDisplay.dataSource.status
                 }
             }
         }
         // populate the list for the location display options for the spinner's adapter
-        val list = arrayListOf(
+        val panModeSpinnerElements = arrayListOf(
             ItemData("Stop", R.drawable.locationdisplaydisabled),
             ItemData("On", R.drawable.locationdisplayon),
-            ItemData("Re-Center", R.drawable.locationdisplayrecenter),
+            ItemData("Re-center", R.drawable.locationdisplayrecenter),
             ItemData("Navigation", R.drawable.locationdisplaynavigation),
             ItemData("Compass", R.drawable.locationdisplayheading)
         )
 
         activityMainBinding.spinner.apply {
-            adapter = SpinnerAdapter(this@MainActivity, R.id.locationTextView, list)
+            adapter = SpinnerAdapter(this@MainActivity, R.id.locationTextView, panModeSpinnerElements)
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -96,24 +97,24 @@ class MainActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    when (position) {
-                        0 ->  // stop location display
+                    when (panModeSpinnerElements[position].text) {
+                        "Stop" ->  // stop location display
                             lifecycleScope.launch {
                                 locationDisplay.dataSource.stop()
                             }
-                        1 ->  // start location display
+                        "On" ->  // start location display
                             lifecycleScope.launch {
                                 locationDisplay.dataSource.start()
                             }
-                        2 -> {
+                        "Re-center" -> {
                             // re-center MapView on location
                             locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
                         }
-                        3 -> {
+                        "Navigation" -> {
                             // start navigation mode
                             locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
                         }
-                        4 -> {
+                        "Compass" -> {
                             // start compass navigation mode
                             locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.CompassNavigation)
                         }
@@ -137,7 +138,9 @@ class MainActivity : AppCompatActivity() {
         val permissionCheckFineLocation =
             ContextCompat.checkSelfPermission(this@MainActivity, ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED
-        if (!(permissionCheckCoarseLocation && permissionCheckFineLocation)) { // if permissions are not already granted, request permission from the user
+
+        // if permissions are not already granted, request permission from the user
+        if (!(permissionCheckCoarseLocation && permissionCheckFineLocation)) {
             ActivityCompat.requestPermissions(
                 this@MainActivity,
                 arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION),
