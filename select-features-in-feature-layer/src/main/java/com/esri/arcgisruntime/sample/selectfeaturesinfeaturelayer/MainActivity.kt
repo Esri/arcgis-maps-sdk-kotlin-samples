@@ -109,11 +109,11 @@ class MainActivity : AppCompatActivity() {
         featureLayer.clearSelection()
         // set a tolerance for accuracy of returned selections from point tapped
         val tolerance = 25.0
-        // create a IdentifyLayerResult future using the screen coordinate
-        val identifyLayerResultFuture =
+        // create a IdentifyLayerResult using the screen coordinate
+        val identifyLayerResult =
             mapView.identifyLayer(featureLayer, screenCoordinate, tolerance, false, -1)
         // handle the result's onSuccess and onFailure
-        identifyLayerResultFuture.apply {
+        identifyLayerResult.apply {
             onSuccess { identifyLayerResult ->
                 // get the elements in the selection that are features
                 val features = identifyLayerResult.geoElements.filterIsInstance<Feature>()
