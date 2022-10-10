@@ -68,17 +68,16 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             // listen to changes in the status of the location data source
-            locationDisplay.dataSource.start().apply {
-                onSuccess {
+            locationDisplay.dataSource.start()
+                .onSuccess {
                     // permission already granted, so start the location display
                     activityMainBinding.spinner.setSelection(1, true)
-                }
-                onFailure {
+                }.onFailure {
                     // check permissions to see if failure may be due to lack of permissions
                     requestPermissions()
                 }
             }
-        }
+
         // populate the list for the location display options for the spinner's adapter
         val panModeSpinnerElements = arrayListOf(
             ItemData("Stop", R.drawable.locationdisplaydisabled),
