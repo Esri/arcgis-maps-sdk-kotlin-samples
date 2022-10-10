@@ -8,14 +8,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import arcgisruntime.LoadStatus
 import arcgisruntime.portal.PortalItem
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 
+@OptIn(ExperimentalCoroutinesApi::class)
 abstract class SampleActivity : AppCompatActivity() {
 
     /**
@@ -27,73 +31,74 @@ abstract class SampleActivity : AppCompatActivity() {
     suspend fun sampleDownloadManager(
         provisionURL: String,
         destinationPath: String
-    ): Flow<Unit> = callbackFlow {
-
-        // set up the alert dialog builder
-        val provisionQuestionDialog = AlertDialog.Builder(this@SampleActivity)
-            .setTitle("Download data?")
+    ): Flow<Unit> = flow {
 
         // the provision file at the destination
         val provisionFile = File(destinationPath)
-        if (provisionFile.exists()) {
-            // file exists, prompt user to download again
-            provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
-            // if user taps "Re-download" data
-            provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->
-                // dismiss provision dialog
-                dialog.dismiss()
-                // start the download of the portal item
-                lifecycleScope.launch {
-                    downloadPortalItem(provisionURL, provisionFile).collect {
-                        if (it == LoadStatus.Loaded) {
-                            // send load status
-                            trySend(Unit)
-                        } else if (it is LoadStatus.FailedToLoad) {
-                            // display error
-                            showError(it.error.message.toString())
+
+        // suspends the coroutine until the dialog is resolved.
+        val shouldDoDownload = suspendCancellableCoroutine<Boolean> { shouldDownloadContinuation ->
+            // set up the alert dialog builder
+            val provisionQuestionDialog = AlertDialog.Builder(this@SampleActivity)
+                .setTitle("Download data?")
+
+            if (provisionFile.exists()) {
+                // file exists, prompt user to download again
+                provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
+                // if user taps "Re-download" data
+                provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->
+                    // dismiss provision dialog
+                    dialog.dismiss()
+                    shouldDownloadContinuation.resume(true, null)
+                }
+                // if user taps "Continue" with existing file
+                provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
+                    // dismiss the provision question dialog
+                    dialog.dismiss()
+                    // send Loaded status as file exists
+                    shouldDownloadContinuation.resume(fa, null)
+                }
+            }
+            // if file does not exist, ask for download permission
+            else {
+                // set require provisioning message
+                provisionQuestionDialog.setMessage(getString(R.string.requires_provisioning))
+                // if user taps "Download" button
+                provisionQuestionDialog.setPositiveButton("Download") { dialog, _ ->
+                    // dismiss provision dialog
+                    dialog.dismiss()
+                    // start the download of the portal item
+                    lifecycleScope.launch {
+                        downloadPortalItem(provisionURL, provisionFile).collect {
+                            if (it == LoadStatus.Loaded) {
+                                // send load status
+                                trySend(Unit)
+                            } else if (it is LoadStatus.FailedToLoad) {
+                                // display error
+                                showError(it.error.message.toString())
+                            }
                         }
                     }
                 }
-            }
-            // if user taps "Continue" with existing file
-            provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
-                // dismiss the provision question dialog
-                dialog.dismiss()
-                // send Loaded status as file exists
-                trySend(Unit)
-            }
-        }
-        // if file does not exist, ask for download permission
-        else {
-            // set require provisioning message
-            provisionQuestionDialog.setMessage(getString(R.string.requires_provisioning))
-            // if user taps "Download" button
-            provisionQuestionDialog.setPositiveButton("Download") { dialog, _ ->
-                // dismiss provision dialog
-                dialog.dismiss()
-                // start the download of the portal item
-                lifecycleScope.launch {
-                    downloadPortalItem(provisionURL, provisionFile).collect {
-                        if (it == LoadStatus.Loaded) {
-                            // send load status
-                            trySend(Unit)
-                        } else if (it is LoadStatus.FailedToLoad) {
-                            // display error
-                            showError(it.error.message.toString())
-                        }
-                    }
+                provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
+                    dialog.dismiss()
+                    finish()
                 }
             }
-            provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
-                dialog.dismiss()
-                finish()
-            }
+
+            // show the provision question dialog
+            provisionQuestionDialog.show()
         }
 
-        // show the provision question dialog
-        provisionQuestionDialog.show()
-        // close this callbackFlow channel when the coroutine scope closes
-        awaitClose { channel.close() }
+        // Back in coroutine world, we know if the download should happen or not.
+        if (shouldDoDownload) {
+            // Start the download (we can just do it here because we are in a suspending
+            // context), and wait until it completes.
+            // Alternatively if we want to propagate the loading status flow to users, we could
+            // just return it (I think, haven't thought too hard about it).
+            //return downloadPortalItem(..)
+            downloadPortalItem(provisionURL, provisionFile).collect()
+        }
     }
 
     /**
@@ -122,7 +127,7 @@ abstract class SampleActivity : AppCompatActivity() {
                 //re-start sample to show the dialog again
                 this@SampleActivity.recreate()
             }
-            // delete folder/file prior to downloading dta
+            // delete folder/file prior to downloading data
             provisionLocation.deleteRecursively()
             // get the PortalItem using the provision URL
             val portalItem = PortalItem(provisionURL)
@@ -134,7 +139,11 @@ abstract class SampleActivity : AppCompatActivity() {
                 onSuccess {
                     // get the data of the PortalItem
                     val portalItemData = portalItem.fetchData()
+                    val byteArrayInputStream = portalItemData.getOrElse {
+                        it.printStackTrace()
+                    }
                     portalItemData.apply {
+
                         // get the byteArray of the PortalItem
                         onSuccess { byteArray ->
                             runCatching {
