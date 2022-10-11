@@ -49,6 +49,7 @@ class DownloadActivity : SampleActivity() {
                     startActivity(Intent(this@DownloadActivity, MainActivity::class.java))
                     finish()
                 } else if (loadStatus is LoadStatus.FailedToLoad){
+                    // show error message
                     val errorMessage = loadStatus.error.message.toString()
                     Snackbar.make(activityDownloadBinding.layout, errorMessage,Snackbar.LENGTH_SHORT).show()
                     Log.e(this@DownloadActivity.packageName, errorMessage)

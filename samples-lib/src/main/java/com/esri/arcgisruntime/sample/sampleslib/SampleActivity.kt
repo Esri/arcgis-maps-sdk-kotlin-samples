@@ -56,16 +56,17 @@ abstract class SampleActivity : AppCompatActivity() {
                 provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
                 // if user taps "Re-download" data
                 provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->
-                    // dismiss provision dialog
+                    // dismiss provision dialog question dialog
                     dialog.dismiss()
+                    // set to should download
                     shouldDownloadContinuation.resume(true, null)
                 }
                 // if user taps "Continue" with existing file
                 provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
                     // dismiss the provision question dialog
                     dialog.dismiss()
-                    // send Loaded status as file exists
-                    shouldDownloadContinuation.resume(false,null)
+                    // set to should not download
+                    shouldDownloadContinuation.resume(false, null)
                 }
             }
             // if file does not exist, ask for download permission
@@ -76,11 +77,12 @@ abstract class SampleActivity : AppCompatActivity() {
                 provisionQuestionDialog.setPositiveButton("Download") { dialog, _ ->
                     // dismiss provision dialog
                     dialog.dismiss()
-                    // send Loaded status as file exists
-                    shouldDownloadContinuation.resume(true,null)
+                    // set to should download
+                    shouldDownloadContinuation.resume(true, null)
                 }
                 provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
                     dialog.dismiss()
+                    // close the sample
                     finish()
                 }
             }
@@ -91,15 +93,16 @@ abstract class SampleActivity : AppCompatActivity() {
 
         // Back in coroutine world, we know if the download should happen or not.
         if (shouldDoDownload) {
-            downloadPortalItem(provisionURL, provisionFile).collect{
+            downloadPortalItem(provisionURL, provisionFile).collect {
+                // return the Loaded/FailedToLoad status
                 this.emit(it)
             }
             return@flow
+        }else{
+            // using local data, to returns a loaded signal
+            this.emit(LoadStatus.Loaded)
+            return@flow
         }
-
-        // using local data, to returns a loaded signal
-        this.emit(LoadStatus.Loaded)
-        return@flow
     }
 
     /**
@@ -134,37 +137,30 @@ abstract class SampleActivity : AppCompatActivity() {
             val portalItem = PortalItem(provisionURL)
             // load the PortalItem
             val loadResult = portalItem.load()
-            loadResult.apply {
-                onSuccess {
-                    // get the data of the PortalItem
-                    val portalItemData = portalItem.fetchData()
-                    portalItemData.apply {
-
-                        // get the byteArray of the PortalItem
-                        onSuccess { byteArray ->
-                            runCatching {
-                                // create file at location to write the PortalItem ByteArray
-                                provisionLocation.createNewFile()
-                                // create and write the file output stream
-                                val fileOutputStream = FileOutputStream(provisionLocation)
-                                fileOutputStream.write(byteArray)
-                                // close dialog and emit status
-                                loadingDialog.dismiss()
-                                emit(LoadStatus.Loaded)
-                            }
-                        }
-                        onFailure {
-                            // close dialog and emit status
-                            loadingDialog.dismiss()
-                            emit(LoadStatus.FailedToLoad(it))
-                        }
-                    }
-                }
-                onFailure {
-                    // close dialog and emit status
-                    loadingDialog.dismiss()
-                    emit(LoadStatus.FailedToLoad(it))
-                }
+            loadResult.getOrElse {
+                // close dialog and emit status
+                loadingDialog.dismiss()
+                emit(LoadStatus.FailedToLoad(it))
+                return@flow
+            }
+            // get the data of the PortalItem
+            val portalItemData = portalItem.fetchData()
+            val byteArray = portalItemData.getOrElse {
+                // close dialog and emit status
+                loadingDialog.dismiss()
+                emit(LoadStatus.FailedToLoad(it))
+                return@flow
+            }
+            // get the byteArray of the PortalItem
+            runCatching {
+                // create file at location to write the PortalItem ByteArray
+                provisionLocation.createNewFile()
+                // create and write the file output stream
+                val fileOutputStream = FileOutputStream(provisionLocation)
+                fileOutputStream.write(byteArray)
+                // close dialog and emit status
+                loadingDialog.dismiss()
+                emit(LoadStatus.Loaded)
             }
         }
 }
