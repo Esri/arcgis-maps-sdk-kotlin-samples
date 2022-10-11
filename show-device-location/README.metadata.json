@@ -12,7 +12,10 @@
         "location",
         "map",
         "mobile",
-        "navigation"
+        "navigation",
+        "ArcGISMap",
+        "LocationDisplay",
+        "MapView"
     ],
     "language": "kotlin",
     "redirect_from": [
