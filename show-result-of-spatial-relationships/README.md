@@ -1,0 +1,1 @@
+# Show result of spatial relationships
