@@ -25,18 +25,13 @@ import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.mapping.MobileMapPackage
-import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.displaymapfrommobilemappackage.databinding.ActivityMainBinding
-import com.esri.arcgisruntime.sample.sampleslib.SampleActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
-
-    // ArcGIS Portal item containing the .mmpk mobile map package
-    val provisionURL: String = "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +66,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     private fun showError(message: String, view: View) {

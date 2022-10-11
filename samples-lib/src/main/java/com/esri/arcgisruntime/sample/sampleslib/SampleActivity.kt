@@ -1,21 +1,30 @@
+/* Copyright 2022 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.esri.arcgisruntime.sample.sampleslib
 
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import arcgisruntime.LoadStatus
 import arcgisruntime.portal.PortalItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 
@@ -31,13 +40,13 @@ abstract class SampleActivity : AppCompatActivity() {
     suspend fun sampleDownloadManager(
         provisionURL: String,
         destinationPath: String
-    ): Flow<Unit> = flow {
+    ): Flow<LoadStatus> = flow {
 
         // the provision file at the destination
         val provisionFile = File(destinationPath)
 
         // suspends the coroutine until the dialog is resolved.
-        val shouldDoDownload = suspendCancellableCoroutine<Boolean> { shouldDownloadContinuation ->
+        val shouldDoDownload: Boolean = suspendCancellableCoroutine { shouldDownloadContinuation ->
             // set up the alert dialog builder
             val provisionQuestionDialog = AlertDialog.Builder(this@SampleActivity)
                 .setTitle("Download data?")
@@ -56,7 +65,7 @@ abstract class SampleActivity : AppCompatActivity() {
                     // dismiss the provision question dialog
                     dialog.dismiss()
                     // send Loaded status as file exists
-                    shouldDownloadContinuation.resume(fa, null)
+                    shouldDownloadContinuation.resume(false,null)
                 }
             }
             // if file does not exist, ask for download permission
@@ -67,18 +76,8 @@ abstract class SampleActivity : AppCompatActivity() {
                 provisionQuestionDialog.setPositiveButton("Download") { dialog, _ ->
                     // dismiss provision dialog
                     dialog.dismiss()
-                    // start the download of the portal item
-                    lifecycleScope.launch {
-                        downloadPortalItem(provisionURL, provisionFile).collect {
-                            if (it == LoadStatus.Loaded) {
-                                // send load status
-                                trySend(Unit)
-                            } else if (it is LoadStatus.FailedToLoad) {
-                                // display error
-                                showError(it.error.message.toString())
-                            }
-                        }
-                    }
+                    // send Loaded status as file exists
+                    shouldDownloadContinuation.resume(true,null)
                 }
                 provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
                     dialog.dismiss()
@@ -92,13 +91,15 @@ abstract class SampleActivity : AppCompatActivity() {
 
         // Back in coroutine world, we know if the download should happen or not.
         if (shouldDoDownload) {
-            // Start the download (we can just do it here because we are in a suspending
-            // context), and wait until it completes.
-            // Alternatively if we want to propagate the loading status flow to users, we could
-            // just return it (I think, haven't thought too hard about it).
-            //return downloadPortalItem(..)
-            downloadPortalItem(provisionURL, provisionFile).collect()
+            downloadPortalItem(provisionURL, provisionFile).collect{
+                this.emit(it)
+            }
+            return@flow
         }
+
+        // using local data, to returns a loaded signal
+        this.emit(LoadStatus.Loaded)
+        return@flow
     }
 
     /**
@@ -133,15 +134,10 @@ abstract class SampleActivity : AppCompatActivity() {
             val portalItem = PortalItem(provisionURL)
             // load the PortalItem
             val loadResult = portalItem.load()
-            // emit status to the calling activity
-            emit(LoadStatus.Loading)
             loadResult.apply {
                 onSuccess {
                     // get the data of the PortalItem
                     val portalItemData = portalItem.fetchData()
-                    val byteArrayInputStream = portalItemData.getOrElse {
-                        it.printStackTrace()
-                    }
                     portalItemData.apply {
 
                         // get the byteArray of the PortalItem
@@ -171,9 +167,4 @@ abstract class SampleActivity : AppCompatActivity() {
                 }
             }
         }
-
-    private fun showError(message: String) {
-        Log.e(this.packageName, message)
-        Toast.makeText(this@SampleActivity, message, Toast.LENGTH_SHORT).show()
-    }
 }
