@@ -18,9 +18,9 @@ package com.esri.arcgisruntime.sample.displaymapfrommobilemappackage
 
 import android.content.Intent
 import android.os.Bundle
-import com.esri.arcgisruntime.sample.sampleslib.SampleActivity
+import com.esri.arcgisruntime.sample.sampleslib.DownloaderActivity
 
-class DownloadActivity : SampleActivity() {
+class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getDownloadInformation(

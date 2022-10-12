@@ -38,7 +38,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @OptIn(ExperimentalCoroutinesApi::class)
-abstract class SampleActivity : AppCompatActivity() {
+abstract class DownloaderActivity : AppCompatActivity() {
 
     // set up data binding for the activity
     private val activitySamplesBinding: ActivitySamplesBinding by lazy {
@@ -70,7 +70,7 @@ abstract class SampleActivity : AppCompatActivity() {
                         errorMessage,
                         Snackbar.LENGTH_SHORT
                     ).show()
-                    Log.e(this@SampleActivity.packageName, errorMessage)
+                    Log.e(this@DownloaderActivity.packageName, errorMessage)
                 }
             }
         }
@@ -93,7 +93,7 @@ abstract class SampleActivity : AppCompatActivity() {
         // suspends the coroutine until the dialog is resolved.
         val shouldDoDownload: Boolean = suspendCancellableCoroutine { shouldDownloadContinuation ->
             // set up the alert dialog builder
-            val provisionQuestionDialog = AlertDialog.Builder(this@SampleActivity)
+            val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
                 .setTitle("Download data?")
 
             if (provisionFile.exists()) {
@@ -146,7 +146,6 @@ abstract class SampleActivity : AppCompatActivity() {
         } else {
             // using local data, to returns a loaded signal
             this.emit(LoadStatus.Loaded)
-            return@flow
         }
     }
 
@@ -165,7 +164,7 @@ abstract class SampleActivity : AppCompatActivity() {
             val progressBar =
                 dialogView.findViewById<LinearProgressIndicator>(R.id.download_spinner)
             progressBar.setProgress(0, false)
-            val loadingBuilder = AlertDialog.Builder(this@SampleActivity).apply {
+            val loadingBuilder = AlertDialog.Builder(this@DownloaderActivity).apply {
                 setView(dialogView)
                 create()
             }
@@ -177,8 +176,10 @@ abstract class SampleActivity : AppCompatActivity() {
             cancelButton.setOnClickListener {
                 loadingDialog.dismiss()
                 //re-start sample to show the dialog again
-                this@SampleActivity.recreate()
+                this@DownloaderActivity.recreate()
             }
+            // emit loading status
+            emit(LoadStatus.Loading)
             // delete folder/file prior to downloading data
             provisionLocation.deleteRecursively()
             // get the PortalItem using the provision URL
@@ -220,6 +221,10 @@ abstract class SampleActivity : AppCompatActivity() {
                 // close dialog and emit status
                 loadingDialog.dismiss()
                 emit(LoadStatus.Loaded)
+            }.onFailure {
+                // close dialog and emit status
+                loadingDialog.dismiss()
+                emit(LoadStatus.FailedToLoad(it))
             }
         }
 }
