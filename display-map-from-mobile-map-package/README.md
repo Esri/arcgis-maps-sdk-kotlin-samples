@@ -24,10 +24,6 @@ When the sample opens, it will automatically display the map in the mobile map p
 * MapView
 * MobileMapPackage
 
-## About the data
-
-This mobile map package shows points of interest within Yellowstone National Park. It is available for download [here on ArcGIS Online](https://arcgisruntime.maps.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061).
-
 ## Offline data
 
 The sample app will use the `sampleslib` to provision offline data automatically. Alternatively, load the offline data to the scoped storage of the sample app:
@@ -39,6 +35,10 @@ The sample app will use the `sampleslib` to provision offline data automatically
 ```kotlin
 adb push Yellowstone.mmpk /Android/data/com.esri.arcgisruntime.sample.displaymapfrommobilemappackage/files/Yellowstone.mmpk
 ```
+
+## About the data
+
+This mobile map package shows points of interest within Yellowstone National Park. It is available for download [here on ArcGIS Online](https://arcgisruntime.maps.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061).
 
 ## Tags
 
