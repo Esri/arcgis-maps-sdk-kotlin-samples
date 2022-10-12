@@ -36,7 +36,7 @@ The sample app will use the `sampleslib` to provision offline data automatically
 2. Open your command prompt and navigate to the folder where you extracted the contents of the data from step 1.
 3. Push the data into the scoped storage of the sample app:
 
-```
+```kotlin
 adb push Yellowstone.mmpk /Android/data/com.esri.arcgisruntime.sample.displaymapfrommobilemappackage/files/Yellowstone.mmpk
 ```
 
