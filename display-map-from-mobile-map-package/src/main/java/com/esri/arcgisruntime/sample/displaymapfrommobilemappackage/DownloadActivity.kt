@@ -18,43 +18,17 @@ package com.esri.arcgisruntime.sample.displaymapfrommobilemappackage
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
-import arcgisruntime.LoadStatus
-import com.esri.arcgisruntime.sample.displaymapfrommobilemappackage.databinding.ActivityDownloadBinding
 import com.esri.arcgisruntime.sample.sampleslib.SampleActivity
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 
 class DownloadActivity : SampleActivity() {
-
-    // ArcGIS Portal item containing the .mmpk mobile map package
-    val provisionURL: String = "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val activityDownloadBinding: ActivityDownloadBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_download)
-
-        // get the file path of the (.mmpk) file
-        val filePath = getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk)
-
-        // start the download manager to automatically add the .mmpk file to the app
-        // alternatively, you can use ADB/Device File Explorer
-        lifecycleScope.launch {
-            sampleDownloadManager(provisionURL, filePath).collect { loadStatus ->
-                if(loadStatus == LoadStatus.Loaded){
-                    // download complete, resuming sample
-                    startActivity(Intent(this@DownloadActivity, MainActivity::class.java))
-                    finish()
-                } else if (loadStatus is LoadStatus.FailedToLoad){
-                    // show error message
-                    val errorMessage = loadStatus.error.message.toString()
-                    Snackbar.make(activityDownloadBinding.layout, errorMessage,Snackbar.LENGTH_SHORT).show()
-                    Log.e(this@DownloadActivity.packageName, errorMessage)
-                }
-            }
-        }
+        getDownloadInformation(
+            Intent(this, MainActivity::class.java),
+            // get the file path of the (.mmpk) file
+            getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk),
+            // ArcGIS Portal item containing the .mmpk mobile map package
+            "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
+        )
     }
 }

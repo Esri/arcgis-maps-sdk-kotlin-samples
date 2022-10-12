@@ -16,20 +16,65 @@
 
 package com.esri.arcgisruntime.sample.sampleslib
 
+import android.content.Intent
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import arcgisruntime.LoadStatus
 import arcgisruntime.portal.PortalItem
+import com.esri.arcgisruntime.sample.sampleslib.databinding.ActivitySamplesBinding
+import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class SampleActivity : AppCompatActivity() {
+
+    // set up data binding for the activity
+    private val activitySamplesBinding: ActivitySamplesBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.activity_samples)
+    }
+
+    /**
+     * Gets the [provisionURL] of the portal item to download at
+     * the [filePath], once download completes it starts the [mainActivity]
+     */
+    fun getDownloadInformation(
+        mainActivity: Intent,
+        filePath: String,
+        provisionURL: String
+    ) {
+        // start the download manager to automatically add the .mmpk file to the app
+        // alternatively, you can use ADB/Device File Explorer
+        lifecycleScope.launch {
+            sampleDownloadManager(provisionURL, filePath).collect { loadStatus ->
+                if (loadStatus == LoadStatus.Loaded) {
+                    // download complete, resuming sample
+                    startActivity(Intent(mainActivity))
+                    finish()
+                } else if (loadStatus is LoadStatus.FailedToLoad) {
+                    // show error message
+                    val errorMessage = loadStatus.error.message.toString()
+                    Snackbar.make(
+                        activitySamplesBinding.layout,
+                        errorMessage,
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                    Log.e(this@SampleActivity.packageName, errorMessage)
+                }
+            }
+        }
+    }
 
     /**
      * The downloadManager checks for provisioned data.
@@ -37,7 +82,7 @@ abstract class SampleActivity : AppCompatActivity() {
      * at the [destinationPath]. The downloadManager clears the directory if user chooses
      * to re-download the provisioned data.
      */
-    suspend fun sampleDownloadManager(
+    private suspend fun sampleDownloadManager(
         provisionURL: String,
         destinationPath: String
     ): Flow<LoadStatus> = flow {
@@ -98,7 +143,7 @@ abstract class SampleActivity : AppCompatActivity() {
                 this.emit(it)
             }
             return@flow
-        }else{
+        } else {
             // using local data, to returns a loaded signal
             this.emit(LoadStatus.Loaded)
             return@flow
@@ -117,6 +162,9 @@ abstract class SampleActivity : AppCompatActivity() {
 
             // build another dialog to show the progress of the download
             val dialogView: View = layoutInflater.inflate(R.layout.download_dialog, null)
+            val progressBar =
+                dialogView.findViewById<LinearProgressIndicator>(R.id.download_spinner)
+            progressBar.setProgress(0, false)
             val loadingBuilder = AlertDialog.Builder(this@SampleActivity).apply {
                 setView(dialogView)
                 create()
@@ -153,6 +201,17 @@ abstract class SampleActivity : AppCompatActivity() {
             }
             // get the byteArray of the PortalItem
             runCatching {
+                val byteArrayInputStream = ByteArrayInputStream(byteArray)
+                val data = ByteArray(1024)
+                var downloadTotal = 0
+                var downloadCount: Int
+                downloadCount = byteArrayInputStream.read(data)
+                while (downloadCount != -1) {
+                    downloadTotal += downloadCount
+                    val progressPercentage = (downloadTotal * 100 / portalItem.size)
+                    downloadCount = byteArrayInputStream.read(data)
+                    progressBar.setProgress(progressPercentage.toInt(), true)
+                }
                 // create file at location to write the PortalItem ByteArray
                 provisionLocation.createNewFile()
                 // create and write the file output stream
