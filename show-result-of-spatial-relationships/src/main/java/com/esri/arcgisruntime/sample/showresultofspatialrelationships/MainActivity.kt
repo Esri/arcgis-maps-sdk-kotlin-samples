@@ -20,22 +20,33 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.geometry.MutablePointCollection
+import arcgisruntime.data.SpatialRelationship
+import arcgisruntime.geometry.Geometry
+import arcgisruntime.geometry.GeometryEngine
 import arcgisruntime.geometry.Point
 import arcgisruntime.geometry.Polygon
 import arcgisruntime.geometry.PolygonBuilder
+import arcgisruntime.geometry.Polyline
+import arcgisruntime.geometry.PolylineBuilder
 import arcgisruntime.geometry.SpatialReference
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
+import arcgisruntime.mapping.Viewpoint
 import arcgisruntime.mapping.symbology.SimpleFillSymbol
 import arcgisruntime.mapping.symbology.SimpleFillSymbolStyle
 import arcgisruntime.mapping.symbology.SimpleLineSymbol
 import arcgisruntime.mapping.symbology.SimpleLineSymbolStyle
+import arcgisruntime.mapping.symbology.SimpleMarkerSymbol
+import arcgisruntime.mapping.symbology.SimpleMarkerSymbolStyle
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
+import arcgisruntime.mapping.view.ScreenCoordinate
 import com.esri.arcgisruntime.sample.showresultofspatialrelationships.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +62,12 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    // create a graphics overlay
+    private val graphicsOverlay by lazy {
+        GraphicsOverlay()
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,9 +76,6 @@ class MainActivity : AppCompatActivity() {
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // create a graphics overlay
-        val graphicsOverlay = GraphicsOverlay()
-
         mapView.apply {
             // create and add a map with a topographic basemap style
             map = ArcGISMap(BasemapStyle.ArcGISTopographic)
@@ -69,9 +83,123 @@ class MainActivity : AppCompatActivity() {
             selectionProperties.color = Color.RED
             // add graphics overlay
             graphicsOverlays.add(graphicsOverlay)
+            //set viewpoint
+            setViewpoint(Viewpoint(33.183564, -42.428668480377, 90000000.0))
         }
 
-        // add the polygon points to the polygon builder
+        graphicsOverlay.graphics.add(polygonGraphic)
+        graphicsOverlay.graphics.add(polylineGraphic)
+        graphicsOverlay.graphics.add(pointGraphic)
+
+        // set an on touch listener on the map view
+        lifecycleScope.launch {
+            mapView.onSingleTapConfirmed.collect { tapEvent ->
+                // get the tapped coordinate
+                val screenCoordinate = tapEvent.screenCoordinate
+                identifySelectedGraphic(screenCoordinate)
+            }
+        }
+    }
+
+    private suspend fun identifySelectedGraphic(screenCoordinate: ScreenCoordinate) {
+        // create HashMap that will hold relationships in between graphics
+        val relationships = HashMap<String, List<SpatialRelationship>>()
+        val identifyGraphicsOverlayResult =
+            mapView.identifyGraphicsOverlay(graphicsOverlay, screenCoordinate, 1.0, false)
+        identifyGraphicsOverlayResult.onSuccess { identifyGraphicsOverlay ->
+            val identifiedGraphics = identifyGraphicsOverlay.graphics
+            if (identifiedGraphics.isEmpty())
+                return
+
+            var message = ""
+            // clear previous results
+            relationships["Point"] = emptyList()
+            relationships["Polyline"] = emptyList()
+            relationships["Polygon"] = emptyList()
+            // select the identified graphic
+            graphicsOverlay.clearSelection()
+            // get the first graphic identified
+            val identifiedGraphic = identifiedGraphics[0]
+            identifiedGraphic.isSelected = true
+            val selectedGeometry = identifiedGraphic.geometry
+            // if selected geometry is a point
+            if (selectedGeometry is Point) {
+                message = "Point geometry is selected"
+                val pointRelationships =
+                    getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
+                relationships["Point"] = pointRelationships
+            }
+            // if selected geometry is a polyline
+            if (selectedGeometry is Polyline) {
+                message = "Polyline geometry is selected"
+                val polylineRelationships =
+                    getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
+                relationships["Polyline"] = polylineRelationships
+            }
+            // if selected geometry is a polygon
+            if (selectedGeometry is Polygon) {
+                message = "Polygon geometry is selected"
+                val polygonRelationships =
+                    getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
+                relationships["Polygon"] = polygonRelationships
+            }
+            // display selected graphic message
+            Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
+            RelationshipsDialog().createDialog(layoutInflater, this, relationships)
+
+        }.onFailure {
+            // TODO
+        }
+    }
+
+    /**
+     * Gets a list of spatial relationships that the first geometry has to the second geometry.
+     *
+     * @param a first geometry
+     * @param b second geometry
+     * @return list of relationships a has to b
+     */
+    private fun getSpatialRelationships(a: Geometry?, b: Geometry?): List<SpatialRelationship> {
+        // check if either geometry is null
+        if (a == null || b == null) {
+            return mutableListOf()
+        }
+
+        val relationships: MutableList<SpatialRelationship> = mutableListOf()
+        if (GeometryEngine.crosses(a, b))
+            relationships.add(SpatialRelationship.Crosses)
+        if (GeometryEngine.contains(a, b))
+            relationships.add(SpatialRelationship.Contains)
+        if (GeometryEngine.disjoint(a, b))
+            relationships.add(SpatialRelationship.Disjoint)
+        if (GeometryEngine.intersects(a, b))
+            relationships.add(SpatialRelationship.Intersects)
+        if (GeometryEngine.overlaps(a, b))
+            relationships.add(SpatialRelationship.Overlaps)
+        if (GeometryEngine.touches(a, b))
+            relationships.add(SpatialRelationship.Touches)
+        if (GeometryEngine.within(a, b))
+            relationships.add(SpatialRelationship.Within)
+        return relationships
+    }
+
+    /**
+     * Gets a string representation of the spatial relationship list
+     *
+     * @param relationshipList a list of spatial relationships
+     * @return a string list of spatial relationships
+     */
+    private fun relationshipStringList(relationshipList: List<SpatialRelationship>): MutableList<String> {
+        val stringList = mutableListOf<String>()
+        for (relationship in relationshipList) {
+            stringList.add(relationship.toString())
+        }
+        return stringList
+    }
+
+
+    private val polygonGraphic by lazy {
+        // add polygon points to the polygon builder
         val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()).apply {
             addPoint(Point(-5991501.677830, 5599295.131468))
             addPoint(Point(-6928550.398185, 2087936.739807))
@@ -79,15 +207,33 @@ class MainActivity : AppCompatActivity() {
             addPoint(Point(-1563689.043184, 3714900.452072))
             addPoint(Point(-3180355.516764, 5619889.608838))
         }
-        // create a polygon from the point collection
+        // create a polygon from the polygon builder
         val polygon = polygonBuilder.toGeometry() as Polygon
-
         val polygonSymbol = SimpleFillSymbol(
             SimpleFillSymbolStyle.ForwardDiagonal, Color.GREEN,
-            SimpleLineSymbol(SimpleLineSymbolStyle.Solid, -0xff0100, 2f)
+            SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.GREEN, 2f)
         )
-        val polygonGraphic = Graphic(polygon, polygonSymbol)
-        graphicsOverlay.graphics.add(polygonGraphic)
+        Graphic(polygon, polygonSymbol)
+    }
 
+    private val polylineGraphic by lazy {
+        // add polyline points to the polyline builder
+        val polylineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
+            addPoint(Point(-4354240.726880, -609939.795721))
+            addPoint(Point(-3427489.245210, 2139422.933233))
+            addPoint(Point(-2109442.693501, 4301843.057130))
+            addPoint(Point(-1810822.771630, 7205664.366363))
+        }
+        // create a polyline graphic
+        val polyline = polylineBuilder.toGeometry() as Polyline
+        val polylineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.RED, 4f)
+        Graphic(polyline, polylineSymbol)
+    }
+
+    private val pointGraphic by lazy {
+        // create a point graphic
+        val point = Point(-4487263.495911, 3699176.480377, SpatialReference.webMercator())
+        val locationMarker = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.BLUE, 10f)
+        Graphic(point, locationMarker)
     }
 }
