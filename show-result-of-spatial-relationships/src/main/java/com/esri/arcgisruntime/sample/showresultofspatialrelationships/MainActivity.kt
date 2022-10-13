@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.selectedGraphicTV
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

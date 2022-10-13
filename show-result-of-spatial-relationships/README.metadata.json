@@ -1,2 +1,32 @@
 {
+  "category": "Analysis",
+  "description": "Determine spatial relationships between two geometries.",
+  "formal_name": "ShowResultOfSpatialRelationships",
+  "ignore": false,
+  "images": [
+    "show-result-of-spatial-relationships.png"
+  ],
+  "keywords": [
+    "geometries",
+    "relationship",
+    "spatial analysis"
+  ],
+  "language": "kotlin",
+  "redirect_from": [
+    "/android/latest/sample-code/spatial-relationships.htm"
+  ],
+  "relevant_apis": [
+    "Geometry",
+    "GeometryEngine",
+    "GeometryType",
+    "Graphic",
+    "Point",
+    "Polygon",
+    "Polyline"
+  ],
+  "snippets": [
+    "src/main/java/com/esri/arcgisruntime/sample/showresultofspatialrelationships/MainActivity.kt",
+    "src/main/java/com/esri/arcgisruntime/sample/showresultofspatialrelationships/RelationshipsDialog.kt"
+  ],
+  "title": "Show result of spatial relationships"
 }
