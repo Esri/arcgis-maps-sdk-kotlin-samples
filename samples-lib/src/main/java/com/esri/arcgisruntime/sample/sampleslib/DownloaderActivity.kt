@@ -30,6 +30,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -49,7 +50,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
      * Gets the [provisionURL] of the portal item to download at
      * the [filePath], once download completes it starts the [mainActivity]
      */
-    fun getDownloadInformation(
+    fun doDownloadThenStartSample(
         mainActivity: Intent,
         filePath: String,
         provisionURL: String
@@ -138,11 +139,8 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
         // Back in coroutine world, we know if the download should happen or not.
         if (shouldDoDownload) {
-            downloadPortalItem(provisionURL, provisionFile).collect {
-                // return the Loaded/FailedToLoad status
-                this.emit(it)
-            }
-            return@flow
+            // return the Loaded/FailedToLoad status
+            this.emitAll(downloadPortalItem(provisionURL, provisionFile))
         } else {
             // using local data, to returns a loaded signal
             this.emit(LoadStatus.Loaded)
