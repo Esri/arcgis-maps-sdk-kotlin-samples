@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun identifySelectedGraphic(screenCoordinate: ScreenCoordinate) {
         // create HashMap that will hold relationships in between graphics
-        val relationships = HashMap<String, List<SpatialRelationship>>()
+        val relationships = HashMap<String, List<String>>()
         val identifyGraphicsOverlayResult =
             mapView.identifyGraphicsOverlay(graphicsOverlay, screenCoordinate, 1.0, false)
         identifyGraphicsOverlayResult.onSuccess { identifyGraphicsOverlay ->
@@ -122,26 +122,30 @@ class MainActivity : AppCompatActivity() {
             val identifiedGraphic = identifiedGraphics[0]
             identifiedGraphic.isSelected = true
             val selectedGeometry = identifiedGraphic.geometry
-            // if selected geometry is a point
-            if (selectedGeometry is Point) {
-                message = "Point geometry is selected"
-                val pointRelationships =
-                    getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
-                relationships["Point"] = pointRelationships
-            }
-            // if selected geometry is a polyline
-            if (selectedGeometry is Polyline) {
-                message = "Polyline geometry is selected"
-                val polylineRelationships =
-                    getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
-                relationships["Polyline"] = polylineRelationships
-            }
-            // if selected geometry is a polygon
-            if (selectedGeometry is Polygon) {
-                message = "Polygon geometry is selected"
-                val polygonRelationships =
-                    getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
-                relationships["Polygon"] = polygonRelationships
+            relationships["Polyline"] =
+                getSpatialRelationships(selectedGeometry, polylineGraphic.geometry, "Polyline")
+            relationships["Polygon"] =
+                getSpatialRelationships(selectedGeometry, polygonGraphic.geometry, "Polygon")
+            relationships["Point"] =
+                getSpatialRelationships(selectedGeometry, pointGraphic.geometry, "Point")
+
+            when (selectedGeometry) {
+                // if selected geometry is a point
+                is Point -> {
+                    message = "Point geometry is selected"
+                }
+                // if selected geometry is a polyline
+                is Polyline -> {
+                    message = "Polyline geometry is selected"
+                }
+                // if selected geometry is a polygon
+                is Polygon -> {
+                    message = "Polygon geometry is selected"
+                }
+                // no graphic selected
+                else -> {
+                    message = "No geometry selected"
+                }
             }
             // display selected graphic message
             Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
@@ -159,27 +163,42 @@ class MainActivity : AppCompatActivity() {
      * @param b second geometry
      * @return list of relationships a has to b
      */
-    private fun getSpatialRelationships(a: Geometry?, b: Geometry?): List<SpatialRelationship> {
+    private fun getSpatialRelationships(
+        a: Geometry?,
+        b: Geometry?,
+        geometryType: String
+    ): List<String> {
+        val relationships: MutableList<String> = mutableListOf()
+
         // check if either geometry is null
         if (a == null || b == null) {
             return mutableListOf()
         }
+        // if we are comparing the same geometry
+        if (a == b) {
+            relationships.add("None")
+            return relationships
+        }
 
-        val relationships: MutableList<SpatialRelationship> = mutableListOf()
         if (GeometryEngine.crosses(a, b))
-            relationships.add(SpatialRelationship.Crosses)
+            relationships.add("Crosses")
         if (GeometryEngine.contains(a, b))
-            relationships.add(SpatialRelationship.Contains)
+            relationships.add("Contains")
         if (GeometryEngine.disjoint(a, b))
-            relationships.add(SpatialRelationship.Disjoint)
+            relationships.add("Disjoint")
         if (GeometryEngine.intersects(a, b))
-            relationships.add(SpatialRelationship.Intersects)
+            relationships.add("Intersects")
         if (GeometryEngine.overlaps(a, b))
-            relationships.add(SpatialRelationship.Overlaps)
+            relationships.add("Overlaps")
         if (GeometryEngine.touches(a, b))
-            relationships.add(SpatialRelationship.Touches)
+            relationships.add("Touches")
         if (GeometryEngine.within(a, b))
-            relationships.add(SpatialRelationship.Within)
+            relationships.add("Within")
+
+        if (relationships.isEmpty()) {
+            relationships.add("No relationships found with $geometryType")
+        }
+
         return relationships
     }
 

@@ -1,10 +1,14 @@
 package com.esri.arcgisruntime.sample.showresultofspatialrelationships
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.BaseExpandableListAdapter
+import android.widget.ExpandableListView
 import android.widget.ListView
-import arcgisruntime.data.SpatialRelationship
+import android.widget.TextView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class RelationshipsDialog {
@@ -12,30 +16,61 @@ class RelationshipsDialog {
     fun createDialog(
         layoutInflater: LayoutInflater,
         context: MainActivity,
-        relationships: HashMap<String, List<SpatialRelationship>>
+        relationships: HashMap<String, List<String>>
     ) {
         val dialogView: View = layoutInflater.inflate(R.layout.dialog_layout, null)
         val dialogBuilder = MaterialAlertDialogBuilder(context).setView(dialogView)
-        // create an expandable list view and an adapter
+
         val polylineListView = dialogView.findViewById<ListView>(R.id.polylineListView)
         val polygonListView = dialogView.findViewById<ListView>(R.id.polygonListView)
         val pointListView = dialogView.findViewById<ListView>(R.id.pointListView)
 
+        val polylineRelationships = relationships["Polyline"]
+        val pointRelationships = relationships["Point"]
+        val polygonRelationships = relationships["Polygon"]
 
-        var adapter = ArrayAdapter<SpatialRelationship>(context,android.R.layout.simple_list_item_1)
-        relationships["Polyline"]?.let { adapter.addAll(it) }
-        polylineListView.adapter = adapter
+        if (polylineRelationships.isNullOrEmpty() || pointRelationships.isNullOrEmpty() || polygonRelationships.isNullOrEmpty())
+            return
 
-        relationships["Polygon"]?.let { adapter.addAll(it) }
-        polygonListView.adapter = adapter
+        polylineListView.adapter = ArrayAdapter(
+            dialogView.context, android.R.layout.simple_list_item_1,
+            polylineRelationships
+        )
+        polygonListView.adapter = ArrayAdapter(
+            dialogView.context, android.R.layout.simple_list_item_1,
+            polygonRelationships
+        )
+        pointListView.adapter = ArrayAdapter(
+            dialogView.context, android.R.layout.simple_list_item_1,
+            pointRelationships
+        )
 
-        relationships["Point"]?.let { adapter.addAll(it) }
-        pointListView.adapter = adapter
+        setDynamicHeight(polylineListView)
+        setDynamicHeight(polygonListView)
+        setDynamicHeight(pointListView)
 
         dialogBuilder.setNeutralButton("Dismiss") { dialog, _ ->
             dialog.dismiss()
         }
         dialogBuilder.create().show()
+    }
+
+    private fun setDynamicHeight(listView: ListView) {
+        val adapter = listView.adapter ?: return
+        var height = 0
+        val desiredWidth =
+            View.MeasureSpec.makeMeasureSpec(listView.width, View.MeasureSpec.UNSPECIFIED)
+        var index = 0
+        while (index < adapter.count) {
+            val listItem = adapter.getView(index, null, listView)
+            listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED)
+            height += listItem.measuredHeight
+            index++
+        }
+        val layoutParams = listView.layoutParams
+        layoutParams.height = height + (listView.dividerHeight * (adapter.count - 1))
+        listView.layoutParams = layoutParams
+        listView.requestLayout()
     }
 
 }
