@@ -8,7 +8,7 @@ Determine spatial relationships between two geometries.
 
 In case of a natural disaster, emergency services can represent the affected areas using polygons. By determining the spatial relationships between these and any other existing features such as populated areas, infrastructure, or natural resources, it is possible to quickly determine which of the existing features might be affected or is in further danger, helping to assess risk and define further action.
 
-## How to use this sample
+## How to use the sample
 
 Select one of the three graphics. The relationships dialog will show the spatial relationships the selected graphic has to the other graphic geometries.
 
