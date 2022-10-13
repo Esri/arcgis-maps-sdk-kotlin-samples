@@ -9,7 +9,14 @@
   "keywords": [
     "geometries",
     "relationship",
-    "spatial analysis"
+    "spatial analysis",
+    "Geometry",
+    "GeometryEngine",
+    "GeometryType",
+    "Graphic",
+    "Point",
+    "Polygon",
+    "Polyline"
   ],
   "language": "kotlin",
   "redirect_from": [
