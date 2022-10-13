@@ -18,6 +18,7 @@ package com.esri.arcgisruntime.sample.showresultofspatialrelationships
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -110,21 +111,22 @@ class MainActivity : AppCompatActivity() {
      * and finds the relations to other graphics on the map.
      */
     private suspend fun identifyGraphicRelationships(screenCoordinate: ScreenCoordinate) {
-        // create HashMap that will hold relationships in between graphics
-        val relationships = HashMap<String, List<SpatialRelationship>>()
+        // get the graphic selected at the given ScreenCoordinate
         val identifyGraphicsOverlayResult =
             mapView.identifyGraphicsOverlay(graphicsOverlay, screenCoordinate, 1.0, false)
         identifyGraphicsOverlayResult.onSuccess { identifyGraphicsOverlay ->
+            // get the identified selected graphics
             val identifiedGraphics = identifyGraphicsOverlay.graphics
-            // no graphic selected
+            // if no graphic was selected
             if (identifiedGraphics.isEmpty()) {
                 // display text and clear selected
                 selectedGraphicTV.text = getString(R.string.select_graphic)
                 graphicsOverlay.clearSelection()
                 return
             }
-
-            // clear previous results
+            // create HashMap that will hold relationships in between graphics
+            val relationships = HashMap<String, List<SpatialRelationship>>()
+            // add the graphics as keys to the hashmap
             relationships["Point"] = emptyList()
             relationships["Polyline"] = emptyList()
             relationships["Polygon"] = emptyList()
@@ -132,61 +134,67 @@ class MainActivity : AppCompatActivity() {
             graphicsOverlay.clearSelection()
             // get the first graphic identified
             val identifiedGraphic = identifiedGraphics[0]
+            // set the identified graphic to be selected
             identifiedGraphic.isSelected = true
-
+            // find the geometry of the selected graphic
             when (val selectedGeometry = identifiedGraphic.geometry) {
                 // if selected geometry is a point
                 is Point -> {
+                    // get the point-polyline relationships
                     relationships["Polyline"] =
                         getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
+                    // get the point-polygon relationships
                     relationships["Polygon"] =
                         getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
+                    // display selected graphic text
                     selectedGraphicTV.text = "Point geometry is selected"
                 }
                 // if selected geometry is a polyline
                 is Polyline -> {
+                    // get the polyline-polygon relationships
                     relationships["Polygon"] =
                         getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
+                    // get the polyline-point relationships
                     relationships["Point"] =
                         getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
+                    // display selected graphic text
                     selectedGraphicTV.text = "Polyline geometry is selected"
                 }
                 // if selected geometry is a polygon
                 is Polygon -> {
+                    // get the polygon-polyline relationships
                     relationships["Polyline"] =
                         getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
+                    // get the polygon-point relationships
                     relationships["Point"] =
                         getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
+                    // display selected graphic text
                     selectedGraphicTV.text = "Polygon geometry is selected"
                 }
-                // no graphic selected
-                else -> {
-                    selectedGraphicTV.text = getString(R.string.select_graphic)
-                }
+                // no other graphic on map
+                else -> {}
             }
-            RelationshipsDialog().createDialog(layoutInflater, this, relationships)
+
+            // create and display a dialog with the established graphics
+            RelationshipsDialog(layoutInflater, this, relationships).createAndDisplayDialog()
 
         }.onFailure {
-            //TODO
+            showError(it.message.toString())
         }
     }
 
     /**
-     * Gets a list of spatial relationships that the first geometry has to the second geometry.
-     *
-     * @param a first geometry
-     * @param b second geometry
-     * @return list of relationships a has to b
+     * Gets a list of spatial relationships that the [a] geometry has to the [b] geometry.
      */
     private fun getSpatialRelationships(
         a: Geometry?,
         b: Geometry?
     ): List<SpatialRelationship> {
-        val relationships: MutableList<SpatialRelationship> = mutableListOf()
         // check if either geometry is null
         if (a == null || b == null) {
             return mutableListOf()
         }
+        val relationships: MutableList<SpatialRelationship> = mutableListOf()
         if (GeometryEngine.crosses(a, b))
             relationships.add(SpatialRelationship.Crosses)
         if (GeometryEngine.contains(a, b))
@@ -204,21 +212,7 @@ class MainActivity : AppCompatActivity() {
         return relationships
     }
 
-    /**
-     * Gets a string representation of the spatial relationship list
-     *
-     * @param relationshipList a list of spatial relationships
-     * @return a string list of spatial relationships
-     */
-    private fun relationshipStringList(relationshipList: List<SpatialRelationship>): MutableList<String> {
-        val stringList = mutableListOf<String>()
-        for (relationship in relationshipList) {
-            stringList.add(relationship.toString())
-        }
-        return stringList
-    }
-
-
+    // create the polygon graphic
     private val polygonGraphic by lazy {
         // add polygon points to the polygon builder
         val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()).apply {
@@ -237,6 +231,8 @@ class MainActivity : AppCompatActivity() {
         Graphic(polygon, polygonSymbol)
     }
 
+
+    // create the polyline graphic
     private val polylineGraphic by lazy {
         // add polyline points to the polyline builder
         val polylineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
@@ -251,10 +247,17 @@ class MainActivity : AppCompatActivity() {
         Graphic(polyline, polylineSymbol)
     }
 
+
+    // create the point graphic
     private val pointGraphic by lazy {
         // create a point graphic
         val point = Point(-4487263.495911, 3699176.480377, SpatialReference.webMercator())
         val locationMarker = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.BLUE, 10f)
         Graphic(point, locationMarker)
+    }
+
+    private fun showError(message: String) {
+        Log.e(TAG, message)
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
