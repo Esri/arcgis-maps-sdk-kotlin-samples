@@ -44,6 +44,7 @@ import arcgisruntime.mapping.symbology.SimpleMarkerSymbol
 import arcgisruntime.mapping.symbology.SimpleMarkerSymbolStyle
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
+import arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult
 import arcgisruntime.mapping.view.ScreenCoordinate
 import com.esri.arcgisruntime.sample.showresultofspatialrelationships.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
@@ -72,143 +73,6 @@ class MainActivity : AppCompatActivity() {
     // text view to display the selected graphic
     private val selectedGraphicTV by lazy {
         activityMainBinding.selectedGraphicTV
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-        // add MapView to the lifecycle
-        lifecycle.addObserver(mapView)
-        mapView.apply {
-            // add a map with a topographic basemap style
-            map = ArcGISMap(BasemapStyle.ArcGISTopographic)
-            // set selection color
-            selectionProperties.color = Color.RED
-            // add graphics overlay
-            graphicsOverlays.add(graphicsOverlay)
-            //set viewpoint
-            setViewpoint(Viewpoint(33.183564, -42.428668480377, 90000000.0))
-        }
-        // add the graphics to the graphics overlay
-        graphicsOverlay.graphics.addAll(listOf(polygonGraphic, polylineGraphic, pointGraphic))
-        // set an on touch listener on the map view
-        lifecycleScope.launch {
-            mapView.onSingleTapConfirmed.collect { tapEvent ->
-                // get the tapped coordinate
-                val screenCoordinate = tapEvent.screenCoordinate
-                // identify the relationships of tapped graphic
-                identifyGraphicRelationships(screenCoordinate)
-            }
-        }
-    }
-
-    /**
-     * Identifies the selected graphic tapped at the [screenCoordinate]
-     * and finds the relations to other graphics on the map.
-     */
-    private suspend fun identifyGraphicRelationships(screenCoordinate: ScreenCoordinate) {
-        // get the graphic selected at the given ScreenCoordinate
-        val identifyGraphicsOverlayResult =
-            mapView.identifyGraphicsOverlay(graphicsOverlay, screenCoordinate, 1.0, false)
-        identifyGraphicsOverlayResult.onSuccess { identifyGraphicsOverlay ->
-            // get the identified selected graphics
-            val identifiedGraphics = identifyGraphicsOverlay.graphics
-            // if no graphic was selected
-            if (identifiedGraphics.isEmpty()) {
-                // display text and clear selected
-                selectedGraphicTV.text = getString(R.string.select_graphic)
-                graphicsOverlay.clearSelection()
-                return
-            }
-            // create HashMap that will hold relationships in between graphics
-            val relationships = HashMap<String, List<SpatialRelationship>>()
-            // add the graphics as keys to the hashmap
-            relationships["Point"] = emptyList()
-            relationships["Polyline"] = emptyList()
-            relationships["Polygon"] = emptyList()
-            // select the identified graphic
-            graphicsOverlay.clearSelection()
-            // get the first graphic identified
-            val identifiedGraphic = identifiedGraphics[0]
-            // set the identified graphic to be selected
-            identifiedGraphic.isSelected = true
-            // find the geometry of the selected graphic
-            when (val selectedGeometry = identifiedGraphic.geometry) {
-                // if selected geometry is a point
-                is Point -> {
-                    // get the point-polyline relationships
-                    relationships["Polyline"] =
-                        getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
-                    // get the point-polygon relationships
-                    relationships["Polygon"] =
-                        getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
-                    // display selected graphic text
-                    selectedGraphicTV.text = "Point geometry is selected"
-                }
-                // if selected geometry is a polyline
-                is Polyline -> {
-                    // get the polyline-polygon relationships
-                    relationships["Polygon"] =
-                        getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
-                    // get the polyline-point relationships
-                    relationships["Point"] =
-                        getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
-                    // display selected graphic text
-                    selectedGraphicTV.text = "Polyline geometry is selected"
-                }
-                // if selected geometry is a polygon
-                is Polygon -> {
-                    // get the polygon-polyline relationships
-                    relationships["Polyline"] =
-                        getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
-                    // get the polygon-point relationships
-                    relationships["Point"] =
-                        getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
-                    // display selected graphic text
-                    selectedGraphicTV.text = "Polygon geometry is selected"
-                }
-                // no other graphic on map
-                else -> {}
-            }
-
-            // create and display a dialog with the established graphics
-            RelationshipsDialog(layoutInflater, this, relationships).createAndDisplayDialog()
-
-        }.onFailure {
-            showError(it.message.toString())
-        }
-    }
-
-    /**
-     * Gets a list of spatial relationships that the [a] geometry has to the [b] geometry.
-     */
-    private fun getSpatialRelationships(
-        a: Geometry?,
-        b: Geometry?
-    ): List<SpatialRelationship> {
-        // check if either geometry is null
-        if (a == null || b == null) {
-            return mutableListOf()
-        }
-        val relationships: MutableList<SpatialRelationship> = mutableListOf()
-        if (GeometryEngine.crosses(a, b))
-            relationships.add(SpatialRelationship.Crosses)
-        if (GeometryEngine.contains(a, b))
-            relationships.add(SpatialRelationship.Contains)
-        if (GeometryEngine.disjoint(a, b))
-            relationships.add(SpatialRelationship.Disjoint)
-        if (GeometryEngine.intersects(a, b))
-            relationships.add(SpatialRelationship.Intersects)
-        if (GeometryEngine.overlaps(a, b))
-            relationships.add(SpatialRelationship.Overlaps)
-        if (GeometryEngine.touches(a, b))
-            relationships.add(SpatialRelationship.Touches)
-        if (GeometryEngine.within(a, b))
-            relationships.add(SpatialRelationship.Within)
-        return relationships
     }
 
     // create the polygon graphic
@@ -253,6 +117,143 @@ class MainActivity : AppCompatActivity() {
         val point = Point(-4487263.495911, 3699176.480377, SpatialReference.webMercator())
         val locationMarker = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.BLUE, 10f)
         Graphic(point, locationMarker)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // authentication with an API key or named user is
+        // required to access basemaps and other location services
+        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+        // add MapView to the lifecycle
+        lifecycle.addObserver(mapView)
+        mapView.apply {
+            // add a map with a topographic basemap style
+            map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+            // set selection color
+            selectionProperties.color = Color.RED
+            // add graphics overlay
+            graphicsOverlays.add(graphicsOverlay)
+            //set viewpoint
+            setViewpoint(Viewpoint(33.183564, -42.428668480377, 90000000.0))
+        }
+        // add the graphics to the graphics overlay
+        graphicsOverlay.graphics.addAll(listOf(polygonGraphic, polylineGraphic, pointGraphic))
+        // set an on touch listener on the map view
+        lifecycleScope.launch {
+            mapView.onSingleTapConfirmed.collect { tapEvent ->
+                // get the tapped coordinate
+                val screenCoordinate = tapEvent.screenCoordinate
+                // identify the relationships of tapped graphic
+                identifyGraphicRelationships(screenCoordinate)
+            }
+        }
+    }
+
+    /**
+     * Identifies the selected graphic tapped at the [screenCoordinate]
+     * and finds the relations to other graphics on the map.
+     */
+    private suspend fun identifyGraphicRelationships(screenCoordinate: ScreenCoordinate) {
+        // get the graphic selected at the given ScreenCoordinate
+        val identifyGraphicsOverlayResult =
+            mapView.identifyGraphicsOverlay(graphicsOverlay, screenCoordinate, 1.0, false)
+        // get identified graphics overlay, else show an error
+        val identifyGraphicsOverlay = identifyGraphicsOverlayResult.getOrElse {
+            showError(it.message.toString())
+        } as IdentifyGraphicsOverlayResult
+        // get the identified selected graphics
+        val identifiedGraphics = identifyGraphicsOverlay.graphics
+        // if no graphic was selected
+        if (identifiedGraphics.isEmpty()) {
+            // display text and clear selected
+            selectedGraphicTV.text = getString(R.string.select_graphic)
+            graphicsOverlay.clearSelection()
+            return
+        }
+        // create HashMap that will hold relationships in between graphics
+        val relationships = mutableMapOf<String, List<SpatialRelationship>>()
+        // add the graphics as keys to the hashmap
+        relationships["Point"] = emptyList()
+        relationships["Polyline"] = emptyList()
+        relationships["Polygon"] = emptyList()
+        // select the identified graphic
+        graphicsOverlay.clearSelection()
+        // get the first graphic identified
+        val identifiedGraphic = identifiedGraphics[0]
+        // set the identified graphic to be selected
+        identifiedGraphic.isSelected = true
+        // find the geometry of the selected graphic
+        when (val selectedGeometry = identifiedGraphic.geometry) {
+            // if selected geometry is a point
+            is Point -> {
+                // get the point-polyline relationships
+                relationships["Polyline"] =
+                    getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
+                // get the point-polygon relationships
+                relationships["Polygon"] =
+                    getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
+                // display selected graphic text
+                selectedGraphicTV.text = "Point geometry is selected"
+            }
+            // if selected geometry is a polyline
+            is Polyline -> {
+                // get the polyline-polygon relationships
+                relationships["Polygon"] =
+                    getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
+                // get the polyline-point relationships
+                relationships["Point"] =
+                    getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
+                // display selected graphic text
+                selectedGraphicTV.text = "Polyline geometry is selected"
+            }
+            // if selected geometry is a polygon
+            is Polygon -> {
+                // get the polygon-polyline relationships
+                relationships["Polyline"] =
+                    getSpatialRelationships(selectedGeometry, polylineGraphic.geometry)
+                // get the polygon-point relationships
+                relationships["Point"] =
+                    getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
+                // display selected graphic text
+                selectedGraphicTV.text = "Polygon geometry is selected"
+            }
+            // no other graphic on map
+            else -> {}
+        }
+
+        // create and display a dialog with the established graphics
+        RelationshipsDialog(layoutInflater, this, relationships).createAndDisplayDialog()
+
+    }
+
+    /**
+     * Gets a list of spatial relationships that the [a] geometry has to the [b] geometry.
+     */
+    private fun getSpatialRelationships(
+        a: Geometry?,
+        b: Geometry?
+    ): List<SpatialRelationship> {
+        // check if either geometry is null
+        if (a == null || b == null) {
+            return mutableListOf()
+        }
+        val relationships: MutableList<SpatialRelationship> = mutableListOf()
+        if (GeometryEngine.crosses(a, b))
+            relationships.add(SpatialRelationship.Crosses)
+        if (GeometryEngine.contains(a, b))
+            relationships.add(SpatialRelationship.Contains)
+        if (GeometryEngine.disjoint(a, b))
+            relationships.add(SpatialRelationship.Disjoint)
+        if (GeometryEngine.intersects(a, b))
+            relationships.add(SpatialRelationship.Intersects)
+        if (GeometryEngine.overlaps(a, b))
+            relationships.add(SpatialRelationship.Overlaps)
+        if (GeometryEngine.touches(a, b))
+            relationships.add(SpatialRelationship.Touches)
+        if (GeometryEngine.within(a, b))
+            relationships.add(SpatialRelationship.Within)
+        return relationships
     }
 
     private fun showError(message: String) {

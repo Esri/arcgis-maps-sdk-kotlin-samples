@@ -14,7 +14,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class RelationshipsDialog(
     private val layoutInflater: LayoutInflater,
     private val context: MainActivity,
-    private val relationships: HashMap<String, List<SpatialRelationship>>
+    private val relationships: MutableMap<String, List<SpatialRelationship>>
 ) {
 
     fun createAndDisplayDialog() {
