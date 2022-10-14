@@ -31,27 +31,30 @@ class RelationshipsDialog(
         val polygonTitle = dialogView.findViewById<TextView>(R.id.polygonTitle)
         val pointTitle = dialogView.findViewById<TextView>(R.id.pointTitle)
         // get the spatial relations of each geometry as List<String>
-        val pointRelationships = getStringRelationships(relationships["Point"])
-        val polygonRelationships = getStringRelationships(relationships["Polygon"])
-        val polylineRelationships = getStringRelationships(relationships["Polyline"])
+        val pointRelationships = relationships["Point"].convertToStringList()
+        val polygonRelationships = relationships["Polygon"].convertToStringList()
+        val polylineRelationships = relationships["Polyline"].convertToStringList()
         // display list if polyline has relationships
-        if (polylineRelationships.isNotEmpty()) polylineListView.adapter = ArrayAdapter(
-            dialogView.context, android.R.layout.simple_list_item_1,
-            polylineRelationships
-        )
-        else polylineTitle.visibility = View.GONE
+        if (polylineRelationships.isNotEmpty()) {
+            polylineListView.adapter = ArrayAdapter(
+                dialogView.context, android.R.layout.simple_list_item_1,
+                polylineRelationships
+            )
+        } else polylineTitle.visibility = View.GONE
         // display list if polygon has relationships
-        if (polygonRelationships.isNotEmpty()) polygonListView.adapter = ArrayAdapter(
-            dialogView.context, android.R.layout.simple_list_item_1,
-            polygonRelationships
-        )
-        else polygonTitle.visibility = View.GONE
+        if (polygonRelationships.isNotEmpty()) {
+            polygonListView.adapter = ArrayAdapter(
+                dialogView.context, android.R.layout.simple_list_item_1,
+                polygonRelationships
+            )
+        } else polygonTitle.visibility = View.GONE
         // display list if point has relationships
-        if (pointRelationships.isNotEmpty()) pointListView.adapter = ArrayAdapter(
-            dialogView.context, android.R.layout.simple_list_item_1,
-            pointRelationships
-        )
-        else pointTitle.visibility = View.GONE
+        if (pointRelationships.isNotEmpty()) {
+            pointListView.adapter = ArrayAdapter(
+                dialogView.context, android.R.layout.simple_list_item_1,
+                pointRelationships
+            )
+        } else pointTitle.visibility = View.GONE
         // set the heights of each list view to make the entire view scrollable
         setDynamicHeight(polylineListView)
         setDynamicHeight(polygonListView)
@@ -65,11 +68,11 @@ class RelationshipsDialog(
     }
 
     /**
-     * Convert the list of [spatialRelationships] to a list of Strings for the dialog
+     * Extension function to convert the list of spatial relationships to a list of strings
      */
-    private fun getStringRelationships(spatialRelationships: List<SpatialRelationship>?): MutableList<String> {
+    private fun List<SpatialRelationship>?.convertToStringList(): List<String> {
         val list = mutableListOf<String>()
-        spatialRelationships?.forEach {
+        this?.forEach {
             when (it) {
                 SpatialRelationship.Crosses -> list.add("Crosses")
                 SpatialRelationship.Contains -> list.add("Contains")
@@ -93,12 +96,10 @@ class RelationshipsDialog(
         var height = 0
         val desiredWidth =
             View.MeasureSpec.makeMeasureSpec(listView.width, View.MeasureSpec.UNSPECIFIED)
-        var index = 0
-        while (index < adapter.count) {
+        for (index in 0 until adapter.count) {
             val listItem = adapter.getView(index, null, listView)
             listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED)
             height += listItem.measuredHeight
-            index++
         }
         val layoutParams = listView.layoutParams
         layoutParams.height = height + (listView.dividerHeight * (adapter.count - 1))
