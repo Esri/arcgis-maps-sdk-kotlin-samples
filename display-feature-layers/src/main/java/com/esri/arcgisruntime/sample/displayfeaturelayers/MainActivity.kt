@@ -22,9 +22,11 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.data.GeoPackage
+import arcgisruntime.data.Geodatabase
 import arcgisruntime.data.ServiceFeatureTable
 import arcgisruntime.data.ShapefileFeatureTable
 import arcgisruntime.mapping.ArcGISMap
@@ -34,11 +36,15 @@ import arcgisruntime.mapping.layers.FeatureLayer
 import arcgisruntime.portal.Portal
 import arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.sample.displayfeaturelayers.databinding.ActivityMainBinding
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val TAG = MainActivity::class.java.simpleName
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -58,36 +64,17 @@ class MainActivity : AppCompatActivity() {
         SHAPEFILE(4)
     }
 
-    private val TAG = MainActivity::class.java.simpleName
-
-    private val scope = CoroutineScope(Dispatchers.IO + CoroutineName(TAG))
-
     // keeps track of the previously selected feature layer source
     private var previousSource: FeatureLayerSource? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
         // set the map to be displayed in as the BasemapStyle topographic
         activityMainBinding.mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
-
-        /*runBlocking {
-            withContext(Dispatchers.IO){
-                map.load().onSuccess {
-                    //todo
-                }.onFailure {
-                    //todo
-                }
-                map.loadStatus.collect{
-                    print("lol")
-                }
-            }
-        }*/
-
         setUpBottomUI()
     }
 
@@ -99,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         val serviceFeatureTable =
             ServiceFeatureTable(resources.getString(R.string.sample_service_url)).apply {
                 // set user credentials to authenticate with the service
-                //credential = UserCredential("viewer01", "I68VGU^nMurF")
+                //credential = Credential.UserCredential("viewer01", "I68VGU^nMurF")
                 // NOTE: Never hardcode login information in a production application
                 // This is done solely for the sake of the sample
             }
@@ -127,39 +114,33 @@ class MainActivity : AppCompatActivity() {
             // set the feature layer on the map
             setFeatureLayer(featureLayer, viewpoint)
         }.onFailure {
-            withContext(Dispatchers.Main) {
-                showError("Error loading portal item: ${it.message}")
-            }
+            showError("Error loading portal item: ${it.message}")
         }
     }
 
     /**
      * Load a feature layer with a local geodatabase file
      */
-    /*
-    private fun loadGeodatabase() {
+    private suspend fun loadGeodatabase() {
         // locate the .geodatabase file in the device
-        val geodatabaseFile = File(getExternalFilesDir(null), "/LA_Trails.geodatabase")
+        val geodatabaseFile = File(getExternalFilesDir(null), getString(R.string.geodatabase_la_trails))
         // instantiate the geodatabase with the file path
         val geodatabase = Geodatabase(geodatabaseFile.path)
         // load the geodatabase
-        geodatabase.loadAsync()
-        geodatabase.addDoneLoadingListener {
-            if (geodatabase.loadStatus == LoadStatus.LOADED) {
-                // get the feature table with the name
-                val geodatabaseFeatureTable = geodatabase.getGeodatabaseFeatureTable("Trailheads")
-                // create a feature layer with the feature table
-                val featureLayer = FeatureLayer(geodatabaseFeatureTable)
-                // set the viewpoint to Malibu, California
-                val viewpoint = Viewpoint(34.0772, -118.7989, 600000.0)
-                // set the feature layer on the map
-                setFeatureLayer(featureLayer, viewpoint)
-            } else {
-                showError("Error loading geodatabase: ${geodatabase.loadError.message}")
-            }
+        geodatabase.load().onSuccess {
+            // get the feature table with the name
+            val geodatabaseFeatureTable =
+                geodatabase.getGeodatabaseFeatureTable("Trailheads") ?: return@onSuccess
+            // create a feature layer with the feature table
+            val featureLayer = FeatureLayer(geodatabaseFeatureTable)
+            // set the viewpoint to Malibu, California
+            val viewpoint = Viewpoint(34.0772, -118.7989, 600000.0)
+            // set the feature layer on the map
+            setFeatureLayer(featureLayer, viewpoint)
+        }.onFailure {
+            showError("Error loading geodatabase: ${it.message}")
         }
     }
-    */
 
     /**
      * Load a feature layer with a local geopackage file
@@ -252,14 +233,16 @@ class MainActivity : AppCompatActivity() {
                     // same feature layer selected, return
                     return@setOnItemClickListener
                 }
-                // set the feature layer source using the selected source
-                when (selectedSource) {
-                    FeatureLayerSource.SERVICE_FEATURE_TABLE -> loadFeatureServiceURL()
-                    FeatureLayerSource.PORTAL_ITEM -> scope.launch { loadPortalItem() }
-                    //FeatureLayerSource.GEODATABASE -> loadGeodatabase()
-                    FeatureLayerSource.GEOPACKAGE -> scope.launch { loadGeopackage() }
-                    FeatureLayerSource.SHAPEFILE -> scope.launch { loadShapefile() }
-                    else -> {}
+                lifecycleScope.launch {
+                    // set the feature layer source using the selected source
+                    when (selectedSource) {
+                        FeatureLayerSource.SERVICE_FEATURE_TABLE -> loadFeatureServiceURL()
+                        FeatureLayerSource.PORTAL_ITEM -> loadPortalItem()
+                        FeatureLayerSource.GEODATABASE -> loadGeodatabase()
+                        FeatureLayerSource.GEOPACKAGE -> loadGeopackage()
+                        FeatureLayerSource.SHAPEFILE -> loadShapefile()
+                        else -> {}
+                    }
                 }
                 // update the previous feature layer source
                 previousSource = selectedSource
