@@ -55,16 +55,11 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             // load the mobile map package
-            val loadResult = mapPackage.load()
-            loadResult.apply {
-                onSuccess {
-                    // add the map from the mobile map package to the MapView
-                    mapView.map = mapPackage.maps.first()
-                }
-                onFailure { throwable ->
-                    showError(throwable.message.toString(), mapView)
-                }
+            mapPackage.load().getOrElse {
+                showError(it.message.toString(), mapView)
             }
+            // add the map from the mobile map package to the MapView
+            mapView.map = mapPackage.maps.first()
         }
     }
 
