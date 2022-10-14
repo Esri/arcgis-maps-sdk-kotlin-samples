@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         // set up data binding for the activity
-        val activityMainBinding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val activityMainBinding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
         val mapView = activityMainBinding.mapView
         lifecycle.addObserver(mapView)
 
@@ -188,7 +189,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getBoatTripGeometry(): Polyline {
         // a new point collection to make up the polyline
-        val boatPositionsPolylineBuilder = PolylineBuilder(SpatialReference.wgs84()).apply {
+        val boatPositionsPolylineBuilder = PolylineBuilder(SpatialReference.wgs84()) {
             // add positions to the point collection
             addPoint(Point(-2.718479122792677, 56.06147084563517))
             addPoint(Point(-2.719680750046392, 56.06147084563517))
@@ -251,7 +252,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // create the polyline from the point collection
-        return boatPositionsPolylineBuilder.toGeometry() as Polyline
+        return boatPositionsPolylineBuilder.toGeometry()
     }
 
     /**
@@ -261,7 +262,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getNestingGroundGeometry(): Polygon {
         // a new point collection to make up the polygon
-        val pointsPolygonBuilder = PolygonBuilder(SpatialReference.wgs84()).apply {
+        val pointsPolygonBuilder = PolygonBuilder(SpatialReference.wgs84()) {
             // add points to the point collection
             addPoint(Point(-2.643077012566659, 56.07712534604447))
             addPoint(Point(-2.642819521015944, 56.07717324600376))
@@ -291,6 +292,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         // create a polygon from the point collection
-        return pointsPolygonBuilder.toGeometry() as Polygon
+        return pointsPolygonBuilder.toGeometry()
     }
 }

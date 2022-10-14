@@ -26,7 +26,6 @@ import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.geometry.Geometry
 import arcgisruntime.geometry.GeometryEngine
 import arcgisruntime.geometry.Point
-import arcgisruntime.geometry.Polygon
 import arcgisruntime.geometry.PolygonBuilder
 import arcgisruntime.geometry.Polyline
 import arcgisruntime.geometry.PolylineBuilder
@@ -47,7 +46,7 @@ import com.esri.arcgisruntime.sample.cutgeometry.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private val lakeSuperiorPolygon by lazy {
-        PolygonBuilder(SpatialReference.webMercator()).apply {
+        PolygonBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-10254374.668616, 5908345.076380))
             addPoint(Point(-10178382.525314, 5971402.386779))
             addPoint(Point(-10118558.923141, 6034459.697178))
@@ -78,11 +77,11 @@ class MainActivity : AppCompatActivity() {
             addPoint(Point(-10111283.079633, 5933406.315128))
             addPoint(Point(-10214761.742852, 5888134.399970))
             addPoint(Point(-10254374.668616, 5901877.659929))
-        }.toGeometry() as Polygon
+        }.toGeometry()
     }
 
     private val borderPolyline by lazy {
-        PolylineBuilder(SpatialReference.webMercator()).apply {
+        PolylineBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-9981328.687124, 6111053.281447))
             addPoint(Point(-9946518.044066, 6102350.620682))
             addPoint(Point(-9872545.427566, 6152390.920079))
@@ -90,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             addPoint(Point(-9446115.050097, 5927209.572793))
             addPoint(Point(-9430885.393759, 5876081.440801))
             addPoint(Point(-9415655.737420, 5860851.784463))
-        }.toGeometry() as Polyline
+        }.toGeometry()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 
         val (polygonGraphic, polylineGraphic) = createGraphics(graphicsOverlay, mapView)
 
-       cutButton.setOnClickListener {
+        cutButton.setOnClickListener {
             // cut the graphic along the polyline to create 2 graphic parts
             polygonGraphic.geometry?.let { graphicGeometry ->
                 val parts: List<Geometry> =
