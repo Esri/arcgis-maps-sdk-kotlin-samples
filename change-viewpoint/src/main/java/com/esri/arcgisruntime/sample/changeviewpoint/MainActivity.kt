@@ -67,13 +67,13 @@ class MainActivity : AppCompatActivity() {
 
     fun onGeometryClicked(view: View) {
         // create a collection of points around Westminster
-        val westminsterPolylineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
+        val westminsterPolylineBuilder = PolylineBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-13823.0, 6710390.0))
             addPoint(Point(-13823.0, 6710150.0))
             addPoint(Point(-14680.0, 6710390.0))
             addPoint(Point(-14680.0, 6710150.0))
         }
-        val geometry = westminsterPolylineBuilder.toGeometry() as Polyline
+        val geometry = westminsterPolylineBuilder.toGeometry()
         // set the map view's viewpoint to Westminster
         lifecycleScope.launch {
             mapView.setViewpointGeometry(geometry)
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         val viewpoint = Viewpoint(londonPoint, viewpointScale)
         // set the map view's viewpoint to London with a seven second animation duration
         lifecycleScope.launch {
-            mapView.setViewpointAnimated(viewpoint,7f)
+            mapView.setViewpointAnimated(viewpoint, 7f)
         }
     }
 }
