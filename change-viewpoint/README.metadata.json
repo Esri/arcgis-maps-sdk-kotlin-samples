@@ -13,7 +13,12 @@
     "rotate",
     "scale",
     "view",
-    "zoom"
+    "zoom",
+    "ArcGISMap",
+    "Geometry",
+    "MapView",
+    "Point",
+    "Viewpoint"
   ],
   "language": "kotlin",
   "redirect_from": [
