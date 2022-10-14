@@ -1,0 +1,35 @@
+{
+  "category": "Edit and Manage Data",
+  "description": "Display a map from a mobile map package.",
+  "formal_name": "DisplayMapFromMobileMapPackage",
+  "ignore": false,
+  "images": [
+    "display-map-from-mobile-map-package.png"
+  ],
+  "keywords": [
+    "mmpk",
+    "mobile map package",
+    "offline",
+    "MapView",
+    "MobileMapPackage"
+  ],
+  "language": "kotlin",
+  "provision_from": [
+      "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
+  ],
+  "provision_to": [
+      "/Yellowstone.mmpk"
+  ],
+  "redirect_from": [
+    "/android/latest/sample-code/open-mobile-map-package.htm"
+  ],
+  "relevant_apis": [
+    "MapView",
+    "MobileMapPackage"
+  ],
+  "snippets": [
+    "src/main/java/com/esri/arcgisruntime/sample/displaymapfrommobilemappackage/DownloadActivity.kt",
+    "src/main/java/com/esri/arcgisruntime/sample/displaymapfrommobilemappackage/MainActivity.kt"
+  ],
+  "title": "Display map from mobile map package"
+}
