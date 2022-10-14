@@ -43,7 +43,14 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    private lateinit var activityMainBinding: ActivityMainBinding
+    // set up data binding for the activity
+    private val activityMainBinding: ActivityMainBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.activity_main)
+    }
+
+    private val mapView by lazy {
+        activityMainBinding.mapView
+    }
 
     private val gdbPerCapitalURL =
         "https://services1.arcgis.com/4yjifSiIG17X0gW4/arcgis/rest/services/GDP_per_capita_1960_2016/FeatureServer/0"
@@ -52,19 +59,12 @@ class MainActivity : AppCompatActivity() {
     private val serviceFeatureTable = ServiceFeatureTable(gdbPerCapitalURL)
     private val featureLayer = FeatureLayer(serviceFeatureTable)
 
-    private val mapView: MapView by lazy {
-        activityMainBinding.mapView
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
-        // set up data binding for the activity
-        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         lifecycle.addObserver(mapView)
 
         // create a map with the streets base map type

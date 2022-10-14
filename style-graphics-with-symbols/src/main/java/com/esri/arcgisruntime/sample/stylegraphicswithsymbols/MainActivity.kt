@@ -42,7 +42,6 @@ import arcgisruntime.mapping.symbology.TextSymbol
 import arcgisruntime.mapping.symbology.VerticalAlignment
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
-import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.stylegraphicswithsymbols.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
