@@ -83,8 +83,7 @@ class MainActivity : AppCompatActivity() {
                         -1131596.019761,
                         3893114.069099,
                         3926705.982140,
-                        7977912.461790,
-                        SpatialReference.webMercator()
+                        7977912.461790
                     )
                 )
             )
