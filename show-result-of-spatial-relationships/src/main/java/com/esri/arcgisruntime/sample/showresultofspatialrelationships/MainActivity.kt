@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
     // create the polygon graphic
     private val polygonGraphic by lazy {
         // add polygon points to the polygon builder
-        val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()).apply {
+        val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-5991501.677830, 5599295.131468))
             addPoint(Point(-6928550.398185, 2087936.739807))
             addPoint(Point(-3149463.800709, 1840803.011362))
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             addPoint(Point(-3180355.516764, 5619889.608838))
         }
         // create a polygon from the polygon builder
-        val polygon = polygonBuilder.toGeometry() as Polygon
+        val polygon = polygonBuilder.toGeometry()
         val polygonSymbol = SimpleFillSymbol(
             SimpleFillSymbolStyle.ForwardDiagonal, Color.GREEN,
             SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.GREEN, 2f)
@@ -98,14 +98,14 @@ class MainActivity : AppCompatActivity() {
     // create the polyline graphic
     private val polylineGraphic by lazy {
         // add polyline points to the polyline builder
-        val polylineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
+        val polylineBuilder = PolylineBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-4354240.726880, -609939.795721))
             addPoint(Point(-3427489.245210, 2139422.933233))
             addPoint(Point(-2109442.693501, 4301843.057130))
             addPoint(Point(-1810822.771630, 7205664.366363))
         }
         // create a polyline graphic
-        val polyline = polylineBuilder.toGeometry() as Polyline
+        val polyline = polylineBuilder.toGeometry()
         val polylineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.RED, 4f)
         Graphic(polyline, polylineSymbol)
     }
