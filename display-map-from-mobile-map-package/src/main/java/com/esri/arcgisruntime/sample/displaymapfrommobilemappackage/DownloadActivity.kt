@@ -25,8 +25,8 @@ class DownloadActivity : DownloaderActivity() {
         super.onCreate(savedInstanceState)
         doDownloadThenStartSample(
             Intent(this, MainActivity::class.java),
-            // get the file path of the (.mmpk) file
-            getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk),
+            // get the download path of the sample
+            getExternalFilesDir(null)?.path.toString(),
             // ArcGIS Portal item containing the .mmpk mobile map package
             "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
         )

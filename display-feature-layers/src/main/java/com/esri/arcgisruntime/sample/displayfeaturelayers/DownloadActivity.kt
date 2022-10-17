@@ -9,8 +9,8 @@ class DownloadActivity : DownloaderActivity() {
         super.onCreate(savedInstanceState)
         doDownloadThenStartSample(
             Intent(this, MainActivity::class.java),
-            // get the file path of the (.mmpk) file
-            getExternalFilesDir(null)?.path + getString(R.string.geodatabase_la_trails),
+            // get the download path of the sample
+            getExternalFilesDir(null)?.path.toString(),
             // ArcGIS Portal item containing the .mmpk mobile map package
             "https://www.arcgis.com/home/item.html?id=2b0f9e17105847809dfeb04e3cad69e0"
         )

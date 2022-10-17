@@ -27,4 +27,5 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$ktxLifecycle"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "com.google.android.material:material:$materialVersion"
+    implementation "commons-io:commons-io:2.11.0"
 }
