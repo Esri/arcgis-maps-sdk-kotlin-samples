@@ -35,7 +35,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
     private val viewpointScale = 5000.0
 
     // set up data binding for the activity
