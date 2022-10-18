@@ -23,7 +23,7 @@ import com.esri.arcgisruntime.sample.sampleslib.DownloaderActivity
 class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        doDownloadThenStartSample(
+        downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the file path of the (.mmpk) file
             getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk),

@@ -50,7 +50,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
      * Gets the [provisionURL] of the portal item to download at
      * the [filePath], once download completes it starts the [mainActivity]
      */
-    fun doDownloadThenStartSample(
+    fun downloadAndStartSample(
         mainActivity: Intent,
         filePath: String,
         provisionURL: String
@@ -59,7 +59,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
         // alternatively, you can use ADB/Device File Explorer
         lifecycleScope.launch {
             sampleDownloadManager(provisionURL, filePath).collect { loadStatus ->
-                if (loadStatus == LoadStatus.Loaded) {
+                if (loadStatus is LoadStatus.Loaded) {
                     // download complete, resuming sample
                     startActivity(Intent(mainActivity))
                     finish()
@@ -92,7 +92,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
         val provisionFile = File(destinationPath)
 
         // suspends the coroutine until the dialog is resolved.
-        val shouldDoDownload: Boolean = suspendCancellableCoroutine { shouldDownloadContinuation ->
+        val downloadRequired: Boolean = suspendCancellableCoroutine { downloadRequiredContinuation ->
             // set up the alert dialog builder
             val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
                 .setTitle("Download data?")
@@ -105,14 +105,14 @@ abstract class DownloaderActivity : AppCompatActivity() {
                     // dismiss provision dialog question dialog
                     dialog.dismiss()
                     // set to should download
-                    shouldDownloadContinuation.resume(true, null)
+                    downloadRequiredContinuation.resume(true, null)
                 }
                 // if user taps "Continue" with existing file
                 provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
                     // dismiss the provision question dialog
                     dialog.dismiss()
                     // set to should not download
-                    shouldDownloadContinuation.resume(false, null)
+                    downloadRequiredContinuation.resume(false, null)
                 }
             }
             // if file does not exist, ask for download permission
@@ -124,7 +124,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                     // dismiss provision dialog
                     dialog.dismiss()
                     // set to should download
-                    shouldDownloadContinuation.resume(true, null)
+                    downloadRequiredContinuation.resume(true, null)
                 }
                 provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
                     dialog.dismiss()
@@ -138,7 +138,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
         }
 
         // Back in coroutine world, we know if the download should happen or not.
-        if (shouldDoDownload) {
+        if (downloadRequired) {
             // return the Loaded/FailedToLoad status
             this.emitAll(downloadPortalItem(provisionURL, provisionFile))
         } else {
