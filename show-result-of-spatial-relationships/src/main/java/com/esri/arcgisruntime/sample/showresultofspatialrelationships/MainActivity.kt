@@ -44,7 +44,6 @@ import arcgisruntime.mapping.symbology.SimpleMarkerSymbol
 import arcgisruntime.mapping.symbology.SimpleMarkerSymbolStyle
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
-import arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult
 import arcgisruntime.mapping.view.ScreenCoordinate
 import com.esri.arcgisruntime.sample.showresultofspatialrelationships.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
@@ -135,7 +134,7 @@ class MainActivity : AppCompatActivity() {
             // add graphics overlay
             graphicsOverlays.add(graphicsOverlay)
             //set viewpoint
-            setViewpoint(Viewpoint(33.183564, -42.428668480377, 90000000.0))
+            setViewpoint(Viewpoint(33.183564, -42.428668, 90000000.0))
         }
         // add the graphics to the graphics overlay
         graphicsOverlay.graphics.addAll(listOf(polygonGraphic, polylineGraphic, pointGraphic))
@@ -160,8 +159,8 @@ class MainActivity : AppCompatActivity() {
             mapView.identifyGraphicsOverlay(graphicsOverlay, screenCoordinate, 1.0, false)
         // get identified graphics overlay, else show an error
         val identifyGraphicsOverlay = identifyGraphicsOverlayResult.getOrElse {
-            showError(it.message.toString())
-        } as IdentifyGraphicsOverlayResult
+            return showError(it.message.toString())
+        }
         // get the identified selected graphics
         val identifiedGraphics = identifyGraphicsOverlay.graphics
         // if no graphic was selected
@@ -183,6 +182,8 @@ class MainActivity : AppCompatActivity() {
         val identifiedGraphic = identifiedGraphics[0]
         // set the identified graphic to be selected
         identifiedGraphic.isSelected = true
+        // tracks the type of geometry selected
+        var selectedGraphicName = ""
         // find the geometry of the selected graphic
         when (val selectedGeometry = identifiedGraphic.geometry) {
             // if selected geometry is a point
@@ -193,8 +194,8 @@ class MainActivity : AppCompatActivity() {
                 // get the point-polygon relationships
                 relationships["Polygon"] =
                     getSpatialRelationships(selectedGeometry, polygonGraphic.geometry)
-                // display selected graphic text
-                selectedGraphicTV.text = "Point geometry is selected"
+                // update the name of the selected geometry
+                selectedGraphicName = "Point"
             }
             // if selected geometry is a polyline
             is Polyline -> {
@@ -204,8 +205,8 @@ class MainActivity : AppCompatActivity() {
                 // get the polyline-point relationships
                 relationships["Point"] =
                     getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
-                // display selected graphic text
-                selectedGraphicTV.text = "Polyline geometry is selected"
+                // update the name of the selected geometry
+                selectedGraphicName = "Polyline"
             }
             // if selected geometry is a polygon
             is Polygon -> {
@@ -215,15 +216,16 @@ class MainActivity : AppCompatActivity() {
                 // get the polygon-point relationships
                 relationships["Point"] =
                     getSpatialRelationships(selectedGeometry, pointGraphic.geometry)
-                // display selected graphic text
-                selectedGraphicTV.text = "Polygon geometry is selected"
+                // update the name of the selected geometry
+                selectedGraphicName = "Polygon"
             }
             // no other graphic on map
             else -> {}
         }
-
+        // display selected graphic text
+        selectedGraphicTV.text = "$selectedGraphicName geometry is selected"
         // create and display a dialog with the established graphics
-        RelationshipsDialog(layoutInflater, this, relationships).createAndDisplayDialog()
+        RelationshipsDialog(layoutInflater, this, relationships, selectedGraphicName).createAndDisplayDialog()
 
     }
 
@@ -236,7 +238,7 @@ class MainActivity : AppCompatActivity() {
     ): List<SpatialRelationship> {
         // check if either geometry is null
         if (a == null || b == null) {
-            return mutableListOf()
+            return emptyList()
         }
         val relationships: MutableList<SpatialRelationship> = mutableListOf()
         if (GeometryEngine.crosses(a, b))

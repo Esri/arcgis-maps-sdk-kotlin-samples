@@ -14,7 +14,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class RelationshipsDialog(
     private val layoutInflater: LayoutInflater,
     private val context: MainActivity,
-    private val relationships: MutableMap<String, List<SpatialRelationship>>
+    private val relationships: Map<String, List<SpatialRelationship>>,
+    private val selectedGraphicName: String
 ) {
 
     fun createAndDisplayDialog() {
@@ -22,7 +23,7 @@ class RelationshipsDialog(
         val dialogView: View = layoutInflater.inflate(R.layout.dialog_layout, null)
         // set up the dialog builder and the title
         val dialogBuilder = MaterialAlertDialogBuilder(context).setView(dialogView)
-        dialogBuilder.setTitle("Selected geometry relationships:")
+        dialogBuilder.setTitle("$selectedGraphicName geometry's relationship:")
         // set up the dialog UI views
         val polylineListView = dialogView.findViewById<ListView>(R.id.polylineListView)
         val polygonListView = dialogView.findViewById<ListView>(R.id.polygonListView)
@@ -68,26 +69,6 @@ class RelationshipsDialog(
     }
 
     /**
-     * Extension function to convert the list of spatial relationships to a list of strings
-     */
-    private fun List<SpatialRelationship>?.convertToStringList(): List<String> {
-        val list = mutableListOf<String>()
-        this?.forEach {
-            when (it) {
-                SpatialRelationship.Crosses -> list.add("Crosses")
-                SpatialRelationship.Contains -> list.add("Contains")
-                SpatialRelationship.Disjoint -> list.add("Disjoint")
-                SpatialRelationship.Intersects -> list.add("Intersects")
-                SpatialRelationship.Overlaps -> list.add("Overlaps")
-                SpatialRelationship.Touches -> list.add("Touches")
-                SpatialRelationship.Within -> list.add("Within")
-                else -> {}
-            }
-        }
-        return list
-    }
-
-    /**
      * Dynamically sets the height of the list view to make the entire
      * dialog scrollable, instead of multiple scrolling views.
      */
@@ -106,5 +87,24 @@ class RelationshipsDialog(
         listView.layoutParams = layoutParams
         listView.requestLayout()
     }
+}
 
+/**
+ * Extension function to convert the list of spatial relationships to a list of strings
+ */
+private fun List<SpatialRelationship>?.convertToStringList(): List<String> {
+    val list = mutableListOf<String>()
+    this?.forEach {
+        when (it) {
+            SpatialRelationship.Crosses -> list.add("Crosses")
+            SpatialRelationship.Contains -> list.add("Contains")
+            SpatialRelationship.Disjoint -> list.add("Disjoint")
+            SpatialRelationship.Intersects -> list.add("Intersects")
+            SpatialRelationship.Overlaps -> list.add("Overlaps")
+            SpatialRelationship.Touches -> list.add("Touches")
+            SpatialRelationship.Within -> list.add("Within")
+            else -> {}
+        }
+    }
+    return list
 }

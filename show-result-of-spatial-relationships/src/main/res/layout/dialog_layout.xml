@@ -18,7 +18,7 @@
             android:padding="8dp"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:text="Relationship with polyline"
+            android:text="with polyline"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -34,7 +34,7 @@
             android:padding="8dp"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:text="Relationship with polygon"
+            android:text="with polygon"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -50,7 +50,7 @@
             android:padding="8dp"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:text="Relationship with point"
+            android:text="with point"
             android:textSize="17sp"
             android:textStyle="bold" />
 
