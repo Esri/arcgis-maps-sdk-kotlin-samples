@@ -32,12 +32,14 @@ Select a viewpoint option to see the map view move to that location.
 
 Below are multiple ways to set a viewpoint:
 
-* setViewpoint(...)
-* setViewpointCenter(...)
-* setViewpointGeometry(...)
-* setViewpointRotation(...)
-* setViewpointScale(...)
-* setViewpointAnimated(...)
+```kotlin
+mapView.setViewpoint(...)
+mapView.setViewpointCenter(...)
+mapView.setViewpointGeometry(...)
+mapView.setViewpointRotation(...)
+mapView.setViewpointScale(...)
+mapView.setViewpointAnimated(...)
+```
 
 ## Tags
 
