@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Show result of spatial relationships</string>
+    <string name="select_graphic">Tap on the map to select the graphic</string>
+</resources>
