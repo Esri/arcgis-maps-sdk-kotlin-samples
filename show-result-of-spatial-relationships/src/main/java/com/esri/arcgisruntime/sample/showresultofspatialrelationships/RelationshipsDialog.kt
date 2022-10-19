@@ -23,7 +23,7 @@ class RelationshipsDialog(
         val dialogView: View = layoutInflater.inflate(R.layout.dialog_layout, null)
         // set up the dialog builder and the title
         val dialogBuilder = MaterialAlertDialogBuilder(context).setView(dialogView)
-        dialogBuilder.setTitle("$selectedGraphicName geometry's relationship:")
+        dialogBuilder.setTitle("$selectedGraphicName geometry's relationship")
         // set up the dialog UI views
         val polylineListView = dialogView.findViewById<ListView>(R.id.polylineListView)
         val polygonListView = dialogView.findViewById<ListView>(R.id.polygonListView)

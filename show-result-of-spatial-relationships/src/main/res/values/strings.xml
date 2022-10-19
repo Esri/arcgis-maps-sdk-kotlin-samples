@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Show result of spatial relationships</string>
     <string name="select_graphic">Tap on the map to select the graphic</string>
+    <string name="with_polyline">with polyline:</string>
+    <string name="with_polygon">with polygon:</string>
+    <string name="with_point">with point:</string>
 </resources>
