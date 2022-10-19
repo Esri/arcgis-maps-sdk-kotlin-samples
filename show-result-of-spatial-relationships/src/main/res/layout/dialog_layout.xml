@@ -18,7 +18,7 @@
             android:padding="8dp"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:text="with polyline"
+            android:text="@string/with_polyline"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -34,7 +34,7 @@
             android:padding="8dp"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:text="with polygon"
+            android:text="@string/with_polygon"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -50,7 +50,7 @@
             android:padding="8dp"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:text="with point"
+            android:text="@string/with_point"
             android:textSize="17sp"
             android:textStyle="bold" />
 
