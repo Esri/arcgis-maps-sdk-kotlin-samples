@@ -54,7 +54,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
      * Gets the [provisionURL] of the portal item to download at
      * the [samplePath], once download completes it starts the [mainActivity]
      */
-    fun doDownloadThenStartSample(
+    fun downloadAndStartSample(
         mainActivity: Intent,
         samplePath: String,
         provisionURL: String
@@ -96,7 +96,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
         val provisionFolder = File(destinationPath)
 
         // suspends the coroutine until the dialog is resolved.
-        val shouldDoDownload: Boolean = suspendCancellableCoroutine { shouldDownloadContinuation ->
+        val downloadRequired: Boolean = suspendCancellableCoroutine { downloadRequiredContinuation ->
             // set up the alert dialog builder
             val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
                 .setTitle("Download data?")
@@ -109,14 +109,14 @@ abstract class DownloaderActivity : AppCompatActivity() {
                     // dismiss provision dialog question dialog
                     dialog.dismiss()
                     // set to should download
-                    shouldDownloadContinuation.resume(true, null)
+                    downloadRequiredContinuation.resume(true, null)
                 }
                 // if user taps "Continue" with existing folder
                 provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
                     // dismiss the provision question dialog
                     dialog.dismiss()
                     // set to should not download
-                    shouldDownloadContinuation.resume(false, null)
+                    downloadRequiredContinuation.resume(false, null)
                 }
             }
             // if folder does not exist, ask for download permission
@@ -128,7 +128,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                     // dismiss provision dialog
                     dialog.dismiss()
                     // set to should download
-                    shouldDownloadContinuation.resume(true, null)
+                    downloadRequiredContinuation.resume(true, null)
                 }
                 provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
                     dialog.dismiss()
@@ -142,7 +142,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
         }
 
         // Back in coroutine world, we know if the download should happen or not.
-        if (shouldDoDownload) {
+        if (downloadRequired) {
             // return the Loaded/FailedToLoad status
             this.emitAll(downloadPortalItem(provisionURL, provisionFolder))
         } else {

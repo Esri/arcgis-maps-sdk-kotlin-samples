@@ -23,7 +23,7 @@ import com.esri.arcgisruntime.sample.sampleslib.DownloaderActivity
 class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        doDownloadThenStartSample(
+        downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the download path of the sample
             getExternalFilesDir(null)?.path.toString(),

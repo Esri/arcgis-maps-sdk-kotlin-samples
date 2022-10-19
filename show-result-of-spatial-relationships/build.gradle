@@ -5,7 +5,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.esri.arcgisruntime.sample.displaymapfrommobilemappackage"
+        applicationId "com.esri.arcgisruntime.sample.showresultofspatialrelationships"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
@@ -29,6 +29,4 @@ dependencies {
     // lib dependencies from rootProject build.gradle
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "com.google.android.material:material:$materialVersion"
-    // this lib handles data provisioning for samples which use local data
-    implementation project(path: ':samples-lib')
 }

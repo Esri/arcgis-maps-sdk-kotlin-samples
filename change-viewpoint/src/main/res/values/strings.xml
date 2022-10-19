@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Change viewpoint</string>
+    <string name="animate">Animate</string>
+    <string name="center_amp_scale"><![CDATA[Center & Scale]]></string>
+    <string name="geometry">Geometry</string>
+</resources>
