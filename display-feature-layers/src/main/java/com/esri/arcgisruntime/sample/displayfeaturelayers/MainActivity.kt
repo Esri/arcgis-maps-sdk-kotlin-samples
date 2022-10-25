@@ -84,12 +84,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadFeatureServiceURL() {
         // initialize the service feature table using a URL
         val serviceFeatureTable =
-            ServiceFeatureTable(resources.getString(R.string.sample_service_url)).apply {
-                // set user credentials to authenticate with the service
-                //credential = Credential.UserCredential("viewer01", "I68VGU^nMurF")
-                // NOTE: Never hardcode login information in a production application
-                // This is done solely for the sake of the sample
-            }
+            ServiceFeatureTable(resources.getString(R.string.sample_service_url))
         // create a feature layer with the feature table
         val featureLayer = FeatureLayer(serviceFeatureTable)
         val viewpoint = Viewpoint(41.773519, -88.143104, 4000.0)
@@ -123,7 +118,8 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun loadGeodatabase() {
         // locate the .geodatabase file in the device
-        val geodatabaseFile = File(getExternalFilesDir(null), getString(R.string.geodatabase_la_trails))
+        val geodatabaseFile =
+            File(getExternalFilesDir(null), getString(R.string.geodatabase_la_trails))
         // instantiate the geodatabase with the file path
         val geodatabase = Geodatabase(geodatabaseFile.path)
         // load the geodatabase
