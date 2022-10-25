@@ -11,8 +11,11 @@ class DownloadActivity : DownloaderActivity() {
             Intent(this, MainActivity::class.java),
             // get the download path of the sample
             getExternalFilesDir(null)?.path.toString(),
-            // ArcGIS Portal item containing the .mmpk mobile map package
-            "https://www.arcgis.com/home/item.html?id=2b0f9e17105847809dfeb04e3cad69e0"
+            listOf<String>(
+                // ArcGIS Portal item containing the .mmpk mobile map package
+                "https://www.arcgis.com/home/item.html?id=2b0f9e17105847809dfeb04e3cad69e0"
+            )
+
         )
     }
 }

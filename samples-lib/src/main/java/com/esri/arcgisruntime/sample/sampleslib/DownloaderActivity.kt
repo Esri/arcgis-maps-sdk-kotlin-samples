@@ -59,7 +59,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
     fun downloadAndStartSample(
         mainActivity: Intent,
         samplePath: String,
-        provisionURL: String
+        provisionURLs: List<String>
     ) {
         // start the download manager to automatically add provision files to the app
         // alternatively, you can use ADB/Device File Explorer
