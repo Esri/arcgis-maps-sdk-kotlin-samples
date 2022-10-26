@@ -30,10 +30,12 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -42,7 +44,6 @@ import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -64,33 +65,24 @@ abstract class DownloaderActivity : AppCompatActivity() {
         samplePath: String,
         provisionURLs: List<String>
     ) {
-        val listOfFlows = mutableListOf<Flow<LoadStatus>>()
-        // start the download manager to automatically add provision files to the app
+        // start the download manager to automatically add the .mmpk file to the app
         // alternatively, you can use ADB/Device File Explorer
         lifecycleScope.launch {
-            provisionURLs.forEach { provisionURL ->
-                val flow = sampleDownloadManager(provisionURL, samplePath)
-                flow.collect()
-                listOfFlows.add(flow)
-            }
-
-            combine(listOfFlows) { loadStatusList ->
-                loadStatusList.forEach { loadStatus ->
-                    if (loadStatus is LoadStatus.FailedToLoad) {
-                        // show error message
-                        val errorMessage = loadStatus.error.message.toString()
-                        Snackbar.make(
-                            activitySamplesBinding.layout,
-                            errorMessage,
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                        Log.e(this@DownloaderActivity.packageName, errorMessage)
-                    }
+            sampleDownloadManager(provisionURLs, samplePath).collect { loadStatus ->
+                if (loadStatus is LoadStatus.Loaded) {
+                    // download complete, resuming sample
+                    startActivity(Intent(mainActivity))
+                    finish()
+                } else if (loadStatus is LoadStatus.FailedToLoad) {
+                    // show error message
+                    val errorMessage = loadStatus.error.message.toString()
+                    Snackbar.make(
+                        activitySamplesBinding.layout,
+                        errorMessage,
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                    Log.e(this@DownloaderActivity.packageName, errorMessage)
                 }
-
-                // download complete, resuming sample
-                startActivity(Intent(mainActivity))
-                finish()
             }
         }
     }
@@ -102,8 +94,8 @@ abstract class DownloaderActivity : AppCompatActivity() {
      * to re-download the provisioned data.
      */
     private suspend fun sampleDownloadManager(
-        provisionURL: String,
-        destinationPath: String
+        provisionURLs: List<String>,
+        destinationPath: String,
     ): Flow<LoadStatus> = flow {
 
         // the provision folder at the destination
@@ -158,8 +150,29 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
         // Back in coroutine world, we know if the download should happen or not.
         if (downloadRequired) {
-            // return the Loaded/FailedToLoad status
-            this.emitAll(downloadPortalItem(provisionURL, provisionFolder))
+            // create a list to collect the status of each portal item download
+            val loadStatusResult = mutableListOf<LoadStatus>()
+            // create a flatMapMerge for each provision URL
+            provisionURLs.asFlow().flatMapMerge { downloadPortalItem(it, provisionFolder) }
+                .collect { loadStatus ->
+                    // add the result of each download to the mutable list
+                    loadStatusResult.add(loadStatus)
+                    // check if we have all the results added
+                    if (loadStatusResult.size == provisionURLs.size) {
+                        // loop through to see if download has succeeded
+                        loadStatusResult.forEach {
+                            // emit failed if a download failed
+                            if (it is LoadStatus.FailedToLoad) {
+                                this.emit(it)
+                                return@collect
+                            }
+                        }
+                        // emit Loaded since download succeeded
+                        this.emit(LoadStatus.Loaded)
+                        return@collect
+                    }
+                }
+
         } else {
             // using local data, to returns a loaded signal
             this.emit(LoadStatus.Loaded)
@@ -168,7 +181,6 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
     /**
      * Handles the download process using the [provisionURL] at the [provisionLocation].
-     *
      */
     private fun downloadPortalItem(
         provisionURL: String,
@@ -195,9 +207,6 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 //re-start sample to show the dialog again
                 this@DownloaderActivity.recreate()
             }
-            // emit loading status
-            // emit loading status
-            emit(LoadStatus.Loading)
             // delete folder/file prior to downloading data
             FileUtils.cleanDirectory(provisionLocation)
             // get the PortalItem using the provision URL
