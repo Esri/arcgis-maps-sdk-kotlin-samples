@@ -47,6 +47,7 @@
         "ShapefileFeatureTable"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgisruntime/sample/displayfeaturelayers/DownloadActivity.kt",
         "src/main/java/com/esri/arcgisruntime/sample/displayfeaturelayers/MainActivity.kt"
     ],
     "title": "Display feature layers"
