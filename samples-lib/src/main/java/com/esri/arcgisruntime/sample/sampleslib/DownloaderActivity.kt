@@ -30,7 +30,10 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -61,24 +64,33 @@ abstract class DownloaderActivity : AppCompatActivity() {
         samplePath: String,
         provisionURLs: List<String>
     ) {
+        val listOfFlows = mutableListOf<Flow<LoadStatus>>()
         // start the download manager to automatically add provision files to the app
         // alternatively, you can use ADB/Device File Explorer
         lifecycleScope.launch {
-            sampleDownloadManager(provisionURL, samplePath).collect { loadStatus ->
-                if (loadStatus == LoadStatus.Loaded) {
-                    // download complete, resuming sample
-                    startActivity(Intent(mainActivity))
-                    finish()
-                } else if (loadStatus is LoadStatus.FailedToLoad) {
-                    // show error message
-                    val errorMessage = loadStatus.error.message.toString()
-                    Snackbar.make(
-                        activitySamplesBinding.layout,
-                        errorMessage,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                    Log.e(this@DownloaderActivity.packageName, errorMessage)
+            provisionURLs.forEach { provisionURL ->
+                val flow = sampleDownloadManager(provisionURL, samplePath)
+                flow.collect()
+                listOfFlows.add(flow)
+            }
+
+            combine(listOfFlows) { loadStatusList ->
+                loadStatusList.forEach { loadStatus ->
+                    if (loadStatus is LoadStatus.FailedToLoad) {
+                        // show error message
+                        val errorMessage = loadStatus.error.message.toString()
+                        Snackbar.make(
+                            activitySamplesBinding.layout,
+                            errorMessage,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                        Log.e(this@DownloaderActivity.packageName, errorMessage)
+                    }
                 }
+
+                // download complete, resuming sample
+                startActivity(Intent(mainActivity))
+                finish()
             }
         }
     }
