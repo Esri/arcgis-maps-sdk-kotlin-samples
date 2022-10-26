@@ -29,6 +29,14 @@ import arcgisruntime.data.GeoPackage
 import arcgisruntime.data.Geodatabase
 import arcgisruntime.data.ServiceFeatureTable
 import arcgisruntime.data.ShapefileFeatureTable
+import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallenge
+import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallengeHandler
+import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallengeResponse
+import arcgisruntime.httpcore.authentication.ArcGISCredential
+import arcgisruntime.httpcore.authentication.AuthenticationManager
+import arcgisruntime.httpcore.authentication.NetworkAuthenticationChallengeHandler
+import arcgisruntime.httpcore.authentication.PasswordCredential
+import arcgisruntime.httpcore.authentication.TokenCredential
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.Viewpoint
@@ -38,6 +46,7 @@ import arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.sample.displayfeaturelayers.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -82,6 +91,27 @@ class MainActivity : AppCompatActivity() {
      * Load a feature layer with a URL
      */
     private fun loadFeatureServiceURL() {
+        //TODO: there seems to be a bug with ArcGISAuthenticationChallengeHandler, will update once fixed
+        val authenticationChallengeHandler =
+            ArcGISAuthenticationChallengeHandler { challenge ->
+                val result: Result<TokenCredential> = runBlocking {
+                    TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
+                }
+                if (result.getOrNull() != null) {
+                    Log.e("Stop here", "")
+                    val credential = result.getOrElse { showError(it.message) }
+                    ArcGISAuthenticationChallengeResponse
+                        .ContinueWithCredential(credential as ArcGISCredential)
+                } else {
+                    val ex = result.getOrElse { showError(it.message) }
+                    ArcGISAuthenticationChallengeResponse
+                        .ContinueAndFailWithError(ex as Throwable)
+                }
+            }
+
+        ArcGISRuntimeEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
+            authenticationChallengeHandler
+
         // initialize the service feature table using a URL
         val serviceFeatureTable =
             ServiceFeatureTable(resources.getString(R.string.sample_service_url))
