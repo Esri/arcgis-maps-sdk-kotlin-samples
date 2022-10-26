@@ -32,7 +32,7 @@ Tap the button on the bottom menu to add feature layers, from different sources,
    ii. Get the first `GeoPackageFeatureTable` from the `GeoPackage.geoPackageFeatureTables` array.  
    iii. Create an `FeatureLayer` from the feature table.
 6. Load a feature layer with a shapefile.  
-   i. Create a `ShapefileFeatureTable` using the shapefile name.  
+   i. Create a `ShapefileFeatureTable` using the shapefile path.  
    ii. Create a `FeatureLayer` from the feature table and load it.
 7. Add the feature layer to the map's `OperationalLayers`.
 

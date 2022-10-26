@@ -26,15 +26,10 @@ import androidx.lifecycle.lifecycleScope
 import arcgisruntime.LoadStatus
 import arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.sample.sampleslib.databinding.ActivitySamplesBinding
-import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectIndexed
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -148,7 +143,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 provisionQuestionDialog.show()
             }
 
-        // Back in coroutine world, we know if the download should happen or not.
+        // back in coroutine world, we know if the download should happen or not.
         if (downloadRequired) {
             // create a list to collect the status of each portal item download
             val loadStatusResult = mutableListOf<LoadStatus>()
@@ -190,9 +185,6 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
             // build another dialog to show the progress of the download
             val dialogView: View = layoutInflater.inflate(R.layout.download_dialog, null)
-            val progressBar =
-                dialogView.findViewById<LinearProgressIndicator>(R.id.download_spinner)
-            progressBar.setProgress(0, false)
             val loadingBuilder = AlertDialog.Builder(this@DownloaderActivity).apply {
                 setView(dialogView)
                 create()
@@ -231,14 +223,10 @@ abstract class DownloaderActivity : AppCompatActivity() {
             runCatching {
                 val byteArrayInputStream = ByteArrayInputStream(byteArray)
                 val data = ByteArray(1024)
-                var downloadTotal = 0
                 var downloadCount: Int
                 downloadCount = byteArrayInputStream.read(data)
                 while (downloadCount != -1) {
-                    downloadTotal += downloadCount
-                    val progressPercentage = (downloadTotal * 100 / portalItem.size)
                     downloadCount = byteArrayInputStream.read(data)
-                    progressBar.setProgress(progressPercentage.toInt(), true)
                 }
                 // set up the file at the download path
                 val destinationFilePath = provisionLocation.path + File.separator + portalItem.name
