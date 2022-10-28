@@ -22,9 +22,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
+import arcgisruntime.geometry.AngularUnit
 import arcgisruntime.geometry.CubicBezierSegment
 import arcgisruntime.geometry.EllipticArcSegment
+import arcgisruntime.geometry.GeodesicEllipseParameters
 import arcgisruntime.geometry.Geometry
+import arcgisruntime.geometry.GeometryEngine
+import arcgisruntime.geometry.LinearUnit
+import arcgisruntime.geometry.MutablePart
 import arcgisruntime.geometry.Point
 import arcgisruntime.geometry.Polygon
 import arcgisruntime.geometry.PolygonBuilder
@@ -42,7 +47,6 @@ import arcgisruntime.mapping.symbology.SimpleMarkerSymbolStyle
 import arcgisruntime.mapping.symbology.SimpleRenderer
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
-import arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.sample.stylegraphicswithrenderer.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -244,18 +248,44 @@ class MainActivity : AppCompatActivity() {
             spatialReference
         )
 
-        // TODO: Part need to be implemented
-        val heart = Part(spatialReference).apply {
-            add(leftCurve)
-            add(leftArc)
-            add(rightArc)
-            add(rightCurve)
+        // create a mutable part list
+        val heartParts = MutablePart(spatialReference).apply {
+            addAll(
+                listOf(leftCurve, leftArc, rightArc, rightCurve)
+            )
         }
-        return Polygon(heart, spatialReference)
+        // return the heart
+        return Polygon(listOf(heartParts).asIterable())
     }
 
-
+    /**
+     * Create an ellipse, its graphic, a graphics overlay for it, and add it to the map view.
+     */
     private fun renderedEllipseGraphicsOverlay(): GraphicsOverlay {
+        // create and set all the parameters so that the ellipse has a major axis of 400 kilometres,
+        // a minor axis of 200 kilometres and is rotated at an angle of -45 degrees
+        val parameters = GeodesicEllipseParameters.createForPolygon().apply {
+            axisDirection = -45.0
+            angularUnit = AngularUnit.degrees
+            center = Point(40e5, 23e5, SpatialReference.webMercator())
+            linearUnit = LinearUnit.kilometers
+            maxPointCount = 100L
+            maxSegmentLength = 20.0
+            semiAxis1Length = 200.0
+            semiAxis2Length = 400.0
+        }
 
+        // define the ellipse parameters to a polygon geometry
+        val polygon = GeometryEngine.ellipseGeodesic(parameters)
+        // create an ellipse graphic overlay using the defined polygon
+        val ellipseGraphicOverlay = GraphicsOverlay()
+        // set the ellipse fill color
+        val ellipseSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.MAGENTA, null)
+        // add the symbol to the renderer and add it to the graphic overlay
+        ellipseGraphicOverlay.renderer = SimpleRenderer(ellipseSymbol)
+        ellipseGraphicOverlay.graphics.add(Graphic(polygon))
+
+        // return the purple ellipse
+        return ellipseGraphicOverlay
     }
 }
