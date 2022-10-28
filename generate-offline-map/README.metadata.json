@@ -10,7 +10,12 @@
     "download",
     "offline",
     "save",
-    "web map"
+    "web map",
+    "GenerateOfflineMapJob",
+    "GenerateOfflineMapParameters",
+    "GenerateOfflineMapResult",
+    "OfflineMapTask",
+    "Portal"
   ],
   "language": "kotlin",
   "redirect_from": [
