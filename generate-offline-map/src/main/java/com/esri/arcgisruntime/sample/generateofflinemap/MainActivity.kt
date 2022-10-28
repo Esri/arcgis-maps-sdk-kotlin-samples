@@ -184,9 +184,12 @@ class MainActivity : AppCompatActivity() {
         // create an alert dialog to show the download progress
         val progressDialogLayoutBinding =
             GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
-        val progressDialog = createProgressDialog(offlineMapJob)
-        progressDialog.setView(progressDialogLayoutBinding.root)
-        progressDialog.show()
+        val progressDialog = createProgressDialog(offlineMapJob).apply {
+            setCancelable(false)
+            setView(progressDialogLayoutBinding.root)
+            show()
+        }
+        // handle offline job loading, error and succeed status
         handleOfflineMapJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
     }
 
@@ -199,7 +202,7 @@ class MainActivity : AppCompatActivity() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     offlineMapJob.progress.collect {
-                        Log.e(TAG,offlineMapJob.progress.value.toString())
+                        Log.e(TAG, offlineMapJob.progress.value.toString())
                         progressDialogLayout.progressBar.progress = offlineMapJob.progress.value
                         progressDialogLayout.progressTextView.text =
                             "${offlineMapJob.progress.value}%"
@@ -210,6 +213,7 @@ class MainActivity : AppCompatActivity() {
                         if (jobStatus is JobStatus.Succeeded) {
                             val result = offlineMapJob.result().getOrElse {
                                 showError("OfflineMapJob error: ${it.message}")
+                                progressDialog.dismiss()
                             } as GenerateOfflineMapResult
                             mapView.map = result.offlineMap
                             graphicsOverlay.graphics.clear()
@@ -223,11 +227,13 @@ class MainActivity : AppCompatActivity() {
                                 "Now displaying offline map.",
                                 Toast.LENGTH_LONG
                             ).show()
+
+                            // close the progress dialog
+                            progressDialog.dismiss()
                         } else if (jobStatus is JobStatus.Failed) {
+                            progressDialog.dismiss()
                             showError("Error loading OfflineMapJob")
                         }
-                        // close the progress dialog
-                        progressDialog.dismiss()
                     }
                 }
                 // start the job
