@@ -18,6 +18,7 @@ package com.esri.arcgisruntime.sample.addfeaturelayers
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -29,20 +30,16 @@ import arcgisruntime.data.GeoPackage
 import arcgisruntime.data.Geodatabase
 import arcgisruntime.data.ServiceFeatureTable
 import arcgisruntime.data.ShapefileFeatureTable
-import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallengeHandler
-import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallengeResponse
-import arcgisruntime.httpcore.authentication.ArcGISCredential
-import arcgisruntime.httpcore.authentication.TokenCredential
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.Viewpoint
+import arcgisruntime.mapping.ViewpointType
 import arcgisruntime.mapping.layers.FeatureLayer
 import arcgisruntime.portal.Portal
 import arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.sample.addfeaturelayers.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -87,33 +84,12 @@ class MainActivity : AppCompatActivity() {
      * Load a feature layer with a URL
      */
     private fun loadFeatureServiceURL() {
-        //TODO: there seems to be a bug with ArcGISAuthenticationChallengeHandler, will update once fixed
-        val authenticationChallengeHandler =
-            ArcGISAuthenticationChallengeHandler { challenge ->
-                val result: Result<TokenCredential> = runBlocking {
-                    TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
-                }
-                if (result.getOrNull() != null) {
-                    Log.e("Stop here", "")
-                    val credential = result.getOrElse { showError(it.message) }
-                    ArcGISAuthenticationChallengeResponse
-                        .ContinueWithCredential(credential as ArcGISCredential)
-                } else {
-                    val ex = result.getOrElse { showError(it.message) }
-                    ArcGISAuthenticationChallengeResponse
-                        .ContinueAndFailWithError(ex as Throwable)
-                }
-            }
-
-        ArcGISRuntimeEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
-            authenticationChallengeHandler
-
         // initialize the service feature table using a URL
         val serviceFeatureTable =
             ServiceFeatureTable(resources.getString(R.string.sample_service_url))
         // create a feature layer with the feature table
         val featureLayer = FeatureLayer(serviceFeatureTable)
-        val viewpoint = Viewpoint(41.773519, -88.143104, 4000.0)
+        val viewpoint = Viewpoint(41.70, -88.20, 120000.0)
         // set the feature layer on the map
         setFeatureLayer(featureLayer, viewpoint)
     }
@@ -152,7 +128,11 @@ class MainActivity : AppCompatActivity() {
         geodatabase.load().onSuccess {
             // get the feature table with the name
             val geodatabaseFeatureTable =
-                geodatabase.getGeodatabaseFeatureTable("Trailheads") ?: return@onSuccess
+                geodatabase.getGeodatabaseFeatureTable("Trailheads")
+            if (geodatabaseFeatureTable == null) {
+                showError("Feature table name not found in geodatabase")
+                return
+            }
             // create a feature layer with the feature table
             val featureLayer = FeatureLayer(geodatabaseFeatureTable)
             // set the viewpoint to Malibu, California
