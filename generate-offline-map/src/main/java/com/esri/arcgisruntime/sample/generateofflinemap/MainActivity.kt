@@ -16,35 +16,36 @@
 
 package com.esri.arcgisruntime.sample.generateofflinemap
 
+import android.app.AlertDialog
 import android.graphics.Color
-import android.graphics.Point
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.LoadStatus
-import arcgisruntime.arcgisservices.LevelOfDetail
 import arcgisruntime.geometry.Envelope
-import arcgisruntime.geometry.Geometry
 import arcgisruntime.mapping.ArcGISMap
-import arcgisruntime.mapping.BasemapStyle
 import arcgisruntime.mapping.symbology.SimpleLineSymbol
 import arcgisruntime.mapping.symbology.SimpleLineSymbolStyle
 import arcgisruntime.mapping.view.Graphic
 import arcgisruntime.mapping.view.GraphicsOverlay
-import arcgisruntime.mapping.view.MapView
 import arcgisruntime.mapping.view.ScreenCoordinate
 import arcgisruntime.portal.Portal
 import arcgisruntime.portal.PortalItem
+import arcgisruntime.tasks.JobStatus
+import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapJob
 import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapParameters
+import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapResult
 import arcgisruntime.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgisruntime.sample.generateofflinemap.databinding.ActivityMainBinding
+import com.esri.arcgisruntime.sample.generateofflinemap.databinding.GenerateOfflineMapDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -91,18 +92,15 @@ class MainActivity : AppCompatActivity() {
 
         val map = ArcGISMap(portalItem).apply {
             lifecycleScope.launch {
-                load().apply {
-                    onSuccess {
-                        // limit the map scale to the largest layer scale
-                        maxScale = operationalLayers[6].maxScale
-                        minScale = operationalLayers[6].minScale
-                    }
-                    onFailure {
-                        showError(it.message.toString())
-                    }
+                load().getOrElse {
+                    showError(it.message.toString())
                 }
+                // limit the map scale to the largest layer scale
+                maxScale = operationalLayers[6].maxScale
+                minScale = operationalLayers[6].minScale
             }
         }
+
 
         // create a symbol to show a box around the extent we want to download
         downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.RED, 2F)
@@ -117,30 +115,28 @@ class MainActivity : AppCompatActivity() {
             // update the download area box whenever the viewpoint changes
             lifecycleScope.launch {
                 viewpointChanged.collect {
-                    map.loadStatus.collect {
-                        if (it is LoadStatus.Loaded) {
-                            // upper left corner of the area to take offline
-                            val minScreenPoint = ScreenCoordinate(200.0, 200.0)
-                            // lower right corner of the downloaded area
-                            val maxScreenPoint = ScreenCoordinate(
-                                mapView.width - 200.0,
-                                mapView.height - 200.0
-                            )
-                            // convert screen points to map points
-                            val minPoint = mapView.screenToLocation(minScreenPoint)
-                            val maxPoint = mapView.screenToLocation(maxScreenPoint)
-                            // use the points to define and return an envelope
-                            if (minPoint != null && maxPoint != null) {
-                                val envelope = Envelope(minPoint, maxPoint)
-                                downloadArea.geometry = envelope
-                                // enable the take map offline button only after the map is loaded
-                                if (!takeMapOfflineButton.isEnabled) takeMapOfflineButton.isEnabled =
-                                    true
-                            }
-                        }
+                    // upper left corner of the area to take offline
+                    val minScreenPoint = ScreenCoordinate(200.0, 200.0)
+                    // lower right corner of the downloaded area
+                    val maxScreenPoint = ScreenCoordinate(
+                        width - 200.0,
+                        height - 200.0
+                    )
+                    // convert screen points to map points
+                    val minPoint = screenToLocation(minScreenPoint)
+                    val maxPoint = screenToLocation(maxScreenPoint)
+                    // use the points to define and return an envelope
+                    if (minPoint != null && maxPoint != null) {
+                        val envelope = Envelope(minPoint, maxPoint)
+                        downloadArea.geometry = envelope
+                        // enable the take map offline button only after the map is loaded
+                        if (!takeMapOfflineButton.isEnabled)
+                            takeMapOfflineButton.isEnabled = true
+
                     }
                 }
             }
+
         }
     }
 
@@ -152,7 +148,6 @@ class MainActivity : AppCompatActivity() {
     fun generateOfflineMap(view: View) {
         // delete any offline map already in the cache
         File(tempDirectoryPath).deleteRecursively()
-
         // specify the extent, min scale, and max scale as parameters
         var minScale: Double = mapView.mapScale.value
         val maxScale: Double = mapView.map?.maxScale ?: 0.0
@@ -160,33 +155,105 @@ class MainActivity : AppCompatActivity() {
         if (minScale <= maxScale) {
             minScale = maxScale + 1
         }
+        // get the geometry of the downloadArea
         val geometry = downloadArea.geometry
-        if (geometry != null) {
-            val generateOfflineMapParameters = GenerateOfflineMapParameters(
-                geometry, minScale, maxScale
-            ).apply {
-                // set job to cancel on any errors
-                isContinueOnErrors = false
-            }
-
-            val map = mapView.map
-            if (map != null) {
-                // create an offline map task with the map
-                val offlineMapTask = OfflineMapTask(map)
-                // create an offline map job with the download directory path and parameters and start the job
-                val offlineMapJob =
-                    offlineMapTask.generateOfflineMap(generateOfflineMapParameters, tempDirectoryPath)
-                // create an alert dialog to show the download progress
-                val progressDialogLayoutBinding = GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
-                val progressDialog = createProgressDialog(offlineMapJob)
-                progressDialog.setView(progressDialogLayoutBinding.root)
-                progressDialog.show()
-            }
-
+        if (geometry == null) {
+            showError("Could not get geometry of the downloadArea")
+            return
         }
+        // set the offline map parameters
+        val generateOfflineMapParameters = GenerateOfflineMapParameters(
+            geometry, minScale, maxScale
+        ).apply {
+            // set job to cancel on any errors
+            isContinueOnErrors = false
+        }
+        // get the map from the MapView
+        val map = mapView.map
+        if (map == null) {
+            showError("Could not get map from MapView")
+            return
+        }
+        // create an offline map task with the map
+        val offlineMapTask = OfflineMapTask(map)
+        // create an offline map job with the download directory path and parameters and start the job
+        val offlineMapJob = offlineMapTask.generateOfflineMap(
+            generateOfflineMapParameters,
+            tempDirectoryPath
+        )
+        // create an alert dialog to show the download progress
+        val progressDialogLayoutBinding =
+            GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
+        val progressDialog = createProgressDialog(offlineMapJob)
+        progressDialog.setView(progressDialogLayoutBinding.root)
+        progressDialog.show()
+        handleOfflineMapJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
+    }
 
+    private fun handleOfflineMapJob(
+        offlineMapJob: GenerateOfflineMapJob,
+        progressDialogLayout: GenerateOfflineMapDialogLayoutBinding,
+        progressDialog: AlertDialog
+    ) {
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    offlineMapJob.progress.collect {
+                        Log.e(TAG,offlineMapJob.progress.value.toString())
+                        progressDialogLayout.progressBar.progress = offlineMapJob.progress.value
+                        progressDialogLayout.progressTextView.text =
+                            "${offlineMapJob.progress.value}%"
+                    }
+                }
+                launch {
+                    offlineMapJob.status.collect { jobStatus ->
+                        if (jobStatus is JobStatus.Succeeded) {
+                            val result = offlineMapJob.result().getOrElse {
+                                showError("OfflineMapJob error: ${it.message}")
+                            } as GenerateOfflineMapResult
+                            mapView.map = result.offlineMap
+                            graphicsOverlay.graphics.clear()
 
+                            // disable and remove the button to take the map offline once the offline map is showing
+                            takeMapOfflineButton.isEnabled = false
+                            takeMapOfflineButton.visibility = View.GONE
 
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Now displaying offline map.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else if (jobStatus is JobStatus.Failed) {
+                            showError("Error loading OfflineMapJob")
+                        }
+                        // close the progress dialog
+                        progressDialog.dismiss()
+                    }
+                }
+                // start the job
+                offlineMapJob.start()
+            }
+        }
+    }
+
+    /**
+     * Create a progress dialog box for tracking the generate offline map job.
+     *
+     * @param job the generate offline map job progress to be tracked
+     * @return an AlertDialog set with the dialog layout view
+     */
+    private fun createProgressDialog(job: GenerateOfflineMapJob): AlertDialog {
+        val builder = AlertDialog.Builder(this).apply {
+            setTitle("Generating offline map...")
+            // provide a cancel button on the dialog
+            setNegativeButton("Cancel") { _, _ ->
+                lifecycleScope.launch { job.cancel() }
+            }
+            setCancelable(true)
+            val dialogLayoutBinding = GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
+            setView(dialogLayoutBinding.root)
+        }
+        return builder.create()
     }
 
     private fun showError(message: String) {
