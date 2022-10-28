@@ -55,7 +55,7 @@
         "SimpleRenderer"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgisruntime/sample/stylegraphicswithrenderer/MainActivity.kt"
+      "/src/main/java/com/esri/arcgisruntime/sample/stylegraphicswithrenderer/MainActivity.kt"
     ],
     "title": "Style graphics with renderer"
 }
