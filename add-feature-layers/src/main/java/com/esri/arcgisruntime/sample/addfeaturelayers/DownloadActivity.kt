@@ -1,4 +1,4 @@
-package com.esri.arcgisruntime.sample.displayfeaturelayers
+package com.esri.arcgisruntime.sample.addfeaturelayers
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,4 +22,3 @@ class DownloadActivity : DownloaderActivity() {
         )
     }
 }
-

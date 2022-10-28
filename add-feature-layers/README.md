@@ -1,8 +1,8 @@
-# Display feature layers
+# Add feature layers
 
-Display feature layers from various data sources.
+Add feature layers from various data sources.
 
-![Display feature layers](display-feature-layers.png)
+![Add feature layers](add-feature-layers.png)
 
 ## Use case
 
@@ -60,9 +60,9 @@ Tap the button on the bottom menu to add feature layers, from different sources,
 
 Link | Local Location
 ---------|-------|
-|[LA trails geodatabase](https://www.arcgis.com/home/item.html?id=2b0f9e17105847809dfeb04e3cad69e0)| /Android/data/com.esri.arcgisruntime.sample.displayfeaturelayers/files/LA_Trails.geodatabase |
-|[Aurora Colorado geopackage](https://www.arcgis.com/home/item.html?id=68ec42517cdd439e81b036210483e8e7)| /Android/data/com.esri.arcgisruntime.sample.displayfeaturelayers/files/AuroraCO.gpkg |
-|[Scottish Wildlife Trust reserve shapefile](https://www.arcgis.com/home/item.html?id=15a7cbd3af1e47cfa5d2c6b93dc44fc2)| /Android/data/com.esri.arcgisruntime.sample.displayfeaturelayers/files/ScottishWildlifeTrust_reserves/ |
+|[LA trails geodatabase](https://www.arcgis.com/home/item.html?id=2b0f9e17105847809dfeb04e3cad69e0)| /Android/data/com.esri.arcgisruntime.sample.addfeaturelayers/files/LA_Trails.geodatabase |
+|[Aurora Colorado geopackage](https://www.arcgis.com/home/item.html?id=68ec42517cdd439e81b036210483e8e7)| /Android/data/com.esri.arcgisruntime.sample.addfeaturelayers/files/AuroraCO.gpkg |
+|[Scottish Wildlife Trust reserve shapefile](https://www.arcgis.com/home/item.html?id=15a7cbd3af1e47cfa5d2c6b93dc44fc2)| /Android/data/com.esri.arcgisruntime.sample.addfeaturelayers/files/ScottishWildlifeTrust_reserves/ |
 
 ## About the data
 

@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgisruntime.sample.displayfeaturelayers
+package com.esri.arcgisruntime.sample.addfeaturelayers
 
 import android.os.Bundle
 import android.util.Log
@@ -29,13 +29,9 @@ import arcgisruntime.data.GeoPackage
 import arcgisruntime.data.Geodatabase
 import arcgisruntime.data.ServiceFeatureTable
 import arcgisruntime.data.ShapefileFeatureTable
-import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallenge
 import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallengeHandler
 import arcgisruntime.httpcore.authentication.ArcGISAuthenticationChallengeResponse
 import arcgisruntime.httpcore.authentication.ArcGISCredential
-import arcgisruntime.httpcore.authentication.AuthenticationManager
-import arcgisruntime.httpcore.authentication.NetworkAuthenticationChallengeHandler
-import arcgisruntime.httpcore.authentication.PasswordCredential
 import arcgisruntime.httpcore.authentication.TokenCredential
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.BasemapStyle
@@ -43,7 +39,7 @@ import arcgisruntime.mapping.Viewpoint
 import arcgisruntime.mapping.layers.FeatureLayer
 import arcgisruntime.portal.Portal
 import arcgisruntime.portal.PortalItem
-import com.esri.arcgisruntime.sample.displayfeaturelayers.databinding.ActivityMainBinding
+import com.esri.arcgisruntime.sample.addfeaturelayers.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

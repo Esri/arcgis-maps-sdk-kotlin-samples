@@ -1,10 +1,10 @@
 {
     "category": "Layers",
-    "description": "Display feature layers from various data sources.",
-    "formal_name": "DisplayFeatureLayers",
+    "description": "Add feature layers from various data sources.",
+    "formal_name": "AddFeatureLayers",
     "ignore": false,
     "images": [
-        "display-feature-layers.png"
+        "add-feature-layers.png"
     ],
     "keywords": [
         "feature",
@@ -47,8 +47,8 @@
         "ShapefileFeatureTable"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgisruntime/sample/displayfeaturelayers/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgisruntime/sample/displayfeaturelayers/MainActivity.kt"
+        "src/main/java/com/esri/arcgisruntime/sample/addfeaturelayers/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgisruntime/sample/addfeaturelayers/MainActivity.kt"
     ],
-    "title": "Display feature layers"
+    "title": "Add feature layers"
 }
