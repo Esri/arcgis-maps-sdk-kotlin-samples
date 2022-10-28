@@ -36,7 +36,7 @@
     ],
     "language": "kotlin",
     "redirect_from": [
-      "/android/latest/sample-code/add-graphics-renderer.htm"
+        "/android/latest/sample-code/add-graphics-renderer.htm"
     ],
     "relevant_apis": [
         "CubicBezierSegment",
@@ -55,7 +55,7 @@
         "SimpleRenderer"
     ],
     "snippets": [
-      "/src/main/java/com/esri/arcgisruntime/sample/stylegraphicswithrenderer/MainActivity.kt"
+        "src/main/java/com/esri/arcgisruntime/sample/stylegraphicswithrenderer/MainActivity.kt"
     ],
     "title": "Style graphics with renderer"
 }
