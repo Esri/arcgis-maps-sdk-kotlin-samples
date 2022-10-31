@@ -21,7 +21,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -63,10 +62,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.takeMapOfflineButton
     }
 
-    private val tempDirectoryPath: String by lazy {
-        "$cacheDir/offlineMap"
-    }
-
     private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
     private val downloadArea: Graphic = Graphic()
@@ -90,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(portalItem).apply {
             lifecycleScope.launch {
                 load().getOrElse {
-                    showError(it.message.toString())
+                    showMessage(it.message.toString())
                 }
                 // limit the map scale to the largest layer scale
                 maxScale = operationalLayers[6].maxScale
@@ -129,11 +124,9 @@ class MainActivity : AppCompatActivity() {
                         // enable the take map offline button only after the map is loaded
                         if (!takeMapOfflineButton.isEnabled)
                             takeMapOfflineButton.isEnabled = true
-
                     }
                 }
             }
-
         }
     }
 
@@ -143,8 +136,10 @@ class MainActivity : AppCompatActivity() {
      * @param view: the button which calls this function
      */
     fun generateOfflineMap(view: View) {
+        // offline map path
+        val offlineMapPath = getExternalFilesDir(null)?.path + "/offlineMap"
         // delete any offline map already in the cache
-        File(tempDirectoryPath).deleteRecursively()
+        File(offlineMapPath).deleteRecursively()
         // specify the extent, min scale, and max scale as parameters
         var minScale: Double = mapView.mapScale.value
         val maxScale: Double = mapView.map?.maxScale ?: 0.0
@@ -155,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         // get the geometry of the downloadArea
         val geometry = downloadArea.geometry
         if (geometry == null) {
-            showError("Could not get geometry of the downloadArea")
+            showMessage("Could not get geometry of the downloadArea")
             return
         }
         // set the offline map parameters
@@ -163,12 +158,12 @@ class MainActivity : AppCompatActivity() {
             geometry, minScale, maxScale
         ).apply {
             // set job to cancel on any errors
-            isContinueOnErrors = false
+            continueOnErrors = false
         }
         // get the map from the MapView
         val map = mapView.map
         if (map == null) {
-            showError("Could not get map from MapView")
+            showMessage("Could not get map from MapView")
             return
         }
         // create an offline map task with the map
@@ -176,7 +171,7 @@ class MainActivity : AppCompatActivity() {
         // create an offline map job with the download directory path and parameters and start the job
         val offlineMapJob = offlineMapTask.generateOfflineMap(
             generateOfflineMapParameters,
-            tempDirectoryPath
+            offlineMapPath
         )
         // create an alert dialog to show the download progress
         val progressDialogLayoutBinding =
@@ -217,7 +212,7 @@ class MainActivity : AppCompatActivity() {
         offlineMapJob.start()
         val jobResult = offlineMapJob.result().getOrElse {
             progressDialog.dismiss()
-            showError(it.message.toString())
+            showMessage(it.message.toString())
         } as GenerateOfflineMapResult
         mapView.map = jobResult.offlineMap
         graphicsOverlay.graphics.clear()
@@ -226,11 +221,7 @@ class MainActivity : AppCompatActivity() {
         takeMapOfflineButton.isEnabled = false
         takeMapOfflineButton.visibility = View.GONE
 
-        Toast.makeText(
-            this@MainActivity,
-            "Now displaying offline map.",
-            Toast.LENGTH_LONG
-        ).show()
+        showMessage("Map saved at: " + offlineMapJob.downloadDirectoryPath)
 
         // close the progress dialog
         progressDialog.dismiss()
@@ -256,7 +247,7 @@ class MainActivity : AppCompatActivity() {
         return builder.create()
     }
 
-    private fun showError(message: String) {
+    private fun showMessage(message: String) {
         Log.e(TAG, message)
         Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_SHORT).show()
     }
