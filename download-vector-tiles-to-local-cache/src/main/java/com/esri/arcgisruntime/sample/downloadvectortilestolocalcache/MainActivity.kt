@@ -221,24 +221,42 @@ class MainActivity : AppCompatActivity() {
 
         // set the value of the job's progress
         lifecycleScope.launch {
-            val progress = exportVectorTilesJob?.progress?.value ?: 0
-            dialogLayoutBinding.progressBar.progress = progress
-            dialogLayoutBinding.progressTextView.text = "$progress% completed"
+            exportVectorTilesJob?.progress?.collect{
+                val progress = exportVectorTilesJob?.progress?.value ?: 0
+                dialogLayoutBinding.progressBar.progress = progress
+                dialogLayoutBinding.progressTextView.text = "$progress% completed"
+                Log.e(TAG,progress.toString())
+            }
+
         }
 
         // display map if job succeeds
         lifecycleScope.launch {
             exportVectorTilesJob?.status?.collect {
+                when (it) {
+                    JobStatus.Canceling -> Log.e("Status","Cancelling")
+                    JobStatus.Failed -> Log.e("Status","Failed")
+                    JobStatus.NotStarted -> Log.e("Status","NotStarted")
+                    JobStatus.Paused -> Log.e("Status","Paused")
+                    JobStatus.Started -> Log.e("Status","Started")
+                    JobStatus.Succeeded -> Log.e("Status","Succeeded")
+                }
                 if (it is JobStatus.Succeeded) {
                     // get the result of the job
+                    Log.e(TAG,"1")
                     val exportVectorTilesResult =
                         exportVectorTilesJob?.result()?.getOrElse { error ->
+                            Log.e(TAG,"2")
                             showError(error.message.toString())
+                            return@collect
                         } as ExportVectorTilesResult
 
+                    Log.e(TAG,"3")
                     // display the map preview using the result from the completed job
-                    showMapPreview(exportVectorTilesResult)
+                    //showMapPreview(exportVectorTilesResult)
+                    Log.e(TAG,"4")
                 } else if (it is JobStatus.Failed) {
+                    Log.e(TAG,"5")
                     showError("Failed to load the export tiles job")
                 }
             }
