@@ -30,7 +30,7 @@ Tap the button on the bottom menu to add feature layers, from different sources,
 5. Load a feature layer with a geopackage.  
    i. Instantiate and load a geopackage using its file name.  
    ii. Get the first `GeoPackageFeatureTable` from the `GeoPackage.geoPackageFeatureTables` array.  
-   iii. Create an `FeatureLayer` from the feature table.
+   iii. Create a `FeatureLayer` from the feature table.
 6. Load a feature layer with a shapefile.  
    i. Create a `ShapefileFeatureTable` using the shapefile path.  
    ii. Create a `FeatureLayer` from the feature table and load it.
