@@ -81,6 +81,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Sets the map using the [layer] at the given [viewpoint]
+     */
+    private fun setFeatureLayer(layer: FeatureLayer, viewpoint: Viewpoint) {
+        activityMainBinding.mapView.apply {
+            // clears the existing layer on the map
+            map?.operationalLayers?.clear()
+            // adds the new layer to the map
+            map?.operationalLayers?.add(layer)
+            // updates the viewpoint to the given viewpoint
+            setViewpoint(viewpoint)
+        }
+    }
+
+    /**
      * Load a feature layer with a URL
      */
     private fun loadFeatureServiceURL() {
@@ -186,23 +200,7 @@ class MainActivity : AppCompatActivity() {
             // set the feature layer on the map
             setFeatureLayer(featureLayer, viewpoint)
         } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                showError("Error loading shapefile: ${e.message}")
-            }
-        }
-    }
-
-    /**
-     * Sets the map using the [layer] at the given [viewpoint]
-     */
-    private fun setFeatureLayer(layer: FeatureLayer, viewpoint: Viewpoint) {
-        activityMainBinding.mapView.apply {
-            // clears the existing layer on the map
-            map?.operationalLayers?.clear()
-            // adds the new layer to the map
-            map?.operationalLayers?.add(layer)
-            // updates the viewpoint to the given viewpoint
-            setViewpoint(viewpoint)
+            showError("Error loading shapefile: ${e.message}")
         }
     }
 

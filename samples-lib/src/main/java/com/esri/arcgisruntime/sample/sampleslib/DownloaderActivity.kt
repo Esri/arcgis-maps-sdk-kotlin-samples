@@ -143,11 +143,11 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 provisionQuestionDialog.show()
             }
 
-        // back in coroutine world, we know if the download should happen or not.
+        // check if the download should happen or not.
         if (downloadRequired) {
             // create a list to collect the status of each portal item download
             val loadStatusResult = mutableListOf<LoadStatus>()
-            // create a flatMapMerge for each provision URL
+            // download the portal item for each provisionURL
             provisionURLs.asFlow().flatMapMerge { downloadPortalItem(it, provisionFolder) }
                 .collect { loadStatus ->
                     // add the result of each download to the mutable list
