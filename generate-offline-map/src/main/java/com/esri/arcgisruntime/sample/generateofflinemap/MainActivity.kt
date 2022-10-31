@@ -24,9 +24,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
 import arcgisruntime.geometry.Envelope
@@ -38,7 +36,6 @@ import arcgisruntime.mapping.view.GraphicsOverlay
 import arcgisruntime.mapping.view.ScreenCoordinate
 import arcgisruntime.portal.Portal
 import arcgisruntime.portal.PortalItem
-import arcgisruntime.tasks.JobStatus
 import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapJob
 import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapParameters
 import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapResult
@@ -190,56 +187,53 @@ class MainActivity : AppCompatActivity() {
             show()
         }
         // handle offline job loading, error and succeed status
-        handleOfflineMapJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
+        lifecycleScope.launch {
+            handleOfflineMapJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
+        }
     }
 
-    private fun handleOfflineMapJob(
+    /**
+     * Initiates, and tracks the result of the [offlineMapJob] while displaying
+     * the progress to the [progressDialog]
+     */
+    private suspend fun handleOfflineMapJob(
         offlineMapJob: GenerateOfflineMapJob,
         progressDialogLayout: GenerateOfflineMapDialogLayoutBinding,
         progressDialog: AlertDialog
     ) {
+        // create a flow-collector for the job's progress
         lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    offlineMapJob.progress.collect {
-                        Log.e(TAG, offlineMapJob.progress.value.toString())
-                        progressDialogLayout.progressBar.progress = offlineMapJob.progress.value
-                        progressDialogLayout.progressTextView.text =
-                            "${offlineMapJob.progress.value}%"
-                    }
-                }
-                launch {
-                    offlineMapJob.status.collect { jobStatus ->
-                        if (jobStatus is JobStatus.Succeeded) {
-                            val result = offlineMapJob.result().getOrElse {
-                                showError("OfflineMapJob error: ${it.message}")
-                                progressDialog.dismiss()
-                            } as GenerateOfflineMapResult
-                            mapView.map = result.offlineMap
-                            graphicsOverlay.graphics.clear()
-
-                            // disable and remove the button to take the map offline once the offline map is showing
-                            takeMapOfflineButton.isEnabled = false
-                            takeMapOfflineButton.visibility = View.GONE
-
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Now displaying offline map.",
-                                Toast.LENGTH_LONG
-                            ).show()
-
-                            // close the progress dialog
-                            progressDialog.dismiss()
-                        } else if (jobStatus is JobStatus.Failed) {
-                            progressDialog.dismiss()
-                            showError("Error loading OfflineMapJob")
-                        }
-                    }
-                }
-                // start the job
-                offlineMapJob.start()
+            offlineMapJob.progress.collect {
+                //TODO REMOVE
+                Log.e(TAG, offlineMapJob.progress.value.toString())
+                // display the current job's progress value
+                val progressPercentage = offlineMapJob.progress.value
+                progressDialogLayout.progressBar.progress = progressPercentage
+                progressDialogLayout.progressTextView.text = "$progressPercentage%"
             }
         }
+
+        // start the job
+        offlineMapJob.start()
+        val jobResult = offlineMapJob.result().getOrElse {
+            progressDialog.dismiss()
+            showError(it.message.toString())
+        } as GenerateOfflineMapResult
+        mapView.map = jobResult.offlineMap
+        graphicsOverlay.graphics.clear()
+
+        // disable and remove the button to take the map offline once the offline map is showing
+        takeMapOfflineButton.isEnabled = false
+        takeMapOfflineButton.visibility = View.GONE
+
+        Toast.makeText(
+            this@MainActivity,
+            "Now displaying offline map.",
+            Toast.LENGTH_LONG
+        ).show()
+
+        // close the progress dialog
+        progressDialog.dismiss()
     }
 
     /**
