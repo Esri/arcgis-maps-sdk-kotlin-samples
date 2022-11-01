@@ -26,17 +26,22 @@ import androidx.lifecycle.lifecycleScope
 import arcgisruntime.LoadStatus
 import arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.sample.sampleslib.databinding.ActivitySamplesBinding
-import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.apache.commons.io.FileUtils
+import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class DownloaderActivity : AppCompatActivity() {
@@ -48,17 +53,17 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
     /**
      * Gets the [provisionURL] of the portal item to download at
-     * the [filePath], once download completes it starts the [mainActivity]
+     * the [samplePath], once download completes it starts the [mainActivity]
      */
     fun downloadAndStartSample(
         mainActivity: Intent,
-        filePath: String,
-        provisionURL: String
+        samplePath: String,
+        provisionURLs: List<String>
     ) {
         // start the download manager to automatically add the .mmpk file to the app
         // alternatively, you can use ADB/Device File Explorer
         lifecycleScope.launch {
-            sampleDownloadManager(provisionURL, filePath).collect { loadStatus ->
+            sampleDownloadManager(provisionURLs, samplePath).collect { loadStatus ->
                 if (loadStatus is LoadStatus.Loaded) {
                     // download complete, resuming sample
                     startActivity(Intent(mainActivity))
@@ -84,63 +89,85 @@ abstract class DownloaderActivity : AppCompatActivity() {
      * to re-download the provisioned data.
      */
     private suspend fun sampleDownloadManager(
-        provisionURL: String,
-        destinationPath: String
+        provisionURLs: List<String>,
+        destinationPath: String,
     ): Flow<LoadStatus> = flow {
 
-        // the provision file at the destination
-        val provisionFile = File(destinationPath)
+        // the provision folder at the destination
+        val provisionFolder = File(destinationPath)
 
         // suspends the coroutine until the dialog is resolved.
-        val downloadRequired: Boolean = suspendCancellableCoroutine { downloadRequiredContinuation ->
-            // set up the alert dialog builder
-            val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
-                .setTitle("Download data?")
+        val downloadRequired: Boolean =
+            suspendCancellableCoroutine { downloadRequiredContinuation ->
+                // set up the alert dialog builder
+                val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
+                    .setTitle("Download data?")
 
-            if (provisionFile.exists()) {
-                // file exists, prompt user to download again
-                provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
-                // if user taps "Re-download" data
-                provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->
-                    // dismiss provision dialog question dialog
-                    dialog.dismiss()
-                    // set to should download
-                    downloadRequiredContinuation.resume(true, null)
+                if (provisionFolder.exists()) {
+                    // folder exists, prompt user to download again
+                    provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
+                    // if user taps "Re-download" data
+                    provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->
+                        // dismiss provision dialog question dialog
+                        dialog.dismiss()
+                        // set to should download
+                        downloadRequiredContinuation.resume(true, null)
+                    }
+                    // if user taps "Continue" with existing folder
+                    provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
+                        // dismiss the provision question dialog
+                        dialog.dismiss()
+                        // set to should not download
+                        downloadRequiredContinuation.resume(false, null)
+                    }
                 }
-                // if user taps "Continue" with existing file
-                provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
-                    // dismiss the provision question dialog
-                    dialog.dismiss()
-                    // set to should not download
-                    downloadRequiredContinuation.resume(false, null)
+                // if folder does not exist, ask for download permission
+                else {
+                    // set require provisioning message
+                    provisionQuestionDialog.setMessage(getString(R.string.requires_provisioning))
+                    // if user taps "Download" button
+                    provisionQuestionDialog.setPositiveButton("Download") { dialog, _ ->
+                        // dismiss provision dialog
+                        dialog.dismiss()
+                        // set to should download
+                        downloadRequiredContinuation.resume(true, null)
+                    }
+                    provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
+                        dialog.dismiss()
+                        // close the sample
+                        finish()
+                    }
                 }
+
+                // show the provision question dialog
+                provisionQuestionDialog.show()
             }
-            // if file does not exist, ask for download permission
-            else {
-                // set require provisioning message
-                provisionQuestionDialog.setMessage(getString(R.string.requires_provisioning))
-                // if user taps "Download" button
-                provisionQuestionDialog.setPositiveButton("Download") { dialog, _ ->
-                    // dismiss provision dialog
-                    dialog.dismiss()
-                    // set to should download
-                    downloadRequiredContinuation.resume(true, null)
-                }
-                provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
-                    dialog.dismiss()
-                    // close the sample
-                    finish()
-                }
-            }
 
-            // show the provision question dialog
-            provisionQuestionDialog.show()
-        }
-
-        // Back in coroutine world, we know if the download should happen or not.
+        // check if the download should happen or not.
         if (downloadRequired) {
-            // return the Loaded/FailedToLoad status
-            this.emitAll(downloadPortalItem(provisionURL, provisionFile))
+            // create a list to collect the status of each portal item download
+            val loadStatusResult = mutableListOf<LoadStatus>()
+            // download the portal item for each provisionURL
+            provisionURLs.asFlow().flatMapMerge { downloadPortalItem(it, provisionFolder) }
+                .collect { loadStatus ->
+                    // add the result of each download to the mutable list
+                    loadStatusResult.add(loadStatus)
+                    // check if we have all the results added
+                    if (loadStatusResult.size == provisionURLs.size) {
+                        // loop through to see if download has succeeded
+                        loadStatusResult.forEach {
+                            // emit failed if a download failed
+                            if (it is LoadStatus.FailedToLoad) {
+                                this.emit(it)
+                                return@collect
+                            }
+                        }
+                        // emit Loaded since download succeeded
+                        this.emit(LoadStatus.Loaded)
+                        return@collect
+                    }
+                }
+
         } else {
             // using local data, to returns a loaded signal
             this.emit(LoadStatus.Loaded)
@@ -149,7 +176,6 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
     /**
      * Handles the download process using the [provisionURL] at the [provisionLocation].
-     *
      */
     private fun downloadPortalItem(
         provisionURL: String,
@@ -159,9 +185,6 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
             // build another dialog to show the progress of the download
             val dialogView: View = layoutInflater.inflate(R.layout.download_dialog, null)
-            val progressBar =
-                dialogView.findViewById<LinearProgressIndicator>(R.id.download_spinner)
-            progressBar.setProgress(0, false)
             val loadingBuilder = AlertDialog.Builder(this@DownloaderActivity).apply {
                 setView(dialogView)
                 create()
@@ -176,10 +199,8 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 //re-start sample to show the dialog again
                 this@DownloaderActivity.recreate()
             }
-            // emit loading status
-            emit(LoadStatus.Loading)
             // delete folder/file prior to downloading data
-            provisionLocation.deleteRecursively()
+            FileUtils.cleanDirectory(provisionLocation)
             // get the PortalItem using the provision URL
             val portalItem = PortalItem(provisionURL)
             // load the PortalItem
@@ -202,20 +223,43 @@ abstract class DownloaderActivity : AppCompatActivity() {
             runCatching {
                 val byteArrayInputStream = ByteArrayInputStream(byteArray)
                 val data = ByteArray(1024)
-                var downloadTotal = 0
                 var downloadCount: Int
                 downloadCount = byteArrayInputStream.read(data)
                 while (downloadCount != -1) {
-                    downloadTotal += downloadCount
-                    val progressPercentage = (downloadTotal * 100 / portalItem.size)
                     downloadCount = byteArrayInputStream.read(data)
-                    progressBar.setProgress(progressPercentage.toInt(), true)
                 }
+                // set up the file at the download path
+                val destinationFilePath = provisionLocation.path + File.separator + portalItem.name
+                val provisionFile = File(destinationFilePath)
                 // create file at location to write the PortalItem ByteArray
-                provisionLocation.createNewFile()
+                provisionFile.createNewFile()
                 // create and write the file output stream
-                val fileOutputStream = FileOutputStream(provisionLocation)
-                fileOutputStream.write(byteArray)
+                val writeOutputStream = FileOutputStream(provisionFile)
+                writeOutputStream.write(byteArray)
+
+                // unzip the file if it is a .zip
+                if (portalItem.name.contains(".zip")) {
+                    val fileInputStream = FileInputStream(destinationFilePath)
+                    val zipInputStream = ZipInputStream(BufferedInputStream(fileInputStream))
+                    var zipEntry: ZipEntry? = zipInputStream.nextEntry
+                    val buffer = ByteArray(1024)
+                    while (zipEntry != null) {
+                        val file = File(provisionLocation.path, zipEntry.name)
+                        val fout = FileOutputStream(file)
+                        var count = zipInputStream.read(buffer)
+                        while (count != -1) {
+                            fout.write(buffer, 0, count)
+                            count = zipInputStream.read(buffer)
+                        }
+                        fout.close()
+                        zipInputStream.closeEntry()
+                        zipEntry = zipInputStream.nextEntry
+                    }
+                    zipInputStream.close();
+                    // delete the .zip file, since unzipping is complete
+                    FileUtils.delete(provisionFile)
+                }
+
                 // close dialog and emit status
                 loadingDialog.dismiss()
                 emit(LoadStatus.Loaded)
