@@ -185,28 +185,28 @@ class MainActivity : AppCompatActivity() {
      * Load a feature layer with a local shapefile file
      */
     private suspend fun loadShapefile() {
-        try {
-            // locate the shape file in device
-            val file = File(
-                getExternalFilesDir(null),
-                "/ScottishWildlifeTrust_ReserveBoundaries_20201102.shp"
-            )
-            // create a shapefile feature table from a named bundle resource
-            val shapeFileTable = ShapefileFeatureTable(file.path)
+        // locate the shape file in device
+        val file = File(
+            getExternalFilesDir(null),
+            "/ScottishWildlifeTrust_ReserveBoundaries_20201102.shp"
+        )
+        // create a shapefile feature table from a named bundle resource
+        val shapeFileTable = ShapefileFeatureTable(file.path)
+        shapeFileTable.load().onSuccess {
             // create a feature layer for the shapefile feature table
             val featureLayer = FeatureLayer(shapeFileTable)
             // set the viewpoint to Scotland
             val viewpoint = Viewpoint(56.641344, -3.889066, 6000000.0)
             // set the feature layer on the map
             setFeatureLayer(featureLayer, viewpoint)
-        } catch (e: Exception) {
-            showError("Error loading shapefile: ${e.message}")
+        }.onFailure {
+            showError("Error loading shapefile: ${it.message}")
         }
     }
 
-    private fun showError(message: String?) {
+    private fun showError(message: String) {
         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-        Log.e(TAG, message.toString())
+        Log.e(TAG, message)
     }
 
     /**
