@@ -9,7 +9,7 @@ This script creates a new sample and configures it as a new module in Android St
 
 ### How to use this script
 
-Navigate to the top-level directory of this repository (`/arcgis-runtime-samples-android/`).
+Navigate to the top-level directory of this repository (`arcgis-maps-sdk-kotlin-samples/`).
 
 **Note:** This `.jar` file requires Java 11 installed.
 
@@ -23,7 +23,7 @@ Example:
     $ java -jar tools/NewModuleScript.jar
     Enter Name of the sample with spaces (Eg. "Display New Map"):    
     Display New Map
-    Using repository $USER/../arcgis-runtime-samples-android
+    Using repository $USER/../arcgis-maps-sdk-kotlin-samples
     Sample Successfully Created!
 
 **Note:** The script will generate all the `gradle`, `src` and `res` files needed for  a new sample. You will have to reload `gradle` manually for Android Studio to implement the changes. To do this run:
