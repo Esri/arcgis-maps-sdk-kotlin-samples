@@ -199,8 +199,6 @@ class MainActivity : AppCompatActivity() {
         // create a flow-collector for the job's progress
         lifecycleScope.launch {
             offlineMapJob.progress.collect {
-                //TODO REMOVE
-                Log.e(TAG, offlineMapJob.progress.value.toString())
                 // display the current job's progress value
                 val progressPercentage = offlineMapJob.progress.value
                 progressDialogLayout.progressBar.progress = progressPercentage
@@ -210,21 +208,22 @@ class MainActivity : AppCompatActivity() {
 
         // start the job
         offlineMapJob.start()
-        val jobResult = offlineMapJob.result().getOrElse {
+        offlineMapJob.result().onSuccess {
+            mapView.map = it.offlineMap
+            graphicsOverlay.graphics.clear()
+            // disable and remove the button to take the map offline once the offline map is showing
+            takeMapOfflineButton.isEnabled = false
+            takeMapOfflineButton.visibility = View.GONE
+
+            showMessage("Map saved at: " + offlineMapJob.downloadDirectoryPath)
+
+            // close the progress dialog
+            progressDialog.dismiss()
+        }.onFailure {
             progressDialog.dismiss()
             showMessage(it.message.toString())
-        } as GenerateOfflineMapResult
-        mapView.map = jobResult.offlineMap
-        graphicsOverlay.graphics.clear()
+        }
 
-        // disable and remove the button to take the map offline once the offline map is showing
-        takeMapOfflineButton.isEnabled = false
-        takeMapOfflineButton.visibility = View.GONE
-
-        showMessage("Map saved at: " + offlineMapJob.downloadDirectoryPath)
-
-        // close the progress dialog
-        progressDialog.dismiss()
     }
 
     /**
