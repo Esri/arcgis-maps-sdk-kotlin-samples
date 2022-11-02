@@ -32,7 +32,7 @@
     "Viewpoint"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgisruntime/sample/changeviewpoint/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/MainActivity.kt"
   ],
   "title": "Change viewpoint"
 }

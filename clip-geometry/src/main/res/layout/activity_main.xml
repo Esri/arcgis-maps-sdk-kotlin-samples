@@ -5,9 +5,9 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.esri.arcgisruntime.sample.clipgeometry.MainActivity">
+        tools:context="com.esri.arcgismaps.sample.clipgeometry.MainActivity">
 
-        <arcgisruntime.mapping.view.MapView
+        <com.arcgismaps.mapping.view.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

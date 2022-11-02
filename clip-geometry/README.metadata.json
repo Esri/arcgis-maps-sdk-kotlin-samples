@@ -23,7 +23,7 @@
         "GraphicsOverlay"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgisruntime/sample/clipgeometry/MainActivity.java"
+        "src/main/java/com/esri/arcgismaps/sample/clipgeometry/MainActivity.java"
     ],
     "title": "Clip geometry"
 }
