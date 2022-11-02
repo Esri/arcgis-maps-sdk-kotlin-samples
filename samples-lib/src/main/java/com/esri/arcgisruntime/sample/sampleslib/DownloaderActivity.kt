@@ -95,6 +95,9 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
         // the provision folder at the destination
         val provisionFolder = File(destinationPath)
+        if (!provisionFolder.exists()) {
+            provisionFolder.mkdirs()
+        }
 
         // suspends the coroutine until the dialog is resolved.
         val downloadRequired: Boolean =
@@ -103,7 +106,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
                     .setTitle("Download data?")
 
-                if (provisionFolder.exists()) {
+                if (provisionFolder.list()?.isNotEmpty() == true) {
                     // folder exists, prompt user to download again
                     provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
                     // if user taps "Re-download" data
