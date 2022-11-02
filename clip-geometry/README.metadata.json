@@ -9,7 +9,12 @@
     "keywords": [
         "analysis",
         "clip",
-        "geometry"
+        "geometry",
+        "Envelope",
+        "Geometry",
+        "GeometryEngine.clip",
+        "Graphic",
+        "GraphicsOverlay"
     ],
     "language": "java",
     "redirect_from": [
@@ -23,7 +28,7 @@
         "GraphicsOverlay"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/clipgeometry/MainActivity.java"
+        "src/main/java/com/esri/arcgismaps/sample/clipgeometry/MainActivity.kt"
     ],
     "title": "Clip geometry"
 }
