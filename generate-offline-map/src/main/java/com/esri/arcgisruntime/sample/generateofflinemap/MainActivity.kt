@@ -37,7 +37,6 @@ import arcgisruntime.portal.Portal
 import arcgisruntime.portal.PortalItem
 import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapJob
 import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapParameters
-import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapResult
 import arcgisruntime.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgisruntime.sample.generateofflinemap.databinding.ActivityMainBinding
 import com.esri.arcgisruntime.sample.generateofflinemap.databinding.GenerateOfflineMapDialogLayoutBinding
@@ -135,7 +134,7 @@ class MainActivity : AppCompatActivity() {
      *
      * @param view: the button which calls this function
      */
-    fun generateOfflineMap(view: View) {
+    fun createOfflineMapJob(view: View) {
         // offline map path
         val offlineMapPath = getExternalFilesDir(null)?.path + "/offlineMap"
         // delete any offline map already in the cache
@@ -183,7 +182,7 @@ class MainActivity : AppCompatActivity() {
         }
         // handle offline job loading, error and succeed status
         lifecycleScope.launch {
-            handleOfflineMapJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
+            displayOfflineMapFromJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
         }
     }
 
@@ -191,7 +190,7 @@ class MainActivity : AppCompatActivity() {
      * Initiates, and tracks the result of the [offlineMapJob] while displaying
      * the progress to the [progressDialog]
      */
-    private suspend fun handleOfflineMapJob(
+    private suspend fun displayOfflineMapFromJob(
         offlineMapJob: GenerateOfflineMapJob,
         progressDialogLayout: GenerateOfflineMapDialogLayoutBinding,
         progressDialog: AlertDialog
