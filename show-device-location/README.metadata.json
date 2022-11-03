@@ -27,8 +27,8 @@
         "MapView"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgisruntime/sample/showdevicelocation/MainActivity.kt",
-        "src/main/java/com/esri/arcgisruntime/sample/showdevicelocation/SpinnerAdapter.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/SpinnerAdapter.kt"
     ],
     "title": "Show device location"
 }
