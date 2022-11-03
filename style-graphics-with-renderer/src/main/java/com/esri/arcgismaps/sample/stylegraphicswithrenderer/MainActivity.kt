@@ -14,40 +14,40 @@
  *
  */
 
-package com.esri.arcgisruntime.sample.stylegraphicswithrenderer
+package com.esri.arcgismaps.sample.stylegraphicswithrenderer
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import arcgisruntime.ApiKey
-import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.geometry.AngularUnit
-import arcgisruntime.geometry.CubicBezierSegment
-import arcgisruntime.geometry.EllipticArcSegment
-import arcgisruntime.geometry.GeodesicEllipseParameters
-import arcgisruntime.geometry.Geometry
-import arcgisruntime.geometry.GeometryEngine
-import arcgisruntime.geometry.LinearUnit
-import arcgisruntime.geometry.MutablePart
-import arcgisruntime.geometry.Point
-import arcgisruntime.geometry.Polygon
-import arcgisruntime.geometry.PolygonBuilder
-import arcgisruntime.geometry.PolylineBuilder
-import arcgisruntime.geometry.SpatialReference
-import arcgisruntime.mapping.ArcGISMap
-import arcgisruntime.mapping.BasemapStyle
-import arcgisruntime.mapping.Viewpoint
-import arcgisruntime.mapping.symbology.SimpleFillSymbol
-import arcgisruntime.mapping.symbology.SimpleFillSymbolStyle
-import arcgisruntime.mapping.symbology.SimpleLineSymbol
-import arcgisruntime.mapping.symbology.SimpleLineSymbolStyle
-import arcgisruntime.mapping.symbology.SimpleMarkerSymbol
-import arcgisruntime.mapping.symbology.SimpleMarkerSymbolStyle
-import arcgisruntime.mapping.symbology.SimpleRenderer
-import arcgisruntime.mapping.view.Graphic
-import arcgisruntime.mapping.view.GraphicsOverlay
-import com.esri.arcgisruntime.sample.stylegraphicswithrenderer.databinding.ActivityMainBinding
+import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
+import com.arcgismaps.geometry.AngularUnit
+import com.arcgismaps.geometry.CubicBezierSegment
+import com.arcgismaps.geometry.EllipticArcSegment
+import com.arcgismaps.geometry.GeodesicEllipseParameters
+import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.LinearUnit
+import com.arcgismaps.geometry.MutablePart
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.Polygon
+import com.arcgismaps.geometry.PolygonBuilder
+import com.arcgismaps.geometry.PolylineBuilder
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.SimpleFillSymbol
+import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleRenderer
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.esri.arcgismaps.sample.stylegraphicswithrenderer.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
-        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
         //  add a map with a topographic night basemap style
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         val pointGraphic = Graphic(pointGeometry)
         // red diamond point symbol
         val pointSymbol =
-            SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.RED, 10f)
+            SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.red, 10f)
         // create simple renderer
         val pointRenderer = SimpleRenderer(pointSymbol)
         // create a new graphics overlay with these settings and add it to the map view
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         val lineGraphic = Graphic(lineGeometry.toGeometry())
         // solid blue line symbol
         val lineSymbol =
-            SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.BLUE, 5f)
+            SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 5f)
         // create simple renderer
         val lineRenderer = SimpleRenderer(lineSymbol)
 
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         val polygonGraphic = Graphic(polygonGeometry.toGeometry())
         // solid yellow polygon symbol
         val polygonSymbol =
-            SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.YELLOW, null)
+            SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.yellow, null)
         // create simple renderer
         val polygonRenderer = SimpleRenderer(polygonSymbol)
 
@@ -173,9 +173,9 @@ class MainActivity : AppCompatActivity() {
         // create graphic for polygon
         val polygonGraphic = Graphic(curvedPolygonGeometry)
         // create a simple fill symbol with outline
-        val curvedLineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.BLACK, 1f)
+        val curvedLineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1f)
         val curvedFillSymbol =
-            SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.RED, curvedLineSymbol)
+            SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.red, curvedLineSymbol)
         // create simple renderer
         val polygonRenderer = SimpleRenderer(curvedFillSymbol)
 
@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity() {
         // create an ellipse graphic overlay using the defined polygon
         val ellipseGraphicOverlay = GraphicsOverlay()
         // set the ellipse fill color
-        val ellipseSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.MAGENTA, null)
+        val ellipseSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.magenta, null)
         // add the symbol to the renderer and add it to the graphic overlay
         ellipseGraphicOverlay.renderer = SimpleRenderer(ellipseSymbol)
         ellipseGraphicOverlay.graphics.add(Graphic(polygon))
@@ -288,4 +288,19 @@ class MainActivity : AppCompatActivity() {
         // return the purple ellipse
         return ellipseGraphicOverlay
     }
+
+    private val Color.Companion.blue: Color
+        get() {
+            return fromRgba(0, 0, 255, 255)
+        }
+
+    private val Color.Companion.yellow: Color
+        get() {
+            return fromRgba(255, 255, 0, 255)
+        }
+
+    private val Color.Companion.magenta: Color
+        get() {
+            return fromRgba(255, 0, 255, 255)
+        }
 }
