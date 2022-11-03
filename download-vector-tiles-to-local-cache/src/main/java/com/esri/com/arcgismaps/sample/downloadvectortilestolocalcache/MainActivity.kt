@@ -14,10 +14,9 @@
  *
  */
 
-package com.esri.arcgisruntime.sample.downloadvectortilestolocalcache
+package com.esri.com.arcgismaps.sample.downloadvectortilestolocalcache
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -27,28 +26,29 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import arcgisruntime.ApiKey
-import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.geometry.Envelope
-import arcgisruntime.mapping.ArcGISMap
-import arcgisruntime.mapping.Basemap
-import arcgisruntime.mapping.BasemapStyle
-import arcgisruntime.mapping.Viewpoint
-import arcgisruntime.mapping.ViewpointType
-import arcgisruntime.mapping.layers.vectortiles.ArcGISVectorTiledLayer
-import arcgisruntime.mapping.symbology.SimpleLineSymbol
-import arcgisruntime.mapping.symbology.SimpleLineSymbolStyle
-import arcgisruntime.mapping.view.Graphic
-import arcgisruntime.mapping.view.GraphicsOverlay
-import arcgisruntime.mapping.view.MapView
-import arcgisruntime.mapping.view.ScreenCoordinate
-import arcgisruntime.tasks.JobStatus
-import arcgisruntime.tasks.exportvectortiles.ExportVectorTilesJob
-import arcgisruntime.tasks.exportvectortiles.ExportVectorTilesParameters
-import arcgisruntime.tasks.exportvectortiles.ExportVectorTilesResult
-import arcgisruntime.tasks.exportvectortiles.ExportVectorTilesTask
-import com.esri.arcgisruntime.sample.downloadvectortilestolocalcache.databinding.ActivityMainBinding
-import com.esri.arcgisruntime.sample.downloadvectortilestolocalcache.databinding.ProgressDialogLayoutBinding
+import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
+import com.arcgismaps.geometry.Envelope
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.Basemap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.ViewpointType
+import com.arcgismaps.mapping.layers.vectortiles.ArcGISVectorTiledLayer
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.mapping.view.ScreenCoordinate
+import com.arcgismaps.tasks.JobStatus
+import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesJob
+import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesParameters
+import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesResult
+import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesTask
+import com.esri.com.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ActivityMainBinding
+import com.esri.com.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ProgressDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -100,13 +100,13 @@ class MainActivity : AppCompatActivity() {
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
-        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         // add mapView to the lifecycle
         lifecycle.addObserver(mapView)
 
         // create a graphic to show a red outline square around the vector tiles to be downloaded
         downloadArea = Graphic().apply {
-            symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.RED, 2F)
+            symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
         }
 
         // create a graphics overlay and add the downloadArea graphic
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                 // update the download area's geometry using the current viewpoint
                 updateDownloadAreaGeometry()
                 // create a new export vector tiles task
-                val exportVectorTilesTask = ExportVectorTilesTask(vectorTiledLayer.uri)
+                val exportVectorTilesTask = ExportVectorTilesTask(vectorTiledLayer.uri.toString())
                 val geometry = downloadArea?.geometry
                 if (geometry == null) {
                     showError("Error retrieving download area geometry")
