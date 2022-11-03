@@ -32,8 +32,8 @@
     "Polyline"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgisruntime/sample/showresultofspatialrelationships/MainActivity.kt",
-    "src/main/java/com/esri/arcgisruntime/sample/showresultofspatialrelationships/RelationshipsDialog.kt"
+    "src/main/java/com/esri/arcgismaps/sample/showresultofspatialrelationships/MainActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/showresultofspatialrelationships/RelationshipsDialog.kt"
   ],
   "title": "Show result of spatial relationships"
 }

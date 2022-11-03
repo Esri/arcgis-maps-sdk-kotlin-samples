@@ -35,7 +35,7 @@
         "SimpleMarkerSymbol"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgisruntime/sample/stylegraphicswithsymbols/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/stylegraphicswithsymbols/MainActivity.kt"
     ],
     "title": "Style graphics with symbols"
 }
