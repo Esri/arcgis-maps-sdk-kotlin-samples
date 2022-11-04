@@ -66,6 +66,10 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    private val previewMapView by lazy {
+        activityMainBinding.previewMapView
+    }
+
     private val exportVectorTilesButton: Button by lazy {
         activityMainBinding.exportVectorTilesButton
     }
@@ -82,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         // add mapView to the lifecycle
         lifecycle.addObserver(mapView)
+        lifecycle.addObserver(previewMapView)
 
         // create a graphic to show a red outline square around the vector tiles to be downloaded
         downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
@@ -130,7 +135,7 @@ class MainActivity : AppCompatActivity() {
             val exportVectorTilesTask = ExportVectorTilesTask(vectorTiledLayer.uri.toString())
             val geometry = (downloadArea.geometry)
             if (geometry == null) {
-                showError("Error retrieving download area geometry")
+                showMessage("Error retrieving download area geometry")
                 return@launch
             }
             // set the parameters of the export vector tiles task
@@ -142,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 
             // get the loaded vector tile parameters
             val exportVectorTilesParameters = exportVectorTilesParametersResult.getOrElse {
-                showError(it.message.toString())
+                showMessage(it.message.toString())
             } as ExportVectorTilesParameters
 
             if (isJobFinished) {
@@ -152,7 +157,7 @@ class MainActivity : AppCompatActivity() {
                     exportVectorTilesTask
                 )
             } else {
-                showError("Previous job is cancelling asynchronously")
+                showMessage("Previous job is cancelling asynchronously")
             }
         }
 
@@ -205,9 +210,15 @@ class MainActivity : AppCompatActivity() {
                 exportVectorTilesJob.result().onSuccess {
                     // display the map preview using the result from the completed job
                     showMapPreview(it)
+                    // set job is completed
                     isJobFinished = true
+                    // display the path of the saved vector tiles
+                    showMessage(it.vectorTileCache?.path.toString())
+                    // dismiss loading dialog
+                    dialog?.dismiss()
                 }.onFailure {
-                    showError(it.message.toString())
+                    showMessage(it.message.toString())
+                    dialog?.dismiss()
                 }
             }
 
@@ -234,10 +245,10 @@ class MainActivity : AppCompatActivity() {
                 // use the points to define and return an envelope
                 downloadArea.geometry = Envelope(minPoint, maxPoint)
             } else {
-                showError("Error getting screen coordinate")
+                showMessage("Error getting screen coordinate")
             }
         }?.onFailure {
-            showError(it.message.toString())
+            showMessage(it.message.toString())
         }
     }
 
@@ -252,7 +263,7 @@ class MainActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     // cancels the export job asynchronously
                     exportVectorTilesJob.cancel().getOrElse {
-                        showError(it.message.toString())
+                        showMessage(it.message.toString())
                     }
                     // cancel is completed, so set to true
                     isJobFinished = true
@@ -272,7 +283,7 @@ class MainActivity : AppCompatActivity() {
     private fun showMapPreview(vectorTilesResult: ExportVectorTilesResult) {
         val vectorTileCache = vectorTilesResult.vectorTileCache
         if (vectorTileCache == null) {
-            showError("Cannot find tile cache")
+            showMessage("Cannot find tile cache")
             return
         }
         // get the layer exported for the preview MapView
@@ -280,28 +291,35 @@ class MainActivity : AppCompatActivity() {
             vectorTileCache,
             vectorTilesResult.itemResourceCache
         )
+
+        // control UI visibility
+        previewMapVisibility(true)
+
         // set up the preview MapView
-        mapView.apply {
+        previewMapView.apply {
             map = ArcGISMap(Basemap(vectorTiledLayer))
             mapView.getCurrentViewpoint(ViewpointType.CenterAndScale)?.let { setViewpoint(it) }
         }
-        // control UI visibility
-        previewMapVisibility(true)
         closePreviewButton.setOnClickListener {
             previewMapVisibility(false)
         }
 
     }
 
+    /**
+     * Controls the visibility of the preview map and the export buttons.
+     */
     private fun previewMapVisibility(isVisible: Boolean) = if (isVisible) {
         exportVectorTilesButton.visibility = View.INVISIBLE
         closePreviewButton.visibility = View.VISIBLE
+        previewMapView.visibility = View.VISIBLE
     } else {
         exportVectorTilesButton.visibility = View.VISIBLE
         closePreviewButton.visibility = View.INVISIBLE
+        previewMapView.visibility = View.GONE
     }
 
-    private fun showError(message: String) {
+    private fun showMessage(message: String) {
         Log.e(TAG, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }

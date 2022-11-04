@@ -4,7 +4,7 @@
     "formal_name": "DownloadVectorTilesToLocalCache",
     "ignore": false,
     "images": [
-        "export-vector-tiles.png"
+        "download-vector-tiles-to-local-cache.png"
     ],
     "keywords": [
         "cache",
@@ -19,6 +19,9 @@
         "VectorTileCache"
     ],
     "language": "kotlin",
+    "redirect_from": [
+        "/android/latest/sample-code/download-vector-tiles-to-local-cache.htm"
+    ],
     "relevant_apis": [
         "ArcGISVectorTiledLayer",
         "ExportVectorTilesJob",
@@ -28,7 +31,7 @@
         "VectorTileCache"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgisruntime/sample/exportvectortiles/MainActivity.kt"
+        "/src/main/java/com/esri/com/arcgismaps/sample/downloadvectortilestolocalcache/MainActivity.kt"
     ],
-    "title": "Export vector tiles"
+    "title": "Download vector tiles to local cache"
 }

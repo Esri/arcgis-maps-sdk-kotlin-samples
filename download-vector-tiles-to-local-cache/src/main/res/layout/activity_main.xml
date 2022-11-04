@@ -22,6 +22,16 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <com.arcgismaps.mapping.view.MapView
+                android:id="@+id/previewMapView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/exportVectorTilesButton"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <Button
                 android:id="@+id/exportVectorTilesButton"
                 android:layout_width="match_parent"
