@@ -46,6 +46,13 @@ import java.util.zip.ZipInputStream
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class DownloaderActivity : AppCompatActivity() {
 
+    /**
+     * Returns the location of the download folder based on the [appName]
+     */
+    fun downloadFolder(appName: String): String{
+        return getExternalFilesDir(null)?.path.toString() + File.separator + appName
+    }
+
     // set up data binding for the activity
     private val activitySamplesBinding: ActivitySamplesBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_samples)
@@ -272,8 +279,4 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 emit(LoadStatus.FailedToLoad(it))
             }
         }
-
-    fun downloadFolder(appName: String): String{
-        return getExternalFilesDir(null)?.path.toString() + File.separator + appName
-    }
 }
