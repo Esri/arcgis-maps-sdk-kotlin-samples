@@ -17,7 +17,7 @@ Select a spatial operation from the overflow menu. When an operation is selected
 ## How it works
 
 1.  Create two `GraphicsOverlay`s, one to show polygons and another to show the relationships between them.
-2.  Define a `PointCollection` of each `Geometry`.
+2.  Define a `PolygonBuilder` of each `Geometry`.
 3.  Add the overlapping polygons to a graphics overlay.
 4.  Perform spatial relationships between the polygons by using the appropriate operation:
     * `GeometryEngine.union(geometry1, geometry2)` - This method returns the two geometries united together as one geometry.
