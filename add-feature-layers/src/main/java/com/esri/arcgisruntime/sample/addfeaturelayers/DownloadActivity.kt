@@ -3,7 +3,6 @@ package com.esri.arcgisruntime.sample.addfeaturelayers
 import android.content.Intent
 import android.os.Bundle
 import com.esri.arcgisruntime.sample.sampleslib.DownloaderActivity
-import java.io.File
 
 class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
