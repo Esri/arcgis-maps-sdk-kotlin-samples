@@ -28,10 +28,15 @@ import arcgisruntime.mapping.MobileMapPackage
 import com.esri.arcgisruntime.sample.displaymapfrommobilemappackage.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
+
+    private val provisionPath: String by lazy {
+        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // get the file path of the (.mmpk) file
-        val filePath = getExternalFilesDir(null)?.path + getString(R.string.yellowstone_mmpk)
+        val filePath = provisionPath + getString(R.string.yellowstone_mmpk)
 
         // create the mobile map package
         val mapPackage = MobileMapPackage(filePath)

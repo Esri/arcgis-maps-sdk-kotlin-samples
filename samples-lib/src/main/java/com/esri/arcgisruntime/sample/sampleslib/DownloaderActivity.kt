@@ -46,6 +46,13 @@ import java.util.zip.ZipInputStream
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class DownloaderActivity : AppCompatActivity() {
 
+    /**
+     * Returns the location of the download folder based on the [appName]
+     */
+    private fun getDownloadFolder(appName: String): String{
+        return getExternalFilesDir(null)?.path.toString() + File.separator + appName
+    }
+
     // set up data binding for the activity
     private val activitySamplesBinding: ActivitySamplesBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_samples)
@@ -53,13 +60,15 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
     /**
      * Gets the [provisionURL] of the portal item to download at
-     * the [samplePath], once download completes it starts the [mainActivity]
+     * the [sampleName], once download completes it starts the [mainActivity]
      */
     fun downloadAndStartSample(
         mainActivity: Intent,
-        samplePath: String,
+        sampleName: String,
         provisionURLs: List<String>
     ) {
+        // get the path to download files
+        val samplePath: String = getDownloadFolder(sampleName)
         // start the download manager to automatically add the .mmpk file to the app
         // alternatively, you can use ADB/Device File Explorer
         lifecycleScope.launch {
@@ -95,6 +104,9 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
         // the provision folder at the destination
         val provisionFolder = File(destinationPath)
+        if (!provisionFolder.exists()) {
+            provisionFolder.mkdirs()
+        }
 
         // suspends the coroutine until the dialog is resolved.
         val downloadRequired: Boolean =
@@ -103,8 +115,8 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
                     .setTitle("Download data?")
 
-                if (provisionFolder.exists()) {
-                    // folder exists, prompt user to download again
+                if (provisionFolder.list()?.isNotEmpty() == true) {
+                    // folder is not empty, prompt user to download again
                     provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
                     // if user taps "Re-download" data
                     provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->

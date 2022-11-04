@@ -57,6 +57,10 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    private val provisionPath: String by lazy {
+        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
+    }
+
     // enum to keep track of the selected source to display the feature layer
     enum class FeatureLayerSource(val menuPosition: Int) {
         SERVICE_FEATURE_TABLE(0),
@@ -134,8 +138,7 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun loadGeodatabase() {
         // locate the .geodatabase file in the device
-        val geodatabaseFile =
-            File(getExternalFilesDir(null), getString(R.string.geodatabase_la_trails))
+        val geodatabaseFile = File(provisionPath, getString(R.string.geodatabase_la_trails))
         // instantiate the geodatabase with the file path
         val geodatabase = Geodatabase(geodatabaseFile.path)
         // load the geodatabase
@@ -163,7 +166,7 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun loadGeopackage() {
         // locate the .gpkg file in the device
-        val geopackageFile = File(getExternalFilesDir(null), "/AuroraCO.gpkg")
+        val geopackageFile = File(provisionPath, "/AuroraCO.gpkg")
         // instantiate the geopackage with the file path
         val geoPackage = GeoPackage(geopackageFile.path)
         // load the geopackage
@@ -187,7 +190,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun loadShapefile() {
         // locate the shape file in device
         val file = File(
-            getExternalFilesDir(null),
+            provisionPath,
             "/ScottishWildlifeTrust_ReserveBoundaries_20201102.shp"
         )
         // create a shapefile feature table from a named bundle resource
