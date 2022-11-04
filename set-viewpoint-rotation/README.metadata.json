@@ -22,7 +22,7 @@
     "MapView"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgisruntime/sample/setviewpointrotation/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/setviewpointrotation/MainActivity.kt"
   ],
   "title": "Set viewpoint rotation"
 }

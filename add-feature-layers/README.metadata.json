@@ -37,8 +37,8 @@
         "ShapefileFeatureTable"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgisruntime/sample/addfeaturelayers/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgisruntime/sample/addfeaturelayers/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/MainActivity.kt"
     ],
     "title": "Add feature layers"
 }

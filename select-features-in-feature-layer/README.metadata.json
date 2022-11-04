@@ -26,7 +26,7 @@
     "ServiceFeatureTable"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgisruntime/sample/selectfeaturesinfeaturelayer/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/selectfeaturesinfeaturelayer/MainActivity.kt"
   ],
   "title": "Select features in feature layer"
 }
