@@ -25,8 +25,8 @@ class DownloadActivity : DownloaderActivity() {
         super.onCreate(savedInstanceState)
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
-            // get the download path of the sample
-            getExternalFilesDir(null)?.path.toString(),
+            // get the app name of the sample
+            getString(R.string.app_name),
             listOf(
                 // ArcGIS Portal item containing the .mmpk mobile map package
                 "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
