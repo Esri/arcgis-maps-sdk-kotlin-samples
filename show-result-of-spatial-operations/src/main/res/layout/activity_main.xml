@@ -12,15 +12,16 @@
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottomMenu"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
+            android:id="@+id/bottomMenu"
             android:layout_margin="10dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:hint="@string/select_spatial_operation"
@@ -29,13 +30,12 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <AutoCompleteTextView
-                android:id="@+id/selector"
+                android:id="@+id/bottomListItems"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:labelFor="@id/textInputLayout"
+                android:labelFor="@id/bottomListItems"
                 android:layout_weight="1"
-                android:inputType="none"
-                tools:text="Happy" />
+                android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,8 +24,10 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
+import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.MutablePart
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.PointBuilder
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.PolygonBuilder
 import com.arcgismaps.geometry.SpatialReference
@@ -44,13 +46,34 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
+    // set up data binding for the activity
+    private val activityMainBinding: ActivityMainBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.activity_main)
+    }
+
+    private val mapView by lazy {
+        activityMainBinding.mapView
+    }
+
+    // enum to keep track of the selected operation to display on the map
+    enum class SpatialOperation(val menuPosition: Int) {
+        NO_OPERATION(0),
+        INTERSECTION(1),
+        UNION(2),
+        DIFFERENCE(3),
+        SYMMETRIC_DIFFERENCE(4)
+    }
+
+    // create the graphic overlays
     private val inputGeometryGraphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
     private val resultGeometryGraphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
     // simple black line symbol for outlines
     private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1f)
+    // red fill symbol for result
     private val resultFillSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.red, lineSymbol)
 
+    // the two polygons for perform spatial operations
     private lateinit var inputPolygon1: Polygon
     private lateinit var inputPolygon2: Polygon
 
@@ -60,21 +83,18 @@ class MainActivity : AppCompatActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
-        // set up data binding for the activity
-        val activityMainBinding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
-        val mapView = activityMainBinding.mapView
-        val spinnerSelector = activityMainBinding.selector
         lifecycle.addObserver(mapView)
 
         // set up the adapter
-        val arrayAdapter =
-            ArrayAdapter(this, R.layout.dropdown_item, resources.getStringArray(R.array.operation))
-        spinnerSelector.setAdapter(arrayAdapter)
-        // set the first item to be selected by default
-        spinnerSelector.setText(arrayAdapter.getItem(0), false);
-
+        val arrayAdapter = ArrayAdapter(
+            this, R.layout.dropdown_item, resources.getStringArray(R.array.operation)
+        )
+        activityMainBinding.bottomListItems.apply {
+            setAdapter(arrayAdapter)
+            setOnItemClickListener { _, _, i, _ ->
+                updateGeometry(i)
+            }
+        }
 
         // set up the MapView
         mapView.apply {
@@ -89,13 +109,46 @@ class MainActivity : AppCompatActivity() {
         createPolygons()
 
         // center the map view on the input geometries
-        val envelope = inputPolygon1.extent
-        lifecycleScope.launch{
+        val envelope = GeometryEngine.union(inputPolygon1, inputPolygon2)?.extent
+        lifecycleScope.launch {
             if (envelope != null) {
                 mapView.setViewpointGeometry(envelope, 20.0)
             }
         }
+    }
 
+    private fun updateGeometry(position: Int) {
+        // clear previous operation result
+        resultGeometryGraphicsOverlay.graphics.clear()
+        // create a result geometry of the spatial operation
+        var resultGeometry: Geometry? = null
+        // get the selected operation
+        when (SpatialOperation.values().find { it.menuPosition == position }) {
+            SpatialOperation.NO_OPERATION -> {/* No operation needed */ }
+            SpatialOperation.INTERSECTION -> {
+                resultGeometry = GeometryEngine.intersection(inputPolygon1, inputPolygon2)
+            }
+            SpatialOperation.UNION -> {
+                resultGeometry = GeometryEngine.union(inputPolygon1, inputPolygon2)
+            }
+            SpatialOperation.DIFFERENCE -> {
+                resultGeometry = GeometryEngine.difference(inputPolygon1, inputPolygon2)
+            }
+            SpatialOperation.SYMMETRIC_DIFFERENCE -> {
+                resultGeometry = GeometryEngine.symmetricDifference(inputPolygon1, inputPolygon2)
+            }
+            null -> {}
+        }
+
+        // add a graphic from the result geometry, showing result in red
+        if (resultGeometry != null) {
+            val resultGraphic = Graphic(resultGeometry, resultFillSymbol).also {
+                // select the result to highlight it
+                it.isSelected = true
+            }
+            // add the result graphic to the graphic overlay
+            resultGeometryGraphicsOverlay.graphics.add(resultGraphic)
+        }
     }
 
     private fun createPolygons() {
@@ -108,27 +161,36 @@ class MainActivity : AppCompatActivity() {
             addPoint(Point(-14660.0, 6710000.0))
             addPoint(Point(-13960.0, 6709400.0))
         }
-        inputPolygon1 = polygonBuilder1.toGeometry() as Polygon
+        inputPolygon1 = polygonBuilder1.toGeometry()
 
         // create and add a blue graphic to show input polygon 1
         val blueFill = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.blue, lineSymbol)
         inputGeometryGraphicsOverlay.graphics.add(Graphic(inputPolygon1, blueFill))
 
-        val outerRing = PointBuilder(SpatialReference.webMercator()) {
-            this.
-
+        // outer ring
+        val outerRing = MutablePart(SpatialReference.webMercator()).apply {
+            addPoint(Point(-13060.0, 6711030.0))
+            addPoint(Point(-12160.0, 6710730.0))
+            addPoint(Point(-13160.0, 6709700.0))
+            addPoint(Point(-14560.0, 6710730.0))
+            addPoint(Point(-13060.0, 6711030.0))
         }
 
-        /*
-        // create a mutable part list
-        val heartParts = MutablePart(spatialReference).apply {
-            addAll(
-                listOf(leftCurve, leftArc, rightArc, rightCurve)
-            )
+        // inner ring
+        val innerRing = MutablePart(SpatialReference.webMercator()).apply {
+            addPoint(Point(-13060.0, 6710910.0))
+            addPoint(Point(-12450.0, 6710660.0))
+            addPoint(Point(-13160.0, 6709900.0))
+            addPoint(Point(-14160.0, 6710630.0))
+            addPoint(Point(-13060.0, 6710910.0))
         }
-        // return the heart
-        return Polygon(listOf(heartParts).asIterable())
-        */
+
+        // add both parts (rings) to a polygon and create a geometry from it
+        inputPolygon2 = Polygon(listOf(outerRing, innerRing))
+
+        // create and add a green graphic to show input polygon 2
+        val greenFill = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.green, lineSymbol)
+        inputGeometryGraphicsOverlay.graphics.add(Graphic(inputPolygon2, greenFill))
     }
 
     private val Color.Companion.blue: Color
