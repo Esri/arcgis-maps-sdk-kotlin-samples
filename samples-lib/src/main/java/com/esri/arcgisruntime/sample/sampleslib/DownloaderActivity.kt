@@ -60,13 +60,15 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
     /**
      * Gets the [provisionURL] of the portal item to download at
-     * the [samplePath], once download completes it starts the [mainActivity]
+     * the [sampleName], once download completes it starts the [mainActivity]
      */
     fun downloadAndStartSample(
         mainActivity: Intent,
-        samplePath: String,
+        sampleName: String,
         provisionURLs: List<String>
     ) {
+        // get the path to download files
+        val samplePath: String = downloadFolder(sampleName)
         // start the download manager to automatically add the .mmpk file to the app
         // alternatively, you can use ADB/Device File Explorer
         lifecycleScope.launch {
