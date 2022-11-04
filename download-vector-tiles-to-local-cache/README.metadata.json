@@ -31,7 +31,7 @@
         "VectorTileCache"
     ],
     "snippets": [
-        "/src/main/java/com/esri/com/arcgismaps/sample/downloadvectortilestolocalcache/MainActivity.kt"
+        "src/main/java/com/esri/com/arcgismaps/sample/downloadvectortilestolocalcache/MainActivity.kt"
     ],
     "title": "Download vector tiles to local cache"
 }
