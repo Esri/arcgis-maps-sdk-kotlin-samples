@@ -49,7 +49,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
     /**
      * Returns the location of the download folder based on the [appName]
      */
-    fun downloadFolder(appName: String): String{
+    private fun getDownloadFolder(appName: String): String{
         return getExternalFilesDir(null)?.path.toString() + File.separator + appName
     }
 
@@ -68,7 +68,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
         provisionURLs: List<String>
     ) {
         // get the path to download files
-        val samplePath: String = downloadFolder(sampleName)
+        val samplePath: String = getDownloadFolder(sampleName)
         // start the download manager to automatically add the .mmpk file to the app
         // alternatively, you can use ADB/Device File Explorer
         lifecycleScope.launch {
