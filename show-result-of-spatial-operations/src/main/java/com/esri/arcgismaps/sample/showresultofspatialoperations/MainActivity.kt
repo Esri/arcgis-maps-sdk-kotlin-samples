@@ -14,29 +14,30 @@
  *
  */
 
-package com.esri.arcgisruntime.sample.showresultofspatialoperations
+package com.esri.arcgismaps.sample.showresultofspatialoperations
 
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import arcgisruntime.ApiKey
-import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.geometry.Point
-import arcgisruntime.geometry.Polygon
-import arcgisruntime.geometry.PolygonBuilder
-import arcgisruntime.geometry.SpatialReference
-import arcgisruntime.mapping.ArcGISMap
-import arcgisruntime.mapping.BasemapStyle
-import arcgisruntime.mapping.symbology.SimpleFillSymbol
-import arcgisruntime.mapping.symbology.SimpleFillSymbolStyle
-import arcgisruntime.mapping.symbology.SimpleLineSymbol
-import arcgisruntime.mapping.symbology.SimpleLineSymbolStyle
-import arcgisruntime.mapping.view.Graphic
-import arcgisruntime.mapping.view.GraphicsOverlay
-import com.esri.arcgisruntime.sample.showresultofspatialoperations.databinding.ActivityMainBinding
+import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.PointBuilder
+import com.arcgismaps.geometry.Polygon
+import com.arcgismaps.geometry.PolygonBuilder
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.symbology.SimpleFillSymbol
+import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.esri.arcgismaps.sample.showresultofspatialoperations.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -47,8 +48,8 @@ class MainActivity : AppCompatActivity() {
     private val resultGeometryGraphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
     // simple black line symbol for outlines
-    private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.BLACK, 1f)
-    private val resultFillSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.RED, lineSymbol)
+    private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1f)
+    private val resultFillSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.red, lineSymbol)
 
     private lateinit var inputPolygon1: Polygon
     private lateinit var inputPolygon2: Polygon
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
-        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         // set up data binding for the activity
         val activityMainBinding: ActivityMainBinding =
@@ -99,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createPolygons() {
         // create input polygon 1
-        val polygonBuilder1 = PolygonBuilder(SpatialReference.webMercator()).apply {
+        val polygonBuilder1 = PolygonBuilder(SpatialReference.webMercator()) {
             // add points to the point collection
             addPoint(Point(-13160.0, 6710100.0))
             addPoint(Point(-13300.0, 6710500.0))
@@ -110,10 +111,28 @@ class MainActivity : AppCompatActivity() {
         inputPolygon1 = polygonBuilder1.toGeometry() as Polygon
 
         // create and add a blue graphic to show input polygon 1
-        val blueFill = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.BLUE, lineSymbol)
+        val blueFill = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.blue, lineSymbol)
         inputGeometryGraphicsOverlay.graphics.add(Graphic(inputPolygon1, blueFill))
 
-        //TODO
-        // Figure out of multi part builder is implemented?
+        val outerRing = PointBuilder(SpatialReference.webMercator()) {
+            this.
+
+        }
+
+        /*
+        // create a mutable part list
+        val heartParts = MutablePart(spatialReference).apply {
+            addAll(
+                listOf(leftCurve, leftArc, rightArc, rightCurve)
+            )
+        }
+        // return the heart
+        return Polygon(listOf(heartParts).asIterable())
+        */
     }
+
+    private val Color.Companion.blue: Color
+        get() {
+            return fromRgba(0, 0, 255, 255)
+        }
 }
