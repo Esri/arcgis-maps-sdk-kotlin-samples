@@ -21,9 +21,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -40,9 +38,7 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.ScreenCoordinate
-import com.arcgismaps.tasks.JobStatus
 import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesJob
 import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesParameters
 import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesResult
@@ -57,8 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    private var downloadArea: Graphic? = null
-    private var exportVectorTilesJob: ExportVectorTilesJob? = null
+    private val downloadArea: Graphic = Graphic()
     private var dialog: AlertDialog? = null
     private var isJobFinished: Boolean = true
 
@@ -71,28 +66,12 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val mapPreviewLayout: ConstraintLayout by lazy {
-        activityMainBinding.mapPreviewLayout
-    }
-
     private val exportVectorTilesButton: Button by lazy {
         activityMainBinding.exportVectorTilesButton
     }
 
-    private val previewMapView: MapView by lazy {
-        activityMainBinding.previewMapView
-    }
-
-    private val dimBackground: View by lazy {
-        activityMainBinding.dimBackground
-    }
-
-    private val closeButton: Button by lazy {
-        activityMainBinding.closeButton
-    }
-
-    private val previewTextView: TextView by lazy {
-        activityMainBinding.previewTextView
+    private val closePreviewButton: Button by lazy {
+        activityMainBinding.closePreviewButton
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,13 +84,11 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create a graphic to show a red outline square around the vector tiles to be downloaded
-        downloadArea = Graphic().apply {
-            symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
-        }
+        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
 
         // create a graphics overlay and add the downloadArea graphic
         val graphicsOverlay = GraphicsOverlay().apply {
-            graphics.add(downloadArea!!)
+            graphics.add(downloadArea)
         }
 
         mapView.apply {
@@ -132,67 +109,60 @@ class MainActivity : AppCompatActivity() {
                     updateDownloadAreaGeometry()
                 }
             }
-            launch {
-                // when the map has loaded, create a vector tiled layer from the basemap and export the tiles
-                mapView.map?.load()?.getOrElse {
-                    showError(it.message.toString())
-                }
-                // check that the layer from the basemap is a vector tiled layer
-                val vectorTiledLayer =
-                    mapView.map?.basemap?.value?.baseLayers?.get(0) as ArcGISVectorTiledLayer
-                handleExportButton(vectorTiledLayer)
-            }
         }
 
     }
 
     /**
-     * Sets up the ExportVectorTilesTask using the [vectorTiledLayer]
-     * on export button click. Then call handleExportVectorTilesJob()
+     * Sets up the ExportVectorTilesTask on export button click.
+     * Then calls handleExportVectorTilesJob()
      */
-    private fun handleExportButton(vectorTiledLayer: ArcGISVectorTiledLayer) {
-        exportVectorTilesButton.setOnClickListener {
-            // the max scale parameter is set to 10% of the map's scale so the
-            // number of tiles exported are within the vector tiled layer's max tile export limit
-            lifecycleScope.launch {
-                // update the download area's geometry using the current viewpoint
-                updateDownloadAreaGeometry()
-                // create a new export vector tiles task
-                val exportVectorTilesTask = ExportVectorTilesTask(vectorTiledLayer.uri.toString())
-                val geometry = downloadArea?.geometry
-                if (geometry == null) {
-                    showError("Error retrieving download area geometry")
-                    return@launch
-                }
-                val exportVectorTilesParametersFuture = exportVectorTilesTask
-                    .createDefaultExportVectorTilesParameters(
-                        geometry,
-                        mapView.mapScale.value * 0.1
-                    )
-
-                val exportVectorTilesParameters = exportVectorTilesParametersFuture.getOrElse {
-                    showError(it.message.toString())
-                } as ExportVectorTilesParameters
-
-                if (isJobFinished) {
-                    // create a job to export vector tiles
-                    handleExportVectorTilesJob(
-                        exportVectorTilesParameters,
-                        exportVectorTilesTask
-                    )
-                } else {
-                    showError("Previous job is cancelling asynchronously")
-                }
+    fun exportButtonClick(view: View) {
+        // check that the layer from the basemap is a vector tiled layer
+        val vectorTiledLayer =
+            mapView.map?.basemap?.value?.baseLayers?.get(0) as ArcGISVectorTiledLayer
+        // the max scale parameter is set to 10% of the map's scale so the
+        // number of tiles exported are within the vector tiled layer's max tile export limit
+        lifecycleScope.launch {
+            // update the download area's geometry using the current viewpoint
+            updateDownloadAreaGeometry()
+            // create a new export vector tiles task
+            val exportVectorTilesTask = ExportVectorTilesTask(vectorTiledLayer.uri.toString())
+            val geometry = (downloadArea.geometry)
+            if (geometry == null) {
+                showError("Error retrieving download area geometry")
+                return@launch
             }
+            // set the parameters of the export vector tiles task
+            val exportVectorTilesParametersResult = exportVectorTilesTask
+                .createDefaultExportVectorTilesParameters(
+                    geometry,
+                    mapView.mapScale.value * 0.1
+                )
 
+            // get the loaded vector tile parameters
+            val exportVectorTilesParameters = exportVectorTilesParametersResult.getOrElse {
+                showError(it.message.toString())
+            } as ExportVectorTilesParameters
+
+            if (isJobFinished) {
+                // create a job to export vector tiles
+                initiateExportTilesJob(
+                    exportVectorTilesParameters,
+                    exportVectorTilesTask
+                )
+            } else {
+                showError("Previous job is cancelling asynchronously")
+            }
         }
+
     }
 
     /**
      * Start the export vector tiles job using [exportVectorTilesTask] and the
      * [exportVectorTilesParameters]. The vector tile package is exported as "file.vtpk"
      */
-    private fun handleExportVectorTilesJob(
+    private fun initiateExportTilesJob(
         exportVectorTilesParameters: ExportVectorTilesParameters,
         exportVectorTilesTask: ExportVectorTilesTask
     ) {
@@ -202,64 +172,45 @@ class MainActivity : AppCompatActivity() {
         resDir.deleteRecursively()
         resDir.mkdir()
 
-        // inflate the progress dialog
-        val dialogLayoutBinding = createProgressDialog()
-
         // create a job with the export vector tile parameters
         // and exports the vector tile package as "file.vtpk"
-        exportVectorTilesJob = exportVectorTilesTask.exportVectorTiles(
+        val exportVectorTilesJob = exportVectorTilesTask.exportVectorTiles(
             exportVectorTilesParameters,
             vtpkFile.absolutePath, resDir.absolutePath
         ).apply {
             // start the export vector tile cache job
             start()
-            // since job is now started, set to false
-            isJobFinished = false
-            // display the progress dialog
-            dialog?.show()
         }
+
+        // inflate the progress dialog
+        val dialogLayoutBinding = createProgressDialog(exportVectorTilesJob)
+        // display the progress dialog
+        dialog?.show()
+        // since job is now started, set to false
+        isJobFinished = false
 
         // set the value of the job's progress
-        lifecycleScope.launch {
-            exportVectorTilesJob?.progress?.collect{
-                val progress = exportVectorTilesJob?.progress?.value ?: 0
-                dialogLayoutBinding.progressBar.progress = progress
-                dialogLayoutBinding.progressTextView.text = "$progress% completed"
-                Log.e(TAG,progress.toString())
-            }
-
-        }
-
-        // display map if job succeeds
-        lifecycleScope.launch {
-            exportVectorTilesJob?.status?.collect {
-                when (it) {
-                    JobStatus.Canceling -> Log.e("Status","Cancelling")
-                    JobStatus.Failed -> Log.e("Status","Failed")
-                    JobStatus.NotStarted -> Log.e("Status","NotStarted")
-                    JobStatus.Paused -> Log.e("Status","Paused")
-                    JobStatus.Started -> Log.e("Status","Started")
-                    JobStatus.Succeeded -> Log.e("Status","Succeeded")
+        lifecycleScope.apply {
+            // collect the progress of the job
+            launch {
+                exportVectorTilesJob.progress.collect {
+                    val progress = exportVectorTilesJob.progress.value
+                    dialogLayoutBinding.progressBar.progress = progress
+                    dialogLayoutBinding.progressTextView.text = "$progress% completed"
+                    Log.e(TAG, progress.toString())
                 }
-                if (it is JobStatus.Succeeded) {
-                    // get the result of the job
-                    Log.e(TAG,"1")
-                    val exportVectorTilesResult =
-                        exportVectorTilesJob?.result()?.getOrElse { error ->
-                            Log.e(TAG,"2")
-                            showError(error.message.toString())
-                            return@collect
-                        } as ExportVectorTilesResult
-
-                    Log.e(TAG,"3")
+            }
+            // display map if job succeeds
+            launch {
+                exportVectorTilesJob.result().onSuccess {
                     // display the map preview using the result from the completed job
-                    //showMapPreview(exportVectorTilesResult)
-                    Log.e(TAG,"4")
-                } else if (it is JobStatus.Failed) {
-                    Log.e(TAG,"5")
-                    showError("Failed to load the export tiles job")
+                    showMapPreview(it)
+                    isJobFinished = true
+                }.onFailure {
+                    showError(it.message.toString())
                 }
             }
+
         }
     }
 
@@ -281,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             val maxPoint = mapView.screenToLocation(maxScreenPoint)
             if (minPoint != null && maxPoint != null) {
                 // use the points to define and return an envelope
-                downloadArea?.geometry = Envelope(minPoint, maxPoint)
+                downloadArea.geometry = Envelope(minPoint, maxPoint)
             } else {
                 showError("Error getting screen coordinate")
             }
@@ -293,14 +244,14 @@ class MainActivity : AppCompatActivity() {
     /**
      * Create a progress dialog to track the progress of the [exportVectorTilesJob]
      */
-    private fun createProgressDialog(): ProgressDialogLayoutBinding {
+    private fun createProgressDialog(exportVectorTilesJob: ExportVectorTilesJob): ProgressDialogLayoutBinding {
         val dialogLayoutBinding = ProgressDialogLayoutBinding.inflate(layoutInflater)
         val dialogBuilder = AlertDialog.Builder(this@MainActivity).apply {
             setTitle("Exporting vector tiles")
             setNegativeButton("Cancel job") { _, _ ->
                 lifecycleScope.launch {
                     // cancels the export job asynchronously
-                    exportVectorTilesJob?.cancel()?.getOrElse {
+                    exportVectorTilesJob.cancel().getOrElse {
                         showError(it.message.toString())
                     }
                     // cancel is completed, so set to true
@@ -330,51 +281,25 @@ class MainActivity : AppCompatActivity() {
             vectorTilesResult.itemResourceCache
         )
         // set up the preview MapView
-        previewMapView.apply {
+        mapView.apply {
             map = ArcGISMap(Basemap(vectorTiledLayer))
             mapView.getCurrentViewpoint(ViewpointType.CenterAndScale)?.let { setViewpoint(it) }
         }
         // control UI visibility
-        previewMapView.getChildAt(0).visibility = View.VISIBLE
-        show(closeButton, dimBackground, previewTextView, previewMapView)
-        exportVectorTilesButton.visibility = View.GONE
-
-        // required for some Android devices running older OS (combats Z-ordering bug in Android API)
-        mapPreviewLayout.bringToFront()
-    }
-
-    /**
-     * Makes the given views in the UI visible.
-     * @param views the views to be made visible
-     */
-    private fun show(vararg views: View) {
-        for (view in views) {
-            view.visibility = View.VISIBLE
+        previewMapVisibility(true)
+        closePreviewButton.setOnClickListener {
+            previewMapVisibility(false)
         }
+
     }
 
-    /**
-     * Makes the given views in the UI visible.
-     * @param views the views to be made visible
-     */
-    private fun hide(vararg views: View) {
-        for (view in views) {
-            view.visibility = View.INVISIBLE
-        }
+    private fun previewMapVisibility(isVisible: Boolean) = if (isVisible) {
+        exportVectorTilesButton.visibility = View.INVISIBLE
+        closePreviewButton.visibility = View.VISIBLE
+    } else {
+        exportVectorTilesButton.visibility = View.VISIBLE
+        closePreviewButton.visibility = View.INVISIBLE
     }
-
-    /**
-     * Called when close preview MapView is clicked
-     */
-    fun clearPreview(view: View) {
-        // control UI visibility
-        hide(closeButton, dimBackground, previewTextView, previewMapView)
-        show(exportVectorTilesButton, mapView)
-        downloadArea?.isVisible = true
-        // required for some Android devices running older OS (combats Z-ordering bug in Android API)
-        mapView.bringToFront()
-    }
-
 
     private fun showError(message: String) {
         Log.e(TAG, message)
