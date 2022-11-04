@@ -46,7 +46,6 @@ public class ScriptMain {
             createFilesAndFolders();
             deleteUnwantedFiles();
             updateSampleContent();
-            //updateSettingsGradle();
         }catch (Exception e){
             exitProgram(e);
         }
@@ -207,28 +206,6 @@ public class ScriptMain {
             exitProgram(e);
         }
     }
-
-    /**
-     * Updates settings.gradle to reflect the new sample.
-     */
-    private void updateSettingsGradle() {
-        File file = new File(samplesRepoPath + "/kotlin/settings.gradle");
-        try {
-            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            while(fileContent.charAt(fileContent.length()-1) != '\'')
-                fileContent = fileContent.substring(0,fileContent.length()-1);
-
-            String newSampleModified = ",\r\n        ':"+sampleWithHyphen+"'\r\n";
-
-            //Adds the new sample to the end
-            fileContent = fileContent + newSampleModified;
-            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            exitProgram(e);
-        }
-    }
-
 
     /**
      * Needed only for debugging purposes

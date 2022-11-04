@@ -95,7 +95,7 @@ def parse_provision_from(offline_data_string: str) -> typing.List[str]:
 
 def parse_provision_to(offline_data_string: str) -> typing.List[str]:
 
-    to_matches = re.findall("`adb push (.*) /Android", offline_data_string)
+    to_matches = re.findall("adb push (.*) /Android", offline_data_string)
     for i, match in enumerate(to_matches):
         to_matches[i] = "/" + match
 
