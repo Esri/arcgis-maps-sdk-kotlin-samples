@@ -107,7 +107,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                     .setTitle("Download data?")
 
                 if (provisionFolder.list()?.isNotEmpty() == true) {
-                    // folder exists, prompt user to download again
+                    // folder is not empty, prompt user to download again
                     provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
                     // if user taps "Re-download" data
                     provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->
@@ -272,4 +272,8 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 emit(LoadStatus.FailedToLoad(it))
             }
         }
+
+    fun downloadFolder(appName: String): String{
+        return getExternalFilesDir(null)?.path.toString() + File.separator + appName
+    }
 }

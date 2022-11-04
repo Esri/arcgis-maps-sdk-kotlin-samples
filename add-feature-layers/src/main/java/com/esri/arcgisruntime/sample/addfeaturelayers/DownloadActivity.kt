@@ -8,13 +8,10 @@ import java.io.File
 class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val downloadFolder = File(
-            getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
-        )
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the download path of the sample
-            downloadFolder.path,
+            downloadFolder(getString(R.string.app_name)),
             listOf(
                 // ArcGIS Portal item containing the .mmpk mobile map package
                 "https://www.arcgis.com/home/item.html?id=2b0f9e17105847809dfeb04e3cad69e0",
