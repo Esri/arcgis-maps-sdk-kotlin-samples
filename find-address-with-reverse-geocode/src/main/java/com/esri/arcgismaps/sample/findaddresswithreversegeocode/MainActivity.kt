@@ -36,11 +36,9 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
-
 import com.esri.arcgismaps.sample.findaddresswithreversegeocode.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -57,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    // display the city of the tapped location
+    // display the street of the tapped location
     private val titleTV by lazy {
         activityMainBinding.titleTV
     }
@@ -65,6 +63,11 @@ class MainActivity : AppCompatActivity() {
     // display the metro area of the tapped location
     private val descriptionTV by lazy {
         activityMainBinding.descriptionTV
+    }
+
+    // set the pin graphic for tapped location
+    private val pinSymbol by lazy {
+        createPinSymbol()
     }
 
     // create a graphics overlay
@@ -95,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
+            // load geocode locator task
             locatorTask.load().getOrElse {
                 showError(it.message.toString())
             }
@@ -108,32 +112,19 @@ class MainActivity : AppCompatActivity() {
      * and finds address with reverse geocode
      */
     private suspend fun geoViewTapped(onSingleTapConfirmed: SharedFlow<SingleTapConfirmedEvent>) {
-        // clear existing graphics
-        graphicsOverlay.graphics.clear()
-
-        //add a graphic for the tapped point
-        val pinSymbol = PictureMarkerSymbol(
-            ContextCompat.getDrawable(
-                this,
-                R.drawable.ic_baseline_pin_24
-            ) as BitmapDrawable
-        )
-        pinSymbol.apply {
-            // resize the dimensions of the symbol
-            width = 60f
-            height = 60f
-            // the image is a pin so offset the image so that the pinpoint
-            // is on the point rather than the image's true center.
-            leaderOffsetX = 30f
-            offsetY = 14f
-        }
         // collect map tapped event
         onSingleTapConfirmed.collect { event ->
             // get map point tapped, return if null
             val mapPoint = event.mapPoint ?: return@collect
-            // add a graphic for the tapped point
+            // create graphic for tapped point
             val pinGraphic = Graphic(mapPoint, pinSymbol)
-            graphicsOverlay.graphics.add(pinGraphic)
+
+            graphicsOverlay.graphics.apply {
+                // clear existing graphics
+                clear()
+                // add the pin graphic
+                add(pinGraphic)
+            }
             // normalize the geometry - needed if the user crosses the international date line.
             val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
             // reverse geocode to get address
@@ -142,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             } as List<GeocodeResult>
             // get the first result
             val address = addresses.first()
-            // use the city and region for the title
+            // use the street and region for the title
             val title = address.attributes["Address"].toString()
             // use the metro area for the description details
             val description = "${address.attributes["City"]} " +
@@ -154,10 +145,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Create a picture marker symbol to represent a pin at the tapped location
+     */
+    private fun createPinSymbol(): PictureMarkerSymbol {
+        // get pin drawable
+        val pinDrawable = ContextCompat.getDrawable(
+            this,
+            R.drawable.baseline_location_pin_red_48
+        )
+        //add a graphic for the tapped point
+        val pinSymbol = PictureMarkerSymbol(
+            pinDrawable as BitmapDrawable
+        )
+        pinSymbol.apply {
+            // resize the dimensions of the symbol
+            width = 50f
+            height = 50f
+            // the image is a pin so offset the image so that the pinpoint
+            // is on the point rather than the image's true center.
+            leaderOffsetX = 30f
+            offsetY = 25f
+        }
+        return pinSymbol
+    }
 
     private fun showError(errorMessage: String) {
         Log.e(TAG, errorMessage)
         Snackbar.make(mapView, errorMessage, Snackbar.LENGTH_SHORT).show()
     }
 }
-
