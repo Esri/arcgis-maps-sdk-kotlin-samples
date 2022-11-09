@@ -33,7 +33,7 @@ import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.ViewpointType
-import com.arcgismaps.mapping.layers.vectortiles.ArcGISVectorTiledLayer
+import com.arcgismaps.mapping.layers.ArcGISVectorTiledLayer
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
         mapView.apply {
             // set the map to BasemapType navigation night
-            map = ArcGISMap(BasemapStyle.ArcGISStreetsNight)
+            map = ArcGISMap(BasemapStyle.)
             // disable rotation
             rotation = 0F
             // set the viewpoint of the sample to ESRI Redlands, CA campus
@@ -115,7 +115,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     /**
