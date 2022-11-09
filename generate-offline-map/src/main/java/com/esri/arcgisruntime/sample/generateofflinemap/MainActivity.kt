@@ -26,6 +26,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import arcgisruntime.ApiKey
 import arcgisruntime.ArcGISRuntimeEnvironment
+import arcgisruntime.LoadStatus
 import arcgisruntime.geometry.Envelope
 import arcgisruntime.mapping.ArcGISMap
 import arcgisruntime.mapping.symbology.SimpleLineSymbol
@@ -81,49 +82,45 @@ class MainActivity : AppCompatActivity() {
         val portal = Portal(getString(R.string.portal_url), false)
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
-        val map = ArcGISMap(portalItem).apply {
-            lifecycleScope.launch {
-                load().getOrElse {
-                    showMessage(it.message.toString())
-                }
-                // limit the map scale to the largest layer scale
-                maxScale = operationalLayers[6].maxScale
-                minScale = operationalLayers[6].minScale
-            }
-        }
-
-
         // create a symbol to show a box around the extent we want to download
         downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.RED, 2F)
         // add the graphic to the graphics overlay when it is created
         graphicsOverlay.graphics.add(downloadArea)
-
-        mapView.apply {
-            // set the map to the map view
-            this.map = map
-            // add the graphics overlay to the map view when it is created
-            graphicsOverlays.add(graphicsOverlay)
-            // update the download area box whenever the viewpoint changes
-            lifecycleScope.launch {
-                viewpointChanged.collect {
-                    // upper left corner of the area to take offline
-                    val minScreenPoint = ScreenCoordinate(200.0, 200.0)
-                    // lower right corner of the downloaded area
-                    val maxScreenPoint = ScreenCoordinate(
-                        width - 200.0,
-                        height - 200.0
-                    )
-                    // convert screen points to map points
-                    val minPoint = screenToLocation(minScreenPoint)
-                    val maxPoint = screenToLocation(maxScreenPoint)
-                    // use the points to define and return an envelope
-                    if (minPoint != null && maxPoint != null) {
-                        val envelope = Envelope(minPoint, maxPoint)
-                        downloadArea.geometry = envelope
-                        // enable the take map offline button only after the map is loaded
-                        if (!takeMapOfflineButton.isEnabled)
-                            takeMapOfflineButton.isEnabled = true
-                    }
+        val map = ArcGISMap(portalItem)
+        lifecycleScope.launch {
+            map.load()
+                .onFailure {
+                    showMessage(it.message.toString())
+                }
+                .onSuccess {
+                    // limit the map scale to the largest layer scale
+                    map.maxScale = map.operationalLayers[6].maxScale
+                    map.minScale = map.operationalLayers[6].minScale
+                    // set the map to the map view
+                    mapView.map = map
+                    // add the graphics overlay to the map view when it is created
+                    mapView.graphicsOverlays.add(graphicsOverlay)
+                }
+        }
+        lifecycleScope.launch {
+            mapView.viewpointChanged.collect {
+                // upper left corner of the area to take offline
+                val minScreenPoint = ScreenCoordinate(200.0, 200.0)
+                // lower right corner of the downloaded area
+                val maxScreenPoint = ScreenCoordinate(
+                    mapView.width - 200.0,
+                    mapView.height - 200.0
+                )
+                // convert screen points to map points
+                val minPoint = mapView.screenToLocation(minScreenPoint)
+                val maxPoint = mapView.screenToLocation(maxScreenPoint)
+                // use the points to define and return an envelope
+                if (minPoint != null && maxPoint != null) {
+                    val envelope = Envelope(minPoint, maxPoint)
+                    downloadArea.geometry = envelope
+                    // enable the take map offline button only after the map is loaded
+                    if (!takeMapOfflineButton.isEnabled && map.loadStatus.value is LoadStatus.Loaded)
+                        takeMapOfflineButton.isEnabled = true
                 }
             }
         }
