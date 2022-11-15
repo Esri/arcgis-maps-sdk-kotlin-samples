@@ -16,6 +16,8 @@
 
 package com.esri.arcgismaps.sample.rendermultilayersymbols
 
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +26,6 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Point
@@ -59,6 +60,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -103,12 +105,10 @@ class MainActivity : AppCompatActivity() {
 
         // add graphics with simple vector marker symbol elements (MultilayerPoint Simple Markers on app UI)
         val solidFillSymbolLayer = SolidFillSymbolLayer(Color.red)
-        val multilayerPolygonSymbol =
-            MultilayerPolygonSymbol(listOf(solidFillSymbolLayer))
+        val multilayerPolygonSymbol = MultilayerPolygonSymbol(listOf(solidFillSymbolLayer))
         val solidStrokeSymbolLayer =
             SolidStrokeSymbolLayer(1.0, Color.red, listOf(DashGeometricEffect()))
-        val multilayerPolylineSymbol =
-            MultilayerPolylineSymbol(listOf(solidStrokeSymbolLayer))
+        val multilayerPolylineSymbol = MultilayerPolylineSymbol(listOf(solidStrokeSymbolLayer))
 
         // define vector element for a diamond, triangle and cross
         val diamondGeometry =
@@ -125,55 +125,43 @@ class MainActivity : AppCompatActivity() {
 
         // add red diamond graphic
         addGraphicsWithVectorMarkerSymbolElements(
-            multilayerPolygonSymbol,
-            diamondGeometry,
-            0.0
+            multilayerPolygonSymbol, diamondGeometry, 0.0
         )
         // add red triangle graphic
         addGraphicsWithVectorMarkerSymbolElements(
-            multilayerPolygonSymbol,
-            triangleGeometry,
-            offset
+            multilayerPolygonSymbol, triangleGeometry, offset
         )
         // add red cross graphic
         addGraphicsWithVectorMarkerSymbolElements(
-            multilayerPolylineSymbol,
-            crossGeometry,
-            2 * offset
+            multilayerPolylineSymbol, crossGeometry, 2 * offset
         )
 
         // create line marker symbols
         // similar to SimpleLineSymbolStyle.SHORTDASHDOTDOT
         addLineGraphicsWithMarkerSymbols(
-            listOf(4.0, 6.0, 0.5, 6.0, 0.5, 6.0),
-            0.0
+            listOf(4.0, 6.0, 0.5, 6.0, 0.5, 6.0), 0.0
         )
         // similar to SimpleLineSymbolStyle.SHORTDASH
         addLineGraphicsWithMarkerSymbols(
-            listOf(4.0, 6.0),
-            offset
+            listOf(4.0, 6.0), offset
         )
         // similar to SimpleLineSymbolStyle.DASHDOTDOT
         addLineGraphicsWithMarkerSymbols(
-            listOf(7.0, 9.0, 0.5, 9.0),
-            2 * offset
+            listOf(7.0, 9.0, 0.5, 9.0), 2 * offset
         )
 
         // create polygon marker symbols
         // cross-hatched diagonal lines
         addPolygonGraphicsWithMarkerSymbols(
-            listOf(-45.0, 45.0),
-            0.0
+            listOf(-45.0, 45.0), 0.0
         )
         // hatched diagonal lines
         addPolygonGraphicsWithMarkerSymbols(
-            listOf(-45.0),
-            offset
+            listOf(-45.0), offset
         )
         // hatched vertical lines
         addPolygonGraphicsWithMarkerSymbols(
-            listOf(90.0),
-            2 * offset
+            listOf(90.0), 2 * offset
         )
 
         // define vector element for a hexagon which will be used as the basis of a complex point
@@ -196,20 +184,16 @@ class MainActivity : AppCompatActivity() {
                 Graphic(
                     Point(-150.0, 50.0, SpatialReference.wgs84()),
                     getTextSymbol("MultilayerPoint\nSimple Markers")
-                ),
-                Graphic(
+                ), Graphic(
                     Point(-80.0, 50.0, SpatialReference.wgs84()),
                     getTextSymbol("MultilayerPoint\nPicture Markers")
-                ),
-                Graphic(
+                ), Graphic(
                     Point(0.0, 50.0, SpatialReference.wgs84()),
                     getTextSymbol("Multilayer\nPolyline")
-                ),
-                Graphic(
+                ), Graphic(
                     Point(65.0, 50.0, SpatialReference.wgs84()),
                     getTextSymbol("Multilayer\nPolygon")
-                ),
-                Graphic(
+                ), Graphic(
                     Point(130.0, 50.0, SpatialReference.wgs84()),
                     getTextSymbol("Multilayer\nComplex Symbols")
                 )
@@ -222,11 +206,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getTextSymbol(text: String): TextSymbol {
         val textSymbol = TextSymbol(
-            text,
-            Color.black,
-            10F,
-            HorizontalAlignment.Center,
-            VerticalAlignment.Middle
+            text, Color.black, 10F, HorizontalAlignment.Center, VerticalAlignment.Middle
         )
         // give the text symbol a white background
         textSymbol.backgroundColor = Color.white
@@ -238,10 +218,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun addImageGraphics() {
         // URI of image to display
-        val bluePinImageURI =
-            "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Recreation/FeatureServer/0/images/e82f744ebb069bb35b234b3fea46deae/blue_pin.png"
+        val blueTentImageURI =
+            "https://static.arcgis.com/images/Symbols/OutdoorRecreation/Camping.png"
         // load the PictureMarkerSymbolLayer using the image URI
-        val pictureMarkerFromUri = PictureMarkerSymbolLayer(bluePinImageURI)
+        val pictureMarkerFromUri = PictureMarkerSymbolLayer(blueTentImageURI)
 
         lifecycleScope.launch {
             pictureMarkerFromUri.load().getOrElse {
@@ -249,43 +229,15 @@ class MainActivity : AppCompatActivity() {
             }
             // add loaded layer to the map
             addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromUri, 0.0)
-
-            val localCachePath = cacheDir.toString() + File.separator + getString(R.string.blue_pin)
-            // load blue pin from assets into cache directory
-            copyFileFromAssetsToCache(localCachePath)
-            // load the PictureMarkerSymbolLayer using the image using local cache
-            val pictureMarkerFromCache = PictureMarkerSymbolLayer(localCachePath)
+            // load blue pin from as a bitmap
+            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin);
+            // load the PictureMarkerSymbolLayer using the bitmap drawable
+            val pictureMarkerFromCache = PictureMarkerSymbolLayer(BitmapDrawable(resources, bitmap))
             pictureMarkerFromCache.load().getOrElse {
-                showError("Picture marker symbol layer failed to load from cache: ${it.message}")
+                showError("Picture marker symbol layer failed to load from bitmap: ${it.message}")
             }
             // add loaded layer to the map
-            addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromCache, 20.0)
-        }
-    }
-
-    /**
-     * Copy the given file from the app's assets folder to the app's cache directory.
-     * @param localCachePath as String.
-     */
-    private fun copyFileFromAssetsToCache(localCachePath: String) {
-        val assetManager = applicationContext.assets
-        val file = File(localCachePath)
-        if (!file.exists()) {
-            try {
-                val fileIn = assetManager.open(getString(R.string.blue_pin))
-                val fileOut: OutputStream =
-                    FileOutputStream(localCachePath)
-                val buffer = ByteArray(1024)
-                var read = fileIn.read(buffer)
-                while (read != -1) {
-                    fileOut.write(buffer, 0, read)
-                    read = fileIn.read(buffer)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error writing to cache. " + e.message)
-            }
-        } else {
-            Log.i(TAG, "File already in cache.")
+            addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromCache, 40.0)
         }
     }
 
@@ -298,8 +250,7 @@ class MainActivity : AppCompatActivity() {
      *
      */
     private fun addGraphicFromPictureMarkerSymbolLayer(
-        pictureMarkerSymbolLayer: PictureMarkerSymbolLayer,
-        offset: Double
+        pictureMarkerSymbolLayer: PictureMarkerSymbolLayer, offset: Double
     ) {
         lifecycleScope.launch {
             // wait for the picture marker symbol layer to load and check it has loaded
@@ -308,8 +259,7 @@ class MainActivity : AppCompatActivity() {
             }
             // set the size of the layer and create a new multilayer point symbol from it
             pictureMarkerSymbolLayer.size = 40.0
-            val multilayerPointSymbol =
-                MultilayerPointSymbol(listOf(pictureMarkerSymbolLayer))
+            val multilayerPointSymbol = MultilayerPointSymbol(listOf(pictureMarkerSymbolLayer))
             // create location for the symbol
             val point = Point(-80.0, 20.0 - offset, SpatialReference.wgs84())
 
@@ -327,9 +277,7 @@ class MainActivity : AppCompatActivity() {
      * [offset] the value used to keep a consistent distance between symbols in the same column.
      */
     private fun addGraphicsWithVectorMarkerSymbolElements(
-        multilayerSymbol: MultilayerSymbol,
-        geometry: Geometry,
-        offset: Double
+        multilayerSymbol: MultilayerSymbol, geometry: Geometry, offset: Double
     ) {
         // define a vector element and create a new multilayer point symbol from it
         val vectorMarkerSymbolElement = VectorMarkerSymbolElement(geometry, multilayerSymbol)
@@ -353,9 +301,7 @@ class MainActivity : AppCompatActivity() {
         val dashGeometricEffect = DashGeometricEffect(dashSpacing)
         // create stroke used by line symbols
         val solidStrokeSymbolLayer = SolidStrokeSymbolLayer(
-            3.0,
-            Color.red,
-            listOf(dashGeometricEffect)
+            3.0, Color.red, listOf(dashGeometricEffect)
         ).apply {
             capStyle = StrokeSymbolLayerCapStyle.Round
         }
@@ -369,8 +315,7 @@ class MainActivity : AppCompatActivity() {
         // create a polyline graphic with geometry using the symbol created above, and add it to the graphics overlay
         graphicsOverlay.graphics.add(
             Graphic(
-                polylineBuilder.toGeometry(),
-                multilayerPolylineSymbol
+                polylineBuilder.toGeometry(), multilayerPolylineSymbol
             )
         )
     }
@@ -390,8 +335,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // create a stroke symbol layer to be used by patterns
-        val strokeForHatches =
-            SolidStrokeSymbolLayer(2.0, Color.red, listOf(DashGeometricEffect()))
+        val strokeForHatches = SolidStrokeSymbolLayer(2.0, Color.red, listOf(DashGeometricEffect()))
 
         // create a stroke symbol layer to be used as an outline for aforementioned patterns
         val strokeForOutline =
@@ -403,8 +347,7 @@ class MainActivity : AppCompatActivity() {
         // for each angle, create a symbol layer using the pattern stroke, with hatched lines at the given angle
         for (i in angles.indices) {
             val hatchFillSymbolLayer = HatchFillSymbolLayer(
-                MultilayerPolylineSymbol(listOf(strokeForHatches)),
-                angles[i]
+                MultilayerPolylineSymbol(listOf(strokeForHatches)), angles[i]
             )
             // define separation distance for lines and add them to the symbol layer array
             hatchFillSymbolLayer.separation = 9.0
@@ -431,12 +374,9 @@ class MainActivity : AppCompatActivity() {
             getLayerForComplexPoint(Color.cyan, Color.blue, 11.0)
         val blackSquareVectorMarkerLayer: VectorMarkerSymbolLayer =
             getLayerForComplexPoint(Color.black, Color.cyan, 6.0)
-        val purpleSquareVectorMarkerLayer: VectorMarkerSymbolLayer =
-            getLayerForComplexPoint(
-                Color.transparent,
-                Color.magenta,
-                14.0
-            )
+        val purpleSquareVectorMarkerLayer: VectorMarkerSymbolLayer = getLayerForComplexPoint(
+            Color.transparent, Color.magenta, 14.0
+        )
 
         // set anchors for marker layers
         orangeSquareVectorMarkerLayer.anchor =
@@ -448,11 +388,9 @@ class MainActivity : AppCompatActivity() {
 
         // create a yellow hexagon with a black outline
         val yellowFillLayer = SolidFillSymbolLayer(Color.yellow)
-        val blackOutline =
-            SolidStrokeSymbolLayer(2.0, Color.black, listOf(DashGeometricEffect()))
+        val blackOutline = SolidStrokeSymbolLayer(2.0, Color.black, listOf(DashGeometricEffect()))
         val hexagonVectorElement = VectorMarkerSymbolElement(
-            complexPointGeometry,
-            MultilayerPolylineSymbol(listOf(yellowFillLayer, blackOutline))
+            complexPointGeometry, MultilayerPolylineSymbol(listOf(yellowFillLayer, blackOutline))
         )
         val hexagonVectorMarkerLayer = VectorMarkerSymbolLayer(listOf(hexagonVectorElement)).apply {
             size = 35.0
@@ -482,26 +420,20 @@ class MainActivity : AppCompatActivity() {
      * @return the vector marker symbol layer.
      */
     private fun getLayerForComplexPoint(
-        fillColor: Color,
-        outlineColor: Color,
-        size: Double
+        fillColor: Color, outlineColor: Color, size: Double
     ): VectorMarkerSymbolLayer {
         // create the fill layer and outline
         val fillLayer = SolidFillSymbolLayer(fillColor)
         val outline = SolidStrokeSymbolLayer(
-            2.0,
-            outlineColor,
-            listOf(DashGeometricEffect())
+            2.0, outlineColor, listOf(DashGeometricEffect())
         )
         // create a geometry from an envelope
         val geometry = Envelope(
-            Point(-0.5, -0.5, SpatialReference.wgs84()),
-            Point(0.5, 0.5, SpatialReference.wgs84())
+            Point(-0.5, -0.5, SpatialReference.wgs84()), Point(0.5, 0.5, SpatialReference.wgs84())
         )
         //create a symbol element using the geometry, fill layer, and outline
         val vectorMarkerSymbolElement = VectorMarkerSymbolElement(
-            geometry,
-            MultilayerPolygonSymbol(listOf(fillLayer, outline))
+            geometry, MultilayerPolygonSymbol(listOf(fillLayer, outline))
         )
         // create a symbol layer containing just the above symbol element, set its size, and return it
         val vectorMarkerSymbolLayer =
@@ -528,8 +460,7 @@ class MainActivity : AppCompatActivity() {
         // created above and add it to the graphics overlay
         graphicsOverlay.graphics.add(
             Graphic(
-                polygonBuilder.toGeometry(),
-                multilayerPolygonSymbol
+                polygonBuilder.toGeometry(), multilayerPolygonSymbol
             )
         )
     }
@@ -547,8 +478,7 @@ class MainActivity : AppCompatActivity() {
         // create the multilayer polyline graphic with geometry using the symbols created above and add it to the graphics overlay
         graphicsOverlay.graphics.add(
             Graphic(
-                polylineBuilder.toGeometry(),
-                multilayerPolylineSymbol
+                polylineBuilder.toGeometry(), multilayerPolylineSymbol
             )
         )
     }
@@ -561,28 +491,21 @@ class MainActivity : AppCompatActivity() {
     private fun getLayersForComplexPolys(includeRedFill: Boolean): List<SymbolLayer> {
         // create a black dash effect
         val blackDashes = SolidStrokeSymbolLayer(
-            1.0,
-            Color.black,
-            listOf(DashGeometricEffect(listOf(5.0, 3.0)))
+            1.0, Color.black, listOf(DashGeometricEffect(listOf(5.0, 3.0)))
         ).apply {
             capStyle = StrokeSymbolLayerCapStyle.Square
         }
 
         // create a black outline
-        val blackOutline =
-            SolidStrokeSymbolLayer(
-                7.0,
-                Color.black,
-                listOf(DashGeometricEffect())
-            ).apply {
-                capStyle = StrokeSymbolLayerCapStyle.Round
-            }
+        val blackOutline = SolidStrokeSymbolLayer(
+            7.0, Color.black, listOf(DashGeometricEffect())
+        ).apply {
+            capStyle = StrokeSymbolLayerCapStyle.Round
+        }
 
         // create a yellow stroke inside
         val yellowStroke = SolidStrokeSymbolLayer(
-            5.0,
-            Color.yellow,
-            listOf(DashGeometricEffect())
+            5.0, Color.yellow, listOf(DashGeometricEffect())
         ).apply {
             capStyle = StrokeSymbolLayerCapStyle.Round
         }
