@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
         mapView.apply {
             // set the map to BasemapType navigation night
-            map = ArcGISMap(BasemapStyle.)
+            map = ArcGISMap(BasemapStyle.ArcGISStreetsNight)
             // disable rotation
             rotation = 0F
             // set the viewpoint of the sample to ESRI Redlands, CA campus
