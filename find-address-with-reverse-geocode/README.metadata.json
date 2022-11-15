@@ -1,5 +1,5 @@
 {
-    "category": "Search & Query",
+    "category": "Search and Query",
     "description": "Use an online service to find the address for a tapped point.",
     "formal_name": "FindAddressWithReverseGeocode",
     "ignore": false,
