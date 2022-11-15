@@ -79,10 +79,12 @@ class MainActivity : AppCompatActivity() {
     private val tappedLocationGraphic = Graphic().apply {
         symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.magenta, 15f)
     }
+
     // create graphic symbol of the nearest coordinate
     private val nearestCoordinateGraphic = Graphic().apply {
         symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.red, 10f)
     }
+
     // create graphic symbol of the nearest vertex
     private val nearestVertexGraphic = Graphic().apply {
         symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.blue, 15f)
@@ -155,19 +157,19 @@ class MainActivity : AppCompatActivity() {
             tappedLocationGraphic.geometry = mapPoint
             // use the geometry engine to get the nearest vertex, return if null
             val nearestVertexResult =
-                GeometryEngine.nearestVertex(polygon, mapPoint) ?: return@collect
+                GeometryEngine.nearestVertex(polygon, mapPoint)
             // set the nearest vertex graphic's geometry to the nearest vertex
-            nearestVertexGraphic.geometry = nearestVertexResult.coordinate
+            nearestVertexGraphic.geometry = nearestVertexResult?.coordinate
             // use the geometry engine to get the nearest coordinate, return if null
             val nearestCoordinateResult =
-                GeometryEngine.nearestCoordinate(polygon, mapPoint) ?: return@collect
+                GeometryEngine.nearestCoordinate(polygon, mapPoint)
             // set the nearest coordinate graphic's geometry to the nearest coordinate
-            nearestCoordinateGraphic.geometry = nearestCoordinateResult.coordinate
+            nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
             // show the distances to the nearest vertex and nearest coordinate
             distanceLayout.visibility = View.VISIBLE
             // convert distance to miles
-            val vertexDistance = (nearestVertexResult.distance / 5280.0).toInt()
-            val coordinateDistance = (nearestCoordinateResult.distance / 5280.0).toInt()
+            val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()
+            val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()
             // set the distance to the text views
             vertexDistanceTextView.text = getString(R.string.nearest_vertex, vertexDistance)
             coordinateDistanceTextView.text =
