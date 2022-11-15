@@ -13,7 +13,7 @@ A renderer allows you to change the style of all graphics in an overlay by only 
 Run the sample and view graphics for points, lines, and polygons, which are stylized using renderers.
 
 ## How it works
-``
+
 1. Create a `GraphicsOverlay` and add it to the `MapView`.
 2. Create a `Graphic`, specifying only a `Geometry`.
 3. Create a single `Symbol` such as a `SimpleMarkerSymbol`.
