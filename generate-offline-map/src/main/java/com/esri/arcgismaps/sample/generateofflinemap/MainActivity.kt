@@ -14,33 +14,33 @@
  *
  */
 
-package com.esri.arcgisruntime.sample.generateofflinemap
+package com.esri.arcgismaps.sample.generateofflinemap
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import arcgisruntime.ApiKey
-import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.LoadStatus
-import arcgisruntime.geometry.Envelope
-import arcgisruntime.mapping.ArcGISMap
-import arcgisruntime.mapping.symbology.SimpleLineSymbol
-import arcgisruntime.mapping.symbology.SimpleLineSymbolStyle
-import arcgisruntime.mapping.view.Graphic
-import arcgisruntime.mapping.view.GraphicsOverlay
-import arcgisruntime.mapping.view.ScreenCoordinate
-import arcgisruntime.portal.Portal
-import arcgisruntime.portal.PortalItem
-import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapJob
-import arcgisruntime.tasks.offlinemaptask.GenerateOfflineMapParameters
-import arcgisruntime.tasks.offlinemaptask.OfflineMapTask
-import com.esri.arcgisruntime.sample.generateofflinemap.databinding.ActivityMainBinding
-import com.esri.arcgisruntime.sample.generateofflinemap.databinding.GenerateOfflineMapDialogLayoutBinding
+import com.arcgismaps.ApiKey
+import com.arcgismaps.LoadStatus
+import com.arcgismaps.geometry.Envelope
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.ScreenCoordinate
+import com.arcgismaps.portal.Portal
+import com.arcgismaps.portal.PortalItem
+import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
+import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
+import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
+import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
+import com.esri.arcgismaps.sample.generateofflinemap.databinding.ActivityMainBinding
+import com.esri.arcgismaps.sample.generateofflinemap.databinding.GenerateOfflineMapDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
-        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         // add mapView to the lifecycle
         lifecycle.addObserver(mapView)
 
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
         // create a symbol to show a box around the extent we want to download
-        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.RED, 2F)
+        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
         // add the graphic to the graphics overlay when it is created
         graphicsOverlay.graphics.add(downloadArea)
         val map = ArcGISMap(portalItem)
