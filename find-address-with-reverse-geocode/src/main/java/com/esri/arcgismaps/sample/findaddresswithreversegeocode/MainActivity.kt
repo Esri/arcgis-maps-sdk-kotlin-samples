@@ -128,20 +128,21 @@ class MainActivity : AppCompatActivity() {
             // normalize the geometry - needed if the user crosses the international date line.
             val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
             // reverse geocode to get address
-            val addresses = locatorTask.reverseGeocode(normalizedPoint).getOrElse {
+            locatorTask.reverseGeocode(normalizedPoint).onSuccess { addresses ->
+                // get the first result
+                val address = addresses.first()
+                // use the street and region for the title
+                val title = address.attributes["Address"].toString()
+                // use the metro area for the description details
+                val description = "${address.attributes["City"]} " +
+                        "${address.attributes["Region"]} " +
+                        "${address.attributes["CountryCode"]}"
+                // set the strings to the text views
+                titleTV.text = title
+                descriptionTV.text = description
+            }.onFailure {
                 showError(it.message.toString())
-            } as List<GeocodeResult>
-            // get the first result
-            val address = addresses.first()
-            // use the street and region for the title
-            val title = address.attributes["Address"].toString()
-            // use the metro area for the description details
-            val description = "${address.attributes["City"]} " +
-                    "${address.attributes["Region"]} " +
-                    "${address.attributes["CountryCode"]}"
-            // set the strings to the text views
-            titleTV.text = title
-            descriptionTV.text = description
+            }
         }
     }
 
