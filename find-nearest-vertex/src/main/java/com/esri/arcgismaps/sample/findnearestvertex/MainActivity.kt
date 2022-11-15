@@ -79,9 +79,11 @@ class MainActivity : AppCompatActivity() {
     private val tappedLocationGraphic = Graphic().apply {
         symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.magenta, 15f)
     }
+    // create graphic symbol of the nearest coordinate
     private val nearestCoordinateGraphic = Graphic().apply {
         symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.red, 10f)
     }
+    // create graphic symbol of the nearest vertex
     private val nearestVertexGraphic = Graphic().apply {
         symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.blue, 15f)
     }
@@ -102,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
+        // set up the outline and fill color of the polygon
         val polygonOutlineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
         val polygonFillSymbol = SimpleFillSymbol(
             SimpleFillSymbolStyle.ForwardDiagonal,
@@ -109,7 +112,6 @@ class MainActivity : AppCompatActivity() {
             polygonOutlineSymbol
         )
         val polygonGraphic = Graphic(polygon, polygonFillSymbol)
-
         // create a graphics overlay to show the polygon, tapped location, and nearest vertex/coordinate
         val graphicsOverlay = GraphicsOverlay().apply {
             graphics.addAll(
@@ -122,7 +124,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        // create a map using the PortalItem
+        // create a map using the portal item
         val map = ArcGISMap(statePlaneCaliforniaZone5SpatialReference)
         val portal = Portal("https://arcgisruntime.maps.arcgis.com", false)
         val portalItem = PortalItem(portal, "99fd67933e754a1181cc755146be21ca")
@@ -142,11 +144,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Collects events from [onSingleTapConfirmed] of the map and finds the nearest vertex
+     */
     private suspend fun findNearestVertex(onSingleTapConfirmed: SharedFlow<SingleTapConfirmedEvent>) {
         onSingleTapConfirmed.collect { event ->
             // get map point tapped, return if null
             val mapPoint = event.mapPoint ?: return@collect
-
             // show where the user clicked
             tappedLocationGraphic.geometry = mapPoint
             // use the geometry engine to get the nearest vertex, return if null
@@ -161,8 +165,10 @@ class MainActivity : AppCompatActivity() {
             nearestCoordinateGraphic.geometry = nearestCoordinateResult.coordinate
             // show the distances to the nearest vertex and nearest coordinate
             distanceLayout.visibility = View.VISIBLE
+            // convert distance to miles
             val vertexDistance = (nearestVertexResult.distance / 5280.0).toInt()
             val coordinateDistance = (nearestCoordinateResult.distance / 5280.0).toInt()
+            // set the distance to the text views
             vertexDistanceTextView.text = getString(R.string.nearest_vertex, vertexDistance)
             coordinateDistanceTextView.text =
                 getString(R.string.nearest_coordinate, coordinateDistance)
