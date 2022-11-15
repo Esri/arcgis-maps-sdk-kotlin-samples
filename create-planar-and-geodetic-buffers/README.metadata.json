@@ -27,7 +27,7 @@
     "GraphicsOverlay"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgisruntime/sample/createplanarandgeodeticbuffers/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/createplanarandgeodeticbuffers/MainActivity.kt"
   ],
   "title": "Create planar and geodetic buffers"
 }

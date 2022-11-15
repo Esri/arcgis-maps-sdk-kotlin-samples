@@ -5,7 +5,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.esri.arcgisruntime.sample.cutgeometry"
+        applicationId "com.esri.arcgismaps.sample.cutgeometry"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode

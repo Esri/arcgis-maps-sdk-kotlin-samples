@@ -28,8 +28,8 @@
     "MobileMapPackage"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgisruntime/sample/displaymapfrommobilemappackage/DownloadActivity.kt",
-    "src/main/java/com/esri/arcgisruntime/sample/displaymapfrommobilemappackage/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/DownloadActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/MainActivity.kt"
   ],
   "title": "Display map from mobile map package"
 }
