@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        //  add a map with a topographic night basemap style
+        //  add a map with a topographic basemap style
         mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
         mapView.setViewpoint(Viewpoint(15.169193, 16.333479, 100000000.0))
 
@@ -113,12 +113,12 @@ class MainActivity : AppCompatActivity() {
      */
     private fun renderedLineGraphicsOverlay(): GraphicsOverlay {
         // create line
-        val lineGeometry = PolylineBuilder(SpatialReference.webMercator()).apply {
+        val lineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
             addPoint(-10e5, 40e5)
             addPoint(20e5, 50e5)
         }
         // create graphic for polyline
-        val lineGraphic = Graphic(lineGeometry.toGeometry())
+        val lineGraphic = Graphic(lineBuilder.toGeometry())
         // solid blue line symbol
         val lineSymbol =
             SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 5f)
@@ -139,14 +139,14 @@ class MainActivity : AppCompatActivity() {
      */
     private fun renderedPolygonGraphicsOverlay(): GraphicsOverlay {
         // create polygon
-        val polygonGeometry = PolygonBuilder(SpatialReference.webMercator()).apply {
+        val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()).apply {
             addPoint(-20e5, 20e5)
             addPoint(20e5, 20e5)
             addPoint(20e5, -20e5)
             addPoint(-20e5, -20e5)
         }
         // create graphic for polygon
-        val polygonGraphic = Graphic(polygonGeometry.toGeometry())
+        val polygonGraphic = Graphic(polygonBuilder.toGeometry())
         // solid yellow polygon symbol
         val polygonSymbol =
             SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.yellow, null)
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Create a polygon, its graphic, a graphics overlay for it, and add it to the map view.
+     * Create a curved polygon, its graphic, a graphics overlay for it, and add it to the map view.
      */
     private fun renderedCurvedPolygonGraphicsOverlay(): GraphicsOverlay {
         // create a point for the center of the geometry
@@ -281,12 +281,12 @@ class MainActivity : AppCompatActivity() {
         val ellipseGraphicOverlay = GraphicsOverlay()
         // set the ellipse fill color
         val ellipseSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.magenta, null)
-        // add the symbol to the renderer and add it to the graphic overlay
-        ellipseGraphicOverlay.renderer = SimpleRenderer(ellipseSymbol)
-        ellipseGraphicOverlay.graphics.add(Graphic(polygon))
-
         // return the purple ellipse
-        return ellipseGraphicOverlay
+        return ellipseGraphicOverlay.apply {
+            // add the symbol to the renderer and add it to the graphic overlay
+            renderer = SimpleRenderer(ellipseSymbol)
+            graphics.add(Graphic(polygon))
+        }
     }
 
     private val Color.Companion.blue: Color
