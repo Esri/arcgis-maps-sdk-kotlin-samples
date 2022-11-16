@@ -277,12 +277,10 @@ class MainActivity : AppCompatActivity() {
 
         // define the ellipse parameters to a polygon geometry
         val polygon = GeometryEngine.ellipseGeodesic(parameters)
-        // create an ellipse graphic overlay using the defined polygon
-        val ellipseGraphicOverlay = GraphicsOverlay()
         // set the ellipse fill color
         val ellipseSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.magenta, null)
         // return the purple ellipse
-        return ellipseGraphicOverlay.apply {
+        return GraphicsOverlay().apply {
             // add the symbol to the renderer and add it to the graphic overlay
             renderer = SimpleRenderer(ellipseSymbol)
             graphics.add(Graphic(polygon))
