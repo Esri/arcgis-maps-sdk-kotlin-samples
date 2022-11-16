@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         var resultGeometry: Geometry? = null
         // get the selected operation
         when (SpatialOperation.values().find { it.menuPosition == position }) {
-            SpatialOperation.NO_OPERATION -> {/* No operation needed */ }
+            SpatialOperation.NO_OPERATION -> { /* No operation needed */ }
             SpatialOperation.INTERSECTION -> {
                 resultGeometry = GeometryEngine.intersection(inputPolygon1, inputPolygon2)
             }
