@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.findnearestvertex
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +29,7 @@ import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.PolygonBuilder
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
@@ -40,11 +42,10 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.findnearestvertex.databinding.ActivityMainBinding
-import kotlinx.coroutines.flow.SharedFlow
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -90,14 +91,6 @@ class MainActivity : AppCompatActivity() {
         symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.blue, 15f)
     }
 
-    // create a graphic for the polygon
-    private val polygon = PolygonBuilder(statePlaneCaliforniaZone5SpatialReference) {
-        addPoint(Point(6627416.41469281, 1804532.53233782))
-        addPoint(Point(6669147.89779046, 2479145.16609522))
-        addPoint(Point(7265673.02678292, 2484254.50442408))
-        addPoint(Point(7676192.55880379, 2001458.66365744))
-    }.toGeometry()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -106,6 +99,13 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
+        // create a polygon geometry
+        val polygon = PolygonBuilder(statePlaneCaliforniaZone5SpatialReference) {
+            addPoint(Point(6627416.41469281, 1804532.53233782))
+            addPoint(Point(6669147.89779046, 2479145.16609522))
+            addPoint(Point(7265673.02678292, 2484254.50442408))
+            addPoint(Point(7676192.55880379, 2001458.66365744))
+        }.toGeometry()
         // set up the outline and fill color of the polygon
         val polygonOutlineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
         val polygonFillSymbol = SimpleFillSymbol(
@@ -113,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             Color.green,
             polygonOutlineSymbol
         )
+        // create a polygon graphic
         val polygonGraphic = Graphic(polygon, polygonFillSymbol)
         // create a graphics overlay to show the polygon, tapped location, and nearest vertex/coordinate
         val graphicsOverlay = GraphicsOverlay().apply {
@@ -131,50 +132,59 @@ class MainActivity : AppCompatActivity() {
         val portal = Portal("https://arcgisruntime.maps.arcgis.com", false)
         val portalItem = PortalItem(portal, "99fd67933e754a1181cc755146be21ca")
         val usStatesGeneralizedLayer = FeatureLayer(portalItem, 0)
-        lifecycleScope.launch {
-            map.basemap.collect { basemap ->
-                // and add the FeatureLayer to the map's basemap
-                basemap?.baseLayers?.add(usStatesGeneralizedLayer)
-                mapView.map = map
-                // add the graphics overlay to the map view
-                mapView.graphicsOverlays.add(graphicsOverlay)
-                // zoom to the polygon's extent
-                mapView.setViewpointGeometry(polygon.extent, 100.0)
-                // find nearest vertex on map tapped
-                findNearestVertex(mapView.onSingleTapConfirmed)
+        with(lifecycleScope) {
+            launch {
+                map.basemap.collect { basemap ->
+                    // and add the FeatureLayer to the map's basemap
+                    basemap?.baseLayers?.add(usStatesGeneralizedLayer)
+                    mapView.map = map
+                    // add the graphics overlay to the map view
+                    mapView.graphicsOverlays.add(graphicsOverlay)
+                    // zoom to the polygon's extent
+                    mapView.setViewpointGeometry(polygon.extent, 100.0)
+                }
+            }
+            launch {
+                // check if map has loaded
+                map.load().onSuccess {
+                    // get point on map tapped
+                    mapView.onSingleTapConfirmed.collect { event ->
+                        // find nearest vertex on map tapped
+                        event.mapPoint?.let { findNearestVertex(it, polygon) }
+                    }
+                }.onFailure {
+                    showError("Error loading map")
+                }
             }
         }
     }
 
     /**
-     * Collects events from [onSingleTapConfirmed] of the map and finds the nearest vertex
+     * Finds the nearest vertex from [mapPoint] from the [polygon]
      */
-    private suspend fun findNearestVertex(onSingleTapConfirmed: SharedFlow<SingleTapConfirmedEvent>) {
-        onSingleTapConfirmed.collect { event ->
-            // get map point tapped, return if null
-            val mapPoint = event.mapPoint ?: return@collect
-            // show where the user clicked
-            tappedLocationGraphic.geometry = mapPoint
-            // use the geometry engine to get the nearest vertex, return if null
-            val nearestVertexResult =
-                GeometryEngine.nearestVertex(polygon, mapPoint)
-            // set the nearest vertex graphic's geometry to the nearest vertex
-            nearestVertexGraphic.geometry = nearestVertexResult?.coordinate
-            // use the geometry engine to get the nearest coordinate, return if null
-            val nearestCoordinateResult =
-                GeometryEngine.nearestCoordinate(polygon, mapPoint)
-            // set the nearest coordinate graphic's geometry to the nearest coordinate
-            nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
-            // show the distances to the nearest vertex and nearest coordinate
-            distanceLayout.visibility = View.VISIBLE
-            // convert distance to miles
-            val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()
-            val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()
-            // set the distance to the text views
-            vertexDistanceTextView.text = getString(R.string.nearest_vertex, vertexDistance)
-            coordinateDistanceTextView.text =
-                getString(R.string.nearest_coordinate, coordinateDistance)
-        }
+    private fun findNearestVertex(mapPoint: Point, polygon: Polygon) {
+        // show where the user clicked
+        tappedLocationGraphic.geometry = mapPoint
+        // use the geometry engine to get the nearest vertex
+        val nearestVertexResult =
+            GeometryEngine.nearestVertex(polygon, mapPoint)
+        // set the nearest vertex graphic's geometry to the nearest vertex
+        nearestVertexGraphic.geometry = nearestVertexResult?.coordinate
+        // use the geometry engine to get the nearest coordinate
+        val nearestCoordinateResult =
+            GeometryEngine.nearestCoordinate(polygon, mapPoint)
+        // set the nearest coordinate graphic's geometry to the nearest coordinate
+        nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
+        // show the distances to the nearest vertex and nearest coordinate
+        distanceLayout.visibility = View.VISIBLE
+        // convert distance to miles
+        val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()
+        val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()
+        // set the distance to the text views
+        vertexDistanceTextView.text = getString(R.string.nearest_vertex, vertexDistance)
+        coordinateDistanceTextView.text =
+            getString(R.string.nearest_coordinate, coordinateDistance)
+
     }
 
     private val Color.Companion.blue: Color
@@ -186,4 +196,9 @@ class MainActivity : AppCompatActivity() {
         get() {
             return fromRgba(255, 0, 255, 255)
         }
+
+    private fun showError(message: String) {
+        Log.e(TAG, message)
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
+    }
 }
