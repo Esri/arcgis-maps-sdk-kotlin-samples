@@ -136,16 +136,15 @@ class MainActivity : AppCompatActivity() {
             multilayerPolylineSymbol, crossGeometry, 2 * offset
         )
 
-        // create line marker symbols
-        // similar to SimpleLineSymbolStyle.SHORTDASHDOTDOT
+        // create line marker symbols with short dash dot dot
         addLineGraphicsWithMarkerSymbols(
             listOf(4.0, 6.0, 0.5, 6.0, 0.5, 6.0), 0.0
         )
-        // similar to SimpleLineSymbolStyle.SHORTDASH
+        // create line marker symbol with short dash
         addLineGraphicsWithMarkerSymbols(
             listOf(4.0, 6.0), offset
         )
-        // similar to SimpleLineSymbolStyle.DASHDOTDOT
+        // create line marker symbol with dash dot dot
         addLineGraphicsWithMarkerSymbols(
             listOf(7.0, 9.0, 0.5, 9.0), 2 * offset
         )
