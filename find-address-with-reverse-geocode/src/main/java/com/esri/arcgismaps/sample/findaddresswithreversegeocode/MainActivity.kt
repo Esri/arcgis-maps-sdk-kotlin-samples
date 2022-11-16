@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Displays a pin of the tapped location using [onSingleTapConfirmed]
+     * Displays a pin of the tapped location using [mapPoint]
      * and finds address with reverse geocode
      */
     private suspend fun geoViewTapped(mapPoint: Point) {
