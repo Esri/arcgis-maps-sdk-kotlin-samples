@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     private val downloadArea: Graphic = Graphic()
     private var dialog: AlertDialog? = null
-    private var isJobFinished: Boolean = true
+    private var hasCurrentJobCompleted: Boolean = true
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -100,19 +100,23 @@ class MainActivity : AppCompatActivity() {
             // set the map to BasemapType navigation night
             map = ArcGISMap(BasemapStyle.ArcGISStreetsNight)
             // disable rotation
-            rotation = 0F
+            interactionOptions.isRotateEnabled = false
             // set the viewpoint of the sample to ESRI Redlands, CA campus
             setViewpoint(Viewpoint(34.056295, -117.195800, 100000.0))
             // add the graphics overlay to the MapView
             graphicsOverlays.add(graphicsOverlay)
         }
 
-        lifecycleScope.apply {
-            launch {
+        lifecycleScope.launch {
+            mapView.map?.load()?.onSuccess {
+                // enable the export tiles button
+                exportVectorTilesButton.isEnabled = true
                 // update the red square whenever the viewpoint changes
                 mapView.viewpointChanged.collect {
                     updateDownloadAreaGeometry()
                 }
+            }?.onFailure {
+                showMessage("Error loading map")
             }
         }
     }
@@ -138,6 +142,7 @@ class MainActivity : AppCompatActivity() {
                 return@launch
             }
             // set the parameters of the export vector tiles task
+            // using the geometry of the area to export and it's max scale
             val exportVectorTilesParametersResult = exportVectorTilesTask
                 .createDefaultExportVectorTilesParameters(
                     geometry,
@@ -149,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                 showMessage(it.message.toString())
             } as ExportVectorTilesParameters
 
-            if (isJobFinished) {
+            if (hasCurrentJobCompleted) {
                 // create a job to export vector tiles
                 initiateExportTilesJob(
                     exportVectorTilesParameters,
@@ -191,10 +196,10 @@ class MainActivity : AppCompatActivity() {
         // display the progress dialog
         dialog?.show()
         // since job is now started, set to false
-        isJobFinished = false
+        hasCurrentJobCompleted = false
 
         // set the value of the job's progress
-        lifecycleScope.apply {
+        with(lifecycleScope) {
             // collect the progress of the job
             launch {
                 exportVectorTilesJob.progress.collect {
@@ -210,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                     // display the map preview using the result from the completed job
                     showMapPreview(it)
                     // set job is completed
-                    isJobFinished = true
+                    hasCurrentJobCompleted = true
                     // display the path of the saved vector tiles
                     showMessage(it.vectorTileCache?.path.toString())
                     // dismiss loading dialog
@@ -225,29 +230,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Updates the [downloadArea]'s geometry on ViewPoint change
+     * Updates the [downloadArea]'s geometry when called with viewpoint change
      * or when export tiles button is clicked.
      */
-    private suspend fun updateDownloadAreaGeometry() {
-        mapView.map?.load()?.onSuccess {
-            // upper left corner of the downloaded tile cache area
-            val minScreenPoint = ScreenCoordinate(150.0, 175.0)
-            // lower right corner of the downloaded tile cache area
-            val maxScreenPoint = ScreenCoordinate(
-                mapView.width - 150.0,
-                mapView.height - 250.0
-            )
-            // convert screen points to map points
-            val minPoint = mapView.screenToLocation(minScreenPoint)
-            val maxPoint = mapView.screenToLocation(maxScreenPoint)
-            if (minPoint != null && maxPoint != null) {
-                // use the points to define and return an envelope
-                downloadArea.geometry = Envelope(minPoint, maxPoint)
-            } else {
-                showMessage("Error getting screen coordinate")
-            }
-        }?.onFailure {
-            showMessage(it.message.toString())
+    private fun updateDownloadAreaGeometry() {
+        // upper left corner of the downloaded tile cache area
+        val minScreenPoint = ScreenCoordinate(150.0, 175.0)
+        // lower right corner of the downloaded tile cache area
+        val maxScreenPoint = ScreenCoordinate(
+            mapView.width - 150.0,
+            mapView.height - 250.0
+        )
+        // convert screen points to map points
+        val minPoint = mapView.screenToLocation(minScreenPoint)
+        val maxPoint = mapView.screenToLocation(maxScreenPoint)
+        if (minPoint != null && maxPoint != null) {
+            // use the points to define and return an envelope
+            downloadArea.geometry = Envelope(minPoint, maxPoint)
+        } else {
+            showMessage("Error getting screen coordinate")
         }
     }
 
@@ -265,7 +266,7 @@ class MainActivity : AppCompatActivity() {
                         showMessage(it.message.toString())
                     }
                     // cancel is completed, so set to true
-                    isJobFinished = true
+                    hasCurrentJobCompleted = true
                 }
             }
             setCancelable(false)

@@ -39,6 +39,7 @@
                 android:onClick="exportButtonClick"
                 android:padding="16dp"
                 android:text="@string/export_vector_tiles"
+                android:enabled="false"
                 android:textAllCaps="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
