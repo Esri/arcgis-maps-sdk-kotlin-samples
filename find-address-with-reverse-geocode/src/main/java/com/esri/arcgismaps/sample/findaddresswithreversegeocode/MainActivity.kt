@@ -33,12 +33,9 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
-import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.esri.arcgismaps.sample.findaddresswithreversegeocode.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -99,11 +96,14 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             // load geocode locator task
-            locatorTask.load().getOrElse {
+            locatorTask.load().onSuccess {
+                // locator task loaded, look for geo view tapped
+                mapView.onSingleTapConfirmed.collect { event ->
+                    event.mapPoint?.let { mapPoint -> geoViewTapped(mapPoint) }
+                }
+            }.onFailure {
                 showError(it.message.toString())
             }
-            // locator task loaded, look for geo view tapped
-            geoViewTapped(mapView.onSingleTapConfirmed)
         }
     }
 
@@ -111,38 +111,32 @@ class MainActivity : AppCompatActivity() {
      * Displays a pin of the tapped location using [onSingleTapConfirmed]
      * and finds address with reverse geocode
      */
-    private suspend fun geoViewTapped(onSingleTapConfirmed: SharedFlow<SingleTapConfirmedEvent>) {
-        // collect map tapped event
-        onSingleTapConfirmed.collect { event ->
-            // get map point tapped, return if null
-            val mapPoint = event.mapPoint ?: return@collect
-            // create graphic for tapped point
-            val pinGraphic = Graphic(mapPoint, pinSymbol)
-
-            graphicsOverlay.graphics.apply {
-                // clear existing graphics
-                clear()
-                // add the pin graphic
-                add(pinGraphic)
-            }
-            // normalize the geometry - needed if the user crosses the international date line.
-            val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
-            // reverse geocode to get address
-            locatorTask.reverseGeocode(normalizedPoint).onSuccess { addresses ->
-                // get the first result
-                val address = addresses.first()
-                // use the street and region for the title
-                val title = address.attributes["Address"].toString()
-                // use the metro area for the description details
-                val description = "${address.attributes["City"]} " +
-                        "${address.attributes["Region"]} " +
-                        "${address.attributes["CountryCode"]}"
-                // set the strings to the text views
-                titleTV.text = title
-                descriptionTV.text = description
-            }.onFailure {
-                showError(it.message.toString())
-            }
+    private suspend fun geoViewTapped(mapPoint: Point) {
+        // create graphic for tapped point
+        val pinGraphic = Graphic(mapPoint, pinSymbol)
+        graphicsOverlay.graphics.apply {
+            // clear existing graphics
+            clear()
+            // add the pin graphic
+            add(pinGraphic)
+        }
+        // normalize the geometry - needed if the user crosses the international date line.
+        val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
+        // reverse geocode to get address
+        locatorTask.reverseGeocode(normalizedPoint).onSuccess { addresses ->
+            // get the first result
+            val address = addresses.first()
+            // use the street and region for the title
+            val title = address.attributes["Address"].toString()
+            // use the metro area for the description details
+            val description = "${address.attributes["City"]} " +
+                    "${address.attributes["Region"]} " +
+                    "${address.attributes["CountryCode"]}"
+            // set the strings to the text views
+            titleTV.text = title
+            descriptionTV.text = description
+        }.onFailure {
+            showError(it.message.toString())
         }
     }
 
