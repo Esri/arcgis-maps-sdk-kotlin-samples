@@ -42,6 +42,11 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.showresultofspatialoperations.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
+private val Color.Companion.blue: Color
+    get() {
+        return fromRgba(0, 0, 255, 255)
+    }
+
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
@@ -70,8 +75,10 @@ class MainActivity : AppCompatActivity() {
 
     // simple black line symbol for outlines
     private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1f)
+
     // red fill symbol for result
-    private val resultFillSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.red, lineSymbol)
+    private val resultFillSymbol =
+        SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.red, lineSymbol)
 
     // the two polygons for perform spatial operations
     private lateinit var inputPolygon1: Polygon
@@ -110,8 +117,8 @@ class MainActivity : AppCompatActivity() {
 
         // center the map view on the input geometries
         val envelope = GeometryEngine.union(inputPolygon1, inputPolygon2)?.extent
-        lifecycleScope.launch {
-            if (envelope != null) {
+        if (envelope != null) {
+            lifecycleScope.launch {
                 mapView.setViewpointGeometry(envelope, 20.0)
             }
         }
@@ -124,7 +131,8 @@ class MainActivity : AppCompatActivity() {
         var resultGeometry: Geometry? = null
         // get the selected operation
         when (SpatialOperation.values().find { it.menuPosition == position }) {
-            SpatialOperation.NO_OPERATION -> { /* No operation needed */ }
+            SpatialOperation.NO_OPERATION -> { /* No operation needed */
+            }
             SpatialOperation.INTERSECTION -> {
                 resultGeometry = GeometryEngine.intersection(inputPolygon1, inputPolygon2)
             }
@@ -168,22 +176,28 @@ class MainActivity : AppCompatActivity() {
         inputGeometryGraphicsOverlay.graphics.add(Graphic(inputPolygon1, blueFill))
 
         // outer ring
-        val outerRing = MutablePart(SpatialReference.webMercator()).apply {
-            addPoint(Point(-13060.0, 6711030.0))
-            addPoint(Point(-12160.0, 6710730.0))
-            addPoint(Point(-13160.0, 6709700.0))
-            addPoint(Point(-14560.0, 6710730.0))
-            addPoint(Point(-13060.0, 6711030.0))
-        }
+        val outerRing = MutablePart.createWithPoints(
+            listOf(
+                Point(-13060.0, 6711030.0),
+                Point(-12160.0, 6710730.0),
+                Point(-13160.0, 6709700.0),
+                Point(-14560.0, 6710730.0),
+                Point(-13060.0, 6711030.0),
+            ),
+            SpatialReference.webMercator()
+        )
 
         // inner ring
-        val innerRing = MutablePart(SpatialReference.webMercator()).apply {
-            addPoint(Point(-13060.0, 6710910.0))
-            addPoint(Point(-12450.0, 6710660.0))
-            addPoint(Point(-13160.0, 6709900.0))
-            addPoint(Point(-14160.0, 6710630.0))
-            addPoint(Point(-13060.0, 6710910.0))
-        }
+        val innerRing = MutablePart.createWithPoints(
+            listOf(
+                Point(-13060.0, 6710910.0),
+                Point(-12450.0, 6710660.0),
+                Point(-13160.0, 6709900.0),
+                Point(-14160.0, 6710630.0),
+                Point(-13060.0, 6710910.0)
+            ),
+            SpatialReference.webMercator()
+        )
 
         // add both parts (rings) to a polygon and create a geometry from it
         inputPolygon2 = Polygon(listOf(outerRing, innerRing))
@@ -192,9 +206,4 @@ class MainActivity : AppCompatActivity() {
         val greenFill = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.green, lineSymbol)
         inputGeometryGraphicsOverlay.graphics.add(Graphic(inputPolygon2, greenFill))
     }
-
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
 }
