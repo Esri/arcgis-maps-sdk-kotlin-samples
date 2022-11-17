@@ -57,14 +57,33 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.rendermultilayersymbols.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 
+private val Color.Companion.blue: Color
+    get() {
+        return fromRgba(0, 0, 255, 255)
+    }
+
+private val Color.Companion.yellow: Color
+    get() {
+        return fromRgba(255, 255, 0, 255)
+    }
+
+private val Color.Companion.magenta: Color
+    get() {
+        return fromRgba(255, 0, 255, 255)
+    }
+
+private val Color.Companion.cyan: Color
+    get() {
+        return fromRgba(0, 100, 100, 255)
+    }
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
+
+    // define offset used to keep a consistent distance between symbols in the same column
+    private val OFFSET = 20.0
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -77,10 +96,6 @@ class MainActivity : AppCompatActivity() {
 
     // define the graphics overlay to add the multilayer symbols
     private var graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
-
-    // define offset used to keep a consistent distance between symbols in the same column
-    private val offset = 20.0
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,11 +144,11 @@ class MainActivity : AppCompatActivity() {
         )
         // add red triangle graphic
         addGraphicsWithVectorMarkerSymbolElements(
-            multilayerPolygonSymbol, triangleGeometry, offset
+            multilayerPolygonSymbol, triangleGeometry, OFFSET
         )
         // add red cross graphic
         addGraphicsWithVectorMarkerSymbolElements(
-            multilayerPolylineSymbol, crossGeometry, 2 * offset
+            multilayerPolylineSymbol, crossGeometry, 2 * OFFSET
         )
 
         // create line marker symbols with short dash dot dot
@@ -142,11 +157,11 @@ class MainActivity : AppCompatActivity() {
         )
         // create line marker symbol with short dash
         addLineGraphicsWithMarkerSymbols(
-            listOf(4.0, 6.0), offset
+            listOf(4.0, 6.0), OFFSET
         )
         // create line marker symbol with dash dot dot
         addLineGraphicsWithMarkerSymbols(
-            listOf(7.0, 9.0, 0.5, 9.0), 2 * offset
+            listOf(7.0, 9.0, 0.5, 9.0), 2 * OFFSET
         )
 
         // create polygon marker symbols
@@ -156,11 +171,11 @@ class MainActivity : AppCompatActivity() {
         )
         // hatched diagonal lines
         addPolygonGraphicsWithMarkerSymbols(
-            listOf(-45.0), offset
+            listOf(-45.0), OFFSET
         )
         // hatched vertical lines
         addPolygonGraphicsWithMarkerSymbols(
-            listOf(90.0), 2 * offset
+            listOf(90.0), 2 * OFFSET
         )
 
         // define vector element for a hexagon which will be used as the basis of a complex point
@@ -213,7 +228,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Create picture marker symbols from online URI or local cache.
+     * Create picture marker symbols from online URI and local cache.
      */
     private fun addImageGraphics() {
         // URI of image to display
@@ -305,7 +320,7 @@ class MainActivity : AppCompatActivity() {
             capStyle = StrokeSymbolLayerCapStyle.Round
         }
         // create a polyline for the multilayer polyline symbol
-        val polylineBuilder = PolylineBuilder(SpatialReference.wgs84()).apply {
+        val polylineBuilder = PolylineBuilder(SpatialReference.wgs84()) {
             addPoint(Point(-30.0, 20 - offset))
             addPoint(Point(30.0, 20 - offset))
         }
@@ -322,11 +337,11 @@ class MainActivity : AppCompatActivity() {
     /**
      * Adds new graphics constructed from multilayer polygon symbols.
      *
-     * A list containing the [angles] at which to draw fill lines within the polygon and
+     * Takes a list containing the [angles] at which to draw fill lines within the polygon and
      * [offset] the value used to keep a consistent distance between symbols in the same column.
      */
     private fun addPolygonGraphicsWithMarkerSymbols(angles: List<Double>, offset: Double) {
-        val polygonBuilder = PolygonBuilder(SpatialReference.wgs84()).apply {
+        val polygonBuilder = PolygonBuilder(SpatialReference.wgs84()) {
             addPoint(Point(60.0, 25 - offset))
             addPoint(Point(70.0, 25 - offset))
             addPoint(Point(70.0, 20 - offset))
@@ -340,24 +355,24 @@ class MainActivity : AppCompatActivity() {
         val strokeForOutline =
             SolidStrokeSymbolLayer(1.0, Color.black, listOf(DashGeometricEffect()))
 
-        // create an array to hold all necessary symbol layers - at least one for patterns and one for an outline at the end
-        val symbolLayerArray = arrayOfNulls<SymbolLayer>(angles.size + 1)
+        // create a list to hold all necessary symbol layers - at least one for patterns and one for an outline at the end
+        val symbolLayerList = mutableListOf<SymbolLayer>()
 
         // for each angle, create a symbol layer using the pattern stroke, with hatched lines at the given angle
         for (i in angles.indices) {
             val hatchFillSymbolLayer = HatchFillSymbolLayer(
                 MultilayerPolylineSymbol(listOf(strokeForHatches)), angles[i]
             )
-            // define separation distance for lines and add them to the symbol layer array
+            // define separation distance for lines and add them to the symbol layer list
             hatchFillSymbolLayer.separation = 9.0
-            symbolLayerArray[i] = hatchFillSymbolLayer
+            symbolLayerList.add(hatchFillSymbolLayer)
         }
 
-        // assign the outline layer to the last element of the symbol layer array
-        symbolLayerArray[symbolLayerArray.size - 1] = strokeForOutline
-        // create a multilayer polygon symbol from the symbol layer array
+        // assign the outline layer to the last element of the symbol layer list
+        symbolLayerList.add(strokeForOutline)
+        // create a multilayer polygon symbol from the symbol layer list
         val multilayerPolygonSymbol =
-            MultilayerPolygonSymbol(symbolLayerArray.asIterable() as Iterable<SymbolLayer>)
+            MultilayerPolygonSymbol(symbolLayerList.asIterable())
         // create a polygon graphic with geometry using the symbol created above, and add it to the graphics overlay
         val graphic = Graphic(polygonBuilder.toGeometry(), multilayerPolygonSymbol)
         graphicsOverlay.graphics.add(graphic)
@@ -412,11 +427,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Creates a symbol layer for use in the composition of a complex point.
-     * [fillColor] of the symbol
-     * [outlineColor] of the symbol
-     * [size] of the symbol
-     * @return the vector marker symbol layer.
+     * Creates a symbol layer for use in the composition of a complex point
+     * using [fillColor], [outlineColor] as colors and the [size] of the symbol
+     * Then return a [VectorMarkerSymbolLayer] of the created symbol.
      */
     private fun getLayerForComplexPoint(
         fillColor: Color, outlineColor: Color, size: Double
@@ -449,7 +462,7 @@ class MainActivity : AppCompatActivity() {
         // create the multilayer polygon symbol
         val multilayerPolygonSymbol = MultilayerPolygonSymbol(getLayersForComplexPolys(true))
         // create the polygon
-        val polygonBuilder = PolygonBuilder(SpatialReference.wgs84()).apply {
+        val polygonBuilder = PolygonBuilder(SpatialReference.wgs84()) {
             addPoint(Point(120.0, 0.0))
             addPoint(Point(140.0, 0.0))
             addPoint(Point(140.0, -10.0))
@@ -470,7 +483,7 @@ class MainActivity : AppCompatActivity() {
     private fun addComplexPolyline() {
         // create the multilayer polyline symbol
         val multilayerPolylineSymbol = MultilayerPolylineSymbol(getLayersForComplexPolys(false))
-        val polylineBuilder = PolylineBuilder(SpatialReference.wgs84()).apply {
+        val polylineBuilder = PolylineBuilder(SpatialReference.wgs84()) {
             addPoint(Point(120.0, -25.0))
             addPoint(Point(140.0, -25.0))
         }
@@ -522,24 +535,4 @@ class MainActivity : AppCompatActivity() {
         Log.e(TAG, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
-
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
-
-    private val Color.Companion.yellow: Color
-        get() {
-            return fromRgba(255, 255, 0, 255)
-        }
-
-    private val Color.Companion.magenta: Color
-        get() {
-            return fromRgba(255, 0, 255, 255)
-        }
-
-    private val Color.Companion.cyan: Color
-        get() {
-            return fromRgba(0, 100, 100, 255)
-        }
 }
