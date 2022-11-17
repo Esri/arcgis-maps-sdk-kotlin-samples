@@ -89,12 +89,10 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(previewMapView)
 
         // create a graphic to show a red outline square around the vector tiles to be downloaded
-        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
+        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2f)
 
         // create a graphics overlay and add the downloadArea graphic
-        val graphicsOverlay = GraphicsOverlay().apply {
-            graphics.add(downloadArea)
-        }
+        val graphicsOverlay = GraphicsOverlay(listOf(downloadArea))
 
         mapView.apply {
             // set the map to BasemapType navigation night
@@ -129,14 +127,13 @@ class MainActivity : AppCompatActivity() {
         // check that the layer from the basemap is a vector tiled layer
         val vectorTiledLayer =
             mapView.map?.basemap?.value?.baseLayers?.get(0) as ArcGISVectorTiledLayer
-        // the max scale parameter is set to 10% of the map's scale so the
-        // number of tiles exported are within the vector tiled layer's max tile export limit
+
         lifecycleScope.launch {
             // update the download area's geometry using the current viewpoint
             updateDownloadAreaGeometry()
             // create a new export vector tiles task
             val exportVectorTilesTask = ExportVectorTilesTask(vectorTiledLayer.uri.toString())
-            val geometry = (downloadArea.geometry)
+            val geometry = downloadArea.geometry
             if (geometry == null) {
                 showMessage("Error retrieving download area geometry")
                 return@launch
@@ -146,6 +143,8 @@ class MainActivity : AppCompatActivity() {
             val exportVectorTilesParametersResult = exportVectorTilesTask
                 .createDefaultExportVectorTilesParameters(
                     geometry,
+                    // set the max scale parameter to 10% of the map's scale so the
+                    // number of tiles exported are within the vector tiled layer's max tile export limit
                     mapView.mapScale.value * 0.1
                 )
 
@@ -223,6 +222,7 @@ class MainActivity : AppCompatActivity() {
                 }.onFailure {
                     showMessage(it.message.toString())
                     dialog?.dismiss()
+                    hasCurrentJobCompleted = true
                 }
             }
 
