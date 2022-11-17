@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
+    // service url to be provided to the LocatorTask (geocoder)
+    private val GEOCODE_SERVER =
+        "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -70,12 +74,8 @@ class MainActivity : AppCompatActivity() {
     // create a graphics overlay
     private val graphicsOverlay = GraphicsOverlay()
 
-    // service url to be provided to the LocatorTask (geocoder)
-    private val geocodeServer =
-        "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
-
     // locator task to provide geocoding services
-    private val locatorTask = LocatorTask(geocodeServer)
+    private val locatorTask = LocatorTask(GEOCODE_SERVER)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,7 +125,11 @@ class MainActivity : AppCompatActivity() {
         // reverse geocode to get address
         locatorTask.reverseGeocode(normalizedPoint).onSuccess { addresses ->
             // get the first result
-            val address = addresses.first()
+            val address = addresses.firstOrNull()
+            if (address == null) {
+                showError("Could not find address at tapped point")
+                return@onSuccess
+            }
             // use the street and region for the title
             val title = address.attributes["Address"].toString()
             // use the metro area for the description details
@@ -158,7 +162,7 @@ class MainActivity : AppCompatActivity() {
             width = 50f
             height = 50f
             // the image is a pin so offset the image so that the pinpoint
-            // is on the point rather than the image's true center.
+            // is on the point rather than the image's true center
             leaderOffsetX = 30f
             offsetY = 25f
         }
