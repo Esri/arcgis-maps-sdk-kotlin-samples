@@ -77,19 +77,16 @@ class MainActivity : AppCompatActivity() {
     private val statePlaneCaliforniaZone5SpatialReference = SpatialReference(2229)
 
     // create graphics with symbols for tapped location, nearest coordinate, and nearest vertex
-    private val tappedLocationGraphic = Graphic().apply {
-        symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.magenta, 15f)
-    }
+    private val tappedLocationGraphic =
+        Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.magenta, 15f))
 
     // create graphic symbol of the nearest coordinate
-    private val nearestCoordinateGraphic = Graphic().apply {
-        symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.red, 10f)
-    }
+    private val nearestCoordinateGraphic =
+        Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.red, 10f))
 
     // create graphic symbol of the nearest vertex
-    private val nearestVertexGraphic = Graphic().apply {
-        symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.blue, 15f)
-    }
+    private val nearestVertexGraphic =
+        Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.blue, 15f))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,45 +113,38 @@ class MainActivity : AppCompatActivity() {
         // create a polygon graphic
         val polygonGraphic = Graphic(polygon, polygonFillSymbol)
         // create a graphics overlay to show the polygon, tapped location, and nearest vertex/coordinate
-        val graphicsOverlay = GraphicsOverlay().apply {
-            graphics.addAll(
-                listOf(
-                    polygonGraphic,
-                    tappedLocationGraphic,
-                    nearestCoordinateGraphic,
-                    nearestVertexGraphic
-                )
+        val graphicsOverlay = GraphicsOverlay(
+            listOf(
+                polygonGraphic,
+                tappedLocationGraphic,
+                nearestCoordinateGraphic,
+                nearestVertexGraphic
             )
-        }
+        )
 
         // create a map using the portal item
         val map = ArcGISMap(statePlaneCaliforniaZone5SpatialReference)
         val portal = Portal("https://arcgisruntime.maps.arcgis.com", false)
         val portalItem = PortalItem(portal, "99fd67933e754a1181cc755146be21ca")
         val usStatesGeneralizedLayer = FeatureLayer(portalItem, 0)
-        with(lifecycleScope) {
-            launch {
-                map.basemap.collect { basemap ->
-                    // and add the FeatureLayer to the map's basemap
-                    basemap?.baseLayers?.add(usStatesGeneralizedLayer)
-                    mapView.map = map
-                    // add the graphics overlay to the map view
-                    mapView.graphicsOverlays.add(graphicsOverlay)
-                    // zoom to the polygon's extent
-                    mapView.setViewpointGeometry(polygon.extent, 100.0)
+        // and add the feature layer to the map's operational layers
+        map.operationalLayers.add(usStatesGeneralizedLayer)
+        // add the map to the map view
+        mapView.map = map
+        // add the graphics overlay to the map view
+        mapView.graphicsOverlays.add(graphicsOverlay)
+        lifecycleScope.launch {
+            // check if map has loaded
+            map.load().onSuccess {
+                // zoom to the polygon's extent
+                mapView.setViewpointGeometry(polygon.extent, 100.0)
+                // get point on map tapped
+                mapView.onSingleTapConfirmed.collect { event ->
+                    // find nearest vertex on map tapped
+                    event.mapPoint?.let { findNearestVertex(it, polygon) }
                 }
-            }
-            launch {
-                // check if map has loaded
-                map.load().onSuccess {
-                    // get point on map tapped
-                    mapView.onSingleTapConfirmed.collect { event ->
-                        // find nearest vertex on map tapped
-                        event.mapPoint?.let { findNearestVertex(it, polygon) }
-                    }
-                }.onFailure {
-                    showError("Error loading map")
-                }
+            }.onFailure {
+                showError("Error loading map")
             }
         }
     }
