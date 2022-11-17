@@ -72,11 +72,11 @@ class MainActivity : AppCompatActivity() {
 
         //  add a map with a topographic basemap style
         mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
-        mapView.setViewpoint(Viewpoint(15.169193, 16.333479, 100000000.0))
+        mapView.setViewpoint(Viewpoint(15.169193, 16.333479, 100_000_000.0))
 
         // add graphics overlays
         mapView.graphicsOverlays.addAll(
-            arrayOf(
+            listOf(
                 renderedPointGraphicsOverlay(),
                 renderedLineGraphicsOverlay(),
                 renderedPolygonGraphicsOverlay(),
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Create a point, its graphic, a graphics overlay for it, and add it to the map view.
+     * Make a point, its graphic, a graphics overlay for it, and add it to the map view.
      */
     private fun renderedPointGraphicsOverlay(): GraphicsOverlay {
         // create point
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun renderedLineGraphicsOverlay(): GraphicsOverlay {
         // create line
-        val lineBuilder = PolylineBuilder(SpatialReference.webMercator()).apply {
+        val lineBuilder = PolylineBuilder(SpatialReference.webMercator()) {
             addPoint(-10e5, 40e5)
             addPoint(20e5, 50e5)
         }
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun renderedPolygonGraphicsOverlay(): GraphicsOverlay {
         // create polygon
-        val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()).apply {
+        val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()) {
             addPoint(-20e5, 20e5)
             addPoint(20e5, 20e5)
             addPoint(20e5, -20e5)
@@ -249,11 +249,10 @@ class MainActivity : AppCompatActivity() {
         )
 
         // create a mutable part list
-        val heartParts = MutablePart(spatialReference).apply {
-            addAll(
-                listOf(leftCurve, leftArc, rightArc, rightCurve)
-            )
-        }
+        val heartParts = MutablePart.createWithSegments(
+            listOf(leftCurve, leftArc, rightArc, rightCurve),
+            spatialReference
+        )
         // return the heart
         return Polygon(listOf(heartParts).asIterable())
     }
