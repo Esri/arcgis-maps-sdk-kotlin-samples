@@ -77,11 +77,11 @@ class MainActivity : AppCompatActivity() {
         // add graphics overlays
         mapView.graphicsOverlays.addAll(
             listOf(
-                renderedPointGraphicsOverlay(),
-                renderedLineGraphicsOverlay(),
-                renderedPolygonGraphicsOverlay(),
-                renderedCurvedPolygonGraphicsOverlay(),
-                renderedEllipseGraphicsOverlay()
+                makeRenderedPointGraphicsOverlay(),
+                makeRenderedLineGraphicsOverlay(),
+                makeRenderedPolygonGraphicsOverlay(),
+                makeRenderedCurvedPolygonGraphicsOverlay(),
+                makeRenderedEllipseGraphicsOverlay()
             )
         )
     }
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Make a point, its graphic, a graphics overlay for it, and add it to the map view.
      */
-    private fun renderedPointGraphicsOverlay(): GraphicsOverlay {
+    private fun makeRenderedPointGraphicsOverlay(): GraphicsOverlay {
         // create point
         val pointGeometry = Point(40e5, 40e5, SpatialReference.webMercator())
         // create graphic for point
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Create a polyline, its graphic, a graphics overlay for it, and add it to the map view.
      */
-    private fun renderedLineGraphicsOverlay(): GraphicsOverlay {
+    private fun makeRenderedLineGraphicsOverlay(): GraphicsOverlay {
         // create line
         val lineBuilder = PolylineBuilder(SpatialReference.webMercator()) {
             addPoint(-10e5, 40e5)
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Create a polygon, its graphic, a graphics overlay for it, and add it to the map view.
      */
-    private fun renderedPolygonGraphicsOverlay(): GraphicsOverlay {
+    private fun makeRenderedPolygonGraphicsOverlay(): GraphicsOverlay {
         // create polygon
         val polygonBuilder = PolygonBuilder(SpatialReference.webMercator()) {
             addPoint(-20e5, 20e5)
@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Create a curved polygon, its graphic, a graphics overlay for it, and add it to the map view.
      */
-    private fun renderedCurvedPolygonGraphicsOverlay(): GraphicsOverlay {
+    private fun makeRenderedCurvedPolygonGraphicsOverlay(): GraphicsOverlay {
         // create a point for the center of the geometry
         val originPoint = Point(40e5, 5e5, SpatialReference.webMercator())
         // create polygon
@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Create an ellipse, its graphic, a graphics overlay for it, and add it to the map view.
      */
-    private fun renderedEllipseGraphicsOverlay(): GraphicsOverlay {
+    private fun makeRenderedEllipseGraphicsOverlay(): GraphicsOverlay {
         // create and set all the parameters so that the ellipse has a major axis of 400 kilometres,
         // a minor axis of 200 kilometres and is rotated at an angle of -45 degrees
         val parameters = GeodesicEllipseParameters.createForPolygon().apply {
