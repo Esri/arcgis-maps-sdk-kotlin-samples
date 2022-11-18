@@ -1,0 +1,61 @@
+{
+    "category": "Visualization",
+    "description": "A renderer allows you to change the style of all graphics in a graphics overlay by referencing a single symbol style. A renderer will only effect graphics that do not specify their own symbol style.",
+    "formal_name": "StyleGraphicsWithRenderer",
+    "ignore": false,
+    "images": [
+        "style-graphics-with-renderer.png"
+    ],
+    "keywords": [
+        "arc",
+        "bezier",
+        "curve",
+        "display",
+        "ellipse",
+        "graphics",
+        "marker",
+        "overlay",
+        "renderer",
+        "segment",
+        "symbol",
+        "true curve",
+        "CubicBezierSegment",
+        "EllipticArcSegment",
+        "GeodesicEllipseParameters",
+        "Geometry",
+        "GeometryEngine",
+        "Graphic",
+        "GraphicsOverlay",
+        "MutablePart",
+        "PolygonBuilder",
+        "PolylineBuilder",
+        "SimpleFillSymbol",
+        "SimpleLineSymbol",
+        "SimpleMarkerSymbol",
+        "SimpleRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "/android/latest/sample-code/add-graphics-renderer.htm"
+    ],
+    "relevant_apis": [
+        "CubicBezierSegment",
+        "EllipticArcSegment",
+        "GeodesicEllipseParameters",
+        "Geometry",
+        "GeometryEngine",
+        "Graphic",
+        "GraphicsOverlay",
+        "MutablePart",
+        "PolygonBuilder",
+        "PolylineBuilder",
+        "SimpleFillSymbol",
+        "SimpleLineSymbol",
+        "SimpleMarkerSymbol",
+        "SimpleRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/stylegraphicswithrenderer/MainActivity.kt"
+    ],
+    "title": "Style graphics with renderer"
+}
