@@ -78,12 +78,12 @@ private val Color.Companion.cyan: Color
         return fromRgba(0, 100, 100, 255)
     }
 
+// define offset used to keep a consistent distance between symbols in the same column
+private const val OFFSET = 20.0
+
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
-
-    // define offset used to keep a consistent distance between symbols in the same column
-    private val OFFSET = 20.0
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -372,7 +372,7 @@ class MainActivity : AppCompatActivity() {
         symbolLayerList.add(strokeForOutline)
         // create a multilayer polygon symbol from the symbol layer list
         val multilayerPolygonSymbol =
-            MultilayerPolygonSymbol(symbolLayerList.asIterable())
+            MultilayerPolygonSymbol(symbolLayerList)
         // create a polygon graphic with geometry using the symbol created above, and add it to the graphics overlay
         val graphic = Graphic(polygonBuilder.toGeometry(), multilayerPolygonSymbol)
         graphicsOverlay.graphics.add(graphic)
