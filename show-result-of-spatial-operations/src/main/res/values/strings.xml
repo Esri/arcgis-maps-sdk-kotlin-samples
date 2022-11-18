@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Show result of spatial operations</string>
+    <string name="select_spatial_operation">Select spatial operation</string>
+
+    <string-array name="operation">
+        <item>No operation</item>
+        <item>Intersection</item>
+        <item>Union</item>
+        <item>Difference</item>
+        <item>Symmetric difference</item>
+    </string-array>
+</resources>
