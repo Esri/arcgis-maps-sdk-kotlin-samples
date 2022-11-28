@@ -93,13 +93,20 @@ class MainActivity : AppCompatActivity() {
                     showMessage(it.message.toString())
                 }
                 .onSuccess {
-                    // limit the map scale to the largest layer scale
-                    map.maxScale = map.operationalLayers[6].maxScale
-                    map.minScale = map.operationalLayers[6].minScale
-                    // set the map to the map view
-                    mapView.map = map
-                    // add the graphics overlay to the map view when it is created
-                    mapView.graphicsOverlays.add(graphicsOverlay)
+                    // get the min an max scale of the the operational layer
+                    val maxScale = map.operationalLayers[6].maxScale
+                    val minScale = map.operationalLayers[6].minScale
+                    if(minScale != null && maxScale != null){
+                        // limit the map scale to the largest layer scale
+                        map.maxScale = maxScale
+                        map.minScale = minScale
+                        // set the map to the map view
+                        mapView.map = map
+                        // add the graphics overlay to the map view when it is created
+                        mapView.graphicsOverlays.add(graphicsOverlay)
+                    } else {
+                        showMessage("Error retrieving map scale")
+                    }
                 }
         }
         lifecycleScope.launch {
