@@ -12,8 +12,7 @@ ext {
     appcompatVersion = '1.3.0'
     constraintLayoutVersion = '2.1.4'
     multidexVersion = '2.0.1'
-    arcgisVersion = '200.0.0-3694'
-    arcgisToolkitVersion = '200.0.0-3694'
+    arcgisVersion = '200.0.0-3707'
     materialVersion = '1.6.1'
     recyclerViewVersion = '1.1.0'
     // plugin versions
