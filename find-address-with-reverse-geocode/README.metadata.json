@@ -1,0 +1,32 @@
+{
+    "category": "Search and Query",
+    "description": "Use an online service to find the address for a tapped point.",
+    "formal_name": "FindAddressWithReverseGeocode",
+    "ignore": false,
+    "images": [
+        "find-address-with-reverse-geocode.png"
+    ],
+    "keywords": [
+        "address",
+        "geocode",
+        "locate",
+        "reverse geocode",
+        "search",
+        "GeocodeParameters",
+        "GeocodeResult",
+        "LocatorTask",
+        "ReverseGeocodeParameters"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "GeocodeParameters",
+        "GeocodeResult",
+        "LocatorTask",
+        "ReverseGeocodeParameters"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/findaddresswithreversegeocode/MainActivity.kt"
+    ],
+    "title": "Find address with reverse geocode"
+}
