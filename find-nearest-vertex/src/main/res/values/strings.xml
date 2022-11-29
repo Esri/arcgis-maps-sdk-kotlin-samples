@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Find nearest vertex</string>
+    <string name="nearest_vertex">Vertex distance: %1$d mi</string>
+    <string name="nearest_coordinate">"Coordinate distance: %1$d mi"</string>
+</resources>

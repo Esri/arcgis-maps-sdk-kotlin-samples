@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         geodatabase.load().onSuccess {
             // get the feature table with the name
             val geodatabaseFeatureTable =
-                geodatabase.getGeodatabaseFeatureTable("Trailheads")
+                geodatabase.getFeatureTable("Trailheads")
             if (geodatabaseFeatureTable == null) {
                 showError("Feature table name not found in geodatabase")
                 return
