@@ -18,7 +18,7 @@ subprojects {
             dependencies {
                 implementation "androidx.appcompat:appcompat:$appcompatVersion"
                 implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-                implementation "arcgisruntime:arcgis-android:$arcgisVersion"
+                implementation "com.esri:arcgis-maps-kotlin:$arcgisVersion"
                 implementation "androidx.multidex:multidex:$multidexVersion"
             }
         }
