@@ -151,7 +151,8 @@ class MainActivity : AppCompatActivity() {
             // get the loaded vector tile parameters
             val exportVectorTilesParameters = exportVectorTilesParametersResult.getOrElse {
                 showMessage(it.message.toString())
-            } as ExportVectorTilesParameters
+                return@launch
+            }
 
             if (hasCurrentJobCompleted) {
                 // create a job to export vector tiles
