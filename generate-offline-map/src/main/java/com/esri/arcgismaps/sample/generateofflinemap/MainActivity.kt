@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         takeMapOfflineButton.isEnabled = false
 
         // create a portal item with the itemId of the web map
-        val portal = Portal(getString(R.string.portal_url), false)
+        val portal = Portal(getString(R.string.portal_url))
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
         // create a symbol to show a box around the extent we want to download
@@ -94,8 +94,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 .onSuccess {
                     // limit the map scale to the largest layer scale
-                    map.maxScale = map.operationalLayers[6].maxScale
-                    map.minScale = map.operationalLayers[6].minScale
+                    map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
+                    map.minScale = map.operationalLayers[6].minScale ?: 0.0
                     // set the map to the map view
                     mapView.map = map
                     // add the graphics overlay to the map view when it is created
