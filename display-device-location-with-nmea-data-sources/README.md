@@ -21,18 +21,19 @@ Click floating button "Play" to parse the provided NMEA sentences into a locatio
 3. Set the `NmeaLocationDataSource` to the `LocationDisplay`'s data source.
 4. Start the location display to begin receiving location and satellite updates.
 
+## Relevant API
+
+* LocationDisplay
+* NmeaLocationDataSource
+* NmeaSatelliteInfo
+
 ## About the data
 
 This sample reads lines from a local file to simulate the feed of data into the `NmeaLocationDataSource`. This simulated data source provides NMEA data periodically, and allows the sample to be used on devices without a GPS dongle that produces NMEA data.
 
 The route taken in this sample features a [one minute driving trip around Redlands, CA](https://arcgis.com/home/item.html?id=d5bad9f4fee9483791e405880fb466da).
 
-## Relevant API
 
-* LocationDisplay
-* NmeaLocationDataSource
-* NmeaSatelliteInfo
-* 
 ## Tags
 
 GPS, history, navigation, NMEA, real-time, trace
