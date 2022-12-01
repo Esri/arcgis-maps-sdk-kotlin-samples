@@ -18,6 +18,7 @@
         "NmeaSatelliteInfo"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "LocationDisplay",
         "NmeaLocationDataSource",
