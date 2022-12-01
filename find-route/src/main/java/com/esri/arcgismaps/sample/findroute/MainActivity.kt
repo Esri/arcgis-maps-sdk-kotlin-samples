@@ -47,8 +47,6 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.networkanalysis.DirectionManeuver
-import com.arcgismaps.tasks.networkanalysis.Route
-import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteResult
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
@@ -133,6 +131,8 @@ class MainActivity : AppCompatActivity() {
      * and displays a graphic of the route on the map.
      */
     private suspend fun solveRoute() {
+        // set the applicationContext as it is required with RouteTask
+        ArcGISEnvironment.applicationContext = this@MainActivity
         // create a route task instance
         val routeTask =
             RouteTask(
@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         mainProgressBar.visibility = View.VISIBLE
         routeTask.createDefaultParameters().onSuccess { routeParams ->
             // create stops
-            val stops = arrayListOf(
+            val stops = listOf(
                 Stop(Point(-117.1508, 32.7411, SpatialReference.wgs84())),
                 Stop(Point(-117.1555, 32.7033, SpatialReference.wgs84()))
             )
