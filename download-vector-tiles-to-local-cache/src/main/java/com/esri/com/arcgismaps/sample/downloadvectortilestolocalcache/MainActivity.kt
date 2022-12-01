@@ -206,7 +206,6 @@ class MainActivity : AppCompatActivity() {
                     val progress = exportVectorTilesJob.progress.value
                     dialogLayoutBinding.progressBar.progress = progress
                     dialogLayoutBinding.progressTextView.text = "$progress% completed"
-                    Log.e(TAG, progress.toString())
                 }
             }
             // display map if job succeeds
