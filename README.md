@@ -47,7 +47,7 @@ Built APK's are saved to **arcgis-maps-sdk-kotlin-samples/[module-name]/build/ou
 
 ### Run samples through the sample viewer
 The samples in this repository can also be viewed in a single sample viewer app. It can be found on the Play Store or [on ArcGIS Online](https://arcgisruntime.maps.arcgis.com/home/item.html?id=21ac248ea189406c821400dc28bf686c). If downloading from ArcGIS Online, follow these instructions to run the app locally on your device:
-- Download and unzip the file to get the apk **ArcGIS_Runtime_Sample_Viewer_Android_20000.apk**.
+- Download and unzip the file to get the apk **ArcGIS_Maps_SDK_Sample_Viewer_Android_20000.apk**.
 
 ## Issues
 
@@ -69,7 +69,7 @@ Anyone and everyone is welcome to [contribute](.github/CONTRIBUTING.md). We do a
 Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/main/README.md)
 
 ## Licensing
-Copyright 2021 Esri
+Copyright 2022 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
@@ -77,4 +77,4 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-A copy of the license is available in the repository's [license.txt](https://github.com/Esri/arcgis-android-sdk-gradle-samples/blob/main/LICENSE) file.
+A copy of the license is available in the repository's [LICENSE](LICENSE?raw=1) file

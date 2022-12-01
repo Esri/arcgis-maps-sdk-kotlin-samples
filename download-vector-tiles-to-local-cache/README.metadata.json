@@ -1,0 +1,37 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Export tiles from an online vector tile service.",
+    "formal_name": "DownloadVectorTilesToLocalCache",
+    "ignore": false,
+    "images": [
+        "download-vector-tiles-to-local-cache.png"
+    ],
+    "keywords": [
+        "cache",
+        "download",
+        "offline",
+        "vector",
+        "ArcGISVectorTiledLayer",
+        "ExportVectorTilesJob",
+        "ExportVectorTilesParameters",
+        "ExportVectorTilesResult",
+        "ExportVectorTilesTask",
+        "VectorTileCache"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "/android/latest/sample-code/download-vector-tiles-to-local-cache.htm"
+    ],
+    "relevant_apis": [
+        "ArcGISVectorTiledLayer",
+        "ExportVectorTilesJob",
+        "ExportVectorTilesParameters",
+        "ExportVectorTilesResult",
+        "ExportVectorTilesTask",
+        "VectorTileCache"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/com/arcgismaps/sample/downloadvectortilestolocalcache/MainActivity.kt"
+    ],
+    "title": "Download vector tiles to local cache"
+}

@@ -13,7 +13,7 @@ class DownloadActivity : DownloaderActivity() {
             getString(R.string.app_name),
             listOf(
                 // ArcGIS Portal item containing the .mmpk mobile map package
-                "https://www.arcgis.com/home/item.html?id=2b0f9e17105847809dfeb04e3cad69e0",
+                "https://www.arcgis.com/home/item.html?id=cb1b20748a9f4d128dad8a87244e3e37",
                 // ArcGIS Portal item containing shapefiles of Scottish Wildlife Trust reserve boundaries
                 "https://www.arcgis.com/home/item.html?id=15a7cbd3af1e47cfa5d2c6b93dc44fc2",
                 // GeoPackage AuroraCO.gpkg with datasets that cover Aurora Colorado
