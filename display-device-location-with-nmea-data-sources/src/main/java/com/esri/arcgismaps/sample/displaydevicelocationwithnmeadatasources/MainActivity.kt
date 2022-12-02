@@ -38,6 +38,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.File
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // create a new NMEA location data source
-    private val nmeaLocationDataSource: NmeaLocationDataSource =
+    private var nmeaLocationDataSource: NmeaLocationDataSource =
         NmeaLocationDataSource(SpatialReference.wgs84())
 
     // create a timer to simulate a stream of NMEA data
@@ -133,7 +134,10 @@ class MainActivity : AppCompatActivity() {
                 setButtonStatus(true)
             } else {
                 // stop receiving and displaying location data
-                nmeaLocationDataSource.stop()
+                nmeaLocationDataSource.stop().onSuccess {
+                    nmeaLocationDataSource = NmeaLocationDataSource(SpatialReference.wgs84())
+                    mapView.locationDisplay.dataSource = nmeaLocationDataSource
+                }
                 setButtonStatus(false)
                 clearInformation()
             }
