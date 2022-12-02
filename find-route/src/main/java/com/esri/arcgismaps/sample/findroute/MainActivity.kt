@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun solveRoute() {
         // set the applicationContext as it is required with RouteTask
-        ArcGISEnvironment.applicationContext = this@MainActivity
+        ArcGISEnvironment.applicationContext = applicationContext
         // create a route task instance
         val routeTask =
             RouteTask(
