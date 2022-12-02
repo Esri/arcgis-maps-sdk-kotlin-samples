@@ -32,7 +32,6 @@ import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.NmeaGnssSystem
 import com.arcgismaps.location.NmeaLocationDataSource
-import com.arcgismaps.location.NmeaSatelliteInfo
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -62,8 +61,8 @@ class MainActivity : AppCompatActivity() {
     // create a timer to simulate a stream of NMEA data
     private var timer = Timer()
 
-    // keeps track of the timer during play/pause
-    private var count = 0
+    // index of list of locations
+    private var locationIndex = 0
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -109,8 +108,7 @@ class MainActivity : AppCompatActivity() {
         // set a viewpoint on the map view centered on Redlands, California
         mapView.setViewpoint(
             Viewpoint(
-                Point(-117.191, 34.0306, SpatialReference.wgs84()),
-                100000.0
+                Point(-117.191, 34.0306, SpatialReference.wgs84()), 100000.0
             )
         )
 
@@ -131,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             if (nmeaLocationDataSource.status.value != LocationDataSourceStatus.Started) {
                 // start location data source
-                displayDeviceLocation()
+                startNMEALocationDataSource()
                 setButtonStatus(true)
             } else {
                 // stop receiving and displaying location data
@@ -148,15 +146,13 @@ class MainActivity : AppCompatActivity() {
     private fun setButtonStatus(isShowingLocation: Boolean) = if (isShowingLocation) {
         playPauseFAB.setImageDrawable(
             AppCompatResources.getDrawable(
-                this,
-                R.drawable.ic_round_pause_24
+                this, R.drawable.ic_round_pause_24
             )
         )
     } else {
         playPauseFAB.setImageDrawable(
             AppCompatResources.getDrawable(
-                this,
-                R.drawable.ic_round_play_arrow_24
+                this, R.drawable.ic_round_play_arrow_24
             )
         )
     }
@@ -166,7 +162,7 @@ class MainActivity : AppCompatActivity() {
      * on the location display. Data is pushed to the data source using a timeline to simulate live updates, as they would
      * appear if using real-time data from a GPS dongle
      */
-    private fun displayDeviceLocation() {
+    private fun startNMEALocationDataSource() {
         val simulatedNmeaDataFile = File("$provisionPath/Redlands.nmea")
         if (simulatedNmeaDataFile.exists()) {
             try {
@@ -193,11 +189,10 @@ class MainActivity : AppCompatActivity() {
                             // convert from meters to foot
                             val horizontalAccuracy = it.horizontalAccuracy * 3.28084
                             val verticalAccuracy = it.verticalAccuracy * 3.28084
-                            accuracyTV.text = getString(R.string.accuracy) +
-                                    "Horizontal-%.1fft, Vertical-%.1fft".format(
-                                        horizontalAccuracy,
-                                        verticalAccuracy
-                                    )
+                            accuracyTV.text =
+                                getString(R.string.accuracy) + "Horizontal-%.1fft, Vertical-%.1fft".format(
+                                    horizontalAccuracy, verticalAccuracy
+                                )
                         }
                     }
                     launch {
@@ -230,15 +225,13 @@ class MainActivity : AppCompatActivity() {
         timer = Timer()
         timer.schedule(timerTask {
             // only push data when started
-            if (nmeaLocationDataSource.status.value == LocationDataSourceStatus.Started)
-                nmeaLocationDataSource.pushData(
-                    nmeaSentences[count++].toByteArray(
-                        StandardCharsets.UTF_8
-                    )
+            if (nmeaLocationDataSource.status.value == LocationDataSourceStatus.Started) nmeaLocationDataSource.pushData(
+                nmeaSentences[locationIndex++].toByteArray(
+                    StandardCharsets.UTF_8
                 )
-            // reset the count after the last data point is reached
-            if (count == nmeaSentences.size)
-                count = 0
+            )
+            // reset the location index after the last data point is reached
+            if (locationIndex == nmeaSentences.size) locationIndex = 0
         }, 250, 250)
     }
 
@@ -247,50 +240,43 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupSatelliteChangedListener() {
         lifecycleScope.launch {
-            nmeaLocationDataSource.satellitesChanged.collect {
-                val uniqueSatelliteIDs: HashSet<Int> = hashSetOf()
-                // get satellite information from the NMEA location data source every time the satellites change
-                val nmeaSatelliteInfoList: List<NmeaSatelliteInfo> = it
+            nmeaLocationDataSource.satellitesChanged.collect { nmeaSatelliteInfoList ->
+                val uniqueSatelliteIDs = mutableListOf<Int>()
+                var satelliteSystems = ""
                 // set the text of the satellite count label
                 satelliteCountTV.text =
                     getString(R.string.satellite_count) + nmeaSatelliteInfoList.size
-
-                for (satInfo in nmeaSatelliteInfoList) {
-                    // collect unique satellite ids
-                    uniqueSatelliteIDs.add(satInfo.id)
-                    // sort the ids numerically
-                    val sortedIds: MutableList<Int> = ArrayList(uniqueSatelliteIDs)
-                    sortedIds.sort()
-                    // get the satellite system used
-                    var systemText = getString(R.string.system)
-                    when (satInfo.system) {
-                        NmeaGnssSystem.Bds -> {
-                            systemText += "BDS"
-                        }
-                        NmeaGnssSystem.Galileo -> {
-                            systemText += "Galileo"
-                        }
-                        NmeaGnssSystem.Glonass -> {
-                            systemText += "Glonass"
-                        }
-                        NmeaGnssSystem.Gps -> {
-                            systemText += "GPS"
-                        }
-                        NmeaGnssSystem.NavIc -> {
-                            systemText += "NavIc"
-                        }
-                        NmeaGnssSystem.Qzss -> {
-                            systemText += "Qzss"
-                        }
-                        NmeaGnssSystem.Unknown -> {
-                            systemText += "Unknown"
-                        }
+                // get the system of the first satellite
+                when (nmeaSatelliteInfoList.first().system) {
+                    NmeaGnssSystem.Bds -> {
+                        satelliteSystems = "BDS"
                     }
-                    // display the satellite system and id information
-                    systemTypeTV.text = systemText
-                    satelliteIDsTV.text = getString(R.string.satellite_ids) + sortedIds
-
+                    NmeaGnssSystem.Galileo -> {
+                        satelliteSystems = "Galileo"
+                    }
+                    NmeaGnssSystem.Glonass -> {
+                        satelliteSystems = "Glonass"
+                    }
+                    NmeaGnssSystem.Gps -> {
+                        satelliteSystems = "GPS"
+                    }
+                    NmeaGnssSystem.NavIc -> {
+                        satelliteSystems = "NavIc"
+                    }
+                    NmeaGnssSystem.Qzss -> {
+                        satelliteSystems = "Qzss"
+                    }
+                    NmeaGnssSystem.Unknown -> {
+                        satelliteSystems = "Unknown"
+                    }
                 }
+                // get the satellite IDs from the info list
+                nmeaSatelliteInfoList.forEach { satelliteInfo ->
+                    uniqueSatelliteIDs.add(satelliteInfo.id)
+                }
+                // display the satellite system and id information
+                systemTypeTV.text = getString(R.string.system) + satelliteSystems
+                satelliteIDsTV.text = getString(R.string.satellite_ids) + uniqueSatelliteIDs
             }
         }
     }
