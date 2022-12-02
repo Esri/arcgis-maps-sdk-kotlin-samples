@@ -14,12 +14,13 @@ For simplicity, the sample comes loaded with a start and end stop. You can tap o
 
 ## How it works
 
-1. Create a `RouteTask` using a URL to an online route service.
-2. Generate default `RouteParameters` using `routeTask.createDefaultParameters()`.
-3. Set `returnDirections` on the parameters to true.
-4. Add `Stop`s to the parameters `stops` collection for each destination.
-5. Solve the route using `routeTask.solveRoute(routeParameters)` to get a `RouteResult`.
-6. Iterate through the result's `Route`s. To display the route, create a graphic using the geometry from `route.routeGeometry`. To display directions, use `route.directionManeuvers`, and for each `DirectionManeuver`, display `DirectionManeuver.directionText`.
+1. Set the `ArcGISEnvironment.applicationContext` to use a `RouteTask`
+2. Create a `RouteTask` using a URL to an online route service.
+3. Generate default `RouteParameters` using `routeTask.createDefaultParameters()`.
+4. Set `returnDirections` on the parameters to true.
+5. Add `Stop`s to the parameters `stops` collection for each destination.
+6. Solve the route using `routeTask.solveRoute(routeParameters)` to get a `RouteResult`.
+7. Iterate through the result's `Route`s. To display the route, create a graphic using the geometry from `route.routeGeometry`. To display directions, use `route.directionManeuvers`, and for each `DirectionManeuver`, display `DirectionManeuver.directionText`.
 
 ## Relevant API
 

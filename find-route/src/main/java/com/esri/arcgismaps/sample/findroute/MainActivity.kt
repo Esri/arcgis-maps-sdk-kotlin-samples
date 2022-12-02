@@ -226,25 +226,20 @@ class MainActivity : AppCompatActivity() {
             // when the user taps a maneuver, set the viewpoint to that portion of the route
             onItemClickListener =
                 AdapterView.OnItemClickListener { _, _, position, _ ->
-                    // remove any graphics that are not the two stops and the route graphic
-                    if (graphicsOverlay.graphics.size > 3) {
-                        graphicsOverlay.graphics.removeAt(graphicsOverlay.graphics.size - 1)
-                    }
-                    // set the viewpoint to the selected maneuver
-                    val geometry = directions[position].geometry
-                    if (geometry != null) {
+                    directions[position].geometry?.let { geometry ->
+                        // set the viewpoint to the selected maneuver
                         mapView.setViewpoint(
                             Viewpoint(geometry.extent, 20.0)
                         )
+                        // create a graphic with a symbol for the maneuver and add it to the graphics overlay
+                        val selectedRouteSymbol = SimpleLineSymbol(
+                            SimpleLineSymbolStyle.Solid,
+                            Color.green, 5f
+                        )
+                        graphicsOverlay.graphics.add(Graphic(geometry, selectedRouteSymbol))
+                        // collapse the bottom sheet
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
-                    // create a graphic with a symbol for the maneuver and add it to the graphics overlay
-                    val selectedRouteSymbol = SimpleLineSymbol(
-                        SimpleLineSymbolStyle.Solid,
-                        Color.green, 5f
-                    )
-                    graphicsOverlay.graphics.add(Graphic(geometry, selectedRouteSymbol))
-                    // collapse the bottom sheet
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
         }
 
