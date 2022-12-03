@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Push the mock data NMEA sentences into the data source every 250 ms
      */
-    private fun startNMEAMockData(nmeaSentences: MutableList<String>) {
+    private fun startNMEAMockData(nmeaSentences: List<String>) {
         timer = Timer()
         timer.schedule(timerTask {
             // only push data when started
