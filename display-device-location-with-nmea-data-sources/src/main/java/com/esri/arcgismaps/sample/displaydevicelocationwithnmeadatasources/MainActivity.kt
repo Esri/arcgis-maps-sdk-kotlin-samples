@@ -198,11 +198,10 @@ class MainActivity : AppCompatActivity() {
         timer = Timer()
         timer.schedule(timerTask {
             // only push data when started
-            if (nmeaLocationDataSource.status.value == LocationDataSourceStatus.Started) nmeaLocationDataSource.pushData(
-                nmeaSentences[locationIndex++].toByteArray(
-                    StandardCharsets.UTF_8
+            if (nmeaLocationDataSource.status.value == LocationDataSourceStatus.Started)
+                nmeaLocationDataSource.pushData(
+                    nmeaSentences[locationIndex++].toByteArray(StandardCharsets.UTF_8)
                 )
-            )
             // reset the location index after the last data point is reached
             if (locationIndex == nmeaSentences.size) locationIndex = 0
         }, 250, 250)
@@ -250,8 +249,7 @@ class MainActivity : AppCompatActivity() {
             val uniqueSatelliteIDs = mutableListOf<Int>()
             var satelliteSystems = ""
             // set the text of the satellite count label
-            satelliteCountTV.text =
-                getString(R.string.satellite_count) + nmeaSatelliteInfoList.size
+            satelliteCountTV.text = getString(R.string.satellite_count) + nmeaSatelliteInfoList.size
             // get the system of the first satellite
             when (nmeaSatelliteInfoList.first().system) {
                 NmeaGnssSystem.Bds -> {
@@ -284,7 +282,6 @@ class MainActivity : AppCompatActivity() {
             systemTypeTV.text = getString(R.string.system) + satelliteSystems
             satelliteIDsTV.text = getString(R.string.satellite_ids) + uniqueSatelliteIDs
         }
-
     }
 
     /**
