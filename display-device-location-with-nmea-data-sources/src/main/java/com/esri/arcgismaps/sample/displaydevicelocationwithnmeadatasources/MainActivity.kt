@@ -38,7 +38,6 @@ import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.File
@@ -62,7 +61,10 @@ class MainActivity : AppCompatActivity() {
     // create a timer to simulate a stream of NMEA data
     private var timer = Timer()
 
-    // index of list of locations
+    // list of nmea location sentences
+    private var nmeaSentences: MutableList<String>? = null
+
+    // index of nmea location sentence
     private var locationIndex = 0
 
     // set up data binding for the activity
@@ -113,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // set the NMEA location data source onto the map view's location display
+        // set the nmea location data source onto the map view's location display
         val locationDisplay = mapView.locationDisplay
         locationDisplay.dataSource = nmeaLocationDataSource
         locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
@@ -121,27 +123,89 @@ class MainActivity : AppCompatActivity() {
         // disable map view interaction, the location display will automatically center on the mock device location
         mapView.interactionOptions.isPanEnabled = false
         mapView.interactionOptions.isZoomEnabled = false
+
+        // read nmea location sentences from file
+        nmeaSentences = getNMEASentenceList()
+        // collects the accuracy for each location change
+        collectLocationChanges()
+        // collects satellite changes and display satellite information
+        setupSatelliteChangedListener()
+    }
+
+    /**
+     * Reads NMEA location sentences from the .nmea file and
+     * returns it as a [MutableList]
+     */
+    private fun getNMEASentenceList(): MutableList<String>? {
+        // create list of nmea location sentences
+        val nmeaSentences: MutableList<String> = mutableListOf()
+        val simulatedNmeaDataFile = File("$provisionPath/Redlands.nmea")
+        if (!simulatedNmeaDataFile.exists()) {
+            showError("NMEA file does not exist")
+            return null
+        }
+        // read the nmea file contents using a buffered reader and store the mock data sentences in a list
+        return try {
+            // create a buffered reader using the .nmea file
+            val bufferedReader = BufferedReader(FileReader(simulatedNmeaDataFile.path))
+            var line = bufferedReader.readLine()
+            while (line != null) {
+                // add carriage return for nmea location data source parser
+                nmeaSentences.add(line + "\n")
+                line = bufferedReader.readLine()
+            }
+            bufferedReader.close()
+            nmeaSentences
+        } catch (e: Exception) {
+            showError("Error creating NMEA sentences " + e.message)
+            null
+        }
     }
 
     /**
      * Control the start/stop status of the NMEA location data source
      */
-    fun playPauseClick(view: View) {
-        lifecycleScope.launch {
-            if (nmeaLocationDataSource.status.value != LocationDataSourceStatus.Started) {
-                // start location data source
-                startNMEALocationDataSource()
-                setButtonStatus(true)
-            } else {
-                // stop receiving and displaying location data
-                nmeaLocationDataSource.stop().onSuccess {
-                    nmeaLocationDataSource = NmeaLocationDataSource(SpatialReference.wgs84())
-                    mapView.locationDisplay.dataSource = nmeaLocationDataSource
-                }
-                setButtonStatus(false)
-                clearInformation()
+    fun playPauseClick(view: View) = lifecycleScope.launch {
+        if (nmeaLocationDataSource.status.value != LocationDataSourceStatus.Started) {
+            // initialize the location data source and prepare to begin receiving location updates when data is pushed
+            // as updates are received, they will be displayed on the map
+            nmeaLocationDataSource.start().onFailure {
+                showError("NmeaLocationDataSource failed to start: ${it.message}")
             }
+            // starts the NMEA mock data sentences
+            nmeaSentences?.let { startNMEAMockData(it) }
+            setButtonStatus(true)
+        } else {
+            // stop receiving and displaying location data
+            nmeaLocationDataSource.stop()
+            // cancel up the timer task
+            timer.cancel()
+            setButtonStatus(false)
+            clearInformation()
         }
+    }
+
+    /**
+     * Initializes the location data source, reads the mock data NMEA sentences, and displays location updates from that file
+     * on the location display. Data is pushed to the data source using a timeline to simulate live updates, as they would
+     * appear if using real-time data from a GPS dongle
+     */
+
+    /**
+     * Push the mock data NMEA sentences into the data source every 250 ms
+     */
+    private fun startNMEAMockData(nmeaSentences: MutableList<String>) {
+        timer = Timer()
+        timer.schedule(timerTask {
+            // only push data when started
+            if (nmeaLocationDataSource.status.value == LocationDataSourceStatus.Started) nmeaLocationDataSource.pushData(
+                nmeaSentences[locationIndex++].toByteArray(
+                    StandardCharsets.UTF_8
+                )
+            )
+            // reset the location index after the last data point is reached
+            if (locationIndex == nmeaSentences.size) locationIndex = 0
+        }, 250, 250)
     }
 
     /**
@@ -162,127 +226,65 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Initializes the location data source, reads the mock data NMEA sentences, and displays location updates from that file
-     * on the location display. Data is pushed to the data source using a timeline to simulate live updates, as they would
-     * appear if using real-time data from a GPS dongle
+     * Collects location changes of the NMEA location data source,
+     * and displays the location accuracy
      */
-    private fun startNMEALocationDataSource() {
-        val simulatedNmeaDataFile = File("$provisionPath/Redlands.nmea")
-        if (simulatedNmeaDataFile.exists()) {
-            try {
-                // read the nmea file contents using a buffered reader and store the mock data sentences in a list
-                val bufferedReader = BufferedReader(FileReader(simulatedNmeaDataFile.path))
-                // add carriage return for NMEA location data source parser
-                val nmeaSentences: MutableList<String> = mutableListOf()
-                var line = bufferedReader.readLine()
-                while (line != null) {
-                    nmeaSentences.add(line + "\n")
-                    line = bufferedReader.readLine()
-                }
-                bufferedReader.close()
-
-                lifecycleScope.apply {
-                    launch {
-                        // initialize the location data source and prepare to begin receiving location updates when data is pushed
-                        // as updates are received, they will be displayed on the map
-                        nmeaLocationDataSource.start()
-                    }
-                    launch {
-                        // collect the accuracy for each location change
-                        nmeaLocationDataSource.locationChanged.collect {
-                            // convert from meters to foot
-                            val horizontalAccuracy = it.horizontalAccuracy * 3.28084
-                            val verticalAccuracy = it.verticalAccuracy * 3.28084
-                            accuracyTV.text =
-                                getString(R.string.accuracy) + "Horizontal-%.1fft, Vertical-%.1fft".format(
-                                    horizontalAccuracy, verticalAccuracy
-                                )
-                        }
-                    }
-                    launch {
-                        // handle when LocationDataSource status is changed
-                        nmeaLocationDataSource.status.collect {
-                            if (it == LocationDataSourceStatus.Started) {
-                                // add a satellite changed listener to the NMEA location data source and display satellite information
-                                setupSatelliteChangedListener()
-                                // starts the NMEA mock data sentences
-                                startNMEAMockData(nmeaSentences)
-                            }
-                            if (it == LocationDataSourceStatus.Stopped) {
-                                timer.cancel()
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                showError("Error while setting up NmeaLocationDataSource: " + e.message)
-            }
-        } else {
-            showError("NMEA File not found")
-        }
-    }
-
-    /**
-     * Push the mock data NMEA sentences into the data source every 250 ms
-     */
-    private fun startNMEAMockData(nmeaSentences: MutableList<String>) {
-        timer = Timer()
-        timer.schedule(timerTask {
-            // only push data when started
-            if (nmeaLocationDataSource.status.value == LocationDataSourceStatus.Started) nmeaLocationDataSource.pushData(
-                nmeaSentences[locationIndex++].toByteArray(
-                    StandardCharsets.UTF_8
+    private fun collectLocationChanges() = lifecycleScope.launch {
+        nmeaLocationDataSource.locationChanged.collect { nmeaLocation ->
+            // convert from meters to foot
+            val horizontalAccuracy = nmeaLocation.horizontalAccuracy * 3.28084
+            val verticalAccuracy = nmeaLocation.verticalAccuracy * 3.28084
+            accuracyTV.text =
+                getString(R.string.accuracy) + "Horizontal-%.1fft, Vertical-%.1fft".format(
+                    horizontalAccuracy, verticalAccuracy
                 )
-            )
-            // reset the location index after the last data point is reached
-            if (locationIndex == nmeaSentences.size) locationIndex = 0
-        }, 250, 250)
+        }
     }
 
     /**
-     * Obtains NMEA satellite information from the NMEA location data source, and displays satellite information on the app
+     * Obtains NMEA satellite information from the NMEA location data source,
+     * and displays satellite information on the app
      */
-    private fun setupSatelliteChangedListener() {
-        lifecycleScope.launch {
-            nmeaLocationDataSource.satellitesChanged.collect { nmeaSatelliteInfoList ->
-                val uniqueSatelliteIDs = mutableListOf<Int>()
-                var satelliteSystems = ""
-                // set the text of the satellite count label
-                satelliteCountTV.text =
-                    getString(R.string.satellite_count) + nmeaSatelliteInfoList.size
-                // get the system of the first satellite
-                when (nmeaSatelliteInfoList.first().system) {
-                    NmeaGnssSystem.Bds -> {
-                        satelliteSystems = "BDS"
-                    }
-                    NmeaGnssSystem.Galileo -> {
-                        satelliteSystems = "Galileo"
-                    }
-                    NmeaGnssSystem.Glonass -> {
-                        satelliteSystems = "Glonass"
-                    }
-                    NmeaGnssSystem.Gps -> {
-                        satelliteSystems = "GPS"
-                    }
-                    NmeaGnssSystem.NavIc -> {
-                        satelliteSystems = "NavIc"
-                    }
-                    NmeaGnssSystem.Qzss -> {
-                        satelliteSystems = "Qzss"
-                    }
-                    NmeaGnssSystem.Unknown -> {
-                        satelliteSystems = "Unknown"
-                    }
+    private fun setupSatelliteChangedListener() = lifecycleScope.launch {
+        nmeaLocationDataSource.satellitesChanged.collect { nmeaSatelliteInfoList ->
+            val uniqueSatelliteIDs = mutableListOf<Int>()
+            var satelliteSystems = ""
+            // set the text of the satellite count label
+            satelliteCountTV.text =
+                getString(R.string.satellite_count) + nmeaSatelliteInfoList.size
+            // get the system of the first satellite
+            when (nmeaSatelliteInfoList.first().system) {
+                NmeaGnssSystem.Bds -> {
+                    satelliteSystems = "BDS"
                 }
-                // get the satellite IDs from the info list
-                nmeaSatelliteInfoList.forEach { satelliteInfo ->
-                    uniqueSatelliteIDs.add(satelliteInfo.id)
+                NmeaGnssSystem.Galileo -> {
+                    satelliteSystems = "Galileo"
                 }
-                // display the satellite system and id information
-                systemTypeTV.text = getString(R.string.system) + satelliteSystems
-                satelliteIDsTV.text = getString(R.string.satellite_ids) + uniqueSatelliteIDs
+                NmeaGnssSystem.Glonass -> {
+                    satelliteSystems = "Glonass"
+                }
+                NmeaGnssSystem.Gps -> {
+                    satelliteSystems = "GPS"
+                }
+                NmeaGnssSystem.NavIc -> {
+                    satelliteSystems = "NavIc"
+                }
+                NmeaGnssSystem.Qzss -> {
+                    satelliteSystems = "Qzss"
+                }
+                NmeaGnssSystem.Unknown -> {
+                    satelliteSystems = "Unknown"
+                }
             }
+            // get the satellite IDs from the info list
+            nmeaSatelliteInfoList.forEach { satelliteInfo ->
+                uniqueSatelliteIDs.add(satelliteInfo.id)
+            }
+            // display the satellite system and id information
+            systemTypeTV.text = getString(R.string.system) + satelliteSystems
+            satelliteIDsTV.text = getString(R.string.satellite_ids) + uniqueSatelliteIDs
         }
+
     }
 
     /**
