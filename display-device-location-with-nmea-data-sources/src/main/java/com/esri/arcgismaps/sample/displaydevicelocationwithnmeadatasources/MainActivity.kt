@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         // collects the accuracy for each location change
         collectLocationChanges()
         // collects satellite changes and display satellite information
-        setupSatelliteChangedListener()
+        collectSatelliteChanges()
     }
 
     /**
@@ -244,7 +244,7 @@ class MainActivity : AppCompatActivity() {
      * Obtains NMEA satellite information from the NMEA location data source,
      * and displays satellite information on the app
      */
-    private fun setupSatelliteChangedListener() = lifecycleScope.launch {
+    private fun collectSatelliteChanges() = lifecycleScope.launch {
         nmeaLocationDataSource.satellitesChanged.collect { nmeaSatelliteInfoList ->
             val uniqueSatelliteIDs = mutableListOf<Int>()
             var satelliteSystems = ""
