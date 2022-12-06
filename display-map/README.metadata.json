@@ -11,6 +11,9 @@
         "map"
     ],
     "language": "kotlin",
+    "redirect_from": [
+        "/android/latest/sample-code/display-map.htm"
+    ],
     "relevant_apis": [
         "ArcGISMap",
         "BasemapStyle",

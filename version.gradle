@@ -3,8 +3,8 @@ ext {
     compileSdkVersion = 33
     minSdkVersion = 26
     targetSdkVersion = 33
-    versionCode = 10015000
-    versionName = '100.15.0.0'
+    versionCode = 2000000
+    versionName = '200.0.0'
     // library versions
     kotlinVersion = '1.7.10'
     ktxLifecycle = '2.5.1'
