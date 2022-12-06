@@ -60,7 +60,7 @@ public class ScriptMain {
     private void deleteUnwantedFiles() {
         File buildFolder = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build");
         File displayMapKotlinFolder = new File(
-                samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/displaymap");
+                samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/displaymap");
         File image = new File(samplesRepoPath + "/" + sampleWithHyphen + "/display-map.png");
         try {
             FileUtils.deleteDirectory(buildFolder);
@@ -91,7 +91,7 @@ public class ScriptMain {
         }
 
         // Create the sample package directory in the source folder
-        File packageDirectory = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/" + sampleWithoutSpaces);
+        File packageDirectory = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/" + sampleWithoutSpaces);
         if(!packageDirectory.exists()){
             packageDirectory.mkdirs();
         }else{
@@ -153,6 +153,8 @@ public class ScriptMain {
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("demos.displaymap", "sample." + sampleWithoutSpaces);
+            fileContent = fileContent.replace("constraintLayoutVersion\"","constraintLayoutVersion\"\n" +
+                    "    implementation \"com.google.android.material:material:$materialVersion\"");
             FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
@@ -195,7 +197,7 @@ public class ScriptMain {
         }
 
         //Update MainActivity.kt
-        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgisruntime/sample/"+sampleWithoutSpaces+"/MainActivity.kt");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/MainActivity.kt");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("Copyright 2017", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
