@@ -39,9 +39,7 @@ import com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources.datab
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 import java.nio.charset.StandardCharsets
 import java.util.*
 import kotlin.concurrent.timerTask
@@ -55,14 +53,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     // create a new NMEA location data source
-    private var nmeaLocationDataSource: NmeaLocationDataSource =
+    private val nmeaLocationDataSource: NmeaLocationDataSource =
         NmeaLocationDataSource(SpatialReference.wgs84())
 
     // create a timer to simulate a stream of NMEA data
     private var timer = Timer()
 
     // list of nmea location sentences
-    private var nmeaSentences: MutableList<String>? = null
+    private var nmeaSentences: List<String>? = emptyList()
 
     // index of nmea location sentence
     private var locationIndex = 0
@@ -115,14 +113,19 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // set the nmea location data source onto the map view's location display
-        val locationDisplay = mapView.locationDisplay
-        locationDisplay.dataSource = nmeaLocationDataSource
-        locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+        mapView.locationDisplay.apply {
+            // set the map view's location display to use the nmea location data source
+            dataSource = nmeaLocationDataSource
+            // set the map view to recenter on location changed events
+            setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+        }
 
         // disable map view interaction, the location display will automatically center on the mock device location
-        mapView.interactionOptions.isPanEnabled = false
-        mapView.interactionOptions.isZoomEnabled = false
+        mapView.interactionOptions.apply {
+            isPanEnabled = false
+            isZoomEnabled = false
+            isRotateEnabled = false
+        }
 
         // read nmea location sentences from file
         nmeaSentences = getNMEASentenceList()
@@ -136,30 +139,22 @@ class MainActivity : AppCompatActivity() {
      * Reads NMEA location sentences from the .nmea file and
      * returns it as a [MutableList]
      */
-    private fun getNMEASentenceList(): MutableList<String>? {
-        // create list of nmea location sentences
-        val nmeaSentences: MutableList<String> = mutableListOf()
+    private fun getNMEASentenceList(): List<String>? {
         val simulatedNmeaDataFile = File("$provisionPath/Redlands.nmea")
         if (!simulatedNmeaDataFile.exists()) {
             showError("NMEA file does not exist")
             return null
         }
+        // create list of nmea location sentences
+        var nmeaSentences: List<String> = emptyList()
+        // create a buffered reader using the .nmea file
+        val bufferedReader = File(simulatedNmeaDataFile.path).bufferedReader()
         // read the nmea file contents using a buffered reader and store the mock data sentences in a list
-        return try {
-            // create a buffered reader using the .nmea file
-            val bufferedReader = BufferedReader(FileReader(simulatedNmeaDataFile.path))
-            var line = bufferedReader.readLine()
-            while (line != null) {
-                // add carriage return for nmea location data source parser
-                nmeaSentences.add(line + "\n")
-                line = bufferedReader.readLine()
-            }
-            bufferedReader.close()
-            nmeaSentences
-        } catch (e: Exception) {
-            showError("Error creating NMEA sentences " + e.message)
-            null
+        bufferedReader.useLines { bufferReaderLines ->
+            // add carriage return for nmea location data source parser
+            nmeaSentences = bufferReaderLines.map { it + "\n" }.toList()
         }
+        return nmeaSentences
     }
 
     /**
@@ -171,6 +166,7 @@ class MainActivity : AppCompatActivity() {
             // as updates are received, they will be displayed on the map
             nmeaLocationDataSource.start().onFailure {
                 showError("NmeaLocationDataSource failed to start: ${it.message}")
+                return@launch
             }
             // starts the NMEA mock data sentences
             nmeaSentences?.let { startNMEAMockData(it) }
@@ -181,7 +177,7 @@ class MainActivity : AppCompatActivity() {
             // cancel up the timer task
             timer.cancel()
             setButtonStatus(false)
-            clearInformation()
+            clearUI()
         }
     }
 
@@ -246,38 +242,21 @@ class MainActivity : AppCompatActivity() {
      */
     private fun collectSatelliteChanges() = lifecycleScope.launch {
         nmeaLocationDataSource.satellitesChanged.collect { nmeaSatelliteInfoList ->
-            val uniqueSatelliteIDs = mutableListOf<Int>()
             var satelliteSystems = ""
             // set the text of the satellite count label
             satelliteCountTV.text = getString(R.string.satellite_count) + nmeaSatelliteInfoList.size
             // get the system of the first satellite
-            when (nmeaSatelliteInfoList.first().system) {
-                NmeaGnssSystem.Bds -> {
-                    satelliteSystems = "BDS"
-                }
-                NmeaGnssSystem.Galileo -> {
-                    satelliteSystems = "Galileo"
-                }
-                NmeaGnssSystem.Glonass -> {
-                    satelliteSystems = "Glonass"
-                }
-                NmeaGnssSystem.Gps -> {
-                    satelliteSystems = "GPS"
-                }
-                NmeaGnssSystem.NavIc -> {
-                    satelliteSystems = "NavIc"
-                }
-                NmeaGnssSystem.Qzss -> {
-                    satelliteSystems = "Qzss"
-                }
-                NmeaGnssSystem.Unknown -> {
-                    satelliteSystems = "Unknown"
-                }
+            satelliteSystems = when (nmeaSatelliteInfoList.first().system) {
+                NmeaGnssSystem.Bds -> "BDS"
+                NmeaGnssSystem.Galileo -> "Galileo"
+                NmeaGnssSystem.Glonass -> "Glonass"
+                NmeaGnssSystem.Gps -> "GPS"
+                NmeaGnssSystem.NavIc -> "NavIc"
+                NmeaGnssSystem.Qzss -> "Qzss"
+                NmeaGnssSystem.Unknown -> "Unknown"
             }
             // get the satellite IDs from the info list
-            nmeaSatelliteInfoList.forEach { satelliteInfo ->
-                uniqueSatelliteIDs.add(satelliteInfo.id)
-            }
+            val uniqueSatelliteIDs = nmeaSatelliteInfoList.map { it.id }
             // display the satellite system and id information
             systemTypeTV.text = getString(R.string.system) + satelliteSystems
             satelliteIDsTV.text = getString(R.string.satellite_ids) + uniqueSatelliteIDs
@@ -287,7 +266,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Clears out the info messages when LocationDataSource is paused.
      */
-    private fun clearInformation() {
+    private fun clearUI() {
         accuracyTV.text = getString(R.string.accuracy)
         satelliteCountTV.text = getString(R.string.satellite_count)
         satelliteIDsTV.text = getString(R.string.satellite_ids)
