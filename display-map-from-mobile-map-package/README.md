@@ -31,4 +31,3 @@ This mobile map package shows points of interest within Yellowstone National Par
 ## Tags
 
 mmpk, mobile map package, offline
-
