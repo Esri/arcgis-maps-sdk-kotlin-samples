@@ -242,11 +242,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun collectSatelliteChanges() = lifecycleScope.launch {
         nmeaLocationDataSource.satellitesChanged.collect { nmeaSatelliteInfoList ->
-            var satelliteSystems = ""
             // set the text of the satellite count label
             satelliteCountTV.text = getString(R.string.satellite_count) + nmeaSatelliteInfoList.size
             // get the system of the first satellite
-            satelliteSystems = when (nmeaSatelliteInfoList.first().system) {
+            val satelliteSystems = when (nmeaSatelliteInfoList.first().system) {
                 NmeaGnssSystem.Bds -> "BDS"
                 NmeaGnssSystem.Galileo -> "Galileo"
                 NmeaGnssSystem.Glonass -> "Glonass"
