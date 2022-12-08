@@ -23,6 +23,8 @@ android {
     buildFeatures {
         dataBinding true
     }
+
+    namespace 'com.esri.arcgismaps.sample.rendermultilayersymbols'
 }
 
 dependencies {

@@ -24,6 +24,8 @@ android {
         dataBinding true
         viewBinding true
     }
+
+    namespace 'com.esri.arcgismaps.sample.generateofflinemap'
 }
 
 dependencies {
