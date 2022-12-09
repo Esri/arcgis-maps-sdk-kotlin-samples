@@ -33,6 +33,9 @@ subprojects {
             packagingOptions {
                 exclude 'META-INF/DEPENDENCIES'
             }
+            kotlinOptions {
+                jvmTarget = "11"
+            }
         }
     }
 }

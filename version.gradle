@@ -13,7 +13,7 @@ ext {
     constraintLayoutVersion = '2.1.4'
     multidexVersion = '2.0.1'
     arcgisVersion = '200.0.0-beta01'
-    materialVersion = '1.6.1'
+    materialVersion = '1.7.0'
     recyclerViewVersion = '1.1.0'
     // plugin versions
     gradleVersion = '7.3.0'
