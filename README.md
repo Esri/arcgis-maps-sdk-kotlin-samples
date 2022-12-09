@@ -45,10 +45,6 @@ adb -d install path/to/sample.apk
 
 Built APK's are saved to **arcgis-maps-sdk-kotlin-samples/[module-name]/build/outputs/apk/**. More information about running apps on devices can be found [here](https://developer.android.com/studio/run/device.html).
 
-### Run samples through the sample viewer
-The samples in this repository can also be viewed in a single sample viewer app. It can be found on the Play Store or [on ArcGIS Online](https://arcgisruntime.maps.arcgis.com/home/item.html?id=21ac248ea189406c821400dc28bf686c). If downloading from ArcGIS Online, follow these instructions to run the app locally on your device:
-- Download and unzip the file to get the apk **ArcGIS_Maps_SDK_Sample_Viewer_Android_20000.apk**.
-
 ## Issues
 
 Have a question about functionality in the ArcGIS Maps SDK Kotlin Samples? Want to ask other users for development advice, discuss a workflow, ask Esri staff and other users about bugs in the API? Use [GeoNet](https://community.esri.com/t5/arcgis-runtime-sdk-for-android/bd-p/arcgis-runtime-sdk-for-android-questions) for any general questions like this, so others can learn from and contribute to the discussion.

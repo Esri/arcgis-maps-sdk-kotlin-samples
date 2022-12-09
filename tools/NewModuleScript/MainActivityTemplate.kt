@@ -14,37 +14,48 @@
  *
  */
 
-package com.esri.arcgisruntime.sample.displaymap
+package com.esri.arcgismaps.sample.displaymap
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import arcgisruntime.ApiKey
-import arcgisruntime.ArcGISRuntimeEnvironment
-import arcgisruntime.mapping.ArcGISMap
-import arcgisruntime.mapping.BasemapStyle
-import arcgisruntime.mapping.view.MapView
-import com.esri.arcgisruntime.sample.displaymap.databinding.ActivityMainBinding
+import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.esri.arcgismaps.sample.displaymap.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
+
+    // set up data binding for the activity
+    private val activityMainBinding: ActivityMainBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.activity_main)
+    }
+
+    private val mapView by lazy {
+        activityMainBinding.mapView
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
-        ArcGISRuntimeEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
-        // set up data binding for the activity
-        val activityMainBinding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
-        val mapView = activityMainBinding.mapView
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         mapView.map = map
+    }
+
+    private fun showError(message: String, view: View) {
+        Log.e(TAG, message)
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }
