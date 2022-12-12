@@ -237,14 +237,12 @@ class MainActivity : AppCompatActivity() {
 
         // bottom right curve
         val rightCurveStart = Point(minX + sideLength, minY + 0.75 * sideLength, spatialReference)
-        val rightCurveEnd = leftCurveStart
         val rightControlPoint1 = Point(minX + sideLength, center.y, spatialReference)
-        val rightControlPoint2 = leftControlPoint1
         val rightCurve = CubicBezierSegment(
             rightCurveStart,
             rightControlPoint1,
-            rightControlPoint2,
-            rightCurveEnd,
+            leftControlPoint1,
+            leftCurveStart,
             spatialReference
         )
 

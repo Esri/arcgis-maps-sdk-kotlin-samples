@@ -244,7 +244,7 @@ class MainActivity : AppCompatActivity() {
             // add loaded layer to the map
             addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromUri, 0.0)
             // load blue pin from as a bitmap
-            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin);
+            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
             // load the PictureMarkerSymbolLayer using the bitmap drawable
             val pictureMarkerFromCache = PictureMarkerSymbolLayer(BitmapDrawable(resources, bitmap))
             pictureMarkerFromCache.load().getOrElse {

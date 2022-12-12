@@ -28,6 +28,7 @@ import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.sampleslib.databinding.ActivitySamplesBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapMerge
@@ -43,7 +44,7 @@ import java.io.FileOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class,FlowPreview::class)
 abstract class DownloaderActivity : AppCompatActivity() {
 
     /**
@@ -59,7 +60,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
     }
 
     /**
-     * Gets the [provisionURL] of the portal item to download at
+     * Gets the [provisionURLs] of the portal item to download at
      * the [sampleName], once download completes it starts the [mainActivity]
      */
     fun downloadAndStartSample(
@@ -93,7 +94,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
     /**
      * The downloadManager checks for provisioned data.
-     * If no provisioned data exists it performs a download using the [provisionURL]
+     * If no provisioned data exists it performs a download using the [provisionURLs]
      * at the [destinationPath]. The downloadManager clears the directory if user chooses
      * to re-download the provisioned data.
      */
@@ -267,7 +268,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                         zipInputStream.closeEntry()
                         zipEntry = zipInputStream.nextEntry
                     }
-                    zipInputStream.close();
+                    zipInputStream.close()
                     // delete the .zip file, since unzipping is complete
                     FileUtils.delete(provisionFile)
                 }

@@ -1,9 +1,7 @@
 package com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import com.esri.arcgismaps.sample.sampleslib.DownloaderActivity
 
 class DownloadActivity : DownloaderActivity() {
