@@ -16,14 +16,17 @@
         "real-time",
         "trace",
         "track",
-        "trail"
+        "trail",
+        "Location.LocationDisplayAutoPanMode",
+        "Location.SimulatedLocationDataSource",
+        "Location.SimulatedLocationDataSource.LocationChanged",
+        "MapView.LocationDisplay"
     ],
     "language": "kotlin",
     "relevant_apis": [
         "Location.LocationDisplayAutoPanMode",
         "Location.SimulatedLocationDataSource",
         "Location.SimulatedLocationDataSource.LocationChanged",
-        "Location.position",
         "MapView.LocationDisplay"
     ],
     "snippets": [

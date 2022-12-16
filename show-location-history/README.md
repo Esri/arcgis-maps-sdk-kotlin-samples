@@ -22,7 +22,6 @@ Tap the floating action button to start tracking your location, which will appea
 
 ## Relevant API
 
-* Location.position
 * Location.LocationDisplayAutoPanMode
 * Location.SimulatedLocationDataSource
 * Location.SimulatedLocationDataSource.LocationChanged
