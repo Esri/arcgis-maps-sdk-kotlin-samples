@@ -23,6 +23,7 @@
         "MapView.LocationDisplay"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "Location.LocationDisplayAutoPanMode",
         "Location.SimulatedLocationDataSource",
@@ -30,7 +31,7 @@
         "MapView.LocationDisplay"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/showlocationhistory/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showlocationhistory/MainActivity.kt"
     ],
     "title": "Show location history"
 }
