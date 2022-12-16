@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey =
-            ApiKey.create("AAPK183faec8d5a64a8a94f599c97c65924bJ73yHdrlxWRiCEI8nUAeJVb9gTzv9_4JoReisBG0ozZpcuMuqM13Q3vcENl8VRJM")
+            ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
         // create a center point for the data in West Los Angeles, California
