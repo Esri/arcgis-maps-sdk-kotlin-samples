@@ -62,7 +62,7 @@ Anyone and everyone is welcome to [contribute](.github/CONTRIBUTING.md). We do a
 3. Contribute Code
 4. Improve Documentation
 
-Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/master/README.md)
+Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/main/README.md)
 
 ## Licensing
 Copyright 2022 Esri
