@@ -21,13 +21,13 @@ Tap the floating action button to start tracking your location, which will appea
 
 ## Relevant API
 
-* LocationDisplayAutoPanMode
-* SimulatedLocationDataSource
 * LocationDisplay
+* LocationDisplayAutoPanMode
 * PolylineBuilder
 * SimpleLineSymbol
 * SimpleMarkerSymbol
 * SimpleRenderer
+* SimulatedLocationDataSource
 
 ## About the data
 

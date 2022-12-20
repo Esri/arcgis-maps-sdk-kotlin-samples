@@ -17,18 +17,24 @@
         "trace",
         "track",
         "trail",
-        "Location.LocationDisplayAutoPanMode",
-        "Location.SimulatedLocationDataSource",
-        "Location.SimulatedLocationDataSource.LocationChanged",
-        "MapView.LocationDisplay"
+        "LocationDisplay",
+        "LocationDisplayAutoPanMode",
+        "PolylineBuilder",
+        "SimpleLineSymbol",
+        "SimpleMarkerSymbol",
+        "SimpleRenderer",
+        "SimulatedLocationDataSource"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
-        "Location.LocationDisplayAutoPanMode",
-        "Location.SimulatedLocationDataSource",
-        "Location.SimulatedLocationDataSource.LocationChanged",
-        "MapView.LocationDisplay"
+        "LocationDisplay",
+        "LocationDisplayAutoPanMode",
+        "PolylineBuilder",
+        "SimpleLineSymbol",
+        "SimpleMarkerSymbol",
+        "SimpleRenderer",
+        "SimulatedLocationDataSource"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showlocationhistory/MainActivity.kt"
