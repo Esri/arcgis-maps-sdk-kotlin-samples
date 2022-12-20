@@ -131,10 +131,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (isTrackLocation) {
                     isTrackLocation = false
-                    Snackbar.make(mapView, "Tracking stopped", Snackbar.LENGTH_INDEFINITE).show()
+                    Snackbar.make(mapView, "Tracking has stopped", Snackbar.LENGTH_INDEFINITE).show()
                 } else {
                     isTrackLocation = true
-                    Snackbar.make(mapView, "Tracking started", Snackbar.LENGTH_INDEFINITE ).show()
+                    Snackbar.make(mapView, "Tracking has started", Snackbar.LENGTH_INDEFINITE ).show()
                 }
             }
         }
