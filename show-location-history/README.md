@@ -10,7 +10,7 @@ You can track device location history and display it as lines and points on the 
 
 ## How to use the sample
 
-Tap the floating action button to start tracking your location, which will appear as points on the map. A line will connect the points for easier visualization. Tap the button again to stop updating the location history. This sample uses a simulated data source. To track a user's real position, use the `SystemLocationDataSource` instead.
+Tap anywhere on the screen to start tracking your location, which will appear as points on the map. A line will connect the points for easier visualization. Tap the screen again to stop updating the location history. This sample uses a simulated data source. To track a user's real position, use the `SystemLocationDataSource` instead.
 
 ## How it works
 
