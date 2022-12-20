@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
             initialZoomScale = 7000.0
         }
 
-        // set a tap event on the map view
+        // coroutine scope to set a tap event on the map view
         lifecycleScope.launch {
             mapView.onSingleTapConfirmed.collect {
                 if (mapView.locationDisplay.autoPanMode.value == LocationDisplayAutoPanMode.Off) {
@@ -139,8 +139,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // coroutine scope to start the simulated location data source
         lifecycleScope.launch {
-            // start the simulated location data source
             simulatedLocationDataSource.start()
         }
     }
