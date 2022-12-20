@@ -25,9 +25,11 @@ android {
     }
 }
 
+namespace 'com.esri.arcgismaps.sample.showlocationhistory'
+
 dependencies {
     // lib dependencies from rootProject build.gradle
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "com.google.android.material:material:$materialVersion"
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:$datetimeVersion")
 }

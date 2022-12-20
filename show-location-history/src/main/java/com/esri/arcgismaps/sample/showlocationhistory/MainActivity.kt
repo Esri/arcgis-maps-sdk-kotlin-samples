@@ -24,14 +24,22 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.*
+import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.Polyline
+import com.arcgismaps.geometry.PolylineBuilder
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
 import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.arcgismaps.mapping.symbology.*
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.showlocationhistory.databinding.ActivityMainBinding
@@ -52,8 +60,8 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val button: FloatingActionButton by lazy {
-        activityMainBinding.button
+    private val trackLocationButton: FloatingActionButton by lazy {
+        activityMainBinding.trackLocationButton
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey =
-            ApiKey.create(BuildConfig.API_KEY)
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
         // create a center point for the data in West Los Angeles, California
@@ -94,6 +101,7 @@ class MainActivity : AppCompatActivity() {
             SimulationParameters(Clock.System.now(), 30.0, 0.0, 0.0)
         )
 
+        // coroutine scope to collect data source location changes
         lifecycleScope.launch {
             simulatedLocationDataSource.locationChanged.collect { location ->
                 // if location tracking is turned off, do not add to the polyline
@@ -120,8 +128,8 @@ class MainActivity : AppCompatActivity() {
             initialZoomScale = 7000.0
         }
 
-        // reset location display and change the isTrackLocation flag and the button's icon
-        button.setOnClickListener {
+        // reset location display and change the isTrackLocation flag and the trackLocationButton's icon
+        trackLocationButton.setOnClickListener {
             // if the user has panned away from the location display, turn it on again
             if (mapView.locationDisplay.autoPanMode.value == LocationDisplayAutoPanMode.Off) {
                 mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
@@ -129,22 +137,16 @@ class MainActivity : AppCompatActivity() {
 
             if (isTrackLocation) {
                 isTrackLocation = false
-                button.setImageResource(R.drawable.ic_my_location_white_24dp)
+                trackLocationButton.setImageResource(R.drawable.ic_my_location_white_24dp)
             } else {
                 isTrackLocation = true
-                button.setImageResource(R.drawable.ic_navigation_white_24dp)
+                trackLocationButton.setImageResource(R.drawable.ic_navigation_white_24dp)
             }
         }
 
         lifecycleScope.launch {
             // start the simulated location data source
             simulatedLocationDataSource.start()
-        }
-
-        // make sure the floating action button doesn't obscure the attribution bar
-        mapView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
-            val layoutParams = button.layoutParams as CoordinatorLayout.LayoutParams
-            layoutParams.bottomMargin += bottom - oldBottom
         }
     }
 }
