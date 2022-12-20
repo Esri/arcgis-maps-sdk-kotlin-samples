@@ -123,9 +123,9 @@ class MainActivity : AppCompatActivity() {
             initialZoomScale = 7000.0
         }
 
-        // set an on touch listener on the map view
+        // set a tap event on the map view
         lifecycleScope.launch {
-            mapView.onSingleTapConfirmed.collect { tapEvent ->
+            mapView.onSingleTapConfirmed.collect {
                 if (mapView.locationDisplay.autoPanMode.value == LocationDisplayAutoPanMode.Off) {
                     mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
                 }
