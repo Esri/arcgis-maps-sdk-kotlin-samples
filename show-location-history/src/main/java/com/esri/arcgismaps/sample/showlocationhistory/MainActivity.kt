@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.showlocationhistory
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -43,7 +42,7 @@ import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.showlocationhistory.databinding.ActivityMainBinding
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -58,10 +57,6 @@ class MainActivity : AppCompatActivity() {
 
     private val mapView by lazy {
         activityMainBinding.mapView
-    }
-
-    private val trackLocationButton: FloatingActionButton by lazy {
-        activityMainBinding.trackLocationButton
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,19 +123,19 @@ class MainActivity : AppCompatActivity() {
             initialZoomScale = 7000.0
         }
 
-        // reset location display and change the isTrackLocation flag and the trackLocationButton's icon
-        trackLocationButton.setOnClickListener {
-            // if the user has panned away from the location display, turn it on again
-            if (mapView.locationDisplay.autoPanMode.value == LocationDisplayAutoPanMode.Off) {
-                mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
-            }
-
-            if (isTrackLocation) {
-                isTrackLocation = false
-                trackLocationButton.setImageResource(R.drawable.ic_my_location_white_24dp)
-            } else {
-                isTrackLocation = true
-                trackLocationButton.setImageResource(R.drawable.ic_navigation_white_24dp)
+        // set an on touch listener on the map view
+        lifecycleScope.launch {
+            mapView.onSingleTapConfirmed.collect { tapEvent ->
+                if (mapView.locationDisplay.autoPanMode.value == LocationDisplayAutoPanMode.Off) {
+                    mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+                }
+                if (isTrackLocation) {
+                    isTrackLocation = false
+                    Snackbar.make(mapView, "Tracking stopped", Snackbar.LENGTH_INDEFINITE).show()
+                } else {
+                    isTrackLocation = true
+                    Snackbar.make(mapView, "Tracking started", Snackbar.LENGTH_INDEFINITE ).show()
+                }
             }
         }
 
