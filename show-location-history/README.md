@@ -21,6 +21,7 @@ Tap anywhere on the screen to start tracking your location, which will appear as
 
 ## Relevant API
 
+* LocationDataSource
 * LocationDisplay
 * LocationDisplayAutoPanMode
 * PolylineBuilder

@@ -17,6 +17,7 @@
         "trace",
         "track",
         "trail",
+        "LocationDataSource",
         "LocationDisplay",
         "LocationDisplayAutoPanMode",
         "PolylineBuilder",
@@ -28,6 +29,7 @@
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
+        "LocationDataSource",
         "LocationDisplay",
         "LocationDisplayAutoPanMode",
         "PolylineBuilder",
