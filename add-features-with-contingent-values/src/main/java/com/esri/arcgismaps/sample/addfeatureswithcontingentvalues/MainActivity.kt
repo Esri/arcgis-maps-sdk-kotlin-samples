@@ -23,14 +23,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.data.ArcGISFeature
+import com.arcgismaps.data.ArcGISFeatureTable
+import com.arcgismaps.data.Geodatabase
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
+
+    private val provisionPath: String by lazy {
+        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
+    }
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -40,6 +49,18 @@ class MainActivity : AppCompatActivity() {
     private val mapView by lazy {
         activityMainBinding.mapView
     }
+
+    // graphic overlay instance to add the feature graphic to the map
+    private val graphicsOverlay = GraphicsOverlay()
+
+    // mobile database containing offline feature data. GeoDatabase is closed on app exit
+    private var geoDatabase: Geodatabase? = null
+
+    // instance of the contingent feature to be added to the map
+    private var feature: ArcGISFeature? = null
+
+    // instance of the feature table retrieved from the GeoDatabase, updates when new feature is added
+    private var featureTable: ArcGISFeatureTable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
