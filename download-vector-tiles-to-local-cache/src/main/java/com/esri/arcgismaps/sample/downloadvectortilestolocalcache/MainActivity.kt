@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.com.arcgismaps.sample.downloadvectortilestolocalcache
+package com.esri.arcgismaps.sample.downloadvectortilestolocalcache
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -43,8 +43,8 @@ import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesJob
 import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesParameters
 import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesResult
 import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesTask
-import com.esri.com.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ActivityMainBinding
-import com.esri.com.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ProgressDialogLayoutBinding
+import com.esri.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ActivityMainBinding
+import com.esri.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ProgressDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File

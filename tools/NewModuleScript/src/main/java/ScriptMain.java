@@ -152,20 +152,9 @@ public class ScriptMain {
         file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build.gradle");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            fileContent = fileContent.replace("demos.displaymap", "sample." + sampleWithoutSpaces);
+            fileContent = fileContent.replace("sample.displaymap", "sample." + sampleWithoutSpaces);
             fileContent = fileContent.replace("constraintLayoutVersion\"","constraintLayoutVersion\"\n" +
                     "    implementation \"com.google.android.material:material:$materialVersion\"");
-            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            exitProgram(e);
-        }
-
-        //Update AndroidManifest.xml
-        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/AndroidManifest.xml");
-        try {
-            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            fileContent = fileContent.replace("displaymap", sampleWithoutSpaces);
             FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
