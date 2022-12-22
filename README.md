@@ -1,12 +1,12 @@
 # ArcGIS Maps SDK Kotlin Samples
 
 # Overview
-ArcGIS Maps SDK Kotlin for Android v200.0.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps SDK Android Kotlin](https://developers.arcgis.com/android/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
+ArcGIS Maps SDK for Kotlin v200.0.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps SDK Android Kotlin](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
 
 # Prerequisites
 * The samples are building with `compileSdkVersion 33`
 * [Android Studio](http://developer.android.com/sdk/index.html)
-* [An ArcGIS Developers API key](https://developers.arcgis.com/android/get-started/#3-get-an-api-key)
+* [An ArcGIS Developers API key](https://developers.arcgis.com/kotlin/get-started/#3-get-an-api-key)
 
 ## Developer Instructions
 Please read our [developer instructions wiki page](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki/dev-instructions) to set up your developer environment with Android Studio.  Instructions include forking and cloning the repository for those new to Git.
@@ -47,7 +47,7 @@ Built APK's are saved to **arcgis-maps-sdk-kotlin-samples/[module-name]/build/ou
 
 ## Issues
 
-Have a question about functionality in the ArcGIS Maps SDK Kotlin Samples? Want to ask other users for development advice, discuss a workflow, ask Esri staff and other users about bugs in the API? Use [GeoNet](https://community.esri.com/t5/arcgis-runtime-sdk-for-android/bd-p/arcgis-runtime-sdk-for-android-questions) for any general questions like this, so others can learn from and contribute to the discussion.
+Have a question about functionality in the ArcGIS Maps SDK Kotlin Samples? Want to ask other users for development advice, discuss a workflow, ask Esri staff and other users about bugs in the API? Use [GeoNet](https://community.esri.com/t5/kotlin-maps-sdk-questions/bd-p/kotlin-maps-sdk-questions) for any general questions like this, so others can learn from and contribute to the discussion.
 
 Do you have something to [contribute](.github/CONTRIBUTING.md)? Send a pull request! New Samples, bug fixes and documentation fixes are welcome.
 
@@ -62,7 +62,7 @@ Anyone and everyone is welcome to [contribute](.github/CONTRIBUTING.md). We do a
 3. Contribute Code
 4. Improve Documentation
 
-Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/main/README.md)
+Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/master/README.md)
 
 ## Licensing
 Copyright 2022 Esri
