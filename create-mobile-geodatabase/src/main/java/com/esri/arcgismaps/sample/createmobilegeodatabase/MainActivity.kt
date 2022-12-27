@@ -49,6 +49,8 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 class MainActivity : AppCompatActivity() {
 
@@ -140,6 +142,8 @@ class MainActivity : AppCompatActivity() {
                 showError("Error sharing file: ${e.message}")
             }
         }
+
+        resetMap()
     }
 
 
@@ -188,7 +192,7 @@ class MainActivity : AppCompatActivity() {
                 val tableFuture = geodatabase.createTable(tableDescription)
                 setupMapFromGeodatabase(tableFuture)
             }.onFailure {
-
+                showError(it.message.toString())
             }
 
         }
@@ -207,6 +211,8 @@ class MainActivity : AppCompatActivity() {
             mapView.map?.operationalLayers?.add(featureLayer)
             // display the current count of features in the FeatureTable
             featureCount.text = "Number of features added: ${featureTable.getAddedFeaturesCount().getOrNull() }}"
+        }.onFailure {
+            showError(it.message.toString())
         }
     }
 
@@ -217,7 +223,7 @@ class MainActivity : AppCompatActivity() {
     private fun addFeature(mapPoint: Point) {
         // set up the feature attributes
         val featureAttributes = mutableMapOf<String, Any>()
-        featureAttributes["collection_timestamp"] = Calendar.getInstance()
+        featureAttributes["collection_timestamp"] = Clock.System.now()
 
         // create a new feature at the mapPoint
         val feature = featureTable?.createFeature(featureAttributes, mapPoint) ?: return
@@ -256,12 +262,14 @@ class MainActivity : AppCompatActivity() {
                     // prepare the table row
                     val tableRowBinding = TableRowBinding.inflate(layoutInflater).apply {
                         oid.text = feature.attributes["oid"].toString()
-                        collectionTimestamp.text = (feature.attributes["collection_timestamp"] as Calendar).time.toString()
+                        collectionTimestamp.text = (feature.attributes["collection_timestamp"] as Instant).toString()
                     }
                     // add the row to the TableLayout
                     table.addView(tableRowBinding.root)
                 }
             }.show()
+        }?.onFailure {
+            showError(it.message.toString())
         }
     }
 
