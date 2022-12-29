@@ -118,21 +118,20 @@ class MainActivity : AppCompatActivity() {
         cutButton.setOnClickListener {
             // cut the graphic along the polyline to create 2 graphic parts
             polygonGraphic.geometry?.let { graphicGeometry ->
-                val parts: List<Geometry> =
-                    GeometryEngine.cut(
-                        graphicGeometry,
-                        polylineGraphic.geometry as Polyline
-                    )
+                val parts = GeometryEngine.cut(
+                    graphicGeometry,
+                    polylineGraphic.geometry as Polyline
+                )
 
                 // create graphics for the US and Canada sides
                 val canadaSide = Graphic(
-                    parts[0], SimpleFillSymbol(
+                    parts?.get(0), SimpleFillSymbol(
                         SimpleFillSymbolStyle.BackwardDiagonal,
                         Color.green, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.blue, 0F)
                     )
                 )
                 val usSide = Graphic(
-                    parts[1], SimpleFillSymbol(
+                    parts?.get(1), SimpleFillSymbol(
                         SimpleFillSymbolStyle.ForwardDiagonal,
                         Color.yellow, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.blue, 0F)
                     )
