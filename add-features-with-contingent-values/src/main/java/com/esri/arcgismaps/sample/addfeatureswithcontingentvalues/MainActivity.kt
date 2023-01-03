@@ -28,13 +28,13 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.data.ArcGISFeature
+import com.arcgismaps.data.ArcGISFeatureTable
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.data.CodedValueDomain
 import com.arcgismaps.data.ContingentCodedValue
 import com.arcgismaps.data.ContingentRangeValue
 import com.arcgismaps.data.Feature
 import com.arcgismaps.data.Geodatabase
-import com.arcgismaps.data.GeodatabaseFeatureTable
 import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
     private var feature: ArcGISFeature? = null
 
     // instance of the feature table retrieved from the GeoDatabase, updates when new feature is added
-    private var featureTable: GeodatabaseFeatureTable? = null
+    private var featureTable: ArcGISFeatureTable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             mapView.onSingleTapConfirmed.collect {
                 // open a bottom sheet view to add the feature
-                it.mapPoint?.let { mapPoint -> openBottomSheetView(mapPoint) }
+                it.mapPoint?.let { mapPoint -> createBottomSheet(mapPoint) }
             }
         }
 
@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
         // get a polygon using the feature's buffer size and geometry
         val polygon = feature.geometry?.let { GeometryEngine.buffer(it, bufferSize.toDouble()) }
         // create the outline for the buffers
-        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 2F)
+        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 2f)
         // create the buffer symbol
         val bufferSymbol = SimpleFillSymbol(
             SimpleFillSymbolStyle.ForwardDiagonal, Color.red, lineSymbol
@@ -219,19 +219,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Open BottomSheetDialog view to handle contingent value interaction.
+     * Creates a BottomSheetDialog view to handle contingent value interaction.
      * Once the contingent values have been set and the apply button is clicked,
-     * the function will call validateContingency() to add the feature to the map.
+     * the function will call validateContingency() to add the feature at the [mapPoint].
      */
-    private fun openBottomSheetView(mapPoint: Point) {
+    private fun createBottomSheet(mapPoint: Point) {
         // creates a new BottomSheetDialog
-        val dialog = BottomSheetDialog(this)
-        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        val bottomSheet = BottomSheetDialog(this).apply {
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
 
         // set up the first content value attribute
         setUpStatusAttributes()
 
+        // clear and set bottom sheet content view to layout,
+        // to be able to set the content view on each bottom sheet draw
+        if (bottomSheetBinding.root.parent != null) {
+            (bottomSheetBinding.root.parent as ViewGroup).removeAllViews()
+        }
+
+        // reset feature to null since this is a new feature
+        feature = null
+
         bottomSheetBinding.apply {
+
             // reset bottom sheet values, this is needed to showcase contingent values behavior
             statusInputLayout.editText?.setText("")
             protectionInputLayout.editText?.setText("")
@@ -244,19 +255,17 @@ class MainActivity : AppCompatActivity() {
             applyTv.setOnClickListener {
                 // check if the contingent features set is valid and set it to the map if valid
                 validateContingency(mapPoint)
-                dialog.dismiss()
+                bottomSheet.dismiss()
             }
+
             // dismiss on cancel clicked
-            cancelTv.setOnClickListener { dialog.dismiss() }
+            cancelTv.setOnClickListener { bottomSheet.dismiss() }
         }
-        // clear and set bottom sheet content view to layout, to be able to set the content view on each bottom sheet draw
-        if (bottomSheetBinding.root.parent != null) {
-            (bottomSheetBinding.root.parent as ViewGroup).removeAllViews()
-        }
+
         // set the content view to the root of the binding layout
-        dialog.setContentView(bottomSheetBinding.root)
+        bottomSheet.setContentView(bottomSheetBinding.root)
         // display the bottom sheet view
-        dialog.show()
+        bottomSheet.show()
     }
 
     /**
@@ -274,7 +283,7 @@ class MainActivity : AppCompatActivity() {
         val statusNames = statusCodedValues.map { it.name }
         // get the items to be added to the spinner adapter
         val adapter = ArrayAdapter(bottomSheetBinding.root.context, R.layout.list_item, statusNames)
-        (bottomSheetBinding.statusInputLayout.editText as? AutoCompleteTextView)?.apply {
+        (bottomSheetBinding.statusInputLayout.editText as AutoCompleteTextView).apply {
             setAdapter(adapter)
             setOnItemClickListener { _, _, position, _ ->
                 // get the CodedValue of the item selected, and create a feature needed for feature attributes
@@ -322,27 +331,28 @@ class MainActivity : AppCompatActivity() {
         }
 
         // get the contingent value results with the feature for the protection field
-        val contingentValuesResult =
-            feature?.let { featureTable?.getContingentValues(it, "Protection") }
+        val contingentValuesResult = feature?.let {
+            featureTable?.getContingentValues(it, "Protection")
+        }
 
-        // get contingent coded values by field group and
+        // get the list of contingent values by field group
+        val contingentValues = contingentValuesResult?.byFieldGroup?.get("ProtectionFieldGroup")
+
+        // convert the list of ContingentValues to a list of CodedValue
         val protectionCodedValues =
-            contingentValuesResult?.byFieldGroup?.get("ProtectionFieldGroup")
-                ?.map { contingentValue ->
-                    // convert the list of ContingentValues to a list of CodedValue
-                    (contingentValue as ContingentCodedValue).codedValue
-                } ?: return showError("Error getting coded values by field group")
+            contingentValues?.map { (it as ContingentCodedValue).codedValue }
+                ?: return showError("Error getting coded values by field group")
+
+        // get the attribute names for each coded value
+        val protectionNames = protectionCodedValues.map { it.name }
 
         // set the items to be added to the spinner adapter
         val adapter = ArrayAdapter(
-            bottomSheetBinding.root.context,
-            R.layout.list_item,
-            protectionCodedValues.map { it.name })
+            bottomSheetBinding.root.context, R.layout.list_item, protectionNames
+        )
 
         // set the choices of protection attribute values
-        val protectionAttributeTextView =
-            bottomSheetBinding.protectionInputLayout.editText as AutoCompleteTextView
-        protectionAttributeTextView.apply {
+        (bottomSheetBinding.protectionInputLayout.editText as AutoCompleteTextView).apply {
             setAdapter(adapter)
             setOnItemClickListener { _, _, position, _ ->
                 // set the protection CodedValue of the item selected
@@ -354,8 +364,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     *  Retrieve the buffer attribute fields, add the fields to a ContingentRangeValue,
-     *  and set the values to a SeekBar
+     *  Retrieve the buffer attribute fields, add the fields
+     *  to a ContingentRangeValue, and set the values to a SeekBar
      */
     private fun showBufferSeekbar() {
         // set the bottom sheet view to enable the buffer attribute
@@ -365,15 +375,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         // get the contingent value results using the feature and field
-        val contingentValueResult =
-            feature?.let { featureTable?.getContingentValues(it, "BufferSize") }
-        val bufferSizeGroupContingentValues =
-            (contingentValueResult?.byFieldGroup?.get("BufferSizeFieldGroup")
-                ?.get(0) as ContingentRangeValue)
+        val contingentValueResult = feature?.let {
+            featureTable?.getContingentValues(it, "BufferSize")
+        }
+
+        // get the contingent rang value of the buffer size field group
+        val bufferSizeRangeValue = contingentValueResult?.byFieldGroup?.get("BufferSizeFieldGroup")
+            ?.get(0) as ContingentRangeValue
+
         // set the minimum and maximum possible buffer sizes
-        val minValue = bufferSizeGroupContingentValues.minValue as Int
-        val maxValue = bufferSizeGroupContingentValues.maxValue as Int
-        // check if there can be a max value, if not disable SeekBar & set value to attribute size to 0
+        val minValue = bufferSizeRangeValue.minValue as Int
+        val maxValue = bufferSizeRangeValue.maxValue as Int
+
+        // check if there can be a max value, if not disable SeekBar
+        // & set value to attribute size to 0
         if (maxValue > 0) {
             // get SeekBar instance from the binding layout
             bottomSheetBinding.bufferSeekBar.apply {
@@ -411,41 +426,38 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        try {
-            // validate the feature's contingencies
-            val contingencyViolations = feature?.let {
-                featureTable?.validateContingencyConstraints(
-                    it
-                )
-            }
-            if (contingencyViolations?.isEmpty() == true) {
-                // if there are no contingency violations in the array,
-                // the feature is valid and ready to add to the feature table
-                // create a symbol to represent a bird's nest
-                val symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.black, 11F)
-                // add the graphic to the graphics overlay
-                graphicsOverlay.graphics.add(Graphic(mapPoint, symbol))
-                feature?.geometry = mapPoint
-                val graphic = feature?.let { createGraphic(it) }
-                lifecycleScope.launch {
-                    // add the feature to the feature table
-                    feature?.let { featureTable?.addFeature(it) }
-                    feature?.load()?.getOrElse {
+        // validate the feature's contingencies
+        val contingencyViolations = feature?.let {
+            featureTable?.validateContingencyConstraints(it)
+        } ?: return showError("No feature attribute was selected")
 
-                    }
-                    // add the graphic to the graphics overlay
-                    graphic?.let { graphicsOverlay.graphics.add(it) }
+        // if there are no contingency violations
+        if (contingencyViolations.isEmpty()) {
+            // the feature is valid and ready to add to the feature table
+            // create a symbol to represent a bird's nest
+            val symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.black, 11F)
+            // add the graphic to the graphics overlay
+            graphicsOverlay.graphics.add(Graphic(mapPoint, symbol))
+
+            // set the geometry of the feature to the map point
+            feature?.geometry = mapPoint
+
+            // create the graphic of the feature
+            val graphic = feature?.let { createGraphic(it) }
+            // add the graphic to the graphics overlay
+            graphic?.let { graphicsOverlay.graphics.add(it) }
+
+            // add the feature to the feature table
+            lifecycleScope.launch {
+                feature?.let { featureTable?.addFeature(it) }
+                feature?.load()?.getOrElse {
+                    return@launch showError(it.message.toString())
                 }
-            } else {
-                showError(
-                    "Invalid contingent values: "
-                            + (contingencyViolations?.size ?: 0)
-                            + " violations found."
-                )
             }
-        } catch (e: Exception) {
-            showError("Invalid contingent values: " + e.message)
+        } else {
+            showError("Invalid contingent values: " + (contingencyViolations.size) + " violations found.")
         }
+
     }
 
     private fun showError(message: String) {
