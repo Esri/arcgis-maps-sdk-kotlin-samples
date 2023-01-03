@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
         val bufferSymbol = SimpleFillSymbol(
             SimpleFillSymbolStyle.ForwardDiagonal, Color.red, lineSymbol
         )
-        // create an a graphic and add it to the array.
+        // create an graphic using the geometry and fill symbol
         return Graphic(polygon, bufferSymbol)
     }
 
