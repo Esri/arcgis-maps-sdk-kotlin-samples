@@ -28,13 +28,13 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.data.ArcGISFeature
-import com.arcgismaps.data.ArcGISFeatureTable
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.data.CodedValueDomain
 import com.arcgismaps.data.ContingentCodedValue
 import com.arcgismaps.data.ContingentRangeValue
 import com.arcgismaps.data.Feature
 import com.arcgismaps.data.Geodatabase
+import com.arcgismaps.data.GeodatabaseFeatureTable
 import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
@@ -63,10 +63,6 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    private val provisionPath: String by lazy {
-        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
-    }
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -80,17 +76,23 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    // graphic overlay instance to add the feature graphic to the map
-    private val graphicsOverlay = GraphicsOverlay()
+    private val provisionPath: String by lazy {
+        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
+    }
 
     // mobile database containing offline feature data. GeoDatabase is closed on app exit
-    private var geoDatabase: Geodatabase? = null
+    private val geoDatabase: Geodatabase by lazy {
+        Geodatabase("${cacheDir.path}/ContingentValuesBirdNests.geodatabase")
+    }
+
+    // graphic overlay instance to add the feature graphic to the map
+    private val graphicsOverlay = GraphicsOverlay()
 
     // instance of the contingent feature to be added to the map
     private var feature: ArcGISFeature? = null
 
     // instance of the feature table retrieved from the GeoDatabase, updates when new feature is added
-    private var featureTable: ArcGISFeatureTable? = null
+    private var featureTable: GeodatabaseFeatureTable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,9 +101,6 @@ class MainActivity : AppCompatActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
-
-        // create a temporary directory to use the geodatabase file
-        createGeodatabaseCacheDirectory()
 
         // use the offline vector tiled layer as a basemap
         val fillmoreVectorTiledLayer = ArcGISVectorTiledLayer(
@@ -112,57 +111,64 @@ class MainActivity : AppCompatActivity() {
             // set the basemap layer and the graphic overlay to the MapView
             map = ArcGISMap(Basemap(fillmoreVectorTiledLayer))
             graphicsOverlays.add(graphicsOverlay)
-            // add a listener to the MapView to detect when a user has performed a single tap to add a new feature
-            lifecycleScope.launch {
-                onSingleTapConfirmed.collect {
-                    it.mapPoint?.let { mapPoint -> openBottomSheetView(mapPoint) }
-                }
+        }
+
+        // add a listener to the MapView to detect when
+        // a user has performed a single tap to add a new feature
+        lifecycleScope.launch {
+            mapView.onSingleTapConfirmed.collect {
+                // open a bottom sheet view to add the feature
+                it.mapPoint?.let { mapPoint -> openBottomSheetView(mapPoint) }
             }
         }
 
+        // create a temporary directory to use the geodatabase file
+        createGeodatabaseCacheDirectory()
 
-        // retrieve and load the offline mobile GeoDatabase file from the cache directory
-        geoDatabase = Geodatabase("${cacheDir.path}/ContingentValuesBirdNests.geodatabase")
         lifecycleScope.launch {
-            geoDatabase?.load()?.getOrElse {
+            // retrieve and load the offline mobile GeoDatabase file from the cache directory
+            geoDatabase.load().getOrElse {
                 showError("Error loading GeoDatabase: ${it.message}")
             }
 
-            (geoDatabase?.featureTables?.first() as? ArcGISFeatureTable)?.let { featureTable ->
-                this@MainActivity.featureTable = featureTable
-                featureTable.load().getOrElse {
-
-                }
-                // create and load the feature layer from the feature table
-                val featureLayer = FeatureLayer(featureTable)
-                // add the feature layer to the map
-                mapView.map?.operationalLayers?.add(featureLayer)
-                // set the map's viewpoint to the feature layer's full extent
-                val extent = featureLayer.fullExtent
-                extent?.let { Viewpoint(it) }?.let { mapView.setViewpoint(it) }
-                // add buffer graphics for the feature layer.g
-                queryFeatures()
+            // get the first geodatabase feature table
+            val featureTable = geoDatabase.featureTables.firstOrNull()
+                ?: return@launch showError("No feature table found in geodatabase")
+            // load the geodatabase feature table
+            featureTable.load().getOrElse {
+                return@launch showError(it.message.toString())
             }
-        }
 
+            // create and load the feature layer from the feature table
+            val featureLayer = FeatureLayer(featureTable)
+            // add the feature layer to the map
+            mapView.map?.operationalLayers?.add(featureLayer)
+
+            // set the map's viewpoint to the feature layer's full extent
+            val extent = featureLayer.fullExtent
+                ?: return@launch showError("Error retrieving extent of the feature layer")
+            mapView.setViewpoint(Viewpoint(extent))
+
+            // keep the instance of the featureTable
+            this@MainActivity.featureTable = featureTable
+
+            // add buffer graphics for the feature layer
+            queryFeatures()
+        }
     }
 
     /**
      * Geodatabase creates and uses various temporary files while processing a database,
-     * which will need to be cleared before looking up the [geoDatabase] again. A copy of the original geodatabase
-     * file is created in the cache folder.
+     * which will need to be cleared before looking up the [geoDatabase] again.
+     * A copy of the original geodatabase file is created in the cache folder.
      */
     private fun createGeodatabaseCacheDirectory() {
-        try {
-            // clear cache directory
-            File(cacheDir.path).deleteRecursively()
-            // copy over the original Geodatabase file to be used in the temp cache directory
-            File("$provisionPath/ContingentValuesBirdNests.geodatabase").copyTo(
-                File("${cacheDir.path}/ContingentValuesBirdNests.geodatabase")
-            )
-        } catch (e: Exception) {
-            showError("Error setting .geodatabase file: ${e.message}")
-        }
+        // clear cache directory
+        File(cacheDir.path).deleteRecursively()
+        // copy over the original Geodatabase file to be used in the temp cache directory
+        File("$provisionPath/ContingentValuesBirdNests.geodatabase").copyTo(
+            File("${cacheDir.path}/ContingentValuesBirdNests.geodatabase")
+        )
     }
 
     /**
@@ -170,32 +176,27 @@ class MainActivity : AppCompatActivity() {
      * the [graphicsOverlay]
      */
     private suspend fun queryFeatures() {
+        // clear the existing graphics
+        graphicsOverlay.graphics.clear()
+
         // create buffer graphics for the features
         val queryParameters = QueryParameters().apply {
             // set the where clause to filter for buffer sizes greater than 0
             whereClause = "BufferSize > 0"
         }
+
         // query the features using the queryParameters on the featureTable
-        featureTable?.queryFeatures(queryParameters)?.onSuccess { featureQueryResult ->
-            // clear the existing graphics
-            graphicsOverlay.graphics.clear()
-            // call get on the future to get the result
-            val resultIterator = featureQueryResult.iterator()
-            if (resultIterator.hasNext()) {
-                // create an array of graphics to add to the graphics overlay
-                val graphics = mutableListOf<Graphic>()
-                // create graphic for each query result by calling createGraphic(feature)
-                //while (resultIterator.hasNext()) graphics.add(createGraphic(resultIterator.next()))
-                resultIterator.forEach {
-                    graphics.add(createGraphic(it))
-                }
-                // add the graphics to the graphics overlay
-                graphicsOverlay.graphics.addAll(graphics)
-            } else {
-                showError("No features found with BufferSize > 0")
-            }
-        }?.onFailure {
-            showError("Error querying features: ${it.message}")
+        val featureQueryResult = featureTable?.queryFeatures(queryParameters)?.getOrThrow()
+        // call get on the future to get the result
+        val featureResultList = featureQueryResult?.toList()
+
+        if (featureResultList != null && featureResultList.isNotEmpty()) {
+            // create list of graphics for each query result
+            val graphics = featureResultList.map { createGraphic(it) }
+            // add the graphics to the graphics overlay
+            graphicsOverlay.graphics.addAll(graphics)
+        } else {
+            showError("No features found with BufferSize > 0")
         }
     }
 
@@ -270,10 +271,7 @@ class MainActivity : AppCompatActivity() {
         // get the coded value domain's coded values
         val statusCodedValues = codedValueDomain.codedValues
         // get the selected index if applicable
-        val statusNames = mutableListOf<String>()
-        statusCodedValues.forEach {
-            statusNames.add(it.name)
-        }
+        val statusNames = statusCodedValues.map { it.name }
         // get the items to be added to the spinner adapter
         val adapter = ArrayAdapter(bottomSheetBinding.root.context, R.layout.list_item, statusNames)
         (bottomSheetBinding.statusInputLayout.editText as? AutoCompleteTextView)?.apply {
@@ -326,28 +324,32 @@ class MainActivity : AppCompatActivity() {
         // get the contingent value results with the feature for the protection field
         val contingentValuesResult =
             feature?.let { featureTable?.getContingentValues(it, "Protection") }
-        if (contingentValuesResult != null) {
-            // get contingent coded values by field group
-            // convert the list of ContingentValues to a list of CodedValue
-            val protectionCodedValues = mutableListOf<CodedValue>()
-            contingentValuesResult.byFieldGroup["ProtectionFieldGroup"]?.forEach { contingentValue ->
-                protectionCodedValues.add((contingentValue as ContingentCodedValue).codedValue)
+
+        // get contingent coded values by field group and
+        val protectionCodedValues =
+            contingentValuesResult?.byFieldGroup?.get("ProtectionFieldGroup")
+                ?.map { contingentValue ->
+                    // convert the list of ContingentValues to a list of CodedValue
+                    (contingentValue as ContingentCodedValue).codedValue
+                } ?: return showError("Error getting coded values by field group")
+
+        // set the items to be added to the spinner adapter
+        val adapter = ArrayAdapter(
+            bottomSheetBinding.root.context,
+            R.layout.list_item,
+            protectionCodedValues.map { it.name })
+
+        // set the choices of protection attribute values
+        val protectionAttributeTextView =
+            bottomSheetBinding.protectionInputLayout.editText as AutoCompleteTextView
+        protectionAttributeTextView.apply {
+            setAdapter(adapter)
+            setOnItemClickListener { _, _, position, _ ->
+                // set the protection CodedValue of the item selected
+                feature?.attributes?.set("Protection", protectionCodedValues[position].code)
+                // enable buffer seekbar
+                showBufferSeekbar()
             }
-            // set the items to be added to the spinner adapter
-            val adapter = ArrayAdapter(
-                bottomSheetBinding.root.context,
-                R.layout.list_item,
-                protectionCodedValues.map { it.name })
-            (bottomSheetBinding.protectionInputLayout.editText as? AutoCompleteTextView)?.apply {
-                setAdapter(adapter)
-                setOnItemClickListener { _, _, position, _ ->
-                    // set the protection CodedValue of the item selected, and then enable buffer seekbar
-                    feature?.attributes?.set("Protection", protectionCodedValues[position].code)
-                    showBufferSeekbar()
-                }
-            }
-        } else {
-            showError("Error loading ContingentValuesResult from the FeatureTable")
         }
     }
 
