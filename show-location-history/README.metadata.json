@@ -1,0 +1,45 @@
+{
+    "category": "Maps and Scenes",
+    "description": "Display your location history on the map.",
+    "formal_name": "ShowLocationHistory",
+    "ignore": false,
+    "images": [
+        "show-location-history.png"
+    ],
+    "keywords": [
+        "GPS",
+        "bread crumb",
+        "breadcrumb",
+        "history",
+        "movement",
+        "navigation",
+        "real-time",
+        "trace",
+        "track",
+        "trail",
+        "LocationDataSource",
+        "LocationDisplay",
+        "LocationDisplayAutoPanMode",
+        "PolylineBuilder",
+        "SimpleLineSymbol",
+        "SimpleMarkerSymbol",
+        "SimpleRenderer",
+        "SimulatedLocationDataSource"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "LocationDataSource",
+        "LocationDisplay",
+        "LocationDisplayAutoPanMode",
+        "PolylineBuilder",
+        "SimpleLineSymbol",
+        "SimpleMarkerSymbol",
+        "SimpleRenderer",
+        "SimulatedLocationDataSource"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showlocationhistory/MainActivity.kt"
+    ],
+    "title": "Show location history"
+}
