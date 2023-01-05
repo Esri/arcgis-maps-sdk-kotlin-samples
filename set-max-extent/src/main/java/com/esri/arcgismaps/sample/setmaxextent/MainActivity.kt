@@ -54,8 +54,10 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.extentText
     }
 
-    private val extentEnvelope =
-        Envelope(Point(-12139393.2109, 5012444.0468), Point(-11359277.5124, 4438148.7816))
+    private val extentEnvelope = Envelope(
+        Point(-12139393.2109, 5012444.0468),
+        Point(-11359277.5124, 4438148.7816)
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
