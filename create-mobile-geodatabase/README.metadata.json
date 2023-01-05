@@ -23,6 +23,7 @@
     "TableDescription"
   ],
   "language": "kotlin",
+  "redirect_from": "",
   "relevant_apis": [
     "ArcGISFeature",
     "FeatureLayer",
