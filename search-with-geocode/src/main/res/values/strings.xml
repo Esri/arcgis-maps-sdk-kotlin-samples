@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Search with geocode</string>
+    <string name="address_search_hint">Enter address</string>
 </resources>
