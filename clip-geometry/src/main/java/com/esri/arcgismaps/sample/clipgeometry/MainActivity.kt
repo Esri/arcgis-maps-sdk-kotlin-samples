@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.clipgeometry
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
@@ -36,7 +35,6 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.MapView
 import com.esri.arcgismaps.sample.clipgeometry.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
