@@ -38,8 +38,9 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.clipgeometry.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var coloradoGraphic : Graphic
-    private lateinit var fillSymbol : SimpleFillSymbol
+
+    private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+    private val envelopesOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,14 +65,12 @@ class MainActivity : AppCompatActivity() {
         mapView.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
 
         // create a graphics overlay to contain the geometry to clip
-        val graphicsOverlay = GraphicsOverlay()
         mapView.graphicsOverlays.add(graphicsOverlay)
-        createGraphics(graphicsOverlay)
+        val (coloradoGraphic, fillSymbol) = createGraphics(graphicsOverlay)
 
         // create a graphics overlay to contain the clipping envelopes
-        val envelopesOverlay = GraphicsOverlay()
         mapView.graphicsOverlays.add(envelopesOverlay)
-        createEnvelope(envelopesOverlay)
+        val envelopeGraphic = createEnvelope(envelopesOverlay)
 
         // create a graphics overlay to contain the clipped areas
         val clipAreasOverlay = GraphicsOverlay()
@@ -95,14 +94,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         resetButton.setOnClickListener {
-            // clear existing graphics
-            graphicsOverlay.graphics.clear()
-            envelopesOverlay.graphics.clear()
+            // clear clipped graphic
             clipAreasOverlay.graphics.clear()
 
             // recreate original graphic and envelope
-            createGraphics(graphicsOverlay)
-            createEnvelope(envelopesOverlay)
+            coloradoGraphic.isVisible = true
 
             clipButton.visibility = View.VISIBLE
             resetButton.visibility = View.GONE
@@ -114,19 +110,20 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createGraphics(
         graphicsOverlay: GraphicsOverlay,
-    ) {
+    ) : Pair<Graphic, SimpleFillSymbol>{
         // create a blue graphic of Colorado
         val colorado = Envelope(
             Point(-11362327.128340, 5012861.290274),
             Point(-12138232.018408, 4441198.773776)
         )
-        fillSymbol = SimpleFillSymbol(
+        val fillSymbol = SimpleFillSymbol(
             SimpleFillSymbolStyle.Solid,
             Color(R.color.transparentDarkBlue),
             SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
         )
-        coloradoGraphic = Graphic(colorado, fillSymbol)
+        val coloradoGraphic = Graphic(colorado, fillSymbol)
         graphicsOverlay.graphics.add(coloradoGraphic)
+        return Pair(coloradoGraphic, fillSymbol)
     }
 
     /**
