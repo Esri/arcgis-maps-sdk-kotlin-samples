@@ -80,8 +80,8 @@ class MainActivity : AppCompatActivity() {
         getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
     }
 
-    // mobile database containing offline feature data. GeoDatabase is closed on app exit
-    private val geoDatabase: Geodatabase by lazy {
+    // mobile database containing offline feature data. geodatabase is closed on app exit
+    private val geodatabase: Geodatabase by lazy {
         Geodatabase("${cacheDir.path}/ContingentValuesBirdNests.geodatabase")
     }
 
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     // instance of the contingent feature to be added to the map
     private var feature: ArcGISFeature? = null
 
-    // instance of the feature table retrieved from the GeoDatabase, updates when new feature is added
+    // instance of the feature table retrieved from the geodatabase, updates when new feature is added
     private var featureTable: ArcGISFeatureTable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,13 +126,13 @@ class MainActivity : AppCompatActivity() {
         createGeodatabaseCacheDirectory()
 
         lifecycleScope.launch {
-            // retrieve and load the offline mobile GeoDatabase file from the cache directory
-            geoDatabase.load().getOrElse {
+            // retrieve and load the offline mobile geodatabase file from the cache directory
+            geodatabase.load().getOrElse {
                 showError("Error loading GeoDatabase: ${it.message}")
             }
 
             // get the first geodatabase feature table
-            val featureTable = geoDatabase.featureTables.firstOrNull()
+            val featureTable = geodatabase.featureTables.firstOrNull()
                 ?: return@launch showError("No feature table found in geodatabase")
             // load the geodatabase feature table
             featureTable.load().getOrElse {
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Geodatabase creates and uses various temporary files while processing a database,
-     * which will need to be cleared before looking up the [geoDatabase] again.
+     * which will need to be cleared before looking up the [geodatabase] again.
      * A copy of the original geodatabase file is created in the cache folder.
      */
     private fun createGeodatabaseCacheDirectory() {
