@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         // define the path and name of the geodatabase file
         // note: the path defined must be non-empty, available,
         // allow read/write access, and end in ".geodatabase"
-        val file = File(getExternalFilesDir(null)?.path + "/LocationHistory.geodatabase")
+        val file = File(getExternalFilesDir(null)?.path, "/LocationHistory.geodatabase")
         if (file.exists()) {
             file.delete()
         }
@@ -197,14 +197,14 @@ class MainActivity : AppCompatActivity() {
             mapView.map?.operationalLayers?.add(featureLayer)
             // display the current count of features in the FeatureTable
             featureCountTextView.text =
-                "Number of features added: ${featureTable?.numberOfFeatures}"
+                "Number of features added: ${featureTable.numberOfFeatures}"
         }?.onFailure {
             showError(it.message.toString())
         }
     }
 
     /**
-     * Create a feature with attributes on map click and it to the [featureTable]
+     * Create a feature with attributes on map click and add it to the [featureTable]
      * Also, updates the TotalFeatureCount on the screen
      */
     private fun addFeature(mapPoint: Point) {
