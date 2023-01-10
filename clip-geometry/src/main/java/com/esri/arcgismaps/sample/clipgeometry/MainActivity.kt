@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             // clear clipped graphic
             clipAreasOverlay.graphics.clear()
 
-            // recreate original graphic and envelope
+            // set the visibility of the colorado graphic to true
             coloradoGraphic.isVisible = true
 
             clipButton.visibility = View.VISIBLE
