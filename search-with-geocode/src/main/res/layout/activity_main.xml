@@ -12,13 +12,13 @@
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/suggestionSpinner"
+            app:layout_constraintBottom_toTopOf="@+id/addressTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/addressSearchView" />
 
-        <Spinner
-            android:id="@+id/suggestionSpinner"
+        <TextView
+            android:id="@+id/addressTextView"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:background="@color/colorWhiteSemiTransparent"
