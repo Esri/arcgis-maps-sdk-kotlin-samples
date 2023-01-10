@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
         // create a graphics overlay to contain the clipping envelopes
         mapView.graphicsOverlays.add(envelopesOverlay)
-        val envelopeGraphic = createEnvelope(envelopesOverlay)
+        createEnvelope(envelopesOverlay)
 
         // create a graphics overlay to contain the clipped areas
         val clipAreasOverlay = GraphicsOverlay()
