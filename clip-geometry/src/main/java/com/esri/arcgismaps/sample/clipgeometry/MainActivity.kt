@@ -39,7 +39,10 @@ import com.esri.arcgismaps.sample.clipgeometry.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+    // graphics overlay along the Colorado state border
+    private val coloradoOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+
+    // graphics overlay to contain the clipping envelopes
     private val envelopesOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,8 +68,8 @@ class MainActivity : AppCompatActivity() {
         mapView.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
 
         // create a graphics overlay to contain the geometry to clip
-        mapView.graphicsOverlays.add(graphicsOverlay)
-        val (coloradoGraphic, fillSymbol) = createGraphics(graphicsOverlay)
+        mapView.graphicsOverlays.add(coloradoOverlay)
+        val (coloradoGraphic, fillSymbol) = createGraphics(coloradoOverlay)
 
         // create a graphics overlay to contain the clipping envelopes
         mapView.graphicsOverlays.add(envelopesOverlay)
@@ -109,7 +112,7 @@ class MainActivity : AppCompatActivity() {
      * Create colorado graphic.
      */
     private fun createGraphics(
-        graphicsOverlay: GraphicsOverlay,
+        coloradoOverlay: GraphicsOverlay,
     ) : Pair<Graphic, SimpleFillSymbol>{
         // create a blue graphic of Colorado
         val colorado = Envelope(
@@ -122,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
         )
         val coloradoGraphic = Graphic(colorado, fillSymbol)
-        graphicsOverlay.graphics.add(coloradoGraphic)
+        coloradoOverlay.graphics.add(coloradoGraphic)
         return Pair(coloradoGraphic, fillSymbol)
     }
 
