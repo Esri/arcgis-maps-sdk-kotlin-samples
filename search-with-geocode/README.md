@@ -10,27 +10,25 @@ You can input an address into the app's search bar and zoom to the address locat
 
 ## How to use the sample
 
-Enter an address and optionally choose from the list of suggestions to show its location as a pin graphic. Tap on a result pin to display the address. If you pan away from the result area, a "Repeat Search Here" button will appear. Tap it to query again for the currently viewed area on the map.
+Enter an address and optionally choose from the list of suggestions to show its location as a pin graphic. Tap on a result pin to display the address. Toggle the switch to search within the MapView's extent. Use it to query again for the currently viewed area on the map.
 
 ## How it works
 
-1. Create a `LocatorSearchSource` using the toolkit.
-2. Create a `SearchView` using the toolkit with the locator search source.
-3. Perform a search.
-4. Identify a result pin graphic in the graphics overlay and show a callout with its address, using the `callout(placement:content:)` map view modifier.
-5. The search toolkit component handles the geocoding mechanism under the hood.
-    * If not specified, the component creates a `LocatorSearchSource` with the default Esri geocoding service.
-    * It creates default `GeocodeParameters` for the locator task and specifies the geocode's attributes.
-    * It also creates `SuggestParameters` to get place of interest (POI) suggestions based on a place name query.
-    * It supports searching a specific area and "Repeat search here" behaviors out of out-of-the-box. Configure these behaviors when you initialize the search view.
+1. Create a `LocatorTask` using the World GeocodeServer.
+2. Create the `GeocodeParameters` and set the `maxResults` and `resultAttributeNames` to return.
+3. To get suggestion results use `LocatorTask.suggest(SearchText)`.
+4. Perform a locator search `LocatorTask.geocode(SearchText, GeocodeParameters)`.
+    * To search in MapView's extent, set`GeocodeParameters.searchArea = mapView.getCurrentViewpoint()`
+5. Identify a result pin graphic in the graphics overlay at `GeocodeResult.displayLocation` and add the attributes `GeocodeResult.attributes` to the graphic
+6. Use `Graphic.attributes` to retrieve the address attributes of the graphic to display on map. 
 
 ## Relevant API
 
 * GeocodeParameters
+* GeocodeResult
 * LocatorTask
-* SearchResult
 * SearchSuggestion
-* SuggestParameters
+* SuggestResult
 
 ## Additional information
 
@@ -38,4 +36,4 @@ This sample uses the World Geocoding Service. For more information, see [Geocodi
 
 ## Tags
 
-address, businesses, geocode, locations, locator, places of interest, POI, point of interest, search, suggestions, toolkit
+address, businesses, geocode, locations, locator, places of interest, POI, point of interest, search, suggestions

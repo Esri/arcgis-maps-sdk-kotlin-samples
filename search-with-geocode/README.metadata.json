@@ -1,2 +1,39 @@
 {
+    "category": "Search and Query",
+    "description": "Find the location for an address or places of interest near a location or within a specific area.",
+    "formal_name": "SearchWithGeocode",
+    "ignore": false,
+    "images": [
+        "search-with-geocode.png"
+    ],
+    "keywords": [
+        "POI",
+        "address",
+        "businesses",
+        "geocode",
+        "locations",
+        "locator",
+        "places of interest",
+        "point of interest",
+        "search",
+        "suggestions",
+        "GeocodeParameters",
+        "GeocodeResult",
+        "LocatorTask",
+        "SearchSuggestion",
+        "SuggestResult"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "GeocodeParameters",
+        "GeocodeResult",
+        "LocatorTask",
+        "SearchSuggestion",
+        "SuggestResult"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/searchwithgeocode/MainActivity.kt"
+    ],
+    "title": "Search with geocode"
 }
