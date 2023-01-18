@@ -20,7 +20,7 @@ Enter an address and optionally choose from the list of suggestions to show its 
 4. Perform a locator search `LocatorTask.geocode(SearchText, GeocodeParameters)`.
     * To search in MapView's extent, set`GeocodeParameters.searchArea = mapView.getCurrentViewpoint()`
 5. Identify a result pin graphic in the graphics overlay at `GeocodeResult.displayLocation` and add the attributes `GeocodeResult.attributes` to the graphic
-6. Use `Graphic.attributes` to retrieve the address attributes of the graphic to display on map. 
+6. Use `Graphic.attributes` to retrieve the address attributes of the graphic to display on map.
 
 ## Relevant API
 
