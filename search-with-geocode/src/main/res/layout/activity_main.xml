@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,26 +15,43 @@
             app:layout_constraintBottom_toTopOf="@+id/addressTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addressSearchView" />
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
         <TextView
             android:id="@+id/addressTextView"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:background="@color/colorWhiteSemiTransparent"
+            android:gravity="center"
+            android:text="@string/search_an_address_or_a_place"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/addressSearchView"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhiteSemiTransparent"
-            android:queryHint="@string/address_search_hint"
+            android:background="@android:color/white"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Light"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/addressSearchView"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:defaultQueryHint="@string/address_search_hint"
+                app:iconifiedByDefault="true"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                app:queryHint="@string/address_search_hint" />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

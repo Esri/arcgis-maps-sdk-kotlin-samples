@@ -21,12 +21,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -35,8 +30,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Envelope
+import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -49,9 +44,7 @@ import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.esri.arcgismaps.sample.searchwithgeocode.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.concurrent.ExecutionException
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,25 +59,35 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val suggestionSpinner: Spinner by lazy {
-        activityMainBinding.suggestionSpinner
-    }
-
     private val addressSearchView: SearchView by lazy {
         activityMainBinding.addressSearchView
     }
 
-    private var addressGeocodeParameters: GeocodeParameters = GeocodeParameters()
+    private val addressTextView: TextView by lazy {
+        activityMainBinding.addressTextView
+    }
+
+    // geocode parameters used to perform a search
+    private val addressGeocodeParameters: GeocodeParameters = GeocodeParameters().apply {
+        // The maximum results to return when performing a search. Most sources default to `6`.
+        maxResults = 6
+        resultAttributeNames.add("*")
+    }
 
     // create a locator task from an online service
-    private val locatorTask: LocatorTask =
-        LocatorTask("https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer")
+    private val locatorTask: LocatorTask = LocatorTask(
+        "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+    )
 
     // create a picture marker symbol
     private var pinSourceSymbol: PictureMarkerSymbol? = null
 
     // create a new Graphics Overlay
     private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
+
+    // The current map view extent. Used to allow repeat
+    // searches after panning/zooming the map.
+    private var geoViewExtent: Envelope? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,21 +97,12 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // create and add a map with a streets basemap style
-        val streetsMap = ArcGISMap(BasemapStyle.ArcGISStreets)
-        streetsMap.initialViewpoint = Viewpoint(40.0, -100.0, 100000000.0)
-        // once the map has loaded successfully, set up address finding UI
-        lifecycleScope.launch {
-            streetsMap.load().getOrThrow()
-            //TODO which one here?
-            pinSourceSymbol = createPinSymbol()
-            //initializeAddressFinding()
-            setupAddressSearchView()
-        }
-
         mapView.apply {
             // set the map to be displayed in the MapView
-            map = streetsMap
+            map = ArcGISMap(BasemapStyle.ArcGISStreets)
+
+            // set map initial viewpoint
+            map?.initialViewpoint = Viewpoint(40.0, -100.0, 100000000.0)
 
             // define the graphics overlay and add it to the map view
             graphicsOverlays.add(graphicsOverlay)
@@ -117,36 +111,54 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 onSingleTapConfirmed.collect { tapEvent ->
                     // identify the graphic at the tapped coordinate
-                    identifyGraphic(tapEvent.screenCoordinate)
+                    val tappedGraphic = identifyGraphic(tapEvent.screenCoordinate)
+                    if (tappedGraphic != null) {
+                        // show the address of the identified graphic
+                        showAddressForGraphic(tappedGraphic)
+                    }
                 }
+            }
+
+            lifecycleScope.launch {
+                viewpointChanged.collect {
+                    // For "Repeat Search Here" behavior, use `geoViewExtent` and
+                    // `isGeoViewNavigating` modifiers on the search view.
+                    geoViewExtent = visibleArea?.extent
+                }
+            }
+        }
+
+        // once the map has loaded successfully, set up address finding UI
+        lifecycleScope.launch {
+            // load the map then set up UI
+            mapView.map?.load()?.onSuccess {
+                // create the pin symbol
+                pinSourceSymbol = createPinSymbol()
+
+                //initializeAddressFinding()
+
+                // once map has loaded, set up the
+                // address search view and listeners
+                setupAddressSearchView()
+            }?.onFailure {
+                showError(it.message.toString())
             }
         }
     }
 
     /**
-     * Populates the spinner with address suggestions and sets up the address search view.
-     */
-    private fun initializeAddressFinding() {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * Sets up the address SearchView and uses MatrixCursor to show suggestions to the user as text is entered.
+     * Sets up the address SearchView and uses MatrixCursor to
+     * show suggestions to the user as text is entered.
      */
     private fun setupAddressSearchView() {
-        addressGeocodeParameters.apply {
-            // get place name and street address attributes
-            resultAttributeNames.addAll(listOf("PlaceName", "Place_addr"))
-            // return only the closest result
-            maxResults = 1
+        // start searching if app bar is tapped
+        activityMainBinding.appBarLayout.setOnClickListener {
+            addressSearchView.isIconified = false
         }
-
         addressSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(address: String): Boolean {
-                // geocode typed address
-                geoCodeTypedAddress(address)
-                // clear focus from search views
-                addressSearchView.clearFocus()
+                // geocode the typed address
+                geocodeAddress(address, true)
                 return true
             }
 
@@ -192,14 +204,14 @@ class MainActivity : AppCompatActivity() {
                                         // get the string from the row at index
                                         val selectedAddress =
                                             selectedRow.getString(selectedCursorIndex)
-                                        // use clicked suggestion as query
-                                        addressSearchView.setQuery(selectedAddress, true)
+                                        // geocode the typed address
+                                        geocodeAddress(selectedAddress, false)
                                     }
                                     return true
                                 }
                             })
                         }.onFailure {
-                            showError("Geocode suggesstion error: ${it.message.toString()}")
+                            showError("Geocode suggestion error: ${it.message.toString()}")
                         }
                     }
                 }
@@ -211,78 +223,91 @@ class MainActivity : AppCompatActivity() {
     /**
      * Geocode an [address] passed in by the user.
      */
-    private fun geoCodeTypedAddress(address: String) = lifecycleScope.launch {
+    private fun geocodeAddress(address: String, isSearchArea: Boolean) = lifecycleScope.launch {
+        // clear graphics on map before displaying search results
+        graphicsOverlay.graphics.clear()
+        // clear focus from search views
+        addressSearchView.clearFocus()
+
+        // search the map view's extent if enabled
+        if (isSearchArea) addressGeocodeParameters.searchArea = geoViewExtent
+        else addressGeocodeParameters.searchArea = null
+
+        // load the locator task
         locatorTask.load().getOrThrow()
 
         // run the locatorTask geocode task, passing in the address
         val geocodeResults = locatorTask.geocode(address, addressGeocodeParameters).getOrThrow()
-
-        // No address found in geocode so return
-        if (geocodeResults.isEmpty()) {
-            showError("No location with address: $address")
-            return@launch
+        // no address found in geocode so return
+        when {
+            geocodeResults.isEmpty() && isSearchArea -> {
+                showError("Address not found in map's extent")
+                return@launch
+            }
+            geocodeResults.isEmpty() && !isSearchArea -> {
+                showError("No address found for $address")
+                return@launch
+            }
+            // address found in geocode
+            else -> displaySearchResultOnMap(geocodeResults)
         }
-
-        // Address found in geocode
-        displaySearchResultOnMap(geocodeResults[0])
 
     }
 
     /**
-     * Turns a [geocodeResult] into a Point and adds it to the graphic overlay of the map.
+     * Turns a list of [geocodeResultList] into a point markers and adds it to the graphic overlay of the map.
      */
-    private fun displaySearchResultOnMap(geocodeResult: GeocodeResult) {
+    private fun displaySearchResultOnMap(geocodeResultList: List<GeocodeResult>) {
         // clear graphics overlay of existing graphics
         graphicsOverlay.graphics.clear()
 
-        // create graphic object for resulting location
-        val resultLocationGraphic = Graphic(
-            geocodeResult.displayLocation,
-            geocodeResult.attributes, pinSourceSymbol
-        )
+        // create graphic object for each resulting location
+        geocodeResultList.forEach { geocodeResult ->
+            val resultLocationGraphic = Graphic(
+                geocodeResult.displayLocation,
+                geocodeResult.attributes, pinSourceSymbol
+            )
+            // add graphic to location layer
+            graphicsOverlay.graphics.add(resultLocationGraphic)
+        }
 
-        // add graphic to location layer
-        graphicsOverlay.graphics.add(resultLocationGraphic)
+        when (geocodeResultList.size) {
+            1 -> addressTextView.text = "${geocodeResultList[0].attributes["Match_addr"]} " +
+                    "${geocodeResultList[0].attributes["Country"]}"
+
+            else -> addressTextView.text = getString(R.string.tap_on_pin_to_select_address)
+        }
 
         // get the envelop to set the viewpoint
-        val envelope = geocodeResult.extent
-            ?: return showError("Geocode result extent is null")
-
+        val envelope = graphicsOverlay.extent ?: return showError("Geocode result extent is null")
         // animate viewpoint to geocode result's extent
         lifecycleScope.launch {
-            mapView.setViewpointAnimated(
-                Viewpoint(envelope),
-                1f
-            )
+            mapView.setViewpointGeometry(envelope, 25.0)
         }
     }
 
     /**
      * Identifies the tapped graphic at the [screenCoordinate] and shows it's address.
      */
-    private suspend fun identifyGraphic(screenCoordinate: ScreenCoordinate) {
+    private suspend fun identifyGraphic(screenCoordinate: ScreenCoordinate): Graphic? {
         // from the graphics overlay, get the graphics near the tapped location
-        mapView.identifyGraphicsOverlay(
+        val identifyGraphicsOverlayResult = mapView.identifyGraphicsOverlay(
             graphicsOverlay,
             screenCoordinate,
             10.0,
             false
-        ).onSuccess { identifyGraphicsOverlayResult ->
-            // if not graphic selected, return
-            if (identifyGraphicsOverlayResult.graphics.isEmpty()) {
-                clearAddress()
-                return@onSuccess
-            }
-
-            // get the first graphic identified
-            val identifiedGraphic = identifyGraphicsOverlayResult.graphics[0]
-
-            // show the address of the identified graphic
-            showAddressForGraphic(identifiedGraphic)
-
-        }.onFailure {
-            showError("Error with identifyGraphicsOverlay: ${it.message.toString()}")
+        ).getOrElse { throwable ->
+            showError("Error with identifyGraphicsOverlay: ${throwable.message.toString()}")
+            return null
         }
+
+        // if not graphic selected, return
+        if (identifyGraphicsOverlayResult.graphics.isEmpty()) {
+            return null
+        }
+
+        // get the first graphic identified
+        return identifyGraphicsOverlayResult.graphics[0]
     }
 
     /**
@@ -297,12 +322,20 @@ class MainActivity : AppCompatActivity() {
         return pinSymbol
     }
 
-    private fun clearAddress() {
-        //TODO("Not yet implemented")
-    }
+    private suspend fun showAddressForGraphic(identifiedGraphic: Graphic) {
+        // get the non null value of the geometry
+        val pinGeometry: Geometry = identifiedGraphic.geometry
+            ?: return showError("Error retrieving geometry for tapped graphic")
 
-    private fun showAddressForGraphic(identifiedGraphic: Graphic) {
-        //TODO("Not yet implemented")
+        // set the viewpoint to the pin location
+        mapView.apply {
+            setViewpointGeometry(pinGeometry.extent)
+            setViewpointScale(10e3)
+        }
+
+        val addressAttributes = identifiedGraphic.attributes
+        addressTextView.text = "${addressAttributes["Match_addr"]} ${addressAttributes["Country"]}"
+
     }
 
     private fun showError(message: String) {
