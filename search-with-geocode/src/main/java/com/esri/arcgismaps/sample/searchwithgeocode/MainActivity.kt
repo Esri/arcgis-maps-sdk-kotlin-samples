@@ -25,6 +25,7 @@ import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
+import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -40,6 +41,7 @@ import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.ViewpointType
 import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
@@ -50,6 +52,7 @@ import com.arcgismaps.tasks.geocode.LocatorTask
 import com.arcgismaps.tasks.geocode.SuggestResult
 import com.esri.arcgismaps.sample.searchwithgeocode.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -69,7 +72,9 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.addressTextView
     }
 
-    //private var addressSearchView: SearchView? = null
+    private val extentSwitch: SwitchMaterial by lazy {
+        activityMainBinding.extentSwitch
+    }
 
     // create a locator task from an online service
     private val locatorTask: LocatorTask = LocatorTask(
@@ -84,15 +89,14 @@ class MainActivity : AppCompatActivity() {
         resultAttributeNames.addAll(listOf("PlaceName", "Place_addr"))
     }
 
-    // create a picture marker symbol
-    private var pinSourceSymbol: PictureMarkerSymbol? = null
-
     // create a new Graphics Overlay
     private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
 
-    // the current map view extent. Used to allow repeat
-    // searches after panning/zooming the map.
-    private var geoViewExtent: Envelope? = null
+    // create a picture marker symbol
+    private var pinSourceSymbol: PictureMarkerSymbol? = null
+
+    // will search in the map view's viewpoint extent if enabled
+    private var isSearchInExtent = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,14 +127,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
-            lifecycleScope.launch {
-                viewpointChanged.collect {
-                    // For "Repeat Search Here" behavior, use `geoViewExtent` and
-                    // `isGeoViewNavigating` modifiers on the search view.
-                    geoViewExtent = visibleArea?.extent
-                }
-            }
         }
 
         // once the map has loaded successfully, set up address finding UI
@@ -143,6 +139,9 @@ class MainActivity : AppCompatActivity() {
                 showError(it.message.toString())
             }
         }
+
+        // set the switch to update the isSearchInExtent value
+        extentSwitch.setOnCheckedChangeListener { _, isChecked -> isSearchInExtent = isChecked }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -161,7 +160,7 @@ class MainActivity : AppCompatActivity() {
         addressSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(address: String): Boolean {
                 // geocode the typed address, search within map's viewpoint as keyword was submitted
-                geocodeAddress(address, true)
+                geocodeAddress(address)
                 addressSearchView.clearAndHideKeyboard()
                 return true
             }
@@ -191,7 +190,7 @@ class MainActivity : AppCompatActivity() {
                                         val selectedAddress =
                                             selectedRow.getString(selectedCursorIndex)
                                         // geocode the typed address
-                                        geocodeAddress(selectedAddress, false)
+                                        geocodeAddress(selectedAddress)
                                         addressSearchView.isIconified = true
                                         addressSearchView.clearAndHideKeyboard()
                                     }
@@ -231,13 +230,16 @@ class MainActivity : AppCompatActivity() {
     /**
      * Geocode an [address] passed in by the user.
      */
-    private fun geocodeAddress(address: String, isSearchArea: Boolean) = lifecycleScope.launch {
+    private fun geocodeAddress(address: String) = lifecycleScope.launch {
         // clear graphics on map before displaying search results
         graphicsOverlay.graphics.clear()
 
         // search the map view's extent if enabled
-        if (isSearchArea) addressGeocodeParameters.searchArea = geoViewExtent
-        else addressGeocodeParameters.searchArea = null
+        if (isSearchInExtent)
+            addressGeocodeParameters.searchArea =
+                mapView.getCurrentViewpoint(ViewpointType.BoundingGeometry)?.targetGeometry
+        else
+            addressGeocodeParameters.searchArea = null
 
         // load the locator task
         locatorTask.load().getOrThrow()
@@ -246,11 +248,11 @@ class MainActivity : AppCompatActivity() {
         val geocodeResults = locatorTask.geocode(address, addressGeocodeParameters).getOrThrow()
         // no address found in geocode so return
         when {
-            geocodeResults.isEmpty() && isSearchArea -> {
+            geocodeResults.isEmpty() && isSearchInExtent -> {
                 showError("Address not found in map's extent")
                 return@launch
             }
-            geocodeResults.isEmpty() && !isSearchArea -> {
+            geocodeResults.isEmpty() && !isSearchInExtent -> {
                 showError("No address found for $address")
                 return@launch
             }
@@ -359,7 +361,7 @@ class MainActivity : AppCompatActivity() {
 
     fun SearchView.clearAndHideKeyboard() {
         // clear the searched text from the view
-        this.isIconified = true
+        this.clearFocus()
         // close the keyboard once search is complete
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
