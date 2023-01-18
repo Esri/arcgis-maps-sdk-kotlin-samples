@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Find route in transport network</string>
+    <string name="delete_button">delete button</string>
 </resources>

@@ -25,6 +25,9 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.tasks.networkanalysis.RouteParameters
+import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.esri.arcgismaps.sample.findrouteintransportnetwork.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -41,6 +44,23 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    private val toggleButtons by lazy {
+        activityMainBinding.toggleButtons
+    }
+
+    private val deleteButton by lazy {
+        activityMainBinding.deleteButton
+    }
+
+    private val distanceTimeTextView by lazy {
+        activityMainBinding.distanceTimeTextView
+    }
+
+    private val stopsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+    private val routeOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+
+    private var routeParameters: RouteParameters? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,8 +74,8 @@ class MainActivity : AppCompatActivity() {
         mapView.map = map
     }
 
-    private fun showError(message: String, view: View) {
+    private fun showError(message: String) {
         Log.e(TAG, message)
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
