@@ -16,15 +16,20 @@
 
 package com.esri.arcgismaps.sample.searchwithgeocode
 
+import android.content.Context
 import android.database.MatrixCursor
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.provider.BaseColumns
+import android.text.SpannableStringBuilder
 import android.util.Log
+import android.view.Menu
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.text.bold
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -42,6 +47,7 @@ import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.tasks.geocode.GeocodeParameters
 import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
+import com.arcgismaps.tasks.geocode.SuggestResult
 import com.esri.arcgismaps.sample.searchwithgeocode.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -59,25 +65,24 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val addressSearchView: SearchView by lazy {
-        activityMainBinding.addressSearchView
-    }
-
     private val addressTextView: TextView by lazy {
         activityMainBinding.addressTextView
     }
 
-    // geocode parameters used to perform a search
-    private val addressGeocodeParameters: GeocodeParameters = GeocodeParameters().apply {
-        // The maximum results to return when performing a search. Most sources default to `6`.
-        maxResults = 6
-        resultAttributeNames.add("*")
-    }
+    //private var addressSearchView: SearchView? = null
 
     // create a locator task from an online service
     private val locatorTask: LocatorTask = LocatorTask(
         "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
     )
+
+    // geocode parameters used to perform a search
+    private val addressGeocodeParameters: GeocodeParameters = GeocodeParameters().apply {
+        // maximum results to return when performing a search. Most sources default to `6`.
+        maxResults = 6
+        // get all attributes names for the geocode results
+        resultAttributeNames.addAll(listOf("PlaceName", "Place_addr"))
+    }
 
     // create a picture marker symbol
     private var pinSourceSymbol: PictureMarkerSymbol? = null
@@ -85,7 +90,7 @@ class MainActivity : AppCompatActivity() {
     // create a new Graphics Overlay
     private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
 
-    // The current map view extent. Used to allow repeat
+    // the current map view extent. Used to allow repeat
     // searches after panning/zooming the map.
     private var geoViewExtent: Envelope? = null
 
@@ -134,31 +139,30 @@ class MainActivity : AppCompatActivity() {
             mapView.map?.load()?.onSuccess {
                 // create the pin symbol
                 pinSourceSymbol = createPinSymbol()
-
-                //initializeAddressFinding()
-
-                // once map has loaded, set up the
-                // address search view and listeners
-                setupAddressSearchView()
             }?.onFailure {
                 showError(it.message.toString())
             }
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        val search = menu.findItem(R.id.appSearchBar)
+        // set up address search view and listeners
+        setupAddressSearchView(search.actionView as SearchView)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     /**
      * Sets up the address SearchView and uses MatrixCursor to
      * show suggestions to the user as text is entered.
      */
-    private fun setupAddressSearchView() {
-        // start searching if app bar is tapped
-        activityMainBinding.appBarLayout.setOnClickListener {
-            addressSearchView.isIconified = false
-        }
+    private fun setupAddressSearchView(addressSearchView: SearchView) {
         addressSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(address: String): Boolean {
-                // geocode the typed address
+                // geocode the typed address, search within map's viewpoint as keyword was submitted
                 geocodeAddress(address, true)
+                addressSearchView.clearAndHideKeyboard()
                 return true
             }
 
@@ -167,25 +171,7 @@ class MainActivity : AppCompatActivity() {
                 if (newText.isNotEmpty()) {
                     lifecycleScope.launch {
                         locatorTask.suggest(newText).onSuccess { suggestResults ->
-
-                            // set up parameters for searching with MatrixCursor
-                            val address = "address"
-                            val columnNames = arrayOf(BaseColumns._ID, address)
-                            val suggestionsCursor = MatrixCursor(columnNames)
-
-                            // add each address suggestion to a new row
-                            for ((key, result) in suggestResults.withIndex()) {
-                                suggestionsCursor.addRow(arrayOf<Any>(key, result.label))
-                            }
-                            // column names for the adapter to look at when mapping data
-                            val cols = arrayOf(address)
-                            // ids that show where data should be assigned in the layout
-                            val to = intArrayOf(R.id.suggestion_address)
-                            // define SimpleCursorAdapter
-                            val suggestionAdapter = SimpleCursorAdapter(
-                                this@MainActivity,
-                                R.layout.suggestion, suggestionsCursor, cols, to, 0
-                            )
+                            val suggestionAdapter = getSuggestionAdapter(suggestResults)
 
                             addressSearchView.suggestionsAdapter = suggestionAdapter
                             // handle an address suggestion being chosen
@@ -200,12 +186,14 @@ class MainActivity : AppCompatActivity() {
                                     (suggestionAdapter.getItem(position) as? MatrixCursor)?.let { selectedRow ->
                                         // get the row's index
                                         val selectedCursorIndex =
-                                            selectedRow.getColumnIndex(address)
+                                            selectedRow.getColumnIndex("address")
                                         // get the string from the row at index
                                         val selectedAddress =
                                             selectedRow.getString(selectedCursorIndex)
                                         // geocode the typed address
                                         geocodeAddress(selectedAddress, false)
+                                        addressSearchView.isIconified = true
+                                        addressSearchView.clearAndHideKeyboard()
                                     }
                                     return true
                                 }
@@ -220,14 +208,32 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun getSuggestionAdapter(suggestResults: List<SuggestResult>): SimpleCursorAdapter {
+        // set up parameters for searching with MatrixCursor
+        val columnNames = arrayOf(BaseColumns._ID, "address")
+        val suggestionsCursor = MatrixCursor(columnNames)
+
+        // add each address suggestion to a new row
+        for ((key, result) in suggestResults.withIndex()) {
+            suggestionsCursor.addRow(arrayOf<Any>(key, result.label))
+        }
+        // column names for the adapter to look at when mapping data
+        val cols = arrayOf("address")
+        // ids that show where data should be assigned in the layout
+        val to = intArrayOf(R.id.suggestion_address)
+        // define SimpleCursorAdapter
+        return SimpleCursorAdapter(
+            this@MainActivity,
+            R.layout.suggestion, suggestionsCursor, cols, to, 0
+        )
+    }
+
     /**
      * Geocode an [address] passed in by the user.
      */
     private fun geocodeAddress(address: String, isSearchArea: Boolean) = lifecycleScope.launch {
         // clear graphics on map before displaying search results
         graphicsOverlay.graphics.clear()
-        // clear focus from search views
-        addressSearchView.clearFocus()
 
         // search the map view's extent if enabled
         if (isSearchArea) addressGeocodeParameters.searchArea = geoViewExtent
@@ -272,9 +278,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         when (geocodeResultList.size) {
-            1 -> addressTextView.text = "${geocodeResultList[0].attributes["Match_addr"]} " +
-                    "${geocodeResultList[0].attributes["Country"]}"
-
+            // if there is only one result, display location's address
+            1 -> {
+                val addressAttributes = geocodeResultList[0].attributes
+                val addressString = SpannableStringBuilder()
+                    .append("Selected address\n")
+                    .bold { append("${addressAttributes["PlaceName"]} ${addressAttributes["Place_addr"]}") }
+                addressTextView.text = addressString
+            }
+            // if there are multiple results, display tap pin message
             else -> addressTextView.text = getString(R.string.tap_on_pin_to_select_address)
         }
 
@@ -322,6 +334,9 @@ class MainActivity : AppCompatActivity() {
         return pinSymbol
     }
 
+    /**
+     * Display the address for the tapped [identifiedGraphic] using the attribute values
+     */
     private suspend fun showAddressForGraphic(identifiedGraphic: Graphic) {
         // get the non null value of the geometry
         val pinGeometry: Geometry = identifiedGraphic.geometry
@@ -333,9 +348,22 @@ class MainActivity : AppCompatActivity() {
             setViewpointScale(10e3)
         }
 
+        // set the address text
         val addressAttributes = identifiedGraphic.attributes
-        addressTextView.text = "${addressAttributes["Match_addr"]} ${addressAttributes["Country"]}"
+        val addressString = SpannableStringBuilder()
+            .append("Selected address\n")
+            .bold { append("${addressAttributes["PlaceName"]} ${addressAttributes["Place_addr"]}") }
+        addressTextView.text = addressString
 
+    }
+
+    fun SearchView.clearAndHideKeyboard() {
+        // clear the searched text from the view
+        this.isIconified = true
+        // close the keyboard once search is complete
+        val inputManager =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
     private fun showError(message: String) {
