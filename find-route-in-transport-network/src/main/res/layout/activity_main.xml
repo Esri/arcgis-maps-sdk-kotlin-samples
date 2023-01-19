@@ -40,12 +40,14 @@
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/shortestButton"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Shortest" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fastestButton"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -54,10 +56,10 @@
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <ImageView
-                android:id="@+id/deleteButton"
+                android:id="@+id/clearButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/delete_button"
+                android:contentDescription="@string/clear_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
