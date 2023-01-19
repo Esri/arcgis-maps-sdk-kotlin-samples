@@ -21,8 +21,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.util.Log
-import android.view.View
-import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -35,9 +33,7 @@ import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.arcgismaps.mapping.ViewpointType
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.layers.TileCache
 import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
@@ -48,9 +44,11 @@ import com.arcgismaps.tasks.geocode.LocatorTask
 import com.arcgismaps.tasks.geocode.ReverseGeocodeParameters
 import com.esri.arcgismaps.sample.geocodeoffline.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.File
+import android.R
+
+import android.widget.AutoCompleteTextView
 
 class MainActivity : AppCompatActivity() {
 
@@ -160,9 +158,28 @@ class MainActivity : AppCompatActivity() {
                 to,
                 0)
         addressSearchView.suggestionsAdapter = suggestionsAdapter
+        addressSearchView.setOnSuggestionListener(object: SearchView.OnSuggestionListener {
+            override fun onSuggestionSelect(position: Int): Boolean {
+                return false
+            }
 
+            override fun onSuggestionClick(position: Int): Boolean {
+                geocode(suggestions[position])
+                return true
+            }
+        })
 
+        // show the suggestions as soon as the user opens the search view
+        findViewById<AutoCompleteTextView>(R.id.search_src_text).threshold = 0
 
+    }
+
+    /**
+     * Use the locator task to geocode the given address.
+     *
+     * @param address as a string to geocode
+     */
+    private fun geocode(address: String) {
 
     }
 
