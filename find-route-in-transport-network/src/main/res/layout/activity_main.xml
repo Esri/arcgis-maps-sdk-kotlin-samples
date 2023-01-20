@@ -24,6 +24,7 @@
             android:id="@+id/optionsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="12dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -34,17 +35,15 @@
                 android:id="@+id/toggleButtons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checked="true"
+                app:checkedButton="@id/fastestButton"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/clearButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:singleSelection="true"
+                app:selectionRequired="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/shortestButton"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Shortest" />
+                app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/fastestButton"
@@ -53,17 +52,30 @@
                     android:layout_height="wrap_content"
                     android:text="Fastest" />
 
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/shortestButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Shortest" />
+
+
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <ImageView
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/clearButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/clear_button"
+                android:enabled="false"
+                android:text="Clear"
+                app:icon="@drawable/ic_outline_delete_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_outline_delete_24" />
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/toggleButtons"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -71,16 +83,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="4dp"
+            android:layout_marginTop="4dp"
+            android:background="@android:color/white"
             app:layout_constraintBottom_toTopOf="@id/optionsLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:id="@+id/distanceTimeTextView"
-                android:text="11 min (2.58 mi)"
-                android:gravity="center"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="11 min (2.58 mi)" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

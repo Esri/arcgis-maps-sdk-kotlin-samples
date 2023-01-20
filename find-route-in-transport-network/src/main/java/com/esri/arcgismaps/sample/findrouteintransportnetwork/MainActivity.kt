@@ -46,6 +46,7 @@ import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
+import com.arcgismaps.tasks.networkanalysis.TravelMode
 import com.esri.arcgismaps.sample.findrouteintransportnetwork.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -107,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         mapView.map = ArcGISMap(Basemap(tiledLayer))
 
         // add the graphics overlays to the map view
-        mapView.graphicsOverlays.addAll(listOf(stopsOverlay, routeOverlay))
+        mapView.graphicsOverlays.addAll(listOf(routeOverlay, stopsOverlay))
 
         val temp = File(provisionPath + getString(R.string.geodatabase_path))
         routeTask = RouteTask(temp.path, "Streets_ND")
@@ -122,33 +123,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        toggleButtons.addOnButtonCheckedListener { _, checkedId, _ ->
-            when (checkedId) {
-                R.id.fastestButton -> routeParameters?.travelMode =
-                    routeTask?.getRouteTaskInfo()?.travelModes?.get(0) // calculate fastest route
-                R.id.shortestButton -> routeParameters?.travelMode =
-                    routeTask?.getRouteTaskInfo()?.travelModes?.get(1) // calculate shortest route
+        toggleButtons.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.fastestButton -> {
+                        // calculate fastest route
+                        routeParameters?.travelMode =
+                            routeTask?.getRouteTaskInfo()?.travelModes?.get(0)
+
+                        // update route based on selection
+                        updateRoute()
+                    }
+                    R.id.shortestButton -> {
+                        // calculate shortest route
+                        routeParameters?.travelMode =
+                            routeTask?.getRouteTaskInfo()?.travelModes?.get(1)
+
+                        // update route based on selection
+                        updateRoute()
+                    }
+                }
             }
-            // update route based on selection
-            updateRoute()
         }
 
         // make a clear button to reset the stops and routes
         clearButton.setOnClickListener {
             stopsOverlay.graphics.clear()
             routeOverlay.graphics.clear()
+            clearButton.isEnabled = false
         }
-
-        val envelope = Envelope(
-            Point(-13045352.223196, 3864910.900750, 0.0, SpatialReference.webMercator()),
-            Point(-13024588.857198, 3838880.505604, 0.0, SpatialReference.webMercator())
-        )
-        val boundarySymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.green, 5f)
-
-        val graphicsOverlay = GraphicsOverlay().apply {
-            graphics.add(Graphic(envelope, boundarySymbol))
-        }
-        mapView.graphicsOverlays.add(graphicsOverlay)
 
         // set up the touch listeners on the map view
         createMapGestures()
@@ -161,12 +164,20 @@ class MainActivity : AppCompatActivity() {
      * */
     private fun createMapGestures() {
         with(lifecycleScope) {
+            launch {
+                val envelope = Envelope(
+                    Point(-13046352.223196, 3864910.900750, 0.0, SpatialReference.webMercator()),
+                    Point(-13024588.857198, 3838880.505604, 0.0, SpatialReference.webMercator())
+                )
+                mapView.setViewpointGeometry(envelope)
+            }
 
             // add graphic at the tapped coordinate
             launch {
                 mapView.onSingleTapConfirmed.collect { tapEvent ->
                     val screenCoordinate = tapEvent.screenCoordinate
                     addOrSelectGraphic(screenCoordinate)
+                    clearButton.isEnabled = true
                 }
             }
             // move the graphic to a different coordinate
@@ -177,7 +188,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Updates the calculated route by calling routeTask.solveRouteAsync().
+     * Updates the calculated route by calling routeTask.solveRoute().
      * Creates a graphic to display the route.
      * */
     private fun updateRoute() = lifecycleScope.launch {
@@ -205,7 +216,7 @@ class MainActivity : AppCompatActivity() {
                 val graphic = Graphic(
                     route.routeGeometry, SimpleLineSymbol(
                         SimpleLineSymbolStyle.Solid,
-                        Color.green, 3F
+                        Color.black, 3F
                     )
                 )
                 routeOverlay.graphics.clear()
@@ -221,7 +232,8 @@ class MainActivity : AppCompatActivity() {
      * */
     private suspend fun addOrSelectGraphic(screenCoordinate: ScreenCoordinate) {
         // identify the selected graphic
-        val result = mapView.identifyGraphicsOverlay(stopsOverlay, screenCoordinate, 10.0, false)
+        val result =
+            mapView.identifyGraphicsOverlay(stopsOverlay, screenCoordinate, 10.0, false)
 
         result.onFailure {
             showError(it.message.toString())
@@ -258,7 +270,13 @@ class MainActivity : AppCompatActivity() {
                 this,
                 R.drawable.pin_symbol
             ) as BitmapDrawable
-        )
+        ).apply {
+            // set the scale of the symbol
+            width = 24f
+            height = 24f
+            // set in pin "drop" to be offset to the point on map
+            offsetY = 10f
+        }
 
         // create black stop number TextSymbol
         val stopNumberSymbol = TextSymbol(
@@ -268,7 +286,7 @@ class MainActivity : AppCompatActivity() {
             HorizontalAlignment.Center,
             VerticalAlignment.Bottom
         ).apply {
-            offsetY = -4f
+            offsetY = 4f
         }
 
         // create a composite symbol and add the picture marker symbol and text symbol
