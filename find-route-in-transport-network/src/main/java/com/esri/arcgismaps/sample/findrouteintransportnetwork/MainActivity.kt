@@ -31,6 +31,7 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.layers.TileCache
 import com.arcgismaps.mapping.symbology.CompositeSymbol
@@ -166,8 +167,8 @@ class MainActivity : AppCompatActivity() {
         with(lifecycleScope) {
             launch {
                 val envelope = Envelope(
-                    Point(-13046352.223196, 3864910.900750, 0.0, SpatialReference.webMercator()),
-                    Point(-13024588.857198, 3838880.505604, 0.0, SpatialReference.webMercator())
+                    Point(-1.3045e7, 3.87e6, 0.0, SpatialReference.webMercator()),
+                    Point(-1.3025e7, 3.84e6, 0.0, SpatialReference.webMercator())
                 )
                 mapView.setViewpointGeometry(envelope)
             }
