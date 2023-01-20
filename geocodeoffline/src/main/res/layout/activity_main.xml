@@ -17,16 +17,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <include
-            android:id="@+id/searchView"
-            layout="@layout/search_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="8dp"/>
-
-
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
