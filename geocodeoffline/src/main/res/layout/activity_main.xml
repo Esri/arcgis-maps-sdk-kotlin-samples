@@ -21,24 +21,12 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
+            android:paddingTop="7dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
-
-            <TextView
-                android:id="@+id/titleTV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="8dp"
-                android:text="@string/tap_map"
-                android:textSize="15sp"
-                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/descriptionTV"
@@ -48,7 +36,8 @@
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:paddingBottom="8dp"
-                android:textSize="12sp"/>
+                android:text="@string/tap_map"
+                android:textSize="15sp"/>
 
         </LinearLayout>
 
