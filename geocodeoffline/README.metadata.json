@@ -1,2 +1,35 @@
 {
+    "category": "Search and Query",
+    "description": "Geocode addresses to locations and reverse geocode locations to addresses offline.",
+    "formal_name": "GeocodeOffline",
+    "ignore": false,
+    "images": [
+        "geocode-offline.png"
+    ],
+    "keywords": [
+        "geocode",
+        "geocoder",
+        "locator",
+        "offline",
+        "package",
+        "query",
+        "search",
+        "GeocodeParameters",
+        "GeocodeResult",
+        "LocatorTask",
+        "ReverseGeocodeParameters"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "GeocodeParameters",
+        "GeocodeResult",
+        "LocatorTask",
+        "ReverseGeocodeParameters"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/geocodeoffline/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/geocodeoffline/MainActivity.kt"
+    ],
+    "title": "Geocode offline"
 }
