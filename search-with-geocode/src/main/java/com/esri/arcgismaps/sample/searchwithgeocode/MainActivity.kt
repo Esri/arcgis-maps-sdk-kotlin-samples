@@ -81,8 +81,6 @@ class MainActivity : AppCompatActivity() {
 
     // geocode parameters used to perform a search
     private val addressGeocodeParameters: GeocodeParameters = GeocodeParameters().apply {
-        // maximum results to return when performing a search. Most sources default to `6`.
-        maxResults = 6
         // get all attributes names for the geocode results
         resultAttributeNames.addAll(listOf("PlaceName", "Place_addr"))
     }
@@ -158,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         addressSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(address: String): Boolean {
                 // geocode the typed address, search within map's viewpoint as keyword was submitted
-                geocodeAddress(address)
+                geocodeAddress(address, true)
                 addressSearchView.clearAndHideKeyboard()
                 return true
             }
@@ -188,7 +186,7 @@ class MainActivity : AppCompatActivity() {
                                         val selectedAddress =
                                             selectedRow.getString(selectedCursorIndex)
                                         // geocode the typed address
-                                        geocodeAddress(selectedAddress)
+                                        geocodeAddress(selectedAddress, false)
                                         addressSearchView.isIconified = true
                                         addressSearchView.clearAndHideKeyboard()
                                     }
@@ -228,7 +226,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Geocode an [address] passed in by the user.
      */
-    private fun geocodeAddress(address: String) = lifecycleScope.launch {
+    private fun geocodeAddress(address: String, multipleResults: Boolean) = lifecycleScope.launch {
         // clear graphics on map before displaying search results
         graphicsOverlay.graphics.clear()
 
@@ -238,6 +236,10 @@ class MainActivity : AppCompatActivity() {
                 mapView.getCurrentViewpoint(ViewpointType.BoundingGeometry)?.targetGeometry
         else
             addressGeocodeParameters.searchArea = null
+
+        // if locator task needs to find multiple results,
+        // set maxResults to default to `6`.
+        addressGeocodeParameters.maxResults = if (multipleResults) 6 else 1
 
         // load the locator task
         locatorTask.load().getOrThrow()
