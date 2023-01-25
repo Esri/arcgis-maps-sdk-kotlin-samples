@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Geocode Offline</string>
-    <string name="tap_map">Tap on the Map</string>
+    <string name="tap_map">Search for an address or tap on the map</string>
     <string name="san_diego_loc">/SanDiego_StreetAddress.loc</string>
     <string name="address_search_hint">Enter address</string>
     <string-array name="suggestion_items">
