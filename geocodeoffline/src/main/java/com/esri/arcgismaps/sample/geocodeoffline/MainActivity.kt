@@ -154,11 +154,7 @@ class MainActivity : AppCompatActivity() {
         // define SimpleCursorAdapter
         val suggestionsAdapter = SimpleCursorAdapter(
             this@MainActivity,
-            R.layout.suggestion_address,
-            suggestionsCursor,
-            cols,
-            to,
-            0
+            R.layout.suggestion_address, suggestionsCursor, cols, to, 0
         )
 
         addressSearchView.suggestionsAdapter = suggestionsAdapter
