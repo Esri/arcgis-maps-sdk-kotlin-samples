@@ -12,9 +12,9 @@ class DownloadActivity : DownloaderActivity() {
             // get the app name of the sample
             getString(R.string.app_name),
             listOf(
-                //
+                // A .tpkx Tile Package file covering the San Diego, CA, USA area
                 "https://www.arcgis.com/home/item.html?id=22c3083d4fa74e3e9b25adfc9f8c0496",
-                //
+                // San Diego Locator Offline Dataset
                 "https://www.arcgis.com/home/item.html?id=3424d442ebe54f3cbf34462382d3aebe"
             )
         )
