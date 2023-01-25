@@ -113,8 +113,8 @@ class MainActivity : AppCompatActivity() {
             graphicsOverlays.add(graphicsOverlay)
         }
 
+         // load geocode locator task
         lifecycleScope.launch {
-            // load geocode locator task
             locatorTask.load().onSuccess {
                 mapView.onSingleTapConfirmed.collect { event ->
                     // find address with reverse geocode using the tapped location
