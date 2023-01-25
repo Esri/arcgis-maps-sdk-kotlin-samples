@@ -206,6 +206,9 @@ class MainActivity : AppCompatActivity() {
         else displaySearchResultOnMap(geocodeResults)
     }
 
+   /**
+   * Get the reverse geocode result from the [mapPoint]
+   */
     private suspend fun findAddressReverseGeocode(mapPoint: Point) {
         // normalize the geometry - needed if the user crosses the international date line.
         val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
