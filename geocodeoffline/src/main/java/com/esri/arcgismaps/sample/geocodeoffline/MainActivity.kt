@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
             graphicsOverlays.add(graphicsOverlay)
         }
 
-         // load geocode locator task
+        // load geocode locator task
         lifecycleScope.launch {
             locatorTask.load().onSuccess {
                 mapView.onSingleTapConfirmed.collect { event ->
@@ -158,7 +158,8 @@ class MainActivity : AppCompatActivity() {
             suggestionsCursor,
             cols,
             to,
-            0)
+            0
+        )
 
         addressSearchView.suggestionsAdapter = suggestionsAdapter
         // handle an address suggestion being chosen
@@ -166,6 +167,7 @@ class MainActivity : AppCompatActivity() {
             override fun onSuggestionSelect(position: Int): Boolean {
                 return false
             }
+
             override fun onSuggestionClick(position: Int): Boolean {
                 // geocode the typed address
                 geocodeAddress(suggestions[position])
@@ -181,6 +183,7 @@ class MainActivity : AppCompatActivity() {
                 addressSearchView.clearFocus()
                 return true
             }
+
             override fun onQueryTextChange(newText: String?) = true
         })
     }
@@ -198,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         // run the locatorTask geocode task, passing in the address
         val geocodeResults = locatorTask.geocode(address, geocodeParameters).getOrThrow()
         // no address found in geocode so return
-        if(geocodeResults.isEmpty()) {
+        if (geocodeResults.isEmpty()) {
             showError("No address found for $address")
             return@launch
         }
@@ -206,15 +209,15 @@ class MainActivity : AppCompatActivity() {
         else displaySearchResultOnMap(geocodeResults)
     }
 
-   /**
-   * Get the reverse geocode result from the [mapPoint]
-   */
+    /**
+     * Get the reverse geocode result from the [mapPoint]
+     */
     private suspend fun findAddressReverseGeocode(mapPoint: Point) {
         // normalize the geometry - needed if the user crosses the international date line.
         val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
         locatorTask.reverseGeocode(normalizedPoint).onSuccess { geocodeResults ->
             // no address found in geocode so return
-            if(geocodeResults.isEmpty()) {
+            if (geocodeResults.isEmpty()) {
                 showError("Could not find address at tapped point")
                 return@onSuccess
             }
