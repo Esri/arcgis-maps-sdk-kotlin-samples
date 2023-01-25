@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity() {
 
         addressSearchView.suggestionsAdapter = suggestionsAdapter
         // handle an address suggestion being chosen
-        addressSearchView.setOnSuggestionListener(object: SearchView.OnSuggestionListener {
+        addressSearchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener {
             override fun onSuggestionSelect(position: Int): Boolean {
                 return false
             }
