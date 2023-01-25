@@ -199,8 +199,8 @@ class MainActivity : AppCompatActivity() {
         val geocodeResults = locatorTask.geocode(address, geocodeParameters).getOrThrow()
         // no address found in geocode so return
         if(geocodeResults.isEmpty()) {
-                showError("No address found for $address")
-                return@launch
+            showError("No address found for $address")
+            return@launch
         }
         // display address found in geocode
         else displaySearchResultOnMap(geocodeResults)
