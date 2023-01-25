@@ -75,9 +75,6 @@ class MainActivity : AppCompatActivity() {
         createPinSymbol()
     }
 
-    // create a graphics overlay
-    private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
-
     // geocode parameters used to perform a search
     private val geocodeParameters: GeocodeParameters by lazy {
         GeocodeParameters().apply {
@@ -92,6 +89,9 @@ class MainActivity : AppCompatActivity() {
     private val locatorTask: LocatorTask by lazy {
         LocatorTask(File(provisionPath, getString(R.string.san_diego_loc)).path)
     }
+
+    // create a graphics overlay
+    private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
