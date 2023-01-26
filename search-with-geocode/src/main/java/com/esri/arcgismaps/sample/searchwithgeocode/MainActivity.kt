@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
     // create a new Graphics Overlay
     private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
 
-    // create a picture marker symbol
+    // instance of the map pin symbol
     private var pinSourceSymbol: PictureMarkerSymbol? = null
 
     // will search in the map view's viewpoint extent if enabled
