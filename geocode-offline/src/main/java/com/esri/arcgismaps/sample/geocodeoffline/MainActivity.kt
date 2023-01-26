@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.provider.BaseColumns
 import android.util.Log
 import android.view.Menu
+import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -139,6 +140,10 @@ class MainActivity : AppCompatActivity() {
      * show suggestions to the user as text is entered.
      */
     private fun setupAddressSearchView(addressSearchView: SearchView) {
+        // disable threshold to show results from single character
+        val autoCompleteTextViewID = resources.getIdentifier("search_src_text", "id", packageName)
+        addressSearchView.findViewById<AutoCompleteTextView>(autoCompleteTextViewID).threshold = 0
+
         // get the list of pre-made suggestions
         val suggestions = resources.getStringArray(R.array.suggestion_items)
         // set up parameters for searching with MatrixCursor
@@ -196,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         locatorTask.load().getOrThrow()
         // run the locatorTask geocode task, passing in the address
         val geocodeResults = locatorTask.geocode(address, geocodeParameters).getOrElse {
-        // no address found in geocode so return
+            // no address found in geocode so return
             showError("No address found for $address")
             return@launch
         }
