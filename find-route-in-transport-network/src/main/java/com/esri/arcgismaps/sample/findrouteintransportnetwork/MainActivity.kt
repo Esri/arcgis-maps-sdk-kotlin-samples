@@ -152,6 +152,7 @@ class MainActivity : AppCompatActivity() {
             stopsOverlay.graphics.clear()
             routeOverlay.graphics.clear()
             clearButton.isEnabled = false
+            distanceTimeTextView.text = getString(R.string.tap_on_map_to_create_a_transport_network)
         }
 
         // set up the touch listeners on the map view
