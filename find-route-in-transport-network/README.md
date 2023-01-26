@@ -21,10 +21,6 @@ Tap once near a road to add a stop to the map. A number graphic will show its or
 5. Solve the `Route` using `routeTask.solveRoute(routeParameters)`.
 6. Create a graphic with the route's geometry and a `SimpleLineSymbol` and display it on another `GraphicsOverlay`.
 
-## About the data
-
-This sample uses a pre-packaged [sample dataset](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca) consisting of a geodatabase with a San Diego road routing network and a tile package with a streets basemap. 
-
 ## Relevant API
 
 * RouteParameters
@@ -32,6 +28,10 @@ This sample uses a pre-packaged [sample dataset](https://arcgisruntime.maps.arcg
 * RouteTask
 * Stop
 * TravelMode
+
+## About the data
+
+This sample uses a pre-packaged [sample dataset](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca) consisting of a geodatabase with a San Diego road routing network and a tile package with a streets basemap.
 
 ## Tags
 
