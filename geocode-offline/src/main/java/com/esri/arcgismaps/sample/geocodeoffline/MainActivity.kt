@@ -195,14 +195,13 @@ class MainActivity : AppCompatActivity() {
         // load the locator task
         locatorTask.load().getOrThrow()
         // run the locatorTask geocode task, passing in the address
-        val geocodeResults = locatorTask.geocode(address, geocodeParameters).getOrThrow()
+        val geocodeResults = locatorTask.geocode(address, geocodeParameters).getOrElse {
         // no address found in geocode so return
-        if (geocodeResults.isEmpty()) {
             showError("No address found for $address")
             return@launch
         }
         // display address found in geocode
-        else displaySearchResultOnMap(geocodeResults)
+        displaySearchResultOnMap(geocodeResults)
     }
 
     /**
