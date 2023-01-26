@@ -31,7 +31,6 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.layers.TileCache
 import com.arcgismaps.mapping.symbology.CompositeSymbol
@@ -47,11 +46,11 @@ import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
-import com.arcgismaps.tasks.networkanalysis.TravelMode
 import com.esri.arcgismaps.sample.findrouteintransportnetwork.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -111,6 +110,7 @@ class MainActivity : AppCompatActivity() {
         // add the graphics overlays to the map view
         mapView.graphicsOverlays.addAll(listOf(routeOverlay, stopsOverlay))
 
+        // create a route task using the geodatabase file
         val temp = File(provisionPath + getString(R.string.geodatabase_path))
         routeTask = RouteTask(temp.path, "Streets_ND")
 
@@ -155,16 +155,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         // set up the touch listeners on the map view
-        createMapGestures()
+        setUpMapView()
     }
 
     /**
-     * Sets up the onTouchListener for the mapView.
+     * Sets up the viewpoint and onSingleTapConfirmed for the mapView.
      * For single taps, graphics will be selected.
-     * For double touch drags, graphics will be moved.
      * */
-    private fun createMapGestures() {
+    private fun setUpMapView() {
         with(lifecycleScope) {
+            // set the viewpoint of the MapView
             launch {
                 val envelope = Envelope(
                     Point(-1.3045e7, 3.87e6, 0.0, SpatialReference.webMercator()),
@@ -181,15 +181,12 @@ class MainActivity : AppCompatActivity() {
                     clearButton.isEnabled = true
                 }
             }
-            // move the graphic to a different coordinate
-            launch {
-                //TODO
-            }
         }
     }
 
     /**
-     * Updates the calculated route by calling routeTask.solveRoute().
+     * Updates the calculated route using the
+     * stops on the map by calling routeTask.solveRoute().
      * Creates a graphic to display the route.
      * */
     private fun updateRoute() = lifecycleScope.launch {
@@ -222,6 +219,13 @@ class MainActivity : AppCompatActivity() {
                 )
                 routeOverlay.graphics.clear()
                 routeOverlay.graphics.add(graphic)
+
+                //set distance-time text
+                val travelTime = route.travelTime.roundToInt()
+                val travelDistance = "%.2f".format(
+                    route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
+                )
+                distanceTimeTextView.text = String.format("$travelTime min ($travelDistance mi)")
             }
         }
     }

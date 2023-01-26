@@ -257,14 +257,20 @@ abstract class DownloaderActivity : AppCompatActivity() {
                     var zipEntry: ZipEntry? = zipInputStream.nextEntry
                     val buffer = ByteArray(1024)
                     while (zipEntry != null) {
-                        val file = File(provisionLocation.path, zipEntry.name)
-                        val fout = FileOutputStream(file)
-                        var count = zipInputStream.read(buffer)
-                        while (count != -1) {
-                            fout.write(buffer, 0, count)
-                            count = zipInputStream.read(buffer)
+                        if(zipEntry.isDirectory){
+                            File(provisionLocation.path, zipEntry.name).mkdirs()
                         }
-                        fout.close()
+                        else {
+                            val file = File(provisionLocation.path, zipEntry.name)
+                            val fout = FileOutputStream(file)
+                            var count = zipInputStream.read(buffer)
+                            while (count != -1) {
+                                fout.write(buffer, 0, count)
+                                count = zipInputStream.read(buffer)
+                            }
+                            fout.close()
+                        }
+
                         zipInputStream.closeEntry()
                         zipEntry = zipInputStream.nextEntry
                     }

@@ -3,4 +3,8 @@
     <string name="clear_button">clear button</string>
     <string name="tpkx_path">/streetmap_SD.tpkx</string>
     <string name="geodatabase_path">/sandiego.geodatabase</string>
+    <string name="tap_on_map_to_create_a_transport_network">Tap on map to create a transport network</string>
+    <string name="shortest">Shortest</string>
+    <string name="fastest">Fastest</string>
+    <string name="clear">Clear</string>
 </resources>
