@@ -28,7 +28,7 @@
         "SpatialReference"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/projectgeometry/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/MainActivity.kt"
     ],
     "title": "Project geometry"
 }
