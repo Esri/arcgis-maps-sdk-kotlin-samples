@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Envelope
+import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
@@ -84,6 +86,11 @@ class MainActivity : AppCompatActivity() {
     private val stopsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
     private val routeOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
+    private val envelope = Envelope(
+        Point(-1.3045e7, 3.87e6, 0.0, SpatialReference.webMercator()),
+        Point(-1.3025e7, 3.84e6, 0.0, SpatialReference.webMercator())
+    )
+
     // create a route task to calculate routes
     private var routeTask: RouteTask? = null
 
@@ -100,7 +107,6 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.applicationContext = applicationContext
         lifecycle.addObserver(mapView)
 
-
         // create a tile cache from the .tpkx file
         val tileCache = TileCache(provisionPath + getString(R.string.tpkx_path))
         val tiledLayer = ArcGISTiledLayer(tileCache)
@@ -111,8 +117,8 @@ class MainActivity : AppCompatActivity() {
         mapView.graphicsOverlays.addAll(listOf(routeOverlay, stopsOverlay))
 
         // create a route task using the geodatabase file
-        val temp = File(provisionPath + getString(R.string.geodatabase_path))
-        routeTask = RouteTask(temp.path, "Streets_ND")
+        val geodatabaseFile = File(provisionPath + getString(R.string.geodatabase_path))
+        routeTask = RouteTask(geodatabaseFile.path, "Streets_ND")
 
         // load the route task
         lifecycleScope.launch {
@@ -167,10 +173,6 @@ class MainActivity : AppCompatActivity() {
         with(lifecycleScope) {
             // set the viewpoint of the MapView
             launch {
-                val envelope = Envelope(
-                    Point(-1.3045e7, 3.87e6, 0.0, SpatialReference.webMercator()),
-                    Point(-1.3025e7, 3.84e6, 0.0, SpatialReference.webMercator())
-                )
                 mapView.setViewpointGeometry(envelope)
             }
 
@@ -221,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                 routeOverlay.graphics.clear()
                 routeOverlay.graphics.add(graphic)
 
-                //set distance-time text
+                // set distance-time text
                 val travelTime = route.travelTime.roundToInt()
                 val travelDistance = "%.2f".format(
                     route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
@@ -255,11 +257,14 @@ class MainActivity : AppCompatActivity() {
             if (graphics.isNotEmpty()) {
                 val firstGraphic = graphics[0]
                 firstGraphic.isSelected = true
-            } else {
-                // there is no graphic at this location
-                // make a new graphic at the tapped location
+            } else { // there is no graphic at this location
                 val locationPoint = mapView.screenToLocation(screenCoordinate)
-                createStopSymbol(stopsOverlay.graphics.size + 1, locationPoint)
+                // check if tapped location is within the envelope
+                if (GeometryEngine.within(locationPoint as Geometry, envelope))
+                    // make a new graphic at the tapped location
+                    createStopSymbol(stopsOverlay.graphics.size + 1, locationPoint)
+                else
+                    showError("Tapped location is outside the transport network")
             }
         }
     }
