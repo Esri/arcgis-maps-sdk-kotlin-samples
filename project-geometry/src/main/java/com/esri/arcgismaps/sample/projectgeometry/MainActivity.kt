@@ -119,12 +119,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Handles the SingleTapEvent by drawing a marker and performs a Spatial reference transformation
-     * of the tapped Location using GeometryEngine and displays the result
+     * Handles the SingleTapEvent by drawing a marker, re-centering the mapView to the marker
+     * and performs a Spatial reference transformation of the tapped Location
+     * using GeometryEngine and displays the result.
      */
-    private fun onGeoViewTapped(point: Point) {
+    private suspend fun onGeoViewTapped(point: Point) {
         // update the marker location to where the user tapped on the map
         markerGraphic.geometry = point
+        // set mapview to recenter to the tapped location
+        mapView.setViewpointGeometry(point.extent)
         // project the web mercator location into a WGS84
         val projectedPoint = GeometryEngine.project(point, SpatialReference.wgs84())
         // build and display the projection result as a string

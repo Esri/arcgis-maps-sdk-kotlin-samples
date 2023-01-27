@@ -1,5 +1,5 @@
 {
-    "category": "Geometry",
+    "category": "Edit and Manage Data",
     "description": "Project a point from one spatial reference to another.",
     "formal_name": "ProjectGeometry",
     "ignore": false,
