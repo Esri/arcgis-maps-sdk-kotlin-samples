@@ -69,16 +69,16 @@ class MainActivity : AppCompatActivity() {
     // setup the red pin marker as a Graphic
     private val markerGraphic: Graphic by lazy {
         // creates a symbol from the marker drawable
-        Graphic().apply {
-            symbol = PictureMarkerSymbol(markerDrawable).apply {
-                // resize the symbol into a smaller size
-                width = 30f
-                height = 30f
-                // offset in +y axis so the marker spawned
-                // is right on the touch point
-                offsetY = 25f
-            }
+        val markerSymbol = PictureMarkerSymbol(markerDrawable).apply {
+            // resize the symbol into a smaller size
+            width = 30f
+            height = 30f
+            // offset in +y axis so the marker spawned
+            // is right on the touch point
+            offsetY = 25f
         }
+        // create the graphic from the symbol
+        Graphic(symbol = markerSymbol)
     }
 
     // creates a graphic overlay
@@ -91,11 +91,13 @@ class MainActivity : AppCompatActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
-
+        // create and add a map with a navigation night basemap style
+        val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         // configure mapView assignments
         mapView.apply {
-            // create and add a map with a navigation night basemap style
-            map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+            this.map = map
+            // add our marker overlay to the graphics overlay
+            graphicsOverlay.graphics.add(markerGraphic)
             // add the graphics overlay to display marker graphics
             graphicsOverlays.add(graphicsOverlay)
             // set the default viewpoint to Redlands,CA
@@ -104,12 +106,12 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             // check if the map has loaded successfully
-            mapView.map?.load()?.onSuccess {
+            map.load().onSuccess {
                 // capture and collect when the user taps on the screen
                 mapView.onSingleTapConfirmed.collect { event ->
-                    event.mapPoint?.let { point -> geoViewTapped(point) }
+                    event.mapPoint?.let { point -> onGeoViewTapped(point) }
                 }
-            }?.onFailure {
+            }.onFailure {
                 // if map load failed, show the error
                 showError("Error Loading Map", mapView)
             }
@@ -120,17 +122,9 @@ class MainActivity : AppCompatActivity() {
      * Handles the SingleTapEvent by drawing a marker and performs a Spatial reference transformation
      * of the tapped Location using GeometryEngine and displays the result
      */
-    private fun geoViewTapped(point: Point) {
-        // show the marker where the user tapped on the map
-        graphicsOverlay.graphics.apply {
-            // this removes previously added markers
-            clear()
-            // add a new marker graphic
-            add(markerGraphic.apply {
-                // updates the geometry location to the current tap
-                geometry = point
-            })
-        }
+    private fun onGeoViewTapped(point: Point) {
+        // update the marker location to where the user tapped on the map
+        markerGraphic.geometry = point
         // project the web mercator location into a WGS84
         val projectedPoint = GeometryEngine.project(point, SpatialReference.wgs84())
         // build and display the projection result as a string
@@ -142,13 +136,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Extension function for the Point type that returns
-     * a float-precision formatted string suitable for display
-     */
-    private fun Point.toDisplayFormat() =
-        "${String.format("%.5f", x)}, ${String.format("%.5f", y)}"
-
-    /**
      * Displays an error onscreen
      */
     private fun showError(message: String, view: View) {
@@ -156,3 +143,10 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+/**
+ * Extension function for the Point type that returns
+ * a float-precision formatted string suitable for display
+ */
+private fun Point.toDisplayFormat() =
+    "${String.format("%.5f", x)}, ${String.format("%.5f", y)}"
