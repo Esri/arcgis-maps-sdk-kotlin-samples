@@ -16,8 +16,8 @@ Use the spinner to browse different floor levels in the facility. Only the selec
 
 1. Create a `PortalItem` using the `itemId` of the floor-aware web map.
 2. Set the `MapView` to display the `PortalItem`.
-3. Wait for the map to load and retrieve the map's floor manager from `MapView.Map.FloorManager`. Then run `FloorManager.load()`.
-4. Wait for the floor manager to load using `FloorManager.addDoneLoadingListener` to retrieve the floor-aware data.
+3. Wait for the map to load and retrieve the map's floor manager from `MapView.Map.FloorManager`.
+4. Wait for the floor manager to load using `FloorManager.load()` to retrieve the floor-aware data.
 5. Set all floors to not visible `FloorManager.levels[floor-number].isVisible = false`.
 6. Set only the selected floor to visible using `FloorManager.levels[floor-number].isVisible = true`.
 * **Note:** Manually set the default floor level to the first floor.
