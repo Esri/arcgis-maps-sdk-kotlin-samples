@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,30 @@
 
 package com.esri.arcgismaps.sample.browsebuildingfloors
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.TextView
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.floor.FloorLevel
+import com.arcgismaps.mapping.floor.FloorManager
+import com.arcgismaps.portal.Portal
+import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.browsebuildingfloors.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +54,14 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    private val floorLevelDropdown by lazy {
+        activityMainBinding.dropdownMenu.editText as AutoCompleteTextView
+    }
+
+    private val currentFloorTV by lazy {
+        activityMainBinding.selectedFloorTV.editableText
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,13 +70,116 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+        // load the portal and create a map from the portal item
+        val portalItem = PortalItem(
+            Portal("https://www.arcgis.com/"),
+            "f133a698536f44c8884ad81f80b6cfc7"
+        )
+
+        // set the map to be displayed in the layout's MapView
+        val map = ArcGISMap(portalItem)
         mapView.map = map
+
+        lifecycleScope.launch {
+            //load the portal item on the map
+            map.load().getOrElse {
+                showError("Error loading portal item" + it.message.toString())
+                return@launch
+            }
+
+            // load the web map's floor manager
+            val floorManager =
+                map.floorManager ?: return@launch showError("Map is not a floor aware web-map")
+            floorManager.load().getOrElse {
+                showError("Error loading floor manager" + it.message.toString())
+                return@launch
+            }
+
+            // set up dropdown and initial floor level to ground floor
+            initializeFloorDropdown(floorManager)
+        }
     }
 
-    private fun showError(message: String, view: View) {
+    /**
+     * Set and update the floor dropdown. Shows the currently selected floor
+     * and hides the other floors using [floorManager].
+     */
+    private fun initializeFloorDropdown(floorManager: FloorManager) {
+        floorLevelDropdown.apply {
+            // set the dropdown adapter for the floor selection
+            setAdapter(
+                FloorsAdapter(
+                    this@MainActivity,
+                    R.layout.browse_floors_dropdown_item,
+                    floorManager.levels
+                )
+            )
+
+            // handle on dropdown item selected
+            onItemClickListener =
+                AdapterView.OnItemClickListener { _, _, position, _ ->
+                    // set all the floors to invisible to reset the floorManager
+                    floorManager.levels.forEach { floorLevel ->
+                        floorLevel.isVisible = false
+                    }
+                    // set the currently selected floor to be visible
+                    floorManager.levels[position].isVisible = true
+
+                    // set the floor name
+                    currentFloorTV.apply {
+                        clear()
+                        append(floorManager.levels[position].longName)
+                    }
+                }
+
+            // Select the ground floor using `verticalOrder`.
+            // The floor at index 0 might not have a vertical order of 0 if,
+            // for example, the building starts with basements.
+            // To select the ground floor, we can search for a level with a
+            // `verticalOrder` of 0. You can also use level ID, number or name
+            // to locate a floor.
+            setSelection(floorManager.levels.indexOf(
+                floorManager.levels.first { it.verticalOrder == 0 }
+            ))
+        }
+    }
+
+    /**
+     * Adapter to display a list of floor levels
+     */
+    private class FloorsAdapter(
+        context: Context,
+        @LayoutRes private val layoutResourceId: Int,
+        private val floorLevels: List<FloorLevel>
+    ) : ArrayAdapter<FloorLevel>(context, layoutResourceId, floorLevels) {
+
+        private val mLayoutInflater: LayoutInflater =
+            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        override fun getCount(): Int {
+            return floorLevels.size
+        }
+
+        override fun getItem(position: Int): FloorLevel {
+            return floorLevels[position]
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            // bind the view to the layout inflater
+            val view = convertView ?: mLayoutInflater.inflate(layoutResourceId, parent, false)
+            val dropdownItemTV = view.findViewById<TextView>(R.id.list_item)
+            // bind the long name of the floor to it's respective text view
+            dropdownItemTV.text = floorLevels[position].longName
+            return view
+        }
+    }
+
+    private fun showError(message: String) {
         Log.e(TAG, message)
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
