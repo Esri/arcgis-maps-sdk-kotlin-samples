@@ -129,10 +129,10 @@ class MainActivity : AppCompatActivity() {
         playPauseButton.setOnClickListener {
             // button was clicked when tour was playing
             if (kmlTourController.tour?.status?.value == KmlTourStatus.Playing)
-            // pause tour and update button
+            // pause KML tour
                 kmlTourController.pause()
             else
-            // play tour and update button
+            // play KML tour
                 kmlTourController.play()
         }
     }
