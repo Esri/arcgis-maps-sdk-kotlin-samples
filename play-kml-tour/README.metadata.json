@@ -1,2 +1,38 @@
 {
+    "category": "Visualization",
+    "description": "Play tours in KML files.",
+    "formal_name": "PlayKmlTour",
+    "ignore": false,
+    "images": [
+        "play-kml-tour.png"
+    ],
+    "keywords": [
+        "KML",
+        "animation",
+        "interactive",
+        "narration",
+        "pause",
+        "play",
+        "story",
+        "tour",
+        "KmlTour",
+        "KmlTourController",
+        "KmlTourController.pause()",
+        "KmlTourController.play()",
+        "KmlTourController.reset()"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "KmlTour",
+        "KmlTourController",
+        "KmlTourController.pause()",
+        "KmlTourController.play()",
+        "KmlTourController.reset()"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour/DownloadActivity.kt"
+    ],
+    "title": "Play KML tour"
 }
