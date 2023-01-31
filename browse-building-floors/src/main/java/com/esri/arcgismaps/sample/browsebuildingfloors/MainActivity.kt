@@ -24,7 +24,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
@@ -54,12 +53,8 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val floorLevelDropdown by lazy {
-        activityMainBinding.dropdownMenu.editText as AutoCompleteTextView
-    }
-
     private val currentFloorTV by lazy {
-        activityMainBinding.selectedFloorTV.editableText
+        activityMainBinding.selectedFloorTV
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,12 +100,15 @@ class MainActivity : AppCompatActivity() {
      * and hides the other floors using [floorManager].
      */
     private fun initializeFloorDropdown(floorManager: FloorManager) {
-        floorLevelDropdown.apply {
+        // enable the dropdown view
+        activityMainBinding.dropdownMenu.isEnabled = true
+
+        currentFloorTV.apply {
             // set the dropdown adapter for the floor selection
             setAdapter(
                 FloorsAdapter(
                     this@MainActivity,
-                    R.layout.browse_floors_dropdown_item,
+                    android.R.layout.simple_list_item_1,
                     floorManager.levels
                 )
             )
@@ -125,11 +123,11 @@ class MainActivity : AppCompatActivity() {
                     // set the currently selected floor to be visible
                     floorManager.levels[position].isVisible = true
 
+                    val floor = floorManager.levels[position].longName
+                    Log.e("Floor",floor)
+
                     // set the floor name
-                    currentFloorTV.apply {
-                        clear()
-                        append(floorManager.levels[position].longName)
-                    }
+                    currentFloorTV.setText(floorManager.levels[position].longName)
                 }
 
             // Select the ground floor using `verticalOrder`.
@@ -145,7 +143,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Adapter to display a list of floor levels
+     * Adapter to display a list [floorLevels]
      */
     private class FloorsAdapter(
         context: Context,
@@ -171,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             // bind the view to the layout inflater
             val view = convertView ?: mLayoutInflater.inflate(layoutResourceId, parent, false)
-            val dropdownItemTV = view.findViewById<TextView>(R.id.list_item)
+            val dropdownItemTV = view.findViewById<TextView>(android.R.id.text1)
             // bind the long name of the floor to it's respective text view
             dropdownItemTV.text = floorLevels[position].longName
             return view
