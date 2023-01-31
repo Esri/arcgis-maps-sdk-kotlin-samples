@@ -120,11 +120,9 @@ class MainActivity : AppCompatActivity() {
                     floorManager.levels.forEach { floorLevel ->
                         floorLevel.isVisible = false
                     }
+
                     // set the currently selected floor to be visible
                     floorManager.levels[position].isVisible = true
-
-                    val floor = floorManager.levels[position].longName
-                    Log.e("Floor",floor)
 
                     // set the floor name
                     currentFloorTV.setText(floorManager.levels[position].longName)
@@ -170,6 +168,7 @@ class MainActivity : AppCompatActivity() {
             // bind the view to the layout inflater
             val view = convertView ?: mLayoutInflater.inflate(layoutResourceId, parent, false)
             val dropdownItemTV = view.findViewById<TextView>(android.R.id.text1)
+
             // bind the long name of the floor to it's respective text view
             dropdownItemTV.text = floorLevels[position].longName
             return view
