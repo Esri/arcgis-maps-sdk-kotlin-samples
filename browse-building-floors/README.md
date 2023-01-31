@@ -21,6 +21,7 @@ Use the spinner to browse different floor levels in the facility. Only the selec
 5. Set all floors to not visible `FloorManager.levels[floor-number].isVisible = false`.
 6. Set only the selected floor to visible using `FloorManager.levels[floor-number].isVisible = true`.
 * **Note:** Manually set the default floor level to the first floor using `floorLevel.verticalOrder`.
+
 ```kotlin
 floorManager.levels.first { floorLevel ->  floorLevel.verticalOrder == 0 }
 ```
