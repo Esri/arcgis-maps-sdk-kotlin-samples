@@ -28,6 +28,8 @@ import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Surface
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.ViewpointType
 import com.arcgismaps.mapping.kml.KmlContainer
 import com.arcgismaps.mapping.kml.KmlDataset
 import com.arcgismaps.mapping.kml.KmlNode
@@ -75,6 +77,8 @@ class MainActivity : AppCompatActivity() {
     private val tourProgressBar by lazy {
         activityMainBinding.tourProgressBar
     }
+
+    private var initialViewpoint: Viewpoint? = null
 
     private val kmlTourController = KmlTourController()
 
@@ -124,7 +128,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        resetTourButton.setOnClickListener { kmlTourController.reset() }
+        resetTourButton.setOnClickListener {
+            // set tour to the initial viewpoint
+            initialViewpoint?.let { sceneView.setViewpoint(it) }
+            // reset tour controller
+            kmlTourController.reset()
+        }
 
         playPauseButton.setOnClickListener {
             // button was clicked when tour was playing
@@ -159,32 +168,22 @@ class MainActivity : AppCompatActivity() {
         kmlTour.status.collect { kmlTourStatus ->
             when (kmlTourStatus) {
                 KmlTourStatus.Completed -> {
-                    showKmlTourStatus(
-                        "Completed",
-                        isResetEnabled = false,
-                        isPlayingTour = false
-                    )
+                    showKmlTourStatus("Completed", isResetEnabled = false, isPlayingTour = false)
                 }
                 KmlTourStatus.Initialized -> {
-                    showKmlTourStatus(
-                        "Initialized",
-                        isResetEnabled = false,
-                        isPlayingTour = false
-                    )
+                    showKmlTourStatus("Initialized", isResetEnabled = false, isPlayingTour = false)
                 }
                 KmlTourStatus.Paused -> {
-                    showKmlTourStatus(
-                        "Paused",
-                        isResetEnabled = true,
-                        isPlayingTour = false
-                    )
+                    showKmlTourStatus("Paused", isResetEnabled = true, isPlayingTour = false)
                 }
                 KmlTourStatus.Playing -> {
-                    showKmlTourStatus(
-                        "Playing",
-                        isResetEnabled = true,
-                        isPlayingTour = true
-                    )
+                    showKmlTourStatus("Playing", isResetEnabled = true, isPlayingTour = true)
+                    // set the tour's initial viewpoint
+                    if (initialViewpoint == null) {
+                        initialViewpoint = sceneView.getCurrentViewpoint(
+                            ViewpointType.BoundingGeometry
+                        )
+                    }
                 }
                 else -> {}
             }
