@@ -1,4 +1,4 @@
-# Show Geodesic Path Between Two Points
+# Show geodesic path between two points
 
 Calculate a geodesic path between two points and measure its distance.
 
