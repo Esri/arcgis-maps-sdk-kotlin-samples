@@ -23,5 +23,5 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showgeodesicpathbetweentwopoints/MainActivity.kt"
     ],
-    "title": "Show Geodesic Path Between Two Points"
+    "title": "Show geodesic path between two points"
 }
