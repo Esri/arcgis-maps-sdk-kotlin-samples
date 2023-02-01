@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     // the geodesic path represented as line graphic
     private val geodesicPathGraphic by lazy {
-        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.blue)
+        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.blue, 5f)
         Graphic().apply {
             symbol = lineSymbol
         }

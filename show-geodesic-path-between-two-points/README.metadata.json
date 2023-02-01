@@ -1,2 +1,28 @@
 {
+    "category": "Analysis",
+    "description": "Calculate a geodesic path between two points and measure its distance.",
+    "formal_name": "ShowGeodesicPathBetweenTwoPoints",
+    "ignore": false,
+    "images": [
+        "show-geodesic-path-between-two-points.png"
+    ],
+    "keywords": [
+        "",
+        "densify",
+        "distance",
+        "geodesic",
+        "geodetic",
+        "GeometryEngine.densifyGeodetic",
+        "GeometryEngine.lengthGeodetic"
+    ],
+    "language": "kotlin",
+    "redirect_from": "/android/latest/sample-code/geodesic-operations.htm",
+    "relevant_apis": [
+        "GeometryEngine.densifyGeodetic",
+        "GeometryEngine.lengthGeodetic"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showgeodesicpathbetweentwopoints/MainActivity.kt"
+    ],
+    "title": "Show Geodesic Path Between Two Points"
 }
