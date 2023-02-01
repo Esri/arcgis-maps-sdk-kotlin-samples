@@ -59,11 +59,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.infoTextView
     }
 
-    // starting location for the distance calculation
-    private val startingPoint by lazy {
-        Point(-73.7781, 40.6413, SpatialReference.wgs84())
-    }
-
     // a blue marker symbol for the location points
     private val locationMarkerSymbol by lazy {
         SimpleMarkerSymbol(
@@ -98,9 +93,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     // the unit of distance measurement in kilometers
-    private val unitsOfMeasurement by lazy {
-        LinearUnit(LinearUnitId.Kilometers)
-    }
+    private val unitsOfMeasurement = LinearUnit(LinearUnitId.Kilometers)
+
+
+    // starting location for the distance calculation
+    private val startingPoint = Point(-73.7781, 40.6413, SpatialReference.wgs84())
+
 
     // creates a graphic overlay to draw all graphics
     private val graphicsOverlay = GraphicsOverlay()
@@ -118,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         // configure mapView assignments
         mapView.apply {
             this.map = map
-            // add the graphics overlay to display marker graphics
+            // add the graphics overlay to the mapview
             graphicsOverlays.add(graphicsOverlay)
         }
 
@@ -143,13 +141,12 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Handles the SingleTapEvent by drawing the destination location marker
-     * and a geodesic path curve
-     * using GeometryEngine.densifyGeodetic and computes the distance using
+     * and a geodesic path curve using GeometryEngine.densifyGeodetic
+     * and computes the distance using
      * GeometryEngine.lengthGeodetic
      */
     private fun onGeoViewTapped(point: Point) {
-        // project the tapped point into the same spatial reference
-        // as the source point
+        // project the tapped point into the same spatial reference as source point
         val destinationPoint = GeometryEngine.project(point, SpatialReference.wgs84())
 
         // check if the destination point is within the map bounds
@@ -157,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         if (!destinationPoint.isEmpty) {
             // update the end location marker location on map
             endLocationMarkerGraphic.geometry = destinationPoint
-            // create a poly between source and destination points
+            // create a polyline between source and destination points
             val polyline = Polyline(listOf(startingPoint, destinationPoint))
             // generate a geodesic curve using the polyline
             GeometryEngine.densifyGeodetic(
@@ -165,8 +162,7 @@ class MainActivity : AppCompatActivity() {
                 1.0,
                 unitsOfMeasurement,
                 GeodeticCurveType.Geodesic
-                // only compute the distance if the returned curved path geometry
-                // is not null
+                // only compute the distance if the returned curved path geometry is not null
             )?.let { pathGeometry ->
                 // update the path graphic
                 geodesicPathGraphic.geometry = pathGeometry
