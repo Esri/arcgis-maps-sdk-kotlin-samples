@@ -32,4 +32,3 @@ The Imagery basemap provides the global context for the displayed geodesic line.
 ## Tags
 
 densify, distance, geodesic, geodetic
- 
