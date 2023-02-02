@@ -78,13 +78,13 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             //load the portal item on the map
             map.load().getOrElse {
-                showError("Error loading portal item" + it.message.toString())
+                showError("Error loading map" + it.message.toString())
                 return@launch
             }
 
             // load the web map's floor manager
             val floorManager =
-                map.floorManager ?: return@launch showError("Map is not a floor aware web-map")
+                map.floorManager ?: return@launch showError("Map is not a floor-aware")
             floorManager.load().getOrElse {
                 showError("Error loading floor manager" + it.message.toString())
                 return@launch
@@ -103,7 +103,23 @@ class MainActivity : AppCompatActivity() {
         // enable the dropdown view
         activityMainBinding.dropdownMenu.isEnabled = true
 
+        // Select the ground floor using `verticalOrder`.
+        // The floor at index 0 might not have a vertical order of 0 if,
+        // for example, the building starts with basements.
+        // To select the ground floor, we can search for a level with a
+        // `verticalOrder` of 0. You can also use level ID, number or name
+        // to locate a floor.
+        val firstFloorIndex = floorManager.levels.indexOf(
+            floorManager.levels.first { it.verticalOrder == 0 }
+        )
+
         currentFloorTV.apply {
+            // set the displayed floor to the first floor
+            setSelection(firstFloorIndex)
+
+            // set the name of the first floor
+            setText(floorManager.levels[firstFloorIndex].longName)
+
             // set the dropdown adapter for the floor selection
             setAdapter(
                 FloorsAdapter(
@@ -127,16 +143,6 @@ class MainActivity : AppCompatActivity() {
                     // set the floor name
                     currentFloorTV.setText(floorManager.levels[position].longName)
                 }
-
-            // Select the ground floor using `verticalOrder`.
-            // The floor at index 0 might not have a vertical order of 0 if,
-            // for example, the building starts with basements.
-            // To select the ground floor, we can search for a level with a
-            // `verticalOrder` of 0. You can also use level ID, number or name
-            // to locate a floor.
-            setSelection(floorManager.levels.indexOf(
-                floorManager.levels.first { it.verticalOrder == 0 }
-            ))
         }
     }
 
