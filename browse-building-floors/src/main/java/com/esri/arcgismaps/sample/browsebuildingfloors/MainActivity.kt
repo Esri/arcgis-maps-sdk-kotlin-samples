@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
             // load the web map's floor manager
             val floorManager =
-                map.floorManager ?: return@launch showError("Map is not a floor-aware")
+                map.floorManager ?: return@launch showError("Map is not floor-aware")
             floorManager.load().getOrElse {
                 showError("Error loading floor manager" + it.message.toString())
                 return@launch
