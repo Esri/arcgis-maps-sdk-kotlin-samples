@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <com.arcgismaps.mapping.view.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/dropdownMenu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dropdownMenu"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:enabled="false"
+            android:hint="@string/select_the_floor_to_display"
+            android:labelFor="@id/selectedFloorTV"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/selectedFloorTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
