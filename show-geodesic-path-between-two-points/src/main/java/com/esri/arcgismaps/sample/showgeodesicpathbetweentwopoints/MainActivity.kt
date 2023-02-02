@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.showgeodesicpathbetweentwopoints
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -63,12 +62,12 @@ class MainActivity : AppCompatActivity() {
     private val locationMarkerSymbol by lazy {
         SimpleMarkerSymbol(
             SimpleMarkerSymbolStyle.Circle,
-            Color.blue,
+            Color.red,
             10f
         )
     }
 
-    // the actual marker graphic for the starting location
+    // the marker graphic for the starting location
     private val startingLocationMarkerGraphic by lazy {
         Graphic().apply {
             symbol = locationMarkerSymbol
@@ -76,8 +75,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // marker graphic for the destination, location information
-    // populated on tap
+    // marker graphic for the destination
     private val endLocationMarkerGraphic by lazy {
         Graphic().apply {
             symbol = locationMarkerSymbol
@@ -86,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
     // the geodesic path represented as line graphic
     private val geodesicPathGraphic by lazy {
-        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.blue, 5f)
+        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.red, 5f)
         Graphic().apply {
             symbol = lineSymbol
         }
@@ -121,31 +119,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         // add all our marker graphics to the graphics overlay
-        graphicsOverlay.graphics.add(startingLocationMarkerGraphic)
-        graphicsOverlay.graphics.add(endLocationMarkerGraphic)
-        graphicsOverlay.graphics.add(geodesicPathGraphic)
+        graphicsOverlay.graphics.addAll(
+            listOf(startingLocationMarkerGraphic, endLocationMarkerGraphic, geodesicPathGraphic)
+        )
 
         lifecycleScope.launch {
             // check if the map has loaded successfully
             map.load().onSuccess {
                 // capture and collect when the user taps on the screen
                 mapView.onSingleTapConfirmed.collect { event ->
-                    event.mapPoint?.let { point -> onGeoViewTapped(point) }
+                    event.mapPoint?.let { point -> displayGeodesicPath(point) }
                 }
             }.onFailure {
                 // if map load failed, show the error
-                showError("Error Loading Map", mapView)
+                showError("Error Loading Map")
             }
         }
     }
 
     /**
-     * Handles the SingleTapEvent by drawing the destination location marker
-     * and a geodesic path curve using GeometryEngine.densifyGeodetic
-     * and computes the distance using
-     * GeometryEngine.lengthGeodetic
+     * displays the destination location marker at the tapped location
+     * and draws a geodesic path curve using GeometryEngine.densifyGeodetic
+     * and computes the distance using GeometryEngine.lengthGeodetic
      */
-    private fun onGeoViewTapped(point: Point) {
+    private fun displayGeodesicPath(point: Point) {
         // project the tapped point into the same spatial reference as source point
         val destinationPoint = GeometryEngine.project(point, SpatialReference.wgs84())
 
@@ -166,7 +163,7 @@ class MainActivity : AppCompatActivity() {
             )?.let { pathGeometry ->
                 // update the path graphic
                 geodesicPathGraphic.geometry = pathGeometry
-                // compute the path distance in kms
+                // compute the path distance in kilometers
                 val distance =
                     GeometryEngine.lengthGeodetic(
                         pathGeometry,
@@ -180,18 +177,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Displays an error onscreen
-     */
-    private fun showError(message: String, view: View) {
+    private fun showError(message: String) {
         Log.e(TAG, message)
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
-
-/**
- * Extension property for the Color type that represents a
- * blue color
- */
-private val Color.Companion.blue
-    get() = fromRgba(0, 0, 255)
