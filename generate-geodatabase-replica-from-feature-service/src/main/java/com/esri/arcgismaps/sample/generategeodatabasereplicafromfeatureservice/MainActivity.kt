@@ -19,11 +19,8 @@ package com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.ProgressBar
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -33,10 +30,7 @@ import com.arcgismaps.Color
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.layers.ArcGISTiledLayer
-import com.arcgismaps.mapping.layers.TileCache
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
@@ -47,10 +41,8 @@ import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.databinding.GenerateGeodatabaseDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -73,19 +65,15 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.generateButton
     }
 
-    private val boundarySymbol by lazy {
-        SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 5f)
-    }
-
-    private val uiScope by lazy {
-        CoroutineScope(Dispatchers.IO + job)
-    }
-
     private val progressDialog by lazy {
         GenerateGeodatabaseDialogLayoutBinding.inflate(layoutInflater)
     }
 
-    private val job = Job()
+    private val alertDialogBuilder by lazy {
+        AlertDialog.Builder(this)
+    }
+
+    private val boundarySymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 5f)
 
     // creates a graphic overlay
     private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
@@ -93,9 +81,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val tpkFile = File("$provisionPath/SanFrancisco.tpkx")
-        val tileCache = TileCache(tpkFile.absolutePath)
-        val tiledLayer = ArcGISTiledLayer(tileCache)
+        // debug, remove for prod
+        mapView.keepScreenOn = true
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
@@ -103,14 +90,14 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(Basemap(tiledLayer))
+        val map = ArcGISMap(BasemapStyle.ArcGISImageryStandard)
         mapView.apply {
             this.map = map
             graphicsOverlays.add(graphicsOverlay)
         }
 
         val featureServiceURL =
-            "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Sync/SaveTheBaySync/FeatureServer"
+            "https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/Mobile_Data_Collection_WFL1/FeatureServer"
         val geodatabaseSyncTask = GeodatabaseSyncTask(featureServiceURL)
 
 
@@ -143,20 +130,20 @@ class MainActivity : AppCompatActivity() {
         val boundary = Graphic(extents, boundarySymbol)
         graphicsOverlay.graphics.add(boundary)
 
-        uiScope.launch {
+        lifecycleScope.launch {
             syncTask.createDefaultGenerateGeodatabaseParameters(extents)
                 .onSuccess { defaultParameters ->
                     defaultParameters.outSpatialReference = SpatialReference(102100)
                     defaultParameters.returnAttachments = false
 
                     val filepath = getExternalFilesDir(null)!!.path + "/gbd_save.geodatabase"
-
                     syncTask.createGenerateGeodatabaseJob(defaultParameters, filepath)
                         .run {
                             start()
-                            showProgressDialog(this)
+                            val dialog = createProgressDialog(this)
+                            dialog.show()
                             // launch a progress collector with the lifecycle scope
-                            lifecycleScope.launch {
+                            launch {
                                 progress.collect { value ->
                                     Log.d(TAG, "generateGeodatabase: $value")
                                     progressDialog.progressBar.progress = value
@@ -170,6 +157,7 @@ class MainActivity : AppCompatActivity() {
                                     if (status == JobStatus.Succeeded) {
                                         Log.d(TAG, "generateGeodatabase: Done")
                                     }
+                                    dialog.dismiss()
                                 }
                             }
 
@@ -185,17 +173,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun showProgressDialog(job: GenerateGeodatabaseJob) = withContext(Dispatchers.Main) {
-        AlertDialog.Builder(this@MainActivity).apply {
+    private fun createProgressDialog(generateGeodatabaseJob: GenerateGeodatabaseJob): AlertDialog {
+        return AlertDialog.Builder(this@MainActivity).apply {
             setNegativeButton("Cancel") { _, _ ->
-                lifecycleScope.launch { job.cancel() }
+                lifecycleScope.launch {
+                    generateGeodatabaseJob.cancel()
+                }
             }
             setCancelable(true)
+            progressDialog.root.parent?.let {
+                (it as ViewGroup).removeAllViews()
+            }
             setView(progressDialog.root)
-        }.create().show()
+        }.create()
     }
-
-
 
     private fun loadAndDisplayGeodatabase() {
 
