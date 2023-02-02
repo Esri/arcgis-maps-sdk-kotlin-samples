@@ -16,14 +16,16 @@
 
 package com.esri.arcgismaps.sample.findroutearoundbarriers
 
+import android.app.Dialog
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.Barrier
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -32,7 +34,6 @@ import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -52,8 +53,10 @@ import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.ActivityMainBinding
+import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.OptionsDialogBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -85,6 +88,25 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.resetButton
     }
 
+    private val optionsButton by lazy {
+        activityMainBinding.optionsButton
+    }
+
+    private val bottomSheet: ScrollView by lazy {
+        activityMainBinding.bottomSheet.bottomSheetLayout
+    }
+
+    private val cancelButton: TextView by lazy {
+        activityMainBinding.bottomSheet.cancelTv
+    }
+
+    private val collapseButton: TextView by lazy {
+        activityMainBinding.bottomSheet.collapseTv
+    }
+
+
+
+
     private val stopList by lazy { mutableListOf<Stop>() }
 
     private val barriersList by lazy { mutableListOf<PolygonBarrier>() }
@@ -103,10 +125,6 @@ class MainActivity : AppCompatActivity() {
     private var routeTask: RouteTask? = null
 
     private var routeParameters: RouteParameters? = null
-
-    private val currentFloorTV by lazy {
-        activityMainBinding.selectedFloorTV
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -157,13 +175,42 @@ class MainActivity : AppCompatActivity() {
             resetButton.isEnabled = false
         }
 
-        // enable the dropdown view
-        activityMainBinding.dropdownMenu.isEnabled = true
+        optionsButton.setOnClickListener {
+            displayOptionsDialog()
+        }
+
 
         val items = listOf("Allow Stops to be reordered", "Preserve first stop", "Preserve last stop")
-        val adapter = ArrayAdapter(this@MainActivity, R.layout.dropdown_item, items)
-        (currentFloorTV)?.setAdapter(adapter)
 
+    }
+
+    private fun displayOptionsDialog() {
+
+        val dialogView: View = layoutInflater.inflate(R.layout.options_dialog, null)
+        val dialogBuilder = AlertDialog.Builder(this).apply {
+            setView(dialogView)
+            create()
+            show()
+        }
+        val reorderSwitch = dialogView.findViewById<SwitchMaterial>(R.id.reorderSwitch)
+        val firstStopSwitch = dialogView.findViewById<SwitchMaterial>(R.id.firstStopSwitch)
+        val lastStopSwitch = dialogView.findViewById<SwitchMaterial>(R.id.lastStopSwitch)
+        reorderSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if(isChecked){
+                firstStopSwitch.apply {
+                    isEnabled = true
+                    setChecked(true)
+                }
+
+                lastStopSwitch.apply {
+                    isEnabled = true
+                    setChecked(true)
+                }
+            }else{
+                firstStopSwitch.isEnabled = false
+                lastStopSwitch.isEnabled = false
+            }
+        }
     }
 
     /**
