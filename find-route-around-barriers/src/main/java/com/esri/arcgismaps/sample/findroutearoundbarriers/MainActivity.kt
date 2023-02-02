@@ -20,8 +20,10 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Barrier
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -102,6 +104,10 @@ class MainActivity : AppCompatActivity() {
 
     private var routeParameters: RouteParameters? = null
 
+    private val currentFloorTV by lazy {
+        activityMainBinding.selectedFloorTV
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -150,6 +156,14 @@ class MainActivity : AppCompatActivity() {
             routeOverlay.graphics.clear()
             resetButton.isEnabled = false
         }
+
+        // enable the dropdown view
+        activityMainBinding.dropdownMenu.isEnabled = true
+
+        val items = listOf("Allow Stops to be reordered", "Preserve first stop", "Preserve last stop")
+        val adapter = ArrayAdapter(this@MainActivity, R.layout.dropdown_item, items)
+        (currentFloorTV)?.setAdapter(adapter)
+
     }
 
     /**

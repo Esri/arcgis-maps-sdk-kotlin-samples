@@ -68,29 +68,44 @@
                     android:textSize="11sp" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dropdownMenu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="66dp"
+                android:enabled="false"
+                android:labelFor="@id/selectedFloorTV"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/resetButton"
+                app:layout_constraintStart_toEndOf="@+id/toggleButtons"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/selectedFloorTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/resetButton"
                 style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="44dp"
-                android:layout_height="46dp"
+                android:layout_width="50dp"
+                android:layout_height="59dp"
+                android:layout_marginTop="2dp"
+                android:contentDescription="@string/reset"
                 app:icon="@drawable/ic_outline_delete_24"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/routeButton"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="78dp"
-                android:layout_height="45dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="2dp"
-                android:text="Route"
-                android:textSize="11sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/toggleButtons" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/toggleButtons"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

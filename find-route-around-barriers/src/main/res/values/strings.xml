@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Find Route Around Barriers</string>
+    <string name="reset">reset</string>
 </resources>
