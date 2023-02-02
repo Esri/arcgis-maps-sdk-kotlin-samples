@@ -25,9 +25,16 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.*
+import com.arcgismaps.geometry.LinearUnit
+import com.arcgismaps.geometry.LinearUnitId
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.Polyline
+import com.arcgismaps.geometry.GeodeticCurveType
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
@@ -58,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.infoTextView
     }
 
-    // a blue marker symbol for the location points
+    // a red marker symbol for the location points
     private val locationMarkerSymbol by lazy {
         SimpleMarkerSymbol(
             SimpleMarkerSymbolStyle.Circle,
@@ -110,7 +117,9 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISImageryStandard)
+        val map = ArcGISMap(BasemapStyle.ArcGISImageryStandard).apply {
+            initialViewpoint = Viewpoint(Point(34.77, -10.24), 20e7)
+        }
         // configure mapView assignments
         mapView.apply {
             this.map = map
@@ -138,7 +147,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * displays the destination location marker at the tapped location
+     * Displays the destination location marker at the tapped location
      * and draws a geodesic path curve using GeometryEngine.densifyGeodetic
      * and computes the distance using GeometryEngine.lengthGeodetic
      */
