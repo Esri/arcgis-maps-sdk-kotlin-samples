@@ -175,6 +175,9 @@ class MainActivity : AppCompatActivity() {
                 // display the distance result
                 infoTextView.text =
                     getString(R.string.distance_info_text, distance.roundToInt())
+            } ?: run {
+                geodesicPathGraphic.geometry = null
+                infoTextView.text = getString(R.string.error_generating_geodesic)
             }
         }
     }
