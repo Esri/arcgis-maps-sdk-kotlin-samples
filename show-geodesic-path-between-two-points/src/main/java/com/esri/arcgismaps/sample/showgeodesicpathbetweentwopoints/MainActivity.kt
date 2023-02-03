@@ -76,25 +76,18 @@ class MainActivity : AppCompatActivity() {
 
     // the marker graphic for the starting location
     private val startingLocationMarkerGraphic by lazy {
-        Graphic().apply {
-            symbol = locationMarkerSymbol
-            geometry = startingPoint
-        }
+        Graphic(startingPoint, locationMarkerSymbol)
     }
 
     // marker graphic for the destination
     private val endLocationMarkerGraphic by lazy {
-        Graphic().apply {
-            symbol = locationMarkerSymbol
-        }
+        Graphic(symbol = locationMarkerSymbol)
     }
 
     // the geodesic path represented as line graphic
     private val geodesicPathGraphic by lazy {
         val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.red, 5f)
-        Graphic().apply {
-            symbol = lineSymbol
-        }
+        Graphic(symbol = lineSymbol)
     }
 
     // the unit of distance measurement in kilometers
