@@ -20,6 +20,7 @@ package com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -48,10 +49,6 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    private val provisionPath: String by lazy {
-        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
-    }
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -67,10 +64,6 @@ class MainActivity : AppCompatActivity() {
 
     private val progressDialog by lazy {
         GenerateGeodatabaseDialogLayoutBinding.inflate(layoutInflater)
-    }
-
-    private val alertDialogBuilder by lazy {
-        AlertDialog.Builder(this)
     }
 
     private val boundarySymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 5f)
@@ -136,7 +129,7 @@ class MainActivity : AppCompatActivity() {
                     defaultParameters.outSpatialReference = SpatialReference(102100)
                     defaultParameters.returnAttachments = false
 
-                    val filepath = getExternalFilesDir(null)!!.path + "/gbd_save.geodatabase"
+                    val filepath = getExternalFilesDir(null)!!.path + "/gbdf.geodatabase"
                     syncTask.createGenerateGeodatabaseJob(defaultParameters, filepath)
                         .run {
                             start()
@@ -155,9 +148,10 @@ class MainActivity : AppCompatActivity() {
                                 status.collect { status ->
                                     Log.d(TAG, "generateGeodatabase: $status")
                                     if (status == JobStatus.Succeeded) {
+                                        generateButton.visibility = View.GONE
                                         Log.d(TAG, "generateGeodatabase: Done")
                                     }
-                                    dialog.dismiss()
+                                    //dialog.dismiss()
                                 }
                             }
 
@@ -174,7 +168,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createProgressDialog(generateGeodatabaseJob: GenerateGeodatabaseJob): AlertDialog {
-        return AlertDialog.Builder(this@MainActivity).apply {
+        return AlertDialog.Builder(this).apply {
             setNegativeButton("Cancel") { _, _ ->
                 lifecycleScope.launch {
                     generateGeodatabaseJob.cancel()
