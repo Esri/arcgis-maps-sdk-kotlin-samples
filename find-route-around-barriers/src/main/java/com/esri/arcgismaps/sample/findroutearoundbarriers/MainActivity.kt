@@ -16,16 +16,23 @@
 
 package com.esri.arcgismaps.sample.findroutearoundbarriers
 
-import android.app.Dialog
 import android.graphics.drawable.BitmapDrawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
+import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -48,12 +55,15 @@ import com.arcgismaps.mapping.symbology.TextSymbol
 import com.arcgismaps.mapping.symbology.VerticalAlignment
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.tasks.networkanalysis.DirectionManeuver
 import com.arcgismaps.tasks.networkanalysis.PolygonBarrier
 import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.ActivityMainBinding
-import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.OptionsDialogBinding
+import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.DirectionSheetBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -92,30 +102,47 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.optionsButton
     }
 
-    private val bottomSheet: ScrollView by lazy {
-        activityMainBinding.bottomSheet.bottomSheetLayout
+    private val directionsButton by lazy {
+        activityMainBinding.directionsButton
     }
 
-    private val cancelButton: TextView by lazy {
-        activityMainBinding.bottomSheet.cancelTv
+    private val bottomSheet by lazy {
+        activityMainBinding.directionSheet.directionSheetLayout
     }
 
-    private val collapseButton: TextView by lazy {
-        activityMainBinding.bottomSheet.collapseTv
+    private val header: ConstraintLayout by lazy {
+        activityMainBinding.directionSheet.header
     }
 
+    private val imageView: ImageView by lazy {
+        activityMainBinding.directionSheet.imageView
+    }
 
+    private val cancelTV: TextView by lazy {
+        activityMainBinding.directionSheet.cancelTv
+    }
 
+    private val mainContainer: ConstraintLayout by lazy {
+        activityMainBinding.mainContainer
+    }
+
+    private val directionsLV: ListView by lazy {
+        activityMainBinding.directionSheet.directionsLV
+    }
 
     private val stopList by lazy { mutableListOf<Stop>() }
 
     private val barriersList by lazy { mutableListOf<PolygonBarrier>() }
+
+    private val directionsList by lazy { mutableListOf<DirectionManeuver>() }
 
     private val stopsOverlay by lazy { GraphicsOverlay() }
 
     private val barriersOverlay by lazy { GraphicsOverlay() }
 
     private val routeOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+
+
 
     private val barrierSymbol by lazy {
         SimpleFillSymbol(SimpleFillSymbolStyle.DiagonalCross, Color.red, null)
@@ -166,26 +193,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         // make a clear button to reset the stops and routes
         resetButton.setOnClickListener {
             stopsOverlay.graphics.clear()
             barriersOverlay.graphics.clear()
             routeOverlay.graphics.clear()
             resetButton.isEnabled = false
+
         }
 
         optionsButton.setOnClickListener {
             displayOptionsDialog()
         }
 
+        // solve the route and display the bottom sheet when the FAB is clicked
+        directionsButton.setOnClickListener {
+            setupBottomSheet(directionsList)
+        }
 
-        val items = listOf("Allow Stops to be reordered", "Preserve first stop", "Preserve last stop")
+        // hide the bottom sheet and make the map view span the whole screen
+        bottomSheet.visibility = View.INVISIBLE
+        (mainContainer.layoutParams as CoordinatorLayout.LayoutParams).bottomMargin = 0
 
     }
 
     private fun displayOptionsDialog() {
-
         val dialogView: View = layoutInflater.inflate(R.layout.options_dialog, null)
         val dialogBuilder = AlertDialog.Builder(this).apply {
             setView(dialogView)
@@ -220,6 +252,10 @@ class MainActivity : AppCompatActivity() {
      * @param mapPoint at which to create a stop or point
      */
     private fun addStopOrBarrier(mapPoint: Point) {
+
+        // clear the displayed route, if it exists, since it might not be up to date any more
+        routeOverlay.graphics.clear()
+
         if (addStopsButton.isChecked) {
             // normalize the geometry - needed if the user crosses the international date line.
             val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
@@ -270,15 +306,88 @@ class MainActivity : AppCompatActivity() {
                 )
                 routeOverlay.graphics.clear()
                 routeOverlay.graphics.add(graphic)
+
+                directionsList.addAll(route.directionManeuvers)
+
             }.onFailure {
                 showError("No route solution. ${it.message}")
                 routeOverlay.graphics.clear()
             }
         }
-
-
     }
 
+    /** Creates a bottom sheet to display a list of direction maneuvers.
+     *  [directions] a list of DirectionManeuver which represents the route
+     */
+    private fun setupBottomSheet(directions: List<DirectionManeuver>) {
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
+            // expand the bottom sheet, and ensure it is displayed on the screen when collapsed
+            state = BottomSheetBehavior.STATE_EXPANDED
+            peekHeight = header.height
+            // animate the arrow when the bottom sheet slides
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    imageView.rotation = slideOffset * 180f
+                }
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    imageView.rotation = when (newState) {
+                        BottomSheetBehavior.STATE_EXPANDED -> 180f
+                        else -> imageView.rotation
+                    }
+                }
+            })
+        }
+
+        bottomSheet.apply {
+            visibility = View.VISIBLE
+            // expand or collapse the bottom sheet when the header is clicked
+            header.setOnClickListener {
+                bottomSheetBehavior.state = when (bottomSheetBehavior.state) {
+                    BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_EXPANDED
+                    else -> BottomSheetBehavior.STATE_COLLAPSED
+                }
+
+            }
+            // rotate the arrow so it starts off in the correct rotation
+            imageView.rotation = 180f
+
+            directionsLV.apply {
+                // Set the adapter for the list view
+                adapter = ArrayAdapter(
+                    this@MainActivity,
+                    android.R.layout.simple_list_item_1,
+                    directions.map { it.directionText }
+                )
+
+                // when the user taps a maneuver, set the viewpoint to that portion of the route
+                onItemClickListener =
+                    AdapterView.OnItemClickListener { _, _, position, _ ->
+                        // remove any graphics that are not the original (blue) route graphic
+                        if (routeOverlay.graphics.size > 1) {
+                            routeOverlay.graphics.removeAt(routeOverlay.graphics.size - 1)
+                        }
+                        // set the viewpoint to the selected maneuver
+                        val geometry = directionsList[position].geometry
+                        geometry?.let { Viewpoint(it.extent, 20.0) }
+                            ?.let { mapView.setViewpoint(it) }
+                        // create a graphic with a symbol for the maneuver and add it to the graphics overlay
+                        val selectedRouteSymbol = SimpleLineSymbol(
+                            SimpleLineSymbolStyle.Solid,
+                            Color.green, 3f
+                        )
+                        routeOverlay.graphics.add(Graphic(geometry, selectedRouteSymbol))
+                        // collapse the bottom sheet
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+            }
+            cancelTV.setOnClickListener {
+                bottomSheet.visibility = View.INVISIBLE
+            }
+        }
+
+    }
     /**
      * Create a composite symbol consisting of a pin graphic overlaid with a particular stop number.
      *

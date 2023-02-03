@@ -2,30 +2,24 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ScrollView
-        android:id="@+id/bottomSheetLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
         <LinearLayout
+            android:id="@+id/directionSheetLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
+                android:id="@+id/header"
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/colorPrimary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary">
 
                 <android.widget.TextView
+                    android:id="@+id/headerTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-thin"
+                    android:padding="15dp"
                     android:text="Directions"
                     android:textColor="@android:color/white"
                     android:textSize="17sp"
@@ -35,17 +29,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <android.widget.TextView
-                    android:id="@+id/collapseTv"
+                <ImageView
+                    android:id="@+id/imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="25dp"
-                    android:padding="10dp"
-                    android:text="Collapse"
+                    android:layout_marginStart="25dp"
+                    android:padding="15dp"
+                    android:text="Cancel"
                     android:textColor="@android:color/white"
+                    android:textSize="17sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_expand_less_black_24dp" />
 
                 <android.widget.TextView
                     android:id="@+id/cancelTv"
@@ -62,10 +58,9 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ListView
+                android:id="@+id/directionsLV"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
+                android:layout_height="wrap_content"
+                android:background="@android:color/white" />
         </LinearLayout>
-
-    </ScrollView>
 </layout>
