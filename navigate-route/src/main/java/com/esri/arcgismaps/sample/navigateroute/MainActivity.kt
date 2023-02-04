@@ -245,7 +245,7 @@ class MainActivity : AppCompatActivity() {
                         showError("Error starting LocationDataSource: ${it.message} ")
                     }
 
-                    //TODO
+                    // set the text for first destination
                     nextStopTextView.text = resources.getStringArray(R.array.stop_message)[0]
 
                     // listen for changes in location
@@ -327,7 +327,7 @@ class MainActivity : AppCompatActivity() {
                 routeTracker.switchToNextDestination().getOrElse {
                     return@launch showError("Error retrieving next destination: ${it.message}")
                 }
-                // set next stop message
+                // set second stop message
                 nextStopTextView.text = resources.getStringArray(R.array.stop_message)[1]
             } else {
                 // the final destination has been reached,
