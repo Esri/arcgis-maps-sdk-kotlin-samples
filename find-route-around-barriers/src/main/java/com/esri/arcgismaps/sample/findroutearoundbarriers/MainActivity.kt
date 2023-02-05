@@ -17,16 +17,12 @@
 package com.esri.arcgismaps.sample.findroutearoundbarriers
 
 import android.graphics.drawable.BitmapDrawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -61,10 +57,9 @@ import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.ActivityMainBinding
-import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.DirectionSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.launch
@@ -80,10 +75,6 @@ class MainActivity : AppCompatActivity() {
 
     private val mapView by lazy {
         activityMainBinding.mapView
-    }
-
-    private val toggleButtons by lazy {
-        activityMainBinding.toggleButtons
     }
 
     private val addStopsButton: MaterialButton by lazy {
@@ -142,8 +133,6 @@ class MainActivity : AppCompatActivity() {
 
     private val routeOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
-
-
     private val barrierSymbol by lazy {
         SimpleFillSymbol(SimpleFillSymbolStyle.DiagonalCross, Color.red, null)
     }
@@ -165,21 +154,24 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISStreets)
-        mapView.map = map
-        mapView.setViewpoint(Viewpoint(32.7270, -117.1750, 40000.0))
-        mapView.graphicsOverlays.addAll(listOf(stopsOverlay, barriersOverlay, routeOverlay))
+        mapView. apply {
+            map = ArcGISMap(BasemapStyle.ArcGISStreets)
+            setViewpoint(Viewpoint(32.7270, -117.1750, 40000.0))
+            graphicsOverlays.addAll(listOf(stopsOverlay, barriersOverlay, routeOverlay))
+        }
 
         // set an on touch listener on the map view
         lifecycleScope.launch {
             mapView.onSingleTapConfirmed.collect { event ->
+                // add stop or barriers graphics to overlay
                 event.mapPoint?.let { mapPoint -> addStopOrBarrier(mapPoint) }
                 resetButton.isEnabled = true
             }
         }
 
         // create route task from San Diego service
-        routeTask = RouteTask("https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/Route")
+        routeTask =
+            RouteTask("https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/Route")
         lifecycleScope.launch {
             routeTask?.load()?.onSuccess {
                 // use the default parameters for the route calculation
@@ -195,18 +187,25 @@ class MainActivity : AppCompatActivity() {
 
         // make a clear button to reset the stops and routes
         resetButton.setOnClickListener {
-            stopsOverlay.graphics.clear()
-            barriersOverlay.graphics.clear()
-            routeOverlay.graphics.clear()
+            // clear stops from route parameters and stops list
+            routeParameters?.clearStops()
+            stopList.clear()
+            // clear barriers from route parameters and barriers list
+            routeParameters?.clearPolygonBarriers()
+            barriersList.clear()
+            // clear the directions list
+            directionsList.clear()
+            // clear all graphics overlays
+            mapView.graphicsOverlays.forEach { it.graphics.clear() }
             resetButton.isEnabled = false
-
         }
 
+        // display the options dialog having the route finding parameters
         optionsButton.setOnClickListener {
             displayOptionsDialog()
         }
 
-        // solve the route and display the bottom sheet when the FAB is clicked
+        // display the bottom sheet with directions when the button is clicked
         directionsButton.setOnClickListener {
             setupBottomSheet(directionsList)
         }
@@ -214,34 +213,38 @@ class MainActivity : AppCompatActivity() {
         // hide the bottom sheet and make the map view span the whole screen
         bottomSheet.visibility = View.INVISIBLE
         (mainContainer.layoutParams as CoordinatorLayout.LayoutParams).bottomMargin = 0
-
     }
 
+    /**
+     * Create options dialog with the route finding parameters to reorder stops to find the optimized route
+     */
     private fun displayOptionsDialog() {
+        // get the dialog root view
         val dialogView: View = layoutInflater.inflate(R.layout.options_dialog, null)
-        val dialogBuilder = AlertDialog.Builder(this).apply {
+        // set up the dialog builder
+        MaterialAlertDialogBuilder(this).apply {
             setView(dialogView)
             create()
             show()
         }
-        val reorderSwitch = dialogView.findViewById<SwitchMaterial>(R.id.reorderSwitch)
+
+        // set up the dialog UI views
+        val findBestSequenceSwitch = dialogView.findViewById<SwitchMaterial>(R.id.findBestSequenceSwitch)
         val firstStopSwitch = dialogView.findViewById<SwitchMaterial>(R.id.firstStopSwitch)
         val lastStopSwitch = dialogView.findViewById<SwitchMaterial>(R.id.lastStopSwitch)
-        reorderSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked){
-                firstStopSwitch.apply {
-                    isEnabled = true
-                    setChecked(true)
-                }
 
-                lastStopSwitch.apply {
-                    isEnabled = true
-                    setChecked(true)
-                }
-            }else{
-                firstStopSwitch.isEnabled = false
-                lastStopSwitch.isEnabled = false
-            }
+        // solve route on each state change
+        findBestSequenceSwitch.setOnCheckedChangeListener { _, _ ->
+            routeParameters?.findBestSequence = findBestSequenceSwitch.isChecked
+            createAndDisplayRoute()
+        }
+        firstStopSwitch.setOnCheckedChangeListener { _, _ ->
+            routeParameters?.preserveFirstStop = firstStopSwitch.isChecked
+            createAndDisplayRoute()
+        }
+        lastStopSwitch.setOnCheckedChangeListener { _, _ ->
+            routeParameters?.preserveLastStop = lastStopSwitch.isChecked
+            createAndDisplayRoute()
         }
     }
 
@@ -255,7 +258,6 @@ class MainActivity : AppCompatActivity() {
 
         // clear the displayed route, if it exists, since it might not be up to date any more
         routeOverlay.graphics.clear()
-
         if (addStopsButton.isChecked) {
             // normalize the geometry - needed if the user crosses the international date line.
             val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
@@ -265,16 +267,16 @@ class MainActivity : AppCompatActivity() {
             stopList.add(stop)
             // create a marker symbol and graphics, and add the graphics to the graphics overlay
             stopsOverlay.graphics.add(Graphic(mapPoint, createStopSymbol(stopList.size)))
-        }
-
-        else if (addBarriersButton.isChecked) {
+        } else if (addBarriersButton.isChecked) {
             // create a buffered polygon around the clicked point
             val barrierBufferPolygon = GeometryEngine.buffer(mapPoint, 200.0)
             // create a polygon barrier for the routing task, and add it to the list of barriers
             barrierBufferPolygon?.let {
-                barriersList.add(PolygonBarrier(it)) }
+                barriersList.add(PolygonBarrier(it))
+            }
             barriersOverlay.graphics.add(Graphic(barrierBufferPolygon, barrierSymbol))
         }
+        // solve the route once the graphics are created
         createAndDisplayRoute()
     }
 
@@ -283,7 +285,12 @@ class MainActivity : AppCompatActivity() {
      * graphic and call showDirectionsInBottomSheet which shows directions in a list view.
      */
     private fun createAndDisplayRoute() = lifecycleScope.launch {
-        if (stopList.size <=1) return@launch
+        if (stopList.size <= 1) return@launch
+
+        // clear the previous route from the graphics overlay, if it exists
+        routeOverlay.graphics.clear()
+        // clear the directions list from the directions list view, if they exist
+        directionsList.clear()
 
         routeParameters?.apply {
             // add the existing stops and barriers to the route parameters
@@ -302,16 +309,13 @@ class MainActivity : AppCompatActivity() {
                 // create Graphic for route
                 val graphic = Graphic(
                     route.routeGeometry,
-                    SimpleLineSymbol (SimpleLineSymbolStyle.Solid, Color.black, 3f)
+                    SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 3f)
                 )
-                routeOverlay.graphics.clear()
                 routeOverlay.graphics.add(graphic)
-
+                // get the direction text for each maneuver and add them to the list to display
                 directionsList.addAll(route.directionManeuvers)
-
             }.onFailure {
                 showError("No route solution. ${it.message}")
-                routeOverlay.graphics.clear()
             }
         }
     }
@@ -320,7 +324,6 @@ class MainActivity : AppCompatActivity() {
      *  [directions] a list of DirectionManeuver which represents the route
      */
     private fun setupBottomSheet(directions: List<DirectionManeuver>) {
-
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             // expand the bottom sheet, and ensure it is displayed on the screen when collapsed
             state = BottomSheetBehavior.STATE_EXPANDED
@@ -382,19 +385,21 @@ class MainActivity : AppCompatActivity() {
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
             }
+            // hide the bottom sheet when cancel button is clicked
             cancelTV.setOnClickListener {
                 bottomSheet.visibility = View.INVISIBLE
             }
         }
 
     }
+
     /**
      * Create a composite symbol consisting of a pin graphic overlaid with a particular stop number.
      *
      * @param stopNumber to overlay the pin symbol
      * @return a composite symbol consisting of the pin graphic overlaid with an the stop number
      */
-    private fun createStopSymbol(stopNumber: Int): CompositeSymbol  {
+    private fun createStopSymbol(stopNumber: Int): CompositeSymbol {
         // create black stop number TextSymbol
         val stopNumberSymbol = TextSymbol(
             stopNumber.toString(),
