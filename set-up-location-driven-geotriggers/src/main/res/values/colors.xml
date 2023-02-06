@@ -3,4 +3,10 @@
     <color name="colorPrimary">#9243cf</color>
     <color name="colorPrimaryDark">#7a2ab7</color>
     <color name="colorAccent">#7a2ab7</color>
+
+    <color name="gardenPrimary">#3b4e1e</color>
+    <color name="gardenSecondary">#ac901e</color>
+    <color name="white">#FFFF</color>
+    <color name="divider">#2A000000</color>
+    <color name="gray">#4B000000</color>
 </resources>
