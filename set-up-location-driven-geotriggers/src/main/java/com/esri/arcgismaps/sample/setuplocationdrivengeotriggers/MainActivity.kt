@@ -77,6 +77,10 @@ class MainActivity : AppCompatActivity() {
         simulatedLocationDataSource
     }
 
+    // Make monitors properties to prevent garbage collection
+    private lateinit var sectionGeotriggerMonitor: GeotriggerMonitor
+    private lateinit var poiGeotriggerMonitor: GeotriggerMonitor
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -117,8 +121,18 @@ class MainActivity : AppCompatActivity() {
             ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
         val gardenPOIs =
             ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
+        // Create Geotriggers for each of the service feature tables
+        sectionGeotriggerMonitor =
+            createGeotriggerMonitor(gardenSections, 0.0, "Section Geotrigger")
+        poiGeotriggerMonitor =
+            createGeotriggerMonitor(gardenPOIs, 10.0, "POI Geotrigger")
         lifecycleScope.launch {
-            // start geotrigger monitors here
+            sectionGeotriggerMonitor.start().onFailure {
+                showError("Section Geotrigger Monitor failed to start: ${it.message}")
+            }
+            poiGeotriggerMonitor.start().onFailure {
+                showError("POI Geotrigger Monitor failed to start: ${it.message}")
+            }
         }
     }
 
