@@ -117,6 +117,9 @@ class MainActivity : AppCompatActivity() {
             ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
         val gardenPOIs =
             ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
+        lifecycleScope.launch {
+            // start geotrigger monitors here
+        }
     }
 
     private fun createGeotriggerMonitor(
@@ -145,14 +148,6 @@ class MainActivity : AppCompatActivity() {
                 handleGeotriggerNotification(it)
             }
         }
-
-        lifecycleScope.launch {
-            // Start must be explicitly called. It is called after the signal connection is defined to avoid a race condition.
-            geotriggerMonitor.start().onFailure { error ->
-                showError("GeotriggerMonitor failed to load: " + error.message)
-            }
-        }
-
         return geotriggerMonitor
     }
 
