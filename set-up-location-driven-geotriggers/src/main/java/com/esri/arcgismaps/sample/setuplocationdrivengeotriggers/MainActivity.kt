@@ -112,9 +112,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Create a LocationGeotriggerFeed that uses the SimulatedLocationDataSource
-        val geotriggerFeed = LocationGeotriggerFeed(simulatedLocationDataSource)
-
         // Instantiate the service feature tables to later create GeotriggerMonitors for
         val gardenSections =
             ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
@@ -125,9 +122,10 @@ class MainActivity : AppCompatActivity() {
     private fun createGeotriggerMonitor(
         serviceFeatureTable: ServiceFeatureTable,
         bufferSize: Double,
-        geotriggerName: String,
-        geotriggerFeed: LocationGeotriggerFeed
+        geotriggerName: String
     ): GeotriggerMonitor {
+        // Create a LocationGeotriggerFeed that uses the SimulatedLocationDataSource
+        val geotriggerFeed = LocationGeotriggerFeed(simulatedLocationDataSource)
         // Initialize FeatureFenceParameters with the service feature table and a buffer of 0 meters
         // to display the exact garden section the user has entered
         val featureFenceParameters = FeatureFenceParameters(serviceFeatureTable, bufferSize)
