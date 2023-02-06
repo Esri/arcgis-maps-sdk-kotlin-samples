@@ -1,5 +1,5 @@
 {
-    "category": "TODO",
+    "category": "Routing and Logistics",
     "description": "Find a route that reaches all stops without crossing any barriers.",
     "formal_name": "FindRouteAroundBarriers",
     "ignore": false,

@@ -76,6 +76,10 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    private val mainContainer: ConstraintLayout by lazy {
+        activityMainBinding.mainContainer
+    }
+
     private val addStopsButton: MaterialButton by lazy {
         activityMainBinding.addStopsButton
     }
@@ -112,10 +116,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.directionSheet.cancelTv
     }
 
-    private val mainContainer: ConstraintLayout by lazy {
-        activityMainBinding.mainContainer
-    }
-
     private val directionsLV: ListView by lazy {
         activityMainBinding.directionSheet.directionsLV
     }
@@ -136,7 +136,6 @@ class MainActivity : AppCompatActivity() {
         SimpleFillSymbol(SimpleFillSymbolStyle.DiagonalCross, Color.red, null)
     }
 
-    // create a route task to calculate routes
     private var routeTask: RouteTask? = null
 
     private var routeParameters: RouteParameters? = null
@@ -153,7 +152,7 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
-        mapView. apply {
+        mapView.apply {
             map = ArcGISMap(BasemapStyle.ArcGISStreets)
             setViewpoint(Viewpoint(32.7270, -117.1750, 40000.0))
             graphicsOverlays.addAll(listOf(stopsOverlay, barriersOverlay, routeOverlay))
@@ -171,9 +170,10 @@ class MainActivity : AppCompatActivity() {
         // create route task from San Diego service
         routeTask =
             RouteTask("https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/Route")
+
+        // coroutine scope to use the default parameters for the route calculation
         lifecycleScope.launch {
             routeTask?.load()?.onSuccess {
-                // use the default parameters for the route calculation
                 routeParameters = routeTask?.createDefaultParameters()?.getOrThrow()
                 routeParameters?.apply {
                     returnStops = true
