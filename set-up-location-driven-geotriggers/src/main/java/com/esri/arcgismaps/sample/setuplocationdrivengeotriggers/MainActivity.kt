@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleGeotriggerNotification(geotriggerNotificationInfo: GeotriggerNotificationInfo) {
-        TODO("Not yet implemented")
+        showError(geotriggerNotificationInfo.message)
     }
 
     private fun showError(message: String) {
