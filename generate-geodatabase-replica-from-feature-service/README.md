@@ -1,4 +1,4 @@
-# Generate Geodatabase Replica From Feature Service
+# Generate geodatabase replica from feature fervice
 
 Generate a local geodatabase replica from an online feature service.
 

@@ -28,5 +28,5 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/generategeodatabasereplicafromfeatureservice/MainActivity.kt"
     ],
-    "title": "Generate Geodatabase Replica From Feature Service"
+    "title": "Generate geodatabase replica from feature service"
 }
