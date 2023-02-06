@@ -28,6 +28,7 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
+import com.arcgismaps.data.Geodatabase
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
@@ -37,14 +38,11 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.tasks.Job
-import com.arcgismaps.tasks.JobStatus
 import com.arcgismaps.tasks.geodatabase.GenerateGeodatabaseJob
 import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.databinding.GenerateGeodatabaseDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -56,18 +54,27 @@ class MainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
+    // setup data binding for the mapview
     private val mapView by lazy {
         activityMainBinding.mapView
     }
 
+    // starts the geodatabase replica process
     private val generateButton by lazy {
         activityMainBinding.generateButton
     }
 
+    // shows the geodatabase loading progress
     private val progressDialog by lazy {
         GenerateGeodatabaseDialogLayoutBinding.inflate(layoutInflater)
     }
 
+    // local file path to the geodatabase
+    private val geodatabaseFilePath by lazy {
+        getExternalFilesDir(null)?.path + getString(R.string.portland_trees_geodatabase_file)
+    }
+
+    // a red boundary line showing the filtered map extents for the features
     private val boundarySymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 5f)
 
     // creates a graphic overlay
@@ -76,7 +83,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // debug, remove for prod
         mapView.keepScreenOn = true
 
         // authentication with an API key or named user is
@@ -84,133 +90,169 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // create and add a map with a navigation night basemap style
+        // create and add a map with a Topographic basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+        // set the max map extents to that of the feature service
+        // representing portland area
         map.maxExtent = Envelope(
             -13687689.2185849, 5687273.88331375,
             -13622795.3756647, 5727520.22085841,
             spatialReference = SpatialReference.webMercator()
         )
+        // configure mapview assignments
         mapView.apply {
             this.map = map
+            // add the graphics overlay to display the boundary
             graphicsOverlays.add(graphicsOverlay)
         }
 
-        val featureServiceURL =
-            "https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/Mobile_Data_Collection_WFL1/FeatureServer"
-        val geodatabaseSyncTask = GeodatabaseSyncTask(featureServiceURL)
-
-
         lifecycleScope.launch {
+            // show the error and return if map load failed
             map.load().onFailure {
                 showError("Unable to load map")
                 return@launch
             }
+            // create a geodatabase sync task with the feature service url
+            // This feature service shows a web map of Portland street trees,
+            // their attributes, as well as related inspection information
+            val geodatabaseSyncTask = GeodatabaseSyncTask(getString(R.string.feature_server_url))
             geodatabaseSyncTask.load().onFailure {
+                // if the metadata load fails, show the error and return
                 showError("Failed to fetch geodatabase metadata")
                 return@launch
             }
+            // enable the generate button and add an onClickListener
             generateButton.isEnabled = true
             generateButton.setOnClickListener {
                 mapView.visibleArea?.let { polygon ->
+                    // start the geodatabase generation process
                     generateGeodatabase(geodatabaseSyncTask, map, polygon.extent)
                 }
             }
         }
     }
 
-    private fun generateGeodatabase(
-        geodatabaseSyncTask: GeodatabaseSyncTask,
-        map: ArcGISMap,
-        extents: Envelope
-    ) {
+    /**
+     * Starts a GeodatabaseSyncTask, runs a GenerateGeodatabaseJob and saves
+     * the geodatabase file into local storage
+     *
+     * @param geodatabaseSyncTask the GeodatabaseSyncTask object
+     * @param map mapView to render the feature layers on
+     * @param extents the selected extents of the mapView
+     */
+    private fun generateGeodatabase(geodatabaseSyncTask: GeodatabaseSyncTask, map: ArcGISMap, extents: Envelope) {
+        // clear any layers already on the map
         map.operationalLayers.clear()
+        // clear all symbols drawn
         graphicsOverlay.graphics.clear()
 
+        // create a boundary representing the extents selected
         val boundary = Graphic(extents, boundarySymbol)
+        // add this boundary to the graphics overlay
         graphicsOverlay.graphics.add(boundary)
 
         lifecycleScope.launch {
+            // create generate geodatabase parameters for the selected extents
             val defaultParameters = geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(extents).getOrElse {
+                // show the error and return if the task fails
                 showError("Error creating geodatabase parameters")
                 return@launch
             }
+
+            // set return attachments option to false
             defaultParameters.returnAttachments = false
-            geodatabaseSyncTask.createGenerateGeodatabaseJob(defaultParameters, makeGeodatabaseFilePath()).run {
+            // create a generate geodatabase job
+            geodatabaseSyncTask.createGenerateGeodatabaseJob(defaultParameters, geodatabaseFilePath).run {
+                // create a dialog to show the jobs progress
                 val dialog = createProgressDialog(this).apply {
+                    // show the dialog
                     show()
+                    // allow it to be cancellable
                     setCancelable(true)
+                    // disable dismissal when tapped outside the dialog
                     setCanceledOnTouchOutside(false)
                 }
-                // launch a progress collector
+                // launch a progress collector to display progress
                 launch {
                     progress.collect { value ->
-                        Log.d(TAG, "generateGeodatabase: $value")
+                        // update the progress bar and progress text
                         progressDialog.progressBar.progress = value
                         progressDialog.progressTextView.text = "$value%"
                     }
                 }
-                // launch a status changed collector
-                launch {
-                    status.collect { status ->
-                        when (status) {
-                            JobStatus.Succeeded -> {
-
-                            }
-                            JobStatus.Failed -> {
-                                showError("Failed to generate geodatabase")
-                            }
-                            else -> {}
-                        }
-                    }
-                }
+                // start the job
                 start()
-                result().onSuccess { geodatabase ->
-                    geodatabase.load().onFailure {
-                        showError("Error loading geodatabase")
-                        cancelAndReturn(this@launch)
-                    }
-                    for (featureTable in geodatabase.featureTables) {
-                        featureTable.load().onFailure {
-                            showError("Error loading feature table")
-                            cancelAndReturn(this@launch)
-                        }
-                        map.operationalLayers += FeatureLayer(featureTable)
-                    }
-                    generateButton.visibility = View.GONE
-                    dialog.dismiss()
-                    geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
-                }.onFailure {
+                // if the job completed successfully, get the geodatabase from the result
+                val geodatabase =  result().getOrElse {
+                    // show an error and return if failed
                     showError("Error fetching geodatabase")
-                    generateButton.visibility = View.VISIBLE
+                    // dismiss the dialog
+                    dialog.dismiss()
+                    return@launch
                 }
+
+                // load the display the geodatabase
+                loadGeodatabase(geodatabase, map)
+                // dismiss the dialog view
+                dialog.dismiss()
+                // unregister since we are not syncing
+                geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
             }
         }
     }
 
+    /**
+     * Loads the geodatabase and renders the feature layers on to the map
+     *
+     * @param geodatabase geodatabase to load
+     * @param map map to display it on
+     */
+    private suspend fun loadGeodatabase(geodatabase: Geodatabase, map: ArcGISMap) {
+        // load the geodatabase
+        geodatabase.load().onFailure {
+            // if the load failed, show the error and return
+            showError("Error loading geodatabase")
+            return
+        }
+        // add all of the geodatabase feature tables to the map as feature layers
+        map.operationalLayers += geodatabase.featureTables.map { featureTable ->
+            FeatureLayer(featureTable)
+        }
+        // hide the generate button as the task is now complete
+        generateButton.visibility = View.GONE
+    }
+
+    /**
+     * Creates a new alert dialog using the progressDialog and provides
+     * GenerateGeodatabaseJob cancellation on dialog cancellation
+     *
+     * @param generateGeodatabaseJob the job to cancel
+     *
+     * @return returns an alert dialog
+     */
     private fun createProgressDialog(generateGeodatabaseJob: GenerateGeodatabaseJob): AlertDialog {
+        // build and return a new alert dialog
         return AlertDialog.Builder(this).apply {
+            // setting it title
+            setTitle(getString(R.string.dialog_title))
+            // sets negative button configuration
             setNegativeButton("Cancel") { _, _ ->
+                // cancels the generateGeodatabaseJob
                 lifecycleScope.launch {
                     generateGeodatabaseJob.cancel()
                 }
             }
+            // removes parent of the progressDialog layout, if previously assigned
             progressDialog.root.parent?.let { parent ->
                 (parent as ViewGroup).removeAllViews()
             }
+            // set the progressDialog Layout to this alert dialog
             setView(progressDialog.root)
         }.create()
     }
-
-    private fun makeGeodatabaseFilePath() = getExternalFilesDir(null)!!.path + "/gdb_${System.currentTimeMillis()}.geodatabase"
 
     private fun showError(message: String) {
         Log.e(TAG, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
-}
-
-private suspend fun <T> Job<T>.cancelAndReturn(coroutineScope: CoroutineScope) {
-    cancel()
-    return
 }

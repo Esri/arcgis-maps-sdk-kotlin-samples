@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="Generate"
+            android:text="@string/generate_button_text"
             android:enabled="false"
             android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
