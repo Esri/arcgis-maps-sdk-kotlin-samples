@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Find Route Around Barriers</string>
     <string name="reset">reset</string>
+    <string name="stops">Stops</string>
+    <string name="barriers">Barriers</string>
+    <string name="directions">Directions</string>
+    <string name="collapse">Collapse</string>
+    <string name="cancel">Cancel</string>
+    <string name="find_the_best_sequence">Find the best sequence</string>
+    <string name="preserve_last_stop">Preserve last stop</string>
+    <string name="preserve_first_stop">Preserve first stop</string>
 </resources>

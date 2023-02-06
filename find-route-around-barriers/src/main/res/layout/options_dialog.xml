@@ -19,7 +19,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Find the best sequence"
+                android:text="@string/find_the_best_sequence"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/findBestSequenceSwitch"
                 app:layout_constraintStart_toStartOf="parent"
@@ -47,14 +47,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:text="Preserve last stop"
+                android:text="@string/preserve_first_stop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.517" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/lastStopSwitch"
+                android:id="@+id/firstStopSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="true"
@@ -75,13 +75,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:text="Preserve first stop"
+                android:text="@string/preserve_last_stop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/firstStopSwitch"
+                android:id="@+id/lastStopSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="true"

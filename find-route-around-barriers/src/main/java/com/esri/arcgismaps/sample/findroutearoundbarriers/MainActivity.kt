@@ -25,7 +25,6 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -304,16 +303,16 @@ class MainActivity : AppCompatActivity() {
         if (results != null) {
             results.onSuccess { routeResult ->
                 // get the first solved route
-                val route = routeResult.routes[0]
+                val firstRoute = routeResult.routes[0]
 
                 // create Graphic for route
                 val graphic = Graphic(
-                    route.routeGeometry,
+                    firstRoute.routeGeometry,
                     SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 3f)
                 )
                 routeOverlay.graphics.add(graphic)
                 // get the direction text for each maneuver and add them to the list to display
-                directionsList.addAll(route.directionManeuvers)
+                directionsList.addAll(firstRoute.directionManeuvers)
             }.onFailure {
                 showError("No route solution. ${it.message}")
             }
