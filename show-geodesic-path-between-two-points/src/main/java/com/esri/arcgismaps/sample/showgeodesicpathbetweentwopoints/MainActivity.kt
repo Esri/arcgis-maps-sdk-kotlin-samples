@@ -176,8 +176,11 @@ class MainActivity : AppCompatActivity() {
                 infoTextView.text =
                     getString(R.string.distance_info_text, distance.roundToInt())
             } ?: run {
+                // hide the geodesic path graphic if densifyGeodetic is null
                 geodesicPathGraphic.geometry = null
-                infoTextView.text = getString(R.string.error_generating_geodesic)
+                // reset the info view and show the error
+                infoTextView.text = getString(R.string.tap_to_begin)
+                showError("Error generating geodesic")
             }
         }
     }
