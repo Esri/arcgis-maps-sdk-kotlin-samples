@@ -83,8 +83,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mapView.keepScreenOn = true
-
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
@@ -113,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                 return@launch
             }
             // create a geodatabase sync task with the feature service url
-            // This feature service shows a web map of Portland street trees,
+            // This feature service shows a web map of portland street trees,
             // their attributes, as well as related inspection information
             val geodatabaseSyncTask = GeodatabaseSyncTask(getString(R.string.feature_server_url))
             geodatabaseSyncTask.load().onFailure {
@@ -180,18 +178,18 @@ class MainActivity : AppCompatActivity() {
                         progressDialog.progressTextView.text = "$value%"
                     }
                 }
-                // start the job
+                // start the generateGeodatabase job
                 start()
                 // if the job completed successfully, get the geodatabase from the result
-                val geodatabase =  result().getOrElse {
-                    // show an error and return if failed
+                val geodatabase = result().getOrElse {
+                    // show an error and return if job failed
                     showError("Error fetching geodatabase")
                     // dismiss the dialog
                     dialog.dismiss()
                     return@launch
                 }
 
-                // load the display the geodatabase
+                // load and display the geodatabase
                 loadGeodatabase(geodatabase, map)
                 // dismiss the dialog view
                 dialog.dismiss()
