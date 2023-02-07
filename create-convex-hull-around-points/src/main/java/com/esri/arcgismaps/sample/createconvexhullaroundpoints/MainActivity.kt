@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        
+
         // add a click listener to create a convex hull
         createButton.setOnClickListener {
             // check if the pointGraphic's geometry is not null
