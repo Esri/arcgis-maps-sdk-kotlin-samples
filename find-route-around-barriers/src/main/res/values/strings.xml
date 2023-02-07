@@ -9,4 +9,5 @@
     <string name="find_the_best_sequence">Find the best sequence</string>
     <string name="preserve_last_stop">Preserve last stop</string>
     <string name="preserve_first_stop">Preserve first stop</string>
+    <string name="routing_service_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/Route</string>
 </resources>

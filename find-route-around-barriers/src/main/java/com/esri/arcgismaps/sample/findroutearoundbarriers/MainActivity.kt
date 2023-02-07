@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
         // create route task from San Diego service
         routeTask =
-            RouteTask("https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/Route")
+            RouteTask(getString(R.string.routing_service_url))
 
         // coroutine scope to use the default parameters for the route calculation
         lifecycleScope.launch {
