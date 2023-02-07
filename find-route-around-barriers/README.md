@@ -1,4 +1,4 @@
-# Find Route Around Barriers
+# Find route around barriers
 
 Find a route that reaches all stops without crossing any barriers.
 
