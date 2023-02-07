@@ -11,12 +11,17 @@
         <com.arcgismaps.mapping.view.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/generateButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
         </com.arcgismaps.mapping.view.MapView>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/generateButton"
+            style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
