@@ -20,6 +20,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
@@ -56,6 +57,7 @@ import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.ActivityMainBinding
+import com.esri.arcgismaps.sample.findroutearoundbarriers.databinding.OptionsDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -70,6 +72,22 @@ class MainActivity : AppCompatActivity() {
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
+    }
+
+    // show the options dialog
+    private val optionsDialogBinding by lazy {
+        OptionsDialogBinding.inflate(layoutInflater)
+    }
+
+    // set up the dialog UI views
+    private val findBestSequenceSwitch by lazy {
+        optionsDialogBinding.findBestSequenceSwitch
+    }
+    private val firstStopSwitch by lazy {
+        optionsDialogBinding.firstStopSwitch
+    }
+    private val lastStopSwitch by lazy {
+        optionsDialogBinding.lastStopSwitch
     }
 
     private val mapView by lazy {
@@ -218,24 +236,44 @@ class MainActivity : AppCompatActivity() {
      * Create options dialog with the route finding parameters to reorder stops to find the optimized route
      */
     private fun displayOptionsDialog() {
-        // get the dialog root view
-        val dialogView: View = layoutInflater.inflate(R.layout.options_dialog, null)
+        // removes parent of the progressDialog layout, if previously assigned
+        optionsDialogBinding.root.parent?.let { parent ->
+            (parent as ViewGroup).removeAllViews()
+        }
+
         // set up the dialog builder
         MaterialAlertDialogBuilder(this).apply {
-            setView(dialogView)
+            setView(optionsDialogBinding.root)
             create()
             show()
         }
 
-        // set up the dialog UI views
-        val findBestSequenceSwitch = dialogView.findViewById<SwitchMaterial>(R.id.findBestSequenceSwitch)
-        val firstStopSwitch = dialogView.findViewById<SwitchMaterial>(R.id.firstStopSwitch)
-        val lastStopSwitch = dialogView.findViewById<SwitchMaterial>(R.id.lastStopSwitch)
+        // set the best sequence toggle state
+        findBestSequenceSwitch.isChecked = routeParameters?.findBestSequence ?: false
+
+        // if best sequence switch is enabled, then enable the options
+        if (findBestSequenceSwitch.isChecked) {
+            firstStopSwitch.isEnabled = true
+            lastStopSwitch.isEnabled = true
+        } else {
+            firstStopSwitch.isEnabled = false
+            lastStopSwitch.isEnabled = false
+        }
 
         // solve route on each state change
         findBestSequenceSwitch.setOnCheckedChangeListener { _, _ ->
+            // update route params if the switch is toggled
             routeParameters?.findBestSequence = findBestSequenceSwitch.isChecked
             createAndDisplayRoute()
+
+            // if best sequence switch is enabled, then enable the options
+            if (findBestSequenceSwitch.isChecked) {
+                firstStopSwitch.isEnabled = true
+                lastStopSwitch.isEnabled = true
+            } else {
+                firstStopSwitch.isEnabled = false
+                lastStopSwitch.isEnabled = false
+            }
         }
         firstStopSwitch.setOnCheckedChangeListener { _, _ ->
             routeParameters?.preserveFirstStop = firstStopSwitch.isChecked
