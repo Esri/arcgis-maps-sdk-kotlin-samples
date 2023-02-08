@@ -26,12 +26,10 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.Geometry
-import com.arcgismaps.geometry.GeometryEngine
-import com.arcgismaps.geometry.Multipoint
-import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.*
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
@@ -63,18 +61,26 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.resetButton
     }
 
+    // set up the point graphic
     private val pointGraphic by lazy {
+        // create a red marker symbol
         val pointSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 10f)
+        // init this graphic with the symbol
         Graphic(symbol = pointSymbol)
     }
 
+    // setup the convex hull graphic
     private val convexHullGraphic by lazy {
-        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 3f)
+        // create a blue line symbol
+        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 3f)
+        // init this graphic with the symbol
         Graphic(symbol = lineSymbol)
     }
 
+    // create a graphics overlay to draw all graphics
     private val graphicsOverlay = GraphicsOverlay()
 
+    // list to store the selected map points
     private val inputPoints = mutableListOf<Point>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,7 +95,10 @@ class MainActivity : AppCompatActivity() {
         graphicsOverlay.graphics.addAll(listOf(pointGraphic, convexHullGraphic))
 
         // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+        val map = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+            // set a default initial point and scale
+            initialViewpoint = Viewpoint(Point(34.77, -10.24), 20e7)
+        }
         // configure map view assignments
         mapView.apply {
             this.map = map
@@ -146,6 +155,13 @@ class MainActivity : AppCompatActivity() {
         GeometryEngine.normalizeCentralMeridian(pointGeometry)?.let { normalizedPointGeometry ->
             // create a convex hull from the points
             GeometryEngine.convexHull(normalizedPointGeometry)?.let { convexHull ->
+//                when(convexHull) {
+//                    is Point -> {}
+//                    is Polyline -> {}
+//                    is Envelope -> {}
+//                    is Polygon -> {}
+//                    else -> {}
+//                }
                 // if convex hull is not null then update the graphic's geometry
                 convexHullGraphic.geometry = convexHull
                 // disable the create button until new input points are created
@@ -174,6 +190,12 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+/**
+ * Simple extension property that represents a blue color
+ */
+private val Color.Companion.blue
+    get() =  fromRgba(0,0,255)
 
 /**
  * Simple extension function to enable a button, if not already enabled
