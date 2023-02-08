@@ -93,8 +93,10 @@ class MainActivity : AppCompatActivity() {
         // set the max map extents to that of the feature service
         // representing portland area
         map.maxExtent = Envelope(
-            -13687689.2185849, 5687273.88331375,
-            -13622795.3756647, 5727520.22085841,
+            -13687689.2185849,
+            5687273.88331375,
+            -13622795.3756647,
+            5727520.22085841,
             spatialReference = SpatialReference.webMercator()
         )
         // configure mapview assignments
@@ -104,6 +106,19 @@ class MainActivity : AppCompatActivity() {
             graphicsOverlays.add(graphicsOverlay)
         }
 
+        // create a geodatabase sync task with the feature service url
+        // This feature service shows a web map of portland street trees,
+        // their attributes, as well as related inspection information
+        val geodatabaseSyncTask = GeodatabaseSyncTask(getString(R.string.feature_server_url))
+
+        // set the button's onClickListener
+        generateButton.setOnClickListener {
+            mapView.visibleArea?.let { polygon ->
+                // start the geodatabase generation process
+                generateGeodatabase(geodatabaseSyncTask, map, polygon.extent)
+            }
+        }
+
         lifecycleScope.launch {
             // show the error and return if map load failed
             map.load().onFailure {
@@ -111,23 +126,14 @@ class MainActivity : AppCompatActivity() {
                 return@launch
             }
 
-            // create a geodatabase sync task with the feature service url
-            // This feature service shows a web map of portland street trees,
-            // their attributes, as well as related inspection information
-            val geodatabaseSyncTask = GeodatabaseSyncTask(getString(R.string.feature_server_url))
             geodatabaseSyncTask.load().onFailure {
                 // if the metadata load fails, show the error and return
                 showError("Failed to fetch geodatabase metadata")
                 return@launch
             }
-            // enable the generate button and add an onClickListener
+
+            // enable the generate button since the task is now loaded
             generateButton.isEnabled = true
-            generateButton.setOnClickListener {
-                mapView.visibleArea?.let { polygon ->
-                    // start the geodatabase generation process
-                    generateGeodatabase(geodatabaseSyncTask, map, polygon.extent)
-                }
-            }
         }
     }
 
@@ -165,12 +171,9 @@ class MainActivity : AppCompatActivity() {
             geodatabaseSyncTask.createGenerateGeodatabaseJob(defaultParameters, geodatabaseFilePath)
                 .run {
                     // create a dialog to show the jobs progress
-                    val dialog = createProgressDialog(this).apply {
-                        // show the dialog
-                        show()
-                        // disable dismissal when tapped outside the dialog
-                        setCanceledOnTouchOutside(false)
-                    }
+                    val dialog = createProgressDialog(this)
+                    // show the dialog
+                    dialog.show()
                     // launch a progress collector to display progress
                     launch {
                         progress.collect { value ->
@@ -232,16 +235,9 @@ class MainActivity : AppCompatActivity() {
             // setting it title
             setTitle(getString(R.string.dialog_title))
             // allow it to be cancellable
-            setCancelable(true)
+            setCancelable(false)
             // sets negative button configuration
             setNegativeButton("Cancel") { _, _ ->
-                // cancels the generateGeodatabaseJob
-                lifecycleScope.launch {
-                    generateGeodatabaseJob.cancel()
-                }
-            }
-            // sets the callback in case the dialog is cancelled
-            setOnCancelListener {
                 // cancels the generateGeodatabaseJob
                 lifecycleScope.launch {
                     generateGeodatabaseJob.cancel()
