@@ -26,44 +26,73 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:text="@string/trace_options"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <android.widget.CheckBox
-                    android:id="@+id/barriersCheckBox"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/include_barriers"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/traceOptionsTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/traceOptionsTextView">
 
-                <android.widget.CheckBox
-                    android:id="@+id/containersCheckbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/include_containers"
-                    app:layout_constraintStart_toEndOf="@+id/barriersCheckBox"
-                    app:layout_constraintTop_toBottomOf="@+id/traceOptionsTextView" />
+
+                    <android.widget.CheckBox
+                        android:id="@+id/barriersCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <android.widget.CheckBox
+                        android:id="@+id/containersCheckbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/barriersCheckBox" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/include_barriers"
+                        android:textSize="15sp"
+                        app:layout_constraintBottom_toTopOf="@+id/textView2"
+                        app:layout_constraintEnd_toStartOf="@+id/barriersCheckBox"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/include_containers"
+                        android:textSize="15sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/containersCheckbox"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <android.widget.TextView
                     android:id="@+id/defineConditionTextBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="16dp"
                     android:text="@string/define_new_condition"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/barriersCheckBox" />
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
                 <android.widget.TextView
                     android:id="@+id/exampleTextView"
@@ -191,8 +220,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:text="@string/barrier_conditions"
-                    android:textStyle="bold"
                     android:textSize="18sp"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/addButton" />
 
