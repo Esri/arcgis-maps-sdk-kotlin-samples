@@ -30,10 +30,7 @@ import com.arcgismaps.geometry.*
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.arcgismaps.mapping.symbology.SimpleLineSymbol
-import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.symbology.*
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.createconvexhullaroundpoints.databinding.ActivityMainBinding
@@ -53,29 +50,30 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    // action button that creates the canvas hull
     private val createButton by lazy {
         activityMainBinding.createButton
     }
 
+    // action button to reset the map
     private val resetButton by lazy {
         activityMainBinding.resetButton
     }
 
-    // set up the point graphic
-    private val pointGraphic by lazy {
-        // create a red marker symbol
-        val pointSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 10f)
-        // init this graphic with the symbol
-        Graphic(symbol = pointSymbol)
-    }
+    // a red marker symbol for points
+    private val pointSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 10f)
 
-    // setup the convex hull graphic
-    private val convexHullGraphic by lazy {
-        // create a blue line symbol
-        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 3f)
-        // init this graphic with the symbol
-        Graphic(symbol = lineSymbol)
-    }
+    // a blue line symbol
+    private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 3f)
+
+    // a fill symbol with an empty fill for polygons
+    private val fillSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Null, Color.red, lineSymbol)
+
+    // set up the point graphic with point symbol
+    private val pointGraphic = Graphic(symbol = pointSymbol)
+
+    // init the convex hull graphic
+    private val convexHullGraphic = Graphic()
 
     // create a graphics overlay to draw all graphics
     private val graphicsOverlay = GraphicsOverlay()
@@ -91,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // add all the our graphics to the graphics overlay
+        // add point and convex hull graphics to the graphics overlay
         graphicsOverlay.graphics.addAll(listOf(pointGraphic, convexHullGraphic))
 
         // create and add a map with a navigation night basemap style
@@ -99,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             // set a default initial point and scale
             initialViewpoint = Viewpoint(Point(34.77, -10.24), 20e7)
         }
+
         // configure map view assignments
         mapView.apply {
             this.map = map
@@ -127,6 +126,7 @@ class MainActivity : AppCompatActivity() {
                 createConvexHull(geometry)
             }
         }
+
         // add a click listener to reset the map
         resetButton.setOnClickListener {
             resetMap()
@@ -151,22 +151,35 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createConvexHull(pointGeometry: Geometry) {
         // normalize the geometry for panning beyond the meridian
-        // and check and proceed if the resulting geometry is not null
+        // and check to proceed if the resulting geometry is not null
         GeometryEngine.normalizeCentralMeridian(pointGeometry)?.let { normalizedPointGeometry ->
             // create a convex hull from the points
             GeometryEngine.convexHull(normalizedPointGeometry)?.let { convexHull ->
-//                when(convexHull) {
-//                    is Point -> {}
-//                    is Polyline -> {}
-//                    is Envelope -> {}
-//                    is Polygon -> {}
-//                    else -> {}
-//                }
-                // if convex hull is not null then update the graphic's geometry
+                // if convex hull is not null then update the graphic's symbol and geometry
+                convexHullGraphic.symbol = when (convexHull) {
+                    // the convex hull's geometry may be a point or polyline if the number of
+                    // points is less than 3
+                    is Point -> {
+                        // set symbol to use the pointSymbol
+                         pointSymbol
+                    }
+                    is Polyline -> {
+                        // set symbol to use the lineSymbol
+                        lineSymbol
+                    }
+                    is Polygon -> {
+                        // set symbol to use the fillSymbol
+                        fillSymbol
+                    }
+                    else -> {
+                        showError("Unknown geometry for convex hull")
+                        null
+                    }
+                }
                 convexHullGraphic.geometry = convexHull
                 // disable the create button until new input points are created
                 createButton.disable()
-            }
+            } ?: showError("Error creating convex hull")
         }
     }
 
@@ -195,7 +208,7 @@ class MainActivity : AppCompatActivity() {
  * Simple extension property that represents a blue color
  */
 private val Color.Companion.blue
-    get() =  fromRgba(0,0,255)
+    get() = fromRgba(0, 0, 255)
 
 /**
  * Simple extension function to enable a button, if not already enabled
