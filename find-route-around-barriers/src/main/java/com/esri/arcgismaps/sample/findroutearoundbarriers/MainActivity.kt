@@ -192,8 +192,7 @@ class MainActivity : AppCompatActivity() {
         // coroutine scope to use the default parameters for the route calculation
         lifecycleScope.launch {
             routeTask?.load()?.onSuccess {
-                routeParameters = routeTask?.createDefaultParameters()?.getOrThrow()
-                routeParameters?.apply {
+                routeParameters = routeTask.createDefaultParameters().getOrThrow().apply {
                     returnStops = true
                     returnDirections = true
                 }
