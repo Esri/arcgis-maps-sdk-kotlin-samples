@@ -429,10 +429,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Create a composite symbol consisting of a pin graphic overlaid with a particular stop number.
-     *
-     * @param stopNumber to overlay the pin symbol
-     * @return a composite symbol consisting of the pin graphic overlaid with an the stop number
+     * Create a composite symbol consisting of a pin graphic overlaid with a particular [stopNumber].
+     * Returns a [CompositeSymbol] consisting of the pin graphic overlaid with an the stop number
      */
     private fun createStopSymbol(stopNumber: Int): CompositeSymbol {
         // create black stop number TextSymbol
