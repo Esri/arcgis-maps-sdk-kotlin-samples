@@ -251,15 +251,6 @@ class MainActivity : AppCompatActivity() {
         // set the best sequence toggle state
         findBestSequenceSwitch.isChecked = routeParameters?.findBestSequence ?: false
 
-        // if best sequence switch is enabled, then enable the options
-        if (findBestSequenceSwitch.isChecked) {
-            firstStopSwitch.isEnabled = true
-            lastStopSwitch.isEnabled = true
-        } else {
-            firstStopSwitch.isEnabled = false
-            lastStopSwitch.isEnabled = false
-        }
-
         // solve route on each state change
         findBestSequenceSwitch.setOnCheckedChangeListener { _, _ ->
             // update route params if the switch is toggled
@@ -270,9 +261,16 @@ class MainActivity : AppCompatActivity() {
             if (findBestSequenceSwitch.isChecked) {
                 firstStopSwitch.isEnabled = true
                 lastStopSwitch.isEnabled = true
+
             } else {
-                firstStopSwitch.isEnabled = false
-                lastStopSwitch.isEnabled = false
+                firstStopSwitch.apply {
+                    isChecked = false
+                    isEnabled = false
+                }
+                lastStopSwitch. apply {
+                    isChecked = false
+                    isEnabled = false
+                }
             }
         }
         firstStopSwitch.setOnCheckedChangeListener { _, _ ->
