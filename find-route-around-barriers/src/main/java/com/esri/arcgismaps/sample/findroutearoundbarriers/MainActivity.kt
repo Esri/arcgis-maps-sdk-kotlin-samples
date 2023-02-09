@@ -154,7 +154,10 @@ class MainActivity : AppCompatActivity() {
         SimpleFillSymbol(SimpleFillSymbolStyle.DiagonalCross, Color.red, null)
     }
 
-    private var routeTask: RouteTask? = null
+    // create route task from San Diego service
+    private val routeTask by lazy {
+        RouteTask(getString(R.string.routing_service_url))
+    }
 
     private var routeParameters: RouteParameters? = null
 
