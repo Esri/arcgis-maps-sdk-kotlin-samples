@@ -284,10 +284,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Add a stop or a point to the correct graphics overlay depending on which button is currently
-     * checked.
-     *
-     * @param mapPoint at which to create a stop or point
+     * Add a stop or a barrier at the selected [mapPoint] to the correct graphics
+     * overlay depending on which button is currently checked.
      */
     private fun addStopOrBarrier(mapPoint: Point) {
 
