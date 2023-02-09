@@ -161,7 +161,7 @@ class MainActivity : AppCompatActivity() {
                 convexHullGraphic.symbol = when (convexHullGeometry) {
                     is Point -> {
                         // set symbol to use the pointSymbol
-                         pointSymbol
+                        pointSymbol
                     }
                     is Polyline -> {
                         // set symbol to use the lineSymbol
