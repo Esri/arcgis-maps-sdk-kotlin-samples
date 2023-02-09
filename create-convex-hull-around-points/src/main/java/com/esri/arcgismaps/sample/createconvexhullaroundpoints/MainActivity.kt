@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
+    // setup binding for the MapView
     private val mapView by lazy {
         activityMainBinding.mapView
     }
@@ -92,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         // add point and convex hull graphics to the graphics overlay
         graphicsOverlay.graphics.addAll(listOf(pointGraphic, convexHullGraphic))
 
-        // create and add a map with a navigation night basemap style
+        // create and add a map with topographic basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
             // set a default initial point and scale
             initialViewpoint = Viewpoint(Point(34.77, -10.24), 20e7)
@@ -153,12 +154,11 @@ class MainActivity : AppCompatActivity() {
         // normalize the geometry for panning beyond the meridian
         // and check to proceed if the resulting geometry is not null
         GeometryEngine.normalizeCentralMeridian(pointGeometry)?.let { normalizedPointGeometry ->
-            // create a convex hull from the points
-            GeometryEngine.convexHull(normalizedPointGeometry)?.let { convexHull ->
-                // if convex hull is not null then update the graphic's symbol and geometry
-                convexHullGraphic.symbol = when (convexHull) {
-                    // the convex hull's geometry may be a point or polyline if the number of
-                    // points is less than 3
+            // create a convex hull from the points and proceed if it's not null
+            GeometryEngine.convexHull(normalizedPointGeometry)?.let { convexHullGeometry ->
+                // the convex hull's geometry may be a point or polyline if the number of
+                // points is less than 3, set its symbol accordingly
+                convexHullGraphic.symbol = when (convexHullGeometry) {
                     is Point -> {
                         // set symbol to use the pointSymbol
                          pointSymbol
@@ -176,7 +176,8 @@ class MainActivity : AppCompatActivity() {
                         null
                     }
                 }
-                convexHullGraphic.geometry = convexHull
+                // update the convex hull graphics geometry
+                convexHullGraphic.geometry = convexHullGeometry
                 // disable the create button until new input points are created
                 createButton.disable()
             } ?: showError("Error creating convex hull")
