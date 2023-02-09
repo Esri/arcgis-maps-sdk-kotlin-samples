@@ -188,10 +188,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // create route task from San Diego service
-        routeTask =
-            RouteTask(getString(R.string.routing_service_url))
-
         // coroutine scope to use the default parameters for the route calculation
         lifecycleScope.launch {
             routeTask?.load()?.onSuccess {
@@ -334,10 +330,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         // solve the route task
-        val results = routeParameters?.let { routeTask?.solveRoute(it) }
+        val routeResults = routeParameters?.let { routeTask?.solveRoute(it) }
 
-        if (results != null) {
-            results.onSuccess { routeResult ->
+        if (routeResults != null) {
+            routeResults.onSuccess { routeResult ->
                 // get the first solved route
                 val firstRoute = routeResult.routes[0]
 
@@ -430,7 +426,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Create a composite symbol consisting of a pin graphic overlaid with a particular [stopNumber].
-     * Returns a [CompositeSymbol] consisting of the pin graphic overlaid with an the stop number
+     * Returns a [CompositeSymbol] consisting of the pin graphic overlaid with the stop number
      */
     private fun createStopSymbol(stopNumber: Int): CompositeSymbol {
         // create black stop number TextSymbol
