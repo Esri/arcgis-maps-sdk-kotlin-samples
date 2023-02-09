@@ -392,7 +392,7 @@ class MainActivity : AppCompatActivity() {
             imageView.rotation = 180f
 
             directionsLV.apply {
-                // Set the adapter for the list view
+                // set the adapter for the list view
                 adapter = ArrayAdapter(
                     this@MainActivity,
                     android.R.layout.simple_list_item_1,
