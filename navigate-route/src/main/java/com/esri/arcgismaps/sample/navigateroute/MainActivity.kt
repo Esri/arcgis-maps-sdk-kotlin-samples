@@ -208,7 +208,8 @@ class MainActivity : AppCompatActivity() {
         createRouteGraphics(routeGeometry)
 
         // set up a simulated location data source which simulates movement along the route
-        val simulationParameters = SimulationParameters(Clock.System.now(),
+        val simulationParameters = SimulationParameters(
+            Clock.System.now(),
             velocity = 35.0,
             horizontalAccuracy = 5.0,
             verticalAccuracy = 5.0
@@ -220,8 +221,13 @@ class MainActivity : AppCompatActivity() {
         )
 
         // set up a RouteTracker for navigation along the calculated route
-        val routeTracker = RouteTracker(routeResult, 0, true)
-
+        val routeTracker = RouteTracker(
+            routeResult,
+            routeIndex = 0,
+            skipCoincidentStops = true
+        ).apply {
+            isSpeechEngineReady = { isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false }
+        }
         // plays the direction voice guidance
         lifecycleScope.launch {
             updateVoiceGuidance(routeTracker)
@@ -261,6 +267,7 @@ class MainActivity : AppCompatActivity() {
                 // display route status and directions info
                 displayRouteInfo(routeTracker,
                     trackingStatus,
+                    simulatedLocationDataSource,
                     routeTrackerLocationDataSource)
             }
         }
@@ -278,15 +285,12 @@ class MainActivity : AppCompatActivity() {
      * voice guidance from the [routeTracker] out loud.
      */
     private suspend fun updateVoiceGuidance(routeTracker: RouteTracker) {
-        if (routeTracker.isSpeechEngineReady.invoke()) {
-            // listen for new voice guidance events
-            routeTracker.newVoiceGuidance.collect { voiceGuidance ->
-                // use Android's text to speech to speak the voice guidance
-                if (isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false) {
-                    textToSpeech?.speak(voiceGuidance.text, TextToSpeech.QUEUE_FLUSH, null, null)
-                }
-                nextDirectionTextView.text = getString(R.string.next_direction, voiceGuidance.text)
-            }
+        // listen for new voice guidance events
+        routeTracker.newVoiceGuidance.collect { voiceGuidance ->
+            // use Android's text to speech to speak the voice guidance
+            textToSpeech?.speak(voiceGuidance.text, TextToSpeech.QUEUE_FLUSH, null, null)
+            // set next direction text
+            nextDirectionTextView.text = getString(R.string.next_direction, voiceGuidance.text)
         }
     }
 
@@ -298,6 +302,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun displayRouteInfo(
         routeTracker: RouteTracker,
         trackingStatus: TrackingStatus,
+        simulatedLocationDataSource: SimulatedLocationDataSource,
         routeTrackerLocationDataSource: RouteTrackerLocationDataSource,
     ) {
         // get remaining distance information
@@ -307,9 +312,11 @@ class MainActivity : AppCompatActivity() {
             DateUtils.formatElapsedTime((trackingStatus.destinationProgress.remainingTime * 60).toLong())
 
         // update text views
-        distanceRemainingTextView.text = getString(R.string.distance_remaining,
+        distanceRemainingTextView.text = getString(
+            R.string.distance_remaining,
             remainingDistance.displayText,
-            remainingDistance.displayTextUnits.abbreviation)
+            remainingDistance.displayTextUnits.abbreviation
+        )
         timeRemainingTextView.text = getString(R.string.time_remaining, remainingTimeString)
 
         // if a destination has been reached
@@ -326,6 +333,7 @@ class MainActivity : AppCompatActivity() {
                 // the final destination has been reached,
                 // stop the location data source
                 routeTrackerLocationDataSource.stop()
+                simulatedLocationDataSource.stop()
                 // set last stop message
                 nextStopTextView.text = resources.getStringArray(R.array.stop_message)[2]
             }
