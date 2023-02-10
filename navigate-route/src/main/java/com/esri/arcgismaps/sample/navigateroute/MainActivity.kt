@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
 
         // set up a simulated location data source which simulates movement along the route
         val simulationParameters = SimulationParameters(Clock.System.now(),
-            velocity = 100.0,
+            velocity = 35.0,
             horizontalAccuracy = 5.0,
             verticalAccuracy = 5.0
         )
