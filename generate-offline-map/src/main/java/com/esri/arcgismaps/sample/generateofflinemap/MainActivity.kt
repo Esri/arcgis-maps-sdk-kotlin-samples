@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         // create an offline map task with the map
         val offlineMapTask = OfflineMapTask(map)
         // create an offline map job with the download directory path and parameters and start the job
-        val offlineMapJob = offlineMapTask.generateOfflineMap(
+        val offlineMapJob = offlineMapTask.createGenerateOfflineMapJob(
             generateOfflineMapParameters,
             offlineMapPath
         )

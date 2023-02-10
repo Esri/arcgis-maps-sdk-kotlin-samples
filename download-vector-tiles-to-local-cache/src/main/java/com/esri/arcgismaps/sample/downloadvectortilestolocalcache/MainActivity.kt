@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity() {
 
         // create a job with the export vector tile parameters
         // and exports the vector tile package as "file.vtpk"
-        val exportVectorTilesJob = exportVectorTilesTask.exportVectorTiles(
+        val exportVectorTilesJob = exportVectorTilesTask.createExportVectorTilesJob(
             exportVectorTilesParameters,
             vtpkFile.absolutePath, resDir.absolutePath
         ).apply {

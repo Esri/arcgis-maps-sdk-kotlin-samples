@@ -17,7 +17,7 @@
 package com.esri.arcgismaps.sample.clipgeometry
 
 import android.os.Bundle
-import android.widget.Button
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
@@ -39,6 +39,12 @@ import com.esri.arcgismaps.sample.clipgeometry.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    // graphics overlay along the Colorado state border
+    private val coloradoOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+
+    // graphics overlay to contain the clipping envelopes
+    private val envelopesOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -51,15 +57,63 @@ class MainActivity : AppCompatActivity() {
         // get the MapView instance from the data binding
         val mapView = activityMainBinding.mapView
         lifecycle.addObserver(mapView)
+
+        // create buttons to perform the clip and reset operations on the geometry
+        val clipButton = activityMainBinding.clipButton
+        val resetButton = activityMainBinding.resetButton
+
         // create and add a map with a topographic basemap style
         mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
         // set the viewpoint of the MapView
         mapView.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
 
         // create a graphics overlay to contain the geometry to clip
-        val graphicsOverlay = GraphicsOverlay()
-        mapView.graphicsOverlays.add(graphicsOverlay)
+        mapView.graphicsOverlays.add(coloradoOverlay)
+        val (coloradoGraphic, fillSymbol) = createGraphics(coloradoOverlay)
 
+        // create a graphics overlay to contain the clipping envelopes
+        mapView.graphicsOverlays.add(envelopesOverlay)
+        createEnvelope(envelopesOverlay)
+
+        // create a graphics overlay to contain the clipped areas
+        val clipAreasOverlay = GraphicsOverlay()
+        mapView.graphicsOverlays.add(clipAreasOverlay)
+
+        clipButton.setOnClickListener {
+            // disable button
+            clipButton.visibility = View.GONE
+            resetButton.visibility = View.VISIBLE
+            // for each envelope, clip the Colorado geometry and show the result,
+            // replacing the original Colorado graphic
+            coloradoGraphic.isVisible = false
+            for (graphic in envelopesOverlay.graphics) {
+                val geometry =
+                    coloradoGraphic.geometry?.let { coloradoGeometry ->
+                        GeometryEngine.clip(coloradoGeometry, graphic.geometry as Envelope)
+                    }
+                val clippedGraphic = Graphic(geometry, fillSymbol)
+                clipAreasOverlay.graphics.add(clippedGraphic)
+            }
+        }
+
+        resetButton.setOnClickListener {
+            // clear clipped graphic
+            clipAreasOverlay.graphics.clear()
+
+            // set the visibility of the colorado graphic to true
+            coloradoGraphic.isVisible = true
+
+            clipButton.visibility = View.VISIBLE
+            resetButton.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Create colorado graphic.
+     */
+    private fun createGraphics(
+        coloradoOverlay: GraphicsOverlay,
+    ) : Pair<Graphic, SimpleFillSymbol>{
         // create a blue graphic of Colorado
         val colorado = Envelope(
             Point(-11362327.128340, 5012861.290274),
@@ -71,12 +125,16 @@ class MainActivity : AppCompatActivity() {
             SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
         )
         val coloradoGraphic = Graphic(colorado, fillSymbol)
-        graphicsOverlay.graphics.add(coloradoGraphic)
+        coloradoOverlay.graphics.add(coloradoGraphic)
+        return Pair(coloradoGraphic, fillSymbol)
+    }
 
-        // create a graphics overlay to contain the clipping envelopes
-        val envelopesOverlay = GraphicsOverlay()
-        mapView.graphicsOverlays.add(envelopesOverlay)
-
+    /**
+     * Create three envelopes, outside, inside and intersecting colorado graphic.
+     */
+    private fun createEnvelope(
+        envelopesOverlay: GraphicsOverlay,
+    ) {
         // create a dotted red outline symbol
         val redOutline = SimpleLineSymbol(SimpleLineSymbolStyle.Dot, Color.red, 3f)
 
@@ -103,28 +161,5 @@ class MainActivity : AppCompatActivity() {
         )
         val contained = Graphic(containedEnvelope, redOutline)
         envelopesOverlay.graphics.add(contained)
-
-        // create a graphics overlay to contain the clipped areas
-        val clipAreasOverlay = GraphicsOverlay()
-        mapView.graphicsOverlays.add(clipAreasOverlay)
-
-        // create a button to perform the clip operation
-        val clipButton: Button = findViewById(R.id.clipButton)
-        clipButton.setOnClickListener {
-            // disable button
-            clipButton.isEnabled = false
-            // for each envelope, clip the Colorado geometry and show the result,
-            // replacing the original Colorado graphic
-            coloradoGraphic.isVisible = false
-            for (graphic in envelopesOverlay.graphics) {
-                val geometry =
-                    coloradoGraphic.geometry?.let { coloradoGeometry ->
-                        GeometryEngine.clip(coloradoGeometry, graphic.geometry as Envelope)
-                    }
-                val clippedGraphic = Graphic(geometry, fillSymbol)
-                clipAreasOverlay.graphics.add(clippedGraphic)
-
-            }
-        }
     }
 }
