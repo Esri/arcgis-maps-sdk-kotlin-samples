@@ -50,8 +50,10 @@ import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.esri.arcgismaps.sample.navigateroute.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
 
@@ -110,8 +112,11 @@ class MainActivity : AppCompatActivity() {
     // instance of the route traveled polyline
     private var routeTraveledGraphic: Graphic = Graphic()
 
+    // instance of the MapView's graphic overlay
+    private val graphicsOverlay = GraphicsOverlay()
+
     // boolean to check if Android text-speech is initialized
-    private var isTextToSpeechInitialized = false
+    private var isTextToSpeechInitialized = AtomicBoolean(false)
 
     // instance of Android text-speech
     private var textToSpeech: TextToSpeech? = null
@@ -133,14 +138,14 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(BasemapStyle.ArcGISStreets)
         mapView.map = map
 
-        // create a graphics overlay to hold our route graphics and clear any graphics
-        mapView.graphicsOverlays.add(GraphicsOverlay())
+        // create a graphics overlay to hold our route graphics
+        mapView.graphicsOverlays.add(graphicsOverlay)
 
         // create text-to-speech to replay navigation voice guidance
         textToSpeech = TextToSpeech(this) { status ->
             if (status != TextToSpeech.ERROR) {
                 textToSpeech?.language = resources.configuration.locales[0]
-                isTextToSpeechInitialized = true
+                isTextToSpeechInitialized.set(true)
             }
         }
 
@@ -166,14 +171,6 @@ class MainActivity : AppCompatActivity() {
 
             // get the route geometry from the route result
             val routeGeometry = routeResult.routes[0].routeGeometry
-
-            // create a graphic for the route geometry
-            val routeGraphic = Graphic(
-                routeGeometry,
-                SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 5f)
-            )
-            // add it to the graphics overlay
-            mapView.graphicsOverlays[0].graphics.add(routeGraphic)
 
             // set the map view view point to show the whole route
             if (routeGeometry?.extent != null) {
@@ -211,19 +208,24 @@ class MainActivity : AppCompatActivity() {
         createRouteGraphics(routeGeometry)
 
         // set up a simulated location data source which simulates movement along the route
-        val simulationParameters = SimulationParameters(
-            Clock.System.now(),
-            35.0,
-            5.0,
-            5.0
+        val simulationParameters = SimulationParameters(Clock.System.now(),
+            velocity = 100.0,
+            horizontalAccuracy = 5.0,
+            verticalAccuracy = 5.0
         )
 
-        val simulatedLocationDataSource = SimulatedLocationDataSource().apply {
-            setLocationsWithPolyline(routeGeometry, simulationParameters)
-        }
+        // create the simulated data source using the geometry and parameters
+        val simulatedLocationDataSource = SimulatedLocationDataSource(
+            routeGeometry, simulationParameters
+        )
 
         // set up a RouteTracker for navigation along the calculated route
         val routeTracker = RouteTracker(routeResult, 0, true)
+
+        // plays the direction voice guidance
+        lifecycleScope.launch {
+            updateVoiceGuidance(routeTracker)
+        }
 
         // create a route tracker location data source to snap the location display to the route
         val routeTrackerLocationDataSource = RouteTrackerLocationDataSource(
@@ -232,92 +234,83 @@ class MainActivity : AppCompatActivity() {
         )
 
         // get the map view's location display and set it up
-        mapView.locationDisplay.apply {
+        val locationDisplay = mapView.locationDisplay.also {
             // set the simulated location data source as the location data source for this app
-            dataSource = routeTrackerLocationDataSource
-            setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+            it.dataSource = routeTrackerLocationDataSource
+            it.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+        }
 
-            with(lifecycleScope) {
-                launch {
-                    // start the LocationDisplay, which starts the
-                    // RouteTrackerLocationDataSource and SimulatedLocationDataSource
-                    dataSource.start().getOrElse {
-                        showError("Error starting LocationDataSource: ${it.message} ")
-                    }
+        lifecycleScope.launch {
+            // start the LocationDisplay, which starts the
+            // RouteTrackerLocationDataSource and SimulatedLocationDataSource
+            locationDisplay.dataSource.start().getOrElse {
+                showError("Error starting LocationDataSource: ${it.message} ")
+            }
 
-                    // set the text for first destination
-                    nextStopTextView.text = resources.getStringArray(R.array.stop_message)[0]
+            // set the text for first destination
+            nextStopTextView.text = resources.getStringArray(R.array.stop_message)[0]
 
-                    // listen for changes in location
-                    mapView.locationDisplay.location.collect {
-                        // get the route's tracking status
-                        val trackingStatus = routeTracker.trackingStatus.value ?: return@collect
+            // listen for changes in location
+            locationDisplay.location.collect {
+                // get the route's tracking status
+                val trackingStatus = routeTracker.trackingStatus.value ?: return@collect
 
-                        // displays the remaining and traversed route
-                        updateRouteGraphics(trackingStatus)
+                // displays the remaining and traversed route
+                updateRouteGraphics(trackingStatus)
 
-                        // display route status and directions info
-                        displayRouteInfo(
-                            routeTracker,
-                            trackingStatus,
-                            simulatedLocationDataSource,
-                            routeTrackerLocationDataSource
-                        )
-                    }
+                // display route status and directions info
+                displayRouteInfo(routeTracker,
+                    trackingStatus,
+                    routeTrackerLocationDataSource)
+            }
+        }
+
+        lifecycleScope.launch {
+            // if the user navigates the map view away from the
+            // location display, activate the recenter button
+            locationDisplay.autoPanMode.filter { it == LocationDisplayAutoPanMode.Off }
+                .collect { recenterButton.isEnabled = true }
+        }
+    }
+
+    /**
+     * Uses Android's [textToSpeech] to speak to say the latest
+     * voice guidance from the [routeTracker] out loud.
+     */
+    private suspend fun updateVoiceGuidance(routeTracker: RouteTracker) {
+        if (routeTracker.isSpeechEngineReady.invoke()) {
+            // listen for new voice guidance events
+            routeTracker.newVoiceGuidance.collect { voiceGuidance ->
+                // use Android's text to speech to speak the voice guidance
+                if (isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false) {
+                    textToSpeech?.speak(voiceGuidance.text, TextToSpeech.QUEUE_FLUSH, null, null)
                 }
-
-                launch {
-                    // if the user navigates the map view away from the
-                    // location display, activate the recenter button
-                    autoPanMode.collect {
-                        if (it == LocationDisplayAutoPanMode.Off)
-                            recenterButton.isEnabled = true
-                    }
-                }
+                nextDirectionTextView.text = getString(R.string.next_direction, voiceGuidance.text)
             }
         }
     }
 
     /**
-     * Displays the route distance and time information using [trackingStatus],
-     * plays the voice guidance using [routeTracker]. When final destination is reached,
-     * [simulatedLocationDataSource] and [routeTrackerLocationDataSource] is stopped.
+     * Displays the route distance and time information using [trackingStatus], and
+     * switches destinations using [routeTracker]. When final destination is reached,
+     * and [routeTrackerLocationDataSource] is stopped.
      */
-    private fun displayRouteInfo(
+    private suspend fun displayRouteInfo(
         routeTracker: RouteTracker,
         trackingStatus: TrackingStatus,
-        simulatedLocationDataSource: SimulatedLocationDataSource,
         routeTrackerLocationDataSource: RouteTrackerLocationDataSource,
-    ) = lifecycleScope.launch {
-
+    ) {
         // get remaining distance information
         val remainingDistance = trackingStatus.destinationProgress.remainingDistance
-        // covert remaining minutes to hours:minutes:seconds
-        val remainingTimeString = DateUtils.formatElapsedTime(
-            (trackingStatus.destinationProgress.remainingTime * 60).toLong()
-        )
+        // convert remaining minutes to hours:minutes:seconds
+        val remainingTimeString =
+            DateUtils.formatElapsedTime((trackingStatus.destinationProgress.remainingTime * 60).toLong())
 
         // update text views
-        distanceRemainingTextView.text = getString(
-            R.string.distance_remaining, remainingDistance.displayText,
-            remainingDistance.displayTextUnits.abbreviation
-        )
-        timeRemainingTextView.text = getString(
-            R.string.time_remaining,
-            remainingTimeString
-        )
-
-        // listen for new voice guidance events
-        lifecycleScope.launch {
-            routeTracker.newVoiceGuidance.collect { voiceGuidance ->
-                // use Android's text to speech to speak the voice guidance
-                speakVoiceGuidance(voiceGuidance.text)
-                nextDirectionTextView.text = getString(
-                    R.string.next_direction,
-                    voiceGuidance.text
-                )
-            }
-        }
+        distanceRemainingTextView.text = getString(R.string.distance_remaining,
+            remainingDistance.displayText,
+            remainingDistance.displayTextUnits.abbreviation)
+        timeRemainingTextView.text = getString(R.string.time_remaining, remainingTimeString)
 
         // if a destination has been reached
         if (trackingStatus.destinationStatus == DestinationStatus.Reached) {
@@ -325,14 +318,13 @@ class MainActivity : AppCompatActivity() {
             if (trackingStatus.remainingDestinationCount > 1) {
                 // switch to the next destination
                 routeTracker.switchToNextDestination().getOrElse {
-                    return@launch showError("Error retrieving next destination: ${it.message}")
+                    return showError("Error retrieving next destination: ${it.message}")
                 }
                 // set second stop message
                 nextStopTextView.text = resources.getStringArray(R.array.stop_message)[1]
             } else {
                 // the final destination has been reached,
-                // stop the simulated location data source
-                simulatedLocationDataSource.stop()
+                // stop the location data source
                 routeTrackerLocationDataSource.stop()
                 // set last stop message
                 nextStopTextView.text = resources.getStringArray(R.array.stop_message)[2]
@@ -344,23 +336,23 @@ class MainActivity : AppCompatActivity() {
      * Update the remaining and traveled route graphics using [trackingStatus]
      */
     private fun updateRouteGraphics(trackingStatus: TrackingStatus) {
-        trackingStatus.routeProgress.apply {
+        trackingStatus.routeProgress.let {
             // set geometries for the route ahead and the remaining route
-            routeAheadGraphic.geometry = remainingGeometry
-            routeTraveledGraphic.geometry = traversedGeometry
+            routeAheadGraphic.geometry = it.remainingGeometry
+            routeTraveledGraphic.geometry = it.traversedGeometry
         }
     }
 
     /**
-     * Initialize and add route travel graphics to the map using [routeGraphic]
+     * Initialize and add route travel graphics to the map using [routeGeometry]
      */
-    private fun createRouteGraphics(routeGraphic: Polyline) {
+    private fun createRouteGraphics(routeGeometry: Polyline) {
         // clear any graphics from the current graphics overlay
-        mapView.graphicsOverlays[0].graphics.clear()
+        graphicsOverlay.graphics.clear()
 
         // create a graphic (with a dashed line symbol) to represent the route
         routeAheadGraphic = Graphic(
-            routeGraphic,
+            routeGeometry,
             SimpleLineSymbol(
                 SimpleLineSymbolStyle.Dash,
                 Color(getColor(R.color.colorPrimary)),
@@ -370,7 +362,7 @@ class MainActivity : AppCompatActivity() {
 
         // create a graphic (solid) to represent the route that's been traveled (initially empty)
         routeTraveledGraphic = Graphic(
-            routeGraphic,
+            routeGeometry,
             SimpleLineSymbol(
                 SimpleLineSymbolStyle.Solid,
                 Color.red,
@@ -385,16 +377,6 @@ class MainActivity : AppCompatActivity() {
                 routeTraveledGraphic
             )
         )
-    }
-
-    /**
-     * Uses Android's [voiceGuidanceText] to speak to say the latest
-     * voice guidance from the RouteTracker out loud.
-     */
-    private fun speakVoiceGuidance(voiceGuidanceText: String) {
-        if (isTextToSpeechInitialized && textToSpeech?.isSpeaking == false) {
-            textToSpeech?.speak(voiceGuidanceText, TextToSpeech.QUEUE_FLUSH, null, null)
-        }
     }
 
     private fun showError(message: String) {
