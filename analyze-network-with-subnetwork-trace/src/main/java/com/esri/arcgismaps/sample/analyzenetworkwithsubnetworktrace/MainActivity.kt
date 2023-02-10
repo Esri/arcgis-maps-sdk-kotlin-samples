@@ -18,14 +18,12 @@ package com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace
 
 import android.os.Bundle
 import android.text.InputType
-import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
+import android.widget.AutoCompleteTextView
 import android.widget.RelativeLayout
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -59,6 +57,7 @@ import com.arcgismaps.utilitynetworks.UtilityTraceType
 import com.arcgismaps.utilitynetworks.UtilityTraversability
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -71,15 +70,11 @@ class MainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
-    private val exampleTextView: TextView by lazy {
-        activityMainBinding.exampleTextView
+    private val sourceDropdown: AutoCompleteTextView by lazy {
+        activityMainBinding.sourceDropdown
     }
 
-    private val sourceSpinner: Spinner by lazy {
-        activityMainBinding.sourceSpinner
-    }
-
-    private val operatorSpinner: Spinner by lazy {
+    private val operatorSpinner: AutoCompleteTextView by lazy {
         activityMainBinding.operatorSpinner
     }
 
@@ -87,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.expressionTextView
     }
 
-    private val valuesSpinner: Spinner by lazy {
+    private val valuesSpinner: AutoCompleteTextView by lazy {
         activityMainBinding.valuesSpinner
     }
 
@@ -99,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.valueBooleanButton
     }
 
-    private val valuesEditText: EditText by lazy {
+    private val valuesEditText: TextInputEditText by lazy {
         activityMainBinding.valuesEditText
     }
 
@@ -110,75 +105,59 @@ class MainActivity : AppCompatActivity() {
     private var initialExpression: UtilityTraceConditionalExpression? = null
     private var sourceTier: UtilityTier? = null
     private var utilityTraceConfiguration: UtilityTraceConfiguration? = null
-    private var sources: List<UtilityNetworkAttribute>? = null
-    private var operators: Array<UtilityAttributeComparisonOperator>? = null
+    private var sourcesList: List<UtilityNetworkAttribute>? = null
+    private var operatorsList: Array<UtilityAttributeComparisonOperator>? = null
     private var startingLocation: UtilityElement? = null
     private var values: List<CodedValue>? = null
+
+    private var sourcePosition: Int = 0
+    private var operatorPosition: Int = 0
+    private var valuePosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         ArcGISEnvironment.applicationContext = this
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
-            ArcGISAuthenticationChallengeHandler { challenge ->
-                val result: Result<TokenCredential> = runBlocking {
-                    TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
-                }
-                if (result.getOrNull() != null) {
-                    val credential = result.getOrNull()
-                    return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse
-                        .ContinueWithCredential(credential!!)
-                } else {
-                    val ex = result.exceptionOrNull()
-                    return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse
-                        .ContinueAndFailWithError(ex!!)
-                }
-            }
+            getAuthenticationChallengeHandler()
 
-        exampleTextView.movementMethod = ScrollingMovementMethod()
-
-        // create a utility network and wait for it to finish to load
+        // load the utility network
         lifecycleScope.launch {
             utilityNetwork.load().getOrElse {
                 return@launch showError("Error loading utility network: " + it.message.toString())
             }
 
             // create a list of utility network attributes whose system is not defined
-            sources = utilityNetwork.definition?.networkAttributes?.filter { !it.isSystemDefined }
-            sourceSpinner.apply {
+            sourcesList = utilityNetwork.definition?.networkAttributes?.filter { !it.isSystemDefined }
+            sourceDropdown.apply {
                 // assign an adapter to the spinner with source names
-                adapter = sources?.let { utilityNetworkAttributes ->
+                setAdapter(sourcesList?.let { utilityNetworkAttributes ->
                     ArrayAdapter(
                         applicationContext,
                         android.R.layout.simple_list_item_1,
                         utilityNetworkAttributes.map { it.name })
-                }
+                })
 
                 // add an on item selected listener which calls on comparison source changed
-                onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long,
-                    ) {
-                        (sources?.get(sourceSpinner.selectedItemPosition))
-                        onComparisonSourceChanged(sources?.get(sourceSpinner.selectedItemPosition)!!)
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                    sourcePosition = position
+                    onComparisonSourceChanged(sourcesList?.get(position)!!)
                 }
             }
 
             // create a list of utility attribute comparison operators
-            operators =
+            operatorsList =
                 UtilityAttributeComparisonOperator::class.sealedSubclasses.mapNotNull { it.objectInstance }
                     .toTypedArray().also { operators ->
                         // assign operator spinner an adapter of operator names
-                        operatorSpinner.adapter = ArrayAdapter(
+                        operatorSpinner.setAdapter(ArrayAdapter(
                             applicationContext,
                             android.R.layout.simple_list_item_1,
-                            operators.map { it::class.simpleName })
+                            operators.map { it::class.simpleName }))
+                        // add an on item selected listener which calls on comparison source changed
+                        operatorSpinner.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            operatorPosition = position
+                        }
                     }
 
             // create a default starting location
@@ -194,15 +173,38 @@ class MainActivity : AppCompatActivity() {
             startingLocation = utilityNetwork.createElement(assetType, globalId, terminal)
 
             // get a default trace configuration from a tier to update the UI
-            val domainNetwork =
-                utilityNetwork.definition?.getDomainNetwork("ElectricDistribution") ?: return@launch
+            val domainNetwork = utilityNetwork.definition?.getDomainNetwork(
+                "ElectricDistribution"
+            ) ?: return@launch
+
             sourceTier = domainNetwork.getTier("Medium Voltage Radial")?.apply {
                 utilityTraceConfiguration = getDefaultTraceConfiguration()?.apply {
                     (traversability?.barriers as? UtilityTraceConditionalExpression)?.let {
                         expressionTextView.text = expressionToString(it)
                         initialExpression = it
                     }
+
                 }
+            }
+        }
+    }
+
+    /**
+     * Returns a [ArcGISAuthenticationChallengeHandler] to access the utility network URL.
+     */
+    private fun getAuthenticationChallengeHandler(): ArcGISAuthenticationChallengeHandler {
+        return ArcGISAuthenticationChallengeHandler { challenge ->
+            val result: Result<TokenCredential> = runBlocking {
+                TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
+            }
+            if (result.getOrNull() != null) {
+                val credential = result.getOrNull()
+                return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse
+                    .ContinueWithCredential(credential!!)
+            } else {
+                val ex = result.exceptionOrNull()
+                return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse
+                    .ContinueAndFailWithError(ex!!)
             }
         }
     }
@@ -222,12 +224,16 @@ class MainActivity : AppCompatActivity() {
             // show the values spinner
             setVisible(valuesBackgroundView.id)
             // update the values spinner adapter
-            valuesSpinner.adapter = ArrayAdapter(
+            valuesSpinner.setAdapter(ArrayAdapter(
                 applicationContext,
                 android.R.layout.simple_list_item_1,
                 // add the coded values from the coded value domain to the values spinner
                 codedValueDomain.codedValues.map { it.name }
-            )
+            ))
+            // add an on item selected listener which calls on comparison source changed
+            valuesSpinner.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                valuePosition = position
+            }
             // if the domain is not a coded value domain
         } ?: when (attribute.dataType) {
             UtilityNetworkAttributeDataType.Boolean -> {
@@ -257,28 +263,28 @@ class MainActivity : AppCompatActivity() {
      */
     fun addCondition(view: View) {
         // if source tier doesn't contain a trace configuration, create one
-        val traceConfiguration = utilityTraceConfiguration?.apply {
+        val traceConfiguration = utilityTraceConfiguration ?: UtilityTraceConfiguration().apply {
             // if the trace configuration doesn't contain traversability, create one
-            traversability = UtilityTraversability()
-        } ?: return
+            traversability ?: UtilityTraversability()
+        }
 
         // get the currently selected attribute
-        val attribute = sources?.get(sourceSpinner.selectedItemPosition)
+        val attribute = sourcesList?.get(sourcePosition)
         attribute?.let {
             // get the currently selected attribute operator
-            val attributeOperator = operators?.get(operatorSpinner.selectedItemPosition)
+            val attributeOperator = operatorsList?.get(operatorPosition)
             attributeOperator?.let {
                 // if the other value is a coded value domain
                 val otherValue = if (attribute.domain is CodedValueDomain) {
-                    values?.get(valuesSpinner.selectedItemPosition)?.code?.let {
+                    values?.get(valuePosition)?.code?.let {
                         convertToDataType(it, attribute.dataType)
                     }
                 } else {
-                    convertToDataType(valuesEditText.text, attribute.dataType)
+                    convertToDataType(valuesEditText.text.toString(), attribute.dataType)
                 }
 
-                if (otherValue == null) {
-                    return
+                if (otherValue.toString().contains("Error") || otherValue == null) {
+                    return showError("Error retrieving value")
                 }
 
                 // NOTE: You may also create a UtilityNetworkAttributeComparison with another
@@ -287,7 +293,7 @@ class MainActivity : AppCompatActivity() {
                     UtilityNetworkAttributeComparison(
                         attribute,
                         attributeOperator,
-                        otherValue.toString()
+                        otherValue
                     )
                 (traceConfiguration.traversability?.barriers as? UtilityTraceConditionalExpression)?.let { otherExpression ->
                     // NOTE: You may also combine expressions with UtilityTraceAndCondition
@@ -295,15 +301,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 traceConfiguration.traversability?.barriers = expression
                 expressionTextView.text = expressionToString(expression)
-
-                /*
-               val error =
-                   "Error creating UtilityNetworkAttributeComparison! Did you forget to input a numeric value? ${e.message}"
-               Log.e(TAG, error)
-               Toast.makeText(this@MainActivity, error, Toast.LENGTH_LONG).show()
-               return
-                 */
-
             }
         }
     }
@@ -346,7 +343,9 @@ class MainActivity : AppCompatActivity() {
         val parameters = UtilityTraceParameters(
             UtilityTraceType.Subnetwork,
             listOf(startingLocation).requireNoNulls()
-        )
+        ).apply {
+            traceConfiguration = utilityTraceConfiguration
+        }
 
         lifecycleScope.launch {
             val utilityTraceResults = utilityNetwork.trace(parameters).getOrElse {
@@ -381,9 +380,10 @@ class MainActivity : AppCompatActivity() {
             // when the expression is an attribute comparison expression
             is UtilityNetworkAttributeComparison -> {
                 // the name and comparison operator of the expression
-                val networkAttributeNameAndOperator =
-                    expression.networkAttribute.name + " " + expression.comparisonOperator + " "
+                val networkAttributeNameAndOperator = expression.networkAttribute.name + " " +
+                        expression.comparisonOperator::class.simpleName + " "
                 // check whether the network attribute has a coded value domain
+
                 (expression.networkAttribute.domain as? CodedValueDomain)?.let { codedValueDomain ->
                     // if there's a coded value domain name
                     val codedValueDomainName = codedValueDomain.codedValues.first { codedValue ->
@@ -433,17 +433,31 @@ class MainActivity : AppCompatActivity() {
         dataType: UtilityNetworkAttributeDataType,
     ): Any {
         return try {
-            when (dataType) {
+            when (dataType::class.objectInstance) {
                 UtilityNetworkAttributeDataType.Boolean -> otherValue.toString().toBoolean()
                 UtilityNetworkAttributeDataType.Double -> otherValue.toString().toDouble()
                 UtilityNetworkAttributeDataType.Float -> otherValue.toString().toFloat()
                 UtilityNetworkAttributeDataType.Integer -> otherValue.toString().toInt()
+                else -> {}
             }
         } catch (e: Exception) {
             ("Error converting data type: " + e.message).also {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 Log.e(TAG, it)
             }
+        }
+    }
+
+    /**
+     * Reset the current barrier condition to the initial expression
+     * "Operational Device Status EQUAL Open".
+     */
+    fun reset(view: View) {
+        initialExpression?.let {
+            utilityTraceConfiguration = sourceTier?.getDefaultTraceConfiguration()?.apply {
+                traversability?.barriers = it
+            }
+            expressionTextView.text = expressionToString(it)
         }
     }
 
