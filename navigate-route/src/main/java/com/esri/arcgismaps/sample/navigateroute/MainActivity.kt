@@ -50,6 +50,7 @@ import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.esri.arcgismaps.sample.navigateroute.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -68,8 +69,8 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val navigateRouteButton: Button by lazy {
-        activityMainBinding.navigateRouteButton
+    private val resetNavigationButton: Button by lazy {
+        activityMainBinding.resetNavigationButton
     }
 
     private val recenterButton: Button by lazy {
@@ -179,11 +180,6 @@ class MainActivity : AppCompatActivity() {
                 return@launch showError("Route geometry extent is null.")
             }
 
-            // set button to start navigation with the given route
-            navigateRouteButton.setOnClickListener {
-                startNavigation(routeResult)
-            }
-
             // start navigating on app launch
             startNavigation(routeResult)
         }
@@ -226,7 +222,8 @@ class MainActivity : AppCompatActivity() {
             routeIndex = 0,
             skipCoincidentStops = true
         ).apply {
-            isSpeechEngineReady = { isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false }
+            isSpeechEngineReady =
+                { isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false }
         }
         // plays the direction voice guidance
         lifecycleScope.launch {
@@ -246,17 +243,18 @@ class MainActivity : AppCompatActivity() {
             it.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
         }
 
+        // start the LocationDisplay, which starts the
+        // RouteTrackerLocationDataSource and SimulatedLocationDataSource
         lifecycleScope.launch {
-            // start the LocationDisplay, which starts the
-            // RouteTrackerLocationDataSource and SimulatedLocationDataSource
             locationDisplay.dataSource.start().getOrElse {
                 showError("Error starting LocationDataSource: ${it.message} ")
             }
-
             // set the text for first destination
             nextStopTextView.text = resources.getStringArray(R.array.stop_message)[0]
+        }
 
-            // listen for changes in location
+        // listen for changes in location
+        val locationDisplayJob = lifecycleScope.launch {
             locationDisplay.location.collect {
                 // get the route's tracking status
                 val trackingStatus = routeTracker.trackingStatus.value ?: return@collect
@@ -272,11 +270,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            // if the user navigates the map view away from the
-            // location display, activate the recenter button
+        // listen if user navigates the map view away from the
+        // location display, activate the recenter button
+        val autoPanModeJob = lifecycleScope.launch {
             locationDisplay.autoPanMode.filter { it == LocationDisplayAutoPanMode.Off }
                 .collect { recenterButton.isEnabled = true }
+        }
+
+        // reset the navigation if button is clicked
+        resetNavigationButton.setOnClickListener {
+            lifecycleScope.launch {
+                if (locationDisplayJob.isActive) {
+                    // stop location data sources
+                    simulatedLocationDataSource.stop()
+                    routeTrackerLocationDataSource.stop()
+                    // cancel the coroutine jobs
+                    locationDisplayJob.cancelAndJoin()
+                    autoPanModeJob.cancelAndJoin()
+                    // start navigation again
+                    startNavigation(routeResult)
+                }
+            }
         }
     }
 

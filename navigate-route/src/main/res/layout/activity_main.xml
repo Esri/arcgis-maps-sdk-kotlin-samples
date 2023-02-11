@@ -27,7 +27,7 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/navigateRouteButton"
+                android:id="@+id/resetNavigationButton"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 android:enabled="false"
                 android:text="@string/recenter"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/navigateRouteButton"
+                app:layout_constraintStart_toEndOf="@+id/resetNavigationButton"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -62,7 +62,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/navigateRouteButton" />
+                app:layout_constraintTop_toBottomOf="@+id/resetNavigationButton" />
 
             <TextView
                 android:id="@+id/distanceRemainingTextView"
