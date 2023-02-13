@@ -160,11 +160,11 @@
                         app:layout_constraintRight_toRightOf="parent">
 
                         <AutoCompleteTextView
-                            android:id="@+id/operatorSpinner"
+                            android:id="@+id/operatorDropdown"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="none"
-                            android:labelFor="@id/operatorSpinner" />
+                            android:labelFor="@id/operatorDropdown" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -200,11 +200,11 @@
                             app:layout_constraintRight_toRightOf="parent">
 
                             <AutoCompleteTextView
-                                android:id="@+id/valuesSpinner"
+                                android:id="@+id/valuesDropdown"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="none"
-                                android:labelFor="@id/valuesSpinner" />
+                                android:labelFor="@id/valuesDropdown" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -251,7 +251,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:onClick="addCondition"
+                    android:onClick="addBarrierCondition"
                     android:text="@string/add_condition"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

@@ -23,9 +23,9 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.CheckBox
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -56,6 +56,7 @@ import com.arcgismaps.utilitynetworks.UtilityTraceParameters
 import com.arcgismaps.utilitynetworks.UtilityTraceType
 import com.arcgismaps.utilitynetworks.UtilityTraversability
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.ActivityMainBinding
+import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.LoadingOptionsDialogBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -74,16 +75,16 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.sourceDropdown
     }
 
-    private val operatorSpinner: AutoCompleteTextView by lazy {
-        activityMainBinding.operatorSpinner
+    private val operatorDropdown: AutoCompleteTextView by lazy {
+        activityMainBinding.operatorDropdown
     }
 
     private val expressionTextView: TextView by lazy {
         activityMainBinding.expressionTextView
     }
 
-    private val valuesSpinner: AutoCompleteTextView by lazy {
-        activityMainBinding.valuesSpinner
+    private val valuesDropdown: AutoCompleteTextView by lazy {
+        activityMainBinding.valuesDropdown
     }
 
     private val valuesBackgroundView: RelativeLayout by lazy {
@@ -98,6 +99,14 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.valuesEditText
     }
 
+    private val barriersCheckbox: CheckBox by lazy {
+        activityMainBinding.barriersCheckBox
+    }
+
+    private val containersCheckbox: CheckBox by lazy {
+        activityMainBinding.containersCheckbox
+    }
+
     private val utilityNetwork by lazy {
         UtilityNetwork(getString(R.string.utility_network_url))
     }
@@ -108,11 +117,11 @@ class MainActivity : AppCompatActivity() {
     private var sourcesList: List<UtilityNetworkAttribute>? = null
     private var operatorsList: Array<UtilityAttributeComparisonOperator>? = null
     private var startingLocation: UtilityElement? = null
-    private var values: List<CodedValue>? = null
-
+    private var codedValuesList: List<CodedValue>? = null
     private var sourcePosition: Int = 0
     private var operatorPosition: Int = 0
     private var valuePosition: Int = 0
+    private var dialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,6 +130,9 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
             getAuthenticationChallengeHandler()
 
+        // create and display the loading dialog
+        showLoadingDialog(true)
+
         // load the utility network
         lifecycleScope.launch {
             utilityNetwork.load().getOrElse {
@@ -128,9 +140,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             // create a list of utility network attributes whose system is not defined
-            sourcesList = utilityNetwork.definition?.networkAttributes?.filter { !it.isSystemDefined }
+            sourcesList =
+                utilityNetwork.definition?.networkAttributes?.filter { !it.isSystemDefined }
+
             sourceDropdown.apply {
-                // assign an adapter to the spinner with source names
+                // add the list of sources to the drop down view
                 setAdapter(sourcesList?.let { utilityNetworkAttributes ->
                     ArrayAdapter(
                         applicationContext,
@@ -141,34 +155,49 @@ class MainActivity : AppCompatActivity() {
                 // add an on item selected listener which calls on comparison source changed
                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                     sourcePosition = position
-                    onComparisonSourceChanged(sourcesList?.get(position)!!)
+                    sourcesList?.get(position)?.let { onComparisonSourceChanged(it) }
                 }
             }
 
             // create a list of utility attribute comparison operators
-            operatorsList =
-                UtilityAttributeComparisonOperator::class.sealedSubclasses.mapNotNull { it.objectInstance }
-                    .toTypedArray().also { operators ->
-                        // assign operator spinner an adapter of operator names
-                        operatorSpinner.setAdapter(ArrayAdapter(
-                            applicationContext,
-                            android.R.layout.simple_list_item_1,
-                            operators.map { it::class.simpleName }))
-                        // add an on item selected listener which calls on comparison source changed
-                        operatorSpinner.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            operatorPosition = position
-                        }
-                    }
+            operatorsList = UtilityAttributeComparisonOperator::class
+                .sealedSubclasses.mapNotNull { it.objectInstance }.toTypedArray()
+
+            operatorDropdown.apply {
+                // add the list of sources to the drop down view
+                setAdapter(operatorsList?.let { utilityAttributeComparisonOperator ->
+                    ArrayAdapter(
+                        applicationContext,
+                        android.R.layout.simple_list_item_1,
+                        utilityAttributeComparisonOperator.map { it::class.simpleName })
+                })
+
+                // add an on item selected listener which calls on comparison source changed
+                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                    operatorPosition = position
+                }
+            }
 
             // create a default starting location
-            val networkSource =
-                utilityNetwork.definition?.getNetworkSource("Electric Distribution Device")
-                    ?: return@launch
-            val assetGroup = networkSource.getAssetGroup("Circuit Breaker") ?: return@launch
-            val assetType = assetGroup.getAssetType("Three Phase") ?: return@launch
-            val globalId = Guid("1CAF7740-0BF4-4113-8DB2-654E18800028")
+            val networkSource = utilityNetwork.definition?.getNetworkSource(
+                "Electric Distribution Device"
+            ) ?: return@launch
+
+            val assetGroup = networkSource.getAssetGroup(
+                "Circuit Breaker"
+            ) ?: return@launch
+
+            val assetType = assetGroup.getAssetType(
+                "Three Phase"
+            ) ?: return@launch
+
+            val globalId = Guid(
+                "1CAF7740-0BF4-4113-8DB2-654E18800028"
+            )
+
             val terminal = assetType.terminalConfiguration?.terminals?.first { it.name == "Load" }
                 ?: return@launch
+
             // utility element to start the trace from
             startingLocation = utilityNetwork.createElement(assetType, globalId, terminal)
 
@@ -177,15 +206,22 @@ class MainActivity : AppCompatActivity() {
                 "ElectricDistribution"
             ) ?: return@launch
 
+            // set source utility tier from the utility domain network
             sourceTier = domainNetwork.getTier("Medium Voltage Radial")?.apply {
-                utilityTraceConfiguration = getDefaultTraceConfiguration()?.apply {
-                    (traversability?.barriers as? UtilityTraceConditionalExpression)?.let {
-                        expressionTextView.text = expressionToString(it)
-                        initialExpression = it
-                    }
-
-                }
+                utilityTraceConfiguration = getDefaultTraceConfiguration()
             }
+
+            // set initial barrier condition
+            val defaultConditionalExpression = sourceTier.let {
+                utilityTraceConfiguration?.traversability?.barriers as UtilityTraceConditionalExpression
+            }
+            // set the text view
+            expressionTextView.text = expressionToString(defaultConditionalExpression)
+            // use the initial expression when resetting trace
+            initialExpression = defaultConditionalExpression
+
+            // dismiss the dialog since
+            dialog?.dismiss()
         }
     }
 
@@ -210,58 +246,56 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * When a comparison source attribute is chosen check if it's a coded value domain and, if it is,
-     * present a spinner of coded value domains. If not, show the correct UI view for the utility
+     * When a comparison source [attribute] is chosen check if it's a coded value domain and, if it is,
+     * present a dropdown of coded value domains. If not, show the correct UI view for the utility
      * network attribute data type.
-     *
-     * @param attribute being compared
      */
     private fun onComparisonSourceChanged(attribute: UtilityNetworkAttribute) {
         // if the domain is a coded value domain
         (attribute.domain as? CodedValueDomain)?.let { codedValueDomain ->
             // update the list of coded values
-            values = codedValueDomain.codedValues
-            // show the values spinner
+            codedValuesList = codedValueDomain.codedValues
+            // show the values dropdown
             setVisible(valuesBackgroundView.id)
-            // update the values spinner adapter
-            valuesSpinner.setAdapter(ArrayAdapter(
+            // update the values dropdown adapter
+            valuesDropdown.setAdapter(ArrayAdapter(
                 applicationContext,
                 android.R.layout.simple_list_item_1,
-                // add the coded values from the coded value domain to the values spinner
+                // add the coded values from the coded value domain to the values dropdown
                 codedValueDomain.codedValues.map { it.name }
             ))
             // add an on item selected listener which calls on comparison source changed
-            valuesSpinner.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                valuePosition = position
+            valuesDropdown.onItemClickListener =
+                AdapterView.OnItemClickListener { _, _, position, _ ->
+                    valuePosition = position
+                }
+        } // if the domain is not a coded value domain
+            ?: when (attribute.dataType) {
+                UtilityNetworkAttributeDataType.Boolean -> {
+                    // show true/false toggle button
+                    setVisible(valueBooleanButton.id)
+                }
+                UtilityNetworkAttributeDataType.Double, UtilityNetworkAttributeDataType.Float -> {
+                    // show the edit text and only allow numbers (decimals allowed)
+                    valuesEditText.inputType =
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    setVisible(valuesEditText.id)
+                }
+                UtilityNetworkAttributeDataType.Integer -> {
+                    // show the edit text only allowing for integer input
+                    valuesEditText.inputType = InputType.TYPE_CLASS_NUMBER
+                    setVisible(valuesEditText.id)
+                }
+                else -> {
+                    showError("Unexpected utility network attribute data type.")
+                }
             }
-            // if the domain is not a coded value domain
-        } ?: when (attribute.dataType) {
-            UtilityNetworkAttributeDataType.Boolean -> {
-                setVisible(valueBooleanButton.id)
-            }
-            UtilityNetworkAttributeDataType.Double, UtilityNetworkAttributeDataType.Float -> {
-                // show the edit text and only allow numbers (decimals allowed)
-                valuesEditText.inputType =
-                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-                setVisible(valuesEditText.id)
-            }
-            UtilityNetworkAttributeDataType.Integer -> {
-                // show the edit text only allowing for integer input
-                valuesEditText.inputType = InputType.TYPE_CLASS_NUMBER
-                setVisible(valuesEditText.id)
-            }
-            else -> {
-                showError("Unexpected utility network attribute data type.")
-            }
-        }
     }
 
     /**
-     * Add a new barrier condition to the trace options.
-     *
-     * @param view of the add button
+     * Add a new barrier condition to the trace options when [addConditionButton] is tapped.
      */
-    fun addCondition(view: View) {
+    fun addBarrierCondition(addConditionButton: View) {
         // if source tier doesn't contain a trace configuration, create one
         val traceConfiguration = utilityTraceConfiguration ?: UtilityTraceConfiguration().apply {
             // if the trace configuration doesn't contain traversability, create one
@@ -269,30 +303,28 @@ class MainActivity : AppCompatActivity() {
         }
 
         // get the currently selected attribute
-        val attribute = sourcesList?.get(sourcePosition)
-        attribute?.let {
-            // get the currently selected attribute operator
-            val attributeOperator = operatorsList?.get(operatorPosition)
-            attributeOperator?.let {
-                // if the other value is a coded value domain
-                val otherValue = if (attribute.domain is CodedValueDomain) {
-                    values?.get(valuePosition)?.code?.let {
-                        convertToDataType(it, attribute.dataType)
-                    }
-                } else {
-                    convertToDataType(valuesEditText.text.toString(), attribute.dataType)
+        sourcesList?.get(sourcePosition)?.let { sourceAttribute ->
+            // if the other value is a coded value domain
+            val otherValue = if (sourceAttribute.domain is CodedValueDomain) {
+                codedValuesList?.get(valuePosition)?.code?.let {
+                    convertToDataType(it, sourceAttribute.dataType)
                 }
+            } else {
+                convertToDataType(valuesEditText.text.toString(), sourceAttribute.dataType)
+            }
 
-                if (otherValue.toString().contains("Error") || otherValue == null) {
-                    return showError("Error retrieving value")
-                }
+            if (otherValue.toString().contains("Error") || otherValue == null) {
+                return showError(otherValue.toString())
+            }
 
-                // NOTE: You may also create a UtilityNetworkAttributeComparison with another
-                // NetworkAttribute
+            // get the currently selected attribute operator>
+            operatorsList?.get(operatorPosition)?.let { comparisonOperator ->
+                // NOTE: You may also create a UtilityNetworkAttributeComparison
+                // with another NetworkAttribute
                 var expression: UtilityTraceConditionalExpression =
                     UtilityNetworkAttributeComparison(
-                        attribute,
-                        attributeOperator,
+                        sourceAttribute,
+                        comparisonOperator,
                         otherValue
                     )
                 (traceConfiguration.traversability?.barriers as? UtilityTraceConditionalExpression)?.let { otherExpression ->
@@ -306,9 +338,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Show the given UI view and hide the others which share the same space.
-     *
-     * @param id of the view to make visible
+     * Show the UI of the given [id] and hide the others which share the same space.
      */
     private fun setVisible(id: Int) {
         when (id) {
@@ -331,34 +361,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Run the network trace with the parameters and display the result in an alert dialog.
-     *
-     * @param view of the trace button
+     * Run the network trace with the parameters and display the result in an alert dialog
+     * when the [traceButton] is clicked.
      */
-    fun trace(view: View) {
-        // don't attempt a trace on an unloaded utility network
+    fun trace(traceButton: View) {
         if (utilityNetwork.loadStatus.value != LoadStatus.Loaded) {
-            return
+            return showError("Utility network is not loaded")
         }
+
+        // set the utility trace parameters
         val parameters = UtilityTraceParameters(
             UtilityTraceType.Subnetwork,
             listOf(startingLocation).requireNoNulls()
         ).apply {
-            traceConfiguration = utilityTraceConfiguration
+            // set the utility trace configuration options to include
+            traceConfiguration = utilityTraceConfiguration?.apply {
+                includeBarriers = barriersCheckbox.isChecked
+                includeContainers = containersCheckbox.isChecked
+            }
         }
 
+        // launch trace in a coroutine scope
         lifecycleScope.launch {
+            showLoadingDialog(true)
             val utilityTraceResults = utilityNetwork.trace(parameters).getOrElse {
                 return@launch showError(
                     "For a working barrier condition, try \"Transformer Load\" Equal \"15\": " +
                             it.message.toString()
                 )
             }
-
+            // get the UtilityElementTraceResult
             val elementTraceResult = utilityTraceResults.first() as UtilityElementTraceResult
-            // create an alert dialog
+
+            showLoadingDialog(false)
             AlertDialog.Builder(this@MainActivity).apply {
-                // set the alert dialog title
+                // set the result dialog title
                 setTitle("Trace result")
                 // show the element result count
                 setMessage(elementTraceResult.elements.count().toString() + " elements found.")
@@ -367,9 +404,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Convert the given UtilityTraceConditionalExpression into a string.
-     *
-     * @param expression to convert to a string
+     * Convert the given [expression] into a string.
      */
     private fun expressionToString(expression: UtilityTraceConditionalExpression): String? {
         when (expression) {
@@ -377,13 +412,25 @@ class MainActivity : AppCompatActivity() {
             is UtilityCategoryComparison -> {
                 return expression.category.name + " " + expression.comparisonOperator
             }
+            // when the expression is an utility trace AND condition
+            is UtilityTraceAndCondition -> {
+                return expressionToString(expression.leftExpression) + " AND\n" + expressionToString(
+                    expression.rightExpression
+                )
+            }
+            // when the expression is an utility trace OR condition
+            is UtilityTraceOrCondition -> {
+                return expressionToString(expression.leftExpression) + " OR\n" + expressionToString(
+                    expression.rightExpression
+                )
+            }
             // when the expression is an attribute comparison expression
             is UtilityNetworkAttributeComparison -> {
                 // the name and comparison operator of the expression
                 val networkAttributeNameAndOperator = expression.networkAttribute.name + " " +
                         expression.comparisonOperator::class.simpleName + " "
-                // check whether the network attribute has a coded value domain
 
+                // check whether the network attribute has a coded value domain
                 (expression.networkAttribute.domain as? CodedValueDomain)?.let { codedValueDomain ->
                     // if there's a coded value domain name
                     val codedValueDomainName = codedValueDomain.codedValues.first { codedValue ->
@@ -403,18 +450,6 @@ class MainActivity : AppCompatActivity() {
                 // if there's no coded value domain name
                     ?: return networkAttributeNameAndOperator + (expression.otherNetworkAttribute?.name
                         ?: expression.value)
-            }
-            // when the expression is an utility trace AND condition
-            is UtilityTraceAndCondition -> {
-                return expressionToString(expression.leftExpression) + " AND\n" + expressionToString(
-                    expression.rightExpression
-                )
-            }
-            // when the expression is an utility trace OR condition
-            is UtilityTraceOrCondition -> {
-                return expressionToString(expression.leftExpression) + " OR\n" + expressionToString(
-                    expression.rightExpression
-                )
             }
             else -> {
                 return null
@@ -441,16 +476,13 @@ class MainActivity : AppCompatActivity() {
                 else -> {}
             }
         } catch (e: Exception) {
-            ("Error converting data type: " + e.message).also {
-                Toast.makeText(this, it, Toast.LENGTH_LONG).show()
-                Log.e(TAG, it)
-            }
+            return("Error converting value to a datatype")
         }
     }
 
     /**
      * Reset the current barrier condition to the initial expression
-     * "Operational Device Status EQUAL Open".
+     * "Operational Device Status EQUAL Open" and resets the UI.
      */
     fun reset(view: View) {
         initialExpression?.let {
@@ -458,6 +490,18 @@ class MainActivity : AppCompatActivity() {
                 traversability?.barriers = it
             }
             expressionTextView.text = expressionToString(it)
+        }
+    }
+
+    private fun showLoadingDialog(isVisible: Boolean) {
+        if (isVisible){
+            dialog= AlertDialog.Builder(this).apply {
+                setCancelable(false)
+                setView(LoadingOptionsDialogBinding.inflate(layoutInflater).root)
+            }.create()
+            dialog?.show()
+        } else {
+            dialog?.dismiss()
         }
     }
 
