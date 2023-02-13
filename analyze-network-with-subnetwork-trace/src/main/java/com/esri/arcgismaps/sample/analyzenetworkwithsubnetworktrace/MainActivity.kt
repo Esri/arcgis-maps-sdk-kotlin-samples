@@ -136,6 +136,7 @@ class MainActivity : AppCompatActivity() {
         // load the utility network
         lifecycleScope.launch {
             utilityNetwork.load().getOrElse {
+                dialog?.dismiss()
                 return@launch showError("Error loading utility network: " + it.message.toString())
             }
 
