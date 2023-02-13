@@ -1,0 +1,45 @@
+{
+    "category": "Routing and Logistics",
+    "description": "Use a routing service to navigate between two points.",
+    "formal_name": "NavigateRoute",
+    "ignore": false,
+    "images": [
+        "navigate-route.png"
+    ],
+    "keywords": [
+        "directions",
+        "maneuver",
+        "navigation",
+        "route",
+        "turn-by-turn",
+        "voice",
+        "DestinationStatus",
+        "Location",
+        "LocationDataSource",
+        "Route",
+        "RouteParameters",
+        "RouteTask",
+        "RouteTracker",
+        "Stop",
+        "VoiceGuidance"
+    ],
+    "language": "kotlin",
+    "provision_from": [],
+    "provision_to": [],
+    "redirect_from": "",
+    "relevant_apis": [
+        "DestinationStatus",
+        "Location",
+        "LocationDataSource",
+        "Route",
+        "RouteParameters",
+        "RouteTask",
+        "RouteTracker",
+        "Stop",
+        "VoiceGuidance"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/navigateroute/MainActivity.kt"
+    ],
+    "title": "Navigate route"
+}
