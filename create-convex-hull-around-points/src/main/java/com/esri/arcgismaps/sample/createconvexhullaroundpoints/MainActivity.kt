@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.createconvexhullaroundpoints
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -143,8 +142,8 @@ class MainActivity : AppCompatActivity() {
         // recreate the graphics geometry representing the input points
         pointGraphic.geometry = Multipoint(inputPoints)
         // enable all the action buttons, since we have at least one point drawn
-        createButton.enable()
-        resetButton.enable()
+        createButton.isEnabled = true
+        resetButton.isEnabled = true
     }
 
     /**
@@ -152,36 +151,40 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createConvexHull(pointGeometry: Geometry) {
         // normalize the geometry for panning beyond the meridian
-        // and check to proceed if the resulting geometry is not null
-        GeometryEngine.normalizeCentralMeridian(pointGeometry)?.let { normalizedPointGeometry ->
-            // create a convex hull from the points and proceed if it's not null
-            GeometryEngine.convexHull(normalizedPointGeometry)?.let { convexHullGeometry ->
-                // the convex hull's geometry may be a point or polyline if the number of
-                // points is less than 3, set its symbol accordingly
-                convexHullGraphic.symbol = when (convexHullGeometry) {
-                    is Point -> {
-                        // set symbol to use the pointSymbol
-                        pointSymbol
-                    }
-                    is Polyline -> {
-                        // set symbol to use the lineSymbol
-                        lineSymbol
-                    }
-                    is Polygon -> {
-                        // set symbol to use the fillSymbol
-                        fillSymbol
-                    }
-                    else -> {
-                        showError("Unknown geometry for convex hull")
-                        null
-                    }
-                }
-                // update the convex hull graphics geometry
-                convexHullGraphic.geometry = convexHullGeometry
-                // disable the create button until new input points are created
-                createButton.disable()
-            } ?: showError("Error creating convex hull")
+        val normalizedPointGeometry = GeometryEngine.normalizeCentralMeridian(pointGeometry)
+        // check to proceed if the resulting geometry is not null
+        normalizedPointGeometry ?: run {
+            // if it is null, show the error and return
+            showError("Error normalizing point geometry")
+            return
         }
+        // create a convex hull from the points and proceed if it's not null
+        GeometryEngine.convexHull(normalizedPointGeometry)?.let { convexHullGeometry ->
+            // the convex hull's geometry may be a point or polyline if the number of
+            // points is less than 3, set its symbol accordingly
+            convexHullGraphic.symbol = when (convexHullGeometry) {
+                is Point -> {
+                    // set symbol to use the pointSymbol
+                    pointSymbol
+                }
+                is Polyline -> {
+                    // set symbol to use the lineSymbol
+                    lineSymbol
+                }
+                is Polygon -> {
+                    // set symbol to use the fillSymbol
+                    fillSymbol
+                }
+                else -> {
+                    showError("Unknown geometry for convex hull")
+                    null
+                }
+            }
+            // update the convex hull graphics geometry
+            convexHullGraphic.geometry = convexHullGeometry
+            // disable the create button until new input points are created
+            createButton.isEnabled = false
+        } ?: showError("Error creating convex hull")
     }
 
 
@@ -194,9 +197,9 @@ class MainActivity : AppCompatActivity() {
         // remove the geometry for the point graphic and convex hull graphics
         pointGraphic.geometry = null
         convexHullGraphic.geometry = null
-        // disabling the buttons
-        resetButton.disable()
-        createButton.disable()
+        // disable the buttons
+        resetButton.isEnabled = false
+        createButton.isEnabled = false
     }
 
     private fun showError(message: String) {
@@ -210,17 +213,3 @@ class MainActivity : AppCompatActivity() {
  */
 private val Color.Companion.blue
     get() = fromRgba(0, 0, 255)
-
-/**
- * Simple extension function to enable a button, if not already enabled
- */
-private fun Button.enable() {
-    if (!isEnabled) isEnabled = true
-}
-
-/**
- * Simple extension function to disable a button, if not already disabled
- */
-private fun Button.disable() {
-    if (isEnabled) isEnabled = false
-}
