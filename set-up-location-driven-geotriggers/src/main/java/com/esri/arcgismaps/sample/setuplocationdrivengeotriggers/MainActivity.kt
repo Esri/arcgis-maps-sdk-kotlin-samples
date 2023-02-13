@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.setuplocationdrivengeotriggers
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -28,12 +29,7 @@ import com.arcgismaps.arcade.ArcadeExpression
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geotriggers.FeatureFenceParameters
-import com.arcgismaps.geotriggers.FenceGeotrigger
-import com.arcgismaps.geotriggers.FenceRuleType
-import com.arcgismaps.geotriggers.GeotriggerMonitor
-import com.arcgismaps.geotriggers.GeotriggerNotificationInfo
-import com.arcgismaps.geotriggers.LocationGeotriggerFeed
+import com.arcgismaps.geotriggers.*
 import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
@@ -65,16 +61,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val simulatedLocationDataSource: SimulatedLocationDataSource by lazy {
-        val simulatedLocationDataSource = SimulatedLocationDataSource()
-        // Create SimulationParameters starting at the current time, a velocity of 10 m/s, and a horizontal and vertical accuracy of 0.0
-        val simulationParameters = SimulationParameters(Clock.System.now(), 3.0, 0.0, 0.0)
-        // Use the polyline as defined above or from this ArcGIS Online GeoJSON to define the path. retrieved
-        // from https://https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
-        simulatedLocationDataSource.setLocationsWithPolyline(
-            Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
-            simulationParameters
+        // Create SimulationParameters starting at the current time,
+        // a velocity of 10 m/s, and a horizontal and vertical accuracy of 0.0
+        val simulationParameters = SimulationParameters(
+            Clock.System.now(),
+            3.0,
+            0.0,
+            0.0
         )
-        simulatedLocationDataSource
+        SimulatedLocationDataSource().apply {
+            // Use the polyline as defined above or from this ArcGIS Online GeoJSON to define the path. retrieved
+            // from https://https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
+            setLocationsWithPolyline(
+                Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
+                simulationParameters
+            )
+        }
     }
 
     // Make monitors properties to prevent garbage collection
@@ -98,23 +100,6 @@ class MainActivity : AppCompatActivity() {
             setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
             initialZoomScale = 1000.0
         }
-        lifecycleScope.launch { simulatedLocationDataSource.start() }
-
-        // Play or pause the simulation data source when the FAB is clicked
-        playPauseFAB.setOnClickListener {
-            lifecycleScope.launch {
-                if (simulatedLocationDataSource.status.value == LocationDataSourceStatus.Started) {
-                    simulatedLocationDataSource.stop()
-                    Toast.makeText(this@MainActivity, "Stopped Simulation", Toast.LENGTH_SHORT).show()
-                    playPauseFAB.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-                } else {
-                    simulatedLocationDataSource.start()
-                    mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
-                    Toast.makeText(this@MainActivity, "Resumed Simulation", Toast.LENGTH_SHORT).show()
-                    playPauseFAB.setImageResource(R.drawable.ic_baseline_pause_24)
-                }
-            }
-        }
 
         // Instantiate the service feature tables to later create GeotriggerMonitors for
         val gardenSections =
@@ -126,12 +111,37 @@ class MainActivity : AppCompatActivity() {
             createGeotriggerMonitor(gardenSections, 0.0, "Section Geotrigger")
         poiGeotriggerMonitor =
             createGeotriggerMonitor(gardenPOIs, 10.0, "POI Geotrigger")
+
         lifecycleScope.launch {
+            simulatedLocationDataSource.start().onFailure {
+                showError("Simulated Location DataSource failed to start: ${it.message}")
+                return@launch
+            }
             sectionGeotriggerMonitor.start().onFailure {
                 showError("Section Geotrigger Monitor failed to start: ${it.message}")
+                return@launch
             }
             poiGeotriggerMonitor.start().onFailure {
                 showError("POI Geotrigger Monitor failed to start: ${it.message}")
+                return@launch
+            }
+        }
+
+        // Play or pause the simulation data source when the FAB is clicked
+        playPauseFAB.setOnClickListener {
+            lifecycleScope.launch {
+                if (simulatedLocationDataSource.status.value == LocationDataSourceStatus.Started) {
+                    simulatedLocationDataSource.stop()
+                    Toast.makeText(this@MainActivity, "Stopped Simulation", Toast.LENGTH_SHORT)
+                        .show()
+                    playPauseFAB.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+                } else {
+                    simulatedLocationDataSource.start()
+                    mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+                    Toast.makeText(this@MainActivity, "Resumed Simulation", Toast.LENGTH_SHORT)
+                        .show()
+                    playPauseFAB.setImageResource(R.drawable.ic_baseline_pause_24)
+                }
             }
         }
     }
