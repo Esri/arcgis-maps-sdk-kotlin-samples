@@ -166,6 +166,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
             // set return attachments option to false
+            // indicates if any attachments are added to the geodatabase from the feature service
             defaultParameters.returnAttachments = false
             // create a generate geodatabase job
             geodatabaseSyncTask.createGenerateGeodatabaseJob(defaultParameters, geodatabaseFilePath)
