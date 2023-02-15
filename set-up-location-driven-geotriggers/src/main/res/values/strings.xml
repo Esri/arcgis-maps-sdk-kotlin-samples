@@ -7,4 +7,6 @@
     <string name="n_a">N/A</string>
     <string name="play_pause_button">Play pause button</string>
     <string name="garden_section_description">Garden section description</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
