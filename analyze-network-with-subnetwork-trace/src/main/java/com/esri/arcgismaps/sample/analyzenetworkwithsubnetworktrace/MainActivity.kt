@@ -153,7 +153,8 @@ class MainActivity : AppCompatActivity() {
             sourceDropdown.apply {
                 // add the list of sources to the drop down view
                 setAdapter(sourcesList?.let { utilityNetworkAttributes ->
-                    ArrayAdapter(applicationContext,
+                    ArrayAdapter(
+                        applicationContext,
                         android.R.layout.simple_list_item_1,
                         utilityNetworkAttributes.map { it.name })
                 })
