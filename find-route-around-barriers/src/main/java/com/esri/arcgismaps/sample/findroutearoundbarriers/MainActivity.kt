@@ -319,9 +319,9 @@ class MainActivity : AppCompatActivity() {
         // clear the directions list from the directions list view, if they exist
         directionsList.clear()
 
-        if (stopList.size <= 1) return@launch
-
         val routeParameters = routeParameters ?: return@launch
+
+        if (stopList.size <= 1) return@launch
 
         routeParameters.apply {
             // add the existing stops and barriers to the route parameters
