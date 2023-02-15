@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         // normalize the geometry for panning beyond the meridian
         val normalizedPointGeometry = GeometryEngine.normalizeCentralMeridian(pointGeometry)
         // check to proceed if the resulting geometry is not null
-        normalizedPointGeometry ?: run {
+        if (normalizedPointGeometry == null) {
             // if it is null, show the error and return
             showError("Error normalizing point geometry")
             return
