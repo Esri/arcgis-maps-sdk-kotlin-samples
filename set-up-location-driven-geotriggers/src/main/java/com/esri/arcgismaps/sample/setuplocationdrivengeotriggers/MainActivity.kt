@@ -66,17 +66,19 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.sectionButton
     }
 
+    // recycler list view to show the the points of interest
     private val poiListView by lazy {
         activityMainBinding.poiListView
     }
 
+    // custom list adapter for the points of interest
     private val poiListAdapter by lazy {
-        FeatureListAdapter(poiList)
+        // create a new feature list adapter from the poiList
+        FeatureListAdapter(poiList) { feature ->
+            // set the item callback to show the feature view fragment
+            showFeatureViewFragment(feature)
+        }
     }
-
-    private val poiList = mutableListOf<ArcGISFeature>()
-
-    private val visitedFeatures = mutableMapOf<String, ArcGISFeature>()
 
     private val simulatedLocationDataSource: SimulatedLocationDataSource by lazy {
         // Create SimulationParameters starting at the current time,
@@ -97,8 +99,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val sectionGeoTriggerName: String = "Section Geotrigger"
-    private val poiGeoTriggerName: String = "POI Geotrigger"
+    // feature list to store the points of interest of a geotrigger
+    private val poiList = mutableListOf<ArcGISFeature>()
+
+    // geotrigger names for the geotrigger monitors
+    private val sectionGeoTrigger: String = "Section Geotrigger"
+    private val poiGeoTrigger: String = "POI Geotrigger"
 
     // Make monitors properties to prevent garbage collection
     private lateinit var sectionGeotriggerMonitor: GeotriggerMonitor
@@ -115,8 +121,9 @@ class MainActivity : AppCompatActivity() {
         val portal = Portal("https://www.arcgis.com")
         // This sample uses a web map with a predefined tile basemap, feature styles, and labels
         val map = ArcGISMap(PortalItem(portal, "6ab0e91dc39e478cae4f408e1a36a308"))
+        // set the mapview's map
         mapView.map = map
-        // Set up the location display and start the simulated location data source
+        // Set the map to simulate the location data source
         mapView.locationDisplay.apply {
             dataSource = simulatedLocationDataSource
             setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
@@ -130,27 +137,9 @@ class MainActivity : AppCompatActivity() {
             ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
         // Create Geotriggers for each of the service feature tables
         sectionGeotriggerMonitor =
-            createGeotriggerMonitor(gardenSections, 0.0, sectionGeoTriggerName)
+            createGeotriggerMonitor(gardenSections, 0.0, sectionGeoTrigger)
         poiGeotriggerMonitor =
-            createGeotriggerMonitor(gardenPOIs, 10.0, poiGeoTriggerName)
-
-        lifecycleScope.launch {
-            map.load().onFailure {
-                return@launch
-            }
-            sectionGeotriggerMonitor.start().onFailure {
-                showError("Section Geotrigger Monitor failed to start: ${it.message}")
-                return@launch
-            }
-            poiGeotriggerMonitor.start().onFailure {
-                showError("POI Geotrigger Monitor failed to start: ${it.message}")
-                return@launch
-            }
-            simulatedLocationDataSource.start().onFailure {
-                showError("Simulated Location DataSource failed to start: ${it.message}")
-                return@launch
-            }
-        }
+            createGeotriggerMonitor(gardenPOIs, 10.0, poiGeoTrigger)
 
         // Play or pause the simulation data source when the FAB is clicked
         playPauseFAB.setOnClickListener {
@@ -161,19 +150,44 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // set the recycler view layout to a vertical linear layout
         poiListView.layoutManager = LinearLayoutManager(this)
-        poiListAdapter.setOnItemClickListener { arcGISFeature ->
-            stopSimulatedDataSource()
-            FeatureViewFragment(arcGISFeature).apply {
-                setOnDismissListener {
-                    startSimulatedDataSource()
-                }
-                show(supportFragmentManager, "FeatureView")
+        // assign its adapter
+        poiListView.adapter = poiListAdapter
+
+        lifecycleScope.launch {
+            // wait for the map load
+            map.load().onFailure {
+                // if the map load fails, show the error and return
+                showError("Error loading map: ${it.message}")
+                return@launch
+            }
+            // start the section geotrigger monitor
+            sectionGeotriggerMonitor.start().onFailure {
+                // if the monitor start fails, show the error and return
+                showError("Section Geotrigger Monitor failed to start: ${it.message}")
+                return@launch
+            }
+            // start the points of interest geotrigger monitor
+            poiGeotriggerMonitor.start().onFailure {
+                // if the monitor start fails, show the error and return
+                showError("POI Geotrigger Monitor failed to start: ${it.message}")
+                return@launch
+            }
+            // finally, start the simulated location data source
+            simulatedLocationDataSource.start().onFailure {
+                // if it fails, show the error and return
+                showError("Simulated Location DataSource failed to start: ${it.message}")
+                return@launch
             }
         }
-        poiListView.adapter = poiListAdapter
     }
 
+    /**
+     * Creates and returns a geotrigger monitor with the [geotriggerName] name,
+     * using the [serviceFeatureTable] and [bufferSize] to initialize
+     * FeatureFenceParameters for the geotrigger
+     */
     private fun createGeotriggerMonitor(
         serviceFeatureTable: ServiceFeatureTable,
         bufferSize: Double,
@@ -184,10 +198,13 @@ class MainActivity : AppCompatActivity() {
         // Initialize FeatureFenceParameters with the service feature table and a buffer of 0 meters
         // to display the exact garden section the user has entered
         val featureFenceParameters = FeatureFenceParameters(serviceFeatureTable, bufferSize)
+        // create a fence geotrigger
         val fenceGeotrigger = FenceGeotrigger(
             geotriggerFeed,
+            // triggers on enter/exit
             FenceRuleType.EnterOrExit,
             featureFenceParameters,
+            // arcade expression to get the feature name
             ArcadeExpression("\$fenceFeature.name"),
             geotriggerName
         )
@@ -196,6 +213,7 @@ class MainActivity : AppCompatActivity() {
         // Hence, triggers on fence enter/exit.
         val geotriggerMonitor = GeotriggerMonitor(fenceGeotrigger)
         lifecycleScope.launch {
+            // capture and handle the geotrigger notification event
             geotriggerMonitor.geotriggerNotificationEvent.collect {
                 handleGeotriggerNotification(it)
             }
@@ -203,14 +221,23 @@ class MainActivity : AppCompatActivity() {
         return geotriggerMonitor
     }
 
+    /**
+     * Handles the [geotriggerNotificationInfo] based on its geotrigger type
+     * and FenceNotificationType
+     */
     private fun handleGeotriggerNotification(geotriggerNotificationInfo: GeotriggerNotificationInfo) {
+        // cast it to a FenceGeotriggerNotificationInfo type
+        // FenceGeotriggerNotificationInfo provides access to the feature that triggered the notification
         val fenceGeotriggerNotificationInfo =
             geotriggerNotificationInfo as FenceGeotriggerNotificationInfo
-        // returned from arcade expression
+        //  name of the fence feature, returned from the set arcade expression
         val fenceFeatureName = fenceGeotriggerNotificationInfo.message
+        // get the specific geotrigger name we set during initialization
         val geoTriggerType = fenceGeotriggerNotificationInfo.geotriggerMonitor.geotrigger.name
+        // check for the type of notification
         when (fenceGeotriggerNotificationInfo.fenceNotificationType) {
             FenceNotificationType.Entered -> {
+                // if the user location entered the geofence, add the feature information to the UI
                 addFeatureInformation(
                     fenceFeatureName,
                     geoTriggerType,
@@ -218,69 +245,117 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             FenceNotificationType.Exited -> {
+                // If the user exits a given geofence, remove the feature's information from the UI
                 removeFeatureInformation(fenceFeatureName, geoTriggerType)
             }
         }
     }
 
+    /**
+     * Adds the [fenceFeature] ArcGISFeature with the [fenceFeatureName] and [geoTriggerType] to the current UI state
+     * and refreshes the UI
+     */
     private fun addFeatureInformation(
         fenceFeatureName: String,
         geoTriggerType: String,
         fenceFeature: ArcGISFeature
     ) {
+        // recenter the mapview
         mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
 
-        if (geoTriggerType == sectionGeoTriggerName) {
-            Log.d(TAG, "addFeatureInformation: ${fenceFeature.attributes.keys}")
-            if (!visitedFeatures.containsKey(fenceFeatureName)) {
-                // val featureSection = FeatureSection(fenceFeature)
-                // lifecycleScope.launch { featureSection.load() }
-                visitedFeatures[fenceFeatureName] = fenceFeature
+        when (geoTriggerType) {
+            // if it's a section geo trigger type
+            sectionGeoTrigger -> {
+                // update the section button's onClickListener
+                // to show a new FeatureViewFragment
+                sectionButton.setOnClickListener { showFeatureViewFragment(fenceFeature) }
+                // update the section button text to the feature name
+                sectionButton.text = fenceFeatureName
+                // enable the button
+                sectionButton.isEnabled = true
             }
+            // or a point of interest geo trigger
+            poiGeoTrigger -> {
+                // add it to the stored list
+                poiList.add(fenceFeature)
+                // notify the list adapter to refresh its recycler views
+                poiListAdapter.notifyItemInserted(poiList.lastIndex)
+            }
+        }
+    }
 
-            // update the UI
-            sectionButton.setOnClickListener {
-                stopSimulatedDataSource()
-                FeatureViewFragment(fenceFeature).apply {
-                    setOnDismissListener {
-                        startSimulatedDataSource()
-                    }
-                    show(supportFragmentManager, "FeatureView")
+    /**
+     * Removes the ArcGISFeature with the given [fenceFeatureName] and corresponding
+     * [geoTriggerType] from the current UI state and refreshes the UI.
+     */
+    private fun removeFeatureInformation(fenceFeatureName: String, geoTriggerType: String) {
+        // check the type of geotrigger
+        when (geoTriggerType) {
+            sectionGeoTrigger -> {
+                // if it's a section geo trigger,
+                // remove the section information and disable the button
+                sectionButton.text = "N/A"
+                sectionButton.isEnabled = false
+            }
+            poiGeoTrigger -> {
+                // if it's a point of interest geotrigger
+                // find its index from the stored list
+                val index = poiList.indexOfFirst { feature ->
+                    feature.attributes["name"] == fenceFeatureName
+                }
+                if (index >= 0) {
+                    // if the feature exists remove it
+                    poiList.removeAt(index)
+                    // notify the list adapter to refresh its recycler views
+                    poiListAdapter.notifyItemRemoved(index)
                 }
             }
-            sectionButton.text = fenceFeatureName
-            sectionButton.isEnabled = true
-        } else {
-            // TO DO POI List
-            poiList.add(fenceFeature)
-            poiListAdapter.notifyDataSetChanged()
         }
     }
 
-    private fun removeFeatureInformation(fenceFeatureName: String, geoTriggerType: String) {
-        if (geoTriggerType == sectionGeoTriggerName) {
-            sectionButton.text = "N/A"
-            sectionButton.isEnabled = false
-        } else {
-            // TO DO POI List
-            poiList.removeIf { it.attributes["name"] == fenceFeatureName }
-            poiListAdapter.notifyDataSetChanged()
+    /**
+     * Creates and shows a new FeatureViewFragment using the given [feature]
+     */
+    private fun showFeatureViewFragment(feature: ArcGISFeature) {
+        // stop the simulated data source
+        stopSimulatedDataSource(false)
+        // create a new FeatureViewFragment
+        val featureViewFragment = FeatureViewFragment(feature) {
+            // set it's onDismissedListener to
+            // resume the simulated data source
+            startSimulatedDataSource(false)
         }
+        // show the fragment
+        featureViewFragment.show(supportFragmentManager, "FeatureViewFragment")
     }
 
-    private fun stopSimulatedDataSource() = lifecycleScope.launch {
-        simulatedLocationDataSource.stop()
-        Toast.makeText(this@MainActivity, "Stopped Simulation", Toast.LENGTH_SHORT)
-            .show()
-        playPauseFAB.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-    }
-
-    private fun startSimulatedDataSource() = lifecycleScope.launch {
+    /**
+     * Starts the simulated data source and shows a status toast if [showAlert] is true.
+     * The data source is resumed from its previous location if stopped before.
+     */
+    private fun startSimulatedDataSource(showAlert: Boolean = true) = lifecycleScope.launch {
+        // start the simulated location data source
         simulatedLocationDataSource.start()
+        // recenter the map view
         mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
-        Toast.makeText(this@MainActivity, "Resumed Simulation", Toast.LENGTH_SHORT)
+        // show a toast if true
+        if (showAlert) Toast.makeText(this@MainActivity, "Resumed Simulation", Toast.LENGTH_SHORT)
             .show()
+        // update the action button's drawable to a pause icon
         playPauseFAB.setImageResource(R.drawable.ic_baseline_pause_24)
+    }
+
+    /**
+     * Stops the simulated data source and shows a status toast if [showAlert] is true.
+     */
+    private fun stopSimulatedDataSource(showAlert: Boolean = true) = lifecycleScope.launch {
+        // stop the simulated location data source
+        simulatedLocationDataSource.stop()
+        // show a toast if true
+        if (showAlert) Toast.makeText(this@MainActivity, "Stopped Simulation", Toast.LENGTH_SHORT)
+            .show()
+        // update the action button's drawable to a play icon
+        playPauseFAB.setImageResource(R.drawable.ic_baseline_play_arrow_24)
     }
 
     private fun showError(message: String) {

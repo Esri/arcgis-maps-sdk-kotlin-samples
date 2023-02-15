@@ -15,41 +15,36 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 import java.io.File
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
- * A simple [Fragment] subclass.
- * Use the [FeatureViewFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Class to display an ArcGISFeature [featureSection] information as a
+ * bottom sheet dialog fragment. Provides an [onDismissListener] callback
+ * when the fragment is dismissed
  */
-class FeatureViewFragment(val featureSection: ArcGISFeature) : BottomSheetDialogFragment() {
+class FeatureViewFragment(
+    private val featureSection: ArcGISFeature,
+    private val onDismissListener: () -> Unit
+) : BottomSheetDialogFragment() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
+    // setup binding for the fragment
     private val featureViewFragmentBinding by lazy {
         FragmentFeatureViewBinding.inflate(layoutInflater)
     }
 
+    // displays the feature title
     private val contentTitleText by lazy {
         featureViewFragmentBinding.contentTitleTextView
     }
 
+    // displays the feature description
     private val contentDescriptionText by lazy {
         featureViewFragmentBinding.contentDescriptionTextView
     }
 
+    // displays the primary image attachment of the feature
     private val contentImage by lazy {
         featureViewFragmentBinding.contentImageView
     }
-
-    private val thumbnailFileDir by lazy {
-        context?.getExternalFilesDir(null)?.path + File.separator
-    }
-
-    private var onDismissListener: (() -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -60,32 +55,42 @@ class FeatureViewFragment(val featureSection: ArcGISFeature) : BottomSheetDialog
 
     override fun onStart() {
         super.onStart()
-        // set ui elements
+        // set up the UI
+        // set the title text to the feature name
         contentTitleText.text = featureSection.attributes["name"] as String
+        // set the description text to the feature description
         contentDescriptionText.text = featureSection.attributes["desc_raw"] as String
+        // load the feature attachments
         loadAttachments()
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        onDismissListener?.invoke()
+        // call the dismiss listener
+        onDismissListener.invoke()
     }
 
-    fun setOnDismissListener(listener: () -> Unit) {
-        onDismissListener = listener
-    }
-
+    /**
+     * Loads the attachments of this ArcGISFeature and updates the UI
+     */
     private fun loadAttachments() = lifecycleScope.launch {
+        // fetch the list of attachments
         val attachments = featureSection.fetchAttachments().getOrElse {
+            // return if it fails
             return@launch
         }
-
+        // if there are attachments
         if (attachments.isNotEmpty()) {
-            val imageData = attachments.first().fetchData().getOrElse {
+            // get the first (and only) attachment for the feature, which is an image
+            val imageAttachment = attachments.first()
+            // and fetch its data
+            val imageData = imageAttachment.fetchData().getOrElse {
+                // return if it fails
                 return@launch
             }
-
+            // construct a bitmap from the fetched image data
             val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+            // set the bitmap to the imageview
             contentImage.setImageBitmap(bitmap)
         }
     }
