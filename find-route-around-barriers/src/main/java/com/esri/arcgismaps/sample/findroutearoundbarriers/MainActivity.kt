@@ -190,12 +190,12 @@ class MainActivity : AppCompatActivity() {
 
         // coroutine scope to use the default parameters for the route calculation
         lifecycleScope.launch {
-            routeTask?.load()?.onSuccess {
+            routeTask.load().onSuccess {
                 routeParameters = routeTask.createDefaultParameters().getOrThrow().apply {
                     returnStops = true
                     returnDirections = true
                 }
-            }?.onFailure {
+            }.onFailure {
                 showError(it.message.toString())
             }
         }
@@ -286,9 +286,6 @@ class MainActivity : AppCompatActivity() {
      * overlay depending on which button is currently checked.
      */
     private fun addStopOrBarrier(mapPoint: Point) {
-
-        // clear the displayed route, if it exists, since it might not be up to date any more
-        routeOverlay.graphics.clear()
         if (addStopsButton.isChecked) {
             // normalize the geometry - needed if the user crosses the international date line.
             val normalizedPoint = GeometryEngine.normalizeCentralMeridian(mapPoint) as Point
@@ -316,21 +313,24 @@ class MainActivity : AppCompatActivity() {
      * graphic and call showDirectionsInBottomSheet which shows directions in a list view.
      */
     private fun createAndDisplayRoute() = lifecycleScope.launch {
-        if (stopList.size <= 1) return@launch
 
         // clear the previous route from the graphics overlay, if it exists
         routeOverlay.graphics.clear()
         // clear the directions list from the directions list view, if they exist
         directionsList.clear()
 
-        routeParameters?.apply {
+        if (stopList.size <= 1) return@launch
+
+        val routeParameters = routeParameters ?: return@launch
+
+        routeParameters.apply {
             // add the existing stops and barriers to the route parameters
             setStops(stopList)
             setPolygonBarriers(barriersList)
         }
 
         // solve the route task
-        val routeResults = routeParameters?.let { routeTask?.solveRoute(it) }
+        val routeResults = routeParameters.let { routeTask.solveRoute(it) }
 
         if (routeResults != null) {
             routeResults.onSuccess { routeResult ->
