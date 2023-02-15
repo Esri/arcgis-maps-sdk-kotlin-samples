@@ -332,23 +332,22 @@ class MainActivity : AppCompatActivity() {
         // solve the route task
         val routeResults = routeParameters.let { routeTask.solveRoute(it) }
 
-        if (routeResults != null) {
-            routeResults.onSuccess { routeResult ->
-                // get the first solved route
-                val firstRoute = routeResult.routes[0]
+        routeResults.onSuccess { routeResult ->
+            // get the first solved route
+            val firstRoute = routeResult.routes[0]
 
-                // create Graphic for route
-                val graphic = Graphic(
-                    firstRoute.routeGeometry,
-                    SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 3f)
-                )
-                routeOverlay.graphics.add(graphic)
-                // get the direction text for each maneuver and add them to the list to display
-                directionsList.addAll(firstRoute.directionManeuvers)
-            }.onFailure {
-                showError("No route solution. ${it.message}")
-            }
+            // create Graphic for route
+            val graphic = Graphic(
+                firstRoute.routeGeometry,
+                SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 3f)
+            )
+            routeOverlay.graphics.add(graphic)
+            // get the direction text for each maneuver and add them to the list to display
+            directionsList.addAll(firstRoute.directionManeuvers)
+        }.onFailure {
+            showError("No route solution. ${it.message}")
         }
+
     }
 
     /** Creates a bottom sheet to display a list of direction maneuvers.
@@ -404,8 +403,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         // set the viewpoint to the selected maneuver
                         val geometry = directionsList[position].geometry
-                        geometry?.let { Viewpoint(it.extent, 20.0) }
-                            ?.let { mapView.setViewpoint(it) }
+                        geometry?.let { mapView.setViewpoint(Viewpoint(it.extent, 20.0)) }
                         // create a graphic with a symbol for the maneuver and add it to the graphics overlay
                         val selectedRouteSymbol = SimpleLineSymbol(
                             SimpleLineSymbolStyle.Solid,
