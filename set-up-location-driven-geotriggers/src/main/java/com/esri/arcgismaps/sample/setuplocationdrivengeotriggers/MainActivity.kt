@@ -31,7 +31,14 @@ import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geotriggers.*
+import com.arcgismaps.geotriggers.FeatureFenceParameters
+import com.arcgismaps.geotriggers.FenceGeotrigger
+import com.arcgismaps.geotriggers.FenceRuleType
+import com.arcgismaps.geotriggers.GeotriggerMonitor
+import com.arcgismaps.geotriggers.GeotriggerNotificationInfo
+import com.arcgismaps.geotriggers.LocationGeotriggerFeed
+import com.arcgismaps.geotriggers.FenceGeotriggerNotificationInfo
+import com.arcgismaps.geotriggers.FenceNotificationType
 import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
@@ -143,10 +150,20 @@ class MainActivity : AppCompatActivity() {
 
         // Play or pause the simulation data source when the FAB is clicked
         playPauseFAB.setOnClickListener {
-            if (simulatedLocationDataSource.status.value == LocationDataSourceStatus.Started) {
-                stopSimulatedDataSource()
-            } else {
-                startSimulatedDataSource()
+            when (simulatedLocationDataSource.status.value) {
+                LocationDataSourceStatus.Started -> {
+                    stopSimulatedDataSource()
+                }
+                LocationDataSourceStatus.Stopped -> {
+                    startSimulatedDataSource()
+                }
+                else -> {
+                    // show an error if the status is anything else
+                    showError(
+                        "Error modifying location data source state: " +
+                            "${simulatedLocationDataSource.status.value}"
+                    )
+                }
             }
         }
 
@@ -178,7 +195,6 @@ class MainActivity : AppCompatActivity() {
             simulatedLocationDataSource.start().onFailure {
                 // if it fails, show the error and return
                 showError("Simulated Location DataSource failed to start: ${it.message}")
-                return@launch
             }
         }
     }
@@ -209,11 +225,11 @@ class MainActivity : AppCompatActivity() {
             geotriggerName
         )
 
-        // Handles Geotrigger notification based on the FenceRuleType
-        // Hence, triggers on fence enter/exit.
+        // initialize a geotrigger monitor with the fence geotrigger
         val geotriggerMonitor = GeotriggerMonitor(fenceGeotrigger)
         lifecycleScope.launch {
-            // capture and handle the geotrigger notification event
+            // capture and handle Geotrigger notification based on the FenceRuleType
+            // hence, triggers on fence enter/exit.
             geotriggerMonitor.geotriggerNotificationEvent.collect {
                 handleGeotriggerNotification(it)
             }
@@ -226,8 +242,8 @@ class MainActivity : AppCompatActivity() {
      * and FenceNotificationType
      */
     private fun handleGeotriggerNotification(geotriggerNotificationInfo: GeotriggerNotificationInfo) {
-        // cast it to a FenceGeotriggerNotificationInfo type
-        // FenceGeotriggerNotificationInfo provides access to the feature that triggered the notification
+        // cast it to FenceGeotriggerNotificationInfo which provides
+        // access to the feature that triggered the notification
         val fenceGeotriggerNotificationInfo =
             geotriggerNotificationInfo as FenceGeotriggerNotificationInfo
         //  name of the fence feature, returned from the set arcade expression
