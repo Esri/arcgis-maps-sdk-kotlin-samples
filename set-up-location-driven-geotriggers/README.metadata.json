@@ -32,9 +32,7 @@
         "SimulatedLocationDataSource"
     ],
     "language": "kotlin",
-    "provision_from": "TODO",
-    "provision_to": "TODO",
-    "redirect_from": "TODO",
+    "redirect_from": "",
     "relevant_apis": [
         "ArcadeExpression",
         "FeatureFenceParameters",
