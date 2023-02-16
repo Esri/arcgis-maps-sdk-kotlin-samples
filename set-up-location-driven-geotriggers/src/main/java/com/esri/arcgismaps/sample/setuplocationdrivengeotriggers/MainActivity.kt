@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val simulatedLocationDataSource: SimulatedLocationDataSource by lazy {
-        // Create SimulationParameters starting at the current time,
+        // create SimulationParameters starting at the current time,
         // a velocity of 10 m/s, and a horizontal and vertical accuracy of 0.0
         val simulationParameters = SimulationParameters(
             Clock.System.now(),
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             0.0
         )
         SimulatedLocationDataSource().apply {
-            // Use the polyline as defined above or from this ArcGIS Online GeoJSON to define the path. retrieved
+            // use the polyline as defined above or from this ArcGIS Online GeoJSON to define the path. retrieved
             // from https://https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
             setLocationsWithPolyline(
                 Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     private val sectionGeoTrigger: String = "Section Geotrigger"
     private val poiGeoTrigger: String = "POI Geotrigger"
 
-    // Make monitors properties to prevent garbage collection
+    // make monitors properties to prevent garbage collection
     private lateinit var sectionGeotriggerMonitor: GeotriggerMonitor
     private lateinit var poiGeotriggerMonitor: GeotriggerMonitor
 
@@ -127,29 +127,29 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         val portal = Portal("https://www.arcgis.com")
-        // This sample uses a web map with a predefined tile basemap, feature styles, and labels
+        // this sample uses a web map with a predefined tile basemap, feature styles, and labels
         val map = ArcGISMap(PortalItem(portal, "6ab0e91dc39e478cae4f408e1a36a308"))
         // set the mapview's map
         mapView.map = map
-        // Set the map to simulate the location data source
+        // set the map to simulate the location data source
         mapView.locationDisplay.apply {
             dataSource = simulatedLocationDataSource
             setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
             initialZoomScale = 1000.0
         }
 
-        // Instantiate the service feature tables to later create GeotriggerMonitors for
+        // instantiate the service feature tables to later create GeotriggerMonitors for
         val gardenSections =
             ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
         val gardenPOIs =
             ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
-        // Create Geotriggers for each of the service feature tables
+        // create Geotriggers for each of the service feature tables
         sectionGeotriggerMonitor =
             createGeotriggerMonitor(gardenSections, 0.0, sectionGeoTrigger)
         poiGeotriggerMonitor =
             createGeotriggerMonitor(gardenPOIs, 10.0, poiGeoTrigger)
 
-        // Play or pause the simulation data source when the FAB is clicked
+        // play or pause the simulation data source when the FAB is clicked
         playPauseFAB.setOnClickListener {
             when (simulatedLocationDataSource.status.value) {
                 LocationDataSourceStatus.Started -> {
@@ -210,10 +210,9 @@ class MainActivity : AppCompatActivity() {
         bufferSize: Double,
         geotriggerName: String
     ): GeotriggerMonitor {
-        // Create a LocationGeotriggerFeed that uses the SimulatedLocationDataSource
+        // create a LocationGeotriggerFeed that uses the SimulatedLocationDataSource
         val geotriggerFeed = LocationGeotriggerFeed(simulatedLocationDataSource)
-        // Initialize FeatureFenceParameters with the service feature table and a buffer of 0 meters
-        // to display the exact garden section the user has entered
+        // initialize FeatureFenceParameters to display the section the user has entered
         val featureFenceParameters = FeatureFenceParameters(serviceFeatureTable, bufferSize)
         // create a fence geotrigger
         val fenceGeotrigger = FenceGeotrigger(
@@ -262,7 +261,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             FenceNotificationType.Exited -> {
-                // If the user exits a given geofence, remove the feature's information from the UI
+                // if the user exits a given geofence, remove the feature's information from the UI
                 removeFeatureInformation(fenceFeatureName, geoTriggerType)
             }
         }
