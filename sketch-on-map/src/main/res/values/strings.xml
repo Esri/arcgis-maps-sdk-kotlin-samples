@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Sketch on map</string>
+    <string name="pointButtonDescription">Draw new point</string>
+    <string name="polylineButtonDescription">Draw new polyline</string>
+    <string name="polygonButtonDescription">Draw new polygon</string>
+    <string name="freehandLineButtonDescription">Draw freehand line</string>
+    <string name="freehandPolyButtonDescription">Draw freehand polygon</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="stop">Stop</string>
+    <string name="clear">Clear</string>
+    <string name="commit_edits">Commit edits</string>
 </resources>
