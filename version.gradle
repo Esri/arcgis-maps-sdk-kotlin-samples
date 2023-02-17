@@ -19,4 +19,6 @@ ext {
     gradleVersion = '7.2.1'
     // java version
     javaVersion = 1.11
+    workVersion = '2.7.1'
+    coreVersion = '1.6.0'
 }
