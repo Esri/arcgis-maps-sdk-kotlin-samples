@@ -32,14 +32,7 @@ import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geotriggers.FeatureFenceParameters
-import com.arcgismaps.geotriggers.FenceGeotrigger
-import com.arcgismaps.geotriggers.FenceRuleType
-import com.arcgismaps.geotriggers.GeotriggerMonitor
-import com.arcgismaps.geotriggers.GeotriggerNotificationInfo
-import com.arcgismaps.geotriggers.LocationGeotriggerFeed
-import com.arcgismaps.geotriggers.FenceGeotriggerNotificationInfo
-import com.arcgismaps.geotriggers.FenceNotificationType
+import com.arcgismaps.geotriggers.*
 import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
@@ -98,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             0.0
         )
         SimulatedLocationDataSource().apply {
-            // use the polyline as defined above or from this ArcGIS Online GeoJSON to define the path. retrieved
+            // use the polyline from this ArcGIS Online GeoJSON to define the path. retrieved
             // from https://https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
             setLocationsWithPolyline(
                 Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
@@ -111,8 +104,8 @@ class MainActivity : AppCompatActivity() {
     private val poiList = mutableListOf<ArcGISFeature>()
 
     // geotrigger names for the geotrigger monitors
-    private val sectionGeoTrigger: String = "Section Geotrigger"
-    private val poiGeoTrigger: String = "POI Geotrigger"
+    private val sectionGeotrigger: String = "Section Geotrigger"
+    private val poiGeotrigger: String = "POI Geotrigger"
 
     // make monitors properties to prevent garbage collection
     private lateinit var sectionGeotriggerMonitor: GeotriggerMonitor
@@ -131,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(PortalItem(portal, "6ab0e91dc39e478cae4f408e1a36a308"))
         // set the mapview's map
         mapView.map = map
-        // set the map to simulate the location data source
+        // set the map to display the location of the simulatedLocationDataSource
         mapView.locationDisplay.apply {
             dataSource = simulatedLocationDataSource
             setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
@@ -145,9 +138,9 @@ class MainActivity : AppCompatActivity() {
             ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
         // create Geotriggers for each of the service feature tables
         sectionGeotriggerMonitor =
-            createGeotriggerMonitor(gardenSections, 0.0, sectionGeoTrigger)
+            createGeotriggerMonitor(gardenSections, 0.0, sectionGeotrigger)
         poiGeotriggerMonitor =
-            createGeotriggerMonitor(gardenPOIs, 10.0, poiGeoTrigger)
+            createGeotriggerMonitor(gardenPOIs, 10.0, poiGeotrigger)
 
         // play or pause the simulation data source when the FAB is clicked
         playPauseFAB.setOnClickListener {
@@ -230,8 +223,8 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // capture and handle Geotrigger notification based on the FenceRuleType
             // hence, triggers on fence enter/exit.
-            geotriggerMonitor.geotriggerNotificationEvent.collect {
-                handleGeotriggerNotification(it)
+            geotriggerMonitor.geotriggerNotificationEvent.collect { geotriggerNotificationInfo ->
+                handleGeotriggerNotification(geotriggerNotificationInfo)
             }
         }
         return geotriggerMonitor
@@ -249,39 +242,39 @@ class MainActivity : AppCompatActivity() {
         //  name of the fence feature, returned from the set arcade expression
         val fenceFeatureName = fenceGeotriggerNotificationInfo.message
         // get the specific geotrigger name we set during initialization
-        val geoTriggerType = fenceGeotriggerNotificationInfo.geotriggerMonitor.geotrigger.name
+        val geotriggerType = fenceGeotriggerNotificationInfo.geotriggerMonitor.geotrigger.name
         // check for the type of notification
         when (fenceGeotriggerNotificationInfo.fenceNotificationType) {
             FenceNotificationType.Entered -> {
                 // if the user location entered the geofence, add the feature information to the UI
                 addFeatureInformation(
                     fenceFeatureName,
-                    geoTriggerType,
+                    geotriggerType,
                     fenceGeotriggerNotificationInfo.fenceGeoElement as ArcGISFeature
                 )
             }
             FenceNotificationType.Exited -> {
                 // if the user exits a given geofence, remove the feature's information from the UI
-                removeFeatureInformation(fenceFeatureName, geoTriggerType)
+                removeFeatureInformation(fenceFeatureName, geotriggerType)
             }
         }
     }
 
     /**
-     * Adds the [fenceFeature] ArcGISFeature with the [fenceFeatureName] and [geoTriggerType] to the current UI state
+     * Adds the [fenceFeature] ArcGISFeature with the [fenceFeatureName] and [geotriggerType] to the current UI state
      * and refreshes the UI
      */
     private fun addFeatureInformation(
         fenceFeatureName: String,
-        geoTriggerType: String,
+        geotriggerType: String,
         fenceFeature: ArcGISFeature
     ) {
         // recenter the mapview
         mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
 
-        when (geoTriggerType) {
+        when (geotriggerType) {
             // if it's a section geo trigger type
-            sectionGeoTrigger -> {
+            sectionGeotrigger -> {
                 // update the section button's onClickListener
                 // to show a new FeatureViewFragment
                 sectionButton.setOnClickListener { showFeatureViewFragment(fenceFeature) }
@@ -291,7 +284,7 @@ class MainActivity : AppCompatActivity() {
                 sectionButton.isEnabled = true
             }
             // or a point of interest geo trigger
-            poiGeoTrigger -> {
+            poiGeotrigger -> {
                 // add it to the stored list
                 poiList.add(fenceFeature)
                 // notify the list adapter to refresh its recycler views
@@ -302,18 +295,18 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Removes the ArcGISFeature with the given [fenceFeatureName] and corresponding
-     * [geoTriggerType] from the current UI state and refreshes the UI.
+     * [geotriggerType] from the current UI state and refreshes the UI.
      */
-    private fun removeFeatureInformation(fenceFeatureName: String, geoTriggerType: String) {
+    private fun removeFeatureInformation(fenceFeatureName: String, geotriggerType: String) {
         // check the type of geotrigger
-        when (geoTriggerType) {
-            sectionGeoTrigger -> {
+        when (geotriggerType) {
+            sectionGeotrigger -> {
                 // if it's a section geo trigger,
                 // remove the section information and disable the button
                 sectionButton.text = "N/A"
                 sectionButton.isEnabled = false
             }
-            poiGeoTrigger -> {
+            poiGeotrigger -> {
                 // if it's a point of interest geotrigger
                 // find its index from the stored list
                 val index = poiList.indexOfFirst { feature ->
