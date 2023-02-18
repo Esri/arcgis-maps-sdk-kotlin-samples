@@ -38,8 +38,8 @@
                 android:layout_alignParentTop="true"
                 android:background="@drawable/button_bar_background"
                 android:contentDescription="@string/undo"
-                android:src="@drawable/ic_menu_undo"
                 android:onClick="undo"
+                android:src="@drawable/ic_menu_undo"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/redoButton"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -49,12 +49,12 @@
             <ImageButton
                 android:id="@+id/redoButton"
                 android:layout_width="wrap_content"
-                android:onClick="redo"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:background="@drawable/button_bar_background"
                 android:contentDescription="@string/redo"
+                android:onClick="redo"
                 android:src="@drawable/ic_menu_redo"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/commitChangesButton"
@@ -68,9 +68,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:onClick="stop"
                 android:background="@drawable/button_bar_background"
                 android:contentDescription="@string/commit_edits"
+                android:onClick="stop"
                 android:src="@drawable/ic_round_commit_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -78,12 +78,11 @@
                 app:layout_constraintStart_toEndOf="@+id/redoButton"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="2px"
             android:background="@android:color/darker_gray"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
             app:layout_constraintEnd_toEndOf="parent"
@@ -111,18 +110,18 @@
                 android:onClick="createModePoint"
                 android:src="@drawable/ic_action_point"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/pointsButton"
+                app:layout_constraintEnd_toStartOf="@+id/multipointButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <ImageButton
-                android:id="@+id/pointsButton"
+                android:id="@+id/multipointButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/pointButton"
                 android:background="@drawable/button_bar_background"
-                android:contentDescription="@string/polylineButtonDescription"
+                android:contentDescription="@string/pointButtonDescription"
                 android:onClick="createModeMultipoint"
                 android:src="@drawable/ic_action_multipoint"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -135,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/pointsButton"
+                android:layout_toEndOf="@+id/multipointButton"
                 android:background="@drawable/button_bar_background"
                 android:contentDescription="@string/polylineButtonDescription"
                 android:onClick="createModePolyline"
@@ -143,7 +142,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/polygonButton"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/pointsButton" />
+                app:layout_constraintStart_toEndOf="@+id/multipointButton" />
 
             <ImageButton
                 android:id="@+id/polygonButton"

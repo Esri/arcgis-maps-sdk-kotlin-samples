@@ -10,4 +10,10 @@
     <string name="stop">Stop</string>
     <string name="clear">Clear</string>
     <string name="commit_edits">Commit edits</string>
+    <string name="current_selection">Current selection: %s</string>
+    <string name="invalid_point_message">Point only valid if it contains an x &amp; y coordinate.</string>
+    <string name="invalid_multipoint_message">Multipoint only valid if it contains at least one vertex.</string>
+    <string name="invalid_polyline_message">Polyline only valid if it contains at least one part of 2 or more vertices.</string>
+    <string name="invalid_polygon_message">Polygon only valid if it contains at least one part of 3 or more vertices which form a closed ring.</string>
+    <string name="none_selected_message">No sketch creation mode selected.</string>
 </resources>
