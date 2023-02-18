@@ -21,6 +21,8 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
@@ -41,6 +43,14 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    private val takeMapOfflineButton by lazy {
+        activityMainBinding.takeMapOfflineButton
+    }
+
+    private val workManager by lazy {
+        WorkManager.getInstance(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -52,6 +62,10 @@ class MainActivity : AppCompatActivity() {
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         mapView.map = map
+
+        takeMapOfflineButton.setOnClickListener {
+            workManager.enqueue(OneTimeWorkRequest.from(JobWorker::class.java))
+        }
     }
 
     private fun showError(message: String, view: View) {
