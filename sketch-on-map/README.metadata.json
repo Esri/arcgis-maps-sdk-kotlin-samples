@@ -1,2 +1,34 @@
 {
+    "category": "Maps and Scenes",
+    "description": "Use the Sketch Editor to edit or sketch a new point, line, or polygon geometry on to a map.",
+    "formal_name": "SketchOnMap",
+    "ignore": false,
+    "images": [
+        "sketch-on-map.png"
+    ],
+    "keywords": [
+        "draw",
+        "edit",
+        "sketch",
+        "Geometry",
+        "GeometryEditor",
+        "GeometryEditorCreationMode",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEditor",
+        "GeometryEditorCreationMode",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/sketchonmap/MainActivity.kt"
+    ],
+    "title": "Sketch on map"
 }

@@ -24,7 +24,6 @@ import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.GeometryBuilder
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
@@ -169,7 +168,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * When the undo button is clicked, undo the last event on the SketchEditor.
+     * When the undo button is clicked, undo the last event on the GeometryEditor.
      */
     fun undo(view: View) {
         if (geometryEditor?.canUndo?.value == true) {
@@ -179,7 +178,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * When the redo button is clicked, redo the last undone event on the SketchEditor.
+     * When the redo button is clicked, redo the last undone event on the GeometryEditor.
      */
     fun redo(view: View) {
         if (geometryEditor?.canRedo?.value == true) {
