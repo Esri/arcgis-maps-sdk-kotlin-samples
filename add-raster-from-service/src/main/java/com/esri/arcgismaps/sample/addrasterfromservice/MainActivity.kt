@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         ImageServiceRaster(getString(R.string.image_service_raster_url))
     }
 
-    private val imageRasterLayer : RasterLayer by lazy{
+    private val imageRasterLayer: RasterLayer by lazy {
         RasterLayer(imageServiceRaster)
     }
 
@@ -123,10 +123,11 @@ class MainActivity : AppCompatActivity() {
 
         // get parameter name value pairs used by hillside
         val rasterFunctionArguments = rasterFunction.arguments
+            ?: return showError("Raster function arguments is null")
 
         // get a list of raster names associated with the raster function
-        val rasterNames = rasterFunctionArguments?.rasterNames
-        rasterFunctionArguments?.setRaster(rasterNames?.get(0).toString(), imageServiceRaster)
+        val rasterNames = rasterFunctionArguments.rasterNames
+        rasterFunctionArguments.setRaster(rasterNames[0], imageServiceRaster)
 
         // create raster as raster layer
         val hillshadeRaster = Raster(rasterFunction)
