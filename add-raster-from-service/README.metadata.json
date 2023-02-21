@@ -1,5 +1,5 @@
 {
-    "category": "add-raster-from-service.png",
+    "category": "Layers",
     "description": "Load a raster from a service, then apply a function to it.",
     "formal_name": "AddRasterFromService",
     "ignore": false,
