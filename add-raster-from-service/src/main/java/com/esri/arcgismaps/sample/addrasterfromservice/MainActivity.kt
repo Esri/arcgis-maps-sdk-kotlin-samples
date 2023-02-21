@@ -21,24 +21,38 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.layers.RasterLayer
+import com.arcgismaps.raster.ImageServiceRaster
+import com.arcgismaps.raster.Raster
+import com.arcgismaps.raster.RasterFunction
 import com.esri.arcgismaps.sample.addrasterfromservice.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
     private val mapView by lazy {
         activityMainBinding.mapView
+    }
+
+    private val imageServiceRaster: ImageServiceRaster by lazy {
+        ImageServiceRaster(getString(R.string.image_service_raster_url))
+    }
+
+    private val imageRasterLayer : RasterLayer by lazy{
+        RasterLayer(imageServiceRaster)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,13 +63,81 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+        // create and add a map with a dark gray basemap style
+        val map = ArcGISMap(BasemapStyle.ArcGISDarkGray)
         mapView.map = map
+
+        // add the imageRasterLayer to the map
+        addImageRasterLayer()
+
+        activityMainBinding.apply {
+            rasterButton.setOnClickListener {
+                // update the raster with simplified hillshade
+                applyRasterFunction()
+                resetButton.visibility = View.VISIBLE
+                rasterButton.visibility = View.GONE
+            }
+            resetButton.setOnClickListener {
+                // reset map to back to the RasterLayer
+                addImageRasterLayer()
+                resetButton.visibility = View.GONE
+                rasterButton.visibility = View.VISIBLE
+            }
+        }
     }
 
-    private fun showError(message: String, view: View) {
+    /**
+     * Adds the image raster layer to the map and set's the viewpoint
+     * to the image server raster's bounding geometry
+     */
+    private fun addImageRasterLayer() {
+        // clear and add the imageRasterLayer to the map
+        mapView.map?.operationalLayers?.apply {
+            clear()
+            add(imageRasterLayer)
+        }
+
+        // collect the load status of the RasterLayer
+        lifecycleScope.launch {
+            imageRasterLayer.loadStatus.collect { loadStatus ->
+                if (loadStatus == LoadStatus.Loaded) {
+                    // get the center point of the image service raster
+                    val extentEnvelope = imageServiceRaster.serviceInfo?.fullExtent
+                        ?: return@collect showError("Error retrieving the ArcGISImageServiceInfo")
+                    // set the viewpoint of the map to the envelope
+                    mapView.setViewpointGeometry(extentEnvelope)
+                } else if (loadStatus is LoadStatus.FailedToLoad) {
+                    showError("Error loading image raster layer: ${loadStatus.error.message}")
+                }
+            }
+        }
+    }
+
+    /**
+     * Create a hillshade layer using a custom JSON raster function.
+     */
+    private fun applyRasterFunction() {
+        // create raster function from json string
+        val rasterFunction = RasterFunction.fromJson(getString(R.string.hillshade_simplified))
+            ?: return showError("Error creating a raster function object from JSON")
+
+        // get parameter name value pairs used by hillside
+        val rasterFunctionArguments = rasterFunction.arguments
+
+        // get a list of raster names associated with the raster function
+        val rasterNames = rasterFunctionArguments?.rasterNames
+        rasterFunctionArguments?.setRaster(rasterNames?.get(0).toString(), imageServiceRaster)
+
+        // create raster as raster layer
+        val hillshadeRaster = Raster(rasterFunction)
+        val hillshadeLayer = RasterLayer(hillshadeRaster)
+
+        // clear and add the layer to the map
+        mapView.map?.operationalLayers?.add(hillshadeLayer)
+    }
+
+    private fun showError(message: String) {
         Log.e(TAG, message)
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
