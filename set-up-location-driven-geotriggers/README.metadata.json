@@ -48,9 +48,9 @@
         "SimulatedLocationDataSource"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/setuplocationdrivengeotriggers/FeatureListAdapter.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setuplocationdrivengeotriggers/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/setuplocationdrivengeotriggers/FeatureViewFragment.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setuplocationdrivengeotriggers/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/setuplocationdrivengeotriggers/FeatureListAdapter.kt"
     ],
     "title": "Set up location driven geotriggers"
 }
