@@ -41,7 +41,7 @@ class FeatureViewHolder(view: View) : ViewHolder(view) {
  * [onItemClickListener] event is called when an itemView clicks
  */
 class FeatureListAdapter(
-    private val featuresList: MutableList<ArcGISFeature>,
+    private val featuresList: List<ArcGISFeature>,
     private var onItemClickListener: (ArcGISFeature) -> Unit
 ) : RecyclerView.Adapter<FeatureViewHolder>() {
 
@@ -52,7 +52,7 @@ class FeatureListAdapter(
         holder.titleView.text = feature.attributes["name"].toString()
         // set the onClickListener to pass the item's feature
         holder.itemView.setOnClickListener {
-            onItemClickListener.invoke(feature)
+            onItemClickListener(feature)
         }
     }
 

@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 /**
  * Class to display an ArcGISFeature [featureSection] information as a
  * bottom sheet dialog fragment. Provides an [onDismissListener] callback
- * when the fragment is dismissed
+ * when the fragment is dismissed.
  */
 class FeatureViewFragment(
     private val featureSection: ArcGISFeature,
@@ -81,7 +81,7 @@ class FeatureViewFragment(
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         // call the dismiss listener
-        onDismissListener.invoke()
+        onDismissListener()
     }
 
     /**

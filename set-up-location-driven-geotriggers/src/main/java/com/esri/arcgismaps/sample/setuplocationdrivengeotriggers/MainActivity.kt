@@ -86,18 +86,17 @@ class MainActivity : AppCompatActivity() {
         // a velocity of 10 m/s, and a horizontal and vertical accuracy of 0.0
         val simulationParameters = SimulationParameters(
             Clock.System.now(),
-            3.0,
-            0.0,
-            0.0
+            velocity = 3.0,
+            horizontalAccuracy = 0.0,
+            verticalAccuracy = 0.0
         )
-        SimulatedLocationDataSource().apply {
-            // use the polyline from this ArcGIS Online GeoJSON to define the path. retrieved
-            // from https://https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
-            setLocationsWithPolyline(
-                Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
-                simulationParameters
-            )
-        }
+        // create a SimulatedLocationDataSource using the polyline from
+        // ArcGIS Online GeoJSON to define the path. retrieved from
+        // https://https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
+        SimulatedLocationDataSource(
+            Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
+            simulationParameters
+        )
     }
 
     // feature list to store the points of interest of a geotrigger
@@ -146,10 +145,10 @@ class MainActivity : AppCompatActivity() {
         playPauseFAB.setOnClickListener {
             when (simulatedLocationDataSource.status.value) {
                 LocationDataSourceStatus.Started -> {
-                    stopSimulatedDataSource()
+                    stopSimulatedDataSource(true)
                 }
                 LocationDataSourceStatus.Stopped -> {
-                    startSimulatedDataSource()
+                    startSimulatedDataSource(true)
                 }
                 else -> {
                     // show an error if the status is anything else
@@ -330,7 +329,7 @@ class MainActivity : AppCompatActivity() {
         stopSimulatedDataSource(false)
         // create a new FeatureViewFragment
         val featureViewFragment = FeatureViewFragment(feature) {
-            // set it's onDismissedListener to
+            // set its onDismissedListener to
             // resume the simulated data source
             startSimulatedDataSource(false)
         }
@@ -342,14 +341,16 @@ class MainActivity : AppCompatActivity() {
      * Starts the simulated data source and shows a status toast if [showAlert] is true.
      * The data source is resumed from its previous location if stopped before.
      */
-    private fun startSimulatedDataSource(showAlert: Boolean = true) = lifecycleScope.launch {
+    private fun startSimulatedDataSource(showAlert: Boolean) = lifecycleScope.launch {
         // start the simulated location data source
         simulatedLocationDataSource.start()
         // recenter the map view
         mapView.locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
         // show a toast if true
-        if (showAlert) Toast.makeText(this@MainActivity, "Resumed Simulation", Toast.LENGTH_SHORT)
-            .show()
+        if (showAlert) {
+            Toast.makeText(this@MainActivity, "Resumed Simulation", Toast.LENGTH_SHORT)
+                .show()
+        }
         // update the action button's drawable to a pause icon
         playPauseFAB.setImageResource(R.drawable.ic_baseline_pause_24)
     }
@@ -357,12 +358,14 @@ class MainActivity : AppCompatActivity() {
     /**
      * Stops the simulated data source and shows a status toast if [showAlert] is true.
      */
-    private fun stopSimulatedDataSource(showAlert: Boolean = true) = lifecycleScope.launch {
+    private fun stopSimulatedDataSource(showAlert: Boolean) = lifecycleScope.launch {
         // stop the simulated location data source
         simulatedLocationDataSource.stop()
         // show a toast if true
-        if (showAlert) Toast.makeText(this@MainActivity, "Stopped Simulation", Toast.LENGTH_SHORT)
-            .show()
+        if (showAlert) {
+            Toast.makeText(this@MainActivity, "Stopped Simulation", Toast.LENGTH_SHORT)
+                .show()
+        }
         // update the action button's drawable to a play icon
         playPauseFAB.setImageResource(R.drawable.ic_baseline_play_arrow_24)
     }
