@@ -159,32 +159,36 @@ class MainActivity : AppCompatActivity() {
             return
         }
         // create a convex hull from the points and proceed if it's not null
-        GeometryEngine.convexHull(normalizedPointGeometry)?.let { convexHullGeometry ->
-            // the convex hull's geometry may be a point or polyline if the number of
-            // points is less than 3, set its symbol accordingly
-            convexHullGraphic.symbol = when (convexHullGeometry) {
-                is Point -> {
-                    // set symbol to use the pointSymbol
-                    pointSymbol
-                }
-                is Polyline -> {
-                    // set symbol to use the lineSymbol
-                    lineSymbol
-                }
-                is Polygon -> {
-                    // set symbol to use the fillSymbol
-                    fillSymbol
-                }
-                else -> {
-                    showError("Unknown geometry for convex hull")
-                    null
-                }
+        val convexHullGeometry = GeometryEngine.convexHull(normalizedPointGeometry)
+        if (convexHullGeometry == null) {
+            // if the convex hull is null, show the error and return
+            showError("Error creating convex hull")
+            return
+        }
+        // the convex hull's geometry may be a point or polyline if the number of
+        // points is less than 3, set its symbol accordingly
+        convexHullGraphic.symbol = when (convexHullGeometry) {
+            is Point -> {
+                // set symbol to use the pointSymbol
+                pointSymbol
             }
-            // update the convex hull graphics geometry
-            convexHullGraphic.geometry = convexHullGeometry
-            // disable the create button until new input points are created
-            createButton.isEnabled = false
-        } ?: showError("Error creating convex hull")
+            is Polyline -> {
+                // set symbol to use the lineSymbol
+                lineSymbol
+            }
+            is Polygon -> {
+                // set symbol to use the fillSymbol
+                fillSymbol
+            }
+            else -> {
+                showError("Unknown geometry for convex hull")
+                null
+            }
+        }
+        // update the convex hull graphics geometry
+        convexHullGraphic.geometry = convexHullGeometry
+        // disable the create button until new input points are created
+        createButton.isEnabled = false
     }
 
 
