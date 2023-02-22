@@ -118,8 +118,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // if the map load fails show the error and return
             map.load().onFailure {
-                showError("Error loading map")
-                return@launch
+                return@launch showError("Error loading map")
             }
             // capture and collect when the user taps on the screen
             mapView.onSingleTapConfirmed.collect { event ->
@@ -161,20 +160,14 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createConvexHull(pointGeometry: Geometry) {
         // normalize the geometry for panning beyond the meridian
+        // and proceed if the resulting geometry is not null
         val normalizedPointGeometry = GeometryEngine.normalizeCentralMeridian(pointGeometry)
-        // check to proceed if the resulting geometry is not null
-        if (normalizedPointGeometry == null) {
-            // if it is null, show the error and return
-            showError("Error normalizing point geometry")
-            return
-        }
+            ?: return showError("Error normalizing point geometry")
+
         // create a convex hull from the points and proceed if it's not null
         val convexHullGeometry = GeometryEngine.convexHull(normalizedPointGeometry)
-        if (convexHullGeometry == null) {
-            // if the convex hull is null, show the error and return
-            showError("Error creating convex hull")
-            return
-        }
+            ?: return showError("Error creating convex hull")
+
         // the convex hull's geometry may be a point or polyline if the number of
         // points is less than 3, set its symbol accordingly
         convexHullGraphic.symbol = when (convexHullGeometry) {
