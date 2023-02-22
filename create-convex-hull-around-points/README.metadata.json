@@ -1,0 +1,26 @@
+{
+    "category": "Analysis",
+    "description": "Create a convex hull for a given set of points. The convex hull is a polygon with shortest perimeter that encloses a set of points. As a visual analogy, consider a set of points as nails in a board. The convex hull of the points would be like a rubber band stretched around the outermost nails.",
+    "formal_name": "CreateConvexHullAroundPoints",
+    "ignore": false,
+    "images": [
+        "create-convex-hull-around-points.png"
+    ],
+    "keywords": [
+        "convex hull",
+        "geometry",
+        "spatial analysis",
+        "Geometry",
+        "GeometryEngine"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEngine"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createconvexhullaroundpoints/MainActivity.kt"
+    ],
+    "title": "Create convex hull around points"
+}
