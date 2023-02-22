@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeometryBuilder
+import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
@@ -40,8 +41,9 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.geometryeditor.FreehandTool
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
-import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorCreationMode
+import com.arcgismaps.mapping.view.geometryeditor.VertexTool
 import com.esri.arcgismaps.sample.sketchonmap.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -60,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     // create a symbol for the point graphic
     private var pointSymbol: SimpleMarkerSymbol = SimpleMarkerSymbol(
         SimpleMarkerSymbolStyle.Square,
-        Color(-0x10000),
+        Color(-0x7800),
         20f
     )
 
@@ -81,6 +83,12 @@ class MainActivity : AppCompatActivity() {
     // keep the instance graphic overlay to add graphics on the map
     private var graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
 
+    // keep the instance of the freehand tool
+    private val freehandTool: FreehandTool = FreehandTool()
+
+    // keep the instance of the vertex tool
+    private val vertexTool: VertexTool = VertexTool()
+
     // keep the instance to create new geometries, and change existing geometries
     private var geometryEditor: GeometryEditor? = GeometryEditor()
 
@@ -94,7 +102,7 @@ class MainActivity : AppCompatActivity() {
 
         // create and add a map with a navigation night basemap style
         mapView.apply {
-            map =  ArcGISMap(BasemapStyle.ArcGISLightGray)
+            map = ArcGISMap(BasemapStyle.ArcGISLightGray)
             setViewpoint(Viewpoint(34.056295, -117.195800, 100000.0))
             graphicsOverlays.add(graphicsOverlay)
             this.geometryEditor = this@MainActivity.geometryEditor
@@ -109,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Point")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.pointButton.isSelected = true
-        geometryEditor?.start(GeometryEditorCreationMode.Point)
+        geometryEditor?.start(GeometryType.Point)
     }
 
     /**
@@ -120,7 +128,10 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Multipoint")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.multipointButton.isSelected = true
-        geometryEditor?.start(GeometryEditorCreationMode.Multipoint)
+        geometryEditor?.apply {
+            tool = vertexTool
+            start(GeometryType.Multipoint)
+        }
     }
 
     /**
@@ -131,7 +142,10 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Polyline")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.polylineButton.isSelected = true
-        geometryEditor?.start(GeometryEditorCreationMode.Polyline)
+        geometryEditor?.apply {
+            tool = vertexTool
+            start(GeometryType.Polyline)
+        }
     }
 
     /**
@@ -142,7 +156,10 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Polygon")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.polygonButton.isSelected = true
-        geometryEditor?.start(GeometryEditorCreationMode.Polygon)
+        geometryEditor?.apply {
+            tool = vertexTool
+            start(GeometryType.Polygon)
+        }
     }
 
     /**
@@ -153,7 +170,10 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("FreehandPolyline")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.freehandLineButton.isSelected = true
-        geometryEditor?.start(GeometryEditorCreationMode.FreehandPolyline)
+        geometryEditor?.apply {
+            tool = freehandTool
+            start(GeometryType.Polyline)
+        }
     }
 
     /**
@@ -164,7 +184,10 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("FreehandPolygon")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.freehandPolygonButton.isSelected = true
-        geometryEditor?.start(GeometryEditorCreationMode.FreehandPolygon)
+        geometryEditor?.apply {
+            tool = freehandTool
+            start(GeometryType.Polygon)
+        }
     }
 
     /**
@@ -196,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         val sketchGeometry = geometryEditor?.geometry?.value
             ?: return showError("Error retrieving geometry")
 
-        if(GeometryBuilder.builder(sketchGeometry)?.isSketchValid == false){
+        if (GeometryBuilder.builder(sketchGeometry)?.isSketchValid == false) {
             return reportNotValid()
         }
 
@@ -249,23 +272,14 @@ class MainActivity : AppCompatActivity() {
      * Called if sketch is invalid. Reports to user why the sketch was invalid.
      */
     private fun reportNotValid() {
+        val geometry = geometryEditor?.geometry?.value ?: return showError("Geometry not found")
         val validIfText: String =
-            when (geometryEditor?.creationMode) {
-                is GeometryEditorCreationMode.Point -> {
-                    getString(R.string.invalid_point_message)
-                }
-                is GeometryEditorCreationMode.Multipoint -> {
-                    getString(R.string.invalid_multipoint_message)
-                }
-                is GeometryEditorCreationMode.Polyline, is GeometryEditorCreationMode.FreehandPolyline -> {
-                    getString(R.string.invalid_polyline_message)
-                }
-                is GeometryEditorCreationMode.Polygon, is GeometryEditorCreationMode.FreehandPolygon -> {
-                    getString(R.string.invalid_polygon_message)
-                }
-                else -> {
-                    getString(R.string.none_selected_message)
-                }
+            when (geometry) {
+                is Point -> getString(R.string.invalid_point_message)
+                is Multipoint -> getString(R.string.invalid_multipoint_message)
+                is Polyline -> getString(R.string.invalid_polyline_message)
+                is Polygon -> getString(R.string.invalid_polygon_message)
+                else -> getString(R.string.none_selected_message)
             }
         setCurrentSelectionText(validIfText)
     }
