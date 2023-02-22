@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         )
         // create a SimulatedLocationDataSource using the polyline from
         // ArcGIS Online GeoJSON to define the path. retrieved from
-        // https://https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
+        // https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
         SimulatedLocationDataSource(
             Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
             simulationParameters
@@ -103,8 +103,8 @@ class MainActivity : AppCompatActivity() {
     private val poiList = mutableListOf<ArcGISFeature>()
 
     // geotrigger names for the geotrigger monitors
-    private val sectionGeotrigger: String = "Section Geotrigger"
-    private val poiGeotrigger: String = "POI Geotrigger"
+    private val sectionGeotrigger = "Section Geotrigger"
+    private val poiGeotrigger = "POI Geotrigger"
 
     // make monitors properties to prevent garbage collection
     private lateinit var sectionGeotriggerMonitor: GeotriggerMonitor
