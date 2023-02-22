@@ -32,9 +32,9 @@
             android:layout_height="wrap_content"
             android:enabled="false"
             android:text="@string/reset"
+            android:textAllCaps="false"
             app:layout_constraintBottom_toTopOf="@id/createButton"
             app:layout_constraintEnd_toEndOf="@id/createButton" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
