@@ -2,4 +2,8 @@
     <string name="app_name">Generate offline map using workmanager</string>
     <string name="portal_url">https://www.arcgis.com</string>
     <string name="item_id">acc027394bc84c2fb04d1ed317aac674</string>
+    <string name="dialog_title">Fetching result</string>
+    <string name="offlineMapFile">/offlineMap</string>
+    <string name="offlineJobJsonFile">/offlineJobJson</string>
+    <string name="offlineJobWorkerTag">offlineJobWorker</string>
 </resources>
