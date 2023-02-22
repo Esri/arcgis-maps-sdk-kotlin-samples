@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -23,6 +23,8 @@ android {
     buildFeatures {
         dataBinding true
     }
+
+    namespace 'com.esri.arcgismaps.sample.addfeaturelayers'
 }
 
 dependencies {

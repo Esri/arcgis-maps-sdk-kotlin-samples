@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Download vector tiles to local cache</string>
+    <string name="export_vector_tiles">Download Vector Tiles</string>
+    <string name="close_vector_tile_preview">Close vector tile preview</string>
+</resources>

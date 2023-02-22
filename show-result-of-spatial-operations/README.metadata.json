@@ -1,0 +1,45 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Find the union, intersection, or difference of two geometries.",
+    "formal_name": "ShowResultOfSpatialOperations",
+    "ignore": false,
+    "images": [
+        "show-result-of-spatial-operations.png"
+    ],
+    "keywords": [
+        "analysis",
+        "combine",
+        "difference",
+        "geometry",
+        "intersection",
+        "merge",
+        "polygon",
+        "union",
+        "Geometry",
+        "GeometryEngine",
+        "GeometryEngine.difference",
+        "GeometryEngine.intersection",
+        "GeometryEngine.symmetricDifference",
+        "GeometryEngine.union",
+        "Graphic",
+        "GraphicsOverlay"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "/android/latest/sample-code/spatial-operations.htm"
+    ],
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEngine",
+        "GeometryEngine.difference",
+        "GeometryEngine.intersection",
+        "GeometryEngine.symmetricDifference",
+        "GeometryEngine.union",
+        "Graphic",
+        "GraphicsOverlay"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showresultofspatialoperations/MainActivity.kt"
+    ],
+    "title": "Show result of spatial operations"
+}
