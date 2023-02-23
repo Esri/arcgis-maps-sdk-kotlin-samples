@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 package com.esri.arcgismaps.sample.showgrid
 
 import android.os.Bundle
-import android.view.View
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -39,16 +38,15 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.TextSymbol
 import com.arcgismaps.mapping.symbology.VerticalAlignment
-import com.arcgismaps.mapping.view.Grid
 import com.arcgismaps.mapping.view.GridLabelPosition
 import com.arcgismaps.mapping.view.LatitudeLongitudeGrid
 import com.arcgismaps.mapping.view.LatitudeLongitudeGridLabelFormat
-import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.MgrsGrid
 import com.arcgismaps.mapping.view.UsngGrid
 import com.arcgismaps.mapping.view.UtmGrid
 import com.esri.arcgismaps.sample.showgrid.databinding.ActivityMainBinding
-import com.esri.arcgismaps.sample.showgrid.databinding.PopupMenuBinding
+import com.esri.arcgismaps.sample.showgrid.databinding.PopupDialogBinding
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,15 +66,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     // create a point to focus the map on in Quebec province
-    private val center: Point by lazy {
-        Point(
-            -7702852.905619, 6217972.345771, SpatialReference(3857)
-        )
-    }
+    private val center: Point = Point(
+        -7702852.905619, 6217972.345771, SpatialReference(3857)
+    )
 
+    // the selected line color of the grid
     private var lineColor: Color = Color.white
+
+    // the selected label color of the grid
     private var labelColor: Color = Color.white
-    private var labelPosition = GridLabelPosition.AllSides
+
+    // the selected label position of the grid
+    private var labelPosition: GridLabelPosition = GridLabelPosition.AllSides
+
+    // boolean set if the layer is visible
     private var isLabelVisible = true
 
 
@@ -97,213 +100,164 @@ class MainActivity : AppCompatActivity() {
             grid = LatitudeLongitudeGrid()
         }
 
-        // set up a popup menu to manage grid settings
-        val builder = AlertDialog.Builder(this@MainActivity)
-        val popUpMenuBinding = PopupMenuBinding.inflate(layoutInflater)
-
-        builder.setView(popUpMenuBinding.root)
+        // create a popup dialog to manage grid settings
+        val popUpDialogBinding = PopupDialogBinding.inflate(layoutInflater)
+        val builder = AlertDialog.Builder(this@MainActivity).apply {
+            setView(popUpDialogBinding.root)
+            setTitle(getString(R.string.change_grid_button))
+        }
         val dialog = builder.create()
 
         // set up options in popup menu
         // create drop-down list of different layer types
-        setupLayerSpinner(popUpMenuBinding)
+        setupLayerDropdown(popUpDialogBinding)
 
         // create drop-down list of different line colors
-        setupLineColorSpinner(popUpMenuBinding)
+        setupLineColorDropdown(popUpDialogBinding)
 
         // create drop-down list of different label colors
-        setupLabelColorSpinner(popUpMenuBinding)
+        setupLabelColorDropdown(popUpDialogBinding)
 
         // create drop-down list of different label positions
-        setupLabelPositionSpinner(popUpMenuBinding)
+        setupLabelPositionDropdown(popUpDialogBinding)
 
         // setup the checkbox to change the visibility of the labels
-        setupLabelsCheckbox(popUpMenuBinding)
+        setupLabelsCheckbox(popUpDialogBinding)
 
         // display pop-up box when button is clicked
         menuButton.setOnClickListener { dialog.show() }
     }
 
     /**
-     * Sets up the spinner for selecting a grid type
+     * Sets up the [popupDialogBinding] for selecting a grid type
      * and handles behavior for when a new grid type is selected.
-     *
-     * @param popupMenuBinding the popup binding inflated in onCreate()
      */
-    private fun setupLayerSpinner(popupMenuBinding: PopupMenuBinding) {
-        popupMenuBinding.layerSpinner.apply {
-            // create drop-down list of different grids
-            adapter = ArrayAdapter(
-                this@MainActivity,
-                android.R.layout.simple_spinner_item,
-                resources.getStringArray(R.array.layers_array)
-            ).also { gridAdapter ->
-                gridAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
-            // change between different grids on the mapView
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View, position: Int, id: Long
-                ) {
-                    // set the grid type and move to the starting point over 1 second.
-                    when (position) {
-                        0 -> {
-                            // LatitudeLongitudeGrid can have a label format of DECIMAL_DEGREES or DEGREES_MINUTES_SECONDS
-                            mapView.grid = LatitudeLongitudeGrid().apply {
-                                labelFormat = LatitudeLongitudeGridLabelFormat.DecimalDegrees
-                            }
-                            mapView.setViewpoint(Viewpoint(center, 23227.0))
+    private fun setupLayerDropdown(popupDialogBinding: PopupDialogBinding) {
+        popupDialogBinding.gridTypeDropdown.apply {
+            // set the grid type adapter
+            setAdapter(ArrayAdapter(
+                applicationContext,
+                android.R.layout.simple_list_item_1,
+                resources.getStringArray(R.array.layers_array))
+            )
+
+            // set the grid type click listener
+            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                when (position) {
+                    0 -> {
+                        // LatitudeLongitudeGrid can have a label format of DecimalDegrees or DegreesMinutesSeconds
+                        mapView.grid = LatitudeLongitudeGrid().apply {
+                            labelFormat = LatitudeLongitudeGridLabelFormat.DecimalDegrees
                         }
-                        1 -> {
-                            mapView.grid = MgrsGrid()
-                            mapView.setViewpoint(Viewpoint(center, 23227.0))
-                        }
-                        2 -> {
-                            mapView.grid = UtmGrid()
-                            mapView.setViewpoint(Viewpoint(center, 10000000.0))
-                        }
-                        3 -> {
-                            mapView.grid = UsngGrid()
-                            mapView.setViewpoint(Viewpoint(center, 23227.0))
-                        }
-                        else -> Toast.makeText(
-                            this@MainActivity, "Unsupported option", Toast.LENGTH_SHORT
-                        ).show()
+                        mapView.setViewpoint(Viewpoint(center, 23227.0))
                     }
-                    // make sure settings persist on grid type change
-                    setLabelVisibility(isLabelVisible)
-                    changeGridColor(lineColor)
-                    changeLabelColor(labelColor)
+                    1 -> {
+                        mapView.grid = MgrsGrid()
+                        mapView.setViewpoint(Viewpoint(center, 23227.0))
+                    }
+                    2 -> {
+                        mapView.grid = UtmGrid()
+                        mapView.setViewpoint(Viewpoint(center, 10000000.0))
+                    }
+                    3 -> {
+                        mapView.grid = UsngGrid()
+                        mapView.setViewpoint(Viewpoint(center, 23227.0))
+                    }
+                    else -> return@OnItemClickListener showError("Unsupported option")
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+                // make sure settings persist on grid type change
+                setLabelVisibility(isLabelVisible)
+                changeGridColor(lineColor)
+                changeLabelColor(labelColor)
             }
         }
     }
 
     /**
-     * Sets up the spinner for selecting a line color and handles behavior for when a new line color is selected.
-     *
-     * @param popupMenuBinding the popup binding inflated in onCreate()
+     * Sets up the [popupDialogBinding] for selecting a grid color and
+     * handles behavior for when a new line color is selected.
      */
-    private fun setupLineColorSpinner(popupMenuBinding: PopupMenuBinding) {
-        popupMenuBinding.lineColorSpinner.apply {
-            // create drop-down list of different line colors
-            adapter = ArrayAdapter(
-                this@MainActivity,
-                android.R.layout.simple_spinner_item,
-                resources.getStringArray(R.array.colors_array)
-            ).also { colorAdapter ->
-                colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
+    private fun setupLineColorDropdown(popupDialogBinding: PopupDialogBinding) {
+        popupDialogBinding.gridColorDropdown.apply {
+            // set the grid color adapter
+            setAdapter(ArrayAdapter(
+                applicationContext,
+                android.R.layout.simple_list_item_1,
+                resources.getStringArray(R.array.colors_array))
+            )
 
-            // change grid lines color
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View, position: Int, id: Long
-                ) { // set the color
-                    when (position) {
-                        0 -> lineColor = Color.red
-                        1 -> lineColor = Color.white
-                        2 -> lineColor = Color.blue
-                        else -> Toast.makeText(
-                            this@MainActivity, "Unsupported option", Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    changeGridColor(lineColor)
+            // set the grid color click listener
+            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                lineColor = when (position) {
+                    0 -> Color.red
+                    1 -> Color.white
+                    2 -> Color.blue
+                    else -> return@OnItemClickListener showError("Unsupported option")
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+                changeGridColor(lineColor)
             }
         }
     }
 
     /**
-     * Sets up the spinner for selecting a label color
+     * Sets up the [popupDialogBinding] for selecting a label color
      * and handles behavior for when a new label color is selected.
-     *
-     * @param popupMenuBinding the popup binding inflated in onCreate()
      */
-    private fun setupLabelColorSpinner(popupMenuBinding: PopupMenuBinding) {
-        popupMenuBinding.labelColorSpinner.apply {
-            adapter = ArrayAdapter(
-                this@MainActivity,
-                android.R.layout.simple_spinner_item,
-                resources.getStringArray(R.array.colors_array)
-            ).also { labelColorAdapter ->
-                labelColorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
-
-            // change grid labels color
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View, position: Int, id: Long
-                ) {
-                    // set the color
-                    when (position) {
-                        0 -> labelColor = Color.red
-                        1 -> labelColor = Color.white
-                        2 -> labelColor = Color.blue
-                        else -> Toast.makeText(
-                            this@MainActivity, "Unsupported option", Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    changeLabelColor(labelColor)
+    private fun setupLabelColorDropdown(popupDialogBinding: PopupDialogBinding) {
+        popupDialogBinding.labelColorDropdown.apply {
+            setAdapter(ArrayAdapter(
+                applicationContext,
+                android.R.layout.simple_list_item_1,
+                resources.getStringArray(R.array.colors_array))
+            )
+            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                // change grid labels color
+                labelColor = when (position) {
+                    0 -> Color.red
+                    1 -> Color.white
+                    2 -> Color.blue
+                    else -> return@OnItemClickListener showError("Unsupported option")
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+                changeLabelColor(labelColor)
             }
         }
     }
 
     /**
-     * Sets up the spinner for selecting a label position relative to the grid
+     * Sets up the [popupDialogBinding] for selecting a label position relative to the grid
      * and handles behavior for when a label position is selected.
-     *
-     * @param popupMenuBinding the popup binding inflated in onCreate()
      */
-    private fun setupLabelPositionSpinner(popupMenuBinding: PopupMenuBinding) {
-        popupMenuBinding.labelPositionSpinner.apply {
-            adapter = ArrayAdapter(
-                this@MainActivity,
-                android.R.layout.simple_spinner_item,
-                resources.getStringArray(R.array.positions_array)
-            ).also { positionAdapter ->
-                positionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
+    private fun setupLabelPositionDropdown(popupDialogBinding: PopupDialogBinding) {
+        popupDialogBinding.labelPositionDropdown.apply {
+            setAdapter(ArrayAdapter(
+                applicationContext,
+                android.R.layout.simple_list_item_1,
+                resources.getStringArray(R.array.positions_array))
+            )
 
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View, position: Int, id: Long
-                ) {
-                    // set the label position
-                    when (position) {
-                        0 -> labelPosition = GridLabelPosition.AllSides
-                        1 -> labelPosition = GridLabelPosition.BottomLeft
-                        2 -> labelPosition = GridLabelPosition.BottomRight
-                        3 -> labelPosition = GridLabelPosition.Center
-                        4 -> labelPosition = GridLabelPosition.Geographic
-                        5 -> labelPosition = GridLabelPosition.TopLeft
-                        6 -> labelPosition = GridLabelPosition.TopRight
-                        else -> Toast.makeText(
-                            this@MainActivity, "Unsupported option", Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    changeLabelPosition(labelPosition)
+            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                // set the label position
+                labelPosition = when (position) {
+                    0 -> GridLabelPosition.AllSides
+                    1 -> GridLabelPosition.BottomLeft
+                    2 -> GridLabelPosition.BottomRight
+                    3 -> GridLabelPosition.Center
+                    4 -> GridLabelPosition.Geographic
+                    5 -> GridLabelPosition.TopLeft
+                    6 -> GridLabelPosition.TopRight
+                    else -> return@OnItemClickListener showError("Unsupported option")
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+                changeLabelPosition(labelPosition)
             }
         }
     }
 
     /**
-     * Sets up the spinner for the checkbox making labels visible or invisible.
-     *
-     * @param popupMenuBinding the popup binding inflated in onCreate()
+     * Sets up the [popupDialogBinding] for the checkbox making labels visible or invisible.
      */
-    private fun setupLabelsCheckbox(popupMenuBinding: PopupMenuBinding) {
-        popupMenuBinding.labelsCheckBox.apply {
+    private fun setupLabelsCheckbox(popupDialogBinding: PopupDialogBinding) {
+        popupDialogBinding.labelsCheckBox.apply {
             isChecked = true
             // hide and show label visibility when the checkbox is clicked
             setOnClickListener {
@@ -314,19 +268,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets the labels as visible or invisible.
-     *
-     * @param visible whether the labels should be visible
+     * Sets the labels visibility based on [isVisible].
      */
-    private fun setLabelVisibility(visible: Boolean) {
+    private fun setLabelVisibility(isVisible: Boolean) {
         val grid = mapView.grid ?: return
-        grid.labelVisibility = visible
+        grid.labelVisibility = isVisible
     }
 
     /**
-     * Sets the color of the grid lines.
-     *
-     * @param color the integer color to use
+     * Sets the [color] of the grid lines.
      */
     private fun changeGridColor(color: Color) {
         val grid = mapView.grid ?: return
@@ -339,9 +289,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets the color of the labels on the grid.
-     *
-     * @param labelColor the integer color to use
+     * Sets the [labelColor] of the labels on the grid.
      */
     private fun changeLabelColor(labelColor: Color) {
         val grid = mapView.grid ?: return
@@ -360,17 +308,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets the position of the labels on the grid.
-     *
-     * @param labelPosition the LabelPosition to use
+     * Sets the [labelPosition] of the labels on the grid.
      */
     private fun changeLabelPosition(labelPosition: GridLabelPosition) {
         val grid = mapView.grid ?: return
         grid.labelPosition = labelPosition
     }
 
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
+    private fun showError(message: String) {
+        Log.e(TAG, message)
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
+    }
 }
+
+private val Color.Companion.blue: Color
+    get() {
+        return fromRgba(0, 0, 255, 255)
+    }

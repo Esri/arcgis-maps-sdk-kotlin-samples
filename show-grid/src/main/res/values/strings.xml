@@ -4,7 +4,8 @@
     <string name="grid_color">Grid Color</string>
     <string name="label_color">Label Color</string>
     <string name="grid_type">Grid Type</string>
-    <string name="change_grid_button">Change Grid</string>
+    <string name="change_grid_button">Grid Options</string>
+    <string name="label_position">Label Position</string>
     <string-array name="layers_array">
         <item>Lat and Long</item>
         <item>MGRS Grid</item>
@@ -19,12 +20,12 @@
     </string-array>
 
     <string-array name="positions_array">
-        <item>ALL_SIDES</item>
-        <item>BOTTOM_LEFT</item>
-        <item>BOTTOM_RIGHT</item>
-        <item>CENTER</item>
-        <item>GEOGRAPHIC</item>
-        <item>TOP_LEFT</item>
-        <item>TOP_RIGHT</item>
+        <item>AllSides</item>
+        <item>BottomLeft</item>
+        <item>BottomRight</item>
+        <item>Center</item>
+        <item>Geographic</item>
+        <item>TopLeft</item>
+        <item>TopRight</item>
     </string-array>
 </resources>
