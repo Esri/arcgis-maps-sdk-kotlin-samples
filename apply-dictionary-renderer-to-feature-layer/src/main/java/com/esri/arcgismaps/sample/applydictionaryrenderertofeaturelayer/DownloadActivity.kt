@@ -13,7 +13,7 @@ class DownloadActivity : DownloaderActivity() {
             getString(R.string.app_name),
             listOf(
                 // A stylx file that incorporates the MIL-STD-2525D symbol dictionary
-                "https://www.arcgis.com/home/item.html?id=e34835bf5ec5430da7cf16bb8c0b075c",
+                "https://www.arcgis.com/home/item.html?id=c78b149a1d52414682c86a5feeb13d30",
                 // A mobile geodatabase created from the ArcGIS for Defense Military Overlay template
                 "https://www.arcgis.com/home/item.html?id=e0d41b4b409a49a5a7ba11939d8535dc"
             )

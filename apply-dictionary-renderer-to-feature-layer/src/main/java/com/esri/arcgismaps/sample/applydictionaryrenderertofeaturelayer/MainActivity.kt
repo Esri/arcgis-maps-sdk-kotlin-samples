@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         val geoDatabase = Geodatabase(geoDatabaseFile.path)
 
         val styleFile = File(provisionPath, getString(R.string.mil2525d_stylx))
-        val dictionarySymbolStyle = DictionarySymbolStyle.createFromFile(styleFile.path)
+        val dictionarySymbolStyle = DictionarySymbolStyle.createFromFile(styleFile.absolutePath)
 
         lifecycleScope.launch {
             // load the dictionary symbol style
