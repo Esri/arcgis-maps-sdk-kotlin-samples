@@ -1,2 +1,46 @@
 {
+    "category": "MapViews, SceneViews and UI",
+    "description": "Display coordinate system grids including Latitude/Longitude, MGRS, UTM and USNG on a map view. Also, toggle label visibility and change the color of grid lines and grid labels.",
+    "formal_name": "ShowGrid",
+    "ignore": false,
+    "images": [
+        "show-grid.png"
+    ],
+    "keywords": [
+        "MGRS",
+        "USNG",
+        "UTM",
+        "coordinates",
+        "degrees",
+        "graticule",
+        "grid",
+        "latitude",
+        "longitude",
+        "minutes",
+        "seconds",
+        "Grid",
+        "LatitudeLongitudeGrid",
+        "MGRSGrid",
+        "MapView",
+        "SimpleLineSymbol",
+        "TextSymbol",
+        "UsngGrid",
+        "UtmGrid"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Grid",
+        "LatitudeLongitudeGrid",
+        "MGRSGrid",
+        "MapView",
+        "SimpleLineSymbol",
+        "TextSymbol",
+        "UsngGrid",
+        "UtmGrid"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showgrid/MainActivity.kt"
+    ],
+    "title": "Show grid"
 }
