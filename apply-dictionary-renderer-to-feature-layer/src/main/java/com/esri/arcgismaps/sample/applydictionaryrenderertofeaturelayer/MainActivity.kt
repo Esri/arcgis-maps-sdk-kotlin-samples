@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import com.arcgismaps.data.Geodatabase
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.arcgismaps.mapping.layers.ArcGISVectorTiledLayer
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.symbology.DictionaryRenderer
 import com.arcgismaps.mapping.symbology.DictionarySymbolStyle
@@ -65,13 +64,15 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
         mapView.map = map
 
-        // locate the .geodatabase file in the device
-        val geoDatabaseFile = File(provisionPath, getString(R.string.militaryoverlay_geodatabase))
-        // instantiate the geodatabase with the file path
-        val geoDatabase = Geodatabase(geoDatabaseFile.path)
-
+        // locate the .stylx file in the device
         val styleFile = File(provisionPath, getString(R.string.mil2525d_stylx))
+        // instantiate the dictionarySymbolStyle using the file path
         val dictionarySymbolStyle = DictionarySymbolStyle.createFromFile(styleFile.absolutePath)
+
+        // locate the .geodatabase file in the device
+        val geodatabaseFile = File(provisionPath, getString(R.string.militaryoverlay_geodatabase))
+        // instantiate the geodatabase with the file path
+        val geodatabase = Geodatabase(geodatabaseFile.path)
 
         lifecycleScope.launch {
             // load the dictionary symbol style
@@ -81,23 +82,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            geoDatabase.load().getOrElse {
-                showError("Error loading GeoDatabase: ${it.message}")
+            // load the geodatabase
+            geodatabase.load().getOrElse {
+                showError("Error loading Geodatabase: ${it.message}")
             }
 
-            geoDatabase.featureTables.forEach { geoDatabaseFeatureTable ->
-                geoDatabaseFeatureTable.load().getOrElse {
-                    return@launch showError("Error loading GeoDatabaseFeatureTable: ${it.message}")
+            geodatabase.featureTables.forEach { geodatabaseFeatureTable ->
+                // load each geodatabaseFeatureTable and create featureLayer from it
+                geodatabaseFeatureTable.load().getOrElse {
+                    return@launch showError("Error loading GeodatabaseFeatureTable: ${it.message}")
                 }
-                val featureLayer = FeatureLayer(geoDatabaseFeatureTable)
+                val featureLayer = FeatureLayer(geodatabaseFeatureTable)
                 featureLayer.load().getOrElse {
                     return@launch showError("Error loading FeatureLayer: ${it.message}")
                 }
+                // add featureLayer to the map's operational layer
                 mapView.map?.operationalLayers?.add(featureLayer)
 
+                // create dictionaryRenderer using the dictionarySymbolStyle and apply it to the featureLayer's renderer
                 val dictionaryRenderer = DictionaryRenderer(dictionarySymbolStyle)
                 featureLayer.renderer = dictionaryRenderer
-                // get the envelop to set the viewpoint
+                // get the featureLayer's envelope to set the map viewpoint
                 val extent = featureLayer.fullExtent
                     ?: return@launch showError("Error retrieving extent of the feature layer")
                 mapView.setViewpoint(Viewpoint(extent))
@@ -109,6 +114,6 @@ class MainActivity : AppCompatActivity() {
         Log.e(TAG, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
-
 }
+
 
