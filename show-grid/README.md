@@ -24,13 +24,13 @@ Tap on the `Grid options` button in the toolbar to open a settings view. You can
 
 * Grid
 * LatitudeLongitudeGrid
-* MapView
 * MGRSGrid
+* MapView
 * SimpleLineSymbol
 * TextSymbol
-* UtmGrid
 * UsngGrid
+* UtmGrid
 
 ## Tags
 
-coordinates, degrees, graticule, grid, latitude, longitude, MGRS, minutes, seconds, USNG, UTM
+MGRS, USNG, UTM, coordinates, degrees, graticule, grid, latitude, longitude, minutes, seconds
