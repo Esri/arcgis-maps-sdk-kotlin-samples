@@ -1,4 +1,4 @@
-# Apply Dictionary Renderer To Feature Layer
+# Apply dictionary renderer to feature layer
 
 Convert features into graphics to show them with mil2525d symbols.
 
@@ -26,8 +26,8 @@ Pan and zoom around the map. Observe the displayed military symbology on the map
 
 * DictionaryRenderer
 * DictionarySymbolStyle
-* Geodatabase
 * FeatureLayer
+* Geodatabase
 
 ## Tags
 
