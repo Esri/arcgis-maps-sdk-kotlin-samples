@@ -5,5 +5,4 @@
     <string name="dialog_title">Generating offline map..</string>
     <string name="offlineMapFile">/offlineMap</string>
     <string name="offlineJobJsonFile">/offlineJobJson</string>
-    <string name="offlineJobWorkerTag">offlineJobWorker</string>
 </resources>

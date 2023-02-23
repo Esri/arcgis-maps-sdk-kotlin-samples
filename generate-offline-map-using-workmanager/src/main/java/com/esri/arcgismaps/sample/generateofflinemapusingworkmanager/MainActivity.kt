@@ -16,12 +16,18 @@
 
 package com.esri.arcgismaps.sample.generateofflinemapusingworkmanager
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.AlertDialog
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.asFlow
@@ -53,15 +59,13 @@ import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemapusingworkmanager.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemapusingworkmanager.databinding.GenerateOfflineMapDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
 const val notificationIdParameter = "NotificationId"
 const val jobParameter = "Job"
-const val jobTag = "OfflineMapJob"
-
+const val jobWorkerRequestTag = "OfflineMapJob"
 
 class MainActivity : AppCompatActivity() {
 
@@ -104,6 +108,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (Build.VERSION.SDK_INT >= 33) {
+            requestNotificationPermission()
+        }
         mapView.keepScreenOn = true
 
         // authentication with an API key or named user is
@@ -128,7 +135,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             map.load().onFailure {
-                showError("Error loading map: ${it.message}")
+                showMessage("Error loading map: ${it.message}")
                 return@launch
             }
 
@@ -185,8 +192,9 @@ class MainActivity : AppCompatActivity() {
             areaOfInterest,
             minScale,
             maxScale
-        )
-        generateOfflineMapParameters.continueOnErrors = false
+        ).apply {
+            continueOnErrors = false
+        }
 
         val offlineMapTask = OfflineMapTask(map)
         return offlineMapTask.createGenerateOfflineMapJob(
@@ -196,23 +204,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startOfflineMapJob(offlineMapJob: GenerateOfflineMapJob) {
-        val uniqueJobId = AtomicInteger(1).incrementAndGet()
+        val uniqueJobId = Random.Default.nextInt(100)
         val jobJsonPath = getExternalFilesDir(null)?.path +
             getString(R.string.offlineJobJsonFile) + uniqueJobId
 
         val jobJsonFile = File(jobJsonPath)
         jobJsonFile.writeText(offlineMapJob.toJson())
 
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresStorageNotLow(true)
-            .build()
-
         val workRequest =
-            OneTimeWorkRequestBuilder<JobWorker>()
+            OneTimeWorkRequestBuilder<OfflineJobWorker>()
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .addTag(jobTag)
-                .setConstraints(constraints)
+                .addTag(jobWorkerRequestTag)
                 .setInputData(
                     workDataOf(
                         notificationIdParameter to uniqueJobId,
@@ -221,11 +223,11 @@ class MainActivity : AppCompatActivity() {
                 )
                 .build()
 
-        workManager.enqueueUniqueWork(uniqueJobId.toString(), ExistingWorkPolicy.KEEP, workRequest)
+        workManager.enqueueUniqueWork(uniqueJobId.toString(), ExistingWorkPolicy.REPLACE, workRequest)
     }
 
     private fun observeWorkStatus() {
-        val workInfoFlow = workManager.getWorkInfosByTagLiveData(jobTag).asFlow()
+        val workInfoFlow = workManager.getWorkInfosByTagLiveData(jobWorkerRequestTag).asFlow()
 
         lifecycleScope.launch {
             workInfoFlow.collect { workInfoList ->
@@ -243,7 +245,12 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         WorkInfo.State.FAILED -> {
-                            showError("Error generating offline map")
+                            showMessage("Error generating offline map")
+                            if (progressDialog.isShowing) {
+                                progressDialog.dismiss()
+                            }
+                            takeMapOfflineButton.isEnabled = true
+                            workManager.pruneWork()
                         }
 
                         WorkInfo.State.RUNNING -> {
@@ -254,6 +261,11 @@ class MainActivity : AppCompatActivity() {
                             val value = progress.getInt("Progress", 0)
                             progressLayout.progressBar.progress = value
                             progressLayout.progressTextView.text = "$value%"
+                        }
+                        WorkInfo.State.ENQUEUED -> {
+//                            if (progressDialog.isShowing) {
+//                                progressDialog.dismiss()
+//                            }
                         }
                         else -> { /* */
                         }
@@ -268,20 +280,22 @@ class MainActivity : AppCompatActivity() {
             if (File(offlineMapPath).exists()) {
                 val mapPackage = MobileMapPackage(offlineMapPath)
                 mapPackage.load().onFailure {
-                    showError("Error loading map package: ${it.message}")
+                    showMessage("Error loading map package: ${it.message}")
                     return@launch
                 }
 
                 val map = mapPackage.maps.first()
                 map.load().onFailure {
-                    showError("Error loading map: ${it.message}")
+                    showMessage("Error loading map: ${it.message}")
                     return@launch
                 }
 
                 mapView.map = map
+                graphicsOverlay.graphics.clear()
+                takeMapOfflineButton.isEnabled = false
+                takeMapOfflineButton.visibility = View.GONE
                 workManager.pruneWork()
-                Toast.makeText(this@MainActivity, "Loaded offline map", Toast.LENGTH_SHORT)
-                    .show()
+                showMessage("Loaded offline map. Map saved at: $offlineMapPath")
             }
         }
     }
@@ -307,7 +321,52 @@ class MainActivity : AppCompatActivity() {
         }.create()
     }
 
-    private fun showError(message: String) {
+    /**
+     * Request fine and coarse location permissions for API level 23+.
+     * https://developer.android.com/develop/ui/views/notifications/notification-permission
+     */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        // push notifications permission
+        val permissionCheckPostNotifications =
+            ContextCompat.checkSelfPermission(this@MainActivity, POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+
+        // if permissions are not already granted, request permission from the user
+        if (!permissionCheckPostNotifications) {
+            ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(POST_NOTIFICATIONS),
+                2
+            )
+        } else {
+            // permission already granted, so start the location display
+            // startLocationDisplay()
+        }
+    }
+
+    /**
+     * Handle the permissions request response.
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // permission granted, start the location display
+            // startLocationDisplay()
+        } else {
+            Snackbar.make(
+                mapView,
+                "Notification permissions required to show progress!",
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun showMessage(message: String) {
         Log.e(TAG, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
