@@ -20,16 +20,26 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import androidx.work.*
+import androidx.lifecycle.asFlow
+import androidx.work.WorkManager
+import androidx.work.WorkInfo
+import androidx.work.workDataOf
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OutOfQuotaPolicy
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.MobileMapPackage
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
@@ -43,13 +53,14 @@ import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemapusingworkmanager.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemapusingworkmanager.databinding.GenerateOfflineMapDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 const val notificationIdParameter = "NotificationId"
 const val jobParameter = "Job"
+const val jobTag = "OfflineMapJob"
 
 
 class MainActivity : AppCompatActivity() {
@@ -78,19 +89,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     // shows the geodatabase loading progress
-    private val progressDialog by lazy {
+    private val progressLayout by lazy {
         GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
     }
 
-    private val sharedPreferences by lazy {
-        getSharedPreferences("JobState", MODE_PRIVATE)
+    private val progressDialog by lazy {
+        createProgressDialog()
     }
 
-    private val dialog by lazy { createProgressDialog() }
+    private val graphicsOverlay = GraphicsOverlay()
 
-    private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
-
-    private val downloadArea: Graphic = Graphic()
+    private val downloadArea = Graphic()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,8 +121,10 @@ class MainActivity : AppCompatActivity() {
         graphicsOverlay.graphics.add(downloadArea)
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(portalItem)
-        mapView.map = map
-        mapView.graphicsOverlays.add(graphicsOverlay)
+        mapView.apply {
+            this.map = map
+            graphicsOverlays.add(graphicsOverlay)
+        }
 
         lifecycleScope.launch {
             map.load().onFailure {
@@ -121,12 +132,12 @@ class MainActivity : AppCompatActivity() {
                 return@launch
             }
 
+            // enable the take map offline button only after the map is loaded
+            takeMapOfflineButton.isEnabled = true
+
             // limit the map scale to the largest layer scale
             map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
             map.minScale = map.operationalLayers[6].minScale ?: 0.0
-            // add the graphics overlay to the map view when it is created
-            // enable the take map offline button only after the map is loaded
-            takeMapOfflineButton.isEnabled = true
 
             mapView.viewpointChanged.collect {
                 // upper left corner of the area to take offline
@@ -137,30 +148,32 @@ class MainActivity : AppCompatActivity() {
                     mapView.height - 200.0
                 )
                 // convert screen points to map points
-                val minPoint = mapView.screenToLocation(minScreenPoint)
-                val maxPoint = mapView.screenToLocation(maxScreenPoint)
+                val minPoint = mapView.screenToLocation(minScreenPoint) ?: return@collect
+                val maxPoint = mapView.screenToLocation(maxScreenPoint) ?: return@collect
                 // use the points to define and return an envelope
-                if (minPoint != null && maxPoint != null) {
-                    val envelope = Envelope(minPoint, maxPoint)
-                    downloadArea.geometry = envelope
-                }
+                val envelope = Envelope(minPoint, maxPoint)
+                downloadArea.geometry = envelope
             }
         }
 
         takeMapOfflineButton.setOnClickListener {
             downloadArea.geometry?.let { geometry ->
-                dialog.show()
-                createOfflineMapJob(map, geometry)
+                val offlineMapJob = createOfflineMapJob(map, geometry)
+                startOfflineMapJob(offlineMapJob)
+                progressDialog.show()
                 takeMapOfflineButton.isEnabled = false
             }
         }
 
-        val jobId =
-            UUID.nameUUIDFromBytes(sharedPreferences.getString("job", "").toString().toByteArray())
-        observeWorkStatus(jobId)
+        observeWorkStatus()
     }
 
-    private fun createOfflineMapJob(map: ArcGISMap, areaOfInterest: Geometry) {
+    private fun createOfflineMapJob(
+        map: ArcGISMap,
+        areaOfInterest: Geometry
+    ): GenerateOfflineMapJob {
+        File(offlineMapPath).deleteRecursively()
+
         val maxScale = map.maxScale
         val minScale = if (map.minScale <= maxScale) {
             maxScale + 1
@@ -176,13 +189,10 @@ class MainActivity : AppCompatActivity() {
         generateOfflineMapParameters.continueOnErrors = false
 
         val offlineMapTask = OfflineMapTask(map)
-        val offlineMapJob = offlineMapTask.createGenerateOfflineMapJob(
+        return offlineMapTask.createGenerateOfflineMapJob(
             generateOfflineMapParameters,
             offlineMapPath
         )
-
-        File(offlineMapPath).deleteRecursively()
-        startOfflineMapJob(offlineMapJob)
     }
 
     private fun startOfflineMapJob(offlineMapJob: GenerateOfflineMapJob) {
@@ -190,44 +200,90 @@ class MainActivity : AppCompatActivity() {
         val jobJsonPath = getExternalFilesDir(null)?.path +
             getString(R.string.offlineJobJsonFile) + uniqueJobId
 
-
         val jobJsonFile = File(jobJsonPath)
         jobJsonFile.writeText(offlineMapJob.toJson())
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresStorageNotLow(true)
+            .build()
 
         val workRequest =
             OneTimeWorkRequestBuilder<JobWorker>()
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .setInputData(workDataOf(notificationIdParameter to uniqueJobId,
-                    jobParameter to jobJsonFile.absolutePath))
+                .addTag(jobTag)
+                .setConstraints(constraints)
+                .setInputData(
+                    workDataOf(
+                        notificationIdParameter to uniqueJobId,
+                        jobParameter to jobJsonFile.absolutePath
+                    )
+                )
                 .build()
 
         workManager.enqueueUniqueWork(uniqueJobId.toString(), ExistingWorkPolicy.KEEP, workRequest)
-        sharedPreferences.edit().putString("job", uniqueJobId.toString()).apply()
-        observeWorkStatus(workRequest.id)
     }
 
-    private fun observeWorkStatus(jobId: UUID) {
-        workManager.getWorkInfoByIdLiveData(jobId)
-            .observe(this) { workInfo ->
-                Log.d(TAG, "observeWorkStatus: $workInfo")
-                when (workInfo.state) {
-                    WorkInfo.State.SUCCEEDED -> {
-                        dialog.dismiss()
-                    }
+    private fun observeWorkStatus() {
+        val workInfoFlow = workManager.getWorkInfosByTagLiveData(jobTag).asFlow()
 
-                    WorkInfo.State.FAILED -> {
-                        showError("Error generating offline map")
-                    }
+        lifecycleScope.launch {
+            workInfoFlow.collect { workInfoList ->
+                Log.d(TAG, "observeWorkStatus: $workInfoList")
+                if (workInfoList.size > 0) {
+                    val workInfo = workInfoList[0]
+                    // Log.d(TAG, "observeWorkStatus: $workInfo")
+                    when (workInfo.state) {
+                        WorkInfo.State.SUCCEEDED -> {
+                            Log.d(TAG, "observeWorkStatus: Finished Job ${workInfo.state}")
+                            if (progressDialog.isShowing) {
+                                progressDialog.dismiss()
+                            }
+                            displayOfflineMap()
+                        }
 
-                    WorkInfo.State.RUNNING -> {
-                        val progress = workInfo.progress
-                        val value = progress.getInt("Progress", 0)
-                        progressDialog.progressBar.progress = value
-                        progressDialog.progressTextView.text = "$value%"
+                        WorkInfo.State.FAILED -> {
+                            showError("Error generating offline map")
+                        }
+
+                        WorkInfo.State.RUNNING -> {
+                            if (!progressDialog.isShowing) {
+                                progressDialog.show()
+                            }
+                            val progress = workInfo.progress
+                            val value = progress.getInt("Progress", 0)
+                            progressLayout.progressBar.progress = value
+                            progressLayout.progressTextView.text = "$value%"
+                        }
+                        else -> { /* */
+                        }
                     }
-                    else -> {}
                 }
             }
+        }
+    }
+
+    private fun displayOfflineMap() {
+        lifecycleScope.launch {
+            if (File(offlineMapPath).exists()) {
+                val mapPackage = MobileMapPackage(offlineMapPath)
+                mapPackage.load().onFailure {
+                    showError("Error loading map package: ${it.message}")
+                    return@launch
+                }
+
+                val map = mapPackage.maps.first()
+                map.load().onFailure {
+                    showError("Error loading map: ${it.message}")
+                    return@launch
+                }
+
+                mapView.map = map
+                workManager.pruneWork()
+                Toast.makeText(this@MainActivity, "Loaded offline map", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
 
     private fun createProgressDialog(): AlertDialog {
@@ -243,11 +299,11 @@ class MainActivity : AppCompatActivity() {
                 workManager.cancelAllWork()
             }
             // removes parent of the progressDialog layout, if previously assigned
-            progressDialog.root.parent?.let { parent ->
+            progressLayout.root.parent?.let { parent ->
                 (parent as ViewGroup).removeAllViews()
             }
             // set the progressDialog Layout to this alert dialog
-            setView(progressDialog.root)
+            setView(progressLayout.root)
         }.create()
     }
 
@@ -256,8 +312,8 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun onStop() {
-        super.onStop()
-        dialog.dismiss()
+    override fun onDestroy() {
+        super.onDestroy()
+        progressDialog.dismiss()
     }
 }
