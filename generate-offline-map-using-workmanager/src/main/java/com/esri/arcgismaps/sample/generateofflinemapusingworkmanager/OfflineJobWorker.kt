@@ -2,14 +2,22 @@ package com.esri.arcgismaps.sample.generateofflinemapusingworkmanager
 
 import android.content.Context
 import android.util.Log
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import androidx.work.ForegroundInfo
+import androidx.work.workDataOf
 import com.arcgismaps.tasks.JobStatus
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.CancellationException
 import java.io.File
 
 /**
- * Class to run a GenerateOfflineMapJob as a CoroutineWorker using WorkManager.
+ * Class that runs a GenerateOfflineMapJob as a CoroutineWorker using WorkManager.
  */
 class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
@@ -26,10 +34,13 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
         WorkerNotification(context, notificationId)
     }
 
-    override suspend fun getForegroundInfo(): ForegroundInfo {
+    private fun createForegroundInfo(progress: Int): ForegroundInfo {
         // create and return a new ForegroundInfo using the notificationId and
         // a new progress notification
-        return ForegroundInfo(notificationId, workerNotification.createProgressNotification())
+        return ForegroundInfo(
+            notificationId,
+            workerNotification.createProgressNotification(progress)
+        )
     }
 
     override suspend fun doWork(): Result {
@@ -44,7 +55,6 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
         if (!offlineJobJsonFile.exists()) {
             return Result.failure()
         }
-
         // create the GenerateOfflineMapJob from the json file
         val generateOfflineMapJob =
             GenerateOfflineMapJob.fromJson(offlineJobJsonFile.readText())
@@ -53,28 +63,32 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
 
         return try {
             // set this worker to run as a long-running foreground service
-            // this will throw an exception, if the worker is launched when the app is
-            // not in foreground
-            setForeground(getForegroundInfo())
-
+            // this will throw an exception, if the worker is launched when the app
+            // is not in foreground
+            setForeground(createForegroundInfo(0))
             // A deferred to wait for the completion of the generateOfflineMapJob
             val deferred = CompletableDeferred<Result>()
             // check and delete if the offline map package file already exists
             // this check is needed, if the download has failed midway and is restarted later
-            // WorkManager
+            // by WorkManager
             File(generateOfflineMapJob.downloadDirectoryPath).deleteRecursively()
 
-            // launch the job progress collector
+            // start the generateOfflineMapJob
+            // this job internally runs on a Dispatchers.IO context, hence this CoroutineWorker
+            // can be run on the default Dispatchers.Default context
+            generateOfflineMapJob.start()
+
+            // launch a job progress collector
             coroutineScope.launch {
                 generateOfflineMapJob.progress.collect { progress ->
                     // update the worker progress
                     setProgress(workDataOf("Progress" to progress))
-                    // update the progress notification
-                    workerNotification.updateProgressNotification(progress)
+                    // update the ongoing progress notification
+                    setForeground(createForegroundInfo(progress))
                 }
             }
 
-            // launch the job status collector
+            // launch a job status collector
             coroutineScope.launch {
                 generateOfflineMapJob.status.collect { jobStatus ->
                     if (jobStatus == JobStatus.Succeeded) {
@@ -83,7 +97,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
                         // complete the deferred with a success result
                         deferred.complete(Result.success())
                     } else if (jobStatus == JobStatus.Failed) {
-                        // if the job failed show a final status notification
+                        // if the job has failed show a final status notification
                         workerNotification.showStatusNotification("Failed")
                         // complete the deferred with a failure result
                         deferred.complete(Result.failure())
@@ -91,10 +105,6 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
                 }
             }
 
-            // start the generateOfflineMapJob
-            // this job internally runs on a Dispatchers.IO context, hence this CoroutineWorker
-            // can be run on the default Dispatchers.Default context
-            generateOfflineMapJob.start()
             // wait for the completion of the deferred value and return its result
             deferred.await()
         } catch (exception: Exception) {

@@ -30,7 +30,12 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.asFlow
-import androidx.work.*
+import androidx.work.WorkManager
+import androidx.work.WorkInfo
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.workDataOf
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
@@ -55,10 +60,9 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.random.Random
 
-// Data parameter keys for the WorkManager
+// data parameter keys for the WorkManager
 // key for the NotificationId parameter
 const val notificationIdParameter = "NotificationId"
-
 // key for the json job file path
 const val jobParameter = "JsonJobPath"
 
@@ -94,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
     }
 
-    // dialog view for the progress bar
+    // alert dialog view for the progress layout
     private val progressDialog by lazy {
         createProgressDialog()
     }
@@ -103,10 +107,10 @@ class MainActivity : AppCompatActivity() {
     // also allows us to query and observe work progress
     private val uniqueWorkName = "offlineJobWorker"
 
-    // creates a graphic overlay
+    // create a graphic overlay
     private val graphicsOverlay = GraphicsOverlay()
 
-    // graphic representing bounds of the downloadable area of the map
+    // represents bounds of the downloadable area of the map
     private val downloadArea = Graphic()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
         // add the graphic to the graphics overlay when it is created
         graphicsOverlay.graphics.add(downloadArea)
-        // create and add a map with a navigation night basemap style
+        // create and add a map with with portal item
         val map = ArcGISMap(portalItem)
         // apply mapview assignments
         mapView.apply {
@@ -137,6 +141,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             map.load().onFailure {
+                // show an error and return if the map load failed
                 showMessage("Error loading map: ${it.message}")
                 return@launch
             }
@@ -159,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 // convert screen points to map points
                 val minPoint = mapView.screenToLocation(minScreenPoint) ?: return@collect
                 val maxPoint = mapView.screenToLocation(maxScreenPoint) ?: return@collect
-                // use the points to define and return an envelope
+                // use the points to define and set an envelope for the downloadArea graphic
                 val envelope = Envelope(minPoint, maxPoint)
                 downloadArea.geometry = envelope
             }
@@ -193,7 +198,7 @@ class MainActivity : AppCompatActivity() {
     ): GenerateOfflineMapJob {
         // check and delete if the offline map package file already exists
         File(offlineMapPath).deleteRecursively()
-        // specify the min scale, and max scale as parameters
+        // specify the min scale and max scale as parameters
         val maxScale = map.maxScale
         // minScale must always be larger than maxScale
         val minScale = if (map.minScale <= maxScale) {
@@ -232,20 +237,20 @@ class MainActivity : AppCompatActivity() {
 
         // create the json file
         val offlineJobJsonFile = File(offlineJobJsonPath)
-        // serialize the offlineMapJob json into the file
+        // serialize the offlineMapJob into the file
         offlineJobJsonFile.writeText(offlineMapJob.toJson())
 
-        // create a random non-zero notification id for the OfflineJobWorker
+        // create a non-zero notification id for the OfflineJobWorker
         // this id will be used to post or update any progress/status notifications
         val notificationId = Random.Default.nextInt(1, 100)
 
-        // create the OfflineJobWorker work request as a one time work request
+        // create a one-time work request with an instance of OfflineJobWorker
         val workRequest = OneTimeWorkRequestBuilder<OfflineJobWorker>()
             // run it as an expedited work
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             // add the input data
             .setInputData(
-                // add the notificationId and the job's json file path as a key/value pair
+                // add the notificationId and the json file path as a key/value pair
                 workDataOf(
                     notificationIdParameter to notificationId,
                     jobParameter to offlineJobJsonFile.absolutePath
@@ -255,15 +260,15 @@ class MainActivity : AppCompatActivity() {
 
         // enqueue the work request to run as a unique work with the uniqueWorkName, so that
         // only one instance of OfflineJobWorker is running at any time
-        // if any new uniqueWorkName work request is enqueued, it replaces any existing ones
-        // that are running
+        // if any new work request with the uniqueWorkName is enqueued, it replaces any existing
+        // ones that are active
         workManager.enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, workRequest)
     }
 
     /**
      * Starts observing any running or completed OfflineJobWorker work requests by capturing the
      * LiveData as a flow. The flow starts receiving updates when the activity is in started
-     * or resumed state. This allows the application to capture current immediate progress when
+     * or resumed state. This allows the application to capture immediate progress when
      * in foreground and latest progress when the app resumes or restarts.
      */
     private fun observeWorkStatus() {
@@ -295,7 +300,6 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 showMessage("Cancelled offline map generation")
                             }
-
                             // dismiss the progress dialog
                             if (progressDialog.isShowing) {
                                 progressDialog.dismiss()
@@ -303,7 +307,7 @@ class MainActivity : AppCompatActivity() {
                             // enable the takeMapOfflineButton
                             takeMapOfflineButton.isEnabled = true
                             // this removes the completed WorkInfo from the WorkManager's database
-                            // Otherwise, the observer will emit the WorkInfo on every launch
+                            // otherwise, the observer will emit the WorkInfo on every launch
                             // until WorkManager auto-prunes
                             workManager.pruneWork()
                         }
@@ -314,7 +318,7 @@ class MainActivity : AppCompatActivity() {
                             // update the progress bar and progress text
                             progressLayout.progressBar.progress = value
                             progressLayout.progressTextView.text = "$value%"
-                            // shows the progress dialog if the app is relaunched and the progress
+                            // shows the progress dialog if the app is relaunched and the
                             // dialog is not visible
                             if (!progressDialog.isShowing) {
                                 progressDialog.show()
@@ -349,7 +353,7 @@ class MainActivity : AppCompatActivity() {
                 // hide the takeMapOfflineButton
                 takeMapOfflineButton.visibility = View.GONE
                 // this removes the completed WorkInfo from the WorkManager's database
-                // Otherwise, the observer will emit the WorkInfo on every launch
+                // otherwise, the observer will emit the WorkInfo on every launch
                 // until WorkManager auto-prunes
                 workManager.pruneWork()
                 // display the offline map loaded message
@@ -359,19 +363,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Creates a progress dialog to show the OfflineMapJob progress. It cancels all the
-     * running work on when the dialog is cancelled
+     * Creates a progress dialog to show the OfflineMapJob worker progress. It cancels all the
+     * running workers when the dialog is cancelled
      */
     private fun createProgressDialog(): AlertDialog {
         // build and return a new alert dialog
         return AlertDialog.Builder(this).apply {
-            // setting it title
+            // set it title
             setTitle(getString(R.string.dialog_title))
             // allow it to be cancellable
             setCancelable(false)
-            // sets negative button configuration
+            // set negative button configuration
             setNegativeButton("Cancel") { _, _ ->
-                // cancels the generateGeodatabaseJob
+                // cancel all the running work
                 workManager.cancelAllWork()
             }
             // removes parent of the progressDialog layout, if previously assigned
@@ -384,18 +388,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Request Post Notifications Permission for API level 33+.
+     * Request Post Notifications permission for API level 33+
      * https://developer.android.com/develop/ui/views/notifications/notification-permission
      */
     private fun requestNotificationPermission() {
         // request notification permission only for android versions >= 33
         if (Build.VERSION.SDK_INT >= 33) {
-            // push notifications permission
+            // check if push notifications permission is granted
             val permissionCheckPostNotifications =
                 ContextCompat.checkSelfPermission(this@MainActivity, POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED
 
-            // if permissions are not already granted, request permission from the user
+            // if permission is not already granted, request permission from the user
             if (!permissionCheckPostNotifications) {
                 ActivityCompat.requestPermissions(
                     this@MainActivity,

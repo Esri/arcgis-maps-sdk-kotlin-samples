@@ -32,7 +32,6 @@ class WorkerNotification(
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         // set the pending intent that will be passed to the NotificationManager
-        // which starts the underlying intent on notification tap
         PendingIntent.getActivity(
             applicationContext,
             0,
@@ -47,40 +46,20 @@ class WorkerNotification(
     }
 
     /**
-     * Creates and returns a new progress notification with current progress
-     * set to 0
+     * Creates and returns a new progress notification with the given [progress] value
      */
-    fun createProgressNotification(): Notification {
+    fun createProgressNotification(progress: Int): Notification {
         // use the default notification builder and set the progress to 0
         return getDefaultNotificationBuilder(
-            setOngoing = true,
-            contentText = "Download in progress: 0%"
-        ).setProgress(100, 0, false)
-            .build()
-    }
-
-    /**
-     * Updates and posts the progress notification already visible with a new
-     * progress value
-     */
-    fun updateProgressNotification(progress: Int) {
-        // build using the default notification builder and update the progress
-        val notification = getDefaultNotificationBuilder(
             setOngoing = true,
             contentText = "Download in progress: $progress%"
         ).setProgress(100, progress, false)
             .build()
-
-        with(NotificationManagerCompat.from(applicationContext)) {
-            // post a new notification that updates the existing one using the
-            // same notificationId
-            notify(notificationId, notification)
-        }
     }
 
     /**
-     * Shows a new status notification with the [message] and dismisses any progress notifications
-     * that are already visible
+     * Creates and posts a new status notification with the [message] and dismisses any ongoing
+     * progress notifications
      */
     fun showStatusNotification(message: String) {
         // build using the default notification builder with the status message
@@ -101,11 +80,10 @@ class WorkerNotification(
     }
 
     /**
-     * Creates a new notification channel and adds it to the NotificationManager. All notifications
-     * created must be associated with a channel
+     * Creates a new notification channel and adds it to the NotificationManager
      */
     private fun createNotificationChannel() {
-        // get the properties from resources
+        // get the channel properties from resources
         val name = applicationContext.getString(R.string.notification_channel_name)
         val descriptionText =
             applicationContext.getString(R.string.notification_channel_description)
@@ -123,7 +101,7 @@ class WorkerNotification(
 
     /**
      * Creates and returns a new NotificationCompat.Builder with the given [contentText]
-     * and as an ongoing notifcation based on [setOngoing]
+     * and as an ongoing notification based on [setOngoing]
      */
     private fun getDefaultNotificationBuilder(
         setOngoing: Boolean,
