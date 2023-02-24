@@ -24,14 +24,15 @@ Once the map loads, zoom to the extent you want to take offline. The red border 
 8. When the `OneTimeWorkRequest` completes successfully, load the mobile map package from the `downloadDirectoryPath` with `mapPackage.load()`.
 9. After it successfully loads, get the map and add it to the map view: `mapView.map = mapPackage.maps.first()`.
 
-## WorkManager and Background behavior
+### WorkManager and Background behavior
 
 The `OfflineJobWorker` is a `CoroutineWorker` instance which is run as a long-running foreground service by the `WorkManager`. See <https://developer.android.com/guide/background/persistent/how-to/long-running> for more info.
 
 Hence the behavior of the Worker depends on state of the application as follows -
 
 When the app
-1. Moves into background 
+
+1. Moves into background
    1. The download continues in the background and push notifications are sent.
 2. Closed by swipe to kill
    1. The download continues in the background and push notifications are sent.
@@ -39,9 +40,9 @@ When the app
    1. The worker is killed and the download/notifications stop.
    2. The worker is restarted upon next launch.
 
-## Notification behaviour
+### Notification behaviour
 
-1. Progress push notification are posted when the `OfflineJobWorker` is running. 
+1. Progress push notification are posted when the `OfflineJobWorker` is running.
 2. Once the worker is done, either a "Completed" or "Failed" notification is posted.
 3. Tapping on the notification takes you back into the app, while tapping on the "Completed" notification will also load the offline map.
 
