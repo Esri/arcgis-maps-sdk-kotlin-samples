@@ -5,4 +5,7 @@
     <string name="dialog_title">Generating offline map..</string>
     <string name="offlineMapFile">/offlineMap</string>
     <string name="offlineJobJsonFile">/offlineJobJson</string>
+    <string name="notification_channel_name">Offline Map Job Notifications</string>
+    <string name="notification_channel_description">Shows notifications for offline map job progress</string>
+    <string name="notification_title">Offline Map Download</string>
 </resources>

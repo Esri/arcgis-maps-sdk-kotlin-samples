@@ -9,123 +9,140 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
+/**
+ * Helper class that handles progress and status notifications on [applicationContext] for
+ * the offline map job run using WorkManager. a non-zero [notificationId] is used to show
+ * and update the progress and status notifications
+ */
 class WorkerNotification(
     private val applicationContext: Context,
     private val notificationId: Int
 ) {
 
-    private val notificationTitle = "Offline Map Download"
-
-    private val name = "notifications"
-
-    private val description = "VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION"
-
-    private val importance = NotificationManager.IMPORTANCE_HIGH
-
+    // unique channel id for the NotificationChannel
     private val notificationChannelId by lazy {
         "${applicationContext.packageName}-notifications"
     }
 
+    // intent for notifications tap action that launch the MainActivity
     private val mainActivityIntent by lazy {
+        // setup the intent to launch MainActivity
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            // launches the activity if not already on top and active
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
+        // set the pending intent that will be passed to the NotificationManager
+        // which starts the underlying intent on notification tap
         PendingIntent.getActivity(
             applicationContext,
-            1,
+            0,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
     }
 
     init {
+        // create the notification channel
         createNotificationChannel()
     }
 
+    /**
+     * Creates and returns a new progress notification with current progress
+     * set to 0
+     */
     fun createProgressNotification(): Notification {
+        // use the default notification builder and set the progress to 0
         return getDefaultNotificationBuilder(
             setOngoing = true,
             contentText = "Download in progress: 0%"
         ).setProgress(100, 0, false)
             .build()
-
-//        return NotificationCompat.Builder(applicationContext, notificationChannelId)
-//            .setContentTitle(notificationTitle)
-//            .setContentText("Download in progress: 0%")
-//            .setProgress(100, 0, false)
-//            .setSmallIcon(R.drawable.ic_launcher_foreground)
-//            .setOngoing(true)
-//            .setOnlyAlertOnce(true)
-//            .setContentIntent(mainActivityIntent)
-//            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-//            .build().apply {
-//                flags = Notification.FLAG_AUTO_CANCEL
-//            }
     }
 
+    /**
+     * Updates and posts the progress notification already visible with a new
+     * progress value
+     */
     fun updateProgressNotification(progress: Int) {
+        // build using the default notification builder and update the progress
         val notification = getDefaultNotificationBuilder(
             setOngoing = true,
             contentText = "Download in progress: $progress%"
         ).setProgress(100, progress, false)
             .build()
-//        val notification = NotificationCompat.Builder(applicationContext, notificationChannelId)
-//            .setContentTitle(notificationTitle)
-//            .setContentText("Download in progress: $progress%")
-//            .setProgress(100, progress, false)
-//            .setSmallIcon(R.drawable.ic_launcher_foreground)
-//            .setOngoing(true)
-//            //.setOnlyAlertOnce(true)
-//            .setContentIntent(mainActivityIntent)
-//            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-//            .build().apply {
-//                flags = Notification.FLAG_AUTO_CANCEL
-//            }
+
         with(NotificationManagerCompat.from(applicationContext)) {
+            // post a new notification that updates the existing one using the
+            // same notificationId
             notify(notificationId, notification)
         }
     }
 
+    /**
+     * Shows a new status notification with the [message] and dismisses any progress notifications
+     * that are already visible
+     */
     fun showStatusNotification(message: String) {
-        val notification = NotificationCompat.Builder(applicationContext, notificationChannelId)
-            .setContentTitle(notificationTitle)
-            .setContentText(message)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setOngoing(false)
-            .setContentIntent(mainActivityIntent)
-            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .build().apply {
-                flags = Notification.FLAG_AUTO_CANCEL
-            }
+        // build using the default notification builder with the status message
+        val notification = getDefaultNotificationBuilder(
+            setOngoing = false,
+            contentText = message
+        ).build().apply {
+            // this flag dismisses the notification on opening
+            flags = Notification.FLAG_AUTO_CANCEL
+        }
+
         with(NotificationManagerCompat.from(applicationContext)) {
+            // cancel the visible progress notification using its id
             cancel(notificationId)
+            // post the new status notification with a new notificationId
             notify(notificationId + 1, notification)
         }
     }
 
+    /**
+     * Creates a new notification channel and adds it to the NotificationManager. All notifications
+     * created must be associated with a channel
+     */
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(notificationChannelId, name, importance)
-        channel.description = description
-
-        // Add the channel
+        // get the properties from resources
+        val name = applicationContext.getString(R.string.notification_channel_name)
+        val descriptionText =
+            applicationContext.getString(R.string.notification_channel_description)
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        // create a new notification channel with the properties
+        val channel = NotificationChannel(notificationChannelId, name, importance).apply {
+            description = descriptionText
+        }
+        // get the notification system service as a NotificationManager
         val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-
-        notificationManager?.createNotificationChannel(channel)
+            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // Add the channel to the NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
+    /**
+     * Creates and returns a new NotificationCompat.Builder with the given [contentText]
+     * and as an ongoing notifcation based on [setOngoing]
+     */
     private fun getDefaultNotificationBuilder(
         setOngoing: Boolean,
         contentText: String
     ): NotificationCompat.Builder {
         return NotificationCompat.Builder(applicationContext, notificationChannelId)
-            .setContentTitle(notificationTitle)
+            // sets the notifications title
+            .setContentTitle(applicationContext.getString(R.string.notification_title))
+            // sets the content that is displayed on expanding the notification
             .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
+            // sets it to only show the notification alert once, in case of progress
             .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            // ongoing notifications cannot be dismissed by swiping them away
             .setOngoing(setOngoing)
+            // sets the onclick action to launch the mainActivityIntent
             .setContentIntent(mainActivityIntent)
+            // sets it to show the notification immediately
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
     }
 }
