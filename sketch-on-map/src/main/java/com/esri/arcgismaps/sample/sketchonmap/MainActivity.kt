@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
@@ -46,6 +47,7 @@ import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.VertexTool
 import com.esri.arcgismaps.sample.sketchonmap.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,25 +62,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     // create a symbol for the point graphic
-    private var pointSymbol: SimpleMarkerSymbol = SimpleMarkerSymbol(
-        SimpleMarkerSymbolStyle.Square,
-        Color(-0x7800),
-        20f
-    )
+    private val pointSymbol: SimpleMarkerSymbol by lazy{
+        SimpleMarkerSymbol(
+            SimpleMarkerSymbolStyle.Square,
+            Color(getColor(R.color.point_symbol_color)),
+            20f
+        )
+    }
 
     // create a symbol for a line graphic
-    private var lineSymbol: SimpleLineSymbol = SimpleLineSymbol(
-        SimpleLineSymbolStyle.Solid,
-        Color(-0x7800),
-        4f
-    )
+    private val lineSymbol: SimpleLineSymbol by lazy {
+        SimpleLineSymbol(
+            SimpleLineSymbolStyle.Solid,
+            Color(getColor(R.color.line_symbol_color)),
+            4f
+        )
+    }
 
     // create a symbol for the fill graphic
-    private var fillSymbol: SimpleFillSymbol = SimpleFillSymbol(
-        SimpleFillSymbolStyle.Cross,
-        Color(0x40FFA9A9),
-        lineSymbol
-    )
+    private val fillSymbol: SimpleFillSymbol by lazy {
+        SimpleFillSymbol(
+            SimpleFillSymbolStyle.Cross,
+            Color(getColor(R.color.fill_symbol_color)),
+            lineSymbol
+        )
+    }
 
     // keep the instance graphic overlay to add graphics on the map
     private var graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
@@ -90,7 +98,7 @@ class MainActivity : AppCompatActivity() {
     private val vertexTool: VertexTool = VertexTool()
 
     // keep the instance to create new geometries, and change existing geometries
-    private var geometryEditor: GeometryEditor? = GeometryEditor()
+    private var geometryEditor: GeometryEditor = GeometryEditor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,8 +113,10 @@ class MainActivity : AppCompatActivity() {
             map = ArcGISMap(BasemapStyle.ArcGISLightGray)
             setViewpoint(Viewpoint(34.056295, -117.195800, 100000.0))
             graphicsOverlays.add(graphicsOverlay)
-            this.geometryEditor = this@MainActivity.geometryEditor
         }
+
+        // set MapView's geometry editor to sketch on map
+        mapView.geometryEditor = geometryEditor
     }
 
     /**
@@ -117,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Point")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.pointButton.isSelected = true
-        geometryEditor?.start(GeometryType.Point)
+        geometryEditor.start(GeometryType.Point)
     }
 
     /**
@@ -128,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Multipoint")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.multipointButton.isSelected = true
-        geometryEditor?.apply {
+        geometryEditor.apply {
             tool = vertexTool
             start(GeometryType.Multipoint)
         }
@@ -142,7 +152,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Polyline")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.polylineButton.isSelected = true
-        geometryEditor?.apply {
+        geometryEditor.apply {
             tool = vertexTool
             start(GeometryType.Polyline)
         }
@@ -156,7 +166,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("Polygon")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.polygonButton.isSelected = true
-        geometryEditor?.apply {
+        geometryEditor.apply {
             tool = vertexTool
             start(GeometryType.Polygon)
         }
@@ -170,7 +180,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("FreehandPolyline")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.freehandLineButton.isSelected = true
-        geometryEditor?.apply {
+        geometryEditor.apply {
             tool = freehandTool
             start(GeometryType.Polyline)
         }
@@ -184,7 +194,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentSelectionText("FreehandPolygon")
         resetButtons()
         activityMainBinding.pointLinePolygonToolbar.freehandPolygonButton.isSelected = true
-        geometryEditor?.apply {
+        geometryEditor.apply {
             tool = freehandTool
             start(GeometryType.Polygon)
         }
@@ -193,20 +203,24 @@ class MainActivity : AppCompatActivity() {
     /**
      * When the undo button is clicked, undo the last event on the GeometryEditor.
      */
-    fun undo(view: View) {
-        if (geometryEditor?.canUndo?.value == true) {
-            geometryEditor?.undo()
-            setCurrentSelectionText(getString(R.string.undo))
+    fun undo(view: View) = lifecycleScope.launch{
+        geometryEditor.canUndo.collect{ value ->
+            if(value){
+                geometryEditor.undo()
+                setCurrentSelectionText(getString(R.string.undo))
+            }
         }
     }
 
     /**
      * When the redo button is clicked, redo the last undone event on the GeometryEditor.
      */
-    fun redo(view: View) {
-        if (geometryEditor?.canRedo?.value == true) {
-            geometryEditor?.redo()
-            setCurrentSelectionText(getString(R.string.redo))
+    fun redo(view: View) = lifecycleScope.launch{
+        geometryEditor.canRedo.collect{ value ->
+            if(value){
+                geometryEditor.redo()
+                setCurrentSelectionText(getString(R.string.redo))
+            }
         }
     }
 
@@ -216,7 +230,7 @@ class MainActivity : AppCompatActivity() {
      */
     fun stop(view: View) {
         // get the geometry from sketch editor
-        val sketchGeometry = geometryEditor?.geometry?.value
+        val sketchGeometry = geometryEditor.geometry.value
             ?: return showError("Error retrieving geometry")
 
         if (GeometryBuilder.builder(sketchGeometry)?.isSketchValid == false) {
@@ -224,19 +238,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         // stops the editing session
-        geometryEditor?.stop()
+        geometryEditor.stop()
 
         // clear button selection
         resetButtons()
 
         // create a graphic from the sketch editor geometry
-        val graphic = Graphic(sketchGeometry)
-        // assign a symbol based on geometry type
-        when (sketchGeometry) {
-            is Polygon -> graphic.symbol = fillSymbol
-            is Polyline -> graphic.symbol = lineSymbol
-            is Point, is Multipoint -> graphic.symbol = pointSymbol
-            else -> {}
+        val graphic = Graphic(sketchGeometry).apply {
+            // assign a symbol based on geometry type
+            symbol = when (sketchGeometry) {
+                is Polygon -> fillSymbol
+                is Polyline -> lineSymbol
+                is Point, is Multipoint -> pointSymbol
+                else -> null
+            }
         }
 
         // add the graphic to the graphics overlay
@@ -263,16 +278,31 @@ class MainActivity : AppCompatActivity() {
      */
     fun clear(view: View) {
         resetButtons()
-        geometryEditor?.clearGeometry()
-        geometryEditor?.clearSelection()
-        setCurrentSelectionText("Cleared")
+        geometryEditor.clearGeometry()
+        geometryEditor.clearSelection()
+        geometryEditor.stop()
+        activityMainBinding.currentSelection.text = getString(R.string.cleared_message)
+    }
+
+    /**
+     * Clear all editing and committed graphics on the map
+     */
+    fun restart(view: View) {
+        resetButtons()
+        graphicsOverlay.graphics.clear()
+        geometryEditor.clearGeometry()
+        geometryEditor.clearSelection()
+        geometryEditor.stop()
+        activityMainBinding.currentSelection.text = getString(R.string.restart_message)
     }
 
     /**
      * Called if sketch is invalid. Reports to user why the sketch was invalid.
      */
     private fun reportNotValid() {
-        val geometry = geometryEditor?.geometry?.value ?: return showError("Geometry not found")
+        // get the geometry currently being added to map
+        val geometry = geometryEditor.geometry.value ?: return showError("Geometry not found")
+        // find the geometry type, and set the valid message
         val validIfText: String =
             when (geometry) {
                 is Point -> getString(R.string.invalid_point_message)
@@ -281,7 +311,8 @@ class MainActivity : AppCompatActivity() {
                 is Polygon -> getString(R.string.invalid_polygon_message)
                 else -> getString(R.string.none_selected_message)
             }
-        setCurrentSelectionText(validIfText)
+        // set the invalid message to the TextView.
+        activityMainBinding.currentSelection.text = validIfText
     }
 
     /**
