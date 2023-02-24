@@ -1,7 +1,7 @@
 {
     "category": "Edit and Manage Data",
     "description": "Take a web map offline as a persistent background task",
-    "formal_name": "GenerateOfflineMapUsingWorkManager",
+    "formal_name": "GenerateOfflineMapUsingWorkmanager",
     "ignore": false,
     "images": [
         "generate-offline-map.png"
