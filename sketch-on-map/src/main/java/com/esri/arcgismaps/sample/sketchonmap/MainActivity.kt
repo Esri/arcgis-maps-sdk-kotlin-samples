@@ -140,9 +140,13 @@ class MainActivity : AppCompatActivity() {
         // set up the geometry list dropdown
         selectedGeometryDropdown.apply {
             // set the adapter to the list of geometries
-            setAdapter(ArrayAdapter(applicationContext,
-                android.R.layout.simple_list_item_1,
-                resources.getStringArray(R.array.geometry_list)))
+            setAdapter(
+                ArrayAdapter(
+                    applicationContext,
+                    android.R.layout.simple_list_item_1,
+                    resources.getStringArray(R.array.geometry_list)
+                )
+            )
 
             // set the dropdown click listener
             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -260,7 +264,7 @@ class MainActivity : AppCompatActivity() {
             is Point -> getString(R.string.invalid_point_message)
             is Multipoint -> getString(R.string.invalid_multipoint_message)
             is Polyline -> getString(R.string.invalid_polyline_message)
-            is Polygon -> getString(R.stri  ng.invalid_polygon_message)
+            is Polygon -> getString(R.string.invalid_polygon_message)
             else -> getString(R.string.none_selected_message)
         }
         // set the invalid message to the TextView.
