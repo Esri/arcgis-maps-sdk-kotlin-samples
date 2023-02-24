@@ -1,5 +1,4 @@
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,9 +10,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/toolbar_background"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/selectGeometryLayout">
 
             <ImageButton
                 android:id="@+id/clearButton"
@@ -88,117 +87,33 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2px"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
+        <android.widget.RelativeLayout
+            android:id="@+id/selectGeometryLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/toolbar_background"
-            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/pointButton"
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:background="@drawable/button_bar_background"
-                android:contentDescription="@string/pointButtonDescription"
-                android:onClick="createModePoint"
-                android:src="@drawable/ic_action_point"
+                android:hint="Select geometry"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/multipointButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent">
 
-            <ImageButton
-                android:id="@+id/multipointButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/pointButton"
-                android:background="@drawable/button_bar_background"
-                android:contentDescription="@string/pointButtonDescription"
-                android:onClick="createModeMultipoint"
-                android:src="@drawable/ic_action_multipoint"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/polylineButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/pointButton" />
+                <AutoCompleteTextView
+                    android:id="@+id/selectGeometryDropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:labelFor="@id/selectGeometryDropdown" />
 
-            <ImageButton
-                android:id="@+id/polylineButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/multipointButton"
-                android:background="@drawable/button_bar_background"
-                android:contentDescription="@string/polylineButtonDescription"
-                android:onClick="createModePolyline"
-                android:src="@drawable/ic_action_polyline"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/polygonButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/multipointButton" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <ImageButton
-                android:id="@+id/polygonButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/polylineButton"
-                android:background="@drawable/button_bar_background"
-                android:contentDescription="@string/polygonButtonDescription"
-                android:onClick="createModePolygon"
-                android:src="@drawable/ic_action_polygon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/freehandLineButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/polylineButton" />
-
-            <ImageButton
-                android:id="@+id/freehandPolygonButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="8dp"
-                android:layout_toEndOf="@+id/freehandLineButton"
-                android:background="@drawable/button_bar_background"
-                android:contentDescription="@string/freehandPolyButtonDescription"
-                android:onClick="createModeFreehandPolygon"
-                android:src="@drawable/ic_action_freehand_polygon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/freehandLineButton" />
-
-            <ImageButton
-                android:id="@+id/freehandLineButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/polygonButton"
-                android:background="@drawable/button_bar_background"
-                android:contentDescription="@string/freehandLineButtonDescription"
-                android:onClick="createModeFreehandLine"
-                android:src="@drawable/ic_action_freehand_polyline"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/freehandPolygonButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/polygonButton" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </android.widget.RelativeLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

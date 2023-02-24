@@ -1,16 +1,9 @@
 <resources>
     <string name="app_name">Sketch on map</string>
-    <string name="pointButtonDescription">Draw new point</string>
-    <string name="polylineButtonDescription">Draw new polyline</string>
-    <string name="polygonButtonDescription">Draw new polygon</string>
-    <string name="freehandLineButtonDescription">Draw freehand line</string>
-    <string name="freehandPolyButtonDescription">Draw freehand polygon</string>
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
-    <string name="stop">Stop</string>
     <string name="clear">Clear</string>
     <string name="commit_edits">Commit edits</string>
-    <string name="current_selection">Current selection: %s</string>
     <string name="invalid_point_message">Point only valid if it contains an x &amp; y coordinate.</string>
     <string name="invalid_multipoint_message">Multipoint only valid if it contains at least one vertex.</string>
     <string name="invalid_polyline_message">Polyline only valid if it contains at least one part of 2 or more vertices.</string>
@@ -19,4 +12,12 @@
     <string name="restart">Restart</string>
     <string name="cleared_message">Cleared editing sketch from map</string>
     <string name="restart_message">Cleared all graphics from map</string>
+    <string-array name="geometry_list">
+        <item>Freehand Polygon</item>
+        <item>Freehand Polyline</item>
+        <item>Multipoint</item>
+        <item>Point</item>
+        <item>Polygon</item>
+        <item>Polyline</item>
+    </string-array>
 </resources>
