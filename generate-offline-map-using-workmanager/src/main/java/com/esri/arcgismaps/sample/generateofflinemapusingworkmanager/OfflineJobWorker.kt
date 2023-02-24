@@ -120,7 +120,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             // cancel the created coroutineScope that cancels all of the
             // subscribed state flows
             coroutineScope.cancel()
-            // cancel the job
+            // cancel the job to free up any resources
             generateOfflineMapJob.cancel()
         }
     }
