@@ -7,7 +7,6 @@ import com.arcgismaps.tasks.JobStatus
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
 import kotlinx.coroutines.*
 import java.io.File
-import kotlin.system.exitProcess
 
 /**
  * Class to run a GenerateOfflineMapJob as a CoroutineWorker using WorkManager.
@@ -39,6 +38,8 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
 
         return try {
             // set this worker to run as a long-running foreground service
+            // this will only run when the worker is launches and the app is in foreground
+            // else an exception in thrown, in which case the worker is terminated
             setForeground(getForegroundInfo())
 
             // get the job parameter which is the json file path
@@ -56,11 +57,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             // check and delete if the offline map package file already exists
             // this check is needed, if the download has failed midway and is restarted later
             // WorkManager
-            File(generateOfflineMapJob.downloadDirectoryPath).run {
-                if (exists()) {
-                    deleteRecursively()
-                }
-            }
+            File(generateOfflineMapJob.downloadDirectoryPath).deleteRecursively()
 
             // launch the job progress collector
             coroutineScope.launch {

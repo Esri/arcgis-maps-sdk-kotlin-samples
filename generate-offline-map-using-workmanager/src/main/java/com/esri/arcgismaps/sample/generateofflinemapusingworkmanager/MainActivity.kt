@@ -24,19 +24,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.asFlow
-import androidx.work.WorkManager
-import androidx.work.WorkInfo
-import androidx.work.workDataOf
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OutOfQuotaPolicy
+import androidx.work.*
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
@@ -105,13 +99,9 @@ class MainActivity : AppCompatActivity() {
         createProgressDialog()
     }
 
-    // represents an Id for the unique worker so that
-    // only one worker is active at a time
-    private val uniqueWorkerId = "offlineJobWorker"
-
-    // tag for the worker allowing us to query and observe
-    // worker progress immediately or during later app launches
-    private val jobWorkerRequestTag = "OfflineMapJob"
+    // used to uniquely identify the work request so that only one worker is active at a time
+    // also allows us to query and observe work progress
+    private val uniqueWorkName = "offlineJobWorker"
 
     // creates a graphic overlay
     private val graphicsOverlay = GraphicsOverlay()
@@ -187,7 +177,6 @@ class MainActivity : AppCompatActivity() {
                 progressDialog.show()
                 // disable the button
                 takeMapOfflineButton.isEnabled = false
-
             }
         }
 
@@ -195,98 +184,139 @@ class MainActivity : AppCompatActivity() {
         observeWorkStatus()
     }
 
+    /**
+     * Creates and returns a new GenerateOfflineMapJob for the [map] and its [areaOfInterest]
+     */
     private fun createOfflineMapJob(
         map: ArcGISMap,
         areaOfInterest: Geometry
     ): GenerateOfflineMapJob {
+        // check and delete if the offline map package file already exists
         File(offlineMapPath).deleteRecursively()
-
+        // specify the min scale, and max scale as parameters
         val maxScale = map.maxScale
+        // minScale must always be larger than maxScale
         val minScale = if (map.minScale <= maxScale) {
             maxScale + 1
         } else {
             map.minScale
         }
-
+        // set the offline map parameters
         val generateOfflineMapParameters = GenerateOfflineMapParameters(
             areaOfInterest,
             minScale,
             maxScale
         ).apply {
+            // set job to cancel on any errors
             continueOnErrors = false
         }
-
+        // create an offline map task with the map
         val offlineMapTask = OfflineMapTask(map)
+        // create an offline map job with the download directory path and parameters and
+        // return the job
         return offlineMapTask.createGenerateOfflineMapJob(
             generateOfflineMapParameters,
             offlineMapPath
         )
     }
 
+    /**
+     * Starts the [offlineMapJob] using OfflineJobWorker with WorkManager. The [offlineMapJob] is
+     * serialized into a json file and the uri is passed to the OfflineJobWorker, since WorkManager
+     * enforces a MAX_DATA_BYTES for the WorkRequest's data
+     */
     private fun startOfflineMapJob(offlineMapJob: GenerateOfflineMapJob) {
+        // create a temporary file path to save the offlineMapJob json file
         val offlineJobJsonPath = getExternalFilesDir(null)?.path +
             getString(R.string.offlineJobJsonFile)
 
+        // create the json file
         val offlineJobJsonFile = File(offlineJobJsonPath)
+        // serialize the offlineMapJob json into the file
         offlineJobJsonFile.writeText(offlineMapJob.toJson())
 
+        // create a random non-zero notification id for the OfflineJobWorker
+        // this id will be used to post or update any progress/status notifications
         val notificationId = Random.Default.nextInt(1, 100)
 
-        val workRequest =
-            OneTimeWorkRequestBuilder<OfflineJobWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .addTag(jobWorkerRequestTag)
-                .setInputData(
-                    workDataOf(
-                        notificationIdParameter to notificationId,
-                        jobParameter to offlineJobJsonFile.absolutePath
-                    )
+        // create the OfflineJobWorker work request as a one time work request
+        val workRequest = OneTimeWorkRequestBuilder<OfflineJobWorker>()
+            // run it as an expedited work
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            // add the input data
+            .setInputData(
+                // add the notificationId and the job's json file path as a key/value pair
+                workDataOf(
+                    notificationIdParameter to notificationId,
+                    jobParameter to offlineJobJsonFile.absolutePath
                 )
-                .build()
+            )
+            .build()
 
-        workManager.enqueueUniqueWork(uniqueWorkerId, ExistingWorkPolicy.REPLACE, workRequest)
+        // enqueue the work request to run as a unique work with the uniqueWorkName, so that
+        // only one instance of OfflineJobWorker is running at any time
+        // if any new uniqueWorkName work request is enqueued, it replaces any existing ones
+        // that are running
+        workManager.enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, workRequest)
     }
 
     /**
-     * 
+     * Starts observing any running or completed OfflineJobWorker work requests by capturing the
+     * LiveData as a flow. The flow starts receiving updates when the activity is in started
+     * or resumed state. This allows the application to capture current immediate progress when
+     * in foreground and latest progress when the app resumes or restarts.
      */
     private fun observeWorkStatus() {
-        val workInfoFlow = workManager.getWorkInfosByTagLiveData(jobWorkerRequestTag).asFlow()
+        // get the livedata observer of the unique work as a flow
+        val liveDataFlow = workManager.getWorkInfosForUniqueWorkLiveData(uniqueWorkName).asFlow()
 
         lifecycleScope.launch {
-            workInfoFlow.collect { workInfoList ->
-                Log.d(TAG, "observeWorkStatus: $workInfoList")
+            // collect the live data flow to get the latest work info list
+            liveDataFlow.collect { workInfoList ->
                 if (workInfoList.size > 0) {
+                    // fetch the first work info as we only ever run one work request at any time
                     val workInfo = workInfoList[0]
-                    // Log.d(TAG, "observeWorkStatus: $workInfo")
+                    // check the current state of the work request
                     when (workInfo.state) {
+                        // if work completed successfully
                         WorkInfo.State.SUCCEEDED -> {
-                            Log.d(TAG, "observeWorkStatus: Finished Job ${workInfo.state}")
-                            if (progressDialog.isShowing) {
-                                progressDialog.dismiss()
-                            }
+                            // load and display the offline map
                             displayOfflineMap()
-                        }
-
-                        WorkInfo.State.FAILED -> {
-                            showMessage("Error generating offline map")
+                            // dismiss the progress dialog
                             if (progressDialog.isShowing) {
                                 progressDialog.dismiss()
                             }
+                        }
+                        // if the work failed
+                        WorkInfo.State.FAILED -> {
+                            // show an error message
+                            showMessage("Error generating offline map")
+                            // dismiss the progress dialog
+                            if (progressDialog.isShowing) {
+                                progressDialog.dismiss()
+                            }
+                            // enable the takeMapOfflineButton
                             takeMapOfflineButton.isEnabled = true
+                            // this removes the completed WorkInfo from the WorkManager's database
+                            // Otherwise, the observer will emit the WorkInfo on every launch
+                            // until WorkManager auto-prunes
                             workManager.pruneWork()
                         }
-
+                        // if the work is currently in progress
                         WorkInfo.State.RUNNING -> {
+                            // get the current progress value
+                            val value = workInfo.progress.getInt("Progress", 0)
+                            // update the progress bar and progress text
+                            progressLayout.progressBar.progress = value
+                            progressLayout.progressTextView.text = "$value%"
+                            // shows the progress dialog if the app is relaunched and the progress
+                            // dialog is not visible
                             if (!progressDialog.isShowing) {
                                 progressDialog.show()
                             }
-                            val progress = workInfo.progress
-                            val value = progress.getInt("Progress", 0)
-                            progressLayout.progressBar.progress = value
-                            progressLayout.progressTextView.text = "$value%"
                         }
-                        else -> { /* other states are not relevant */ }
+                        else -> { /* other states are not relevant */
+                        }
                     }
                 }
             }
@@ -313,9 +343,9 @@ class MainActivity : AppCompatActivity() {
                 graphicsOverlay.graphics.clear()
                 // hide the takeMapOfflineButton
                 takeMapOfflineButton.visibility = View.GONE
-                // this removes the completed OfflineJobWorker WorkInfo from
-                // the WorkManager's database. Otherwise, the observer will return the
-                // WorkInfo on every launch until WorkManager auto-prunes
+                // this removes the completed WorkInfo from the WorkManager's database
+                // Otherwise, the observer will emit the WorkInfo on every launch
+                // until WorkManager auto-prunes
                 workManager.pruneWork()
                 // display the offline map loaded message
                 showMessage("Loaded offline map. Map saved at: $offlineMapPath")
