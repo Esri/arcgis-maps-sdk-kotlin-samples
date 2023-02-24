@@ -31,7 +31,7 @@ Pan and zoom around the map. Observe the displayed military symbology on the map
 
 ## About the data
 
-The sample uses [mil2525d stylx file](https://www.arcgis.com/home/item.html?id=c78b149a1d52414682c86a5feeb13d30) and [geodatabase](https://www.arcgis.com/home/item.html?id=e0d41b4b409a49a5a7ba11939d8535dc) from ArcGIS Online.
+The sample uses a [mil2525d stylx file](https://www.arcgis.com/home/item.html?id=c78b149a1d52414682c86a5feeb13d30) and a [mobile geodatabase](https://www.arcgis.com/home/item.html?id=e0d41b4b409a49a5a7ba11939d8535dc) from ArcGIS Online.
 
 ## Tags
 
