@@ -287,10 +287,15 @@ class MainActivity : AppCompatActivity() {
                                 progressDialog.dismiss()
                             }
                         }
-                        // if the work failed
-                        WorkInfo.State.FAILED -> {
-                            // show an error message
-                            showMessage("Error generating offline map")
+                        // if the work failed or was cancelled
+                        WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
+                            // show an error message based on if it was cancelled or failed
+                            if (workInfo.state == WorkInfo.State.FAILED) {
+                                showMessage("Error generating offline map")
+                            } else {
+                                showMessage("Cancelled offline map generation")
+                            }
+
                             // dismiss the progress dialog
                             if (progressDialog.isShowing) {
                                 progressDialog.dismiss()
@@ -315,7 +320,7 @@ class MainActivity : AppCompatActivity() {
                                 progressDialog.show()
                             }
                         }
-                        else -> { /* other states are not relevant */
+                        else -> { /* don't have to handle other states */
                         }
                     }
                 }

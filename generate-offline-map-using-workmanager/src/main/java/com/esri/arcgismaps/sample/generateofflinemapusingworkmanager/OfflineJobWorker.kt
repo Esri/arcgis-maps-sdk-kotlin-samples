@@ -36,21 +36,26 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
         // CoroutineScope to run the GenerateOfflineMapJob's state flows on
         val coroutineScope = CoroutineScope(Dispatchers.Default)
 
+        // get the job parameter which is the json file path
+        val offlineJobJsonPath = inputData.getString(jobParameter) ?: return Result.failure()
+        // load the json file
+        val offlineJobJsonFile = File(offlineJobJsonPath)
+        // if the file doesn't exist return failure
+        if (!offlineJobJsonFile.exists()) {
+            return Result.failure()
+        }
+
+        // create the GenerateOfflineMapJob from the json file
+        val generateOfflineMapJob =
+            GenerateOfflineMapJob.fromJson(offlineJobJsonFile.readText())
+            // return failure if the created job is null
+                ?: return Result.failure()
+
         return try {
             // set this worker to run as a long-running foreground service
-            // this will only run when the worker is launches and the app is in foreground
-            // else an exception in thrown, in which case the worker is terminated
+            // this will throw an exception, if the worker is launched when the app is
+            // not in foreground
             setForeground(getForegroundInfo())
-
-            // get the job parameter which is the json file path
-            val offlineJobJsonPath = inputData.getString(jobParameter) ?: return Result.failure()
-            // load the json file
-            val offlineJobJsonFile = File(offlineJobJsonPath)
-            // create the GenerateOfflineMapJob from the json file
-            val generateOfflineMapJob =
-                GenerateOfflineMapJob.fromJson(offlineJobJsonFile.readText())
-                // return failure if the created job is null
-                    ?: return Result.failure()
 
             // A deferred to wait for the completion of the generateOfflineMapJob
             val deferred = CompletableDeferred<Result>()
@@ -95,14 +100,18 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
         } catch (exception: Exception) {
             // capture and log if exception occurs
             Log.e(TAG, "Offline map job failed:", exception)
-            // post a job failed notification
-            workerNotification.showStatusNotification("Failed")
+            if (exception !is CancellationException) {
+                // post a job failed notification only when it is not cancelled
+                workerNotification.showStatusNotification("Failed")
+            }
             // return a failure result
             Result.failure()
         } finally {
             // cancel the created coroutineScope that cancels all of the
             // subscribed state flows
             coroutineScope.cancel()
+            // cancel the job
+            generateOfflineMapJob.cancel()
         }
     }
 }
