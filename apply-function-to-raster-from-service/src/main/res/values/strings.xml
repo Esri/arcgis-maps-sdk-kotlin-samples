@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Add raster from service</string>
+    <string name="app_name">Apply function to raster from service</string>
     <string name="image_service_raster_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer</string>
     <string name="hillshade_simplified">
         {

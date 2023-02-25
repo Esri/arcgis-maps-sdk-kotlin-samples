@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.addrasterfromservice
+package com.esri.arcgismaps.sample.applyfunctiontorasterfromservice
 
 import android.os.Bundle
 import android.util.Log
@@ -31,7 +31,7 @@ import com.arcgismaps.mapping.layers.RasterLayer
 import com.arcgismaps.raster.ImageServiceRaster
 import com.arcgismaps.raster.Raster
 import com.arcgismaps.raster.RasterFunction
-import com.esri.arcgismaps.sample.addrasterfromservice.databinding.ActivityMainBinding
+import com.esri.arcgismaps.sample.applyfunctiontorasterfromservice.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
@@ -127,14 +127,19 @@ class MainActivity : AppCompatActivity() {
 
         // get a list of raster names associated with the raster function
         val rasterNames = rasterFunctionArguments.rasterNames
-        rasterFunctionArguments.setRaster(rasterNames[0], imageServiceRaster)
+        // check if raster function arguments contains raster variable names
+        if(rasterNames.isNotEmpty()){
+            // using the first raster variable name
+            rasterFunctionArguments.setRaster(rasterNames[0], imageServiceRaster)
+            // create raster as raster layer
+            val hillshadeRaster = Raster(rasterFunction)
+            val hillshadeLayer = RasterLayer(hillshadeRaster)
+            // clear and add the layer to the map
+            mapView.map?.operationalLayers?.add(hillshadeLayer)
+        } else{
+            showError("Raster function arguments does not contain raster variable names")
+        }
 
-        // create raster as raster layer
-        val hillshadeRaster = Raster(rasterFunction)
-        val hillshadeLayer = RasterLayer(hillshadeRaster)
-
-        // clear and add the layer to the map
-        mapView.map?.operationalLayers?.add(hillshadeLayer)
     }
 
     private fun showError(message: String) {

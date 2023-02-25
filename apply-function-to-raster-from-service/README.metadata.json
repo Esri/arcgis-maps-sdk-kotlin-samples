@@ -1,10 +1,10 @@
 {
     "category": "Layers",
     "description": "Load a raster from a service, then apply a function to it.",
-    "formal_name": "AddRasterFromService",
+    "formal_name": "ApplyFunctionToRasterFromService",
     "ignore": false,
     "images": [
-        "add-raster-from-service.png"
+        "apply-function-to-raster-from-service.png"
     ],
     "keywords": [
         "function",
@@ -30,5 +30,5 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromservice/MainActivity.kt"
     ],
-    "title": "Add raster from service"
+    "title": "Apply function to raster from service"
 }

@@ -1,8 +1,8 @@
-# Add raster from service
+# Apply function to raster from service
 
 Load a raster from a service, then apply a function to it.
 
-![Image of add raster from service](add-raster-from-service.png)
+![Image of apply function to raster from service](apply-function-to-raster-from-service.png)
 
 ## Use case
 
@@ -10,7 +10,7 @@ Raster functions allow processing operations that can be applied to one or more 
 
 ## How to use the sample
 
-Tap the "Apply Layer" button to apply the raster function and display the result.
+Tap the "Apply Layer" button to apply the raster function and display the result. Tap "Reset" to apply the image service raster back to the rasterLayer.
 
 ## How it works
 
