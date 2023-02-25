@@ -28,7 +28,7 @@
         "RasterLayer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addrasterfromservice/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applyfunctiontorasterfromservice/MainActivity.kt"
     ],
     "title": "Apply function to raster from service"
 }
