@@ -1,0 +1,30 @@
+{
+    "category": "Visualization",
+    "description": "Convert features into graphics to show them with mil2525d symbols.",
+    "formal_name": "ApplyDictionaryRendererToFeatureLayer",
+    "ignore": false,
+    "images": [
+        "apply-dictionary-renderer-to-feature-layer.png"
+    ],
+    "keywords": [
+        "military",
+        "symbol",
+        "DictionaryRenderer",
+        "DictionarySymbolStyle",
+        "FeatureLayer",
+        "Geodatabase"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "DictionaryRenderer",
+        "DictionarySymbolStyle",
+        "FeatureLayer",
+        "Geodatabase"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/DownloadActivity.kt"
+    ],
+    "title": "Apply dictionary renderer to feature layer"
+}
