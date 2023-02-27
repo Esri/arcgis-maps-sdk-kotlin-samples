@@ -79,9 +79,7 @@ class MainActivity : AppCompatActivity() {
             dictionarySymbolStyle.load().getOrElse {
                 return@launch showError("Error loading DictionarySymbolStyle: ${it.message}")
             }
-        }
 
-        lifecycleScope.launch {
             // load the geodatabase
             geodatabase.load().getOrElse {
                 showError("Error loading Geodatabase: ${it.message}")
