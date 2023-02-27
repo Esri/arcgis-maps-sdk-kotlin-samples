@@ -22,5 +22,4 @@ ext {
     javaVersion = 1.11
     // work manager
     workVersion = '2.7.1'
-    coreVersion = '1.6.0'
 }
