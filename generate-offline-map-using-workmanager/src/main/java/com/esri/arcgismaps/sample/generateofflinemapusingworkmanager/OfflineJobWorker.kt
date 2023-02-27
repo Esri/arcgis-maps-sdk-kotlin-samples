@@ -34,9 +34,18 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
         WorkerNotification(context, notificationId)
     }
 
+    // must override for api versions < 31 for backwards compatibility
+    // with foreground services
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return createForegroundInfo(0)
+    }
+
+    /**
+     * Creates and returns a new ForegroundInfo with a progress notification and the given
+     * [progress] value.
+     */
     private fun createForegroundInfo(progress: Int): ForegroundInfo {
-        // create and return a new ForegroundInfo using the notificationId and
-        // a new progress notification
+        // create a ForegroundInfo using the notificationId and a new progress notification
         return ForegroundInfo(
             notificationId,
             workerNotification.createProgressNotification(progress)
