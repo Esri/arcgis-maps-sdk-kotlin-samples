@@ -201,12 +201,11 @@ class MainActivity : AppCompatActivity() {
         // check and delete if the offline map package file already exists
         File(offlineMapPath).deleteRecursively()
         // specify the min scale and max scale as parameters
-        val maxScale = map.maxScale
+        val maxScale = map.maxScale ?: 0.0
+        var minScale = map.minScale ?: 0.0
         // minScale must always be larger than maxScale
-        val minScale = if (map.minScale <= maxScale) {
-            maxScale + 1
-        } else {
-            map.minScale
+        if (minScale <= maxScale) {
+            minScale = maxScale + 1
         }
         // set the offline map parameters
         val generateOfflineMapParameters = GenerateOfflineMapParameters(
@@ -257,8 +256,7 @@ class MainActivity : AppCompatActivity() {
                     notificationIdParameter to notificationId,
                     jobParameter to offlineJobJsonFile.absolutePath
                 )
-            )
-            .build()
+            ).build()
 
         // enqueue the work request to run as a unique work with the uniqueWorkName, so that
         // only one instance of OfflineJobWorker is running at any time
