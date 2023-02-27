@@ -23,8 +23,8 @@
         "Geodatabase"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/DownloadActivity.kt"
     ],
     "title": "Apply dictionary renderer to feature layer"
 }
