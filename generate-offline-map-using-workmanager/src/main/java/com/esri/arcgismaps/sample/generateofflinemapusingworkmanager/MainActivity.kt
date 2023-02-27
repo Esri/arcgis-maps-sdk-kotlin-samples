@@ -1,4 +1,5 @@
-/* Copyright 2022 Esri
+/*
+ * Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +64,7 @@ import kotlin.random.Random
 // data parameter keys for the WorkManager
 // key for the NotificationId parameter
 const val notificationIdParameter = "NotificationId"
+
 // key for the json job file path
 const val jobParameter = "JsonJobPath"
 
