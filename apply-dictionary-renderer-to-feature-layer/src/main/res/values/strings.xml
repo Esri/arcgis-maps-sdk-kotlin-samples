@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Apply Dictionary Renderer To Feature Layer</string>
+    <string name="militaryoverlay_geodatabase">/militaryoverlay.geodatabase</string>
+    <string name="mil2525d_stylx">/mil2525d.stylx</string>
+</resources>
