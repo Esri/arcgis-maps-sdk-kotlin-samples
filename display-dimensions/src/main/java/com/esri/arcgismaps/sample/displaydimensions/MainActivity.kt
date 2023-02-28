@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
             // set up the dialog
             AlertDialog.Builder(this).apply {
                 setView(dialogBinding.root)
-                setTitle(getString(R.string.settings))
+                setTitle("${getString(R.string.settings)}: ${dimensionLayer?.name}")
 
                 dimensionLayerSwitch.setOnCheckedChangeListener { _, isEnabled ->
                     // set the visibility of the dimension layer
