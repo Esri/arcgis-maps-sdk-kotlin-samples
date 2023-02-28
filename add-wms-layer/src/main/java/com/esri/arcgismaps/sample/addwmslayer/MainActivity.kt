@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             map.load().onFailure {
                 return@launch showError("Error loading map")
             }
-            // create a list representing names of the layers to load from the WMS service
+            // create a list representing names of layers to load from the WMS service
             val wmsLayerNames = listOf("1")
             // create a new WmsLayer with the WMS service url and the layers name list
             val wmsLayer = WmsLayer(getString(R.string.wms_layer_url), wmsLayerNames)
