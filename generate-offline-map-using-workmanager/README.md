@@ -63,4 +63,4 @@ to achieve more customised results.
 
 ## Tags
 
-download, offline, save, web map, workmanager, service, background, notification
+background, download, notification, offline, save, service, web map, workmanager
