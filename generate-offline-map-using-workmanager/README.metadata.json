@@ -33,7 +33,8 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/generateofflinemapusingworkmanager/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/generateofflinemapusingworkmanager/OfflineJobWorker.kt",
-        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapusingworkmanager/WorkerNotification.kt"
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapusingworkmanager/WorkerNotification.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapusingworkmanager/NotificationActionReceiver.kt"
     ],
     "title": "Generate offline map using workmanager"
 }
