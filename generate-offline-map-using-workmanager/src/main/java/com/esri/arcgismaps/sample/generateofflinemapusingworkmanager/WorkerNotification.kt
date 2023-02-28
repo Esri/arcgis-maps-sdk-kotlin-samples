@@ -89,6 +89,7 @@ class WorkerNotification(
             setOngoing = true,
             contentText = "Download in progress: $progress%"
         ).setProgress(100, progress, false)
+            // add a cancellation action
             .addAction(0, "Cancel", cancelActionIntent)
             .build()
     }
