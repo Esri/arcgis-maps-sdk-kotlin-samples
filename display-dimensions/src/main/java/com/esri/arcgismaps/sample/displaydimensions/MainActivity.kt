@@ -18,18 +18,12 @@ package com.esri.arcgismaps.sample.displaydimensions
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.MobileMapPackage
 import com.arcgismaps.mapping.layers.DimensionLayer
 import com.esri.arcgismaps.sample.displaydimensions.databinding.ActivityMainBinding
@@ -60,8 +54,10 @@ class MainActivity : AppCompatActivity() {
 
     // keep an instance of the MapView's dimension layer
     private var dimensionLayer: DimensionLayer? = null
+
     // track if the layer is enabled
     private var isDimensionLayerEnabled: Boolean = true
+
     // track if the custom definition is enabled
     private var isDefinitionEnabled: Boolean = false
 
@@ -73,8 +69,12 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
+        // check if the .mmpk file exits
+        val mmpkFile = File(provisionPath, getString(R.string.file_name))
+        if (!mmpkFile.exists()) return showError("Mobile map package file does not exist.")
+
         // create and load a mobile map package
-        val mobileMapPackage = MobileMapPackage("$provisionPath/Edinburgh_Pylon_Dimensions.mmpk")
+        val mobileMapPackage = MobileMapPackage(mmpkFile.path)
 
         lifecycleScope.launch {
             // load the mobile map package

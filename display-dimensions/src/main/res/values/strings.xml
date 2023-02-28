@@ -3,4 +3,5 @@
     <string name="settings">Dimension settings</string>
     <string name="dimension_layer">Dimension Layer</string>
     <string name="definition_expression">Definition expression: Dimensions >= 450m</string>
+    <string name="file_name">Edinburgh_Pylon_Dimensions.mmpk</string>
 </resources>
