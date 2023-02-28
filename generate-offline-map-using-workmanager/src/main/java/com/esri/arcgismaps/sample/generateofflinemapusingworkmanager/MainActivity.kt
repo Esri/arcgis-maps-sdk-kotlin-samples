@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
     // used to uniquely identify the work request so that only one worker is active at a time
     // also allows us to query and observe work progress
-    private val uniqueWorkName = "offlineJobWorker"
+    private val uniqueWorkName = "ArcgisMaps.Sample.OfflineMapJob.Worker"
 
     // create a graphic overlay
     private val graphicsOverlay = GraphicsOverlay()
@@ -278,7 +278,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // collect the live data flow to get the latest work info list
             liveDataFlow.collect { workInfoList ->
-                if (workInfoList.size > 0) {
+                if (workInfoList.isNotEmpty()) {
                     // fetch the first work info as we only ever run one work request at any time
                     val workInfo = workInfoList[0]
                     // check the current state of the work request
@@ -358,6 +358,8 @@ class MainActivity : AppCompatActivity() {
                 workManager.pruneWork()
                 // display the offline map loaded message
                 showMessage("Loaded offline map. Map saved at: $offlineMapPath")
+            } else {
+                showMessage("Offline map does not exists at path: $offlineMapPath")
             }
         }
     }
