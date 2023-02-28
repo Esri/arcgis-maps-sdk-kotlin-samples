@@ -101,25 +101,17 @@ class MainActivity : AppCompatActivity() {
         optionsButton.setOnClickListener {
             // inflate the dialog layout and get references to each of its components
             val dialogBinding = DimensionsDialogLayoutBinding.inflate(layoutInflater)
-            val dimensionLayerSwitch = dialogBinding.dimensionLayerSwitch.apply {
+            dialogBinding.dimensionLayerSwitch.apply {
                 isChecked = isDimensionLayerEnabled
-            }
-            val definitionSwitch = dialogBinding.definitionSwitch.apply {
-                isChecked = isDefinitionEnabled
-            }
-
-            // set up the dialog
-            AlertDialog.Builder(this).apply {
-                setView(dialogBinding.root)
-                setTitle("${getString(R.string.settings)}: ${dimensionLayer?.name}")
-
-                dimensionLayerSwitch.setOnCheckedChangeListener { _, isEnabled ->
+                setOnCheckedChangeListener { _, isEnabled ->
                     // set the visibility of the dimension layer
                     dimensionLayer?.isVisible = isEnabled
                     isDimensionLayerEnabled = isEnabled
                 }
-
-                definitionSwitch.setOnCheckedChangeListener { _, isEnabled ->
+            }
+            dialogBinding.definitionSwitch.apply {
+                isChecked = isDefinitionEnabled
+                setOnCheckedChangeListener { _, isEnabled ->
                     // set a definition expression to show dimension lengths of
                     // greater than or equal to 450m when the checkbox is selected,
                     // or to reset the definition expression to show all
@@ -128,6 +120,12 @@ class MainActivity : AppCompatActivity() {
                     dimensionLayer?.definitionExpression = defExpression
                     isDefinitionEnabled = isEnabled
                 }
+            }
+
+            // set up the dialog
+            AlertDialog.Builder(this).apply {
+                setView(dialogBinding.root)
+                setTitle("${getString(R.string.settings)}: ${dimensionLayer?.name}")
             }.show()
         }
     }
