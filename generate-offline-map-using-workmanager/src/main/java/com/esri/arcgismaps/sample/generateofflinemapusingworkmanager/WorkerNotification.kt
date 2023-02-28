@@ -57,6 +57,24 @@ class WorkerNotification(
         )
     }
 
+    // intent for notification cancel action that launches a NotificationActionReceiver
+    private val cancelActionIntent by lazy {
+        // setup the intent to launch a NotificationActionReceiver
+        val intent = Intent(applicationContext, NotificationActionReceiver::class.java).apply {
+            // set this intent to only launch with this application package
+            setPackage(applicationContext.packageName)
+            // add the notification action as a string
+            putExtra(applicationContext.getString(R.string.notification_action), "Cancel")
+        }
+        // set the pending intent that will be passed to the NotificationManager
+        PendingIntent.getBroadcast(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
     init {
         // create the notification channel
         createNotificationChannel()
@@ -71,6 +89,7 @@ class WorkerNotification(
             setOngoing = true,
             contentText = "Download in progress: $progress%"
         ).setProgress(100, progress, false)
+            .addAction(0, "Cancel", cancelActionIntent)
             .build()
     }
 
