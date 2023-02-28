@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.addwmslayer
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -31,7 +30,6 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.WmsLayer
 import com.esri.arcgismaps.sample.addwmslayer.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -61,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         // apply mapView assignments
         mapView.apply {
             this.map = map
-            // set initial viewpoint to a zoomed out view of North America
+            // set an initial viewpoint to a zoomed out view of North America
             setViewpoint(Viewpoint(39.8, -98.6, 10e7))
         }
 
@@ -74,13 +72,12 @@ class MainActivity : AppCompatActivity() {
             val wmsLayerNames = listOf("1")
             // create a new WmsLayer with the WMS service url and the layers name list
             val wmsLayer = WmsLayer(getString(R.string.wms_layer_url), wmsLayerNames)
-            // load the wmsLayer
-            wmsLayer.load().onFailure {
-                // if the load fails show an error and return
-                return@launch showError("Error loading WMSLayer")
-            }
             // add the wmsLayer to the map as an operational layer
             map.operationalLayers.add(wmsLayer)
+            // if loading the layer fails show an error
+            wmsLayer.load().onFailure {
+                showError("Error loading WmsLayer")
+            }
         }
     }
 

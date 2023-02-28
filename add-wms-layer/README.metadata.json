@@ -1,2 +1,28 @@
 {
+    "category": "Layers",
+    "description": "Display a WMS layer using a WMS service URL.",
+    "formal_name": "AddWmsLayer",
+    "ignore": false,
+    "images": [
+        "add-wms-layer.png"
+    ],
+    "keywords": [
+        "OGC",
+        "WMS",
+        "web map service",
+        "ArcGISMap",
+        "MapView",
+        "WmsLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "/android/latest/sample-code/wms-layer-url.htm",
+    "relevant_apis": [
+        "ArcGISMap",
+        "MapView",
+        "WmsLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addwmslayer/MainActivity.kt"
+    ],
+    "title": "Add WMS Layer"
 }
