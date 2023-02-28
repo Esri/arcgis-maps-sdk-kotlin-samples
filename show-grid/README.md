@@ -25,7 +25,7 @@ Tap on the `Grid options` button in the toolbar to open a settings view. You can
 * Grid
 * LatitudeLongitudeGrid
 * MapView
-* MGRSGrid
+* MgrsGrid
 * SimpleLineSymbol
 * TextSymbol
 * UsngGrid

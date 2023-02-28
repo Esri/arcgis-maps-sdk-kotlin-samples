@@ -32,7 +32,7 @@
     "relevant_apis": [
         "Grid",
         "LatitudeLongitudeGrid",
-        "MGRSGrid",
+        "MgrsGrid",
         "MapView",
         "SimpleLineSymbol",
         "TextSymbol",

@@ -300,8 +300,8 @@ class MainActivity : AppCompatActivity() {
                 size = 14f
                 horizontalAlignment = HorizontalAlignment.Left
                 verticalAlignment = VerticalAlignment.Bottom
-                haloColor = Color.white
-                haloWidth = gridLevel + 1.toFloat()
+                haloColor = Color.black
+                haloWidth =  5f
             }
             grid.setTextSymbol(gridLevel, textSymbol)
         }
