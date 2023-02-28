@@ -20,7 +20,7 @@
         "utm",
         "Grid",
         "LatitudeLongitudeGrid",
-        "MGRSGrid",
+        "MgrsGrid",
         "MapView",
         "SimpleLineSymbol",
         "TextSymbol",
