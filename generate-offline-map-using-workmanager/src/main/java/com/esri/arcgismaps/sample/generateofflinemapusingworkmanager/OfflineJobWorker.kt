@@ -25,12 +25,12 @@ import androidx.work.ForegroundInfo
 import androidx.work.workDataOf
 import com.arcgismaps.tasks.JobStatus
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.takeWhile
 import java.io.File
 
 /**
@@ -70,9 +70,6 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
     }
 
     override suspend fun doWork(): Result {
-        // CoroutineScope to run the GenerateOfflineMapJob's state flows on
-        val coroutineScope = CoroutineScope(Dispatchers.Default)
-
         // get the job parameter which is the json file path
         val offlineJobJsonPath = inputData.getString(jobParameter) ?: return Result.failure()
         // load the json file
@@ -86,14 +83,14 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             GenerateOfflineMapJob.fromJson(offlineJobJsonFile.readText())
             // return failure if the created job is null
                 ?: return Result.failure()
+        // a coroutine job reference for the generateOfflineMapJob's progress collector
+        var progressCollectorJob: Job? = null
 
         return try {
             // set this worker to run as a long-running foreground service
             // this will throw an exception, if the worker is launched when the app
             // is not in foreground
             setForeground(createForegroundInfo(0))
-            // A deferred to wait for the completion of the generateOfflineMapJob
-            val deferred = CompletableDeferred<Result>()
             // check and delete if the offline map package file already exists
             // this check is needed, if the download has failed midway and is restarted later
             // by WorkManager
@@ -104,9 +101,13 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             // can be run on the default Dispatchers.Default context
             generateOfflineMapJob.start()
 
-            // launch a job progress collector
-            coroutineScope.launch {
-                generateOfflineMapJob.progress.collect { progress ->
+            // launch a progress collector in a new CoroutineScope
+            progressCollectorJob = CoroutineScope(Dispatchers.Default).launch {
+                // collect on progress until the job has completed in a success/failure
+                generateOfflineMapJob.progress.takeWhile {
+                    generateOfflineMapJob.status.value != JobStatus.Failed
+                        && generateOfflineMapJob.status.value != JobStatus.Succeeded
+                }.collect { progress ->
                     // update the worker progress
                     setProgress(workDataOf("Progress" to progress))
                     // update the ongoing progress notification
@@ -114,28 +115,22 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
                 }
             }
 
-            // launch a job status collector
-            coroutineScope.launch {
-                generateOfflineMapJob.status.collect { jobStatus ->
-                    if (jobStatus == JobStatus.Succeeded) {
-                        // if the job is successful show a final status notification
-                        workerNotification.showStatusNotification("Completed")
-                        // complete the deferred with a success result
-                        deferred.complete(Result.success())
-                    } else if (jobStatus == JobStatus.Failed) {
-                        // if the job has failed show a final status notification
-                        workerNotification.showStatusNotification("Failed")
-                        // complete the deferred with a failure result
-                        deferred.complete(Result.failure())
-                    }
-                }
+            // suspends until the generateOfflineMapJob has completed
+            val result = generateOfflineMapJob.result()
+            // handle and return the result
+            if (result.isSuccess) {
+                // if the job is successful show a final status notification
+                workerNotification.showStatusNotification("Completed")
+                Result.success()
+            } else {
+                // if the job has failed show a final status notification
+                workerNotification.showStatusNotification("Failed")
+                Result.failure()
             }
-
-            // wait for the completion of the deferred value and return its result
-            deferred.await()
         } catch (exception: Exception) {
             // capture and log if exception occurs
             Log.e(TAG, "Offline map job failed:", exception)
+            // a CancellationException is raised if the work is cancelled manually by the user
             if (exception !is CancellationException) {
                 // post a job failed notification only when it is not cancelled
                 workerNotification.showStatusNotification("Failed")
@@ -143,9 +138,8 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             // return a failure result
             Result.failure()
         } finally {
-            // cancel the created coroutineScope that cancels all of the
-            // subscribed state flows
-            coroutineScope.cancel()
+            // cancel the progressCollectorJob if it is running
+            progressCollectorJob?.cancel()
             // cancel the job to free up any resources
             generateOfflineMapJob.cancel()
         }
