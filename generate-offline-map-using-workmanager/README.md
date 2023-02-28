@@ -26,9 +26,7 @@ Once the map loads, zoom to the extent you want to take offline. The red border 
 
 ### WorkManager and Background behavior
 
-The `OfflineJobWorker` is a `CoroutineWorker` instance which is run as a long-running foreground service by the `WorkManager`. See <https://developer.android.com/guide/background/persistent/how-to/long-running> for more info.
-
-Hence the behavior of the Worker depends on state of the application as follows -
+The `OfflineJobWorker` is a `CoroutineWorker` instance which is run as a long-running foreground service by the `WorkManager`. Check out [Support for long-running workers](https://developer.android.com/guide/background/persistent/how-to/long-running) for more info. Hence the behavior of the Worker depends on state of the application as follows:
 
 When the app
 
@@ -65,4 +63,4 @@ to achieve more customised results.
 
 ## Tags
 
-download, offline, save, web map
+download, offline, save, web map, workmanager, service, background, notification

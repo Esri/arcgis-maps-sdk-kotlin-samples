@@ -7,10 +7,14 @@
         "generate-offline-map.png"
     ],
     "keywords": [
+        "background",
         "download",
+        "notification",
         "offline",
         "save",
+        "service",
         "web map",
+        "workmanager",
         "GenerateOfflineMapJob",
         "GenerateOfflineMapParameters",
         "GenerateOfflineMapResult",
