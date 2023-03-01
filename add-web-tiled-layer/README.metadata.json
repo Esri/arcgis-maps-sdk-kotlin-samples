@@ -1,2 +1,30 @@
 {
+    "category": "Layers",
+    "description": "Display a web tiled layer.",
+    "formal_name": "AddWebTiledLayer",
+    "ignore": false,
+    "images": [
+        "add-web-tiled-layer.png"
+    ],
+    "keywords": [
+        "OGC",
+        "Open Street Map",
+        "OpenStreetMap",
+        "layer",
+        "stamen.com",
+        "tiled",
+        "tiles",
+        "Basemap",
+        "WebTiledLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Basemap",
+        "WebTiledLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/MainActivity.kt"
+    ],
+    "title": "Add web tiled layer"
 }
