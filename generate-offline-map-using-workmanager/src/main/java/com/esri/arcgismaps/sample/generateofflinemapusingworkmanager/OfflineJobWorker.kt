@@ -25,9 +25,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.workDataOf
 import com.arcgismaps.tasks.JobStatus
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.takeWhile
@@ -83,8 +81,6 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             GenerateOfflineMapJob.fromJson(offlineJobJsonFile.readText())
             // return failure if the created job is null
                 ?: return Result.failure()
-        // a coroutine job reference for the generateOfflineMapJob's progress collector
-        var progressCollectorJob: Job? = null
 
         return try {
             // set this worker to run as a long-running foreground service
@@ -101,24 +97,30 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             // can be run on the default Dispatchers.Default context
             generateOfflineMapJob.start()
 
-            // launch a progress collector in a new CoroutineScope
-            progressCollectorJob = CoroutineScope(Dispatchers.Default).launch {
-                // collect on progress until the job has completed in a success/failure
-                generateOfflineMapJob.progress.takeWhile {
-                    generateOfflineMapJob.status.value != JobStatus.Failed
-                        && generateOfflineMapJob.status.value != JobStatus.Succeeded
-                }.collect { progress ->
-                    // update the worker progress
-                    setProgress(workDataOf("Progress" to progress))
-                    // update the ongoing progress notification
-                    setForeground(createForegroundInfo(progress))
+            // collect job progress, wait for the job to finish and get the result
+            val jobResult = coroutineScope {
+                // launch the progress collector in a new coroutine
+                val progressCollectorJob = launch {
+                    // collect on progress until the job has completed in a success/failure
+                    generateOfflineMapJob.progress.takeWhile {
+                        generateOfflineMapJob.status.value != JobStatus.Failed
+                            && generateOfflineMapJob.status.value != JobStatus.Succeeded
+                    }.collect { progress ->
+                        // update the worker progress
+                        setProgress(workDataOf("Progress" to progress))
+                        // update the ongoing progress notification
+                        setForeground(createForegroundInfo(progress))
+                    }
                 }
+                // suspends until the generateOfflineMapJob has completed
+                val result = generateOfflineMapJob.result()
+                // cancel the progress collection coroutine if it is still running
+                progressCollectorJob.cancel()
+                // return the result
+                result
             }
-
-            // suspends until the generateOfflineMapJob has completed
-            val result = generateOfflineMapJob.result()
             // handle and return the result
-            if (result.isSuccess) {
+            if (jobResult.isSuccess) {
                 // if the job is successful show a final status notification
                 workerNotification.showStatusNotification("Completed")
                 Result.success()
@@ -138,8 +140,6 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             // return a failure result
             Result.failure()
         } finally {
-            // cancel the progressCollectorJob if it is running
-            progressCollectorJob?.cancel()
             // cancel the job to free up any resources
             generateOfflineMapJob.cancel()
         }
