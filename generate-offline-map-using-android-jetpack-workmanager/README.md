@@ -2,7 +2,7 @@
 
 Take a web map offline as a persistent background task using Android Jetpack's [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager)
 
-![Image of generate offline map](generate-offline-map.png)
+![Image of generate offline map](generate-offline-map-using-android-jetpack-workmanager.png)
 
 ## Use case
 
