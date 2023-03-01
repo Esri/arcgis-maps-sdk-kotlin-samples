@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-
         // list of sub-domains
         var subDomains = listOf("a", "b", "c", "d")
 
