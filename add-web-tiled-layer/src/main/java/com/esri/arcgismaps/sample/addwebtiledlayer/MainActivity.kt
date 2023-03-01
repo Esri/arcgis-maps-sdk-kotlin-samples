@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(Basemap(webTiledLayer)).also {
             // Kotlin Island
             it.initialViewpoint = Viewpoint(
-                Point(3307706.566137, 8403714.435952, SpatialReference(102100)),
+                Point(3307706.566137, 8403714.435952, mapView.spatialReference.value),
                 94594.86820903532
             )
         }
