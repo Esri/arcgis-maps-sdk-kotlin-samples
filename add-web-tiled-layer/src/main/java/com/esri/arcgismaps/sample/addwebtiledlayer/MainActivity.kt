@@ -21,11 +21,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.WebTiledLayer
 import com.esri.arcgismaps.sample.addwebtiledlayer.databinding.ActivityMainBinding
 
@@ -50,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
 
         // list of sub-domains
-        var subDomains = listOf("a", "b", "c", "d");
+        var subDomains = listOf("a", "b", "c", "d")
 
         // build the web tiled layer from stamen
         var webTiledLayer =
@@ -59,13 +56,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         // use web tiled layer as Basemap
-        val map = ArcGISMap(Basemap(webTiledLayer)).also {
-            // Kotlin Island
-            it.initialViewpoint = Viewpoint(
-                Point(3307706.566137, 8403714.435952, mapView.spatialReference.value),
-                94594.86820903532
-            )
-        }
+        val map = ArcGISMap(Basemap(webTiledLayer))
         mapView.map = map
     }
 }
