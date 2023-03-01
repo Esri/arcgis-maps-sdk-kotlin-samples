@@ -1,4 +1,4 @@
-package com.esri.arcgismaps.sample.generateofflinemapusingworkmanager
+package com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager
 
 import android.content.BroadcastReceiver
 import android.content.Context

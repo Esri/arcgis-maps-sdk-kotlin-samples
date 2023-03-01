@@ -15,7 +15,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.generateofflinemapusingworkmanager
+package com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager
 
 import android.content.Context
 import android.util.Log

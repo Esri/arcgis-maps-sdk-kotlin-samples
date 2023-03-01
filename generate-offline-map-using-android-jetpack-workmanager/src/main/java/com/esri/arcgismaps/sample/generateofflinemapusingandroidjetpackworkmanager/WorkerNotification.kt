@@ -15,7 +15,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.generateofflinemapusingworkmanager
+package com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager
 
 import android.app.Notification
 import android.app.NotificationChannel

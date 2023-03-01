@@ -15,7 +15,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.generateofflinemapusingworkmanager
+package com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager
 
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.AlertDialog
@@ -54,8 +54,8 @@ import com.arcgismaps.portal.PortalItem
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
-import com.esri.arcgismaps.sample.generateofflinemapusingworkmanager.databinding.ActivityMainBinding
-import com.esri.arcgismaps.sample.generateofflinemapusingworkmanager.databinding.GenerateOfflineMapDialogLayoutBinding
+import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.ActivityMainBinding
+import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.GenerateOfflineMapDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
