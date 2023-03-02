@@ -151,9 +151,16 @@ class MainActivity : AppCompatActivity() {
             // enable the take map offline button only after the map is loaded
             takeMapOfflineButton.isEnabled = true
 
+            // get the Control Valve layer, which is the largest layer in the
+            // map's operational layers
+            val operationalLayer =
+                map.operationalLayers.firstOrNull { layer ->
+                    layer.name == "Control Valve"
+                } ?: return@launch showMessage("Error finding Control Valve layer")
+
             // limit the map scale to the largest layer scale
-            map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
-            map.minScale = map.operationalLayers[6].minScale ?: 0.0
+            map.maxScale = operationalLayer.maxScale ?: 0.0
+            map.minScale = operationalLayer.minScale ?: 0.0
 
             mapView.viewpointChanged.collect {
                 // upper left corner of the area to take offline
