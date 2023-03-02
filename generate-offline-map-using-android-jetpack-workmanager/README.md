@@ -1,6 +1,6 @@
 # Generate offline map using Android Jetpack WorkManager
 
-Take a web map offline as a persistent background task using Android Jetpack's [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager)
+Take a web map offline as a persistent background task using Android Jetpack's WorkManager.
 
 ![Image of generate offline map using Android Jetpack WorkManager](generate-offline-map-using-android-jetpack-workmanager.png)
 
@@ -26,7 +26,7 @@ Once the map loads, zoom to the extent you want to take offline. The red border 
 
 ### WorkManager and Background behavior
 
-The `OfflineJobWorker` is a `CoroutineWorker` instance which is run as a long-running foreground service by the `WorkManager`. Check out [Support for long-running workers](https://developer.android.com/guide/background/persistent/how-to/long-running) for more info. Hence the behavior of the Worker depends on state of the application as follows:
+The `OfflineJobWorker` is a `CoroutineWorker` instance which is run as a long-running foreground service by the [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager). Check out [Support for long-running workers](https://developer.android.com/guide/background/persistent/how-to/long-running) for more info. Hence the behavior of the Worker depends on state of the application as follows:
 
 When the app
 
