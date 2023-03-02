@@ -55,7 +55,7 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.ActivityMainBinding
-import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.ProgressDialogLayoutBinding
+import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.OfflineJobProgressDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
     // shows the offline map job loading progress
     private val progressLayout by lazy {
-        ProgressDialogLayoutBinding.inflate(layoutInflater)
+        OfflineJobProgressDialogLayoutBinding.inflate(layoutInflater)
     }
 
     // alert dialog view for the progress layout
