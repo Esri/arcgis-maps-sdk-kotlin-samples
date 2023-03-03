@@ -50,7 +50,10 @@ class MainActivity : AppCompatActivity() {
 
         // build the web tiled layer from stamen url and subDomains
         val webTiledLayer =
-            WebTiledLayer.create(getString(R.string.template_uri_stamen), subDomains).apply {
+            WebTiledLayer.create(
+                getString(R.string.template_uri_stamen),
+                subDomains
+            ).apply {
                 // set the attribution on the layer
                 attribution = getString(R.string.stamen_attribution)
             }
