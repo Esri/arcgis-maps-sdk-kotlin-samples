@@ -31,4 +31,10 @@ dependencies {
     // lib dependencies from rootProject build.gradle
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "com.google.android.material:material:$materialVersion"
+    implementation "androidx.activity:activity-ktx:$ktxActivityExt"
+    implementation "androidx.fragment:fragment-ktx:$ktxFragmentsExt"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxLifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$ktxLifecycle"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$ktxLifecycle"
+    implementation "androidx.browser:browser:$androidBrowserVersion"
 }

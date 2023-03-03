@@ -17,20 +17,24 @@
 package com.esri.arcgismaps.sample.authenticatewithoauth
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
+import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
+import com.arcgismaps.httpcore.authentication.OAuthUserConfiguration
+import com.arcgismaps.httpcore.authentication.OAuthUserCredential
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.portal.Portal
 import com.esri.arcgismaps.sample.authenticatewithoauth.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.simpleName
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -41,21 +45,67 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    private val portal by lazy {
+        Portal(getString(R.string.portal_url), Portal.Connection.Authenticated)
+    }
+
+    private val oAuthConfiguration by lazy {
+        OAuthUserConfiguration(
+            portalUrl = portal.url,
+            clientId = getString(R.string.oauth_client_id),
+            redirectUrl = getString(R.string.oauth_redirect_uri)
+        )
+    }
+
+    private lateinit var oAuthUserSignInViewModel: OAuthUserSignInViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+
+        // initialize the OAuth sign in view model
+        oAuthUserSignInViewModel = ViewModelProvider(
+            owner = this,
+            factory = OAuthUserSignInViewModel.getFactory { activityResultRegistry })[OAuthUserSignInViewModel::class.java]
+
+        lifecycle.addObserver(oAuthUserSignInViewModel)
         lifecycle.addObserver(mapView)
 
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         mapView.map = map
-    }
 
-    private fun showError(message: String) {
-        Log.e(TAG, message)
-        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
+        ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
+            ArcGISAuthenticationChallengeHandler { challenge ->
+                if (oAuthConfiguration.canBeUsedForUrl(challenge.requestUrl)) {
+                    val oAuthUserCredential =
+                        OAuthUserCredential.create(oAuthConfiguration) { oAuthUserSignIn ->
+                            oAuthUserSignInViewModel.promptForOAuthUserSignIn(oAuthUserSignIn)
+                        }.getOrThrow()
+
+                    ArcGISAuthenticationChallengeResponse.ContinueWithCredential(oAuthUserCredential)
+                } else {
+                    ArcGISAuthenticationChallengeResponse.ContinueAndFailWithError(
+                        UnsupportedOperationException()
+                    )
+                }
+            }
+
+        lifecycleScope.launch {
+            AlertDialog.Builder(this@MainActivity).apply {
+                setTitle(portal.url)
+            }.also { dialogBuilder ->
+                portal.load().onSuccess {
+                    dialogBuilder.setMessage("Portal succeeded to load, portal user: ${portal.user?.username}")
+                    dialogBuilder.create().show()
+                }.onFailure {
+                    dialogBuilder.setMessage("Portal failed to load, error: ${it.message}")
+                    dialogBuilder.create().show()
+                }
+            }
+        }
     }
 }
