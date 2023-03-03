@@ -46,10 +46,10 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // list of sub-domains
-        var subDomains = listOf("a", "b", "c", "d")
+        val subDomains = listOf("a", "b", "c", "d")
 
         // build the web tiled layer from stamen url and subDomains
-        var webTiledLayer =
+        val webTiledLayer =
             WebTiledLayer.create(getString(R.string.template_uri_stamen), subDomains).apply {
                 // set the attribution on the layer
                 attribution = getString(R.string.stamen_attribution)
