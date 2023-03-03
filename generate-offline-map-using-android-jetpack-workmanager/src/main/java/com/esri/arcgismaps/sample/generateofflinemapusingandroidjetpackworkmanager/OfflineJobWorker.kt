@@ -129,18 +129,16 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
                 workerNotification.showStatusNotification("Failed")
                 Result.failure()
             }
-        } catch (exception: Exception) {
-            // capture and log if exception occurs
-            Log.e(TAG, "Offline map job failed:", exception)
+        } catch (cancellationException: CancellationException) {
             // a CancellationException is raised if the work is cancelled manually by the user
-            if (exception is CancellationException) {
-                // rethrow if it is a CancellationException
-                throw exception
-            } else {
-                // post a job failed notification only when it is not cancelled
-                workerNotification.showStatusNotification("Failed")
-            }
-
+            // log and rethrow the cancellationException
+            Log.e(TAG, "Offline map job canceled: ", cancellationException)
+            throw cancellationException
+        } catch (exception: Exception) {
+            // capture and log if any other exception occurs
+            Log.e(TAG, "Offline map job failed:", exception)
+            // post a job failed notification
+            workerNotification.showStatusNotification("Failed")
             // return a failure result
             Result.failure()
         } finally {
