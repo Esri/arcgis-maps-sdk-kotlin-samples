@@ -132,7 +132,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
         } catch (cancellationException: CancellationException) {
             // a CancellationException is raised if the work is cancelled manually by the user
             // log and rethrow the cancellationException
-            Log.e(TAG, "Offline map job canceled: ", cancellationException)
+            Log.e(TAG, "Offline map job canceled:", cancellationException)
             throw cancellationException
         } catch (exception: Exception) {
             // capture and log if any other exception occurs
