@@ -14,12 +14,12 @@ When you run the sample, the app will load a web map which contains premium cont
 
 ## How it works
 
-This sample takes advantage of Android's `ViewModel` to encapsulate launching the OAuth user sign in prompt, establishing the activity result contract, verifying the OAuth user's credentials.   
+This sample takes advantage of Android's `ViewModel` to encapsulate launching the OAuth user sign in prompt, establishing the activity result contract, verifying the OAuth user's credentials.
 
 1. Set the `AuthenticationManager`'s `arcGISAuthenticationChallengeHandler` to a `ArcGISAuthenticationChallengeHandler`.
 2. Create an `OAuthConfiguration` specifying the portal URL, client ID, and redirect URL.
 3. Add the OAuth configuration to the authentication manager using `OAuthUserCredential.create(oAuthConfiguration)` to get a `OAuthUserSignIn`.
-4. Set up `ViewModel` responsible for launching an OAuth user sign in prompt and retrieves the authorized redirect URI
+4. Set up `ViewModel` responsible for launching an OAuth user sign in prompt and retrieve the authorized redirect URI
 5. Set the URI to complete the sign in using, `OAuthUserSignIn.complete(redirectUri)`
 6. Load a map with premium content requiring authentication to automatically invoke the default authentication handler.
 
@@ -35,7 +35,7 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 
 ## Additional information
 
-The sample uses a `ActivityResultContract` to get the response from the OAuth user sign in page. This allows for developers to natively navigate back their apps as you can register a callback for an activity result. [Android Documentation](https://developer.android.com/training/basics/intents/result)
+The sample uses an `ActivityResultContract` to get the response from the OAuth user sign in page. This allows for developers to natively navigate back their apps as you can register a callback for an activity result. [Android Documentation](https://developer.android.com/training/basics/intents/result)
 
 The workflow presented in this sample works for all SAML based enterprise (IWA, PKI, Okta, etc.) & social (facebook, google, etc.) identity providers for ArcGIS Online or Portal. For more information, see the topic [Set up enterprise logins](https://doc.arcgis.com/en/arcgis-online/administer/enterprise-logins.htm).
 
