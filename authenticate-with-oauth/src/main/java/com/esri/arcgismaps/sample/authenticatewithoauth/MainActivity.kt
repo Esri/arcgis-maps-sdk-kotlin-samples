@@ -57,8 +57,6 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private lateinit var oAuthUserSignInViewModel: OAuthUserSignInViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -67,17 +65,44 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         // initialize the OAuth sign in view model
-        oAuthUserSignInViewModel = ViewModelProvider(
+        val oAuthUserSignInViewModel = ViewModelProvider(
             owner = this,
-            factory = OAuthUserSignInViewModel.getFactory { activityResultRegistry })[OAuthUserSignInViewModel::class.java]
+            factory = OAuthUserSignInViewModel.getFactory { activityResultRegistry }
+        )[OAuthUserSignInViewModel::class.java]
 
         lifecycle.addObserver(oAuthUserSignInViewModel)
         lifecycle.addObserver(mapView)
+
+        setUpArcGISAuthenticationChallengeHandler(oAuthUserSignInViewModel)
 
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         mapView.map = map
 
+        // check if the portal is can be loaded
+        lifecycleScope.launch {
+            AlertDialog.Builder(this@MainActivity).apply {
+                setTitle(portal.url)
+            }.also { dialogBuilder ->
+                portal.load().onSuccess {
+                    dialogBuilder.setMessage(
+                        "Portal succeeded to load, portal user: ${portal.user?.username}"
+                    ).create().show()
+                }.onFailure {
+                    dialogBuilder.setMessage(
+                        "Portal failed to load, error: ${it.message}"
+                    ).create().show()
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets up the [ArcGISAuthenticationChallengeHandler] to load create a
+     * [OAuthUserCredential] by launching a browser page to perform a OAuth user
+     * login prompt using [oAuthUserSignInViewModel]
+     */
+    private fun setUpArcGISAuthenticationChallengeHandler(oAuthUserSignInViewModel: OAuthUserSignInViewModel) {
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
             ArcGISAuthenticationChallengeHandler { challenge ->
                 if (oAuthConfiguration.canBeUsedForUrl(challenge.requestUrl)) {
@@ -93,19 +118,5 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
-
-        lifecycleScope.launch {
-            AlertDialog.Builder(this@MainActivity).apply {
-                setTitle(portal.url)
-            }.also { dialogBuilder ->
-                portal.load().onSuccess {
-                    dialogBuilder.setMessage("Portal succeeded to load, portal user: ${portal.user?.username}")
-                    dialogBuilder.create().show()
-                }.onFailure {
-                    dialogBuilder.setMessage("Portal failed to load, error: ${it.message}")
-                    dialogBuilder.create().show()
-                }
-            }
-        }
     }
 }
