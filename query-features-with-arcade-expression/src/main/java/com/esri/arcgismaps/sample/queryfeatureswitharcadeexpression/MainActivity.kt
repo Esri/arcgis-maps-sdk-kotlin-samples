@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
             return
         }
-        // get the crimes count from the arcadeEvaluationResult
+        // get the crimes count from the arcadeEvaluationResult as a numerical double value
         val crimesCount = (arcadeEvaluationResult.result as Double)
         // display this result in a textview
         infoTextView.text = getString(R.string.crime_info_text, crimesCount.toInt())
