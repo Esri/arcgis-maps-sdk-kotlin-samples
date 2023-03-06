@@ -213,6 +213,10 @@ class MainActivity : AppCompatActivity() {
         // stops the editing session
         geometryEditor.stop()
 
+        // clear the UI selection
+        selectedGeometryDropdown.setText("")
+        selectedGeometryDropdown.clearFocus()
+
         // create a graphic from the sketch editor geometry
         val graphic = Graphic(sketchGeometry).apply {
             // assign a symbol based on geometry type
