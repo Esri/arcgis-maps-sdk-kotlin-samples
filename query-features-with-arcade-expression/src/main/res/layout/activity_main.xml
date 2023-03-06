@@ -19,7 +19,7 @@
         <TextView
             android:id="@+id/infoTextView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:text="@string/tap_to_begin"
@@ -27,13 +27,14 @@
             android:textAlignment="center"
             android:textSize="15sp"
             android:textStyle="bold"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
