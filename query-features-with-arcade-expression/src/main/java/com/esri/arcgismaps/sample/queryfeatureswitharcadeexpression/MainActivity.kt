@@ -1,4 +1,5 @@
-/* Copyright 2022 Esri
+/*
+ * Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +23,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.scaleMatrix
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -31,19 +31,16 @@ import com.arcgismaps.arcade.ArcadeEvaluator
 import com.arcgismaps.arcade.ArcadeExpression
 import com.arcgismaps.arcade.ArcadeProfile
 import com.arcgismaps.data.ArcGISFeature
-import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.queryfeatureswitharcadeexpression.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -63,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.infoTextView
     }
 
+    // progress indicator
     private val progressBar by lazy {
         activityMainBinding.progressBar
     }
@@ -88,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         Graphic(symbol = markerSymbol)
     }
 
-    // creates a graphic overlay
+    // create a graphic overlay
     private val graphicsOverlay = GraphicsOverlay()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,59 +122,81 @@ class MainActivity : AppCompatActivity() {
                     layer.id == "RPD_Reorg_9254"
                 } ?: return@launch showError("Error finding RPD Beats layer")
 
+            // capture and collect when the user taps on the screen
             mapView.onSingleTapConfirmed.collect { event ->
+                // update the marker location to where the user tapped on the map
                 markerGraphic.geometry = event.mapPoint
-                evaluateArcadeExpression(event.screenCoordinate, policeBeatsLayer)
+                // evaluate an Arcade expression on the point
+                evaluateArcadeExpression(event.screenCoordinate, map, policeBeatsLayer)
             }
         }
     }
 
+    /**
+     * Evaluates an Arcade expression that returns crime in the last 60 days at the tapped
+     * [screenCoordinate] on the [map] with the [policeBeatsLayer] and displays the result in a textview
+     */
     private suspend fun evaluateArcadeExpression(
         screenCoordinate: ScreenCoordinate,
+        map: ArcGISMap,
         policeBeatsLayer: Layer
     ) {
+        // show the progress indicator as the Arcade evaluation can take time to complete
         progressBar.visibility = View.VISIBLE
-        infoTextView.text = ""
-
+        // identify the layer and its elements based on the position tapped on the mapView and
+        // get the result
         val result = mapView.identifyLayer(
             layer = policeBeatsLayer,
             screenCoordinate = screenCoordinate,
             tolerance = 12.0,
             returnPopupsOnly = false
         )
-
+        // get the result as an IdentifyLayerResult
         val identifyLayerResult = result.getOrElse { error ->
+            // if the identifyLayer operation failed show an error and return
             showError("Error identifying layer:${error.message}")
+            // reset the text view to show its default text
+            infoTextView.text = getString(R.string.tap_to_begin)
+            // dismiss the progress indicator
             progressBar.visibility = View.GONE
             return
         }
-
+        // if there are no geoElements identified
         if (identifyLayerResult.geoElements.isEmpty()) {
-            infoTextView.text =  "No layers found"
+            // since the layer is a feature layer, display that no features were found
+            infoTextView.text = "No features found"
+            // dismiss the progress indicator
             progressBar.visibility = View.GONE
             return
         }
-
-        val feature = identifyLayerResult.geoElements.first() as ArcGISFeature
-
+        // get the tapped GeoElement as an ArcGISFeature
+        val identifiedFeature = identifyLayerResult.geoElements.first() as ArcGISFeature
+        // create a string containing the Arcade expression
         val expressionValue =
             "var crimes = FeatureSetByName(\$map, 'Crime in the last 60 days');\n" +
                 "return Count(Intersects(\$feature, crimes));"
-
+        // create an ArcadeExpression using the string expression
         val arcadeExpression = ArcadeExpression(expressionValue)
+        // create an ArcadeEvaluator with the ArcadeExpression and an ArcadeProfile
         val arcadeEvaluator = ArcadeEvaluator(arcadeExpression, ArcadeProfile.FormCalculation)
-        val profileVariables = mapOf<String, Any>("\$feature" to feature, "\$map" to mapView.map!!)
-
+        //  create a list of profile variable key value pairs
+        val profileVariables =
+            mapOf<String, Any>("\$feature" to identifiedFeature, "\$map" to map)
+        // evaluate using the previously set profile variables and get the result
         val evaluationResult = arcadeEvaluator.evaluate(profileVariables)
-
+        // get the result as an ArcadeEvaluationResult
         val arcadeEvaluationResult = evaluationResult.getOrElse {
+            // reset the text view to show its default text
+            infoTextView.text = getString(R.string.tap_to_begin)
+            // dismiss the progress indicator
             progressBar.visibility = View.GONE
             return
         }
-
-        val crimesCount = (arcadeEvaluationResult.result as Double).toInt()
-
-        infoTextView.text = "Crimes in the last 60 days: $crimesCount"
+        // get the crimes count from the arcadeEvaluationResult
+        val crimesCount = (arcadeEvaluationResult.result as Double)
+        // display this result in a textview
+        infoTextView.text = getString(R.string.crime_info_text, crimesCount.toInt())
+        // hide the progress indicator
         progressBar.visibility = View.GONE
     }
 
