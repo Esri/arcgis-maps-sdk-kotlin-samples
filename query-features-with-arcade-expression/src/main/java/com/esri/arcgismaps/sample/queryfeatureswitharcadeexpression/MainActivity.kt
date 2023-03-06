@@ -102,11 +102,12 @@ class MainActivity : AppCompatActivity() {
         val portalItem = PortalItem(portal, "539d93de54c7422f88f69bfac2aebf7d")
         // create and add a map with with portal item
         val map = ArcGISMap(portalItem)
-        // add our marker overlay to the graphics overlay
+        // add the marker graphic to the graphics overlay
         graphicsOverlay.graphics.add(markerGraphic)
         // apply mapview assignments
         mapView.apply {
             this.map = map
+            // add the graphics overlay to the mapview
             graphicsOverlays.add(graphicsOverlay)
         }
 
@@ -134,7 +135,8 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Evaluates an Arcade expression that returns crime in the last 60 days at the tapped
-     * [screenCoordinate] on the [map] with the [policeBeatsLayer] and displays the result in a textview
+     * [screenCoordinate] on the [map] with the [policeBeatsLayer] and displays the result
+     * in a textview
      */
     private suspend fun evaluateArcadeExpression(
         screenCoordinate: ScreenCoordinate,
@@ -179,13 +181,15 @@ class MainActivity : AppCompatActivity() {
         val arcadeExpression = ArcadeExpression(expressionValue)
         // create an ArcadeEvaluator with the ArcadeExpression and an ArcadeProfile
         val arcadeEvaluator = ArcadeEvaluator(arcadeExpression, ArcadeProfile.FormCalculation)
-        //  create a list of profile variable key value pairs
+        //  create a map of profile variables with the feature and map as key value pairs
         val profileVariables =
             mapOf<String, Any>("\$feature" to identifiedFeature, "\$map" to map)
         // evaluate using the previously set profile variables and get the result
         val evaluationResult = arcadeEvaluator.evaluate(profileVariables)
         // get the result as an ArcadeEvaluationResult
-        val arcadeEvaluationResult = evaluationResult.getOrElse {
+        val arcadeEvaluationResult = evaluationResult.getOrElse { error ->
+            // if the evaluation failed show an error and return
+            showError("Error evaluating Arcade expression:${error.message}")
             // reset the text view to show its default text
             infoTextView.text = getString(R.string.tap_to_begin)
             // dismiss the progress indicator
