@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
             mapView.onSingleTapConfirmed.collect { event ->
                 // update the marker location to where the user tapped on the map
                 markerGraphic.geometry = event.mapPoint
-                // evaluate an Arcade expression on the point
+                // evaluate an Arcade expression on the tapped screen coordinate
                 evaluateArcadeExpression(event.screenCoordinate, map, policeBeatsLayer)
             }
         }
@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
             return
         }
-        // get the tapped GeoElement as an ArcGISFeature
+        // get the first identified GeoElement as an ArcGISFeature
         val identifiedFeature = identifyLayerResult.geoElements.first() as ArcGISFeature
         // create a string containing the Arcade expression
         val expressionValue =
@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         // get the crimes count from the arcadeEvaluationResult as a numerical double value
-        val crimesCount = (arcadeEvaluationResult.result as Double)
+        val crimesCount = arcadeEvaluationResult.result as Double
         // display this result in a textview
         infoTextView.text = getString(R.string.crime_info_text, crimesCount.toInt())
         // hide the progress indicator
