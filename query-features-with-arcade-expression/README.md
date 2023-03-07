@@ -20,17 +20,17 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a cal
 4. Identify the visible layer where it is tapped using `mapView.identifyLayer()` and get the feature.
 5. Create the following `ArcadeExpression`:
 
-    ```kotlin		
-    expressionValue = "var crimes = FeatureSetByName(\$map, 'Crime in the last 60 days');\n"
+   ```kotlin
+   expressionValue = "var crimes = FeatureSetByName(\$map, 'Crime in the last 60 days');\n"
     "return Count(Intersects(\$feature, crimes));"
-    ```
+   ```
 
 6. Create an `ArcadeEvaluator` using the Arcade expression and `ArcadeProfile.FORM_CALCULATION`.
 7. Create a map of profile variables with the following key-value pairs:
 
-    ```kotlin
+   ```kotlin
     mapOf<String, Any>("\$feature" to feature, "\$map" to mapView.map)
-    ```
+   ```
 
 8. Call `ArcadeEvaluator.evaluate()` on the Arcade evaluator object and pass the profile variables map.
 9. Get the `ArcadeEvaluationResult.result`.
