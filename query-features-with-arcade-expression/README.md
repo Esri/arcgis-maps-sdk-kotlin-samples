@@ -15,7 +15,7 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a cal
 ## How it works
 
 1. Create a `PortalItem` using the URL and ID.
-2. Create a `ArcGISMap` using the portal item.
+2. Create an `ArcGISMap` using the portal item.
 3. Set up a listener for taps on the map.
 4. Identify the visible layer where it is tapped using `mapView.identifyLayer()` and get the feature.
 5. Create the following `ArcadeExpression`:

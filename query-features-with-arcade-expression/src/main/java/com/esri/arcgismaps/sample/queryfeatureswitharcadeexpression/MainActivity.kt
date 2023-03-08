@@ -104,7 +104,6 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(portalItem)
         // add the marker graphic to the graphics overlay
         graphicsOverlay.graphics.add(markerGraphic)
-        // apply mapview assignments
         mapView.apply {
             this.map = map
             // add the graphics overlay to the mapview
