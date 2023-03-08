@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.editfeatureattachments
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Point
 import android.os.Bundle
 import android.util.Log
@@ -53,15 +54,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val REQUEST_CODE = 100
-    private var progressDialog: AlertDialog? = null
     private val mCalloutLayout: RelativeLayout? = null
 
     private var mFeatureLayer: FeatureLayer? = null
     private var mSelectedArcGISFeature: ArcGISFeature? = null
     private val mTapPoint: Point? = null
 
-    private val attachments: List<Attachment>? = null
-    private var mSelectedArcGISFeatureAttributeValue: String? = null
+    private var attachments: List<Attachment>? = null
+    private var damageType: String? = null
     private var mAttributeID: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,12 +75,7 @@ class MainActivity : AppCompatActivity() {
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISStreets)
         mapView.map = map
-        mapView.setViewpoint(Viewpoint(40.0, -95.0, 1e8))
-
-        progressDialog = AlertDialog.Builder(this@MainActivity).apply {
-            setTitle(getString(R.string.fetching_no_attachments))
-            setMessage(getString(R.string.wait))
-        }.create()
+        mapView.setViewpoint(Viewpoint(40.0, -95.0, 1e7))
 
         // create feature layer with its service feature table and create the service feature table
         val mServiceFeatureTable = ServiceFeatureTable(getString(R.string.sample_service_url))
@@ -102,28 +97,25 @@ class MainActivity : AppCompatActivity() {
                 mFeatureLayer!!.clearSelection()
                 mSelectedArcGISFeature = null
                 //TODO callout.dismiss
-                val identifyLayerResult = mapView.identifyLayer(
+                mapView.identifyLayer(
                     layer = mFeatureLayer!!,
                     screenCoordinate = screenCoordinate,
                     tolerance = 5.0,
                     returnPopupsOnly = false,
                     maximumResults = 1
-                ).onSuccess {layerResult ->
+                ).onSuccess { layerResult ->
                     val resultGeoElements: List<GeoElement> = layerResult.geoElements
-                    if(resultGeoElements.isNotEmpty() && resultGeoElements[0] is ArcGISFeature){
-                        progressDialog?.show()
+                    if (resultGeoElements.isNotEmpty() && resultGeoElements[0] is ArcGISFeature) {
+                        // retrieve and set the currently selected feature
                         mSelectedArcGISFeature = resultGeoElements[0] as ArcGISFeature
-                        // highlight the selected feature
+                        // highlight the currently selected feature
                         mFeatureLayer!!.selectFeature(mSelectedArcGISFeature!!)
                         mAttributeID = mSelectedArcGISFeature?.attributes?.get("objectid").toString()
                         // get the number of attachments
-                        val attachmentsList = mSelectedArcGISFeature?.fetchAttachments()?.getOrThrow()
+                        attachments = mSelectedArcGISFeature?.fetchAttachments()?.getOrThrow()
                         // show callout with the value for the attribute "typdamage" of the selected feature
-                        mSelectedArcGISFeatureAttributeValue = mSelectedArcGISFeature?.attributes?.get("typdamage").toString()
-                        if (progressDialog?.isShowing!!) {
-                            progressDialog?.dismiss()
-                        }
-                        //TODO
+                        damageType = mSelectedArcGISFeature?.attributes?.get("typdamage").toString()
+                        showDialog(damageType!!, attachments!!.size)
                         //showCallout(mSelectedArcGISFeatureAttributeValue, attachments!!.size)
                     } else {
                         // none of the features on the map were selected
@@ -135,12 +127,46 @@ class MainActivity : AppCompatActivity() {
                 }
 
 
-
-
             }
         }
 
     }
+
+    private fun showDialog(damageType: String, attachmentSize: Int) {
+        val dialogBuilder = AlertDialog.Builder(this).apply {
+            setTitle("Damage type: $damageType")
+            setMessage(getString(R.string.attachment_info_message) + attachmentSize)
+            setNegativeButton("Dismiss") { _, _ ->
+
+            }
+            setPositiveButton("Edit attachments") { _, _ ->
+                // start EditAttachmentActivity to view/edit the attachments
+                val myIntent = Intent(this@MainActivity, EditAttachmentActivity::class.java)
+                myIntent.putExtra(getString(R.string.attribute), mAttributeID)
+                myIntent.putExtra(getString(R.string.noOfAttachments), attachments!!.size)
+                val bundle = Bundle()
+                startActivityForResult(
+                    myIntent,
+                    REQUEST_CODE,
+                    bundle
+                )
+            }
+        }
+        val dialog = dialogBuilder.create()
+        dialog.show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // Check which request we're responding to
+        if (requestCode == REQUEST_CODE) {
+            val noOfAttachments =
+                data?.extras!!.getInt(application.getString(R.string.noOfAttachments))
+            // update the callout with attachment count
+            showDialog(damageType!!, noOfAttachments)
+        }
+    }
+
 
     private fun showError(message: String) {
         Log.e(TAG, message)
