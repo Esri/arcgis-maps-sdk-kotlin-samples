@@ -28,7 +28,7 @@
         "TextSymbol"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/showlabelsonlayer/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showlabelsonlayer/MainActivity.kt"
     ],
     "title": "Show labels on layer"
 }
