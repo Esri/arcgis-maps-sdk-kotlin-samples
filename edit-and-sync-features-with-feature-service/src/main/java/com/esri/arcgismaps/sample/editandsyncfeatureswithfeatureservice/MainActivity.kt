@@ -332,8 +332,7 @@ class MainActivity : AppCompatActivity() {
                             // set the edit state to indicate geodatabase is ready for edits
                             geodatabaseEditState = GeodatabaseEditState.READY
                         }
-                        else -> { /* don't have to handle other states */
-                        }
+                        else -> { /* don't have to handle other states */ }
                     }
                 }
             }
