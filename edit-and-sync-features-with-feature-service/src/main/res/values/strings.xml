@@ -4,5 +4,5 @@
     <string name="dialog_title">Fetching result</string>
     <string name="generate_button_text">Generate Geodatabase</string>
     <string name="sync_button_text">Sync Geodatabase</string>
-    <string name="geodatabase_file">/portland_trees_gdb.geodatabase</string>
+    <string name="geodatabase_file">/wildfire_gdb.geodatabase</string>
 </resources>

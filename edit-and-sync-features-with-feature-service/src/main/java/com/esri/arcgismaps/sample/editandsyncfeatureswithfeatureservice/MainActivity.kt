@@ -20,6 +20,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.AutoCompleteTextView.OnDismissListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -61,10 +62,12 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    // button for the generate, sync actions
     private val actionButton by lazy {
         activityMainBinding.actionButton
     }
 
+    // shows the progress of the generate, sync tasks
     private val progressDialog by lazy {
         EditAndSyncDialogLayoutBinding.inflate(layoutInflater)
     }
@@ -84,12 +87,16 @@ class MainActivity : AppCompatActivity() {
     // a red boundary line showing the filtered map extents for the features
     private val boundarySymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 5f)
 
+    // graphics overlay to draw graphics on
     private val graphicsOverlay = GraphicsOverlay()
 
+    // current edit state to track when feature edits can be performed on the geodatabase
     private var geodatabaseEditState = GeodatabaseEditState.NOT_READY
 
+    // list of selected features to edit
     private var selectedFeatures = mutableListOf<Feature>()
 
+    // geodatabase instance that is loaded
     private lateinit var geodatabase: Geodatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create and add a map with a Topographic basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+        val map = ArcGISMap(BasemapStyle.ArcGISStreets)
         // set the max map extents to that of the feature service
         // representing san fransisco area
         map.maxExtent = Envelope(
@@ -111,58 +118,62 @@ class MainActivity : AppCompatActivity() {
             4567228.901189857,
             spatialReference = SpatialReference.webMercator()
         )
-        // configure mapview assignments
+
         mapView.apply {
             this.map = map
             // add the graphics overlay to display the boundary
             graphicsOverlays.add(graphicsOverlay)
+        }
 
-            lifecycleScope.launch {
-                mapView.onSingleTapConfirmed.collect { event ->
-                    event.mapPoint?.let { point ->
-                        when (geodatabaseEditState) {
-                            GeodatabaseEditState.NOT_READY -> {
-                                showInfo("Can't edit yet. The geodatabase hasn't been generated!")
-                            }
-                            GeodatabaseEditState.EDITING -> {
-                                moveSelectedFeatures(point, map)
-                            }
-                            GeodatabaseEditState.READY -> {
-                                selectFeatures(event.screenCoordinate, map)
-                            }
+        lifecycleScope.launch {
+            // if map load failed, show the error and return
+            map.load().onFailure {
+                showInfo("Unable to load map: ${it.message}")
+                return@launch
+            }
+            // if the metadata load fails, show the error and return
+            geodatabaseSyncTask.load().onFailure {
+                showInfo("Failed to fetch geodatabase metadata: ${it.message}")
+                return@launch
+            }
+            // enable the sync button since the task is now loaded
+            actionButton.isEnabled = true
+            // collect and handle map touch events
+            mapView.onSingleTapConfirmed.collect { event ->
+                event.mapPoint?.let { point ->
+                    // perform an action based on the current edit state
+                    when (geodatabaseEditState) {
+                        GeodatabaseEditState.NOT_READY -> {
+                            // if not ready, show info message
+                            showInfo("Can't edit yet. The geodatabase hasn't been generated!")
+                        }
+                        GeodatabaseEditState.EDITING -> {
+                            // if edits have been performed, move the selected features
+                            moveSelectedFeatures(point, map)
+                        }
+                        GeodatabaseEditState.READY -> {
+                            // if no edits are performed but geodatabase is ready, select the
+                            // tapped features
+                            selectFeatures(event.screenCoordinate, map)
                         }
                     }
                 }
             }
         }
 
-        lifecycleScope.launch {
-            // show the error and return if map load failed
-            map.load().onFailure {
-                showInfo("Unable to load map")
-                return@launch
-            }
-
-            geodatabaseSyncTask.load().onFailure {
-                // if the metadata load fails, show the error and return
-                showInfo("Failed to fetch geodatabase metadata")
-                return@launch
-            }
-
-            // enable the sync button since the task is now loaded
-            actionButton.isEnabled = true
-        }
-
         // set the button's onClickListener
         actionButton.setOnClickListener {
             when (geodatabaseEditState) {
+                // if geodatabase hasn't been generated
                 GeodatabaseEditState.NOT_READY -> {
                     mapView.visibleArea?.let { polygon ->
                         // start the geodatabase generation process
                         generateGeodatabase(geodatabaseSyncTask, map, polygon.extent)
                     }
                 }
-                GeodatabaseEditState.EDITING -> showInfo("Unexpected edit state!")
+                // cannot sync in the middle of edit
+                GeodatabaseEditState.EDITING -> showInfo("Features are currently being edited!")
+                // if the edits have been completed
                 GeodatabaseEditState.READY -> syncGeodatabase(geodatabase)
             }
         }
@@ -181,7 +192,6 @@ class MainActivity : AppCompatActivity() {
         map.operationalLayers.clear()
         // clear all symbols drawn
         graphicsOverlay.graphics.clear()
-
         // create a boundary representing the extents selected
         val boundary = Graphic(extents, boundarySymbol)
         // add this boundary to the graphics overlay
@@ -197,40 +207,47 @@ class MainActivity : AppCompatActivity() {
                 }.apply {
                     // set return attachments option to false
                     // indicates if any attachments are added to the geodatabase from the feature service
-                    returnAttachments = true
+                    returnAttachments = false
                 }
 
             // create a generate geodatabase job
-            geodatabaseSyncTask.createGenerateGeodatabaseJob(defaultParameters, geodatabaseFilePath)
-                .run {
-                    // create a dialog to show the jobs progress
-                    val dialog = createProgressDialog("Generating geodatabase", this)
-                    // show the dialog
-                    dialog.show()
-                    // start the generateGeodatabase job
-                    start()
-                    // launch a progress collector to display progress
-                    launch {
-                        progress.collect { value ->
-                            // update the progress bar and progress text
-                            progressDialog.progressBar.progress = value
-                            progressDialog.progressTextView.text = "$value%"
-                        }
-                    }
-                    // if the job completed successfully, get the geodatabase from the result
-                    geodatabase = result().getOrElse {
-                        // show an error and return if job failed
-                        showInfo("Error fetching geodatabase: ${it.message}")
-                        // dismiss the dialog
-                        dialog.dismiss()
-                        return@launch
-                    }
-
-                    // load and display the geodatabase
-                    loadGeodatabase(geodatabase, map)
-                    // dismiss the dialog view
-                    dialog.dismiss()
+            val generateGeodatabaseJob = geodatabaseSyncTask.createGenerateGeodatabaseJob(
+                defaultParameters,
+                geodatabaseFilePath
+            )
+            // create a dialog to show the jobs progress
+            val dialog = createProgressDialog("Generating geodatabase") {
+                // set the onDismissListener to cancel the job when the dialog is dismissed
+                launch {
+                    generateGeodatabaseJob.cancel()
                 }
+            }
+            // show the dialog
+            dialog.show()
+            // start the generateGeodatabase job
+            generateGeodatabaseJob.start()
+            // launch a progress collector to display progress
+            launch {
+                generateGeodatabaseJob.progress.collect { value ->
+                    // update the progress bar and progress text
+                    progressDialog.progressBar.progress = value
+                    progressDialog.progressTextView.text = "$value%"
+                }
+            }
+            // if the job completed successfully, get the geodatabase from the result
+            geodatabase = generateGeodatabaseJob.result().getOrElse {
+                // show an error and return if job failed
+                showInfo("Error fetching geodatabase: ${it.message}")
+                // dismiss the dialog
+                dialog.dismiss()
+                // clear any drawn boundary
+                graphicsOverlay.graphics.clear()
+                return@launch
+            }
+            // load and display the geodatabase
+            loadGeodatabase(geodatabase, map)
+            // dismiss the dialog
+            dialog.dismiss()
         }
     }
 
@@ -250,88 +267,118 @@ class MainActivity : AppCompatActivity() {
         }
         // update the sync button text to show a sync action
         actionButton.text = getString(R.string.sync_button_text)
-        // update the geodatabase edit state
+        // update the geodatabase edit state to indicate its ready for edits and syncs
         geodatabaseEditState = GeodatabaseEditState.READY
     }
 
     /**
-     * Syncs changes made either on the local [geodatabase] or web service geodatabase with each
+     * Syncs changes made on either the local [geodatabase] or web service geodatabase with each
      * other
      */
     private fun syncGeodatabase(geodatabase: Geodatabase) {
+        // create parameters for the geodatabase sync task
         val syncGeodatabaseParameters = SyncGeodatabaseParameters().apply {
+            // sync changes in either direction
             geodatabaseSyncDirection = SyncDirection.Bidirectional
             shouldRollbackOnFailure = false
         }
 
+        // set synchronization option for each layer in the geodatabase we want to synchronize
         syncGeodatabaseParameters.layerOptions += geodatabase.featureTables.map { featureTable ->
             val serviceLayerId = featureTable.serviceLayerId
+            // create a new sync layer option with the layer id of the feature table
             SyncLayerOption(serviceLayerId)
         }
 
-        geodatabaseSyncTask.createSyncGeodatabaseJob(syncGeodatabaseParameters, geodatabase)
-            .run {
-                // create a dialog to show the jobs progress
-                val dialog = createProgressDialog("Syncing geodatabase", this)
-                // show the dialog
-                dialog.show()
-                // start the sync geodatabase job
-                start()
-                // launch a progress collector to display progress
-                lifecycleScope.launch {
-                    progress.collect { value ->
-                        // update the progress bar and progress text
-                        progressDialog.progressBar.progress = value
-                        progressDialog.progressTextView.text = "$value%"
-                    }
-                }
+        // create a new coroutine to run the SyncGeodatabaseJob
+        lifecycleScope.launch {
+            // create the SyncGeodatabaseJob using the parameters and the geodatabase
+            val syncGeodatabaseJob =
+                geodatabaseSyncTask.createSyncGeodatabaseJob(syncGeodatabaseParameters, geodatabase)
 
-                lifecycleScope.launch {
-                    // if the job failed show an error and return
-                    // this code crashes
-                    /* result().onFailure {
-                        showInfo("Database did not sync correctly: ${it.message}")
-                        return@onFailure
-                    } */
-                    status.collect { status ->
-                        when (status) {
-                            JobStatus.Failed, JobStatus.Succeeded -> {
-                                if (status is JobStatus.Failed) {
-                                    showInfo("Database did not sync correctly")
-                                } else {
-                                    showInfo("Sync Complete")
-                                }
-                                dialog.dismiss()
-                                geodatabaseEditState = GeodatabaseEditState.READY
+            // create a dialog to show the jobs progress
+            val dialog = createProgressDialog("Syncing geodatabase") {
+                // set the onDismissListener to cancel the job when the dialog is dismissed
+                launch {
+                    syncGeodatabaseJob.cancel()
+                }
+            }
+            // show the dialog
+            dialog.show()
+            // start the sync geodatabase job
+            syncGeodatabaseJob.start()
+            // launch a progress collector to display progress
+            launch {
+                syncGeodatabaseJob.progress.collect { value ->
+                    // update the progress bar and progress text
+                    progressDialog.progressBar.progress = value
+                    progressDialog.progressTextView.text = "$value%"
+                }
+            }
+            // launch a job status collector
+            launch {
+                syncGeodatabaseJob.status.collect { status ->
+                    when (status) {
+                        JobStatus.Failed, JobStatus.Succeeded -> {
+                            // if the job failed show an failed message
+                            if (status is JobStatus.Failed) {
+                                showInfo("Database did not sync correctly")
+                            } else {
+                                showInfo("Sync Complete")
                             }
-                            else -> {}
+                            // dismiss the dialog
+                            dialog.dismiss()
+                            // set the edit state to indicate geodatabase is ready for edits
+                            geodatabaseEditState = GeodatabaseEditState.READY
+                        }
+                        else -> { /* don't have to handle other states */
                         }
                     }
                 }
             }
-
+        }
     }
 
     /**
      * Queries and selects features on FeatureLayers at the tapped [screenCoordinate] on the [map]
      */
     private fun selectFeatures(screenCoordinate: ScreenCoordinate, map: ArcGISMap) {
+        // set the current edit state to editing
         geodatabaseEditState = GeodatabaseEditState.EDITING
-        lifecycleScope.launch(Dispatchers.Main.immediate) {
+        // create a new coroutine to handle the selection
+        lifecycleScope.launch {
+            // flag to indicate if any features were selected
+            var featuresSelected = false
+            // for each feature layer in the map
             map.operationalLayers.filterIsInstance<FeatureLayer>().forEach { featureLayer ->
+                // identify the layer at the tapped screenCoordinate
                 val identifyLayerResult = mapView.identifyLayer(
                     featureLayer,
                     screenCoordinate,
                     12.0,
                     false
                 ).getOrElse {
+                    // show an error and return if the identifyLayer operation failed
                     showInfo("Unable to identify selected layer: ${it.message}")
                     return@launch
                 }
-
+                // get the identified features in the feature layer
                 val identifiedFeatures = identifyLayerResult.geoElements.filterIsInstance<Feature>()
-                featureLayer.selectFeatures(identifiedFeatures)
-                selectedFeatures.addAll(identifiedFeatures)
+                if(identifiedFeatures.isNotEmpty()) {
+                    // select the features on the map
+                    featureLayer.selectFeatures(identifiedFeatures)
+                    // add the identified features to the selectedFeatures list
+                    selectedFeatures.addAll(identifiedFeatures)
+                    // set the flag to true
+                    featuresSelected = true
+                }
+            }
+            // if no features were selected
+            if (!featuresSelected) {
+                // show a message
+                showInfo("No features found at the tapped location!")
+                // reset the current edit state to ready
+                geodatabaseEditState = GeodatabaseEditState.READY
             }
         }
     }
@@ -340,29 +387,31 @@ class MainActivity : AppCompatActivity() {
      * Moves the selected features to a new [point] on the [map]
      */
     private fun moveSelectedFeatures(point: Point, map: ArcGISMap) {
+        // create a new coroutine to move the features
         lifecycleScope.launch {
             selectedFeatures.forEach { feature ->
+                // update each selected features geometry
                 feature.geometry = point
+                // update the feature
                 feature.featureTable?.updateFeature(feature)
             }
-
+            // clear the list of selected features once all have been updated
             selectedFeatures.clear()
-
+            // clear any selected features on the map
             map.operationalLayers.filterIsInstance<FeatureLayer>().forEach { featureLayer ->
                 featureLayer.clearSelection()
             }
-
+            // set the current edit state to ready
             geodatabaseEditState = GeodatabaseEditState.READY
-            actionButton.isEnabled = true
         }
     }
 
 
     /**
      * Creates and returns a new alert dialog using the progressDialog with the given [title] and
-     * provides [job] cancellation on dialog cancellation
+     * provides an [onDismissListener] callback when the dialog is dismissed
      */
-    private fun createProgressDialog(title: String, job: Job<*>): AlertDialog {
+    private fun createProgressDialog(title: String, onDismissListener: () -> Unit): AlertDialog {
         // build and return a new alert dialog
         return AlertDialog.Builder(this).apply {
             // setting it title
@@ -372,9 +421,7 @@ class MainActivity : AppCompatActivity() {
             // sets negative button configuration
             setNegativeButton("Cancel") { _, _ ->
                 // call the dismiss listener
-                lifecycleScope.launch {
-                    job.cancel()
-                }
+                onDismissListener()
             }
             // removes parent of the progressDialog layout, if previously assigned
             progressDialog.root.parent?.let { parent ->
@@ -388,5 +435,14 @@ class MainActivity : AppCompatActivity() {
     private fun showInfo(message: String) {
         Log.e(TAG, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Enum state class to track editing of features
+     */
+    enum class GeodatabaseEditState {
+        NOT_READY,  // geodatabase has not yet been generated
+        EDITING,  // a feature is in the process of being moved
+        READY // the geodatabase is ready for synchronization or further edits
     }
 }
