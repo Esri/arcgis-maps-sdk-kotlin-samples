@@ -1,4 +1,5 @@
-/* Copyright 2022 Esri
+/*
+ * Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
-import android.widget.AutoCompleteTextView.OnDismissListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -40,13 +40,14 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
-import com.arcgismaps.tasks.Job
 import com.arcgismaps.tasks.JobStatus
-import com.arcgismaps.tasks.geodatabase.*
+import com.arcgismaps.tasks.geodatabase.SyncGeodatabaseParameters
+import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
+import com.arcgismaps.tasks.geodatabase.SyncLayerOption
+import com.arcgismaps.tasks.geodatabase.SyncDirection
 import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.databinding.EditAndSyncDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
