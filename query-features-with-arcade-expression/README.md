@@ -10,7 +10,7 @@ Arcade is a portable, lightweight, and secure expression language used to create
 
 ## How to use the sample
 
-Tap on any neighborhood to see the number of crimes in the last 60 days in a callout.
+Tap on any neighborhood to see the number of crimes in the last 60 days in a TextView.
 
 ## How it works
 
@@ -25,7 +25,7 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a cal
     "return Count(Intersects(\$feature, crimes));"
    ```
 
-6. Create an `ArcadeEvaluator` using the Arcade expression and `ArcadeProfile.FORM_CALCULATION`.
+6. Create an `ArcadeEvaluator` using the Arcade expression and `ArcadeProfile.FormCalculation`.
 7. Create a map of profile variables with the following key-value pairs:
 
    ```kotlin

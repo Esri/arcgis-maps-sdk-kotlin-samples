@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         graphicsOverlay.graphics.add(markerGraphic)
         mapView.apply {
             this.map = map
-            // add the graphics overlay to the mapview
+            // add the graphics overlay to the MapView
             graphicsOverlays.add(graphicsOverlay)
         }
 
@@ -117,15 +117,17 @@ class MainActivity : AppCompatActivity() {
             }
 
             // get the RPD Beats layer from the map's operational layers
-            val policeBeatsLayer =
-                map.operationalLayers.firstOrNull { layer ->
+            val policeBeatsLayer = map.operationalLayers.firstOrNull { layer ->
                     layer.id == "RPD_Reorg_9254"
                 } ?: return@launch showError("Error finding RPD Beats layer")
 
             // capture and collect when the user taps on the screen
             mapView.onSingleTapConfirmed.collect { event ->
                 // update the marker location to where the user tapped on the map
-                markerGraphic.geometry = event.mapPoint
+                event.mapPoint?.let { point ->
+                    markerGraphic.geometry = point
+                    mapView.setViewpointCenter(point)
+                }
                 // evaluate an Arcade expression on the tapped screen coordinate
                 evaluateArcadeExpression(event.screenCoordinate, map, policeBeatsLayer)
             }
@@ -165,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         // if there are no geoElements identified
         if (identifyLayerResult.geoElements.isEmpty()) {
             // since the layer is a feature layer, display that no features were found
-            infoTextView.text = "No features found"
+            infoTextView.text = getString(R.string.no_features_found)
             // dismiss the progress indicator
             progressBar.visibility = View.GONE
             return
@@ -181,8 +183,7 @@ class MainActivity : AppCompatActivity() {
         // create an ArcadeEvaluator with the ArcadeExpression and an ArcadeProfile
         val arcadeEvaluator = ArcadeEvaluator(arcadeExpression, ArcadeProfile.FormCalculation)
         //  create a map of profile variables with the feature and map as key value pairs
-        val profileVariables =
-            mapOf<String, Any>("\$feature" to identifiedFeature, "\$map" to map)
+        val profileVariables = mapOf<String, Any>("\$feature" to identifiedFeature, "\$map" to map)
         // evaluate using the previously set profile variables and get the result
         val evaluationResult = arcadeEvaluator.evaluate(profileVariables)
         // get the result as an ArcadeEvaluationResult
