@@ -143,5 +143,4 @@ class MainActivity : AppCompatActivity() {
 /**
  * Simple extension property that represents a blue color
  */
-private val Color.Companion.blue
-    get() = fromRgba(0, 0, 255)
+private val Color.Companion.blue get() = fromRgba(0, 0, 255)
