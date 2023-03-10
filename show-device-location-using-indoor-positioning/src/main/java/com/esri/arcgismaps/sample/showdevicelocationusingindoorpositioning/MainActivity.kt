@@ -1,0 +1,374 @@
+/* Copyright 2023 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.esri.arcgismaps.sample.showdevicelocationusingindoorpositioning
+
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.arcgismaps.Guid
+import com.arcgismaps.data.*
+import com.arcgismaps.location.*
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.portal.Portal
+import com.arcgismaps.portal.PortalItem
+import com.esri.arcgismaps.sample.showdevicelocationusingindoorpositioning.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
+import java.text.DecimalFormat
+import java.util.*
+
+class MainActivity : AppCompatActivity() {
+
+    private val TAG = MainActivity::class.java.simpleName
+
+    private var currentFloor: Int? = null
+
+    // Provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
+    private var mIndoorsLocationDataSource: IndoorsLocationDataSource? = null
+
+    private val activityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
+
+    private val mapView by lazy {
+        activityMainBinding.mapView
+    }
+
+    private val progressBar by lazy {
+        activityMainBinding.progressBar
+    }
+
+    private val textView by lazy {
+        activityMainBinding.textView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(activityMainBinding.root)
+        // check for location permissions
+        // if permissions is allowed, the device's current location is shown
+        checkPermissions()
+    }
+
+    /**
+     * Check for location permissions, if not received then request for one
+     */
+    private fun checkPermissions() {
+        val requestCode = 1
+        val requestPermissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                requestPermissions[0]
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, requestPermissions, requestCode)
+        } else {
+            // permission already given, so no need to request
+            setUpMap()
+        }
+    }
+
+    /**
+     * Set up the connection between the device and the portal item
+     * And set the [mapView] using the [portalItem] then invokes [loadTables]
+     */
+    private fun setUpMap() {
+        // load the portal and create a map from the portal item
+        val portalItem = PortalItem(
+            Portal("https://www.arcgis.com/"),
+            "8fa941613b4b4b2b8a34ad4cdc3e4bba"
+        )
+        mapView.map = ArcGISMap(portalItem)
+        val map = mapView.map
+        lifecycleScope.launch {
+            map?.load()?.onSuccess {
+                val featureTables = map.tables
+                // check if the portalItem contains featureTables
+                if (featureTables.isNotEmpty()) {
+                    setUpLoadTables(featureTables)
+                } else {
+                    showError("Map does not contain feature tables")
+                }
+            }?.onFailure {
+                // if map load failed, show the error
+                showError("Error Loading Map")
+            }
+        }
+    }
+
+    /**
+     * Set up the ResultsCallback for when all tables are loaded
+     */
+    private fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
+        lifecycleScope.launch {
+            featureTables.forEach { featureTable ->
+                // load each FeatureTable
+                featureTable.load().onSuccess {
+                    setupIndoorsLocationDataSource(featureTable)
+                }.onFailure {
+                    showError("Error loading FeatureTable: ${it.message}")
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets up the [mIndoorsLocationDataSource] using the positioningTable
+     */
+    private fun setupIndoorsLocationDataSource(featureTable: FeatureTable) {
+        // positioningTable needs to be present
+        val positioningTable = featureTable.tableName == "ips_positioning"
+
+        if (positioningTable != null) {
+            val positioningserviceFeatureTable = positioningTable as ServiceFeatureTable
+            // when multiple entries are available, IndoorsLocationDataSource constructor function
+            // looks up the entry with the most recent date and takes this positioning data
+            // set up queryParameters to grab one result.
+            val dateCreatedFieldName =
+                getDateCreatedFieldName(positioningserviceFeatureTable.fields)
+            if (dateCreatedFieldName == null) {
+                showError("The service table does not contain \"DateCreated\" fields.")
+                return
+            }
+            val queryParameters = QueryParameters().apply {
+                maxFeatures = 1
+                whereClause = "1 = 1"
+                // find and sort out the orderByFields by most recent first
+                orderByFields.add(
+                    OrderBy(
+                        dateCreatedFieldName,
+                        sortOrder = SortOrder.Descending
+                    )
+                )
+            }
+            lifecycleScope.launch {
+                positioningserviceFeatureTable?.queryFeatures(queryParameters)
+                    ?.onSuccess { queryResults ->
+                        // perform search query using the queryParameters
+
+                        queryResults.forEach { feature ->
+                            // check if serviceFeatureTable contains positioning data
+                            // The ID that identifies a row in the positioning table.
+                            if (feature != null) {
+                                val globalID =
+                                    feature.attributes[positioningserviceFeatureTable.globalIdField].toString()
+                                val positioningId = Guid(globalID)
+                                // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
+                                // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
+                                // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
+                                // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+                                // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
+                                mIndoorsLocationDataSource = IndoorsLocationDataSource(
+                                    positioningserviceFeatureTable,
+                                    getPathwaysTable(),
+                                    getLevelsTable(),
+                                    positioningId
+                                )
+                                // start the location display (blue dot)
+                                startLocationDisplay()
+                            } else {
+                                showError("The positioning table contain no data")
+                            }
+                        }
+                    }?.onFailure {
+                        showError("Positioning Table not found in FeatureTables")
+                    }
+            }
+        } else {
+            showError("Positioning Table not found in FeatureTables")
+        }
+    }
+
+    /**
+     * Find the exact formatting of the name "DateCreated" in the list of ServiceFeatureTable fields.
+     */
+    private fun getDateCreatedFieldName(fields: List<Field>): String? {
+        val field = fields.find {
+            it.name.equals(
+                "DateCreated",
+                ignoreCase = true
+            ) || it.name.equals("Date_Created", ignoreCase = true)
+        }
+        return field?.name
+    }
+
+    /**
+     * Retrieves the PathwaysTable which is an [ArcGISFeatureTable] that contains pathways as per the ArcGIS Indoors Information Model.
+     * Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+     */
+    private fun getPathwaysTable(): ArcGISFeatureTable? {
+        return try {
+            val pathwaysFeatureLayer =
+                mapView.map?.operationalLayers?.firstOrNull { it.name == "Pathways" } as? FeatureLayer
+            pathwaysFeatureLayer?.featureTable as? ArcGISFeatureTable
+        } catch (e: Exception) {
+            // if pathways table not found in map's operationalLayers
+            showError("PathwaysTable not found")
+            null
+        }
+    }
+
+    /**
+     * Retrieves the Levels tables which is an [ArcGISFeatureTable] that contains floor levels in accordance with the ArcGIS Indoors Information Model.
+     * Providing this table enables the retrieval of a location's floor level ID.
+     */
+    private fun getLevelsTable(): ArcGISFeatureTable? {
+        return try {
+            val levelsFeatureLayer =
+                mapView.map?.operationalLayers?.firstOrNull { it.name == "levels" } as? FeatureLayer
+            levelsFeatureLayer?.featureTable as? ArcGISFeatureTable
+        } catch (e: Exception) {
+            // if levels table not found in map's operationalLayers
+            showError("Levels table not found")
+            null
+        }
+    }
+
+    /**
+     * Invokes when the app is closed or LocationDataSource is stopped.
+     */
+//    private fun stopLocationDisplay() {
+//        mapView.locationDisplay.dataSource.stop()
+//    }
+
+    /**
+     * Sets up the location listeners, the navigation mode, and display's the devices location as a blue dot
+     */
+    private fun startLocationDisplay() {
+        val locationDisplay = mapView.locationDisplay.apply {
+            setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+            dataSource = mIndoorsLocationDataSource
+                ?: return showError("Error setting the IndoorsLocationDataSource value.")
+        }
+
+        // coroutine scope to start the location display, which will in-turn start IndoorsLocationDataSource to start receiving IPS updates.
+        lifecycleScope.launch {
+            locationDisplay.dataSource.start()
+        }
+
+        // coroutine scope to collect data source location changes like currentFloor, positionSource, transmitterCount, networkCount and horizontalAccuracy
+        lifecycleScope.launch {
+            locationDisplay.dataSource.locationChanged.collect { location ->
+                // get the location properties of the LocationDataSource
+                val locationProperties = location.additionalSourceProperties
+                if (locationProperties == null) {
+                    showError("LocationDataSource does not have any property-fields")
+                }
+                // retrieve information about the location of the device
+                val floor = (locationProperties["floor"] ?: "").toString()
+                val positionSource = (locationProperties["positionSource"] ?: "").toString()
+                val transmitterCount = (locationProperties["transmitterCount"] ?: "").toString()
+                val satelliteCount = (locationProperties["satelliteCount"] ?: "").toString()
+
+                // check if current floor hasn't been set or if the floor has changed
+                val newFloor = floor.toInt()
+                if (currentFloor == null || currentFloor != newFloor) {
+                    currentFloor = newFloor
+                    // set up the floor layer with the newFloor
+                    setupLayers()
+                }
+                // set up the message with floor properties to be displayed to the textView
+                var locationPropertiesMessage =
+                    "Floor: $floor, Position-source: $positionSource, " +
+                            "Horizontal-accuracy: " + location.let {
+                        DecimalFormat(".##").format(
+                            it.horizontalAccuracy
+                        )
+                    } + "m, "
+                if (positionSource == Location.SourceProperties.Values.POSITION_SOURCE_GNSS) {
+                    locationPropertiesMessage += "Satellite-count: $satelliteCount"
+                } else if (positionSource == "BLE") {
+                    locationPropertiesMessage += "Transmitter-count: $transmitterCount"
+                }
+                textView.text = locationPropertiesMessage
+            }
+        }
+
+        lifecycleScope.launch {
+            // Handle status changes of IndoorsLocationDataSource
+            locationDisplay.dataSource.status.collect { status ->
+                when (status) {
+                    LocationDataSourceStatus.Starting -> progressBar.visibility = View.VISIBLE
+                    LocationDataSourceStatus.Started -> progressBar.visibility = View.GONE
+                    LocationDataSourceStatus.FailedToStart -> {
+                        progressBar.visibility = View.GONE
+                        showError("Failed to start IndoorsLocationDataSource")
+                    }
+                    LocationDataSourceStatus.Stopped -> {
+                        progressBar.visibility = View.GONE
+                        mapView.locationDisplay.dataSource.stop()
+                        showError("IndoorsLocationDataSource stopped due to an internal error")
+                    }
+                    else -> {
+                        null
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set up the floor layer when the device location is updated
+     */
+    private fun setupLayers() {
+        // update layer's definition express with the current floor
+        val layerList = mapView.map?.operationalLayers
+        layerList?.forEach { layer ->
+            val name = layer.name
+            if (layer is FeatureLayer && (name == "Details" || name == "Units" || name == "Levels")) {
+                layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
+            }
+        }
+    }
+
+    /**
+     * Result of the user from location permissions request
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // if location permissions accepted, start setting up IndoorsLocationDataSource
+            setUpMap()
+        } else {
+            val message = "Location permission is not granted"
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            Log.e(TAG, message)
+            progressBar.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Displays an error onscreen
+     */
+    private fun showError(message: String) {
+        Log.e(TAG, message)
+        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
+    }
+}
+
