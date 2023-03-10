@@ -105,10 +105,10 @@ class MainActivity : AppCompatActivity() {
         // set the max map extents to that of the feature service
         // representing portland area
         map.maxExtent = Envelope(
-            -1.3632707690979272E7,
-            4540419.016643651,
-            -1.3608608918353476E7,
-            4569337.543794606,
+            -1.3641320770825155E7,
+            4524676.716562641,
+            -1.3617221998199359E7,
+            4567228.901189857,
             spatialReference = SpatialReference.webMercator()
         )
         // configure mapview assignments
@@ -125,10 +125,10 @@ class MainActivity : AppCompatActivity() {
                                 showInfo("Can't edit yet. The geodatabase hasn't been generated!")
                             }
                             GeodatabaseEditState.EDITING -> {
-                                // moveSelectedFeatures(point, map)
+                                moveSelectedFeatures(point, map)
                             }
                             GeodatabaseEditState.READY -> {
-                                // selectFeatures(event.screenCoordinate, map)
+                                selectFeatures(event.screenCoordinate, map)
                             }
                         }
                     }
@@ -160,6 +160,7 @@ class MainActivity : AppCompatActivity() {
             when (geodatabaseEditState) {
                 GeodatabaseEditState.NOT_READY -> {
                     mapView.visibleArea?.let { polygon ->
+                        Log.e(TAG, "onCreate: ${polygon.extent}", )
                         // start the geodatabase generation process
                         generateGeodatabase(geodatabaseSyncTask, map, polygon.extent)
                     }
