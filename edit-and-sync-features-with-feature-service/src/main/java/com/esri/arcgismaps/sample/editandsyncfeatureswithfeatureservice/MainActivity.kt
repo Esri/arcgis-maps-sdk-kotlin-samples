@@ -297,7 +297,6 @@ class MainActivity : AppCompatActivity() {
                     syncButton.isEnabled = false
                     geodatabaseEditState = GeodatabaseEditState.READY
                     showInfo("Sync Complete")
-                    geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
                 }
         }
     }
