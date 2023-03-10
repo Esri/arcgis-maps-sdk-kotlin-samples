@@ -45,6 +45,7 @@ import com.arcgismaps.tasks.geodatabase.*
 import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.databinding.EditAndSyncDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -74,11 +75,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     // create a geodatabase sync task with the feature service url
-    // This feature service shows a web map of portland street trees,
-    // their attributes, as well as related inspection information
+    // This feature service illustrates a collection schema for wildlfire information
+    // in the san fransisco area
     private val geodatabaseSyncTask by lazy {
-        GeodatabaseSyncTask("https://sampleserver6.arcgisonline.com/arcgis/rest/services/Sync/WildfireSync/FeatureServer")
-        // GeodatabaseSyncTask(getString(R.string.feature_server_url))
+        GeodatabaseSyncTask(getString(R.string.feature_server_url))
     }
 
     // a red boundary line showing the filtered map extents for the features
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         // create and add a map with a Topographic basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
         // set the max map extents to that of the feature service
-        // representing portland area
+        // representing san fransisco area
         map.maxExtent = Envelope(
             -1.3641320770825155E7,
             4524676.716562641,
@@ -160,7 +160,6 @@ class MainActivity : AppCompatActivity() {
             when (geodatabaseEditState) {
                 GeodatabaseEditState.NOT_READY -> {
                     mapView.visibleArea?.let { polygon ->
-                        Log.e(TAG, "onCreate: ${polygon.extent}", )
                         // start the geodatabase generation process
                         generateGeodatabase(geodatabaseSyncTask, map, polygon.extent)
                     }
@@ -257,6 +256,10 @@ class MainActivity : AppCompatActivity() {
         geodatabaseEditState = GeodatabaseEditState.READY
     }
 
+    /**
+     * Syncs changes made either on the local [geodatabase] or web service geodatabase with each
+     * other
+     */
     private fun syncGeodatabase(geodatabase: Geodatabase) {
         val syncGeodatabaseParameters = SyncGeodatabaseParameters().apply {
             geodatabaseSyncDirection = SyncDirection.Bidirectional
@@ -268,42 +271,55 @@ class MainActivity : AppCompatActivity() {
             SyncLayerOption(serviceLayerId)
         }
 
-        lifecycleScope.launch {
-            geodatabaseSyncTask.createSyncGeodatabaseJob(syncGeodatabaseParameters, geodatabase)
-                .run {
-                    // create a dialog to show the jobs progress
-                    val dialog = createProgressDialog("Syncing geodatabase", this)
-                    // show the dialog
-                    dialog.show()
-                    // start the sync geodatabase job
-                    start()
-                    // launch a progress collector to display progress
-                    launch {
-                        progress.collect { value ->
-                            // update the progress bar and progress text
-                            progressDialog.progressBar.progress = value
-                            progressDialog.progressTextView.text = "$value%"
-                        }
+        geodatabaseSyncTask.createSyncGeodatabaseJob(syncGeodatabaseParameters, geodatabase)
+            .run {
+                // create a dialog to show the jobs progress
+                val dialog = createProgressDialog("Syncing geodatabase", this)
+                // show the dialog
+                dialog.show()
+                // start the sync geodatabase job
+                start()
+                // launch a progress collector to display progress
+                lifecycleScope.launch {
+                    progress.collect { value ->
+                        // update the progress bar and progress text
+                        progressDialog.progressBar.progress = value
+                        progressDialog.progressTextView.text = "$value%"
                     }
+                }
 
+                lifecycleScope.launch {
                     // if the job failed show an error and return
-                    result().onFailure {
+                    // this code crashes
+                    /* result().onFailure {
                         showInfo("Database did not sync correctly: ${it.message}")
                         return@onFailure
+                    } */
+                    status.collect { status ->
+                        when (status) {
+                            JobStatus.Failed, JobStatus.Succeeded -> {
+                                if (status is JobStatus.Failed) {
+                                    showInfo("Database did not sync correctly")
+                                } else {
+                                    showInfo("Sync Complete")
+                                }
+                                dialog.dismiss()
+                                geodatabaseEditState = GeodatabaseEditState.READY
+                            }
+                            else -> {}
+                        }
                     }
-
-                    // dismiss the dialog
-                    dialog.dismiss()
-                    syncButton.isEnabled = false
-                    geodatabaseEditState = GeodatabaseEditState.READY
-                    showInfo("Sync Complete")
                 }
-        }
+            }
+
     }
 
+    /**
+     * Queries and selects features on FeatureLayers at the tapped [screenCoordinate] on the [map]
+     */
     private fun selectFeatures(screenCoordinate: ScreenCoordinate, map: ArcGISMap) {
         geodatabaseEditState = GeodatabaseEditState.EDITING
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Main.immediate) {
             map.operationalLayers.filterIsInstance<FeatureLayer>().forEach { featureLayer ->
                 val identifyLayerResult = mapView.identifyLayer(
                     featureLayer,
@@ -322,6 +338,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Moves the selected features to a new [point] on the [map]
+     */
     private fun moveSelectedFeatures(point: Point, map: ArcGISMap) {
         lifecycleScope.launch {
             selectedFeatures.forEach { feature ->
@@ -343,9 +362,9 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Creates and returns a new alert dialog using the progressDialog with the given [title] and
-     * provides an [onDismissListener] callback on dialog cancellation
+     * provides [job] cancellation on dialog cancellation
      */
-    private fun createProgressDialog(title: String, job : Job<*>): AlertDialog {
+    private fun createProgressDialog(title: String, job: Job<*>): AlertDialog {
         // build and return a new alert dialog
         return AlertDialog.Builder(this).apply {
             // setting it title
