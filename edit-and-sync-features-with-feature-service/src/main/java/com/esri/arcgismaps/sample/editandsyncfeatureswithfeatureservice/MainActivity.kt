@@ -61,8 +61,8 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val syncButton by lazy {
-        activityMainBinding.syncButton
+    private val actionButton by lazy {
+        activityMainBinding.actionButton
     }
 
     private val progressDialog by lazy {
@@ -150,13 +150,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             // enable the sync button since the task is now loaded
-            syncButton.isEnabled = true
-
-
+            actionButton.isEnabled = true
         }
 
         // set the button's onClickListener
-        syncButton.setOnClickListener {
+        actionButton.setOnClickListener {
             when (geodatabaseEditState) {
                 GeodatabaseEditState.NOT_READY -> {
                     mapView.visibleArea?.let { polygon ->
@@ -251,7 +249,7 @@ class MainActivity : AppCompatActivity() {
             FeatureLayer(featureTable)
         }
         // update the sync button text to show a sync action
-        syncButton.text = getString(R.string.sync_button_text)
+        actionButton.text = getString(R.string.sync_button_text)
         // update the geodatabase edit state
         geodatabaseEditState = GeodatabaseEditState.READY
     }
@@ -355,7 +353,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             geodatabaseEditState = GeodatabaseEditState.READY
-            syncButton.isEnabled = true
+            actionButton.isEnabled = true
         }
     }
 
