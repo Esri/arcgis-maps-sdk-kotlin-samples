@@ -17,17 +17,16 @@
 package com.esri.arcgismaps.sample.editfeatureattachments
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
@@ -44,22 +43,20 @@ import com.arcgismaps.mapping.GeoElement
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.ActivityMainBinding
-import com.esri.arcgismaps.sample.editfeatureattachments.databinding.SheetEditAttachmentBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
+import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentLoadingDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
@@ -68,18 +65,33 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val bottomSheetBinding by lazy {
-        SheetEditAttachmentBinding.inflate(layoutInflater)
+    private val attachmentsSheetBinding by lazy {
+        AttachmentEditSheetBinding.inflate(layoutInflater)
     }
 
+    private val loadingDialogBinding by lazy {
+        AttachmentLoadingDialogBinding.inflate(layoutInflater)
+    }
 
-    private val mServiceFeatureTable by lazy {
+    private val serviceFeatureTable by lazy {
         ServiceFeatureTable(getString(R.string.sample_service_url))
     }
 
-    private val RESULT_LOAD_IMAGE = 1
-    private var mSelectedArcGISFeature: ArcGISFeature? = null
-    private var mAttributeID = ""
+    // Registers the activity for an image data result from the default image picker
+    private val activityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val data = result.data?.data
+            if (data != null) {
+                // add the image data as a feature attachment
+                addFeatureAttachment(data)
+            }
+        }
+
+    // tracks the selected ArcGISFeature and it's attachments
+    private var selectedArcGISFeature: ArcGISFeature? = null
+
+    // tracks the instance of the bottom sheet
+    private var bottomSheet: BottomSheetDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,52 +101,48 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISStreets)
-        mapView.map = map
-        mapView.setViewpoint(Viewpoint(40.0, -95.0, 1e8))
-
-        // create feature layer with its service feature table and create the service feature table
-        mServiceFeatureTable.featureRequestMode = FeatureRequestMode.OnInteractionCache
         // create the feature layer using the service feature table
-        val mFeatureLayer = FeatureLayer(mServiceFeatureTable)
-        // add the layer to the map
-        map.operationalLayers.add(mFeatureLayer)
+        val featureLayer = FeatureLayer(serviceFeatureTable)
 
-        // TODO get callout, set content and show
-        //mCallout = mMapView.getCallout()
+        // create and add a map with a navigation night basemap style
+        val streetsMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
+            operationalLayers.add(featureLayer)
+        }
+        // set the map and the viewpoint to the MapView
+        mapView.apply {
+            map = streetsMap
+            setViewpoint(Viewpoint(40.0, -95.0, 1e8))
+        }
 
+        // set the feature request mode to request from the server as they are needed
+        serviceFeatureTable.featureRequestMode = FeatureRequestMode.OnInteractionCache
+
+        // identify feature selected on map tap
         lifecycleScope.launch {
             mapView.onSingleTapConfirmed.collect { tapConfirmedEvent ->
-                val screenCoordinate = tapConfirmedEvent.screenCoordinate
                 // clear any previous selection
-                mFeatureLayer.clearSelection()
+                featureLayer.clearSelection()
+                // identify tapped feature
                 mapView.identifyLayer(
-                    layer = mFeatureLayer,
-                    screenCoordinate = screenCoordinate,
+                    layer = featureLayer,
+                    screenCoordinate = tapConfirmedEvent.screenCoordinate,
                     tolerance = 5.0,
                     returnPopupsOnly = false,
                     maximumResults = 1
                 ).onSuccess { layerResult ->
                     val resultGeoElements: List<GeoElement> = layerResult.geoElements
+                    // check if a feature was identified
                     if (resultGeoElements.isNotEmpty() && resultGeoElements[0] is ArcGISFeature) {
                         // retrieve and set the currently selected feature
                         val selectedFeature = resultGeoElements[0] as ArcGISFeature
                         // highlight the currently selected feature
-                        mFeatureLayer.selectFeature(selectedFeature)
-                        mAttributeID = selectedFeature.attributes["objectid"].toString()
-                        // get the number of attachments
-                        val attachments = selectedFeature.fetchAttachments().getOrThrow()
-                        // show callout with the value for the attribute "typdamage" of the selected feature
-                        val damageType = selectedFeature.attributes["typdamage"].toString()
-                        createBottomSheet(damageType, attachments)
-                        //showDialog(damageType, attachments.size)
-                        //showCallout(mSelectedArcGISFeatureAttributeValue, attachments!!.size)
-                        mSelectedArcGISFeature = selectedFeature
-                    } else {
-                        // none of the features on the map were selected
-                        // TODO
-                        // mCallout.dismiss();
+                        featureLayer.selectFeature(selectedFeature)
+
+                        // show the bottom sheet layout
+                        createBottomSheet(selectedFeature)
+
+                        // keep track fo the selected feature
+                        selectedArcGISFeature = selectedFeature
                     }
                 }.onFailure {
                     showError("Failed to select feature: ${it.message}")
@@ -143,224 +151,179 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDialog(damageType: String, attachmentSize: Int) {
-        val dialogBuilder = AlertDialog.Builder(this).apply {
-            setTitle("Damage type: $damageType")
-            setMessage(getString(R.string.attachment_info_message) + attachmentSize)
-            setNegativeButton("Dismiss") { _, _ ->
+    /**
+     * Creates and displays a bottom sheet to display and modify
+     * the attachments of [selectedFeature]. Calls [AttachmentsBottomSheet] to
+     * inflate bottom sheet and listen for interactions.
+     */
+    private suspend fun createBottomSheet(selectedFeature: ArcGISFeature) {
+        // get the number of attachments
+        val attachmentList = selectedFeature.fetchAttachments().getOrThrow()
+        // get the attribute "typdamage" of the selected feature
+        val damageTypeAttribute = selectedFeature.attributes["typdamage"].toString()
 
-            }
-            setPositiveButton("Edit attachments") { _, _ ->
-                // start EditAttachmentActivity to view/edit the attachments
-                val myIntent = Intent(this@MainActivity, SheetEditAttachmentBinding::class.java)
-                myIntent.putExtra(getString(R.string.attribute), mAttributeID)
-                myIntent.putExtra(getString(R.string.noOfAttachments), attachmentSize)
-            }
-        }
-        val dialog = dialogBuilder.create()
-        dialog.show()
-    }
-
-    private fun createBottomSheet(damageType: String, attachments: List<Attachment>) {
         // creates a new BottomSheetDialog
-        val bottomSheet = BottomSheetDialog(this).apply {
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        }
-
-        // clear and set bottom sheet content view to layout,
-        // to be able to set the content view on each bottom sheet draw
-        if (bottomSheetBinding.root.parent != null) {
-            (bottomSheetBinding.root.parent as ViewGroup).removeAllViews()
-        }
-
-        val attachmentList = mutableListOf<String>()
-        attachments.forEach {
-            attachmentList.add(it.name)
-        }
-        val adapter = CustomList(this, attachmentList)
-
-        bottomSheetBinding.apply {
-
-            bottomSheetBinding.listView.adapter = adapter
-            bottomSheetBinding.damageStatus.text = String.format("Damage type: %s", damageType)
-            bottomSheetBinding.numberOfAttachments.text =
-                String.format("Number of attachments: %d", attachments.size)
-
-            bottomSheetBinding.addAttachmentButton.setOnClickListener {
-                selectAttachment()
-            }
-
-            // listener on attachment items to download the attachment
-            bottomSheetBinding.listView.onItemClickListener =
-                AdapterView.OnItemClickListener { _: AdapterView<*>?, view: View?, position: Int, id: Long ->
-                    fetchAttachmentAsync(
-                        attachments[position]
-                    )
-                }
-
-            // set on long click listener to delete the attachment
-            bottomSheetBinding.listView.onItemLongClickListener =
-                AdapterView.OnItemLongClickListener { _, _, position: Int, _ ->
-                    val builder = AlertDialog.Builder(this@MainActivity)
-                    builder.setMessage(application.getString(R.string.delete_query))
-                    builder.setCancelable(true)
-                    builder.setPositiveButton(
-                        resources.getString(R.string.yes)
-                    ) { dialog: DialogInterface, which: Int ->
-                        deleteAttachment(attachments[position])
-                        adapter.notifyDataSetChanged()
-                        dialog.dismiss()
-                    }
-                    builder.setNegativeButton(
-                        resources.getString(R.string.no)
-                    ) { dialog: DialogInterface, which: Int -> dialog.cancel() }
-                    val alert = builder.create()
-                    alert.show()
-                    true
-                }
-
-            // set apply button to validate and apply contingency feature on map
-            applyTv.setOnClickListener {
-                bottomSheet.dismiss()
-            }
-        }
-
+        bottomSheet = AttachmentsBottomSheet(
+            context = this@MainActivity,
+            bottomSheetBinding = attachmentsSheetBinding,
+            attachments = attachmentList,
+            damageType = damageTypeAttribute
+        )
         // set the content view to the root of the binding layout
-        bottomSheet.setContentView(bottomSheetBinding.root)
+        bottomSheet?.setContentView(attachmentsSheetBinding.root)
         // display the bottom sheet view
-        bottomSheet.show()
+        bottomSheet?.show()
     }
 
-    private fun fetchAttachmentAsync(attachment: Attachment) {
-        /*
-                progressDialog?.setTitle(application.getString(R.string.downloading_attachments))
-        progressDialog?.setMessage(application.getString(R.string.wait))
-        progressDialog?.show()
-         */
+    /**
+     * Retrieves the [attachment] data in the form of a byte array, converts it
+     * to a [BitmapDrawable], caches the bitmap as a png image, and open's the
+     * attachment image in the default image viewer.
+     */
+    fun fetchAttachmentAsync(attachment: Attachment) {
+        // display loading dialog
+        val dialog = createLoadingDialog("Fetching attachment data").also {
+            it.show()
+        }
 
-        // create a listenableFuture to fetch the attachment asynchronously
+        // create folder /ArcGIS/Attachments in external storage
+        val fileDir = File(externalCacheDir?.path + "/Attachments")
+        if (!fileDir.exists()) {
+            fileDir.mkdirs()
+        }
+
+        // create the file and the file output stream
+        val file = File(fileDir, attachment.name)
+        val imageOutputStream = FileOutputStream(file)
+
+        // file provider URI
+        val contentUri = FileProvider.getUriForFile(
+            applicationContext, applicationContext.packageName + ".provider", file
+        )
+        // open the file in gallery
+        val imageIntent = Intent().apply {
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            action = Intent.ACTION_VIEW
+            setDataAndType(contentUri, "image/png")
+        }
+
+        // fetch the attachment data
         lifecycleScope.launch {
             attachment.fetchData().onSuccess {
-                val fileName = attachment.name
-                // create a drawable from InputStream
-                val d = BitmapDrawable(resources, BitmapFactory.decodeByteArray(it, 0, it.size))
-                // create a bitmap from drawable
-                val bitmap = (d as BitmapDrawable?)!!.bitmap
-                val fileDir = File(getExternalFilesDir(null).toString() + "/ArcGIS/Attachments")
-                // create folder /ArcGIS/Attachments in external storage
-                var isDirectoryCreated = fileDir.exists()
-                if (!isDirectoryCreated) {
-                    isDirectoryCreated = fileDir.mkdirs()
-                }
-                var file: File? = null
-                if (isDirectoryCreated) {
-                    file = File(fileDir, fileName)
-                    val fos = FileOutputStream(file)
-                    // compress the bitmap to PNG format
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos)
-                    fos.flush()
-                    fos.close()
-                }
-                // open the file in gallery
-                val i = Intent()
-                i.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                i.action = Intent.ACTION_VIEW
-                val contentUri = FileProvider.getUriForFile(
-                    applicationContext, applicationContext.packageName + ".provider", file!!
+                // create a drawable from InputStream, then create the Bitmap
+                val bitmapDrawable = BitmapDrawable(
+                    resources,
+                    BitmapFactory.decodeByteArray(it, 0, it.size)
                 )
-                i.setDataAndType(contentUri, "image/png")
-                startActivity(i)
+                // compress the bitmap to PNG format
+                bitmapDrawable.bitmap.compress(Bitmap.CompressFormat.PNG, 90, imageOutputStream)
+                // start activity using created intent
+                startActivity(imageIntent)
+                // dismiss dialog
+                dialog.dismiss()
             }.onFailure {
+                // dismiss dialog
+                dialog.dismiss()
                 showError(it.message.toString())
             }
         }
     }
 
     /**
-     * Delete the attachment from the feature
-     *
-     * @param pos position of the attachment in the list view to be deleted
+     * Adds a new attachment to the [selectedArcGISFeature] using the [selectedImageUri]
+     * and updates the changes with the feature service table
      */
-    private fun deleteAttachment(attachment: Attachment) {
+    private fun addFeatureAttachment(selectedImageUri: Uri) {
+        // display a loading dialog
+        val dialog = createLoadingDialog("Adding feature attachment").also {
+            it.show()
+        }
+        // create an input stream at the selected URI
+        val imageInputStream = contentResolver.openInputStream(selectedImageUri)
+            ?: return showError("Error opening input stream")
+        // get the byte array of the image input stream
+        val imageBytes: ByteArray = bytesFromInputStream(imageInputStream)
+        // create the attachment name with the current time
+        val attachmentName = "attachment_${System.currentTimeMillis()}.png"
+
         lifecycleScope.launch {
-            mSelectedArcGISFeature?.deleteAttachment(attachment)?.getOrElse {
-                showError(it.message.toString())
+            selectedArcGISFeature?.let { arcGISFeature ->
+                // add the attachment to the selected feature
+                arcGISFeature.addAttachment(
+                    name = attachmentName,
+                    contentType = "image/png",
+                    data = imageBytes
+                ).onFailure {
+                    return@launch showError(it.message.toString())
+                }
+                // update the feature changes in the loaded service feature table
+                serviceFeatureTable.updateFeature(arcGISFeature).getOrElse {
+                    return@launch showError(it.message.toString())
+                }
             }
-            mServiceFeatureTable.updateFeature(mSelectedArcGISFeature!!).getOrElse {
-                showError(it.message.toString())
+            applyServerEdits(dialog)
+        }
+    }
+
+    /**
+     * Delete the [attachment] from the [selectedArcGISFeature] and update the changes
+     * with the feature service table
+     */
+    fun deleteAttachment(attachment: Attachment) {
+        lifecycleScope.launch {
+            val dialog = createLoadingDialog("Deleting feature attachment").also {
+                it.show()
+            }
+            selectedArcGISFeature?.let { arcGISFeature ->
+                // delete the attachment from the selected feature
+                arcGISFeature.deleteAttachment(attachment).getOrElse {
+                    return@launch showError(it.message.toString())
+                }
+                // update the feature changes in the loaded service feature table
+                serviceFeatureTable.updateFeature(arcGISFeature).getOrElse {
+                    return@launch showError(it.message.toString())
+                }
             }
             // apply changes back to the server
-            applyServerEdits()
+            applyServerEdits(dialog)
         }
     }
 
     /**
      * Applies changes from a Service Feature Table to the server.
+     * The [dialog] will be dismissed when changes are applied.
      */
-    private suspend fun applyServerEdits() {
+    private suspend fun applyServerEdits(dialog: AlertDialog) {
+        // close the bottom sheet, as it will be created
+        // after service changes are made
+        bottomSheet?.dismiss()
+
         // apply edits to the server
-        val updatedServerResult = mServiceFeatureTable.applyEdits()
+        val updatedServerResult = serviceFeatureTable.applyEdits()
         updatedServerResult.onSuccess { edits ->
+            dialog.dismiss()
             // check that the feature table was successfully updated
-            if (edits.isNotEmpty()) {
-                mAttributeID = mSelectedArcGISFeature?.attributes?.get("objectid").toString()
-                //fetchAttachmentsFromServer(mAttributeID!!)
-                // update the attachment list view on the control panel
-                showError(getString(R.string.success_message))
-            } else {
-                showError(getString(R.string.failure_edit_results))
+            if (edits.isEmpty()) {
+                return showError(getString(R.string.failure_edit_results))
             }
+            // if the edits were made successfully, create the bottom sheet to display new changes.
+            selectedArcGISFeature?.let { createBottomSheet(it) }
         }.onFailure {
-            showError("Error getting feature edit result: ${it.message}")
+            showError(it.message.toString())
+            dialog.dismiss()
         }
     }
-
-    private fun selectAttachment() {
-        val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(i, RESULT_LOAD_IMAGE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // check if image is selected from MediaStore
-        if (requestCode == RESULT_LOAD_IMAGE && data != null) {
-            val selectedImage = data.data ?: return showError("Error with selected image")
-            val imageInputStream = contentResolver.openInputStream(selectedImage)
-                ?: return showError("Error opening input stream")
-            val imageBytes: ByteArray = bytesFromInputStream(imageInputStream)
-            val attachmentName =
-                getString(R.string.attachment) + '_' + System.currentTimeMillis() + ".png"
-            /*
-            progressDialog.setTitle(application.getString(R.string.apply_edit_message))
-            progressDialog.setMessage(application.getString(R.string.wait))
-            progressDialog.show()
-             */
-
-            lifecycleScope.launch {
-                val addResult = mSelectedArcGISFeature?.addAttachment(
-                    name = attachmentName,
-                    contentType = "image/png",
-                    data = imageBytes
-                )?.getOrElse {
-                    return@launch showError("Error converting image to byte array: ${it.message}")
-                } as Attachment
-
-                mServiceFeatureTable.updateFeature(mSelectedArcGISFeature!!).getOrElse {
-                    return@launch showError("Error updating feature to service feature table")
-                }
-                applyServerEdits()
-                showError("DONE!")
-            }
-        }
-    }
-
 
     /**
-     * Converts the given input stream into a byte array.
-     *
-     * @param inputStream from an image
-     * @return an array of bytes from the input stream
-     * @throws IOException if input stream can't be read
+     * Opens the default Android image selector
+     */
+    fun selectAttachment() {
+        val mediaIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        activityResultLauncher.launch(mediaIntent)
+    }
+
+    /**
+     * Converts the given image [inputStream] into a byte array.
      */
     private fun bytesFromInputStream(inputStream: InputStream): ByteArray {
         ByteArrayOutputStream().use { byteBuffer ->
@@ -372,6 +335,25 @@ class MainActivity : AppCompatActivity() {
             }
             return byteBuffer.toByteArray()
         }
+    }
+
+    /**
+     * Creates a loading dialog with the [message]
+     */
+    private fun createLoadingDialog(message: String): AlertDialog {
+        // build and return a new alert dialog
+        return AlertDialog.Builder(this).apply {
+            // set message
+            setMessage(message)
+            // allow it to be cancellable
+            setCancelable(false)
+            // removes parent of the progressDialog layout, if previously assigned
+            loadingDialogBinding.root.parent?.let { parent ->
+                (parent as ViewGroup).removeAllViews()
+            }
+            // set the loading dialog layout to this alert dialog
+            setView(loadingDialogBinding.root)
+        }.create()
     }
 
     private fun showError(message: String) {
