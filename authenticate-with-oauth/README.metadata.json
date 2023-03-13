@@ -4,7 +4,8 @@
     "formal_name": "AuthenticateWithOauth",
     "ignore": false,
     "images": [
-        "authenticate-with-oauth.png"
+        "authenticate-with-oauth.png",
+        "oauth-sample-flowchart.png"
     ],
     "keywords": [
         "OAuth",

@@ -20,7 +20,7 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 2. A ViewModel which launches the above activity when prompted, and when it receives the result, passes it through to the `OAuthUserSignIn` object
 3. An `ArcGISAuthenticationChallengeHandler` which prompts the ViewModel to start the sign in process with a URL if it is valid.
 
-![Image of a flowchart explaining the OAuth sample](oauth-sample-flowchat.png)
+![Image of a flowchart explaining the OAuth sample](oauth-sample-flowchart.png)
 
 
 ## How it works
