@@ -12,9 +12,18 @@ Your app may need to access items that are only shared with authorized users. Fo
 
 When you run the sample, the app will load a web map which contains premium content. You will be challenged for an ArcGIS Online login to view the private layers. Enter a user name and password for an ArcGIS Online named user account (such as your ArcGIS for Developers account). If you authenticate successfully, the traffic layer will display, otherwise the map will contain only the public basemap layer.
 
-## How it works
+## Use of Model View ViewModel (MVVM)
 
 This sample takes advantage of Android's `ViewModel` to encapsulate launching the OAuth user sign in prompt, establishing the activity result contract, verifying the OAuth user's credentials.
+
+1. An Activity which launches a custom tab intent and sets its own result to the redirect url of the custom tab's result
+2. A ViewModel which launches the above activity when prompted, and when it receives the result, passes it through to the `OAuthUserSignIn` object
+3. An `ArcGISAuthenticationChallengeHandler` which prompts the ViewModel to start the sign in process with a URL if it is valid.
+
+![Image of a flowchart explaining the OAuth sample](oauth-sample-flowchat.png)
+
+
+## How it works
 
 1. Set the `AuthenticationManager`'s `arcGISAuthenticationChallengeHandler` to a `ArcGISAuthenticationChallengeHandler`.
 2. Create an `OAuthConfiguration` specifying the portal URL, client ID, and redirect URL.
