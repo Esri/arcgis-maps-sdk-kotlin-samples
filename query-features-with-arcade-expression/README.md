@@ -21,7 +21,7 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a Tex
 5. Create the following `ArcadeExpression`:
 
    ```kotlin
-   expressionValue = "var crimes = FeatureSetByName(\$map, 'Crime in the last 60 days');\n"
+   expressionValue = "var crimes = FeatureSetByName(\$map, 'Crime in the last 60 days');\n" +
     "return Count(Intersects(\$feature, crimes));"
    ```
 
