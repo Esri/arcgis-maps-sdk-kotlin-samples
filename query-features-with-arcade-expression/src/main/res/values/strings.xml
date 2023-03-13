@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Query Features With Arcade Expression</string>
+    <string name="tap_to_begin">Tap to begin</string>
+    <string name="crime_info_text">Crime in the last 60 days: %1d</string>
+    <string name="no_features_found">No features found</string>
+</resources>
