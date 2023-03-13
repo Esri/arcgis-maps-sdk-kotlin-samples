@@ -44,7 +44,7 @@ import com.esri.arcgismaps.sample.setuplocationdrivengeotriggers.databinding.Act
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import java.time.Instant
 
 class MainActivity : AppCompatActivity() {
 
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         // create SimulationParameters starting at the current time,
         // a velocity of 10 m/s, and a horizontal and vertical accuracy of 0.0
         val simulationParameters = SimulationParameters(
-            Clock.System.now(),
+            Instant.now(),
             velocity = 3.0,
             horizontalAccuracy = 0.0,
             verticalAccuracy = 0.0
