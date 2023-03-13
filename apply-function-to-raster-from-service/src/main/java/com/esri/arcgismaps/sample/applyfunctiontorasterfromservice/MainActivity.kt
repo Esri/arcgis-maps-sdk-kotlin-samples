@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
             // using the first raster variable name
             rasterFunctionArguments.setRaster(rasterNames[0], imageServiceRaster)
             // create raster as raster layer
-            val hillshadeRaster = Raster(rasterFunction)
+            val hillshadeRaster = Raster.createWithRasterFunction(rasterFunction)
             val hillshadeLayer = RasterLayer(hillshadeRaster)
             // clear and add the layer to the map
             mapView.map?.operationalLayers?.add(hillshadeLayer)
