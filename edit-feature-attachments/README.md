@@ -22,10 +22,6 @@ Tap a feature on the map to open a bottom sheet displaying the number of attachm
 6. To delete an attachment from the selected ArcGISFeature, use the `ArcGISFeature.deleteAttachment()`.
 7. After a change, apply the changes to the server using `ServiceFeatureTable.applyEdits()`.
 
-## Additional information
-
-Attachments can only be added to and accessed on service feature tables when their hasAttachments property is true.
-
 ## Relevant API
 
 * ArcGISFeature.deleteAttachment
@@ -35,6 +31,10 @@ Attachments can only be added to and accessed on service feature tables when the
 * ServiceFeatureTable
 * ServiceFeatureTable.applyEdits
 * ServiceFeatureTable.updateFeature
+
+## Additional information
+
+Attachments can only be added to and accessed on service feature tables when their hasAttachments property is true.
 
 ## Tags
 
