@@ -22,7 +22,6 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 
 ![Image of a flowchart explaining the OAuth sample](oauth-sample-flowchart.png)
 
-
 ## How it works
 
 1. Set the `AuthenticationManager`'s `arcGISAuthenticationChallengeHandler` to a `ArcGISAuthenticationChallengeHandler`.
