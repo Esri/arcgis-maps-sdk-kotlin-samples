@@ -7,13 +7,13 @@
         "edit-feature-attachments.png"
     ],
     "keywords": [
-        "Edit and Manage Data",
-        "JPEG",
-        "PDF",
-        "PNG",
-        "TXT",
+        "edit and manage data",
         "image",
+        "jpeg",
+        "pdf",
         "picture",
+        "png",
+        "txt",
         "ArcGISFeature.deleteAttachment",
         "ArcGISFeature.fetchAttachments",
         "Attachment.fetchData",
