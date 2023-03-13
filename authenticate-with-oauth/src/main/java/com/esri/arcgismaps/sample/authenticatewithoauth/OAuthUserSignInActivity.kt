@@ -23,6 +23,7 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.lifecycle.Lifecycle
 import com.arcgismaps.httpcore.authentication.OAuthUserSignIn
 
 private const val AUTHORIZE_URL_KEY = "KEY_INTENT_EXTRA_AUTHORIZE_URL"
@@ -40,7 +41,6 @@ private const val RESULT_CODE_CANCELED = 2
 class OAuthUserSignInActivity : AppCompatActivity() {
 
     private var customTabsWasLaunched = false
-    private var isResumed = false
     private lateinit var redirectUrl: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,14 +67,17 @@ class OAuthUserSignInActivity : AppCompatActivity() {
         outState.putBoolean(CUSTOM_TABS_WAS_LAUNCHED_KEY, customTabsWasLaunched)
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-
-        intent?.data?.let { uri ->
-            val uriString = uri.toString()
-            if (uriString.startsWith(redirectUrl)) {
+    override fun onNewIntent(customTabsIntent: Intent) {
+        super.onNewIntent(customTabsIntent)
+        // get the OAuth authorized URI returned from the custom tab
+        customTabsIntent.data?.let { uri ->
+            // the authorization code to generate the OAuth token, for example
+            // in this sample app: "my-ags-app://auth?code=<AUTHORIZED_CODE>"
+            val authorizationCode = uri.toString()
+            // check if the URI matches with the OAuthUserConfiguration's redirectUrl
+            if (authorizationCode.startsWith(redirectUrl)) {
                 val intent = Intent().apply {
-                    putExtra(OAUTH_RESPONSE_URI_KEY, uri.toString())
+                    putExtra(OAUTH_RESPONSE_URI_KEY, authorizationCode)
                 }
                 setResult(RESULT_CODE_SUCCESS, intent)
             } else {
@@ -88,24 +91,12 @@ class OAuthUserSignInActivity : AppCompatActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && isResumed) {
+        if (hasFocus && lifecycle.currentState == Lifecycle.State.RESUMED) {
             // if we got here the user must have pressed the back button or the x button while the
             // custom tab was visible - finish by cancelling OAuth sign in
             setResult(RESULT_CODE_CANCELED, Intent())
             finish()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // keep track of the resumed state of the activity,
-        // because there is not built-in way of checking this state.
-        isResumed = true
-    }
-
-    override fun onPause() {
-        super.onPause()
-        isResumed = false
     }
 
     /**

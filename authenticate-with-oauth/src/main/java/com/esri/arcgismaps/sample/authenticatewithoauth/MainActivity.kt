@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets up the [ArcGISAuthenticationChallengeHandler] to load create a
+     * Sets up the [ArcGISAuthenticationChallengeHandler] to create a
      * [OAuthUserCredential] by launching a browser page to perform a OAuth user
      * login prompt using [oAuthUserSignInViewModel]
      */
