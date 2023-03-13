@@ -25,9 +25,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Guid
 import com.arcgismaps.data.*
+import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
+import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
+import com.arcgismaps.httpcore.authentication.TokenCredential
 import com.arcgismaps.location.*
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.layers.FeatureLayer
@@ -48,8 +53,9 @@ class MainActivity : AppCompatActivity() {
     // Provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
     private var mIndoorsLocationDataSource: IndoorsLocationDataSource? = null
 
-    private val activityMainBinding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
+    // set up data binding for the activity
+    private val activityMainBinding: ActivityMainBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
     private val mapView by lazy {
@@ -66,7 +72,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(activityMainBinding.root)
+        lifecycle.addObserver(mapView)
+        // some parts of the API require an Android Context to properly interact with Android system
+        // features, such as LocationProvider and application resources
+        ArcGISEnvironment.applicationContext = applicationContext
         // check for location permissions
         // if permissions is allowed, the device's current location is shown
         checkPermissions()
@@ -95,12 +104,39 @@ class MainActivity : AppCompatActivity() {
      * And set the [mapView] using the [portalItem] then invokes [loadTables]
      */
     private fun setUpMap() {
-        // load the portal and create a map from the portal item
-        val portalItem = PortalItem(
-            Portal("https://www.arcgis.com/"),
-            "8fa941613b4b4b2b8a34ad4cdc3e4bba"
-        )
-        mapView.map = ArcGISMap(portalItem)
+//        // load the portal and create a map from the portal item
+//        val portalItem = PortalItem(
+//            Portal("https://runtimecoretest.maps.arcgis.com/"),
+//            "41fd5a7ee7044a40ad73f7f4a79a5a25"
+//        )
+
+//        val itemUrl = "https://nitrotest.mapsqa.arcgis.com/home/item.html?id=29bd40758ffb4d71bd4c7b538aef0faf"
+//        val authenticator = ArcGISAuthenticationChallengeHandler {
+//            ArcGISAuthenticationChallengeResponse.ContinueWithCredential(
+//                TokenCredential.create(
+//                    itemUrl,
+//                    "nitropublisher",
+//                    "appearexamboxer7",
+//                    0
+//                ).getOrThrow()
+//            )
+//        }
+
+        val itemUrl = "https://runtimecoretest.maps.arcgis.com/home/item.html?id=41fd5a7ee7044a40ad73f7f4a79a5a25"
+        val authenticator = ArcGISAuthenticationChallengeHandler {
+            ArcGISAuthenticationChallengeResponse.ContinueWithCredential(
+                TokenCredential.create(
+                    itemUrl,
+                    "qtdevteam_2",
+                    "qtdevteam1234",
+                    0
+                ).getOrThrow()
+            )
+        }
+
+        ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler = authenticator
+
+        mapView.map = ArcGISMap(itemUrl)
         val map = mapView.map
         lifecycleScope.launch {
             map?.load()?.onSuccess {
@@ -139,15 +175,14 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupIndoorsLocationDataSource(featureTable: FeatureTable) {
         // positioningTable needs to be present
-        val positioningTable = featureTable.tableName == "ips_positioning"
-
-        if (positioningTable != null) {
-            val positioningserviceFeatureTable = positioningTable as ServiceFeatureTable
+        if (featureTable.tableName == "IPS_Positioning")
+        {
+            val positioningServiceFeatureTable = featureTable as ServiceFeatureTable
             // when multiple entries are available, IndoorsLocationDataSource constructor function
             // looks up the entry with the most recent date and takes this positioning data
             // set up queryParameters to grab one result.
             val dateCreatedFieldName =
-                getDateCreatedFieldName(positioningserviceFeatureTable.fields)
+                getDateCreatedFieldName(positioningServiceFeatureTable.fields)
             if (dateCreatedFieldName == null) {
                 showError("The service table does not contain \"DateCreated\" fields.")
                 return
@@ -164,16 +199,15 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             lifecycleScope.launch {
-                positioningserviceFeatureTable?.queryFeatures(queryParameters)
+                positioningServiceFeatureTable?.queryFeatures(queryParameters)
                     ?.onSuccess { queryResults ->
                         // perform search query using the queryParameters
-
                         queryResults.forEach { feature ->
                             // check if serviceFeatureTable contains positioning data
                             // The ID that identifies a row in the positioning table.
                             if (feature != null) {
                                 val globalID =
-                                    feature.attributes[positioningserviceFeatureTable.globalIdField].toString()
+                                    feature.attributes[positioningServiceFeatureTable.globalIdField].toString()
                                 val positioningId = Guid(globalID)
                                 // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
                                 // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
@@ -181,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                                 // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
                                 // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
                                 mIndoorsLocationDataSource = IndoorsLocationDataSource(
-                                    positioningserviceFeatureTable,
+                                    positioningServiceFeatureTable,
                                     getPathwaysTable(),
                                     getLevelsTable(),
                                     positioningId
@@ -196,7 +230,8 @@ class MainActivity : AppCompatActivity() {
                         showError("Positioning Table not found in FeatureTables")
                     }
             }
-        } else {
+        }
+        else {
             showError("Positioning Table not found in FeatureTables")
         }
     }
@@ -245,13 +280,6 @@ class MainActivity : AppCompatActivity() {
             null
         }
     }
-
-    /**
-     * Invokes when the app is closed or LocationDataSource is stopped.
-     */
-//    private fun stopLocationDisplay() {
-//        mapView.locationDisplay.dataSource.stop()
-//    }
 
     /**
      * Sets up the location listeners, the navigation mode, and display's the devices location as a blue dot
