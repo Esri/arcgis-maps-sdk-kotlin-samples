@@ -44,7 +44,7 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.showlocationhistory.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import java.time.Instant
 
 class MainActivity : AppCompatActivity() {
 
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         // create a simulated location data source from json data with simulation parameters to set a consistent velocity
         val simulatedLocationDataSource = SimulatedLocationDataSource(
             Geometry.fromJson(getString(R.string.polyline_data)) as Polyline,
-            SimulationParameters(Clock.System.now(), 30.0, 0.0, 0.0)
+            SimulationParameters(Instant.now(), 30.0, 0.0, 0.0)
         )
 
         // coroutine scope to collect data source location changes
