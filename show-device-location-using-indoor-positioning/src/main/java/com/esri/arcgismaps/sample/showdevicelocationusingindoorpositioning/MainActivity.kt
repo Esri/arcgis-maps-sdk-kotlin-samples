@@ -104,26 +104,12 @@ class MainActivity : AppCompatActivity() {
      * And set the [mapView] using the [portalItem]
      */
     private fun setUpMap() {
-//        // load the portal and create a map from the portal item
-//        val portalItem = PortalItem(
-//            Portal("https://runtimecoretest.maps.arcgis.com/"),
-//            "41fd5a7ee7044a40ad73f7f4a79a5a25"
-//        )
-
-        val itemUrl =
-            "https://runtimecoretest.maps.arcgis.com/home/item.html?id=41fd5a7ee7044a40ad73f7f4a79a5a25"
-        val authenticator = ArcGISAuthenticationChallengeHandler {
-            ArcGISAuthenticationChallengeResponse.ContinueWithCredential(
-                TokenCredential.create(
-                    itemUrl,
-                    "qtdevteam_2",
-                    "qtdevteam1234",
-                    0
-                ).getOrThrow()
-            )
-        }
-        ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler = authenticator
-        mapView.map = ArcGISMap(itemUrl)
+        // load the portal and create a map from the portal item
+        val portalItem = PortalItem(
+            Portal("https://www.arcgis.com/"),
+            "8fa941613b4b4b2b8a34ad4cdc3e4bba"
+        )
+        mapView.map = ArcGISMap(portalItem)
         val map = mapView.map
         lifecycleScope.launch {
             map?.load()?.onSuccess {
