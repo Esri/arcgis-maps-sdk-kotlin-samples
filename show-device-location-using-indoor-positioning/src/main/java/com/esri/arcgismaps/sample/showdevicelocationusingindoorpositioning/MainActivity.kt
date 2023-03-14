@@ -30,9 +30,6 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Guid
 import com.arcgismaps.data.*
-import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
-import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
-import com.arcgismaps.httpcore.authentication.TokenCredential
 import com.arcgismaps.location.*
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.layers.FeatureLayer
@@ -128,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Load each feature table and setup the IndoorsLocationDataSource for each table loaded.
+     * Load each feature table and setup the IndoorsLocationDataSource for each table loaded
      */
     private fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
         lifecycleScope.launch {
