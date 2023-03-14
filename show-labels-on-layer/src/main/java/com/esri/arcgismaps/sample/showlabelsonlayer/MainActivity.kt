@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
             // set the label placement
             placement = LabelingPlacement.PolygonAlwaysHorizontal
             // set the attribute name for which this label will be generated
-            whereClause = String.format("PARTY = '%s'", name)
+            whereClause = "PARTY = '$name'"
         }
     }
 
