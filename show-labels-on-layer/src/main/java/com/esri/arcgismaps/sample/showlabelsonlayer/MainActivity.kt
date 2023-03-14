@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                 )
             )
             // enable the labels
-            featureLayer.labelsEnabled = true
+            labelsEnabled = true
         }
     }
 
