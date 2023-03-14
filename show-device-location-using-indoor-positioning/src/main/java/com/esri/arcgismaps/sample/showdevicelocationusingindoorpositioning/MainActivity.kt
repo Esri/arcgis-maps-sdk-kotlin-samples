@@ -48,11 +48,6 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
 
-    private var currentFloor: Int? = null
-
-    // Provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
-    private var mIndoorsLocationDataSource: IndoorsLocationDataSource? = null
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -61,6 +56,11 @@ class MainActivity : AppCompatActivity() {
     private val mapView by lazy {
         activityMainBinding.mapView
     }
+
+    private var currentFloor: Int? = null
+
+    // Provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
+    private var mIndoorsLocationDataSource: IndoorsLocationDataSource? = null
 
     private val progressBar by lazy {
         activityMainBinding.progressBar
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Set up the connection between the device and the portal item
-     * And set the [mapView] using the [portalItem] then invokes [loadTables]
+     * And set the [mapView] using the [portalItem]
      */
     private fun setUpMap() {
 //        // load the portal and create a map from the portal item
@@ -110,19 +110,8 @@ class MainActivity : AppCompatActivity() {
 //            "41fd5a7ee7044a40ad73f7f4a79a5a25"
 //        )
 
-//        val itemUrl = "https://nitrotest.mapsqa.arcgis.com/home/item.html?id=29bd40758ffb4d71bd4c7b538aef0faf"
-//        val authenticator = ArcGISAuthenticationChallengeHandler {
-//            ArcGISAuthenticationChallengeResponse.ContinueWithCredential(
-//                TokenCredential.create(
-//                    itemUrl,
-//                    "nitropublisher",
-//                    "appearexamboxer7",
-//                    0
-//                ).getOrThrow()
-//            )
-//        }
-
-        val itemUrl = "https://runtimecoretest.maps.arcgis.com/home/item.html?id=41fd5a7ee7044a40ad73f7f4a79a5a25"
+        val itemUrl =
+            "https://runtimecoretest.maps.arcgis.com/home/item.html?id=41fd5a7ee7044a40ad73f7f4a79a5a25"
         val authenticator = ArcGISAuthenticationChallengeHandler {
             ArcGISAuthenticationChallengeResponse.ContinueWithCredential(
                 TokenCredential.create(
@@ -133,9 +122,7 @@ class MainActivity : AppCompatActivity() {
                 ).getOrThrow()
             )
         }
-
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler = authenticator
-
         mapView.map = ArcGISMap(itemUrl)
         val map = mapView.map
         lifecycleScope.launch {
@@ -155,7 +142,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Set up the ResultsCallback for when all tables are loaded
+     * Load each feature table and setup the IndoorsLocationDataSource for each table loaded.
      */
     private fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
         lifecycleScope.launch {
@@ -171,18 +158,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets up the [mIndoorsLocationDataSource] using the positioningTable
+     * Sets up the [mIndoorsLocationDataSource] using the IPS_Positioning table
      */
     private fun setupIndoorsLocationDataSource(featureTable: FeatureTable) {
         // positioningTable needs to be present
-        if (featureTable.tableName == "IPS_Positioning")
-        {
-            val positioningServiceFeatureTable = featureTable as ServiceFeatureTable
+        if (featureTable.tableName == "IPS_Positioning") {
+            val positioningFeatureTable = featureTable as ServiceFeatureTable
             // when multiple entries are available, IndoorsLocationDataSource constructor function
             // looks up the entry with the most recent date and takes this positioning data
             // set up queryParameters to grab one result.
             val dateCreatedFieldName =
-                getDateCreatedFieldName(positioningServiceFeatureTable.fields)
+                getDateCreatedFieldName(positioningFeatureTable.fields)
             if (dateCreatedFieldName == null) {
                 showError("The service table does not contain \"DateCreated\" fields.")
                 return
@@ -199,7 +185,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             lifecycleScope.launch {
-                positioningServiceFeatureTable?.queryFeatures(queryParameters)
+                positioningFeatureTable?.queryFeatures(queryParameters)
                     ?.onSuccess { queryResults ->
                         // perform search query using the queryParameters
                         queryResults.forEach { feature ->
@@ -207,15 +193,16 @@ class MainActivity : AppCompatActivity() {
                             // The ID that identifies a row in the positioning table.
                             if (feature != null) {
                                 val globalID =
-                                    feature.attributes[positioningServiceFeatureTable.globalIdField].toString()
+                                    feature.attributes[positioningFeatureTable.globalIdField].toString()
                                 val positioningId = Guid(globalID)
                                 // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
                                 // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
                                 // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
+                                // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
                                 // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
                                 // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
                                 mIndoorsLocationDataSource = IndoorsLocationDataSource(
-                                    positioningServiceFeatureTable,
+                                    positioningFeatureTable,
                                     getPathwaysTable(),
                                     getLevelsTable(),
                                     positioningId
@@ -223,15 +210,14 @@ class MainActivity : AppCompatActivity() {
                                 // start the location display (blue dot)
                                 startLocationDisplay()
                             } else {
-                                showError("The positioning table contain no data")
+                                showError("No features found")
                             }
                         }
                     }?.onFailure {
-                        showError("Positioning Table not found in FeatureTables")
+                        showError("The positioning table contain no data")
                     }
             }
-        }
-        else {
+        } else {
             showError("Positioning Table not found in FeatureTables")
         }
     }
@@ -260,7 +246,7 @@ class MainActivity : AppCompatActivity() {
             pathwaysFeatureLayer?.featureTable as? ArcGISFeatureTable
         } catch (e: Exception) {
             // if pathways table not found in map's operationalLayers
-            showError("PathwaysTable not found")
+            showError("Pathways table not found")
             null
         }
     }
@@ -282,7 +268,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets up the location listeners, the navigation mode, and display's the devices location as a blue dot
+     * Sets up the location listeners, the navigation mode, display's the devices location as a blue dot, collect data source location changes and handles its status changes
      */
     private fun startLocationDisplay() {
         val locationDisplay = mapView.locationDisplay.apply {
@@ -314,8 +300,14 @@ class MainActivity : AppCompatActivity() {
                 val newFloor = floor.toInt()
                 if (currentFloor == null || currentFloor != newFloor) {
                     currentFloor = newFloor
-                    // set up the floor layer with the newFloor
-                    setupLayers()
+                    // update layer's definition express with the current floor
+                    val layerList = mapView.map?.operationalLayers
+                    layerList?.forEach { layer ->
+                        val name = layer.name
+                        if (layer is FeatureLayer && (name == "Details" || name == "Units" || name == "Levels")) {
+                            layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
+                        }
+                    }
                 }
                 // set up the message with floor properties to be displayed to the textView
                 var locationPropertiesMessage =
@@ -349,24 +341,8 @@ class MainActivity : AppCompatActivity() {
                         mapView.locationDisplay.dataSource.stop()
                         showError("IndoorsLocationDataSource stopped due to an internal error")
                     }
-                    else -> {
-                        null
-                    }
+                    else -> null
                 }
-            }
-        }
-    }
-
-    /**
-     * Set up the floor layer when the device location is updated
-     */
-    private fun setupLayers() {
-        // update layer's definition express with the current floor
-        val layerList = mapView.map?.operationalLayers
-        layerList?.forEach { layer ->
-            val name = layer.name
-            if (layer is FeatureLayer && (name == "Details" || name == "Units" || name == "Levels")) {
-                layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
             }
         }
     }
