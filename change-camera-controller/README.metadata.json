@@ -1,2 +1,34 @@
 {
+    "category": "MapViews, SceneViews and UI",
+    "description": "Control the behavior of the camera in a scene.",
+    "formal_name": "ChangeCameraController",
+    "ignore": false,
+    "images": [
+        "change-camera-controller.png"
+    ],
+    "keywords": [
+        "3D",
+        "camera",
+        "camera controller",
+        "ArcGISScene",
+        "Camera",
+        "GlobeCameraController",
+        "OrbitGeoElementCameraController",
+        "OrbitLocationCameraController",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "/android/latest/sample-code/choose-camera-controller.htm",
+    "relevant_apis": [
+        "ArcGISScene",
+        "Camera",
+        "GlobeCameraController",
+        "OrbitGeoElementCameraController",
+        "OrbitLocationCameraController",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/changecameracontroller/MainActivity.kt"
+    ],
+    "title": "Change camera controller"
 }
