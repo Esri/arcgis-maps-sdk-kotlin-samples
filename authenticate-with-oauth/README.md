@@ -14,9 +14,9 @@ When you run the sample, the app will load a web map which contains premium cont
 
 ## Use of Model View ViewModel (MVVM)
 
-This sample takes advantage of Android's `ViewModel` to encapsulate launching the OAuth user sign in prompt, establishing the activity result contract, verifying the OAuth user's credentials.
+This sample takes advantage of Android's `ViewModel` to encapsulate launching the OAuth user sign in prompt, establishing the activity result contract, and verifying the OAuth user's credentials.
 
-1. An Activity which launches a custom tab intent and sets its own result to the redirect url of the custom tab's result
+1. An Activity which launches a custom tab intent and sets its own result to the redirect URI of the custom tab's result
 2. A ViewModel which launches the above activity when prompted, and when it receives the result, passes it through to the `OAuthUserSignIn` object
 3. An `ArcGISAuthenticationChallengeHandler` which prompts the ViewModel to start the sign in process with a URL if it is valid.
 
@@ -24,12 +24,12 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 
 ## How it works
 
-1. Set the `AuthenticationManager`'s `arcGISAuthenticationChallengeHandler` to a `ArcGISAuthenticationChallengeHandler`.
-2. Create an `OAuthConfiguration` specifying the portal URL, client ID, and redirect URL.
-3. Add the OAuth configuration to the authentication manager using `OAuthUserCredential.create(oAuthConfiguration)` to get a `OAuthUserSignIn`.
-4. Set up `ViewModel` responsible for launching an OAuth user sign in prompt and retrieve the authorized redirect URI
-5. Set the URI to complete the sign in using, `OAuthUserSignIn.complete(redirectUri)`
-6. Load a map with premium content requiring authentication to automatically invoke the default authentication handler.
+1. Create an `OAuthConfiguration` specifying the portal URL, client ID, and redirect URI.
+2. Create an `OAuthUserSignInActivity` that will launch the sign in page in a Custom Tab and  receive & process the redirect intent when completing the Custom Tab prompt.
+3. Set up `ViewModel` responsible for launching an OAuth user sign in prompt and retrieving the authorized redirect URI
+4. Crete an `ArcGISAuthenticationChallengeHandler` that checks if the `ArcGISAuthenticationChallenge.requestUrl` matches the `OAUthUserConfiguration's`  with `canBeUserdForUrl()`. If the challenge matches, then create a `OAuthUserCredential` by Invoking the `OAuthUserSignInViewModel.promptForOAuthUserSignIn`
+5. Set the `AuthenticationManager`'s `arcGISAuthenticationChallengeHandler` to the `ArcGISAuthenticationChallengeHandler` created above.
+6. Load a map with premium content requiring authentication to automatically invoke the `ArcGISAuthenticationHandler`.
 
 ## Relevant API
 
@@ -47,7 +47,9 @@ The sample uses an `ActivityResultContract` to get the response from the OAuth u
 
 The workflow presented in this sample works for all SAML based enterprise (IWA, PKI, Okta, etc.) & social (facebook, google, etc.) identity providers for ArcGIS Online or Portal. For more information, see the topic [Set up enterprise logins](https://doc.arcgis.com/en/arcgis-online/administer/enterprise-logins.htm).
 
-For additional information on using Oauth in your app, see the topic [Authenticate with the API](https://developers.arcgis.com/documentation/core-concepts/security-and-authentication/mobile-and-native-user-logins/) in *Mobile and Native Named User Login*.
+For additional information on using Oauth in your app, see the topic [Authenticate with the API](https://developers.arcgis.com/documentation/core-concepts/security-and-authentication/mobile-and-native-user-logins/) in *Mobile and Native Named User Login*. 
+
+For more information on how OAuth works visit [OAuth 2.0 with ArcGIS](https://developers.arcgis.com/documentation/mapping-apis-and-services/security/oauth-2.0/)
 
 ## Tags
 

@@ -24,13 +24,13 @@
             android:name=".OAuthUserSignInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"> <!--keeps only one instance to the top of the stack-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
+                <!--required to launch a custom browser tab-->
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
+                <!-- data provider to help navigate back to the app with prompt result -->
                 <data
                     android:host="auth"
                     android:scheme="my-ags-app" />
