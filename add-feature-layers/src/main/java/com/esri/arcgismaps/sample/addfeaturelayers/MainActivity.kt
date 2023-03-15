@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         val serviceFeatureTable =
             ServiceFeatureTable(resources.getString(R.string.sample_service_url))
         // create a feature layer with the feature table
-        val featureLayer = FeatureLayer(serviceFeatureTable)
+        val featureLayer = FeatureLayer.createWithFeatureTable(serviceFeatureTable)
         val viewpoint = Viewpoint(41.70, -88.20, 120000.0)
         // set the feature layer on the map
         setFeatureLayer(featureLayer, viewpoint)
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         val portalItem = PortalItem(portal, "1759fd3e8a324358a0c58d9a687a8578")
         portalItem.load().onSuccess {
             // create the feature layer with the item
-            val featureLayer = FeatureLayer(portalItem)
+            val featureLayer = FeatureLayer.createWithItem(portalItem)
             // set the viewpoint to Portland, Oregon
             val viewpoint = Viewpoint(45.5266, -122.6219, 2500.0)
             // set the feature layer on the map
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                 return
             }
             // create a feature layer with the feature table
-            val featureLayer = FeatureLayer(geodatabaseFeatureTable)
+            val featureLayer = FeatureLayer.createWithFeatureTable(geodatabaseFeatureTable)
             // set the viewpoint to Malibu, California
             val viewpoint = Viewpoint(34.0772, -118.7989, 600000.0)
             // set the feature layer on the map
@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             // get the first feature table in the geopackage
             val geoPackageFeatureTable = geoPackage.geoPackageFeatureTables.first()
             // create a feature layer with the feature table
-            val featureLayer = FeatureLayer(geoPackageFeatureTable)
+            val featureLayer = FeatureLayer.createWithFeatureTable(geoPackageFeatureTable)
             // set the viewpoint to Denver, CO
             val viewpoint = Viewpoint(39.7294, -104.8319, 500000.0)
             // set the feature layer on the map
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
         val shapeFileTable = ShapefileFeatureTable(file.path)
         shapeFileTable.load().onSuccess {
             // create a feature layer for the shapefile feature table
-            val featureLayer = FeatureLayer(shapeFileTable)
+            val featureLayer = FeatureLayer.createWithFeatureTable(shapeFileTable)
             // set the viewpoint to Scotland
             val viewpoint = Viewpoint(56.641344, -3.889066, 6000000.0)
             // set the feature layer on the map

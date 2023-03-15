@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                 geodatabaseFeatureTable.load().getOrElse {
                     return@launch showError("Error loading GeodatabaseFeatureTable: ${it.message}")
                 }
-                val featureLayer = FeatureLayer(geodatabaseFeatureTable)
+                val featureLayer = FeatureLayer.createWithFeatureTable(geodatabaseFeatureTable)
                 featureLayer.load().getOrElse {
                     return@launch showError("Error loading FeatureLayer: ${it.message}")
                 }
