@@ -31,6 +31,7 @@ import com.arcgismaps.httpcore.authentication.OAuthUserCredential
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.portal.Portal
+import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.authenticatewithoauth.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
@@ -75,10 +76,6 @@ class MainActivity : AppCompatActivity() {
 
         setUpArcGISAuthenticationChallengeHandler(oAuthUserSignInViewModel)
 
-        // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-        mapView.map = map
-
         // check if the portal is can be loaded
         lifecycleScope.launch {
             AlertDialog.Builder(this@MainActivity).apply {
@@ -88,10 +85,14 @@ class MainActivity : AppCompatActivity() {
                     dialogBuilder.setMessage(
                         "Portal succeeded to load, portal user: ${portal.user?.username}"
                     ).create().show()
+                    // authentication complete, display PortalItem
+                    mapView.map = ArcGISMap(PortalItem(url = portal.url))
                 }.onFailure {
                     dialogBuilder.setMessage(
                         "Portal failed to load, error: ${it.message}"
                     ).create().show()
+                    // authentication failed, display a basemap instead
+                    mapView.map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
                 }
             }
         }
