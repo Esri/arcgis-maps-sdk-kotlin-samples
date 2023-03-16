@@ -30,7 +30,7 @@
                 <!--required to launch a custom browser tab-->
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- data provider to help navigate back to the app with prompt result -->
+                <!-- used as a redirect URI to navigate back to the app after prompting for OAuth credentials -->
                 <data
                     android:host="auth"
                     android:scheme="my-ags-app" />

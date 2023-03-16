@@ -65,7 +65,8 @@ class MainActivity : AppCompatActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
-        // initialize the OAuth sign in view model
+        // initialize the OAuth sign in view model to receive
+        // the result from the activity result contract
         val oAuthUserSignInViewModel = ViewModelProvider(
             owner = this,
             factory = OAuthUserSignInViewModel.getFactory { activityResultRegistry }
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
         setUpArcGISAuthenticationChallengeHandler(oAuthUserSignInViewModel)
 
-        // check if the portal is can be loaded
+        // check if the portal can be loaded
         lifecycleScope.launch {
             AlertDialog.Builder(this@MainActivity).apply {
                 setTitle(portal.url)

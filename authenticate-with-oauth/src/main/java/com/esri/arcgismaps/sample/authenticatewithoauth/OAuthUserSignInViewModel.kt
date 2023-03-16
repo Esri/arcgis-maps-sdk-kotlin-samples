@@ -29,10 +29,10 @@ import com.arcgismaps.httpcore.authentication.OAuthUserSignIn
 private const val ACTIVITY_RESULT_REGISTRY_KEY = "KEY_ACTIVITY_RESULT_REGISTRY"
 
 /**
- * A ViewModel responsible for launching an OAuth user sign in prompt and to own the
+ * A ViewModel responsible for launching an OAuth user sign in prompt and managing the
  * [OAuthUserSignIn] object associated with the OAuth prompt.
- * Uses [OAuthUserSignInActivity.Contract] to launch a `OAuthUserSignInActivity` and to receive
- * the result of the prompt, in order to complete the associated `OAuthUserSignIn`.
+ * Uses [OAuthUserSignInActivity.Contract] to launch an `OAuthUserSignInActivity` and to receive
+ * the result of the prompt. The result is used to complete the associated `OAuthUserSignIn`.
  */
 class OAuthUserSignInViewModel(
     private val getRegistry : () -> ActivityResultRegistry

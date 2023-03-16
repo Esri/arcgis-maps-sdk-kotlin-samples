@@ -25,9 +25,9 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 ## How it works
 
 1. Create an `OAuthConfiguration` specifying the portal URL, client ID, and redirect URI.
-2. Create an `OAuthUserSignInActivity` that will launch the sign in page in a Custom Tab and  receive & process the redirect intent when completing the Custom Tab prompt.
+2. Create an `OAuthUserSignInActivity` that will launch the sign in page in a Custom Tab and receive & process the redirect intent when completing the Custom Tab prompt.
 3. Set up `ViewModel` responsible for launching an OAuth user sign in prompt and retrieving the authorized redirect URI
-4. Crete an `ArcGISAuthenticationChallengeHandler` that checks if the `ArcGISAuthenticationChallenge.requestUrl` matches the `OAUthUserConfiguration's`  with `canBeUserdForUrl()`. If the challenge matches, then create a `OAuthUserCredential` by Invoking the `OAuthUserSignInViewModel.promptForOAuthUserSignIn`
+4. Crete an `ArcGISAuthenticationChallengeHandler` that checks if the `ArcGISAuthenticationChallenge.requestUrl` matches the `OAuthUserConfiguration's`  with `canBeUserdForUrl()`. If the challenge matches, then create a `OAuthUserCredential` by invoking the `OAuthUserSignInViewModel.promptForOAuthUserSignIn`
 5. Set the `AuthenticationManager`'s `arcGISAuthenticationChallengeHandler` to the `ArcGISAuthenticationChallengeHandler` created above.
 6. Load a map with premium content requiring authentication to automatically invoke the `ArcGISAuthenticationHandler`.
 
