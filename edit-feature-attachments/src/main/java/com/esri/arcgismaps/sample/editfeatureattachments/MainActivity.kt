@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create the feature layer using the service feature table
-        val featureLayer = FeatureLayer(serviceFeatureTable)
+        val featureLayer = FeatureLayer.createWithFeatureTable(serviceFeatureTable)
 
         // create and add a map with a streets basemap style
         val streetsMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
