@@ -299,9 +299,7 @@ class MainActivity : AppCompatActivity() {
             // create a buffered polygon around the clicked point
             val barrierBufferPolygon = GeometryEngine.buffer(mapPoint, 200.0)
             // create a polygon barrier for the routing task, and add it to the list of barriers
-            barrierBufferPolygon?.let {
-                barriersList.add(PolygonBarrier(it))
-            }
+            barriersList.add(PolygonBarrier(barrierBufferPolygon))
             barriersOverlay.graphics.add(Graphic(barrierBufferPolygon, barrierSymbol))
         }
         // solve the route once the graphics are created
