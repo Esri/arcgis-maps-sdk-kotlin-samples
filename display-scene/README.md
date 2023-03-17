@@ -16,13 +16,16 @@ When loaded, the sample will display a scene. Pan and zoom to explore the scene.
 
 1. Create an `ArcGISScene` object with the `BasemapStyle.ArcGISImagery` basemap.
 2. Create an `ArcGISTiledElevationSource` object and add it to the scene's base surface.
-3. Create a `SceneView` object to display the map.
-4. Set the scene to the scene view.
+3. Create a `SceneView` object to display the scene.
+4. Set a `Camera` to the view using `SceneView.setViewpointCamera()`
+5. Set the scene to the scene view.
 
 ## Relevant API
 
 * ArcGISScene
 * ArcGISTiledElevationSource
+* BasemapStyle
+* Camera
 * SceneView
 
 ## Tags

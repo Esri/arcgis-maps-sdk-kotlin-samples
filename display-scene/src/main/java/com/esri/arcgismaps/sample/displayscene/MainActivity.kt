@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package com.esri.arcgismaps.sample.displayscene
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
@@ -28,7 +26,6 @@ import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.displayscene.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -69,6 +66,8 @@ class MainActivity : AppCompatActivity() {
             pitch = 80.0,
             roll = 0.0
         )
+
+        // apply the scene to the sceneView and set its viewpoint
         sceneView.apply {
             scene = imageryScene
             setViewpointCamera(camera)
