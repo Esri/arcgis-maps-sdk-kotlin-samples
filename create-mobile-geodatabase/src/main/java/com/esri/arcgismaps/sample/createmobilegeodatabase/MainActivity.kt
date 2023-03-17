@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
             // get the result of the loaded "LocationHistory" table
             this.featureTable = featureTable
             // create a feature layer for the map using the GeodatabaseFeatureTable
-            val featureLayer = FeatureLayer(featureTable)
+            val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
             mapView.map?.operationalLayers?.add(featureLayer)
             // display the current count of features in the FeatureTable
             featureCountTextView.text =
