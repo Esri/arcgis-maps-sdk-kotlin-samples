@@ -73,17 +73,20 @@ class MainActivity : AppCompatActivity() {
         AttachmentLoadingDialogBinding.inflate(layoutInflater)
     }
 
+    // load the Damage to Residential Buildings feature server
     private val serviceFeatureTable by lazy {
-        ServiceFeatureTable(getString(R.string.sample_service_url))
+        ServiceFeatureTable(getString(R.string.sample_service_url)).apply {
+            // set the feature request mode to request from the server as they are needed
+            featureRequestMode = FeatureRequestMode.OnInteractionCache
+        }
     }
 
-    // Registers the activity for an image data result from the default image picker
+    // registers the activity for an image data result from the default image picker
     private val activityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val data = result.data?.data
-            if (data != null) {
+            result.data?.data?.let { imageUri ->
                 // add the image data as a feature attachment
-                addFeatureAttachment(data)
+                addFeatureAttachment(imageUri)
             }
         }
 
@@ -104,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         // create the feature layer using the service feature table
         val featureLayer = FeatureLayer(serviceFeatureTable)
 
-        // create and add a map with a navigation night basemap style
+        // create and add a map with a streets basemap style
         val streetsMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
             operationalLayers.add(featureLayer)
         }
@@ -113,9 +116,6 @@ class MainActivity : AppCompatActivity() {
             map = streetsMap
             setViewpoint(Viewpoint(40.0, -95.0, 1e8))
         }
-
-        // set the feature request mode to request from the server as they are needed
-        serviceFeatureTable.featureRequestMode = FeatureRequestMode.OnInteractionCache
 
         // identify feature selected on map tap
         lifecycleScope.launch {
@@ -132,16 +132,16 @@ class MainActivity : AppCompatActivity() {
                 ).onSuccess { layerResult ->
                     val resultGeoElements: List<GeoElement> = layerResult.geoElements
                     // check if a feature was identified
-                    if (resultGeoElements.isNotEmpty() && resultGeoElements[0] is ArcGISFeature) {
+                    if (resultGeoElements.isNotEmpty() && resultGeoElements.first() is ArcGISFeature) {
                         // retrieve and set the currently selected feature
-                        val selectedFeature = resultGeoElements[0] as ArcGISFeature
+                        val selectedFeature = resultGeoElements.first() as ArcGISFeature
                         // highlight the currently selected feature
                         featureLayer.selectFeature(selectedFeature)
 
                         // show the bottom sheet layout
                         createBottomSheet(selectedFeature)
 
-                        // keep track fo the selected feature
+                        // keep track of the selected feature
                         selectedArcGISFeature = selectedFeature
                     }
                 }.onFailure {
@@ -158,7 +158,9 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun createBottomSheet(selectedFeature: ArcGISFeature) {
         // get the number of attachments
-        val attachmentList = selectedFeature.fetchAttachments().getOrThrow()
+        val attachmentList = selectedFeature.fetchAttachments().getOrElse {
+            return showError(it.message.toString())
+        }
         // get the attribute "typdamage" of the selected feature
         val damageTypeAttribute = selectedFeature.attributes["typdamage"].toString()
 
@@ -188,13 +190,9 @@ class MainActivity : AppCompatActivity() {
 
         // create folder /ArcGIS/Attachments in external storage
         val fileDir = File(externalCacheDir?.path + "/Attachments")
-        if (!fileDir.exists()) {
-            fileDir.mkdirs()
-        }
-
-        // create the file and the file output stream
+        fileDir.mkdirs()
+        // create the file with the attachment name
         val file = File(fileDir, attachment.name)
-        val imageOutputStream = FileOutputStream(file)
 
         // file provider URI
         val contentUri = FileProvider.getUriForFile(
@@ -215,12 +213,15 @@ class MainActivity : AppCompatActivity() {
                     resources,
                     BitmapFactory.decodeByteArray(it, 0, it.size)
                 )
-                // compress the bitmap to PNG format
-                bitmapDrawable.bitmap.compress(Bitmap.CompressFormat.PNG, 90, imageOutputStream)
-                // start activity using created intent
-                startActivity(imageIntent)
-                // dismiss dialog
-                dialog.dismiss()
+                // create a file output stream using the attachment file
+                FileOutputStream(file).use { imageOutputStream ->
+                    // compress the bitmap to PNG format
+                    bitmapDrawable.bitmap.compress(Bitmap.CompressFormat.PNG, 90, imageOutputStream)
+                    // start activity using created intent
+                    startActivity(imageIntent)
+                    // dismiss dialog
+                    dialog.dismiss()
+                }
             }.onFailure {
                 // dismiss dialog
                 dialog.dismiss()
@@ -238,30 +239,31 @@ class MainActivity : AppCompatActivity() {
         val dialog = createLoadingDialog("Adding feature attachment").also {
             it.show()
         }
-        // create an input stream at the selected URI
-        val imageInputStream = contentResolver.openInputStream(selectedImageUri)
-            ?: return showError("Error opening input stream")
-        // get the byte array of the image input stream
-        val imageBytes: ByteArray = bytesFromInputStream(imageInputStream)
-        // create the attachment name with the current time
-        val attachmentName = "attachment_${System.currentTimeMillis()}.png"
 
-        lifecycleScope.launch {
-            selectedArcGISFeature?.let { arcGISFeature ->
-                // add the attachment to the selected feature
-                arcGISFeature.addAttachment(
-                    name = attachmentName,
-                    contentType = "image/png",
-                    data = imageBytes
-                ).onFailure {
-                    return@launch showError(it.message.toString())
+        // create an input stream at the selected URI
+        contentResolver.openInputStream(selectedImageUri)?.use { imageInputStream ->
+            // get the byte array of the image input stream
+            val imageBytes: ByteArray = imageInputStream.readBytes()
+            // create the attachment name with the current time
+            val attachmentName = "attachment_${System.currentTimeMillis()}.png"
+
+            lifecycleScope.launch {
+                selectedArcGISFeature?.let { arcGISFeature ->
+                    // add the attachment to the selected feature
+                    arcGISFeature.addAttachment(
+                        name = attachmentName,
+                        contentType = "image/png",
+                        data = imageBytes
+                    ).onFailure {
+                        return@launch showError(it.message.toString())
+                    }
+                    // update the feature changes in the loaded service feature table
+                    serviceFeatureTable.updateFeature(arcGISFeature).getOrElse {
+                        return@launch showError(it.message.toString())
+                    }
                 }
-                // update the feature changes in the loaded service feature table
-                serviceFeatureTable.updateFeature(arcGISFeature).getOrElse {
-                    return@launch showError(it.message.toString())
-                }
+                applyServerEdits(dialog)
             }
-            applyServerEdits(dialog)
         }
     }
 
@@ -320,21 +322,6 @@ class MainActivity : AppCompatActivity() {
     fun selectAttachment() {
         val mediaIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         activityResultLauncher.launch(mediaIntent)
-    }
-
-    /**
-     * Converts the given image [inputStream] into a byte array.
-     */
-    private fun bytesFromInputStream(inputStream: InputStream): ByteArray {
-        ByteArrayOutputStream().use { byteBuffer ->
-            val bufferSize = 1024
-            val buffer = ByteArray(bufferSize)
-            var len: Int
-            while (inputStream.read(buffer).also { len = it } != -1) {
-                byteBuffer.write(buffer, 0, len)
-            }
-            return byteBuffer.toByteArray()
-        }
     }
 
     /**
