@@ -156,32 +156,23 @@ class MainActivity : AppCompatActivity() {
             // create a polyline between source and destination points
             val polyline = Polyline(listOf(startingPoint, destinationPoint))
             // generate a geodesic curve using the polyline
-            GeometryEngine.densifyGeodetic(
-                polyline,
-                1.0,
-                unitsOfMeasurement,
-                GeodeticCurveType.Geodesic
+            val pathGeometry = GeometryEngine.densifyGeodetic(
+                geometry = polyline,
+                maxSegmentLength = 1.0,
+                lengthUnit = unitsOfMeasurement,
+                curveType = GeodeticCurveType.Geodesic
                 // only compute the distance if the returned curved path geometry is not null
-            )?.let { pathGeometry ->
-                // update the path graphic
-                geodesicPathGraphic.geometry = pathGeometry
-                // compute the path distance in kilometers
-                val distance =
-                    GeometryEngine.lengthGeodetic(
-                        pathGeometry,
-                        unitsOfMeasurement,
-                        GeodeticCurveType.Geodesic
-                    )
-                // display the distance result
-                infoTextView.text =
-                    getString(R.string.distance_info_text, distance.roundToInt())
-            } ?: run {
-                // hide the geodesic path graphic if densifyGeodetic is null
-                geodesicPathGraphic.geometry = null
-                // reset the info view and show the error
-                infoTextView.text = getString(R.string.tap_to_begin)
-                showError("Error generating geodesic")
-            }
+            )
+            // update the path graphic
+            geodesicPathGraphic.geometry = pathGeometry
+            // compute the path distance in kilometers
+            val distance = GeometryEngine.lengthGeodetic(
+                geometry = pathGeometry,
+                lengthUnit = unitsOfMeasurement,
+                curveType = GeodeticCurveType.Geodesic
+                )
+            // display the distance result
+            infoTextView.text = getString(R.string.distance_info_text, distance.roundToInt())
         }
     }
 

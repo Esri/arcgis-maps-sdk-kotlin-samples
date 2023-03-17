@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         val serviceFeatureTable =
             ServiceFeatureTable(getString(R.string.congressional_districts_url))
         // create the feature layer from the service feature table
-        val featureLayer = FeatureLayer(serviceFeatureTable)
+        val featureLayer = FeatureLayer.createWithFeatureTable(serviceFeatureTable)
         // add this feature layer to the map
         map.operationalLayers.add(featureLayer)
         // add the map to the mapview

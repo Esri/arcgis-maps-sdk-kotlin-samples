@@ -73,11 +73,6 @@ private val Color.Companion.magenta: Color
         return fromRgba(255, 0, 255, 255)
     }
 
-private val Color.Companion.cyan: Color
-    get() {
-        return fromRgba(0, 100, 100, 255)
-    }
-
 // define offset used to keep a consistent distance between symbols in the same column
 private const val OFFSET = 20.0
 

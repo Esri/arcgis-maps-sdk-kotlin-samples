@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     // create service feature table and a feature layer from it
     private val serviceFeatureTable = ServiceFeatureTable(gdbPerCapitalURL)
-    private val featureLayer = FeatureLayer(serviceFeatureTable)
+    private val featureLayer = FeatureLayer.createWithFeatureTable(serviceFeatureTable)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
