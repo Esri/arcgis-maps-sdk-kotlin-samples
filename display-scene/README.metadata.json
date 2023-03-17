@@ -23,6 +23,8 @@
     "relevant_apis": [
         "ArcGISScene",
         "ArcGISTiledElevationSource",
+        "BasemapStyle",
+        "Camera",
         "SceneView"
     ],
     "snippets": [
