@@ -5,7 +5,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.esri.arcgismaps.sample.navigateroute"
+        applicationId "com.esri.arcgismaps.sample.queryfeatureswitharcadeexpression"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
@@ -24,7 +24,7 @@ android {
         dataBinding true
     }
 
-    namespace 'com.esri.arcgismaps.sample.navigateroute'
+    namespace 'com.esri.arcgismaps.sample.queryfeatureswitharcadeexpression'
 }
 
 dependencies {
