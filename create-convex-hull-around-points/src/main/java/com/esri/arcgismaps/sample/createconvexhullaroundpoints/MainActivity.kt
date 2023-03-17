@@ -166,7 +166,6 @@ class MainActivity : AppCompatActivity() {
 
         // create a convex hull from the points and proceed if it's not null
         val convexHullGeometry = GeometryEngine.convexHull(normalizedPointGeometry)
-            ?: return showError("Error creating convex hull")
 
         // the convex hull's geometry may be a point or polyline if the number of
         // points is less than 3, set its symbol accordingly

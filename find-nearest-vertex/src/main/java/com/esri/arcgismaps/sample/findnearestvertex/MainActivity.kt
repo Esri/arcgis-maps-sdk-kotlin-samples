@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(statePlaneCaliforniaZone5SpatialReference)
         val portal = Portal("https://arcgisruntime.maps.arcgis.com")
         val portalItem = PortalItem(portal, "99fd67933e754a1181cc755146be21ca")
-        val usStatesGeneralizedLayer = FeatureLayer(portalItem, 0)
+        val usStatesGeneralizedLayer = FeatureLayer.createWithItemAndLayerId(portalItem, 0)
         // and add the feature layer to the map's operational layers
         map.operationalLayers.add(usStatesGeneralizedLayer)
         // add the map to the map view

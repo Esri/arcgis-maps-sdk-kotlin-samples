@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity() {
         }
         // add all of the geodatabase feature tables to the map as feature layers
         map.operationalLayers += geodatabase.featureTables.map { featureTable ->
-            FeatureLayer(featureTable)
+            FeatureLayer.createWithFeatureTable(featureTable)
         }
         // hide the generate button as the task is now complete
         generateButton.visibility = View.GONE

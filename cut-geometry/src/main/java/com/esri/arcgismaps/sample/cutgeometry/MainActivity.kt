@@ -125,13 +125,13 @@ class MainActivity : AppCompatActivity() {
 
                 // create graphics for the US and Canada sides
                 val canadaSide = Graphic(
-                    parts?.get(0), SimpleFillSymbol(
+                    parts[0], SimpleFillSymbol(
                         SimpleFillSymbolStyle.BackwardDiagonal,
                         Color.green, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.blue, 0F)
                     )
                 )
                 val usSide = Graphic(
-                    parts?.get(1), SimpleFillSymbol(
+                    parts[1], SimpleFillSymbol(
                         SimpleFillSymbolStyle.ForwardDiagonal,
                         Color.yellow, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.blue, 0F)
                     )

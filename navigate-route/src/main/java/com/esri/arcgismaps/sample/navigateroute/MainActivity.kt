@@ -53,7 +53,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
 
         // set up a simulated location data source which simulates movement along the route
         val simulationParameters = SimulationParameters(
-            Clock.System.now(),
+            Instant.now(),
             velocity = 35.0,
             horizontalAccuracy = 5.0,
             verticalAccuracy = 5.0
