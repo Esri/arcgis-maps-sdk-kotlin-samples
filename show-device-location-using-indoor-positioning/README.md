@@ -25,7 +25,6 @@ When there is no IPS beacons nearby, or other errors occur while initializing th
 
 ## Relevant API
 
-
 * ArcGISMap
 * FeatureLayer
 * FeatureTable
