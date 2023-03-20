@@ -39,7 +39,7 @@ import com.arcgismaps.location.SimulatedLocationDataSource
 import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
+import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.setuplocationdrivengeotriggers.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar

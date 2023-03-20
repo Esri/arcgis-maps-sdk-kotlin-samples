@@ -24,7 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.LoadStatus
-import com.arcgismaps.portal.PortalItem
+import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.sampleslib.databinding.ActivitySamplesBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi

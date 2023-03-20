@@ -32,10 +32,10 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.floor.FloorLevel
 import com.arcgismaps.mapping.floor.FloorManager
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.browsebuildingfloors.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch

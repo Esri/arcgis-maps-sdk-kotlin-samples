@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     // setup the red pin marker as a Graphic
     private val markerGraphic: Graphic by lazy {
         // creates a symbol from the marker drawable
-        val markerSymbol = PictureMarkerSymbol(markerDrawable).apply {
+        val markerSymbol = PictureMarkerSymbol.createWithImage(markerDrawable).apply {
             // resize the symbol into a smaller size
             width = 30f
             height = 30f
