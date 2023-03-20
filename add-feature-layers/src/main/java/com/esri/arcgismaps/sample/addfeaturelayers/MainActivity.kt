@@ -34,7 +34,7 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
+import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.addfeaturelayers.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import java.io.File
