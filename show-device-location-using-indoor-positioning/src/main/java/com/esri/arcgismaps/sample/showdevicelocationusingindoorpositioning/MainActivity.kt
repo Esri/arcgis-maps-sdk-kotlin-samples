@@ -194,8 +194,8 @@ class MainActivity : AppCompatActivity() {
                             // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
                             mIndoorsLocationDataSource = IndoorsLocationDataSource(
                                 positioningFeatureTable,
-                                getPathwaysTable(),
-                                getLevelsTable(),
+                                getFeatureTable("Pathways"),
+                                getFeatureTable("levels"),
                                 positioningId
                             )
                             // start the location display (blue dot)
@@ -224,33 +224,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Retrieves the PathwaysTable which is an [ArcGISFeatureTable] that contains pathways as per the ArcGIS Indoors Information Model.
-     * Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+     * Retrieves the "Pathways" or the "levels" table depending on the string passed.
+     * Pathways table is an [ArcGISFeatureTable] that contains pathways as per the ArcGIS Indoors Information Model. Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+     * Levels tables which is an [ArcGISFeatureTable] that contains floor levels in accordance with the ArcGIS Indoors Information Model. Providing this table enables the retrieval of a location's floor level ID.
      */
-    private fun getPathwaysTable(): ArcGISFeatureTable? {
-        return try {
-            val pathwaysFeatureLayer =
-                mapView.map?.operationalLayers?.firstOrNull { it.name == "Pathways" } as? FeatureLayer
-            pathwaysFeatureLayer?.featureTable as? ArcGISFeatureTable
-        } catch (e: Exception) {
-            // if pathways table not found in map's operationalLayers
-            showError("Pathways table not found")
-            null
-        }
-    }
-
-    /**
-     * Retrieves the Levels tables which is an [ArcGISFeatureTable] that contains floor levels in accordance with the ArcGIS Indoors Information Model.
-     * Providing this table enables the retrieval of a location's floor level ID.
-     */
-    private fun getLevelsTable(): ArcGISFeatureTable? {
-        return try {
-            val levelsFeatureLayer =
-                mapView.map?.operationalLayers?.firstOrNull { it.name == "levels" } as? FeatureLayer
-            levelsFeatureLayer?.featureTable as? ArcGISFeatureTable
-        } catch (e: Exception) {
-            // if levels table not found in map's operationalLayers
-            showError("Levels table not found")
+    private fun getFeatureTable(name: String): ArcGISFeatureTable? {
+        return mapView.map?.operationalLayers?.firstOrNull { operationalLayer ->
+            operationalLayer.name == name
+        }?.let { layer ->
+            if (layer is FeatureLayer) {
+                layer.featureTable as ArcGISFeatureTable
+            } else {
+                null
+            }
+        } ?: run {
+            showError("$name table not found")
             null
         }
     }
