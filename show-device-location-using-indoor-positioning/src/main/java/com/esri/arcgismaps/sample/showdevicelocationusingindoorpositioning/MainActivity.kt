@@ -29,17 +29,26 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Guid
-import com.arcgismaps.data.*
-import com.arcgismaps.location.*
+import com.arcgismaps.data.ArcGISFeatureTable
+import com.arcgismaps.data.FeatureTable
+import com.arcgismaps.data.Field
+import com.arcgismaps.data.OrderBy
+import com.arcgismaps.data.QueryParameters
+import com.arcgismaps.data.ServiceFeatureTable
+import com.arcgismaps.data.SortOrder
+import com.arcgismaps.location.IndoorsLocationDataSource
+import com.arcgismaps.location.Location
+import com.arcgismaps.location.LocationDataSourceStatus
+import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
+import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.showdevicelocationusingindoorpositioning.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
-import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -106,10 +115,10 @@ class MainActivity : AppCompatActivity() {
             Portal("https://www.arcgis.com/"),
             "8fa941613b4b4b2b8a34ad4cdc3e4bba"
         )
-        mapView.map = ArcGISMap(portalItem)
-        val map = mapView.map
+        val map = ArcGISMap(portalItem)
+        mapView.map = map
         lifecycleScope.launch {
-            map?.load()?.onSuccess {
+            map.load().onSuccess {
                 val featureTables = map.tables
                 // check if the portalItem contains featureTables
                 if (featureTables.isNotEmpty()) {
@@ -117,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     showError("Map does not contain feature tables")
                 }
-            }?.onFailure {
+            }.onFailure {
                 // if map load failed, show the error
                 showError("Error Loading Map")
             }
