@@ -177,35 +177,31 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             lifecycleScope.launch {
-                positioningFeatureTable?.queryFeatures(queryParameters)
-                    ?.onSuccess { queryResults ->
+                positioningFeatureTable.queryFeatures(queryParameters)
+                    .onSuccess { queryResults ->
                         // perform search query using the queryParameters
                         queryResults.forEach { feature ->
                             // check if serviceFeatureTable contains positioning data
                             // The ID that identifies a row in the positioning table.
-                            if (feature != null) {
-                                val globalID =
-                                    feature.attributes[positioningFeatureTable.globalIdField].toString()
-                                val positioningId = Guid(globalID)
-                                // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
-                                // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
-                                // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
-                                // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
-                                // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
-                                // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
-                                mIndoorsLocationDataSource = IndoorsLocationDataSource(
-                                    positioningFeatureTable,
-                                    getPathwaysTable(),
-                                    getLevelsTable(),
-                                    positioningId
-                                )
-                                // start the location display (blue dot)
-                                startLocationDisplay()
-                            } else {
-                                showError("No features found")
-                            }
+                            val globalID =
+                                feature.attributes[positioningFeatureTable.globalIdField].toString()
+                            val positioningId = Guid(globalID)
+                            // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
+                            // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
+                            // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
+                            // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
+                            // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+                            // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
+                            mIndoorsLocationDataSource = IndoorsLocationDataSource(
+                                positioningFeatureTable,
+                                getPathwaysTable(),
+                                getLevelsTable(),
+                                positioningId
+                            )
+                            // start the location display (blue dot)
+                            startLocationDisplay()
                         }
-                    }?.onFailure {
+                    }.onFailure {
                         showError("The positioning table contain no data")
                     }
             }

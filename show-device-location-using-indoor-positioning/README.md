@@ -20,8 +20,8 @@ When there is no IPS beacons nearby, or other errors occur while initializing th
 2. Create an `IndoorsLocationDataSource` with the positioning feature table (stored with the map) and the pathways feature table after both tables are loaded.
 3. Handle location change events to respond to floor changes or read other metadata for locations.
 4. Assign the `IndoorsLocationDataSource` to the map view's location display.
-5. Enable and disable the map view's location display using `LocationDisplay.start()` and `LocationDisplay.stop()`. Device location will appear on the display as a blue dot and update as the user moves throughout the space.
-6. Use the `LocationDisplay.AutoPanMode` property to change how the map behaves when location updates are received.
+5. Enable and disable the map view's location display using `LocationDisplay.dataSource.start()` and `LocationDisplay.dataSource.stop()`. Device location will appear on the display as a blue dot and update as the user moves throughout the space.
+6. Use the `LocationDisplay.setAutoPanMode()` function to change how the map behaves when location updates are received.
 
 ## Relevant API
 
