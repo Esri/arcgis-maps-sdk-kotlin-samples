@@ -276,7 +276,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createStopSymbol(stopNumber: Int, locationPoint: Point?) {
         // create a orange pin PictureMarkerSymbol
-        val pinSymbol = PictureMarkerSymbol(
+        val pinSymbol = PictureMarkerSymbol.createWithImage(
             ContextCompat.getDrawable(
                 this,
                 R.drawable.pin_symbol

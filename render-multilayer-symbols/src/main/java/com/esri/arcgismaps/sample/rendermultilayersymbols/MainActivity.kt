@@ -241,7 +241,7 @@ class MainActivity : AppCompatActivity() {
             // load blue pin from as a bitmap
             val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
             // load the PictureMarkerSymbolLayer using the bitmap drawable
-            val pictureMarkerFromCache = PictureMarkerSymbolLayer(BitmapDrawable(resources, bitmap))
+            val pictureMarkerFromCache = PictureMarkerSymbolLayer.createWithImage(BitmapDrawable(resources, bitmap))
             pictureMarkerFromCache.load().getOrElse {
                 showError("Picture marker symbol layer failed to load from bitmap: ${it.message}")
             }

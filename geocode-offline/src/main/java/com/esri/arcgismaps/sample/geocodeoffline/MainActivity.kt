@@ -255,7 +255,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createPinSymbol(): PictureMarkerSymbol {
         val pinDrawable = ContextCompat.getDrawable(this, R.drawable.pin) as BitmapDrawable
-        val pinSymbol = PictureMarkerSymbol(pinDrawable)
+        val pinSymbol = PictureMarkerSymbol.createWithImage(pinDrawable)
         pinSymbol.apply {
             // resize the dimensions of the symbol
             width = 18f
