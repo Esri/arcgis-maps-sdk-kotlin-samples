@@ -437,7 +437,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // create a new picture marker from a pin drawable
-        val pinSymbol = PictureMarkerSymbol(
+        val pinSymbol = PictureMarkerSymbol.createWithImage(
             ContextCompat.getDrawable(
                 this,
                 R.drawable.pin_symbol
