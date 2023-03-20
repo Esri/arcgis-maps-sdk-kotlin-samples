@@ -279,9 +279,6 @@ class MainActivity : AppCompatActivity() {
             locationDisplay.dataSource.locationChanged.collect { location ->
                 // get the location properties of the LocationDataSource
                 val locationProperties = location.additionalSourceProperties
-                if (locationProperties == null) {
-                    showError("LocationDataSource does not have any property-fields")
-                }
                 // retrieve information about the location of the device
                 val floor = (locationProperties["floor"] ?: "").toString()
                 val positionSource = (locationProperties["positionSource"] ?: "").toString()
@@ -293,8 +290,7 @@ class MainActivity : AppCompatActivity() {
                 if (currentFloor == null || currentFloor != newFloor) {
                     currentFloor = newFloor
                     // update layer's definition express with the current floor
-                    val layerList = mapView.map?.operationalLayers
-                    layerList?.forEach { layer ->
+                        mapView.map?.operationalLayers?.forEach { layer ->
                         val name = layer.name
                         if (layer is FeatureLayer && (name == "Details" || name == "Units" || name == "Levels")) {
                             layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
@@ -333,7 +329,7 @@ class MainActivity : AppCompatActivity() {
                         mapView.locationDisplay.dataSource.stop()
                         showError("IndoorsLocationDataSource stopped due to an internal error")
                     }
-                    else -> null
+                    else -> {}
                 }
             }
         }
