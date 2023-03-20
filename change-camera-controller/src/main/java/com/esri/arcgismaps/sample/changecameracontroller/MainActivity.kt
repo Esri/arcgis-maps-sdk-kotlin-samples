@@ -18,10 +18,8 @@ package com.esri.arcgismaps.sample.changecameracontroller
 
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -41,11 +39,43 @@ import com.arcgismaps.mapping.view.GlobeCameraController
 import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.changecameracontroller.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.ensureActive
 import java.io.File
 import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
+
+    // enum to keep track of the selected camera controller mode set for the SceneView
+    enum class CameraControllerMode(val displayName: String) {
+        OrbitPlane("Orbit Camera Around Plane"),
+        OrbitLocation("Orbit Camera Around Crater"),
+        Globe("Free Pan Around The Globe");
+
+        companion object {
+            /**
+             * Returns a List containing the [displayName] property of this enum type, in the order
+             * they're declared.
+             * */
+            fun getValuesByDisplayName(): List<String> {
+                return values().map { cameraControllerMode ->
+                    cameraControllerMode.displayName
+                }
+            }
+
+            /**
+             * Returns the enum constant of this type with the specified [displayName] property or
+             * null if no match is found.
+             */
+            fun getValueOrNull(displayName: String): CameraControllerMode? {
+                return values().firstOrNull {
+                    it.displayName == displayName
+                }
+            }
+        }
+    }
 
     private val TAG = MainActivity::class.java.simpleName
 
@@ -58,19 +88,16 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.sceneView
     }
 
-    // custom toolbar to show camera controller options menu
-    private val toolbar by lazy {
-        activityMainBinding.toolbar.apply {
-            // set the overflow icon to the camera icon
-            overflowIcon = ContextCompat.getDrawable(context, R.drawable.ic_camera)
-        }
-    }
-
-    // graphics overlay for the scene to draw the 3d graphics on
-    private val graphicsOverlay by lazy {
-        GraphicsOverlay().apply {
-            // set the altitude values in the scene to be absolute
-            sceneProperties.surfacePlacement = SurfacePlacement.Absolute
+    // options dropdown view for the camera controller types
+    private val cameraControllerOptionsView by lazy {
+        // create an array adapter data source using the list of camera controller modes
+        val arrayAdapter = ArrayAdapter(
+            this,
+            R.layout.camera_controller_dropdown_item,
+            CameraControllerMode.getValuesByDisplayName()
+        )
+        activityMainBinding.bottomListItems.apply {
+            setAdapter(arrayAdapter)
         }
     }
 
@@ -124,28 +151,8 @@ class MainActivity : AppCompatActivity() {
         0.0
     )
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // inflate the camera controller options menu
-        menuInflater.inflate(R.menu.camera_controller_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // select the camera controller based on the menu option item clicked
-        sceneView.cameraController = when (item.itemId) {
-            R.id.action_camera_controller_plane -> orbitPlaneCameraController
-            R.id.action_camera_controller_crater -> orbitLocationCameraController
-            R.id.action_camera_controller_globe -> globeCameraController
-            else -> return super.onOptionsItemSelected(item)
-        }
-        return true
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // set the custom toolbar for the activity
-        setSupportActionBar(toolbar)
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
@@ -160,8 +167,13 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        // add the airplane 3d graphic to the graphics overlay
-        graphicsOverlay.graphics.add(airplane3DGraphic)
+        // graphics overlay for the scene to draw the 3d graphics on
+        val graphicsOverlay = GraphicsOverlay().apply {
+            // set the altitude values in the scene to be absolute
+            sceneProperties.surfacePlacement = SurfacePlacement.Absolute
+            // add the airplane 3d graphic to the graphics overlay
+            graphics.add(airplane3DGraphic)
+        }
 
         sceneView.apply {
             // set the scene to the SceneView
@@ -183,12 +195,56 @@ class MainActivity : AppCompatActivity() {
             // load the airplane model file and update the the airplane3DGraphic
             loadModel(getString(R.string.bristol_model_file), airplane3DGraphic)
         }
+
+        // set the click listener for the options dropdown view
+        cameraControllerOptionsView.setOnItemClickListener { parent, _, position, _ ->
+            // get the selected camera mode item
+            val selectedItem = parent.getItemAtPosition(position) as String
+            // get the CameraControllerMode from the selected item
+            CameraControllerMode.getValueOrNull(selectedItem)?.let { mode ->
+                // update the camera controller
+                setCameraControllerMode(mode)
+            }
+        }
+    }
+
+    /**
+     * Loads a [ModelSceneSymbol] from the [filename] in [getCacheDir] and updates the [graphic].
+     */
+    private suspend fun loadModel(filename: String, graphic: Graphic) {
+        val modelFilePath = File(cacheDir, filename)
+        if (modelFilePath.exists()) {
+            // create a new ModelSceneSymbol with the file
+            val modelSceneSymbol = ModelSceneSymbol(modelFilePath.absolutePath).apply {
+                heading = 45f
+            }
+            // if the symbol load failed show and error and return
+            modelSceneSymbol.load().onFailure {
+                showError("Error loading airplane model: ${it.message}")
+                return
+            }
+            // update the graphic's symbol
+            graphic.symbol = modelSceneSymbol
+        } else {
+            showError("Error loading airplane model: file does not exist.")
+        }
+    }
+
+    /**
+     * Updates the SceneView's camera controller based on the [mode] specified.
+     */
+    private fun setCameraControllerMode(mode: CameraControllerMode) {
+        sceneView.cameraController = when (mode) {
+            CameraControllerMode.OrbitPlane -> orbitPlaneCameraController
+            CameraControllerMode.OrbitLocation -> orbitLocationCameraController
+            CameraControllerMode.Globe -> globeCameraController
+        }
     }
 
     /**
      * Copies the list of [assets] files from the assets folder to a given [cache] directory. This
      * suspending function runs on the [Dispatchers.IO] context. If [overwrite] is true, any assets
-     * already in the [cache] directory are overwritten, otherwise copy is skipped
+     * already in the [cache] directory are overwritten, otherwise copy is skipped.
      */
     private suspend fun copyAssetsToCache(
         assets: List<String>,
@@ -220,28 +276,6 @@ class MainActivity : AppCompatActivity() {
             } catch (exception: Exception) {
                 showError("Error caching asset :${exception.message}")
             }
-        }
-    }
-
-    /**
-     * Loads a [ModelSceneSymbol] from the [filename] in the [getCacheDir] and updates the [graphic]
-     */
-    private suspend fun loadModel(filename: String, graphic: Graphic) {
-        val modelFilePath = File(cacheDir, filename)
-        if (modelFilePath.exists()) {
-            // create a new ModelSceneSymbol with the file
-            val modelSceneSymbol = ModelSceneSymbol(modelFilePath.absolutePath).apply {
-                heading = 45f
-            }
-            // if the symbol load failed show and error and return
-            modelSceneSymbol.load().onFailure {
-                showError("Error loading airplane model: ${it.message}")
-                return
-            }
-            // update the graphic's symbol
-            graphic.symbol = modelSceneSymbol
-        } else {
-            showError("Error loading airplane model: file does not exist.")
         }
     }
 

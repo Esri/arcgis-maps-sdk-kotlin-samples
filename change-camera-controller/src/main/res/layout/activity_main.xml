@@ -8,20 +8,36 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            style="@style/Toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?actionBarSize"
-            app:layout_constraintTop_toTopOf="parent"/>
-
         <com.arcgismaps.mapping.view.SceneView
             android:id="@+id/sceneView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottomMenu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/bottomMenu"
+            android:layout_margin="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:hint="@string/select_camera_controller"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/bottomListItems"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:labelFor="@id/bottomListItems"
+                android:layout_weight="1"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

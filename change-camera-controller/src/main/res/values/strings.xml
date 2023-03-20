@@ -4,13 +4,10 @@
 
     <string name="bristol_model_file">Bristol.dae</string>
     <string name="bristol_skin_file">Bristol.png</string>
+    <string name="select_camera_controller">Select camera controller</string>
 
     <string-array name="asset_files">
         <item>@string/bristol_model_file</item>
         <item>@string/bristol_skin_file</item>
     </string-array>
-
-    <string name="menu_item_plane">Orbit Camera Around Plane</string>
-    <string name="menu_item_crater">Orbit Camera Around Crater</string>
-    <string name="menu_item_globe">Free Pan Around The Globe</string>
 </resources>
