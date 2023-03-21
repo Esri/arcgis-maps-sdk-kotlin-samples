@@ -48,37 +48,6 @@ import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
-    // enum to keep track of the selected camera controller mode set for the SceneView
-    enum class CameraControllerMode(val displayName: String) {
-        OrbitPlane("Orbit Camera Around Plane"),
-        OrbitLocation("Orbit Camera Around Crater"),
-        Globe("Free Pan Around The Globe");
-
-        companion object {
-            /**
-             * Returns a List containing the [displayName] property of this enum type, in the order
-             * they're declared.
-             * */
-            fun getValuesByDisplayName(): List<String> {
-                return values().map { cameraControllerMode ->
-                    cameraControllerMode.displayName
-                }
-            }
-
-            /**
-             * Returns the enum constant of this type with the specified [displayName] property or
-             * null if no match is found.
-             */
-            fun getValueOrNull(displayName: String): CameraControllerMode? {
-                return values().firstOrNull {
-                    it.displayName == displayName
-                }
-            }
-        }
-    }
-
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -201,10 +170,9 @@ class MainActivity : AppCompatActivity() {
             // get the selected camera mode item
             val selectedItem = parent.getItemAtPosition(position) as String
             // get the CameraControllerMode from the selected item
-            CameraControllerMode.getValueOrNull(selectedItem)?.let { mode ->
-                // update the camera controller
-                setCameraControllerMode(mode)
-            }
+            val mode = CameraControllerMode.getValue(selectedItem)
+            // update the camera controller
+            setCameraControllerMode(mode)
         }
     }
 
@@ -268,10 +236,10 @@ class MainActivity : AppCompatActivity() {
                             // copy the input file stream to the output file stream
                             inputStream.copyTo(outputStream)
                         }
-                        Log.i(TAG, "$assetName copied to cache.")
+                        Log.i(localClassName, "$assetName copied to cache.")
                     }
                 } else {
-                    Log.i(TAG, "$assetName already in cache, skipping copy.")
+                    Log.i(localClassName, "$assetName already in cache, skipping copy.")
                 }
             } catch (exception: Exception) {
                 showError("Error caching asset :${exception.message}")
@@ -280,7 +248,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showError(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(sceneView, message, Snackbar.LENGTH_SHORT).show()
+    }
+}
+
+// enum to keep track of the selected camera controller mode set for the SceneView
+enum class CameraControllerMode(val displayName: String) {
+    OrbitPlane("Orbit camera around a plane model"),
+    OrbitLocation("Orbit camera around a crater"),
+    Globe("Free pan around the globe");
+
+    companion object {
+        /**
+         * Returns a List containing the [displayName] property of this enum type.
+         * */
+        fun getValuesByDisplayName(): List<String> {
+            return values().map { cameraControllerMode ->
+                cameraControllerMode.displayName
+            }
+        }
+
+        /**
+         * Returns the enum constant of this type with the specified [displayName] property.
+         */
+        fun getValue(displayName: String): CameraControllerMode {
+            return values().first {
+                it.displayName == displayName
+            }
+        }
     }
 }
