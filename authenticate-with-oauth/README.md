@@ -31,6 +31,21 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 5. Set the `AuthenticationManager`'s `arcGISAuthenticationChallengeHandler` to the `ArcGISAuthenticationChallengeHandler` created above.
 6. Load a map with premium content requiring authentication to automatically invoke the `ArcGISAuthenticationHandler`.
 
+#### Setting up the Manifest.xml:
+
+1. Set the `<intent-filter>` categories tags to be able to launch a custom browser tab. 
+```xml
+<category android:name="android.intent.category.DEFAULT" />
+<category android:name="android.intent.category.BROWSABLE" />
+```
+
+2. Set the `data` tag to be able to use the redirect URL to navigate back to the app after prompting for OAuth credentials. To learn more on setting up the data specification to an intent filter, visit the [Android docs](https://developer.android.com/guide/topics/manifest/data-element).
+```xml
+<data
+    android:host="auth"
+    android:scheme="my-ags-app" />
+```
+
 ## Relevant API
 
 * ArcGISAuthenticationChallengeHandler
