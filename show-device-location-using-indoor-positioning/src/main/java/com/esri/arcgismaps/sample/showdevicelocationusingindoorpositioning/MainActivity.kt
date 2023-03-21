@@ -49,7 +49,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
-
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
@@ -107,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Set up the connection between the device and the portal item
-     * And set the [mapView] using the [portalItem]
+     * and set the [mapView] using the [portalItem]
      */
     private fun setUpMap() {
         // load the portal and create a map from the portal item
@@ -166,7 +165,9 @@ class MainActivity : AppCompatActivity() {
                 return
             }
             val queryParameters = QueryParameters().apply {
+                // set a limit of 1 on the number of returned features per request
                 maxFeatures = 1
+                // 1=1 is a true where clause which will result in all matching records being returned
                 whereClause = "1 = 1"
                 // find and sort out the orderByFields by most recent first
                 orderByFields.add(
@@ -189,8 +190,9 @@ class MainActivity : AppCompatActivity() {
                             // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
                             // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
                             // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
-                            // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
                             // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+                            // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
+                            // Providing this table enables the retrieval of a location's floor level ID.
                             // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
                             mIndoorsLocationDataSource = IndoorsLocationDataSource(
                                 positioningFeatureTable,
@@ -225,8 +227,6 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Retrieves the "Pathways" or the "levels" table depending on the string passed.
-     * Pathways table is an [ArcGISFeatureTable] that contains pathways as per the ArcGIS Indoors Information Model. Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
-     * Levels tables which is an [ArcGISFeatureTable] that contains floor levels in accordance with the ArcGIS Indoors Information Model. Providing this table enables the retrieval of a location's floor level ID.
      */
     private fun getFeatureTable(name: String): ArcGISFeatureTable? {
         return mapView.map?.operationalLayers?.firstOrNull { operationalLayer ->
@@ -244,7 +244,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets up the location listeners, the navigation mode, display's the devices location as a blue dot, collect data source location changes and handles its status changes
+     * Sets up the location listeners, the navigation mode, display's the devices location as a blue dot,
+     * collect data source location changes and handles its status changes
      */
     private fun startLocationDisplay() {
         val locationDisplay = mapView.locationDisplay.apply {
@@ -270,16 +271,20 @@ class MainActivity : AppCompatActivity() {
                 val satelliteCount = (locationProperties["satelliteCount"] ?: "").toString()
 
                 // check if current floor hasn't been set or if the floor has changed
-                val newFloor = floor.toInt()
-                if (currentFloor == null || currentFloor != newFloor) {
-                    currentFloor = newFloor
-                    // update layer's definition express with the current floor
+                if (floor.isNotEmpty()) {
+                    val newFloor = floor.toInt()
+                    if (currentFloor == null || currentFloor != newFloor) {
+                        currentFloor = newFloor
+                        // update layer's definition express with the current floor
                         mapView.map?.operationalLayers?.forEach { layer ->
-                        val name = layer.name
-                        if (layer is FeatureLayer && (name == "Details" || name == "Units" || name == "Levels")) {
-                            layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
+                            val name = layer.name
+                            if (layer is FeatureLayer && (name == "Details" || name == "Units" || name == "Levels")) {
+                                layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
+                            }
                         }
                     }
+                } else {
+                    showError("Floors is empty.")
                 }
                 // set up the message with floor properties to be displayed to the textView
                 var locationPropertiesMessage =
