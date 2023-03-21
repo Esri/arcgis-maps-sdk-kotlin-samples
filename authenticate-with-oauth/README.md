@@ -33,13 +33,19 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 
 #### Setting up the Manifest.xml:
 
-1. Set the `<intent-filter>` categories tags to be able to launch a custom browser tab. 
+1. Set the launch mode for the activity to route it's intent instance through a call to its `onNewIntent()` method, rather than creating a new instance of the activity. To find out more on setting the launch configuration of an activity, visit the [Android docs](https://developer.android.com/guide/topics/manifest/activity-element)
+```xml
+<activity android:launchMode="singleTop"
+          ...
+```
+
+2. Set the `<intent-filter>` categories tags to be able to launch a custom browser tab. 
 ```xml
 <category android:name="android.intent.category.DEFAULT" />
 <category android:name="android.intent.category.BROWSABLE" />
 ```
 
-2. Set the `data` tag to be able to use the redirect URI to navigate back to the app after prompting for OAuth credentials. To learn more on setting up the data specification to an intent filter, visit the [Android docs](https://developer.android.com/guide/topics/manifest/data-element).
+3. Set the `data` tag to be able to use the redirect URI to navigate back to the app after prompting for OAuth credentials. To learn more on setting up the data specification to an intent filter, visit the [Android docs](https://developer.android.com/guide/topics/manifest/data-element).
 ```xml
 <data
     android:host="auth"
