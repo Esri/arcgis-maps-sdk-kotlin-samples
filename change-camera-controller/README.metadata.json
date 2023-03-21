@@ -23,10 +23,10 @@
         "ArcGISScene",
         "Camera",
         "GlobeCameraController",
+        "ModelSceneSymbol",
         "OrbitGeoElementCameraController",
         "OrbitLocationCameraController",
-        "SceneView",
-        "ModelSceneSymbol"
+        "SceneView"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/changecameracontroller/MainActivity.kt"
