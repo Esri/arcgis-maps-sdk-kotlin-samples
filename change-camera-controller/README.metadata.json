@@ -25,7 +25,8 @@
         "GlobeCameraController",
         "OrbitGeoElementCameraController",
         "OrbitLocationCameraController",
-        "SceneView"
+        "SceneView",
+        "ModelSceneSymbol"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/changecameracontroller/MainActivity.kt"

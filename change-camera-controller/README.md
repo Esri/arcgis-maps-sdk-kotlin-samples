@@ -25,6 +25,7 @@ The application loads with the default globe camera controller. To rotate and fi
 * OrbitGeoElementCameraController
 * OrbitLocationCameraController
 * SceneView
+* ModelSceneSymbol
 
 ## Tags
 

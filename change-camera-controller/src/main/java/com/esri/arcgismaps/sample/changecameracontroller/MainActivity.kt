@@ -83,6 +83,17 @@ class MainActivity : AppCompatActivity() {
         Graphic(point)
     }
 
+    // camera controller which orbits the plane graphic
+    private val orbitPlaneCameraController by lazy {
+        // instantiate a new camera controller with a distance from airplane graphic
+        OrbitGeoElementCameraController(airplane3DGraphic, 100.0).apply {
+            // set a relative pitch to the target
+            setCameraPitchOffset(3.0)
+            // set a relative heading to the target
+            setCameraHeadingOffset(150.0)
+        }
+    }
+
     // camera controller which orbits a target location
     private val orbitLocationCameraController by lazy {
         // target location for the camera controller
@@ -96,28 +107,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // camera controller which orbits the plane graphic
-    private val orbitPlaneCameraController by lazy {
-        // instantiate a new camera controller with a distance from airplane graphic
-        OrbitGeoElementCameraController(airplane3DGraphic, 100.0).apply {
-            // set a relative pitch to the target
-            setCameraPitchOffset(3.0)
-            // set a relative heading to the target
-            setCameraHeadingOffset(150.0)
-        }
-    }
-
     // camera controller for free roam navigation
     private val globeCameraController = GlobeCameraController()
 
     // camera looking at the Upheaval Dome crater in Utah
     private val defaultCamera = Camera(
-        38.459291,
-        -109.937576,
-        5500.0,
-        150.0,
-        20.0,
-        0.0
+        latitude = 38.459291,
+        longitude = -109.937576,
+        altitude = 5500.0,
+        heading = 150.0,
+        pitch = 20.0,
+        roll = 0.0
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(sceneView)
 
         // create and add a scene with an imagery basemap style
-        val scene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+        val terrainScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
             // add an elevation data source to the base surface
             baseSurface.elevationSources.add(
                 ArcGISTiledElevationSource(getString(R.string.elevation_service_url))
@@ -146,20 +146,20 @@ class MainActivity : AppCompatActivity() {
 
         sceneView.apply {
             // set the scene to the SceneView
-            this.scene = scene
+            scene = terrainScene
             // add the graphics overlay to the SceneView
             graphicsOverlays.add(graphicsOverlay)
         }
 
         lifecycleScope.launch {
             // if the map load failed show an error and return
-            scene.load().onFailure {
+            terrainScene.load().onFailure {
                 showError("Failed to load the scene: ${it.message}")
                 return@launch
             }
             // set the sceneView viewpoint to the default camera
             sceneView.setViewpointCamera(defaultCamera)
-            // copy assets to the cache directory if needed
+            // copy the airplane model assets to the cache directory if needed
             copyAssetsToCache(assetFiles, cacheDir, false)
             // load the airplane model file and update the the airplane3DGraphic
             loadModel(getString(R.string.bristol_model_file), airplane3DGraphic)
@@ -180,16 +180,15 @@ class MainActivity : AppCompatActivity() {
      * Loads a [ModelSceneSymbol] from the [filename] in [getCacheDir] and updates the [graphic].
      */
     private suspend fun loadModel(filename: String, graphic: Graphic) {
-        val modelFilePath = File(cacheDir, filename)
-        if (modelFilePath.exists()) {
+        val modelFile = File(cacheDir, filename)
+        if (modelFile.exists()) {
             // create a new ModelSceneSymbol with the file
-            val modelSceneSymbol = ModelSceneSymbol(modelFilePath.absolutePath).apply {
+            val modelSceneSymbol = ModelSceneSymbol(modelFile.path).apply {
                 heading = 45f
             }
             // if the symbol load failed show and error and return
             modelSceneSymbol.load().onFailure {
-                showError("Error loading airplane model: ${it.message}")
-                return
+                return showError("Error loading airplane model: ${it.message}")
             }
             // update the graphic's symbol
             graphic.symbol = modelSceneSymbol
