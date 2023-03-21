@@ -39,7 +39,7 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 <category android:name="android.intent.category.BROWSABLE" />
 ```
 
-2. Set the `data` tag to be able to use the redirect URL to navigate back to the app after prompting for OAuth credentials. To learn more on setting up the data specification to an intent filter, visit the [Android docs](https://developer.android.com/guide/topics/manifest/data-element).
+2. Set the `data` tag to be able to use the redirect URI to navigate back to the app after prompting for OAuth credentials. To learn more on setting up the data specification to an intent filter, visit the [Android docs](https://developer.android.com/guide/topics/manifest/data-element).
 ```xml
 <data
     android:host="auth"
