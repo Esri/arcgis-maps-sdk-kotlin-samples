@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity() {
                             mIndoorsLocationDataSource = IndoorsLocationDataSource(
                                 positioningFeatureTable,
                                 getFeatureTable("Pathways"),
-                                getFeatureTable("levels"),
+                                getFeatureTable("Levels"),
                                 positioningId
                             )
                             // start the location display (blue dot)
