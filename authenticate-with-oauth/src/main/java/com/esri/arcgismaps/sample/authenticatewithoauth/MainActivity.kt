@@ -17,19 +17,18 @@
 package com.esri.arcgismaps.sample.authenticatewithoauth
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
 import com.arcgismaps.httpcore.authentication.OAuthUserConfiguration
 import com.arcgismaps.httpcore.authentication.OAuthUserCredential
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.authenticatewithoauth.databinding.ActivityMainBinding
@@ -46,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
+    // to view the traffic layer in the portal, you must enter valid ArcGIS Online credentials.
     private val portal by lazy {
         Portal(getString(R.string.portal_url), Portal.Connection.Authenticated)
     }
@@ -61,10 +61,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
         // initialize the OAuth sign in view model to receive
         // the result from the activity result contract
         val oAuthUserSignInViewModel = ViewModelProvider(
@@ -79,21 +75,20 @@ class MainActivity : AppCompatActivity() {
 
         // check if the portal can be loaded
         lifecycleScope.launch {
-            AlertDialog.Builder(this@MainActivity).apply {
-                setTitle(portal.url)
-            }.also { dialogBuilder ->
-                portal.load().onSuccess {
-                    dialogBuilder.setMessage(
-                        "Portal succeeded to load, portal user: ${portal.user?.username}"
-                    ).create().show()
-                    // authentication complete, display PortalItem
-                    mapView.map = ArcGISMap(PortalItem(url = portal.url))
-                }.onFailure {
-                    dialogBuilder.setMessage(
-                        "Portal failed to load, error: ${it.message}"
-                    ).create().show()
-                    // authentication failed, display a basemap instead
-                    mapView.map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+            portal.load().onSuccess {
+                AlertDialog.Builder(this@MainActivity).setMessage(
+                    "Portal succeeded to load, portal user: ${portal.user?.username}"
+                ).create().show()
+                // authentication complete, display PortalItem
+                mapView.apply {
+                    visibility = View.VISIBLE
+                    map = ArcGISMap(PortalItem(portal.url))
+                }
+            }.onFailure { throwable ->
+                // authentication failed, display error message
+                activityMainBinding.authFailedMessage.apply {
+                    visibility = View.VISIBLE
+                    text = String.format("Portal failed to load, ${throwable.message}")
                 }
             }
         }
