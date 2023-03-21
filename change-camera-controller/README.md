@@ -22,10 +22,10 @@ The application loads with the default globe camera controller. To rotate and fi
 * ArcGISScene
 * Camera
 * GlobeCameraController
+* ModelSceneSymbol
 * OrbitGeoElementCameraController
 * OrbitLocationCameraController
 * SceneView
-* ModelSceneSymbol
 
 ## Tags
 
