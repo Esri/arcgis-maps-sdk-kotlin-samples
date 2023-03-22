@@ -1,0 +1,17 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight" >
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+<!--        <item name="colorSurface">@color/colorPrimary</item>-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+<!--        <item name="colorSecondary">#ebebf2</item>-->
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">#2C2C2E</item>
+        <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
+
+    </style>
+
+
+</resources>
