@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.showdevicelocationusingindoorpositioning
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -91,12 +92,15 @@ class MainActivity : AppCompatActivity() {
      */
     private fun checkPermissions() {
         val requestCode = 1
-        val requestPermissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        if (ContextCompat.checkSelfPermission(
-                this,
-                requestPermissions[0]
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        val requestPermissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH_SCAN
+        )
+        if (ContextCompat.checkSelfPermission(this, requestPermissions[0]) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, requestPermissions[1]) != PackageManager.PERMISSION_GRANTED ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    ContextCompat.checkSelfPermission(this, requestPermissions[2]) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, requestPermissions, requestCode)
         } else {
             // permission already given, so no need to request
