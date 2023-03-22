@@ -47,8 +47,6 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     private val provisionPath: String by lazy {
         getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.app_name)
     }
@@ -245,7 +243,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showError(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(sceneView, message, Snackbar.LENGTH_SHORT).show()
     }
 }

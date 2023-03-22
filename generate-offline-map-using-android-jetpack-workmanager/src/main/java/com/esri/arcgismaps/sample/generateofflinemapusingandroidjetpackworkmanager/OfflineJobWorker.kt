@@ -37,8 +37,6 @@ import java.io.File
 class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
-    private val TAG = OfflineJobWorker::class.java.simpleName
-
     // notificationId passed by the activity
     private val notificationId by lazy {
         inputData.getInt(notificationIdParameter, 1)
@@ -132,11 +130,11 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
         } catch (cancellationException: CancellationException) {
             // a CancellationException is raised if the work is cancelled manually by the user
             // log and rethrow the cancellationException
-            Log.e(TAG, "Offline map job canceled:", cancellationException)
+            Log.e(javaClass.simpleName, "Offline map job canceled:", cancellationException)
             throw cancellationException
         } catch (exception: Exception) {
             // capture and log if any other exception occurs
-            Log.e(TAG, "Offline map job failed:", exception)
+            Log.e(javaClass.simpleName, "Offline map job failed:", exception)
             // post a job failed notification
             workerNotification.showStatusNotification("Failed")
             // return a failure result
