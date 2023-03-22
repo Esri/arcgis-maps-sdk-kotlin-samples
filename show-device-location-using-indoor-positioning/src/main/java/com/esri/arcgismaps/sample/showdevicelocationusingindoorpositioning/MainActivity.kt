@@ -52,8 +52,6 @@ import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -92,15 +90,25 @@ class MainActivity : AppCompatActivity() {
      */
     private fun checkPermissions() {
         val requestCode = 1
-        val requestPermissions = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH_SCAN
-        )
-        if (ContextCompat.checkSelfPermission(this, requestPermissions[0]) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, requestPermissions[1]) != PackageManager.PERMISSION_GRANTED ||
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                    ContextCompat.checkSelfPermission(this, requestPermissions[2]) != PackageManager.PERMISSION_GRANTED)) {
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
+        ) {
+            val requestPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.BLUETOOTH_SCAN
+                )
+            } else {
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            }
             ActivityCompat.requestPermissions(this, requestPermissions, requestCode)
         } else {
             // permission already given, so no need to request
@@ -343,7 +351,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             val message = "Location permission is not granted"
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-            Log.e(TAG, message)
+            Log.e(localClassName, message)
             progressBar.visibility = View.GONE
         }
     }
@@ -352,7 +360,7 @@ class MainActivity : AppCompatActivity() {
      * Displays an error onscreen
      */
     private fun showError(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
