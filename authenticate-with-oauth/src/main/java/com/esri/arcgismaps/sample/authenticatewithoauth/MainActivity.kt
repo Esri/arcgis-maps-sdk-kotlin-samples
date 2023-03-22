@@ -29,8 +29,8 @@ import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeRespo
 import com.arcgismaps.httpcore.authentication.OAuthUserConfiguration
 import com.arcgismaps.httpcore.authentication.OAuthUserCredential
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
 import com.esri.arcgismaps.sample.authenticatewithoauth.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
