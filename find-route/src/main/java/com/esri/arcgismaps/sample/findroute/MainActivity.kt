@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupSymbols() {
         val startDrawable =
             ContextCompat.getDrawable(this, R.drawable.ic_source) as BitmapDrawable
-        val pinSourceSymbol = PictureMarkerSymbol(startDrawable).apply {
+        val pinSourceSymbol = PictureMarkerSymbol.createWithImage(startDrawable).apply {
             // make the graphic smaller
             width = 30f
             height = 30f
@@ -272,7 +272,7 @@ class MainActivity : AppCompatActivity() {
 
         endDrawable.let {
             val pinDestinationSymbol =
-                PictureMarkerSymbol(endDrawable).apply {
+                PictureMarkerSymbol.createWithImage(endDrawable).apply {
                     // make the graphic smaller
                     width = 30f
                     height = 30f

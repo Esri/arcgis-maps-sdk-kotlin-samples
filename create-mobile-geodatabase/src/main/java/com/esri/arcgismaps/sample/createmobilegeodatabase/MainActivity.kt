@@ -47,9 +47,8 @@ import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.TableLayou
 import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.TableRowBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import java.io.File
+import java.time.Instant
 
 class MainActivity : AppCompatActivity() {
 
@@ -193,7 +192,7 @@ class MainActivity : AppCompatActivity() {
             // get the result of the loaded "LocationHistory" table
             this.featureTable = featureTable
             // create a feature layer for the map using the GeodatabaseFeatureTable
-            val featureLayer = FeatureLayer(featureTable)
+            val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
             mapView.map?.operationalLayers?.add(featureLayer)
             // display the current count of features in the FeatureTable
             featureCountTextView.text =
@@ -210,7 +209,7 @@ class MainActivity : AppCompatActivity() {
     private fun addFeature(mapPoint: Point) {
         // set up the feature attributes
         val featureAttributes = mutableMapOf<String, Any>()
-        featureAttributes["collection_timestamp"] = Clock.System.now()
+        featureAttributes["collection_timestamp"] = Instant.now()
 
         // create a new feature at the mapPoint
         val feature = featureTable?.createFeature(featureAttributes, mapPoint)

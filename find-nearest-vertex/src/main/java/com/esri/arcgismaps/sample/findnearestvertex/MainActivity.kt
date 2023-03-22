@@ -43,7 +43,7 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
+import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.findnearestvertex.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         val map = ArcGISMap(statePlaneCaliforniaZone5SpatialReference)
         val portal = Portal("https://arcgisruntime.maps.arcgis.com")
         val portalItem = PortalItem(portal, "99fd67933e754a1181cc755146be21ca")
-        val usStatesGeneralizedLayer = FeatureLayer(portalItem, 0)
+        val usStatesGeneralizedLayer = FeatureLayer.createWithItemAndLayerId(portalItem, 0)
         // and add the feature layer to the map's operational layers
         map.operationalLayers.add(usStatesGeneralizedLayer)
         // add the map to the map view

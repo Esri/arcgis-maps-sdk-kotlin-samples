@@ -38,7 +38,7 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
+import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.queryfeatureswitharcadeexpression.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     // setup the red pin marker as a Graphic
     private val markerGraphic: Graphic by lazy {
         // creates a symbol from the marker drawable
-        val markerSymbol = PictureMarkerSymbol(markerDrawable).apply {
+        val markerSymbol = PictureMarkerSymbol.createWithImage(markerDrawable).apply {
             // resize the symbol into a smaller size
             width = 30f
             height = 30f

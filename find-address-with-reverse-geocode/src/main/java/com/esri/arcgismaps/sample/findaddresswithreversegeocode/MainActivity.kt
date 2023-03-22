@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
             R.drawable.baseline_location_pin_red_48
         )
         //add a graphic for the tapped point
-        val pinSymbol = PictureMarkerSymbol(
+        val pinSymbol = PictureMarkerSymbol.createWithImage(
             pinDrawable as BitmapDrawable
         )
         pinSymbol.apply {

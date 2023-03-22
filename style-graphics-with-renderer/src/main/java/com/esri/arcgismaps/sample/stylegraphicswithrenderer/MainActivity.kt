@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.stylegraphicswithrenderer
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
@@ -49,11 +48,8 @@ import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.stylegraphicswithrenderer.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.simpleName
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -194,7 +190,7 @@ class MainActivity : AppCompatActivity() {
      * Create a heart-shape geometry with Bezier and elliptic arc segments from a given [center]
      * point and [sideLength].
      */
-    private fun makeHeartGeometry(center: Point, sideLength: Double): Geometry? {
+    private fun makeHeartGeometry(center: Point, sideLength: Double): Geometry {
         val spatialReference = center.spatialReference
         // the x and y coordinates to simplify the calculation
         val minX = center.x - 0.5 * sideLength
@@ -248,11 +244,6 @@ class MainActivity : AppCompatActivity() {
             spatialReference
         )
 
-        if(leftArc == null || rightArc == null){
-            showError("Error creating EllipticArcSegment using createCircularEllipticArc")
-            return null
-        }
-
         // create a mutable part list
         val heartParts = MutablePart.createWithSegments(
             listOf(leftCurve, leftArc, rightArc, rightCurve),
@@ -289,11 +280,6 @@ class MainActivity : AppCompatActivity() {
             renderer = SimpleRenderer(ellipseSymbol)
             graphics.add(Graphic(polygon))
         }
-    }
-
-    private fun showError(message: String){
-        Log.e(TAG,message)
-        Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 
     private val Color.Companion.blue: Color

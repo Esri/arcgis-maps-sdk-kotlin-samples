@@ -329,7 +329,7 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun createPinSymbol(): PictureMarkerSymbol {
         val pinDrawable = ContextCompat.getDrawable(this, R.drawable.pin) as BitmapDrawable
-        val pinSymbol = PictureMarkerSymbol(pinDrawable)
+        val pinSymbol = PictureMarkerSymbol.createWithImage(pinDrawable)
         pinSymbol.load().getOrThrow()
         pinSymbol.width = 19f
         pinSymbol.height = 72f

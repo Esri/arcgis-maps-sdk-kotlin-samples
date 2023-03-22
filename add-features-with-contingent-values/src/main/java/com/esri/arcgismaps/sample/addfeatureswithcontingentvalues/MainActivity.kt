@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // create and load the feature layer from the feature table
-            val featureLayer = FeatureLayer(featureTable)
+            val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
             // add the feature layer to the map
             mapView.map?.operationalLayers?.add(featureLayer)
 
