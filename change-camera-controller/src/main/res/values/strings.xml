@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Change camera controller</string>
+    <string name="elevation_service_url">https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer</string>
+
+    <string name="bristol_model_file">Bristol.dae</string>
+    <string name="bristol_skin_file">Bristol.png</string>
+    <string name="select_camera_controller">Select camera controller</string>
+
+    <string-array name="asset_files">
+        <item>@string/bristol_model_file</item>
+        <item>@string/bristol_skin_file</item>
+    </string-array>
+</resources>
