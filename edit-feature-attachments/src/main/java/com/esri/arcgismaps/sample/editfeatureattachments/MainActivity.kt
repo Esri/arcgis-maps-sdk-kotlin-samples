@@ -42,16 +42,15 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.GeoElement
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentLoadingDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -123,29 +122,30 @@ class MainActivity : AppCompatActivity() {
                 // clear any previous selection
                 featureLayer.clearSelection()
                 // identify tapped feature
-                mapView.identifyLayer(
+                val layerResult = mapView.identifyLayer(
                     layer = featureLayer,
                     screenCoordinate = tapConfirmedEvent.screenCoordinate,
                     tolerance = 5.0,
                     returnPopupsOnly = false,
                     maximumResults = 1
-                ).onSuccess { layerResult ->
-                    val resultGeoElements: List<GeoElement> = layerResult.geoElements
-                    // check if a feature was identified
-                    if (resultGeoElements.isNotEmpty() && resultGeoElements.first() is ArcGISFeature) {
-                        // retrieve and set the currently selected feature
-                        val selectedFeature = resultGeoElements.first() as ArcGISFeature
-                        // highlight the currently selected feature
-                        featureLayer.selectFeature(selectedFeature)
+                ).getOrElse { exception ->
+                    showError("Failed to select feature: ${exception.message}")
+                } as IdentifyLayerResult
 
-                        // show the bottom sheet layout
-                        createBottomSheet(selectedFeature)
+                // get a list of identified elements
+                val resultGeoElements: List<GeoElement> = layerResult.geoElements
+                // check if a feature was identified
+                if (resultGeoElements.isNotEmpty() && resultGeoElements.first() is ArcGISFeature) {
+                    // retrieve and set the currently selected feature
+                    val selectedFeature = resultGeoElements.first() as ArcGISFeature
+                    // highlight the currently selected feature
+                    featureLayer.selectFeature(selectedFeature)
 
-                        // keep track of the selected feature
-                        selectedArcGISFeature = selectedFeature
-                    }
-                }.onFailure {
-                    showError("Failed to select feature: ${it.message}")
+                    // show the bottom sheet layout
+                    createBottomSheet(selectedFeature)
+
+                    // keep track of the selected feature
+                    selectedArcGISFeature = selectedFeature
                 }
             }
         }
@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity() {
      * to a [BitmapDrawable], caches the bitmap as a png image, and open's the
      * attachment image in the default image viewer.
      */
-    fun fetchAttachmentAsync(attachment: Attachment) {
+    suspend fun fetchAttachment(attachment: Attachment) {
         // display loading dialog
         val dialog = createLoadingDialog("Fetching attachment data").also {
             it.show()
@@ -206,27 +206,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         // fetch the attachment data
-        lifecycleScope.launch {
-            attachment.fetchData().onSuccess {
-                // create a drawable from InputStream, then create the Bitmap
-                val bitmapDrawable = BitmapDrawable(
-                    resources,
-                    BitmapFactory.decodeByteArray(it, 0, it.size)
-                )
-                // create a file output stream using the attachment file
-                FileOutputStream(file).use { imageOutputStream ->
-                    // compress the bitmap to PNG format
-                    bitmapDrawable.bitmap.compress(Bitmap.CompressFormat.PNG, 90, imageOutputStream)
-                    // start activity using created intent
-                    startActivity(imageIntent)
-                    // dismiss dialog
-                    dialog.dismiss()
-                }
-            }.onFailure {
+        attachment.fetchData().onSuccess {
+            // create a drawable from InputStream, then create the Bitmap
+            val bitmapDrawable = BitmapDrawable(
+                resources,
+                BitmapFactory.decodeByteArray(it, 0, it.size)
+            )
+            // create a file output stream using the attachment file
+            FileOutputStream(file).use { imageOutputStream ->
+                // compress the bitmap to PNG format
+                bitmapDrawable.bitmap.compress(Bitmap.CompressFormat.PNG, 90, imageOutputStream)
+                // start activity using created intent
+                startActivity(imageIntent)
                 // dismiss dialog
                 dialog.dismiss()
-                showError(it.message.toString())
             }
+        }.onFailure {
+            // dismiss dialog
+            dialog.dismiss()
+            showError(it.message.toString())
         }
     }
 

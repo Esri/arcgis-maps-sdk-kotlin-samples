@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.data.Attachment
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
 
 class AttachmentsBottomSheet(
     context: MainActivity,
@@ -42,9 +44,11 @@ class AttachmentsBottomSheet(
 
             // listener to download and open an attachment
             listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                context.fetchAttachmentAsync(
-                    attachments[position]
-                )
+                lifecycleScope.launch {
+                    context.fetchAttachment(
+                        attachments[position]
+                    )
+                }
             }
 
             // listener to delete an attachment
