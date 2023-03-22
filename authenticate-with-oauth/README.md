@@ -35,7 +35,9 @@ This sample takes advantage of Android's `ViewModel` to encapsulate launching th
 
 1. Set the launch mode for the `OAuthUserSignInActivity` to route it's intent instance through a call to its `onNewIntent()` method, rather than creating a new instance of the activity. To find out more on setting the launch configuration of an activity, visit the [Android docs](https://developer.android.com/guide/topics/manifest/activity-element)
 ```xml
-<activity android:launchMode="singleTop"
+<activity 
+          android:name=".OAuthUserSignInActivity"
+          android:launchMode="singleTop"
           ...
 ```
 
