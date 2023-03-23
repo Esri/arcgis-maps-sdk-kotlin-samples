@@ -1,24 +1,11 @@
 <resources>
 
-    <!-- Base application theme. -->
-<!--    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">-->
-<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
-<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
-<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-<!--        <item name="colorAccent">@color/colorAccent</item>-->
-<!--    </style>-->
-
-    <style name="AppTheme.Light" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">@color/custom_light_primary</item>
-        <item name="colorPrimaryVariant">@color/custom_light_primary_variant</item>
-        <item name="colorSecondary">@color/custom_light_secondary</item>
-        <!-- Add other custom attributes for your light theme -->
+     Base application theme.
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.Dark" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-    <item name="colorPrimary">@color/custom_dark_primary</item>
-    <item name="colorPrimaryDark">#918989</item>
-    <item name="colorPrimaryVariant">@color/custom_dark_primary_variant</item>
-    <item name="colorSecondary">@color/custom_dark_secondary</item>
-    </style>
 </resources>
