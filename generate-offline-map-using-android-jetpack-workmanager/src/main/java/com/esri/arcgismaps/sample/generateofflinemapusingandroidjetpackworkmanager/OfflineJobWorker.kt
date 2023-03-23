@@ -75,8 +75,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             return Result.failure()
         }
         // create the GenerateOfflineMapJob from the json file
-        val generateOfflineMapJob =
-            GenerateOfflineMapJob.fromJson(offlineJobJsonFile.readText())
+        val generateOfflineMapJob = GenerateOfflineMapJob.fromJsonOrNull(offlineJobJsonFile.readText())
             // return failure if the created job is null
                 ?: return Result.failure()
 

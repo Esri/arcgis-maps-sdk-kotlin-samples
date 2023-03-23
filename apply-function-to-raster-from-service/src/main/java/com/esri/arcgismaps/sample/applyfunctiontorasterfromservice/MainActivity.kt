@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun applyRasterFunction() {
         // create raster function from json string
-        val rasterFunction = RasterFunction.fromJson(getString(R.string.hillshade_simplified))
+        val rasterFunction = RasterFunction.fromJsonOrNull(getString(R.string.hillshade_simplified))
             ?: return showError("Error creating a raster function object from JSON")
 
         // get parameter name value pairs used by hillside
