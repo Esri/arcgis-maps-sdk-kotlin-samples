@@ -40,8 +40,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // service url to be provided to the LocatorTask (geocoder)
     private val GEOCODE_SERVER =
         "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
@@ -170,7 +168,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showError(errorMessage: String) {
-        Log.e(TAG, errorMessage)
+        Log.e(localClassName, errorMessage)
         Snackbar.make(mapView, errorMessage, Snackbar.LENGTH_SHORT).show()
     }
 }

@@ -70,8 +70,6 @@ const val jobParameter = "JsonJobPath"
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -443,7 +441,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMessage(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }

@@ -42,8 +42,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -142,7 +140,7 @@ class MainActivity : AppCompatActivity() {
      * Displays an error onscreen
      */
     private fun showError(message: String, view: View) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }

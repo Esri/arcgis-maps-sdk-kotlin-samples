@@ -38,8 +38,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -119,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             }
             onFailure {
                 val errorMessage = "Select feature failed: " + it.message
-                Log.e(TAG, errorMessage)
+                Log.e(localClassName, errorMessage)
                 Snackbar.make(mapView, errorMessage, Snackbar.LENGTH_SHORT).show()
             }
         }

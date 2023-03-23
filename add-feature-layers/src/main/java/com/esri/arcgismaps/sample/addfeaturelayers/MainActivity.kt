@@ -39,10 +39,7 @@ import com.esri.arcgismaps.sample.addfeaturelayers.databinding.ActivityMainBindi
 import kotlinx.coroutines.launch
 import java.io.File
 
-
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.simpleName
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -205,7 +202,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showError(message: String) {
         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
     }
 
     /**

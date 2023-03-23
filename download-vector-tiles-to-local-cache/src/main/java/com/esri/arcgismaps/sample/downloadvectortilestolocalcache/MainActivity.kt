@@ -51,8 +51,6 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     private val downloadArea: Graphic = Graphic()
     private var dialog: AlertDialog? = null
     private var hasCurrentJobCompleted: Boolean = true
@@ -320,7 +318,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMessage(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
