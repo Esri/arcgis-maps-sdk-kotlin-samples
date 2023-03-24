@@ -20,6 +20,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="24dp"
             android:text="Clip geometry"
+            android:backgroundTint="@color/buttonColor"
+            android:textColor="@color/textColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -32,6 +34,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="24dp"
             android:text="Reset"
+            android:backgroundTint="@color/buttonColor"
+            android:textColor="@color/textColor"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -41,6 +41,8 @@
                 android:text="@string/export_vector_tiles"
                 android:enabled="false"
                 android:textAllCaps="false"
+                android:backgroundTint="@color/buttonColor"
+                android:textColor="@color/textColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -53,6 +55,8 @@
                 android:text="@string/close_vector_tile_preview"
                 android:textAllCaps="false"
                 android:visibility="gone"
+                android:backgroundTint="@color/buttonColor"
+                android:textColor="@color/textColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

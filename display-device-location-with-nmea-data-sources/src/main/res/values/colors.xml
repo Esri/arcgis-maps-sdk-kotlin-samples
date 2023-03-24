@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    <color name="custom_light_primary">#9243cf</color>-->
-<!--    <color name="custom_light_primary_dark">#7a2ab7</color>-->
-<!--    <color name="custom_light_color_accent">#7a2ab7</color>-->
-
-<!--    <color name="custom_dark_primary">#fa0707</color>-->
-<!--    <color name="custom_dark_primary_dark">#590c0c</color>-->
-<!--    <color name="custom_dark_color_accent">#e85d5d</color>-->
-<!--    <color name="custom_dark_color_background">#deb4b4</color>-->
-<!--    <color name="custom_dark_color_secondary">#8a5151</color>-->
-
-    <color name="custom_light_primary">#ffffff</color>
-    <color name="custom_light_primary_variant">#eeeeee</color>
-    <color name="custom_light_secondary">#ff9800</color>
-
-    <color name="custom_dark_primary">#918989</color>
-    <color name="custom_dark_primary_variant">#918989</color>
-    <color name="custom_dark_secondary">#ff9800</color>
-
+    <color name="colorPrimary">#9243cf</color>
+    <color name="colorPrimaryDark">#7a2ab7</color>
+    <color name="colorAccent">#7a2ab7</color>
 </resources>

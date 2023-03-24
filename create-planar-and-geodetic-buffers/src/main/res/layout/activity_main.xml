@@ -118,6 +118,8 @@
                 android:layout_marginEnd="32dp"
                 android:text="@string/clear"
                 android:textAllCaps="false"
+                android:backgroundTint="@color/buttonColor"
+                android:textColor="@color/textColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

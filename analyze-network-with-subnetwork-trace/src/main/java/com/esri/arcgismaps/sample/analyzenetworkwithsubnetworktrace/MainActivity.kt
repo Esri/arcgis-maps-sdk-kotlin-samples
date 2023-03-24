@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
 import com.arcgismaps.Guid
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.data.CodedValue
