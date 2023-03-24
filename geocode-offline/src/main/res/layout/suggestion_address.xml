@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:theme="@style/ThemeOverlay.AppCompat.Light"
+    android:background="@color/background"
+    android:theme="@style/Theme.MaterialComponents.DayNight"
     android:orientation="horizontal">
 
     <TextView
