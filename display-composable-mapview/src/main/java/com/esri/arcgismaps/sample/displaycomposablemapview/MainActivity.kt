@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2023 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,45 +17,66 @@
 package com.esri.arcgismaps.sample.displaycomposablemapview
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.viewinterop.AndroidView
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.displaycomposablemapview.theme.KotlinExampleAppTheme
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
-import com.esri.arcgismaps.sample.displaycomposablemapview.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
+import com.arcgismaps.mapping.view.MapView
 
-class MainActivity : AppCompatActivity() {
-
-
-
-    // set up data binding for the activity
-    private val activityMainBinding: ActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.activity_main)
-    }
-
-    private val mapView by lazy {
-        activityMainBinding.mapView
-    }
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-        lifecycle.addObserver(mapView)
-
-        // create and add a map with a navigation night basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-        mapView.map = map
+        // add the composable content to the activity
+        setContent {
+            KotlinExampleAppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    ComposableMapView()
+                }
+            }
+        }
     }
+}
 
-    private fun showError(message: String, view: View) {
-        Log.e(localClassName, message)
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
-    }
+/**
+ * Wraps the MapView in a Composable function.
+ */
+@Composable
+fun ComposableMapView(
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val mapView = remember { MapView(context) }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    AndroidView(
+        // modifiers are used to set layout parameters and respond to user input
+        modifier = modifier.fillMaxSize(),
+        // the factory parameter provides a context to create a classic Android view
+        // called when the composable is created, but not when it's recomposed
+        factory = {
+            mapView.also { mapView ->
+                lifecycle.addObserver(mapView)
+                mapView.map = ArcGISMap(Basemap(BasemapStyle.ArcGISDarkGrayBase))
+            }
+        }
+    )
 }
