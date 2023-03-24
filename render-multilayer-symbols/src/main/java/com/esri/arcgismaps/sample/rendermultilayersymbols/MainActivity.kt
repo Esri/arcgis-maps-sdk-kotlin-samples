@@ -120,11 +120,11 @@ class MainActivity : AppCompatActivity() {
 
         // define vector element for a diamond, triangle and cross
         val diamondGeometry =
-            Geometry.fromJson("{\"rings\":[[[0.0,2.5],[2.5,0.0],[0.0,-2.5],[-2.5,0.0],[0.0,2.5]]]}")
+            Geometry.fromJsonOrNull("{\"rings\":[[[0.0,2.5],[2.5,0.0],[0.0,-2.5],[-2.5,0.0],[0.0,2.5]]]}")
         val triangleGeometry =
-            Geometry.fromJson("{\"rings\":[[[0.0,5.0],[5,-5.0],[-5,-5.0],[0.0,5.0]]]}")
+            Geometry.fromJsonOrNull("{\"rings\":[[[0.0,5.0],[5,-5.0],[-5,-5.0],[0.0,5.0]]]}")
         val crossGeometry =
-            Geometry.fromJson("{\"paths\":[[[-1,1],[0,0],[1,-1]],[[1,1],[0,0],[-1,-1]]]}")
+            Geometry.fromJsonOrNull("{\"paths\":[[[-1,1],[0,0],[1,-1]],[[1,1],[0,0],[-1,-1]]]}")
 
         if (diamondGeometry == null || triangleGeometry == null || crossGeometry == null) {
             showError("Error reading geometry from json")
@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
         // define vector element for a hexagon which will be used as the basis of a complex point
         val complexPointGeometry =
-            Geometry.fromJson("{\"rings\":[[[-2.89,5.0],[2.89,5.0],[5.77,0.0],[2.89,-5.0],[-2.89,-5.0],[-5.77,0.0],[-2.89,5.0]]]}")
+            Geometry.fromJsonOrNull("{\"rings\":[[[-2.89,5.0],[2.89,5.0],[5.77,0.0],[2.89,-5.0],[-2.89,-5.0],[-5.77,0.0],[-2.89,5.0]]]}")
 
         // create the more complex multilayer graphics: a point, polygon, and polyline
         complexPointGeometry?.let { addComplexPoint(it) }
