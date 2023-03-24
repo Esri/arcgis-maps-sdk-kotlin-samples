@@ -14,6 +14,7 @@
             android:layout_height="match_parent" />
 
         <com.google.android.material.button.MaterialButton
+            style="@style/ButtonTheme"
             android:id="@+id/createButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,20 +24,17 @@
             android:text="@string/create_convex_hull"
             android:textAllCaps="false"
             android:textSize="14sp"
-            android:backgroundTint="@color/buttonColor"
-            android:textColor="@color/textColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.google.android.material.button.MaterialButton
+            style="@style/ButtonTheme"
             android:id="@+id/resetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
             android:text="@string/reset"
             android:textAllCaps="false"
-            android:backgroundTint="@color/buttonColor"
-            android:textColor="@color/textColor"
             app:layout_constraintBottom_toTopOf="@id/createButton"
             app:layout_constraintEnd_toEndOf="@id/createButton" />
 
