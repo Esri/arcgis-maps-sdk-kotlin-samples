@@ -8,6 +8,8 @@
     ],
     "keywords": [
         "basemap",
+        "compose",
+        "jetpack",
         "map",
         "ArcGISMap",
         "BasemapStyle",
