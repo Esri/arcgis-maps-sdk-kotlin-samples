@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         // ArcGIS Online GeoJSON to define the path. retrieved from
         // https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
         SimulatedLocationDataSource(
-            Geometry.fromJson(getString(R.string.polyline_json)) as Polyline,
+            Geometry.fromJsonOrNull(getString(R.string.polyline_json)) as Polyline,
             simulationParameters
         )
     }

@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         // create a simulated location data source from json data with simulation parameters to set a consistent velocity
         val simulatedLocationDataSource = SimulatedLocationDataSource(
-            Geometry.fromJson(getString(R.string.polyline_data)) as Polyline,
+            Geometry.fromJsonOrNull(getString(R.string.polyline_data)) as Polyline,
             SimulationParameters(Instant.now(), 30.0, 0.0, 0.0)
         )
 
