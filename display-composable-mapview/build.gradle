@@ -24,7 +24,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0"
+        kotlinCompilerExtensionVersion = "$kotlinCompilerExt"
     }
 
     namespace 'com.esri.arcgismaps.sample.displaycomposablemapview'
@@ -32,15 +32,9 @@ android {
 
 dependencies {
     // lib dependencies from rootProject build.gradle
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation "androidx.core:core-ktx:$ktxAndroidCore"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$ktxLifecycle"
-    implementation 'androidx.activity:activity-compose:1.3.1'
-    implementation "androidx.compose.ui:ui:1.2.0"
-    implementation "androidx.compose.ui:ui-tooling-preview:1.2.0"
-    implementation "androidx.compose.material3:material3:1.0.1"
-    debugImplementation "androidx.compose.ui:ui-tooling:1.2.0"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:1.2.0"
-
-    implementation "androidx.lifecycle:lifecycle-viewmodel:2.4.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
+    implementation "androidx.activity:activity-compose:$composeActivityVersion"
+    implementation "androidx.compose.ui:ui:$composeUI"
+    implementation "androidx.compose.material:material:$composeMaterial"
 }
