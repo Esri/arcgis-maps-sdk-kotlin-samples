@@ -22,10 +22,7 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/theme/Color.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/theme/Shape.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/theme/Theme.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/theme/Type.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/theme/Theme.kt"
     ],
     "title": "Display Composable MapView"
 }

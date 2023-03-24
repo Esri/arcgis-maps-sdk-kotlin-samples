@@ -30,7 +30,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.displaycomposablemapview.theme.KotlinExampleAppTheme
+import com.esri.arcgismaps.sample.displaycomposablemapview.theme.SampleAppTheme
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         // add the composable content to the activity
         setContent {
-            KotlinExampleAppTheme {
+            SampleAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background

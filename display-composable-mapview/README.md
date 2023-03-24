@@ -1,12 +1,12 @@
 # Display Composable MapView
 
-Display a map with an imagery basemap.
+Display a map using Jetpack Compose.
 
-![Image of display map](display-composable-mapview.png)
+![Image of display composable mapview](display-composable-mapview.png)
 
 ## Use case
 
-The map is the fundamental building block of any GIS application and is used to specify how geographic data is organized and communicated to your users.
+Android Jetpack Compose is designed to be more efficient and performant than XML layouts. It allows you to define UI in a more declarative and composable way. Compose is also designed to work seamlessly with Kotlin. 
 
 ## How to use the sample
 
