@@ -65,18 +65,15 @@ fun ComposableMapView(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val mapView = remember { MapView(context) }
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val mapView = remember { MapView(context) }.also { mapView ->
+        LocalLifecycleOwner.current.lifecycle.addObserver(mapView)
+        mapView.map = ArcGISMap(Basemap(BasemapStyle.ArcGISNavigationNight))
+    }
     AndroidView(
         // modifiers are used to set layout parameters and respond to user input
         modifier = modifier.fillMaxSize(),
         // the factory parameter provides a context to create a classic Android view
         // called when the composable is created, but not when it's recomposed
-        factory = {
-            mapView.also { mapView ->
-                lifecycle.addObserver(mapView)
-                mapView.map = ArcGISMap(Basemap(BasemapStyle.ArcGISDarkGrayBase))
-            }
-        }
+        factory = { mapView }
     )
 }
