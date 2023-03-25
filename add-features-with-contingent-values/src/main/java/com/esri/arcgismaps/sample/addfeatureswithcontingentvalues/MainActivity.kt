@@ -330,7 +330,7 @@ class MainActivity : AppCompatActivity() {
 
         // get the contingent value results with the feature for the protection field
         val contingentValuesResult = feature?.let {
-            featureTable?.getContingentValues(it, "Protection")
+            featureTable?.getContingentValuesOrNull(it, "Protection")
         }
 
         // get the list of contingent values by field group
@@ -374,7 +374,7 @@ class MainActivity : AppCompatActivity() {
 
         // get the contingent value results using the feature and field
         val contingentValueResult = feature?.let {
-            featureTable?.getContingentValues(it, "BufferSize")
+            featureTable?.getContingentValuesOrNull(it, "BufferSize")
         }
 
         // get the contingent rang value of the buffer size field group
