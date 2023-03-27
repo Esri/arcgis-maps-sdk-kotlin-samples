@@ -7,13 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
-<!--        ButtonTheme here -->
     </style>
 
     <style name="ButtonTheme" parent="Widget.MaterialComponents.Button">
-        <!-- Customize your theme here. -->
-        <item name="backgroundColor">#2C2C2E</item>
-        <item name="android:textColor">@color/button_text</item>
-
+        <item name="android:backgroundTint">@color/button_backgroundcolor_state_list</item>
+        <item name="android:textColor">@color/button_textcolor_state_list</item>
     </style>
 </resources>
