@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity() {
             this.map = map
             // set an initial viewpoint to a zoomed out view of North America
             setViewpoint(Viewpoint(39.8, -98.6, 10e7))
-
         }
 
         lifecycleScope.launch {
