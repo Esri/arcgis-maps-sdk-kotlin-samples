@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@android:color/white"
-    android:theme="@style/ThemeOverlay.AppCompat.Light"
+    android:background="@color/colorBackground"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
