@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         // get the feature's buffer size
         val bufferSize = feature.attributes["BufferSize"] as Int
         // get a polygon using the feature's buffer size and geometry
-        val polygon = feature.geometry?.let { GeometryEngine.buffer(it, bufferSize.toDouble()) }
+        val polygon = feature.geometry?.let { GeometryEngine.bufferOrNull(it, bufferSize.toDouble()) }
         // create the outline for the buffers
         val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 2f)
         // create the buffer symbol

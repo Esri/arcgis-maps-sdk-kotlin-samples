@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         cutButton.setOnClickListener {
             // cut the graphic along the polyline to create 2 graphic parts
             polygonGraphic.geometry?.let { graphicGeometry ->
-                val parts = GeometryEngine.cut(
+                val parts = GeometryEngine.tryCut(
                     graphicGeometry,
                     polylineGraphic.geometry as Polyline
                 )
