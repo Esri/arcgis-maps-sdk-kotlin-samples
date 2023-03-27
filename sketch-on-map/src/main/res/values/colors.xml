@@ -7,4 +7,5 @@
     <color name="line_symbol_color">#FE8700</color>
     <color name="point_symbol_color">#FE8700</color>
     <color name="fill_symbol_color">#6DFE8700</color>
+    <color name="textColor">#87878a</color>
 </resources>
