@@ -41,6 +41,6 @@
             android:id="@+id/directionsListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white" />
+            android:background="@color/colorBackground" />
     </LinearLayout>
 </layout>
