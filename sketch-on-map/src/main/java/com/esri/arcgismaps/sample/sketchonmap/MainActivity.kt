@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
             setAdapter(
                 ArrayAdapter(
                     applicationContext,
-                    android.R.layout.simple_list_item_1,
+                    R.layout.custom_dropdown_item,
                     resources.getStringArray(R.array.geometry_list)
                 )
             )
