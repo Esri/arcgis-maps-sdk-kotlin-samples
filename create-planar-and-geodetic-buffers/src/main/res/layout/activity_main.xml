@@ -21,7 +21,7 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:background="@color/colorBackground"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="@+id/mapView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -117,9 +117,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
                 android:text="@string/clear"
+                android:textColor="@android:color/white"
                 android:textAllCaps="false"
-                android:backgroundTint="@color/buttonColor"
-                android:textColor="@color/textColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
