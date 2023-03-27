@@ -9,6 +9,7 @@
         <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
     </style>
 
+    <!-- MaterialButton theme for enabled/diabled state. -->
     <style name="ButtonTheme" parent="Widget.MaterialComponents.Button">
         <item name="android:backgroundTint">@color/button_backgroundcolor_state_list</item>
         <item name="android:textColor">@color/button_textcolor_state_list</item>
