@@ -171,12 +171,8 @@ class MainActivity : AppCompatActivity() {
             // when multiple entries are available, IndoorsLocationDataSource constructor function
             // looks up the entry with the most recent date and takes this positioning data
             // set up queryParameters to grab one result.
-            val dateCreatedFieldName =
-                getDateCreatedFieldName(positioningFeatureTable.fields)
-            if (dateCreatedFieldName == null) {
-                showError("The service table does not contain \"DateCreated\" fields.")
-                return
-            }
+            val dateCreatedFieldName = getDateCreatedFieldName(positioningFeatureTable.fields)
+                ?: return showError("The service table does not contain \"DateCreated\" fields.")
             val queryParameters = QueryParameters().apply {
                 // set a limit of 1 on the number of returned features per request
                 maxFeatures = 1
