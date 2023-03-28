@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     private var currentFloor: Int? = null
 
     // Provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
-    private var mIndoorsLocationDataSource: IndoorsLocationDataSource? = null
+    private var indoorsLocationDataSource: IndoorsLocationDataSource? = null
 
     private val progressBar by lazy {
         activityMainBinding.progressBar
@@ -145,8 +145,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Load each feature table and setup the IndoorsLocationDataSource for each table loaded
      */
-    private fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
-        lifecycleScope.launch {
+    private suspend fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
             featureTables.forEach { featureTable ->
                 // load each FeatureTable
                 featureTable.load().onSuccess {
@@ -155,15 +154,19 @@ class MainActivity : AppCompatActivity() {
                     showError("Error loading FeatureTable: ${it.message}")
                 }
             }
-        }
     }
 
     /**
-     * Sets up the [mIndoorsLocationDataSource] using the IPS_Positioning table
+     * Sets up the [indoorsLocationDataSource] using the IPS_Positioning table
      */
     private fun setupIndoorsLocationDataSource(featureTable: FeatureTable) {
-        // positioningTable needs to be present
-        if (featureTable.tableName == "IPS_Positioning") {
+        if (featureTable.tableName != "IPS_Positioning") {
+            showError("Positioning Table not found in FeatureTables")
+            return
+        } // IPS_Positioning table needs to be present
+        else if (featureTable.tableName == "IPS_Positioning") {
+            // cast the featureTable to a ServiceFeatureTable to get the globalIdField which identifies a row in the positioning table
+            // and used as a parameter to setup IndoorsLocationDataSource
             val positioningFeatureTable = featureTable as ServiceFeatureTable
             // when multiple entries are available, IndoorsLocationDataSource constructor function
             // looks up the entry with the most recent date and takes this positioning data
@@ -204,7 +207,7 @@ class MainActivity : AppCompatActivity() {
                             // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
                             // Providing this table enables the retrieval of a location's floor level ID.
                             // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
-                            mIndoorsLocationDataSource = IndoorsLocationDataSource(
+                            indoorsLocationDataSource = IndoorsLocationDataSource(
                                 positioningFeatureTable,
                                 getFeatureTable("Pathways"),
                                 getFeatureTable("Levels"),
@@ -217,8 +220,6 @@ class MainActivity : AppCompatActivity() {
                         showError("The positioning table contain no data")
                     }
             }
-        } else {
-            showError("Positioning Table not found in FeatureTables")
         }
     }
 
@@ -254,13 +255,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets up the location listeners, the navigation mode, display's the devices location as a blue dot,
+     * Sets up the location listeners, the navigation mode, displays the devices location as a blue dot,
      * collect data source location changes and handles its status changes
      */
     private fun startLocationDisplay() {
         val locationDisplay = mapView.locationDisplay.apply {
             setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
-            dataSource = mIndoorsLocationDataSource
+            dataSource = indoorsLocationDataSource
                 ?: return showError("Error setting the IndoorsLocationDataSource value.")
         }
 
@@ -275,10 +276,10 @@ class MainActivity : AppCompatActivity() {
                 // get the location properties of the LocationDataSource
                 val locationProperties = location.additionalSourceProperties
                 // retrieve information about the location of the device
-                val floor = (locationProperties["floor"] ?: "").toString()
-                val positionSource = (locationProperties["positionSource"] ?: "").toString()
-                val transmitterCount = (locationProperties["transmitterCount"] ?: "").toString()
-                val satelliteCount = (locationProperties["satelliteCount"] ?: "").toString()
+                val floor = locationProperties["floor"]?.toString() ?: ""
+                val positionSource = locationProperties["positionSource"]?.toString() ?: ""
+                val transmitterCount = locationProperties["transmitterCount"]?.toString() ?: ""
+                val satelliteCount = locationProperties["satelliteCount"]?.toString() ?: ""
 
                 // check if current floor hasn't been set or if the floor has changed
                 if (floor.isNotEmpty()) {
@@ -288,7 +289,7 @@ class MainActivity : AppCompatActivity() {
                         // update layer's definition express with the current floor
                         mapView.map?.operationalLayers?.forEach { layer ->
                             val name = layer.name
-                            if (layer is FeatureLayer && (name == "Details" || name == "Units" || name == "Levels")) {
+                            if (layer is FeatureLayer && name in listOf("Details", "Units", "Levels")) {
                                 layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
                             }
                         }
@@ -325,7 +326,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     LocationDataSourceStatus.Stopped -> {
                         progressBar.visibility = View.GONE
-                        mapView.locationDisplay.dataSource.stop()
+                        //mapView.locationDisplay.dataSource.stop()
                         showError("IndoorsLocationDataSource stopped due to an internal error")
                     }
                     else -> {}
