@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentFloor: Int? = null
 
-    // Provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
+    // provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
     private var indoorsLocationDataSource: IndoorsLocationDataSource? = null
 
     private val progressBar by lazy {
