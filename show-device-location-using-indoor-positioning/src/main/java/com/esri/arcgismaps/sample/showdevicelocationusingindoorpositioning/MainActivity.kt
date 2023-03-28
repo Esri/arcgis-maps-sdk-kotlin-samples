@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }.onFailure {
                 // if map load failed, show the error
-                showError("Error Loading Map")
+                showError("Error Loading Map: {it.message}")
             }
         }
     }
