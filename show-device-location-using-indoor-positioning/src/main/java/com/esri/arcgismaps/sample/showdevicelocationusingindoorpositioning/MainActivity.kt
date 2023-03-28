@@ -61,11 +61,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private var currentFloor: Int? = null
-
-    // provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
-    private var indoorsLocationDataSource: IndoorsLocationDataSource? = null
-
     private val progressBar by lazy {
         activityMainBinding.progressBar
     }
@@ -73,6 +68,12 @@ class MainActivity : AppCompatActivity() {
     private val textView by lazy {
         activityMainBinding.textView
     }
+
+    // keep track of the current floor in an indoor map, null if using GPS
+    private var currentFloor: Int? = null
+
+    // provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
+    private var indoorsLocationDataSource: IndoorsLocationDataSource? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,19 +96,12 @@ class MainActivity : AppCompatActivity() {
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
         ) {
-            val requestPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.BLUETOOTH_SCAN
-                )
-            } else {
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
+            val requestPermissions = mutableListOf( Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
+            // Android 12 required permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                requestPermissions.add(Manifest.permission.BLUETOOTH_SCAN)
             }
-            ActivityCompat.requestPermissions(this, requestPermissions, requestCode)
+            ActivityCompat.requestPermissions(this, requestPermissions.toTypedArray(), requestCode)
         } else {
             // permission already given, so no need to request
             setUpMap()
@@ -156,7 +150,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Sets up the [indoorsLocationDataSource] using the IPS_Positioning table
+     * Sets up the [indoorsLocationDataSource] using the IPS_Positioning [featureTable]
      */
     private fun setupIndoorsLocationDataSource(featureTable: FeatureTable) {
         if (featureTable.tableName != "IPS_Positioning") {
@@ -188,29 +182,28 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 positioningFeatureTable.queryFeatures(queryParameters)
                     .onSuccess { queryResults ->
+                        val featureResult = queryResults.first()
                         // perform search query using the queryParameters
-                        queryResults.forEach { feature ->
-                            // check if serviceFeatureTable contains positioning data
-                            // The ID that identifies a row in the positioning table.
-                            val globalID =
-                                feature.attributes[positioningFeatureTable.globalIdField].toString()
-                            val positioningId = Guid(globalID)
-                            // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
-                            // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
-                            // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
-                            // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
-                            // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
-                            // Providing this table enables the retrieval of a location's floor level ID.
-                            // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
-                            indoorsLocationDataSource = IndoorsLocationDataSource(
-                                positioningFeatureTable,
-                                getFeatureTable("Pathways"),
-                                getFeatureTable("Levels"),
-                                positioningId
-                            )
-                            // start the location display (blue dot)
-                            startLocationDisplay()
-                        }
+                        // check if serviceFeatureTable contains positioning data
+                        // The ID that identifies a row in the positioning table.
+                        val globalID =
+                            featureResult.attributes[positioningFeatureTable.globalIdField].toString()
+                        val positioningId = Guid(globalID)
+                        // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
+                        // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
+                        // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
+                        // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+                        // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
+                        // Providing this table enables the retrieval of a location's floor level ID.
+                        // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
+                        indoorsLocationDataSource = IndoorsLocationDataSource(
+                            positioningFeatureTable,
+                            getFeatureTable("Pathways"),
+                            getFeatureTable("Levels"),
+                            positioningId
+                        )
+                        // start the location display (blue dot)
+                        startLocationDisplay()
                     }.onFailure {
                         showError("The positioning table contain no data")
                     }
@@ -294,17 +287,17 @@ class MainActivity : AppCompatActivity() {
                 }
                 // set up the message with floor properties to be displayed to the textView
                 val sb = StringBuilder()
-                sb += "Floor: $floor, "
-                sb += "Position-source: $positionSource, "
+                sb.append("Floor: $floor, ")
+                sb.append("Position-source: $positionSource, ")
                 val accuracy = DecimalFormat(".##").format(
                     location.horizontalAccuracy
                 )
-                sb += "Horizontal-accuracy: ${accuray}m, "
-                sb += when (positionSource) {
+                sb.append("Horizontal-accuracy: ${accuracy}m, ")
+                sb.append(when (positionSource) {
                     Location.SourceProperties.Values.POSITION_SOURCE_GNSS -> "Satellite-count: $satelliteCount"
                     "BLE" -> "Transmitter-count: $transmitterCount"
                     else -> ""
-                }
+                })
                 textView.text = sb.toString()
             }
         }
@@ -321,7 +314,6 @@ class MainActivity : AppCompatActivity() {
                     }
                     LocationDataSourceStatus.Stopped -> {
                         progressBar.visibility = View.GONE
-                        //mapView.locationDisplay.dataSource.stop()
                         showError("IndoorsLocationDataSource stopped due to an internal error")
                     }
                     else -> {}
