@@ -115,8 +115,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Set up the connection between the device and the portal item
-     * and set the [mapView] using the [portalItem]
+     * Set up the [mapView] to load a floor-aware web map.
      */
     private fun setUpMap() {
         // load the portal and create a map from the portal item
