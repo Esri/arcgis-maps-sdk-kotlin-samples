@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Load each feature table and setup the IndoorsLocationDataSource for each table loaded
+     * Load each feature table and setup the IndoorsLocationDataSource for each loaded table
      */
     private suspend fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
             featureTables.forEach { featureTable ->
