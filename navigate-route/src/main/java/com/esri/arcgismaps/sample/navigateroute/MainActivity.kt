@@ -261,10 +261,7 @@ class MainActivity : AppCompatActivity() {
                 updateRouteGraphics(trackingStatus)
 
                 // display route status and directions info
-                displayRouteInfo(routeTracker,
-                    trackingStatus,
-                    simulatedLocationDataSource,
-                    routeTrackerLocationDataSource)
+                displayRouteInfo(routeTracker, trackingStatus)
             }
         }
 
@@ -280,8 +277,7 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 if (locationDisplayJob.isActive) {
                     // stop location data sources
-                    simulatedLocationDataSource.stop()
-                    routeTrackerLocationDataSource.stop()
+                    mapView.locationDisplay.dataSource.stop()
                     // cancel the coroutine jobs
                     locationDisplayJob.cancelAndJoin()
                     autoPanModeJob.cancelAndJoin()
@@ -313,9 +309,7 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun displayRouteInfo(
         routeTracker: RouteTracker,
-        trackingStatus: TrackingStatus,
-        simulatedLocationDataSource: SimulatedLocationDataSource,
-        routeTrackerLocationDataSource: RouteTrackerLocationDataSource,
+        trackingStatus: TrackingStatus
     ) {
         // get remaining distance information
         val remainingDistance = trackingStatus.destinationProgress.remainingDistance
