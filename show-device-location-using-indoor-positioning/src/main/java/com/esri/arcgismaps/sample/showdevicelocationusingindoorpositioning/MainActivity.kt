@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Find the exact formatting of the name "DateCreated" in the list of ServiceFeatureTable fields.
+     * Find the exact formatting of the name "DateCreated" in the list of ServiceFeatureTable [fields].
      */
     private fun getDateCreatedFieldName(fields: List<Field>): String? {
         val field = fields.find {
