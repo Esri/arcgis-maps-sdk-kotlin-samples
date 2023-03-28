@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         // get the feature's buffer size
         val bufferSize = feature.attributes["BufferSize"] as Int
         // get a polygon using the feature's buffer size and geometry
-        val polygon = feature.geometry?.let { GeometryEngine.buffer(it, bufferSize.toDouble()) }
+        val polygon = feature.geometry?.let { GeometryEngine.bufferOrNull(it, bufferSize.toDouble()) }
         // create the outline for the buffers
         val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 2f)
         // create the buffer symbol
@@ -330,7 +330,7 @@ class MainActivity : AppCompatActivity() {
 
         // get the contingent value results with the feature for the protection field
         val contingentValuesResult = feature?.let {
-            featureTable?.getContingentValues(it, "Protection")
+            featureTable?.getContingentValuesOrNull(it, "Protection")
         }
 
         // get the list of contingent values by field group
@@ -374,7 +374,7 @@ class MainActivity : AppCompatActivity() {
 
         // get the contingent value results using the feature and field
         val contingentValueResult = feature?.let {
-            featureTable?.getContingentValues(it, "BufferSize")
+            featureTable?.getContingentValuesOrNull(it, "BufferSize")
         }
 
         // get the contingent rang value of the buffer size field group

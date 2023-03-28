@@ -132,16 +132,16 @@ class MainActivity : AppCompatActivity() {
             SpatialOperation.NO_OPERATION -> { /* No operation needed */
             }
             SpatialOperation.INTERSECTION -> {
-                resultGeometry = GeometryEngine.intersection(inputPolygon1, inputPolygon2)
+                resultGeometry = GeometryEngine.intersectionOrNull(inputPolygon1, inputPolygon2)
             }
             SpatialOperation.UNION -> {
                 resultGeometry = GeometryEngine.union(inputPolygon1, inputPolygon2)
             }
             SpatialOperation.DIFFERENCE -> {
-                resultGeometry = GeometryEngine.difference(inputPolygon1, inputPolygon2)
+                resultGeometry = GeometryEngine.differenceOrNull(inputPolygon1, inputPolygon2)
             }
             SpatialOperation.SYMMETRIC_DIFFERENCE -> {
-                resultGeometry = GeometryEngine.symmetricDifference(inputPolygon1, inputPolygon2)
+                resultGeometry = GeometryEngine.symmetricDifferenceOrNull(inputPolygon1, inputPolygon2)
             }
             null -> {}
         }

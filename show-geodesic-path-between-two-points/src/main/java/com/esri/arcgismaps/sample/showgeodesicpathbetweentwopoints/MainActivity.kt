@@ -144,7 +144,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun displayGeodesicPath(point: Point) {
         // project the tapped point into the same spatial reference as source point
-        val destinationPoint = GeometryEngine.project(point, SpatialReference.wgs84())
+        val destinationPoint = GeometryEngine.projectOrNull(point, SpatialReference.wgs84())
+            ?: return showError("Error converting point projection")
 
         // check if the destination point is within the map bounds
         // isEmpty returns true if out of bounds
@@ -154,13 +155,13 @@ class MainActivity : AppCompatActivity() {
             // create a polyline between source and destination points
             val polyline = Polyline(listOf(startingPoint, destinationPoint))
             // generate a geodesic curve using the polyline
-            val pathGeometry = GeometryEngine.densifyGeodetic(
+            val pathGeometry = GeometryEngine.densifyGeodeticOrNull(
                 geometry = polyline,
                 maxSegmentLength = 1.0,
                 lengthUnit = unitsOfMeasurement,
                 curveType = GeodeticCurveType.Geodesic
                 // only compute the distance if the returned curved path geometry is not null
-            )
+            ) ?: return showError("Error creating a densified geometry")
             // update the path graphic
             geodesicPathGraphic.geometry = pathGeometry
             // compute the path distance in kilometers
@@ -168,7 +169,7 @@ class MainActivity : AppCompatActivity() {
                 geometry = pathGeometry,
                 lengthUnit = unitsOfMeasurement,
                 curveType = GeodeticCurveType.Geodesic
-                )
+            )
             // display the distance result
             infoTextView.text = getString(R.string.distance_info_text, distance.roundToInt())
         }

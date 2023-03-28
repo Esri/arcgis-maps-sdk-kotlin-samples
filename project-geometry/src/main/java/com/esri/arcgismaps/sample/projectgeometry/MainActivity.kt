@@ -127,12 +127,12 @@ class MainActivity : AppCompatActivity() {
         // set mapview to recenter to the tapped location
         mapView.setViewpointGeometry(point.extent)
         // project the web mercator location into a WGS84
-        val projectedPoint = GeometryEngine.project(point, SpatialReference.wgs84())
+        val projectedPoint = GeometryEngine.projectOrNull(point, SpatialReference.wgs84())
         // build and display the projection result as a string
         infoTextView.text = getString(
             R.string.projection_info_text,
             point.toDisplayFormat(),
-            projectedPoint.toDisplayFormat()
+            projectedPoint?.toDisplayFormat()
         )
     }
 
