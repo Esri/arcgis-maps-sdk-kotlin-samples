@@ -298,19 +298,19 @@ class MainActivity : AppCompatActivity() {
                     showError("Floors is empty.")
                 }
                 // set up the message with floor properties to be displayed to the textView
-                var locationPropertiesMessage =
-                    "Floor: $floor, Position-source: $positionSource, " +
-                            "Horizontal-accuracy: " + location.let {
-                        DecimalFormat(".##").format(
-                            it.horizontalAccuracy
-                        )
-                    } + "m, "
-                if (positionSource == Location.SourceProperties.Values.POSITION_SOURCE_GNSS) {
-                    locationPropertiesMessage += "Satellite-count: $satelliteCount"
-                } else if (positionSource == "BLE") {
-                    locationPropertiesMessage += "Transmitter-count: $transmitterCount"
+                val sb = StringBuilder()
+                sb += "Floor: $floor, "
+                sb += "Position-source: $positionSource, "
+                val accuracy = DecimalFormat(".##").format(
+                    location.horizontalAccuracy
+                )
+                sb += "Horizontal-accuracy: ${accuray}m, "
+                sb += when (positionSource) {
+                    Location.SourceProperties.Values.POSITION_SOURCE_GNSS -> "Satellite-count: $satelliteCount"
+                    "BLE" -> "Transmitter-count: $transmitterCount"
+                    else -> ""
                 }
-                textView.text = locationPropertiesMessage
+                textView.text = sb.toString()
             }
         }
 
