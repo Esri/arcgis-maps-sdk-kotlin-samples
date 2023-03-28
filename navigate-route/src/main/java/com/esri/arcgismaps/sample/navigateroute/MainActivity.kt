@@ -277,7 +277,7 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 if (locationDisplayJob.isActive) {
                     // stop location data sources
-                    mapView.locationDisplay.dataSource.stop()
+                    locationDisplay.dataSource.stop()
                     // cancel the coroutine jobs
                     locationDisplayJob.cancelAndJoin()
                     autoPanModeJob.cancelAndJoin()
