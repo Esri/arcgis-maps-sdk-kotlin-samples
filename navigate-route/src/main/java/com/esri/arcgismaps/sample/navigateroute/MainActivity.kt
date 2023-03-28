@@ -344,8 +344,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 // the final destination has been reached,
                 // stop the location data source
-                routeTrackerLocationDataSource.stop()
-                simulatedLocationDataSource.stop()
+                mapView.locationDisplay.dataSource.stop()
                 // set last stop message
                 nextStopTextView.text = resources.getStringArray(R.array.stop_message)[2]
             }
