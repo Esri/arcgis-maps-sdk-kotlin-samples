@@ -14,13 +14,12 @@ Run the sample to view the map. Pan and zoom to navigate the map.
 
 ## How it works
 
-1. Create a `@Composable` function to wrap the `MapView`
-2. Get the context using `LocalContext.current`
-3. Set the `MapView` to be evaluated only once during composition with `remember { MapView(context) }`
-5. Use `AndroidView` to wrap a classic Android view in a Compose UI. 
-6. Set the modifier to the max size in the Compose UI tree using `modifier.fillMaxSize()`
-7. Provide the Android view using `factory = { mapView }`
-8. Add the composable content to the Activity using `setContent { }` 
+1. Create a custom `@Composable` function to wrap the `MapView`
+2. Use `AndroidView` to wrap a classic Android view in a Compose UI.
+3. Set it's `Modifier` to define the MapView layout parameters
+4. Use it's `factory` parameter to provide context and create `MapView(context)`
+5. Add the `MapView` to the lifecycle observer
+6. Add the composable content to the Activity using `setContent { }` 
 
 ## Relevant API
 
