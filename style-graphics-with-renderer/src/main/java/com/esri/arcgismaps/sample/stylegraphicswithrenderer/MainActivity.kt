@@ -271,7 +271,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // define the ellipse parameters to a polygon geometry
-        val polygon = GeometryEngine.ellipseGeodesic(parameters)
+        val polygon = GeometryEngine.ellipseGeodesicOrNull(parameters)
         // set the ellipse fill color
         val ellipseSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.magenta, null)
         // return the purple ellipse

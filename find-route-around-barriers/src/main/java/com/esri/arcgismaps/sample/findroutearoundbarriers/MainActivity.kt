@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity() {
                     isChecked = false
                     isEnabled = false
                 }
-                lastStopSwitch. apply {
+                lastStopSwitch.apply {
                     isChecked = false
                     isEnabled = false
                 }
@@ -295,7 +295,8 @@ class MainActivity : AppCompatActivity() {
             stopsOverlay.graphics.add(Graphic(mapPoint, createStopSymbol(stopList.size)))
         } else if (addBarriersButton.isChecked) {
             // create a buffered polygon around the clicked point
-            val barrierBufferPolygon = GeometryEngine.buffer(mapPoint, 200.0)
+            val barrierBufferPolygon = GeometryEngine.bufferOrNull(mapPoint, 200.0)
+                ?: return showError("Error creating buffer polygon")
             // create a polygon barrier for the routing task, and add it to the list of barriers
             barriersList.add(PolygonBarrier(barrierBufferPolygon))
             barriersOverlay.graphics.add(Graphic(barrierBufferPolygon, barrierSymbol))

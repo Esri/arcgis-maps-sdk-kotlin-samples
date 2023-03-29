@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             for (graphic in envelopesOverlay.graphics) {
                 val geometry =
                     coloradoGraphic.geometry?.let { coloradoGeometry ->
-                        GeometryEngine.clip(coloradoGeometry, graphic.geometry as Envelope)
+                        GeometryEngine.clipOrNull(coloradoGeometry, graphic.geometry as Envelope)
                     }
                 val clippedGraphic = Graphic(geometry, fillSymbol)
                 clipAreasOverlay.graphics.add(clippedGraphic)

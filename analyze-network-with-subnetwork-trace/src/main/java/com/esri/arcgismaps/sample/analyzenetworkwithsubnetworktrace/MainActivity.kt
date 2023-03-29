@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity() {
             val terminal = assetType.terminalConfiguration?.terminals?.first { it.name == "Load" }
 
             // utility element to start the trace from
-            startingLocation = utilityNetwork.createElement(assetType, globalId, terminal)
+            startingLocation = utilityNetwork.createElementOrNull(assetType, globalId, terminal)
 
             // get a default trace configuration from a tier to update the UI
             val domainNetwork = utilityNetwork.definition?.getDomainNetwork(
