@@ -19,61 +19,57 @@ package com.esri.arcgismaps.sample.displaycomposablemapview
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.viewinterop.AndroidView
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.displaycomposablemapview.theme.SampleAppTheme
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.mapping.Viewpoint
+import com.esri.arcgismaps.sample.displaycomposablemapview.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val viewpointRef1 = Viewpoint(39.8, -98.6, 10e7)
+    private val viewpointRef2 = Viewpoint(39.8, 98.6, 10e7)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-        // add the composable content to the activity
+
         setContent {
             SampleAppTheme {
-                Surface(
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ComposableMapView()
+                    // a mutable or immutable state is computed by remember to stored the
+                    // Composition during initial composition, and the stored value
+                    // is returned during recomposition/state change.
+                    var viewpoint by remember { mutableStateOf(viewpointRef1) }
+
+                    // Composable function that wraps the MapView
+                    MapViewWithCompose(
+                        lifecycle = lifecycle,
+                        arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
+                        viewpoint = viewpoint,
+                        // lambda to retrieve the MapView's onSingleTapConfirmed
+                        onSingleTap = {
+                            // swap between two America and Asia viewpoints
+                            viewpoint =
+                                if (viewpoint == viewpointRef1) viewpointRef2 else viewpointRef1
+                        }
+                    )
                 }
             }
         }
     }
-}
-
-/**
- * Wraps the MapView in a Composable function.
- */
-@Composable
-fun ComposableMapView(
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val mapView = remember { MapView(context) }.also { mapView ->
-        LocalLifecycleOwner.current.lifecycle.addObserver(mapView)
-        mapView.map = ArcGISMap(Basemap(BasemapStyle.ArcGISNavigationNight))
-    }
-    AndroidView(
-        // modifiers are used to set layout parameters and respond to user input
-        modifier = modifier.fillMaxSize(),
-        // the factory parameter provides a context to create a classic Android view
-        // called when the composable is created, but not when it's recomposed
-        factory = { mapView }
-    )
 }
