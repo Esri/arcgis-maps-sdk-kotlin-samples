@@ -24,7 +24,7 @@ fun MapViewWithCompose(
     onSingleTap: (mapPoint: Point?) -> Unit = {},
 ) {
     AndroidView(
-        // modifiers are used to set layout parameters and respond to user input
+        // modifiers are used to set layout parameters
         modifier = Modifier.fillMaxSize(),
         // the factory parameter provides a context to create a classic Android view
         // called when the composable is created, but not when it's recomposed
