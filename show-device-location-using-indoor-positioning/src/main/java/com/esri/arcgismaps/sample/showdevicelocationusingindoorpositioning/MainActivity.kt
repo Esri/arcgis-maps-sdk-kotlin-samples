@@ -94,9 +94,8 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
-        ) {
-            val requestPermissions = mutableListOf( Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)) {
+            val requestPermissions = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
             // Android 12 required permission
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 requestPermissions.add(Manifest.permission.BLUETOOTH_SCAN)
@@ -139,75 +138,74 @@ class MainActivity : AppCompatActivity() {
      * Load each feature table and setup the IndoorsLocationDataSource for each loaded table
      */
     private suspend fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
-            featureTables.forEach { featureTable ->
-                // load each FeatureTable
-                featureTable.load().onSuccess {
+        featureTables.forEach { featureTable ->
+            // load each FeatureTable
+            featureTable.load().onSuccess {
+                // IPS_Positioning table needs to be present
+                if (featureTable.tableName == "IPS_Positioning") {
                     setupIndoorsLocationDataSource(featureTable)
-                }.onFailure {
-                    showError("Error loading FeatureTable: ${it.message}")
+                } else {
+                    showError("Positioning Table not found in FeatureTables")
                 }
+            }.onFailure {
+                showError("Error loading FeatureTable: ${it.message}")
             }
+        }
     }
 
     /**
      * Sets up the [indoorsLocationDataSource] using the IPS_Positioning [featureTable]
      */
     private fun setupIndoorsLocationDataSource(featureTable: FeatureTable) {
-        if (featureTable.tableName != "IPS_Positioning") {
-            showError("Positioning Table not found in FeatureTables")
-            return
-        } // IPS_Positioning table needs to be present
-        else if (featureTable.tableName == "IPS_Positioning") {
-            // cast the featureTable to a ServiceFeatureTable to get the globalIdField which identifies a row in the positioning table
-            // and used as a parameter to setup IndoorsLocationDataSource
-            val positioningFeatureTable = featureTable as ServiceFeatureTable
-            // when multiple entries are available, IndoorsLocationDataSource constructor function
-            // looks up the entry with the most recent date and takes this positioning data
-            // set up queryParameters to grab one result.
-            val dateCreatedFieldName = getDateCreatedFieldName(positioningFeatureTable.fields)
-                ?: return showError("The service table does not contain \"DateCreated\" fields.")
-            val queryParameters = QueryParameters().apply {
-                // set a limit of 1 on the number of returned features per request
-                maxFeatures = 1
-                // 1=1 is a true where clause which will result in all matching records being returned
-                whereClause = "1 = 1"
-                // find and sort out the orderByFields by most recent first
-                orderByFields.add(
-                    OrderBy(
-                        dateCreatedFieldName,
-                        sortOrder = SortOrder.Descending
-                    )
+        // cast the featureTable to a ServiceFeatureTable to get the globalIdField which identifies a row in the positioning table
+        // and used as a parameter to setup IndoorsLocationDataSource
+        val positioningFeatureTable = featureTable as ServiceFeatureTable
+        // when multiple entries are available, IndoorsLocationDataSource constructor function
+        // looks up the entry with the most recent date and takes this positioning data
+        // set up queryParameters to grab one result.
+        val dateCreatedFieldName = getDateCreatedFieldName(positioningFeatureTable.fields)
+            ?: return showError("The service table does not contain \"DateCreated\" fields.")
+        val queryParameters = QueryParameters().apply {
+            // set a limit of 1 on the number of returned features per request
+            maxFeatures = 1
+            // 1=1 is a true where clause which will result in all matching records being returned
+            whereClause = "1 = 1"
+            // find and sort out the orderByFields by most recent first
+            orderByFields.add(
+                OrderBy(
+                    dateCreatedFieldName,
+                    sortOrder = SortOrder.Descending
                 )
-            }
-            lifecycleScope.launch {
-                positioningFeatureTable.queryFeatures(queryParameters)
-                    .onSuccess { queryResults ->
-                        val featureResult = queryResults.first()
-                        // perform search query using the queryParameters
-                        // check if serviceFeatureTable contains positioning data
-                        // The ID that identifies a row in the positioning table.
-                        val globalID =
-                            featureResult.attributes[positioningFeatureTable.globalIdField].toString()
-                        val positioningId = Guid(globalID)
-                        // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
-                        // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
-                        // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
-                        // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
-                        // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
-                        // Providing this table enables the retrieval of a location's floor level ID.
-                        // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
-                        indoorsLocationDataSource = IndoorsLocationDataSource(
-                            positioningFeatureTable,
-                            getFeatureTable("Pathways"),
-                            getFeatureTable("Levels"),
-                            positioningId
-                        )
-                        // start the location display (blue dot)
-                        startLocationDisplay()
-                    }.onFailure {
-                        showError("The positioning table contain no data")
-                    }
-            }
+            )
+        }
+        lifecycleScope.launch {
+            positioningFeatureTable.queryFeatures(queryParameters)
+                .onSuccess { queryResults ->
+                    val featureResult = queryResults.first()
+                    // perform search query using the queryParameters
+                    // check if serviceFeatureTable contains positioning data
+                    // The ID that identifies a row in the positioning table.
+                    val globalID =
+                        featureResult.attributes[positioningFeatureTable.globalIdField].toString()
+                    val positioningId = Guid(globalID)
+                    // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
+                    // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
+                    // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
+                    // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
+                    // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
+                    // Providing this table enables the retrieval of a location's floor level ID.
+                    // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
+                    indoorsLocationDataSource = IndoorsLocationDataSource(
+                        positioningFeatureTable,
+                        getFeatureTable("Pathways"),
+                        getFeatureTable("Levels"),
+                        positioningId
+                    )
+                    // start the location display (blue dot)
+                    startLocationDisplay()
+                }.onFailure {
+                    showError("The positioning table contain no data")
+                }
         }
     }
 
@@ -277,7 +275,12 @@ class MainActivity : AppCompatActivity() {
                         // update layer's definition express with the current floor
                         mapView.map?.operationalLayers?.forEach { layer ->
                             val name = layer.name
-                            if (layer is FeatureLayer && name in listOf("Details", "Units", "Levels")) {
+                            if (layer is FeatureLayer && name in listOf(
+                                    "Details",
+                                    "Units",
+                                    "Levels"
+                                )
+                            ) {
                                 layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
                             }
                         }
@@ -294,10 +297,11 @@ class MainActivity : AppCompatActivity() {
                 )
                 sb.append("Horizontal-accuracy: ${accuracy}m, ")
                 sb.append(when (positionSource) {
-                    Location.SourceProperties.Values.POSITION_SOURCE_GNSS -> "Satellite-count: $satelliteCount"
-                    "BLE" -> "Transmitter-count: $transmitterCount"
-                    else -> ""
-                })
+                        Location.SourceProperties.Values.POSITION_SOURCE_GNSS -> "Satellite-count: $satelliteCount"
+                        "BLE" -> "Transmitter-count: $transmitterCount"
+                        else -> ""
+                    }
+                )
                 textView.text = sb.toString()
             }
         }
