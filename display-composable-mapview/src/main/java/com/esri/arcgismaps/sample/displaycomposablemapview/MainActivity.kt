@@ -36,8 +36,8 @@ import com.esri.arcgismaps.sample.displaycomposablemapview.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
-    private val viewpointRef1 = Viewpoint(39.8, -98.6, 10e7)
-    private val viewpointRef2 = Viewpoint(39.8, 98.6, 10e7)
+    private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
+    private val viewpointAsia = Viewpoint(39.8, 98.6, 10e7)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,18 +54,17 @@ class MainActivity : ComponentActivity() {
                     // a mutable or immutable state is computed by remember to stored the
                     // Composition during initial composition, and the stored value
                     // is returned during recomposition/state change.
-                    var viewpoint by remember { mutableStateOf(viewpointRef1) }
+                    var viewpoint by remember { mutableStateOf(viewpointAmerica) }
 
                     // Composable function that wraps the MapView
                     MapViewWithCompose(
-                        lifecycle = lifecycle,
                         arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
                         viewpoint = viewpoint,
                         // lambda to retrieve the MapView's onSingleTapConfirmed
                         onSingleTap = {
-                            // swap between two America and Asia viewpoints
+                            // swap between America and Asia viewpoints
                             viewpoint =
-                                if (viewpoint == viewpointRef1) viewpointRef2 else viewpointRef1
+                                if (viewpoint == viewpointAmerica) viewpointAsia else viewpointAmerica
                         }
                     )
                 }
