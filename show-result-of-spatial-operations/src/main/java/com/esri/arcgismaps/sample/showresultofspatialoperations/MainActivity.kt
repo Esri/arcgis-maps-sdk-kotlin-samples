@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         // set up the adapter
         val arrayAdapter = ArrayAdapter(
-            this, R.layout.dropdown_item, resources.getStringArray(R.array.operation)
+            this, R.layout.custom_dropdown_item, resources.getStringArray(R.array.operation)
         )
         activityMainBinding.bottomListItems.apply {
             setAdapter(arrayAdapter)
