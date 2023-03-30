@@ -16,7 +16,6 @@
             android:id="@+id/menuButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="?attr/materialIconButtonFilledStyle"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:layout_marginBottom="50dp"
