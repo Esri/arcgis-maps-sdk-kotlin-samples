@@ -51,6 +51,7 @@ fun MapViewWithCompose(
         update = { view -> // view is automatically cast to a MapView
             lifecycleOwner.lifecycleScope.launch {
                 view.setViewpointAnimated(viewpoint) // called only if the viewpoint parameter is changed
+                view.map = arcGISMap // called only if the arcGISMap parameter is changes
             }
         }
     )

@@ -55,10 +55,11 @@ class MainActivity : ComponentActivity() {
                     // Composition during initial composition, and the stored value
                     // is returned during recomposition/state change.
                     var viewpoint by remember { mutableStateOf(viewpointAmerica) }
+                    val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
 
                     // Composable function that wraps the MapView
                     MapViewWithCompose(
-                        arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
+                        arcGISMap = map,
                         viewpoint = viewpoint,
                         // lambda to retrieve the MapView's onSingleTapConfirmed
                         onSingleTap = {
