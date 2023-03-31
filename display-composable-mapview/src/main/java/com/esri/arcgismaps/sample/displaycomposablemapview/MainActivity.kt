@@ -51,9 +51,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // a mutable or immutable state is computed by remember to stored the
-                    // Composition during initial composition, and the stored value
-                    // is returned during recomposition/state change.
+                    // a mutable/immutable state is computed by remember to store its value during
+                    // initial composition, and updates the composition on the state value change
                     var viewpoint by remember { mutableStateOf(viewpointAmerica) }
                     val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
 
