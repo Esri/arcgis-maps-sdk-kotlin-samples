@@ -64,7 +64,6 @@
             android:layout_marginBottom="30dp"
             android:contentDescription="@string/start_stop_button"
             android:src="@drawable/ic_round_play_arrow_24"
-            android:tint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

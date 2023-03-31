@@ -20,7 +20,6 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -45,6 +44,7 @@ import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesResult
 import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesTask
 import com.esri.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ProgressDialogLayoutBinding
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -68,11 +68,11 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.previewMapView
     }
 
-    private val exportVectorTilesButton: Button by lazy {
+    private val exportVectorTilesButton: MaterialButton by lazy {
         activityMainBinding.exportVectorTilesButton
     }
 
-    private val closePreviewButton: Button by lazy {
+    private val closePreviewButton: MaterialButton by lazy {
         activityMainBinding.closePreviewButton
     }
 

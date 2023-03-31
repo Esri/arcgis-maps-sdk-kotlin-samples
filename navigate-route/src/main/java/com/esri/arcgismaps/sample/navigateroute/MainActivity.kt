@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.text.format.DateUtils
 import android.util.Log
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -49,6 +48,7 @@ import com.arcgismaps.tasks.networkanalysis.RouteResult
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.esri.arcgismaps.sample.navigateroute.databinding.ActivityMainBinding
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.filter
@@ -67,11 +67,11 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val resetNavigationButton: Button by lazy {
+    private val resetNavigationButton: MaterialButton by lazy {
         activityMainBinding.resetNavigationButton
     }
 
-    private val recenterButton: Button by lazy {
+    private val recenterButton: MaterialButton by lazy {
         activityMainBinding.recenterButton
     }
 
