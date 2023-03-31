@@ -32,4 +32,5 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation project(path: ':samples-lib')
 }
