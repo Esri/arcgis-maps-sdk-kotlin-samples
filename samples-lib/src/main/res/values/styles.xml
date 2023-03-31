@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="CustomButtonTheme" parent="@style/Widget.MaterialComponents.Button">
+    <style name="SamplesMaterialButton" parent="@style/Widget.MaterialComponents.Button">
+        <item name="materialButtonOutlinedStyle">@style/OutlineButton</item>
+        <item name="materialButtonStyle">@style/RegularButton</item>
+    </style>
+
+    <style name="RegularButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@color/button_textcolor_state_list</item>
         <item name="android:backgroundTint">@color/button_backgroundcolor_state_list</item>
+    </style>
+
+    <style name="OutlineButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/button_textcolor_state_list</item>
     </style>
 
     <!-- Base application theme. -->
@@ -13,9 +22,14 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSecondary">@color/colorPrimary</item>
+        <item name="android:progressBackgroundTint">@color/colorBackground</item>
         <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
-        <item name="materialButtonStyle">@style/CustomButtonTheme</item>
-
+        <item name="materialButtonStyle">@style/SamplesMaterialButton</item>
     </style>
+
+
+
+
 
 </resources>
