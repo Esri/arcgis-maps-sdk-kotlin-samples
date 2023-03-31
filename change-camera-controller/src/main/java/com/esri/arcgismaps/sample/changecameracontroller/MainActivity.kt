@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         // create an array adapter data source using the list of camera controller modes
         val arrayAdapter = ArrayAdapter(
             this,
-            R.layout.camera_controller_dropdown_item,
+            R.layout.custom_dropdown_item,
             CameraControllerMode.getValuesByDisplayName()
         )
         activityMainBinding.bottomListItems.apply {

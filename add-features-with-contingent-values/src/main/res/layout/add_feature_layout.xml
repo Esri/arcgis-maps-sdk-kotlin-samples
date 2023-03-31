@@ -16,7 +16,6 @@
                 android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -26,7 +25,6 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-thin"
                     android:text="Add Feature"
-                    android:textColor="@android:color/white"
                     android:textSize="17sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -41,7 +39,6 @@
                     android:layout_marginEnd="25dp"
                     android:padding="10dp"
                     android:text="Apply"
-                    android:textColor="@android:color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -53,7 +50,6 @@
                     android:layout_marginStart="25dp"
                     android:padding="10dp"
                     android:text="Cancel"
-                    android:textColor="@android:color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -78,8 +74,7 @@
                 style="@style/TextInputLayoutTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select status attribute"
-                app:boxBackgroundColor="@android:color/white">
+                android:hint="Select status attribute">
 
                 <AutoCompleteTextView
                     android:layout_width="match_parent"
@@ -97,8 +92,7 @@
                 style="@style/TextInputLayoutTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select protection attribute"
-                app:boxBackgroundColor="@android:color/white">
+                android:hint="Select protection attribute">
 
                 <AutoCompleteTextView
                     android:layout_width="match_parent"
@@ -114,8 +108,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/bufferLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -143,8 +136,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/numberPickerLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white">
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/bufferSeekBar"

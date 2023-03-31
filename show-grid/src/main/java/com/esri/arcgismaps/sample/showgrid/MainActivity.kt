@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -46,6 +45,7 @@ import com.arcgismaps.mapping.view.UsngGrid
 import com.arcgismaps.mapping.view.UtmGrid
 import com.esri.arcgismaps.sample.showgrid.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.showgrid.databinding.PopupDialogBinding
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val menuButton: Button by lazy {
+    private val menuButton: MaterialButton by lazy {
         activityMainBinding.menuButton
     }
 
