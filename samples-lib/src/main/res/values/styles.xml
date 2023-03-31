@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="SamplesMaterialButton" parent="@style/Widget.MaterialComponents.Button">
-        <item name="materialButtonOutlinedStyle">@style/OutlineButton</item>
-        <item name="materialButtonStyle">@style/RegularButton</item>
-    </style>
-
-    <style name="RegularButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+    <style name="RegularButton" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/button_textcolor_state_list</item>
         <item name="android:backgroundTint">@color/button_backgroundcolor_state_list</item>
     </style>
@@ -30,7 +25,8 @@
         <item name="colorSecondary">@color/colorPrimary</item>
         <item name="android:progressBackgroundTint">@color/colorBackground</item>
         <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
-        <item name="materialButtonStyle">@style/SamplesMaterialButton</item>
+        <item name="materialButtonStyle">@style/RegularButton</item>
+        <item name="materialButtonOutlinedStyle">@style/OutlineButton</item>
     </style>
 
 
