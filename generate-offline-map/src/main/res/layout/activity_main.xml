@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <android.widget.Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/takeMapOfflineButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
