@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textSize="12sp"
-                android:text="@string/attribut_table_hint" />
+                android:text="@string/attribute_table_hint" />
 
         </LinearLayout>
 

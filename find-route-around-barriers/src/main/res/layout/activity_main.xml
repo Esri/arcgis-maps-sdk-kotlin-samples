@@ -83,7 +83,8 @@
                     app:layout_constraintStart_toEndOf="@+id/toggleButtons"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
-                    app:tint="@color/colorAccent" />
+                    app:tint="@color/colorAccent"
+                    android:contentDescription="@string/reset_button" />
 
                 <ImageView
                     android:id="@+id/optionsButton"
@@ -96,7 +97,8 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/resetButton"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/colorAccent" />
+                    app:tint="@color/colorAccent"
+                    android:contentDescription="@string/options_button" />
 
                 <ImageView
                     android:id="@+id/directionsButton"
@@ -109,7 +111,8 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/optionsButton"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/colorAccent" />
+                    app:tint="@color/colorAccent"
+                    android:contentDescription="@string/directions_button" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

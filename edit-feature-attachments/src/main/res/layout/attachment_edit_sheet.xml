@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:fontFamily="sans-serif-thin"
-                android:text="Edit attatchments"
+                android:text="Edit attachments"
                 android:textColor="@android:color/white"
                 android:textSize="17sp"
                 android:textStyle="bold"

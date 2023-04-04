@@ -82,9 +82,11 @@
                 app:boxBackgroundColor="@android:color/white">
 
                 <AutoCompleteTextView
+                    android:id="@+id/statusAttributeList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    android:labelFor="@+id/statusAttributeList"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,9 +103,11 @@
                 app:boxBackgroundColor="@android:color/white">
 
                 <AutoCompleteTextView
+                    android:id="@+id/protectionAttributeList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    android:labelFor="@+id/protectionAttributeList"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

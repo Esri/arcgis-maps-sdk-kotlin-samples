@@ -3,4 +3,5 @@
     <string name="address_search_hint">Enter address</string>
     <string name="search_an_address_or_a_place">Search for an address or a place</string>
     <string name="tap_on_pin_to_select_address">Tap on pin to select address</string>
+    <string name="search_within_map_extent">Search within map\'s extent</string>
 </resources>

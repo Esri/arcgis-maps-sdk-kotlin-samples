@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
         val gardenPOIs =
             ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
-        // create Geotriggers for each of the service feature tables
+        // create geotriggers for each of the service feature tables
         sectionGeotriggerMonitor =
             createGeotriggerMonitor(gardenSections, 0.0, sectionGeotrigger)
         poiGeotriggerMonitor =
@@ -218,9 +218,9 @@ class MainActivity : AppCompatActivity() {
         // initialize a geotrigger monitor with the fence geotrigger
         val geotriggerMonitor = GeotriggerMonitor(fenceGeotrigger)
         lifecycleScope.launch {
-            // capture and handle Geotrigger notification based on the FenceRuleType
+            // capture and handle geotrigger notification based on the FenceRuleType
             // hence, triggers on fence enter/exit.
-            geotriggerMonitor.geotriggerNotificationEvent.collect { geotriggerNotificationInfo ->
+            geotriggerMonitor.notifications.collect { geotriggerNotificationInfo ->
                 handleGeotriggerNotification(geotriggerNotificationInfo)
             }
         }
