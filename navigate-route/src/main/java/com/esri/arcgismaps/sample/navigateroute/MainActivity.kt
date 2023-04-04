@@ -220,8 +220,9 @@ class MainActivity : AppCompatActivity() {
             routeIndex = 0,
             skipCoincidentStops = true
         ).apply {
-            isSpeechEngineReady =
-                { isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false }
+            setSpeechEngineReadyCallback {
+                isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false
+            }
         }
         // plays the direction voice guidance
         lifecycleScope.launch {
@@ -261,10 +262,7 @@ class MainActivity : AppCompatActivity() {
                 updateRouteGraphics(trackingStatus)
 
                 // display route status and directions info
-                displayRouteInfo(routeTracker,
-                    trackingStatus,
-                    simulatedLocationDataSource,
-                    routeTrackerLocationDataSource)
+                displayRouteInfo(routeTracker, trackingStatus)
             }
         }
 
@@ -280,8 +278,7 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 if (locationDisplayJob.isActive) {
                     // stop location data sources
-                    simulatedLocationDataSource.stop()
-                    routeTrackerLocationDataSource.stop()
+                    locationDisplay.dataSource.stop()
                     // cancel the coroutine jobs
                     locationDisplayJob.cancelAndJoin()
                     autoPanModeJob.cancelAndJoin()
@@ -309,13 +306,11 @@ class MainActivity : AppCompatActivity() {
     /**
      * Displays the route distance and time information using [trackingStatus], and
      * switches destinations using [routeTracker]. When final destination is reached,
-     * and [routeTrackerLocationDataSource] is stopped.
+     * the location data source is stopped.
      */
     private suspend fun displayRouteInfo(
         routeTracker: RouteTracker,
-        trackingStatus: TrackingStatus,
-        simulatedLocationDataSource: SimulatedLocationDataSource,
-        routeTrackerLocationDataSource: RouteTrackerLocationDataSource,
+        trackingStatus: TrackingStatus
     ) {
         // get remaining distance information
         val remainingDistance = trackingStatus.destinationProgress.remainingDistance
@@ -344,8 +339,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 // the final destination has been reached,
                 // stop the location data source
-                routeTrackerLocationDataSource.stop()
-                simulatedLocationDataSource.stop()
+                mapView.locationDisplay.dataSource.stop()
                 // set last stop message
                 nextStopTextView.text = resources.getStringArray(R.array.stop_message)[2]
             }
