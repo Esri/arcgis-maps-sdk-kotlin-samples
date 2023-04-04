@@ -220,7 +220,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // capture and handle Geotrigger notification based on the FenceRuleType
             // hence, triggers on fence enter/exit.
-            geotriggerMonitor.geotriggerNotificationEvent.collect { geotriggerNotificationInfo ->
+            geotriggerMonitor.notifications.collect { geotriggerNotificationInfo ->
                 handleGeotriggerNotification(geotriggerNotificationInfo)
             }
         }
