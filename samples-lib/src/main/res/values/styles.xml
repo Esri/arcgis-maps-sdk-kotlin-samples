@@ -7,8 +7,8 @@
     </style>
 
     <style name="RegularButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/button_textcolor_state_list</item>
-        <item name="android:backgroundTint">@color/button_backgroundcolor_state_list</item>
+        <item name="android:textColor">@color/textbutton_textcolor</item>
+        <item name="android:backgroundTint">@color/textbutton_background</item>
     </style>
 
     <style name="TextInputLayoutTheme" parent="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
