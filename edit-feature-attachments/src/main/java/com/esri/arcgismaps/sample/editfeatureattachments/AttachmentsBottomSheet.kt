@@ -12,6 +12,7 @@ import com.arcgismaps.data.Attachment
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class AttachmentsBottomSheet(
@@ -55,7 +56,7 @@ class AttachmentsBottomSheet(
             listView.onItemLongClickListener =
                 AdapterView.OnItemLongClickListener { _, _, position, _ ->
                     // create a dialog to display the delete query
-                    val builder = AlertDialog.Builder(context)
+                    val builder = androidx.appcompat.app.AlertDialog.Builder(context)
                     builder.setMessage(context.getString(R.string.delete_query))
                     builder.setCancelable(true)
                     builder.setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->

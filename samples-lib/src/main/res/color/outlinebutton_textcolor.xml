@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- MaterialButton text color for enabled and disabled state -->
+    <item android:color="@color/button_disabled_text_color" android:state_enabled="false" />
+    <item android:color="@color/colorPrimary" android:state_enabled="true" />
+</selector>
