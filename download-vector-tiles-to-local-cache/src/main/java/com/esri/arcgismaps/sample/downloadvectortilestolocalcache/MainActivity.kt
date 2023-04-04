@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.downloadvectortilestolocalcache
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -52,7 +51,7 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private val downloadArea: Graphic = Graphic()
-    private var dialog: AlertDialog? = null
+    private var dialog: androidx.appcompat.app.AlertDialog? = null
     private var hasCurrentJobCompleted: Boolean = true
 
     // set up data binding for the activity
@@ -255,7 +254,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createProgressDialog(exportVectorTilesJob: ExportVectorTilesJob): ProgressDialogLayoutBinding {
         val dialogLayoutBinding = ProgressDialogLayoutBinding.inflate(layoutInflater)
-        val dialogBuilder = AlertDialog.Builder(this@MainActivity).apply {
+        val dialogBuilder = androidx.appcompat.app.AlertDialog.Builder(this@MainActivity).apply {
             setTitle("Exporting vector tiles")
             setNegativeButton("Cancel job") { _, _ ->
                 lifecycleScope.launch {
