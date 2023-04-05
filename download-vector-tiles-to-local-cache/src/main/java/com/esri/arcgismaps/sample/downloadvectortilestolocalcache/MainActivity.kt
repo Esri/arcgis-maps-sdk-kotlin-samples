@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun createProgressDialog(exportVectorTilesJob: ExportVectorTilesJob): ProgressDialogLayoutBinding {
         val dialogLayoutBinding = ProgressDialogLayoutBinding.inflate(layoutInflater)
-        val dialogBuilder = androidx.appcompat.app.AlertDialog.Builder(this@MainActivity).apply {
+        val dialogBuilder = AlertDialog.Builder(this@MainActivity).apply {
             setTitle("Exporting vector tiles")
             setNegativeButton("Cancel job") { _, _ ->
                 lifecycleScope.launch {
