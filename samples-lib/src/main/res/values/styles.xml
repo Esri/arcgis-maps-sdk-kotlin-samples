@@ -12,10 +12,6 @@
         <item name="iconTint">@color/textbutton_textcolor</item>
     </style>
 
-    <style name="TextInputLayoutTheme" parent="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
-        <item name="boxStrokeColor">#00FFFFFF</item>
-    </style>
-
     <style name="SamplesAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:background">@color/colorBackground</item>
     </style>
