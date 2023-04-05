@@ -239,11 +239,13 @@ class MainActivity : AppCompatActivity() {
             // add loaded layer to the map
             addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromUri, 0.0)
             // load blue pin from as a bitmap
-            val bitmap = withContext(Dispatchers.Default) {
+            val bitmap = withContext(Dispatchers.IO) {
                 BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
             }
             // load the PictureMarkerSymbolLayer using the bitmap drawable
-            val pictureMarkerFromCache = PictureMarkerSymbolLayer.createWithImage(BitmapDrawable(resources, bitmap))
+            val pictureMarkerFromCache = withContext(Dispatchers.IO) {
+                PictureMarkerSymbolLayer.createWithImage(BitmapDrawable(resources, bitmap))
+            }
             pictureMarkerFromCache.load().getOrElse {
                 showError("Picture marker symbol layer failed to load from bitmap: ${it.message}")
             }
@@ -262,7 +264,7 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun addGraphicFromPictureMarkerSymbolLayer(
         pictureMarkerSymbolLayer: PictureMarkerSymbolLayer, offset: Double
-    ) = withContext(Dispatchers.Default) {
+    ) = withContext(Dispatchers.IO) {
         // wait for the picture marker symbol layer to load and check it has loaded
         pictureMarkerSymbolLayer.load().getOrElse {
             showError("Picture marker symbol layer failed to load: ${it.message}")
