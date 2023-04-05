@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#7a2ab7</color>
     <color name="colorAccent">#7a2ab7</color>
     <color name="colorBackground">#2C2C2E</color>
+    <color name="actionBarColor">#212121</color>
+    <color name="actionBarTextColor">@android:color/white</color>
     <color name="textColor">#e3e1e1</color>
     <color name="button_disabled_background_color">#e3e1e1</color>
     <color name="button_enabled_text_color">#2C2C2E</color>

@@ -19,16 +19,21 @@
     <style name="SamplesAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:background">@color/colorBackground</item>
     </style>
+    
+    <style name="SamplesAppBar" parent="Widget.MaterialComponents.ActionBar.Primary">
+        <item name="colorSurface">@color/actionBarColor</item>
+        <item name="android:elevation">12dp</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="colorSecondary">@color/colorPrimary</item>
         <item name="android:progressBackgroundTint">@color/colorBackground</item>
-        <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
+        <item name="actionBarTheme">@style/SamplesAppBar</item>
         <item name="materialButtonStyle">@style/RegularButton</item>
         <item name="materialButtonOutlinedStyle">@style/OutlineButton</item>
         <item name="materialAlertDialogTheme">@style/SamplesAlertDialog</item>
