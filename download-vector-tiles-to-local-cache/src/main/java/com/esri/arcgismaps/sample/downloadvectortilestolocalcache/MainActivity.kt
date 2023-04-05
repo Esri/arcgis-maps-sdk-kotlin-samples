@@ -51,7 +51,7 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private val downloadArea: Graphic = Graphic()
-    private var dialog: androidx.appcompat.app.AlertDialog? = null
+    private var dialog: AlertDialog? = null
     private var hasCurrentJobCompleted: Boolean = true
 
     // set up data binding for the activity
