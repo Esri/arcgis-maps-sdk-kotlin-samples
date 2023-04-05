@@ -17,7 +17,6 @@
         \"type\":\"Raster_function_template\"
         }
     </string>
-    <string name="raster_function_layer">Apply Layer</string>
     <string name="apply_layer">Apply Layer</string>
     <string name="reset">Reset</string>
 </resources>

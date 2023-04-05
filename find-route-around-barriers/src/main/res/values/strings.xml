@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Find route around barriers</string>
-    <string name="reset">reset</string>
     <string name="stops">Stops</string>
     <string name="barriers">Barriers</string>
     <string name="directions">Directions</string>

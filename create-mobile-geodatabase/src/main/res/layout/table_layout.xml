@@ -23,14 +23,14 @@
 
                     <TextView
                         android:padding="10dp"
-                        android:text="OID"
+                        android:text="@string/oid"
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/collectionTimestamp"
                         android:padding="10dp"
-                        android:text="Collection Timestamp"
+                        android:text="@string/collection_timestamp"
                         android:textSize="17sp"
                         android:textStyle="bold" />
                 </TableRow>

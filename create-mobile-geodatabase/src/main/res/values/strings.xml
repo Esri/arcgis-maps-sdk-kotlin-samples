@@ -5,4 +5,6 @@
     <string name="view_table">View table</string>
     <string name="attribute_table_hint">Attribute table loaded from the mobile geodatabase file. File can be loaded on ArcGIS Pro or ArcGIS Runtime</string>
     <string name="file_provider_package">com.esri.arcgismaps.fileprovider</string>
+    <string name="oid">OID</string>
+    <string name="collection_timestamp">Collection Timestamp</string>
 </resources>

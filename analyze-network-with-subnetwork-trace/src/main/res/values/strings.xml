@@ -15,4 +15,6 @@
     <string name="select_source">Select source</string>
     <string name="select_operator">Select operator</string>
     <string name="select_value">Select value</string>
+    <string name="value">Value</string>
+    <string name="loading_subnetwork_trace">Loading subnetwork trace</string>
 </resources>
