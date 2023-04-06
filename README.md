@@ -23,14 +23,14 @@ Once the project is cloned to disk you can import into Android Studio:
 
 Accessing Esri location services, including basemaps, routing, and geocoding, requires authentication using either an API Key or an ArcGIS identity:
 
-#### API key
+* API key
 
 A permanent key that gives your application access to Esri location services. Visit your [ArcGIS Developers Dashboard](https://developers.arcgis.com/dashboard) to create a new API key or access an existing API key.
 The Android samples in this repository have been structured to use an API key, set once, which will run in all samples.
 Set your API key in the `gradle.properties` file located in the `/.gradle` folder within your home directory (`/Users/<user_name>/.gradle/gradle.properties`).
 The API_KEY property should contain quotes around the key itself: `API_KEY = "YOUR_API_KEY"`
 
-#### ArcGIS identity
+* ArcGIS identity
 
 An ArcGIS named user account that is a member of an organization in ArcGIS Online or ArcGIS Enterprise.
 
@@ -78,10 +78,8 @@ Please see our [guidelines for contributing doc](https://github.com/Esri/contrib
 ## Licensing
 
 Copyright 2023 Esri
-
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
-You may obtain a copy of the License (here)[http://www.apache.org/licenses/LICENSE-2.0]
-
+You may obtain a copy of the License <http://www.apache.org/licenses/LICENSE-2.0>
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 A copy of the license is available in the repository's [LICENSE](LICENSE?raw=1) file
