@@ -1,14 +1,17 @@
 # ArcGIS Maps SDK Kotlin Samples
 
-# Overview
+## Overview
+
 ArcGIS Maps SDK for Kotlin v200.1.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps SDK Android Kotlin](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
 
-# Prerequisites
+## Prerequisites
+
 * The samples are building with `compileSdkVersion 33`
 * [Android Studio](http://developer.android.com/sdk/index.html)
 * [An ArcGIS Developers API key](https://developers.arcgis.com/kotlin/get-started/#3-get-an-api-key)
 
 ## Developer Instructions
+
 Please read our [developer instructions wiki page](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki/dev-instructions) to set up your developer environment with Android Studio.  Instructions include forking and cloning the repository for those new to Git.
 
 Once the project is cloned to disk you can import into Android Studio:
@@ -17,6 +20,7 @@ Once the project is cloned to disk you can import into Android Studio:
 * Navigate to the **arcgis-maps-sdk-kotlin-samples/** folder and click **OK**.
 
 ## Accessing Esri location services
+
 Accessing Esri location services, including basemaps, routing, and geocoding, requires authentication using either an API Key or an ArcGIS identity:
  1. API key: A permanent key that gives your application access to Esri location services. Visit your [ArcGIS Developers Dashboard](https://developers.arcgis.com/dashboard) to create a new API key or access an existing API key.
  
@@ -25,12 +29,15 @@ The Android samples in this repository have been structured to use an API key, s
 2. ArcGIS identity: An ArcGIS named user account that is a member of an organization in ArcGIS Online or ArcGIS Enterprise.
 
 ## Run a sample
+
 Once you have set up your developer environment you can run any sample from within Android Studio by selecting the app module from the **Edit Configurations** drop down and clicking the **Run** button from the toolbar. 
 
 ### Build/Run sample from Gradle
+
 You can execute all the build tasks using the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) command line tool. It's available as a batch file for Windows (gradlew.bat) and a shell script for Linux/Mac (gradlew.sh) and it is accessible from the root of the project.  
 
 - Build a debug APK
+
 
 ```
 $ ./gradlew assembleDebug
@@ -55,6 +62,7 @@ Have a problem running one of the samples in this repo? Does the sample not work
 
 
 ## Contributing
+
 Anyone and everyone is welcome to [contribute](.github/CONTRIBUTING.md). We do accept pull requests.
 
 1. Get Involved
@@ -65,6 +73,7 @@ Anyone and everyone is welcome to [contribute](.github/CONTRIBUTING.md). We do a
 Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/master/README.md)
 
 ## Licensing
+
 Copyright 2023 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
