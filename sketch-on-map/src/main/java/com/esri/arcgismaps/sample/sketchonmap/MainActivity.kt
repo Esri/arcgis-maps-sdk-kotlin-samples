@@ -203,7 +203,7 @@ class MainActivity : AppCompatActivity() {
         val sketchGeometry = geometryEditor.geometry.value
             ?: return showMessage("Error retrieving geometry")
 
-        if (GeometryBuilder.builder(sketchGeometry)?.isSketchValid == false) {
+        if (!GeometryBuilder.builder(sketchGeometry).isSketchValid) {
             return reportNotValid()
         }
 
