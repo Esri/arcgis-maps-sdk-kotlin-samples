@@ -22,15 +22,15 @@ Once the project is cloned to disk you can import into Android Studio:
 ## Accessing Esri location services
 
 Accessing Esri location services, including basemaps, routing, and geocoding, requires authentication using either an API Key or an ArcGIS identity:
- 1. API key: A permanent key that gives your application access to Esri location services. Visit your [ArcGIS Developers Dashboard](https://developers.arcgis.com/dashboard) to create a new API key or access an existing API key.
- 
+1. API key: A permanent key that gives your application access to Esri location services. Visit your [ArcGIS Developers Dashboard](https://developers.arcgis.com/dashboard) to create a new API key or access an existing API key.
+
 The Android samples in this repository have been structured to use an API key, set once, which will run in all samples. Set your API key in the `gradle.properties` file located in the `/.gradle` folder within your home directory (`/Users/<user_name>/.gradle/gradle.properties`). The API_KEY property should contain quotes around the key itself: `API_KEY = "YOUR_API_KEY"`
 
 2. ArcGIS identity: An ArcGIS named user account that is a member of an organization in ArcGIS Online or ArcGIS Enterprise.
 
 ## Run a sample
 
-Once you have set up your developer environment you can run any sample from within Android Studio by selecting the app module from the **Edit Configurations** drop down and clicking the **Run** button from the toolbar. 
+Once you have set up your developer environment you can run any sample from within Android Studio by selecting the app module from the **Edit Configurations** drop down and clicking the **Run** button from the toolbar.
 
 ### Build/Run sample from Gradle
 
@@ -38,14 +38,12 @@ You can execute all the build tasks using the [Gradle Wrapper](https://docs.grad
 
 - Build a debug APK
 
-
 ```
-$ ./gradlew assembleDebug
+./gradlew assembleDebug
 ```
 
-- Run the app
+- Install the app on the device
 
-**Device**
 ```
 adb -d install path/to/sample.apk
 ```
@@ -59,7 +57,6 @@ Have a question about functionality in the ArcGIS Maps SDK Kotlin Samples? Want 
 Do you have something to [contribute](.github/CONTRIBUTING.md)? Send a pull request! New Samples, bug fixes and documentation fixes are welcome.
 
 Have a problem running one of the samples in this repo? Does the sample not work on a specific device? Have questions about how the code in this repo is working? Want to request a specific sample? In that case, [submit a new issue](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/issues).
-
 
 ## Contributing
 
