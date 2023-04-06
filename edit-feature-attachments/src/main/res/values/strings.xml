@@ -10,4 +10,7 @@
     <!-- Feature Service URL -->
     <string name="sample_service_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/DamageAssessment/FeatureServer/0</string>
     <string name="attachment_click">attachment_click</string>
+    <string name="edit_attachments">Edit attachments</string>
+    <string name="done">Done</string>
+    <string name="add_attachment">Add attachment</string>
 </resources>
