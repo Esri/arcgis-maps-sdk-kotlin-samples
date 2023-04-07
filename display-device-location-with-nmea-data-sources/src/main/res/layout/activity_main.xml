@@ -14,6 +14,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="25dp"
+            android:paddingEnd="25dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"

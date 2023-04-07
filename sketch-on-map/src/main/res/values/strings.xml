@@ -12,6 +12,7 @@
     <string name="restart">Restart</string>
     <string name="cleared_message">Cleared editing sketch from map</string>
     <string name="restart_message">Cleared all graphics from map</string>
+    <string name="select_geometry">Select geometry</string>
     <string-array name="geometry_list">
         <item>Freehand Polygon</item>
         <item>Freehand Polyline</item>

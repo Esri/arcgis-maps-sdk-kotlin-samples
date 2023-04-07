@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Project Geometry</string>
+    <string name="app_name">Project geometry</string>
     <string name="title_text">Coordinates</string>
     <string name="tap_to_begin">Tap to begin</string>
     <string name="projection_info_text">Original: %1s\nProjected: %2s</string>

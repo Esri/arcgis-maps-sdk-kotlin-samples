@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     // service url to be provided to the LocatorTask (geocoder)
-    private val GEOCODE_SERVER =
+    private val geocodeServer =
         "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
 
     // set up data binding for the activity
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     private val graphicsOverlay = GraphicsOverlay()
 
     // locator task to provide geocoding services
-    private val locatorTask = LocatorTask(GEOCODE_SERVER)
+    private val locatorTask = LocatorTask(geocodeServer)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
