@@ -45,6 +45,7 @@
             android:text="@string/initial_rotation_text"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@android:color/black"
             app:layout_constraintBottom_toBottomOf="@+id/rotationSeekBar"
             app:layout_constraintRight_toRightOf="parent"
             tools:text="180" />

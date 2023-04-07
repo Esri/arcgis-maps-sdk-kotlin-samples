@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="OutlineButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/outlinebutton_textcolor</item>
+        <item name="android:backgroundTint">@color/outlinebutton_background</item>
+    </style>
+
+    <style name="RegularButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/textbutton_textcolor</item>
+        <item name="android:backgroundTint">@color/textbutton_background</item>
+        <item name="iconTint">@color/textbutton_textcolor</item>
+    </style>
+
+    <style name="SamplesAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:background">@color/colorBackground</item>
+    </style>
+    
+    <style name="SamplesAppBar" parent="Widget.MaterialComponents.ActionBar.Primary">
+        <item name="colorSurface">@color/actionBarColor</item>
+        <item name="android:elevation">12dp</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSecondary">@color/colorPrimary</item>
+        <item name="android:progressBackgroundTint">@color/colorBackground</item>
+        <item name="actionBarTheme">@style/SamplesAppBar</item>
+        <item name="materialButtonStyle">@style/RegularButton</item>
+        <item name="materialButtonOutlinedStyle">@style/OutlineButton</item>
+        <item name="materialAlertDialogTheme">@style/SamplesAlertDialog</item>
+        <item name="alertDialogTheme">@style/SamplesAlertDialog</item>
+        <item name="alertDialogStyle">@style/SamplesAlertDialog</item>
+
+    </style>
+
+</resources>

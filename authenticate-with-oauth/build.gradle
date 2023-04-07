@@ -36,4 +36,5 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$ktxLifecycle"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$ktxLifecycle"
     implementation "androidx.browser:browser:$androidBrowserVersion"
+    implementation project(path: ':samples-lib')
 }

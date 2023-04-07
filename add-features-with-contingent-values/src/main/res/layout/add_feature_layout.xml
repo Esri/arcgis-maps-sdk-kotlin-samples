@@ -16,7 +16,6 @@
                 android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -25,8 +24,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-thin"
-                    android:text="@string/add_feature"
-                    android:textColor="@android:color/white"
+                    android:text="Add Feature"
                     android:textSize="17sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -34,26 +32,26 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <android.widget.TextView
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/applyTv"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="25dp"
                     android:padding="10dp"
-                    android:text="@string/apply"
-                    android:textColor="@android:color/white"
+                    android:text="Apply"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <android.widget.TextView
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancelTv"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="25dp"
                     android:padding="10dp"
-                    android:text="@string/cancel"
-                    android:textColor="@android:color/white"
+                    android:text="Cancel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -75,11 +73,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/statusInputLayout"
-                style="@style/TextInputLayoutTheme"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/select_status_attribute"
-                app:boxBackgroundColor="@android:color/white">
+                android:hint="Select status attribute">
 
                 <AutoCompleteTextView
                     android:id="@+id/statusAttributeList"
@@ -96,11 +93,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/protectionInputLayout"
-                style="@style/TextInputLayoutTheme"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/select_protection_attribute"
-                app:boxBackgroundColor="@android:color/white">
+                android:hint="Select protection attribute">
 
                 <AutoCompleteTextView
                     android:id="@+id/protectionAttributeList"
@@ -118,8 +114,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/bufferLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -147,8 +142,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/numberPickerLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white">
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/bufferSeekBar"

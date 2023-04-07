@@ -20,7 +20,6 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -45,6 +44,7 @@ import com.arcgismaps.mapping.layers.FeatureLayer
 import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.TableLayoutBinding
 import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.TableRowBinding
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -61,11 +61,11 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.mapView
     }
 
-    private val createButton: Button by lazy {
+    private val createButton: MaterialButton by lazy {
         activityMainBinding.createButton
     }
 
-    private val viewTableButton: Button by lazy {
+    private val viewTableButton: MaterialButton by lazy {
         activityMainBinding.viewTableButton
     }
 

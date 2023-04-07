@@ -1,12 +1,12 @@
 package com.esri.arcgismaps.sample.editfeatureattachments
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.data.Attachment
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
