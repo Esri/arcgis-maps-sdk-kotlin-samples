@@ -6,7 +6,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
         tools:context=".MainActivity">
 
         <com.arcgismaps.mapping.view.MapView
@@ -83,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@android:color/white"
+            android:background="@color/colorBackground"
             android:padding="4dp"
             app:layout_constraintBottom_toTopOf="@id/optionsLayout"
             app:layout_constraintEnd_toEndOf="parent"

@@ -12,9 +12,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/playPauseFAB"
@@ -31,7 +33,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/colorBackground"
             android:orientation="vertical"
             android:paddingBottom="5dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,13 +62,11 @@
                     android:layout_height="35dp"
                     android:layout_margin="8dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/rounded_button_primary"
                     android:enabled="false"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
                     android:text="@string/n_a"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
