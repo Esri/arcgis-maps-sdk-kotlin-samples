@@ -225,27 +225,17 @@ class MainActivity : AppCompatActivity() {
      */
     private fun addImageGraphics() {
         // URI of image to display
-        val blueTentImageURI =
-            "https://static.arcgis.com/images/Symbols/OutdoorRecreation/Camping.png"
+        val blueTentImageURI = "https://static.arcgis.com/images/Symbols/OutdoorRecreation/Camping.png"
         // load the PictureMarkerSymbolLayer using the image URI
         val pictureMarkerFromUri = PictureMarkerSymbolLayer(blueTentImageURI)
-
-        lifecycleScope.launch {
-            pictureMarkerFromUri.load().getOrElse {
-                showError("Picture marker symbol layer failed to load from URI: ${it.message}")
-            }
-            // add loaded layer to the map
-            addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromUri, 0.0)
-            // load blue pin from as a bitmap
-            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
-            // load the PictureMarkerSymbolLayer using the bitmap drawable
-            val pictureMarkerFromCache = PictureMarkerSymbolLayer.createWithImage(BitmapDrawable(resources, bitmap))
-            pictureMarkerFromCache.load().getOrElse {
-                showError("Picture marker symbol layer failed to load from bitmap: ${it.message}")
-            }
-            // add loaded layer to the map
-            addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromCache, 40.0)
-        }
+        // add loaded layer to the map
+        addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromUri, 0.0)
+        // load blue pin from as a bitmap
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
+        // load the PictureMarkerSymbolLayer using the bitmap drawable
+        val pictureMarkerFromCache = PictureMarkerSymbolLayer.createWithImage(BitmapDrawable(resources, bitmap))
+        // add loaded layer to the map
+        addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromCache, 40.0)
     }
 
     /**
@@ -254,26 +244,23 @@ class MainActivity : AppCompatActivity() {
      *
      * The [pictureMarkerSymbolLayer] to be loaded.
      * The [offset] value used to keep a consistent distance between symbols in the same column.
-     *
      */
     private fun addGraphicFromPictureMarkerSymbolLayer(
         pictureMarkerSymbolLayer: PictureMarkerSymbolLayer, offset: Double
-    ) {
-        lifecycleScope.launch {
-            // wait for the picture marker symbol layer to load and check it has loaded
-            pictureMarkerSymbolLayer.load().getOrElse {
-                showError("Picture marker symbol layer failed to load: ${it.message}")
-            }
-            // set the size of the layer and create a new multilayer point symbol from it
-            pictureMarkerSymbolLayer.size = 40.0
-            val multilayerPointSymbol = MultilayerPointSymbol(listOf(pictureMarkerSymbolLayer))
-            // create location for the symbol
-            val point = Point(-80.0, 20.0 - offset, SpatialReference.wgs84())
-
-            // create graphic with the location and symbol and add it to the graphics overlay
-            val graphic = Graphic(point, multilayerPointSymbol)
-            graphicsOverlay.graphics.add(graphic)
+    ) = lifecycleScope.launch {
+        // wait for the picture marker symbol layer to load and check it has loaded
+        pictureMarkerSymbolLayer.load().getOrElse {
+            showError("Picture marker symbol layer failed to load: ${it.message}")
         }
+        // set the size of the layer and create a new multilayer point symbol from it
+        pictureMarkerSymbolLayer.size = 40.0
+        val multilayerPointSymbol = MultilayerPointSymbol(listOf(pictureMarkerSymbolLayer))
+        // create location for the symbol
+        val point = Point(-80.0, 20.0 - offset, SpatialReference.wgs84())
+
+        // create graphic with the location and symbol and add it to the graphics overlay
+        val graphic = Graphic(point, multilayerPointSymbol)
+        graphicsOverlay.graphics.add(graphic)
     }
 
     /**

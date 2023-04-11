@@ -22,8 +22,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:text="@string/directions"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -43,6 +43,6 @@
             android:id="@+id/directionsListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white" />
+            android:background="@color/colorBackground" />
     </LinearLayout>
 </layout>
