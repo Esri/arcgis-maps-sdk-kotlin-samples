@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     // to view the traffic layer in the portal, you must enter valid ArcGIS Online credentials.
     private val portal by lazy {
-        Portal(getString(R.string.portal_url), Portal.Connection.Authenticated)
+        Portal(getString(R.string.auth_portal_url), Portal.Connection.Authenticated)
     }
 
     private val oAuthConfiguration by lazy {
