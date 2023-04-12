@@ -23,7 +23,7 @@ Once the project is cloned to disk you can import into Android Studio:
 
 Accessing Esri location services, including basemaps, routing, and geocoding, requires authentication using either an API Key or an ArcGIS identity:
 
-* API key
+#### API key
 
 A permanent key that gives your application access to Esri location services. Visit your [ArcGIS Developers Dashboard](https://developers.arcgis.com/dashboard) to create a new API key or access an existing API key.
 The Android samples in this repository have been structured to use an API key, set once, which will run in all samples.
