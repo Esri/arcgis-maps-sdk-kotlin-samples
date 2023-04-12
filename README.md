@@ -30,7 +30,7 @@ The Android samples in this repository have been structured to use an API key, s
 Set your API key in the `gradle.properties` file located in the `/.gradle` folder within your home directory.
 The API_KEY property should contain quotes around the key itself: 
 
-* ArcGIS identity
+#### ArcGIS identity
 
 An ArcGIS named user account that is a member of an organization in ArcGIS Online or ArcGIS Enterprise.
 
