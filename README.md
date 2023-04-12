@@ -45,7 +45,7 @@ You can execute all the build tasks using the [Gradle Wrapper](https://docs.grad
 
 * Build a debug APK
 
-```gradle
+```
 ./gradlew assembleDebug
 ```
 
