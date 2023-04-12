@@ -46,7 +46,7 @@ You can execute all the build tasks using the [Gradle Wrapper](https://docs.grad
 * Build a debug APK
 
 ```
-./gradlew assembleDebug
+$ ./gradlew assembleDebug
 ```
 
 * Install the app on the device
@@ -80,7 +80,7 @@ Please see our [guidelines for contributing doc](https://github.com/Esri/contrib
 
 Copyright 2023 Esri
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
-You may obtain a copy of the License <http://www.apache.org/licenses/LICENSE-2.0>
+You may obtain a copy of the License <http://www.apache.org/licenses/LICENSE-2.0>. 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 A copy of the license is available in the repository's [LICENSE](LICENSE?raw=1) file
