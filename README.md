@@ -12,7 +12,7 @@ ArcGIS Maps SDK for Kotlin v200.1.0 samples.  The `main` branch of this reposito
 
 ## Developer Instructions
 
-Please read our [developer instructions wiki page](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki/dev-instructions) to set up your developer environment with Android Studio.  Instructions include forking and cloning the repository for those new to Git.
+Please read our [developer instructions wiki page](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki/Developer-Instructions) to set up your developer environment with Android Studio.  Instructions include forking and cloning the repository for those new to Git.
 
 Once the project is cloned to disk you can import into Android Studio:
 
