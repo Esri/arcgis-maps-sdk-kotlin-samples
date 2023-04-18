@@ -29,7 +29,9 @@ A permanent key that gives your application access to Esri location services. Vi
 The Android samples in this repository have been structured to use an API key, set once, which will run in all samples.
 Set your API key in the `gradle.properties` file located in the `/.gradle` folder within your home directory.
 The API_KEY property should contain quotes around the key itself:
-`API_KEY = "YOUR_API_KEY" // path: /Users/<user_name>/.gradle/gradle.properties`
+```gradle
+API_KEY = "YOUR_API_KEY" // path: /Users/<user_name>/.gradle/gradle.properties
+```
 
 ### ArcGIS identity
 
