@@ -1,0 +1,31 @@
+{
+    "category": "Maps and Scenes",
+    "description": "Display a map using Jetpack Compose.",
+    "formal_name": "DisplayComposableMapview",
+    "ignore": false,
+    "images": [
+        "display-composable-mapview.png"
+    ],
+    "keywords": [
+        "basemap",
+        "compose",
+        "jetpack",
+        "map",
+        "ArcGISMap",
+        "BasemapStyle",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "BasemapStyle",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/MapViewWithCompose.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/theme/Theme.kt"
+    ],
+    "title": "Display Composable MapView"
+}

@@ -23,7 +23,6 @@ import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.PolygonBuilder
@@ -118,11 +117,10 @@ class MainActivity : AppCompatActivity() {
         cutButton.setOnClickListener {
             // cut the graphic along the polyline to create 2 graphic parts
             polygonGraphic.geometry?.let { graphicGeometry ->
-                val parts: List<Geometry> =
-                    GeometryEngine.cut(
-                        graphicGeometry,
-                        polylineGraphic.geometry as Polyline
-                    )
+                val parts = GeometryEngine.tryCut(
+                    graphicGeometry,
+                    polylineGraphic.geometry as Polyline
+                )
 
                 // create graphics for the US and Canada sides
                 val canadaSide = Graphic(

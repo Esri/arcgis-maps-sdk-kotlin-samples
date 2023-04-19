@@ -38,8 +38,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     // create service feature table and a feature layer from it
     private val serviceFeatureTable = ServiceFeatureTable(gdbPerCapitalURL)
-    private val featureLayer = FeatureLayer(serviceFeatureTable)
+    private val featureLayer = FeatureLayer.createWithFeatureTable(serviceFeatureTable)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             }
             onFailure {
                 val errorMessage = "Select feature failed: " + it.message
-                Log.e(TAG, errorMessage)
+                Log.e(localClassName, errorMessage)
                 Snackbar.make(mapView, errorMessage, Snackbar.LENGTH_SHORT).show()
             }
         }

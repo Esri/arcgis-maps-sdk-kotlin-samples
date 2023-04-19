@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Generate offline map using android jetpack workmanager</string>
+    <string name="portal_url">https://www.arcgis.com</string>
+    <string name="item_id">acc027394bc84c2fb04d1ed317aac674</string>
+    <string name="dialog_title">Generating offline map..</string>
+    <string name="offlineMapFile">/offlineMap</string>
+    <string name="offlineJobJsonFile">/offlineJobJson</string>
+    <string name="notification_channel_name">Offline Map Job Notifications</string>
+    <string name="notification_channel_description">Shows notifications for offline map job progress</string>
+    <string name="notification_title">ArcGIS Maps Sample: Offline Map Download</string>
+    <string name="notification_action">NotificationAction</string>
+    <string name="take_map_offline">Take Map Offline</string>
+</resources>

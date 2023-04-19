@@ -51,8 +51,6 @@ import com.esri.arcgismaps.sample.stylegraphicswithrenderer.databinding.Activity
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -273,7 +271,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // define the ellipse parameters to a polygon geometry
-        val polygon = GeometryEngine.ellipseGeodesic(parameters)
+        val polygon = GeometryEngine.ellipseGeodesicOrNull(parameters)
         // set the ellipse fill color
         val ellipseSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.magenta, null)
         // return the purple ellipse

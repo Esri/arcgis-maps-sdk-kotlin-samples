@@ -32,4 +32,5 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation "com.google.android.material:material:$materialVersion"
+    implementation project(path: ':samples-lib')
 }

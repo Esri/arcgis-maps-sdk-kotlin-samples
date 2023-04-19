@@ -16,29 +16,29 @@
 
 package com.esri.arcgismaps.sample.generateofflinemap
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.portal.PortalItem
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
-import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.Color
 import com.esri.arcgismaps.sample.generateofflinemap.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemap.databinding.GenerateOfflineMapDialogLayoutBinding
 import com.google.android.material.snackbar.Snackbar
@@ -46,8 +46,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.simpleName
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -165,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         // create an offline map task with the map
         val offlineMapTask = OfflineMapTask(map)
         // create an offline map job with the download directory path and parameters and start the job
-        val offlineMapJob = offlineMapTask.generateOfflineMap(
+        val offlineMapJob = offlineMapTask.createGenerateOfflineMapJob(
             generateOfflineMapParameters,
             offlineMapPath
         )
@@ -243,7 +241,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMessage(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 }

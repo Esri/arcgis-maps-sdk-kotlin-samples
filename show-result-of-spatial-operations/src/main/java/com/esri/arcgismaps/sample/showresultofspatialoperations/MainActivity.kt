@@ -49,8 +49,6 @@ private val Color.Companion.blue: Color
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -94,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         // set up the adapter
         val arrayAdapter = ArrayAdapter(
-            this, R.layout.dropdown_item, resources.getStringArray(R.array.operation)
+            this, R.layout.custom_dropdown_item, resources.getStringArray(R.array.operation)
         )
         activityMainBinding.bottomListItems.apply {
             setAdapter(arrayAdapter)
@@ -134,16 +132,16 @@ class MainActivity : AppCompatActivity() {
             SpatialOperation.NO_OPERATION -> { /* No operation needed */
             }
             SpatialOperation.INTERSECTION -> {
-                resultGeometry = GeometryEngine.intersection(inputPolygon1, inputPolygon2)
+                resultGeometry = GeometryEngine.intersectionOrNull(inputPolygon1, inputPolygon2)
             }
             SpatialOperation.UNION -> {
                 resultGeometry = GeometryEngine.union(inputPolygon1, inputPolygon2)
             }
             SpatialOperation.DIFFERENCE -> {
-                resultGeometry = GeometryEngine.difference(inputPolygon1, inputPolygon2)
+                resultGeometry = GeometryEngine.differenceOrNull(inputPolygon1, inputPolygon2)
             }
             SpatialOperation.SYMMETRIC_DIFFERENCE -> {
-                resultGeometry = GeometryEngine.symmetricDifference(inputPolygon1, inputPolygon2)
+                resultGeometry = GeometryEngine.symmetricDifferenceOrNull(inputPolygon1, inputPolygon2)
             }
             null -> {}
         }

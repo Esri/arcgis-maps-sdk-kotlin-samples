@@ -38,21 +38,21 @@ class RelationshipsDialog(
         // display list if polyline has relationships
         if (polylineRelationships.isNotEmpty()) {
             polylineListView.adapter = ArrayAdapter(
-                dialogView.context, android.R.layout.simple_list_item_1,
+                dialogView.context, R.layout.custom_dropdown_item,
                 polylineRelationships
             )
         } else polylineTitle.visibility = View.GONE
         // display list if polygon has relationships
         if (polygonRelationships.isNotEmpty()) {
             polygonListView.adapter = ArrayAdapter(
-                dialogView.context, android.R.layout.simple_list_item_1,
+                dialogView.context, R.layout.custom_dropdown_item,
                 polygonRelationships
             )
         } else polygonTitle.visibility = View.GONE
         // display list if point has relationships
         if (pointRelationships.isNotEmpty()) {
             pointListView.adapter = ArrayAdapter(
-                dialogView.context, android.R.layout.simple_list_item_1,
+                dialogView.context, R.layout.custom_dropdown_item,
                 pointRelationships
             )
         } else pointTitle.visibility = View.GONE
@@ -60,10 +60,6 @@ class RelationshipsDialog(
         setDynamicHeight(polylineListView)
         setDynamicHeight(polygonListView)
         setDynamicHeight(pointListView)
-        // add a dismiss listener
-        dialogBuilder.setNeutralButton("Dismiss") { dialog, _ ->
-            dialog.dismiss()
-        }
         // create and display the alert dialog
         dialogBuilder.create().show()
     }

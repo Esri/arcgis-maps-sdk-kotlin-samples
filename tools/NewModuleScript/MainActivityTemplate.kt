@@ -30,7 +30,7 @@ import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
+
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showError(message: String, view: View) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }

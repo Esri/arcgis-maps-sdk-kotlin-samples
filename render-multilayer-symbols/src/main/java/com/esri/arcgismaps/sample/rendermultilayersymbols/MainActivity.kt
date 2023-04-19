@@ -73,17 +73,10 @@ private val Color.Companion.magenta: Color
         return fromRgba(255, 0, 255, 255)
     }
 
-private val Color.Companion.cyan: Color
-    get() {
-        return fromRgba(0, 100, 100, 255)
-    }
-
 // define offset used to keep a consistent distance between symbols in the same column
 private const val OFFSET = 20.0
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.simpleName
 
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
@@ -127,11 +120,11 @@ class MainActivity : AppCompatActivity() {
 
         // define vector element for a diamond, triangle and cross
         val diamondGeometry =
-            Geometry.fromJson("{\"rings\":[[[0.0,2.5],[2.5,0.0],[0.0,-2.5],[-2.5,0.0],[0.0,2.5]]]}")
+            Geometry.fromJsonOrNull("{\"rings\":[[[0.0,2.5],[2.5,0.0],[0.0,-2.5],[-2.5,0.0],[0.0,2.5]]]}")
         val triangleGeometry =
-            Geometry.fromJson("{\"rings\":[[[0.0,5.0],[5,-5.0],[-5,-5.0],[0.0,5.0]]]}")
+            Geometry.fromJsonOrNull("{\"rings\":[[[0.0,5.0],[5,-5.0],[-5,-5.0],[0.0,5.0]]]}")
         val crossGeometry =
-            Geometry.fromJson("{\"paths\":[[[-1,1],[0,0],[1,-1]],[[1,1],[0,0],[-1,-1]]]}")
+            Geometry.fromJsonOrNull("{\"paths\":[[[-1,1],[0,0],[1,-1]],[[1,1],[0,0],[-1,-1]]]}")
 
         if (diamondGeometry == null || triangleGeometry == null || crossGeometry == null) {
             showError("Error reading geometry from json")
@@ -180,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
         // define vector element for a hexagon which will be used as the basis of a complex point
         val complexPointGeometry =
-            Geometry.fromJson("{\"rings\":[[[-2.89,5.0],[2.89,5.0],[5.77,0.0],[2.89,-5.0],[-2.89,-5.0],[-5.77,0.0],[-2.89,5.0]]]}")
+            Geometry.fromJsonOrNull("{\"rings\":[[[-2.89,5.0],[2.89,5.0],[5.77,0.0],[2.89,-5.0],[-2.89,-5.0],[-5.77,0.0],[-2.89,5.0]]]}")
 
         // create the more complex multilayer graphics: a point, polygon, and polyline
         complexPointGeometry?.let { addComplexPoint(it) }
@@ -232,27 +225,17 @@ class MainActivity : AppCompatActivity() {
      */
     private fun addImageGraphics() {
         // URI of image to display
-        val blueTentImageURI =
-            "https://static.arcgis.com/images/Symbols/OutdoorRecreation/Camping.png"
+        val blueTentImageURI = "https://static.arcgis.com/images/Symbols/OutdoorRecreation/Camping.png"
         // load the PictureMarkerSymbolLayer using the image URI
         val pictureMarkerFromUri = PictureMarkerSymbolLayer(blueTentImageURI)
-
-        lifecycleScope.launch {
-            pictureMarkerFromUri.load().getOrElse {
-                showError("Picture marker symbol layer failed to load from URI: ${it.message}")
-            }
-            // add loaded layer to the map
-            addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromUri, 0.0)
-            // load blue pin from as a bitmap
-            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
-            // load the PictureMarkerSymbolLayer using the bitmap drawable
-            val pictureMarkerFromCache = PictureMarkerSymbolLayer(BitmapDrawable(resources, bitmap))
-            pictureMarkerFromCache.load().getOrElse {
-                showError("Picture marker symbol layer failed to load from bitmap: ${it.message}")
-            }
-            // add loaded layer to the map
-            addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromCache, 40.0)
-        }
+        // add loaded layer to the map
+        addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromUri, 0.0)
+        // load blue pin from as a bitmap
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
+        // load the PictureMarkerSymbolLayer using the bitmap drawable
+        val pictureMarkerFromCache = PictureMarkerSymbolLayer.createWithImage(BitmapDrawable(resources, bitmap))
+        // add loaded layer to the map
+        addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromCache, 40.0)
     }
 
     /**
@@ -261,26 +244,23 @@ class MainActivity : AppCompatActivity() {
      *
      * The [pictureMarkerSymbolLayer] to be loaded.
      * The [offset] value used to keep a consistent distance between symbols in the same column.
-     *
      */
     private fun addGraphicFromPictureMarkerSymbolLayer(
         pictureMarkerSymbolLayer: PictureMarkerSymbolLayer, offset: Double
-    ) {
-        lifecycleScope.launch {
-            // wait for the picture marker symbol layer to load and check it has loaded
-            pictureMarkerSymbolLayer.load().getOrElse {
-                showError("Picture marker symbol layer failed to load: ${it.message}")
-            }
-            // set the size of the layer and create a new multilayer point symbol from it
-            pictureMarkerSymbolLayer.size = 40.0
-            val multilayerPointSymbol = MultilayerPointSymbol(listOf(pictureMarkerSymbolLayer))
-            // create location for the symbol
-            val point = Point(-80.0, 20.0 - offset, SpatialReference.wgs84())
-
-            // create graphic with the location and symbol and add it to the graphics overlay
-            val graphic = Graphic(point, multilayerPointSymbol)
-            graphicsOverlay.graphics.add(graphic)
+    ) = lifecycleScope.launch {
+        // wait for the picture marker symbol layer to load and check it has loaded
+        pictureMarkerSymbolLayer.load().getOrElse {
+            showError("Picture marker symbol layer failed to load: ${it.message}")
         }
+        // set the size of the layer and create a new multilayer point symbol from it
+        pictureMarkerSymbolLayer.size = 40.0
+        val multilayerPointSymbol = MultilayerPointSymbol(listOf(pictureMarkerSymbolLayer))
+        // create location for the symbol
+        val point = Point(-80.0, 20.0 - offset, SpatialReference.wgs84())
+
+        // create graphic with the location and symbol and add it to the graphics overlay
+        val graphic = Graphic(point, multilayerPointSymbol)
+        graphicsOverlay.graphics.add(graphic)
     }
 
     /**
@@ -532,7 +512,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showError(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Generate geodatabase replica from feature service</string>
+    <string name="feature_server_url">https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/Mobile_Data_Collection_WFL1/FeatureServer</string>
+    <string name="generate_button_text">Generate</string>
+    <string name="dialog_title">Fetching result</string>
+    <string name="portland_trees_geodatabase_file">/portland_trees_gdb.geodatabase</string>
+</resources>

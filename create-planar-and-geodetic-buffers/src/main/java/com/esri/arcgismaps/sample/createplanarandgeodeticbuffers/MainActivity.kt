@@ -122,12 +122,12 @@ class MainActivity : AppCompatActivity() {
                     val bufferInMeters = bufferInMiles * 1609.34
 
                     // create a planar buffer graphic around the input location at the specified distance
-                    val bufferGeometryPlanar = GeometryEngine.buffer(mapPoint, bufferInMeters)
+                    val bufferGeometryPlanar = GeometryEngine.bufferOrNull(mapPoint, bufferInMeters)
                     val planarBufferGraphic = Graphic(bufferGeometryPlanar)
 
                     // create a geodesic buffer graphic using the same location and distance
                     val bufferGeometryGeodesic =
-                        GeometryEngine.bufferGeodetic(
+                        GeometryEngine.bufferGeodeticOrNull(
                             mapPoint, bufferInMeters,
                             LinearUnit(LinearUnitId.Meters), Double.NaN, GeodeticCurveType.Geodesic
                         )

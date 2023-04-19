@@ -22,8 +22,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:text="@string/directions"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -35,13 +35,14 @@
                 android:layout_marginEnd="32dp"
                 app:layout_constraintBottom_toBottomOf="@+id/headerTitle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_expand_less_black_24dp" />
+                app:srcCompat="@drawable/ic_expand_less_black_24dp"
+                android:contentDescription="@string/collapse_directions" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ListView
             android:id="@+id/directionsListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white" />
+            android:background="@color/colorBackground" />
     </LinearLayout>
 </layout>

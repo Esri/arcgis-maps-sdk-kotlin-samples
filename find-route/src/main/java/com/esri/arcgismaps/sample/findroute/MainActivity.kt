@@ -58,8 +58,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = MainActivity::class.java.simpleName
-
     // set up data binding for the activity
     private val activityMainBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -254,7 +252,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupSymbols() {
         val startDrawable =
             ContextCompat.getDrawable(this, R.drawable.ic_source) as BitmapDrawable
-        val pinSourceSymbol = PictureMarkerSymbol(startDrawable).apply {
+        val pinSourceSymbol = PictureMarkerSymbol.createWithImage(startDrawable).apply {
             // make the graphic smaller
             width = 30f
             height = 30f
@@ -272,7 +270,7 @@ class MainActivity : AppCompatActivity() {
 
         endDrawable.let {
             val pinDestinationSymbol =
-                PictureMarkerSymbol(endDrawable).apply {
+                PictureMarkerSymbol.createWithImage(endDrawable).apply {
                     // make the graphic smaller
                     width = 30f
                     height = 30f
@@ -286,7 +284,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showError(message: String) {
-        Log.e(TAG, message)
+        Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 

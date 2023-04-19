@@ -1,0 +1,60 @@
+{
+    "category": "Routing and Logistics",
+    "description": "Find a route that reaches all stops without crossing any barriers.",
+    "formal_name": "FindRouteAroundBarriers",
+    "ignore": false,
+    "images": [
+        "find-route-around-barriers.png"
+    ],
+    "keywords": [
+        "barriers",
+        "best sequence",
+        "directions",
+        "maneuver",
+        "network analysis",
+        "routing",
+        "sequence",
+        "stop order",
+        "stops",
+        "DirectionManeuver",
+        "PolygonBarrier",
+        "Route",
+        "Route.DirectionManeuver",
+        "Route.RouteGeometry",
+        "RouteParameters.ClearPolygonBarriers",
+        "RouteParameters.FindBestSequence",
+        "RouteParameters.PreserveFirstStop",
+        "RouteParameters.PreserveLastStop",
+        "RouteParameters.ReturnDirections",
+        "RouteParameters.ReturnStops",
+        "RouteParameters.SetPolygonBarriers",
+        "RouteResult",
+        "RouteResult.Routes",
+        "RouteTask",
+        "Stop"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "DirectionManeuver",
+        "PolygonBarrier",
+        "Route",
+        "Route.DirectionManeuver",
+        "Route.RouteGeometry",
+        "RouteParameters.ClearPolygonBarriers",
+        "RouteParameters.FindBestSequence",
+        "RouteParameters.PreserveFirstStop",
+        "RouteParameters.PreserveLastStop",
+        "RouteParameters.ReturnDirections",
+        "RouteParameters.ReturnStops",
+        "RouteParameters.SetPolygonBarriers",
+        "RouteResult",
+        "RouteResult.Routes",
+        "RouteTask",
+        "Stop"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/findroutearoundbarriers/MainActivity.kt"
+    ],
+    "title": "Find route around barriers"
+}

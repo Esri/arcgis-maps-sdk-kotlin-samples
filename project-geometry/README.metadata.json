@@ -1,0 +1,34 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Project a point from one spatial reference to another.",
+    "formal_name": "ProjectGeometry",
+    "ignore": false,
+    "images": [
+        "project-geometry.png"
+    ],
+    "keywords": [
+        "WGS 84",
+        "Web Mercator",
+        "coordinate system",
+        "coordinates",
+        "latitude",
+        "longitude",
+        "projected",
+        "projection",
+        "spatial reference",
+        "GeometryEngine",
+        "Point",
+        "SpatialReference"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "GeometryEngine",
+        "Point",
+        "SpatialReference"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/MainActivity.kt"
+    ],
+    "title": "Project geometry"
+}

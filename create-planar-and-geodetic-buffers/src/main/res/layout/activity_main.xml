@@ -21,7 +21,7 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:background="@color/colorBackground"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="@+id/mapView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,7 +82,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:text="@string/geodesic_buffer"
                     app:layout_constraintBottom_toBottomOf="@+id/geodesicSwatch"
                     app:layout_constraintStart_toEndOf="@+id/geodesicSwatch"
@@ -111,7 +110,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/clearButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
