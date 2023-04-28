@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaycomposablemapview.theme
+package com.esri.arcgismaps.sample.sampleslib.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -32,7 +32,7 @@ import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.esri.arcgismaps.sample.displaycomposablemapview.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
