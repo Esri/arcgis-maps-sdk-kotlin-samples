@@ -169,7 +169,7 @@ public class ScriptMain {
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace(
-                    "<string name=\"app_name\">Display map</string>",
+                    "<string name=\"app_name\">Display composable mapView</string>",
                     "<string name=\"app_name\">" + sampleName +"</string>");
             FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
         } catch (IOException e) {
