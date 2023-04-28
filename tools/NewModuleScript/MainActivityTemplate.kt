@@ -21,16 +21,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.displaycomposablemapview.components.ComposeMapView
 
 class MainActivity : ComponentActivity() {
 
@@ -42,21 +45,27 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // a mutable/immutable state is computed by remember to store its value during
-                    // initial composition, and updates the composition on the state value change
-                    val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
-
-                    // Composable function that wraps the MapView
-                    ComposeMapView(
-                            modifier = Modifier.fillMaxSize(),
-                            arcGISMap = map
-                    )
-                }
+                SampleApp()
             }
         }
+    }
+
+    @Composable
+    private fun SampleApp() {
+        Surface(
+                color = MaterialTheme.colors.background,
+                modifier = Modifier.fillMaxSize(),
+                content = {
+                    Column() {
+                        // a mutable/immutable state is computed by remember to store its value during
+                        // initial composition, and updates the composition on the state value change
+                        val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
+                        // composable function that wraps the MapView
+                        ComposeMapView(
+                                modifier = Modifier.fillMaxSize(),
+                                arcGISMap = map
+                        )
+                    }
+                })
     }
 }

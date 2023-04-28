@@ -99,7 +99,7 @@ public class ScriptMain {
 
         // Copy Kotlin template files to new sample
         File mainActivityTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainActivityTemplate.kt");
-        File composeMapViewTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/ComposeMapView.kt");
+        File composeMapViewTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/ComposeMapViewTemplate.kt");
 
         // Perform copy
         try {
@@ -107,8 +107,10 @@ public class ScriptMain {
             Path source = Paths.get(packageDirectory+"/MainActivityTemplate.kt");
             Files.move(source, source.resolveSibling("MainActivity.kt"));
 
-            FileUtils.copyFileToDirectory(composeMapViewTemplate, packageDirectory);
-            source = Paths.get(packageDirectory+"/ComposeMapView.kt");
+            File composeComponentsDir = new File(packageDirectory + "/components");
+            composeComponentsDir.mkdirs();
+            FileUtils.copyFileToDirectory(composeMapViewTemplate, composeComponentsDir);
+            source = Paths.get(composeComponentsDir+"/ComposeMapViewTemplate.kt");
             Files.move(source, source.resolveSibling("ComposeMapView.kt"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -188,7 +190,7 @@ public class ScriptMain {
         }
 
         //Update ComposeMapView.kt
-        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/ComposeMapView.kt");
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/components/ComposeMapView.kt");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
