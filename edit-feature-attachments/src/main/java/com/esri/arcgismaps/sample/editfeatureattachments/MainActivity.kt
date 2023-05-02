@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
 
         // file provider URI
         val contentUri = FileProvider.getUriForFile(
-            applicationContext, applicationContext.packageName + ".provider", file
+            applicationContext, getString(R.string.provider_authority), file
         )
         // open the file in gallery
         val imageIntent = Intent().apply {
