@@ -29,6 +29,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="colorSecondary">@color/colorPrimary</item>
+        <item name="colorOnSecondary">@color/icon_tint</item>
         <item name="android:progressBackgroundTint">@color/colorBackground</item>
         <item name="actionBarTheme">@style/SamplesAppBar</item>
         <item name="materialButtonStyle">@style/RegularButton</item>

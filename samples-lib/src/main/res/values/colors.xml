@@ -9,4 +9,5 @@
     <color name="textColor">#2C2C2E</color>
     <color name="button_disabled_background_color">#e3e1e1</color>
     <color name="button_enabled_text_color">@android:color/white</color>
+    <color name="icon_tint">@android:color/white</color>
 </resources>
