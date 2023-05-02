@@ -9,5 +9,5 @@
     <color name="textColor">#e3e1e1</color>
     <color name="button_disabled_background_color">#e3e1e1</color>
     <color name="button_enabled_text_color">#2C2C2E</color>
-    <color name="icon_tint">@android:color/black</color>
+    <color name="colorOnSecondary">#BF000000</color>
 </resources>

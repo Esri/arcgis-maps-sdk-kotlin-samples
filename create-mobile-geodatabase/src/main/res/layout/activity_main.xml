@@ -45,16 +45,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
                 android:text="@string/share_mobile_geodatabase"
                 android:textAllCaps="false"
+                app:icon="@drawable/round_create_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/viewTableButton"
+                style="@style/OutlineButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
