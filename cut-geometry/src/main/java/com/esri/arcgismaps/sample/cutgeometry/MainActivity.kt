@@ -138,9 +138,9 @@ class MainActivity : AppCompatActivity() {
                 // add the graphics to the graphics overlay
                 graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
 
-                // swap button visibility
-                cutButton.visibility = View.GONE
-                resetButton.visibility = View.VISIBLE
+                // swap button state
+                cutButton.isEnabled = false
+                resetButton.isEnabled = true
             }
         }
 
@@ -152,8 +152,8 @@ class MainActivity : AppCompatActivity() {
             createGraphics(graphicsOverlay, mapView)
 
             // swap button visibility
-            cutButton.visibility = View.VISIBLE
-            resetButton.visibility = View.GONE
+            cutButton.isEnabled = true
+            resetButton.isEnabled = false
         }
 
     }
