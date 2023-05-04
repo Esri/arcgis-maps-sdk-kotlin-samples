@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--Outline button style: To be used as a secondary option button-->
     <style name="OutlineButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:paddingHorizontal">12dp</item>
-        <item name="android:paddingVertical">8dp</item>
-        <item name="android:insetTop">12dp</item>
-        <item name="android:insetBottom">12dp</item>
-        <item name="android:insetLeft">12dp</item>
-        <item name="android:insetRight">12dp</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:paddingHorizontal">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingVertical">@dimen/buttonVerticalPadding</item>
+        <item name="android:insetTop">@dimen/buttonMargin</item>
+        <item name="android:insetBottom">@dimen/buttonMargin</item>
+        <item name="android:insetLeft">@dimen/buttonMargin</item>
+        <item name="android:insetRight">@dimen/buttonMargin</item>
+        <item name="android:textSize">@dimen/textSize</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <!--Filled button style: To be used as a primary option button-->
+    <style name="RegularButton" parent="@style/Widget.MaterialComponents.Button">
+        <item name="android:paddingHorizontal">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingVertical">@dimen/buttonVerticalPadding</item>
+        <item name="android:insetTop">@dimen/buttonMargin</item>
+        <item name="android:insetLeft">@dimen/buttonMargin</item>
+        <item name="android:insetRight">@dimen/buttonMargin</item>
+        <item name="android:insetBottom">@dimen/buttonMargin</item>
+        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!--Icon button style: To be used with an 24dp icon without any text-->
     <style name="IconButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:layout_height">52dp</item>
         <item name="android:layout_width">52dp</item>
@@ -19,35 +33,25 @@
         <item name="android:paddingVertical">0dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="strokeColor">@android:color/transparent</item>
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetRight">0dp</item>
+        <item name="strokeColor">@android:color/transparent</item>
         <item name="iconPadding">0dp</item>
         <item name="iconGravity">textStart</item>
     </style>
 
+    <!--Toggle button style: To be used with a MaterialButtonToggleGroup -->
     <style name="ToggleButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:paddingHorizontal">12dp</item>
-        <item name="android:paddingVertical">8dp</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="RegularButton" parent="@style/Widget.MaterialComponents.Button">
-        <item name="android:paddingHorizontal">12dp</item>
-        <item name="android:paddingVertical">8dp</item>
-        <item name="android:insetTop">12dp</item>
-        <item name="android:insetLeft">12dp</item>
-        <item name="android:insetRight">12dp</item>
-        <item name="android:insetBottom">12dp</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:paddingHorizontal">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingVertical">@dimen/buttonVerticalPadding</item>
+        <item name="android:textSize">@dimen/textSize</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="SamplesAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:background">@color/colorBackground</item>
     </style>
-    
+
     <style name="SamplesAppBar" parent="Widget.MaterialComponents.ActionBar.Primary">
         <item name="colorSurface">@color/actionBarColor</item>
         <item name="android:elevation">12dp</item>
