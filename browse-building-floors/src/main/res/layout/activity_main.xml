@@ -22,7 +22,6 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:enabled="false"
             android:hint="@string/select_the_floor_to_display"
             android:labelFor="@id/selectedFloorTV"
