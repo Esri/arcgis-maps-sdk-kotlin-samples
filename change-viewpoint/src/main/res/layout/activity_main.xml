@@ -43,7 +43,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/geometryButton"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="@style/ToggleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="onGeometryClicked"
@@ -52,7 +52,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/centerButton"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="@style/ToggleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -61,7 +61,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/animateButton"
-                    style="?attr/materialButtonOutlinedStyle"
+                    style="@style/ToggleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"

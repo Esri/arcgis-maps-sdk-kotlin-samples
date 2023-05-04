@@ -60,9 +60,16 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.takeMapOfflineButton
     }
 
+    private val resetMapButton by lazy {
+        activityMainBinding.resetButton
+    }
+
     private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
-    private val downloadArea: Graphic = Graphic()
+    // create a symbol to show a box around the extent we want to download
+    private val downloadArea: Graphic = Graphic().apply {
+        symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,17 +79,23 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         // add mapView to the lifecycle
         lifecycle.addObserver(mapView)
+        // set up the portal item to take offline
+        setUpMapView()
+    }
 
-        // disable the button until the map is loaded
-        takeMapOfflineButton.isEnabled = false
-
+    /**
+     * Sets up a portal item and displays map area to take offline
+     */
+    private fun setUpMapView() {
         // create a portal item with the itemId of the web map
         val portal = Portal(getString(R.string.portal_url))
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
-        // create a symbol to show a box around the extent we want to download
-        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
-        // add the graphic to the graphics overlay when it is created
+        // clear graphic overlays
+        graphicsOverlay.graphics.clear()
+        mapView.graphicsOverlays.clear()
+
+        // add the download graphic to the graphics overlay
         graphicsOverlay.graphics.add(downloadArea)
         val map = ArcGISMap(portalItem)
         lifecycleScope.launch {
@@ -116,9 +129,6 @@ class MainActivity : AppCompatActivity() {
                 if (minPoint != null && maxPoint != null) {
                     val envelope = Envelope(minPoint, maxPoint)
                     downloadArea.geometry = envelope
-                    // enable the take map offline button only after the map is loaded
-                    if (!takeMapOfflineButton.isEnabled && map.loadStatus.value is LoadStatus.Loaded)
-                        takeMapOfflineButton.isEnabled = true
                 }
             }
         }
@@ -205,9 +215,9 @@ class MainActivity : AppCompatActivity() {
         offlineMapJob.result().onSuccess {
             mapView.map = it.offlineMap
             graphicsOverlay.graphics.clear()
-            // disable and remove the button to take the map offline once the offline map is showing
+            // disable the button to take the map offline once the offline map is showing
             takeMapOfflineButton.isEnabled = false
-            takeMapOfflineButton.visibility = View.GONE
+            resetMapButton.isEnabled = true
 
             showMessage("Map saved at: " + offlineMapJob.downloadDirectoryPath)
 
@@ -238,6 +248,17 @@ class MainActivity : AppCompatActivity() {
             setView(dialogLayoutBinding.root)
         }
         return builder.create()
+    }
+
+    /**
+     * Clear the preview map and display the Portal Item
+     */
+    fun resetButtonClick(view: View) {
+        // enable offline button
+        takeMapOfflineButton.isEnabled = true
+        resetMapButton.isEnabled = false
+        // set up the portal item to take offline
+        setUpMapView()
     }
 
     private fun showMessage(message: String) {
