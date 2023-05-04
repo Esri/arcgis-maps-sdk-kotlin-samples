@@ -62,7 +62,6 @@
                     android:layout_height="wrap_content"
                     android:enabled="false"
                     android:text="@string/n_a"
-                    android:textAllCaps="false"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

@@ -45,7 +45,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/share_mobile_geodatabase"
-                android:textAllCaps="false"
                 app:icon="@drawable/round_create_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -58,7 +57,6 @@
                 android:layout_height="wrap_content"
                 android:enabled="false"
                 android:text="@string/view_table"
-                android:textAllCaps="false"
                 app:layout_constraintBottom_toTopOf="@+id/createButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -23,7 +23,6 @@
         android:layout_marginEnd="16dp"
         android:contentDescription="@string/attachment_click"
         android:src="@drawable/right_arrow"
-        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
