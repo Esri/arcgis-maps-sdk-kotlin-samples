@@ -25,7 +25,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/clipButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/clip_geometry"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -37,7 +37,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/resetButton"
                 style="@style/OutlineButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:enabled="false"
                 android:text="@string/reset"
