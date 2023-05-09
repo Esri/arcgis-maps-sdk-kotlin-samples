@@ -127,8 +127,8 @@ class MainActivity : AppCompatActivity() {
             // add the download boundary
             graphicsOverlay.graphics.add(downloadArea)
             // show generate button
-            generateButton.visibility = View.VISIBLE
-            resetButton.visibility = View.GONE
+            generateButton.isEnabled = true
+            resetButton.isEnabled = false
         }
 
         lifecycleScope.launch {
@@ -144,31 +144,40 @@ class MainActivity : AppCompatActivity() {
                 return@launch
             }
 
+            // show download area once map is loaded
+            updateDownloadArea()
+
             // enable the generate button since the task is now loaded
             generateButton.isEnabled = true
-
 
             // create a symbol to show a box around the extent we want to download
             downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
             // add the graphic to the graphics overlay when it is created
             graphicsOverlay.graphics.add(downloadArea)
-
+            // update the download area on viewpoint change
             mapView.viewpointChanged.collect {
-                // define screen area to create replica
-                val minScreenPoint = ScreenCoordinate(200.0, 200.0)
-                val maxScreenPoint = ScreenCoordinate(
-                    mapView.measuredWidth - 200.0,
-                    mapView.measuredHeight - 200.0
-                )
-                // convert screen points to map points
-                val minPoint = mapView.screenToLocation(minScreenPoint)
-                val maxPoint = mapView.screenToLocation(maxScreenPoint)
-                // use the points to define and return an envelope
-                if (minPoint != null && maxPoint != null) {
-                    val envelope = Envelope(minPoint, maxPoint)
-                    downloadArea.geometry = envelope
-                }
+                updateDownloadArea()
             }
+        }
+    }
+
+    /**
+     * Displays a red border on the map to signify the [downloadArea]
+     */
+    private fun updateDownloadArea() {
+        // define screen area to create replica
+        val minScreenPoint = ScreenCoordinate(200.0, 200.0)
+        val maxScreenPoint = ScreenCoordinate(
+            mapView.measuredWidth - 200.0,
+            mapView.measuredHeight - 200.0
+        )
+        // convert screen points to map points
+        val minPoint = mapView.screenToLocation(minScreenPoint)
+        val maxPoint = mapView.screenToLocation(maxScreenPoint)
+        // use the points to define and return an envelope
+        if (minPoint != null && maxPoint != null) {
+            val envelope = Envelope(minPoint, maxPoint)
+            downloadArea.geometry = envelope
         }
     }
 
@@ -181,7 +190,7 @@ class MainActivity : AppCompatActivity() {
         map: ArcGISMap,
         extents: Envelope?
     ) {
-        if(extents == null){
+        if (extents == null) {
             return showError("Download area extent is null")
         }
 
@@ -192,6 +201,10 @@ class MainActivity : AppCompatActivity() {
                     // show the error and return if the task fails
                     showError("Error creating geodatabase parameters")
                     return@launch
+                }.apply {
+                    layerOptions.removeIf { layerOptions ->
+                        layerOptions.layerId != 0L
+                    }
                 }
 
             // set return attachments option to false
@@ -230,8 +243,8 @@ class MainActivity : AppCompatActivity() {
                     // unregister since we are not syncing
                     geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
                     // show reset button as the task is now complete
-                    generateButton.visibility = View.GONE
-                    resetButton.visibility = View.VISIBLE
+                    generateButton.isEnabled = false
+                    resetButton.isEnabled = true
                 }
         }
     }
