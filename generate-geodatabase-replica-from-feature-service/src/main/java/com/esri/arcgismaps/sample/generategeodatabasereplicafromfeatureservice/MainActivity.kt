@@ -202,6 +202,7 @@ class MainActivity : AppCompatActivity() {
                     showError("Error creating geodatabase parameters")
                     return@launch
                 }.apply {
+                    // set the parameters to only create a replica of the Trees (0) layer
                     layerOptions.removeIf { layerOptions ->
                         layerOptions.layerId != 0L
                     }
