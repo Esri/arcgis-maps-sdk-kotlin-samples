@@ -51,7 +51,7 @@ class MapViewModel() : ViewModel() {
 
 
 /**
- * Data class tha¬t represents the MapView state
+ * Data class that represents the MapView state
  */
 data class MapViewState( // This would change based on each sample implementation
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
