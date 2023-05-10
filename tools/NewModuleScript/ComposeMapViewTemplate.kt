@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.MapView
 import kotlinx.coroutines.launch
 /**
@@ -32,7 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComposeMapView(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel = viewModel(),
+    mapViewModel: MapViewModel,
 ) {
     val mapViewState by mapViewModel.mapViewState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -53,7 +52,7 @@ fun ComposeMapView(
             }
         },
         update = { mapView ->
-            // Update MapView properties defined in the MapViewState data class
+            // update MapView properties defined in the MapViewState data class
             mapView.apply {
                 map = mapViewState.arcGISMap
                 setViewpoint(mapViewState.viewpoint)

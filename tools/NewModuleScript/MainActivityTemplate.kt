@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.ComposeMapView
+import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
@@ -55,7 +56,10 @@ class MainActivity : ComponentActivity() {
                 Column() {
                     SampleTopAppBar(getString(R.string.app_name))
                     // composable function that wraps the MapView
-                    ComposeMapView(modifier = Modifier.fillMaxSize())
+                    ComposeMapView(
+                        modifier = Modifier.fillMaxSize(),
+                        mapViewModel = MapViewModel(application)
+                    )
                 }
             })
     }

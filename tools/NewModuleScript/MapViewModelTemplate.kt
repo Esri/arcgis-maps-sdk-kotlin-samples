@@ -16,7 +16,8 @@
 
 package com.esri.arcgismaps.sample.displaycomposablemapview.components
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -25,7 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class MapViewModel() : ViewModel() {
+class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     private val _mapViewState = MutableStateFlow(MapViewState())
     val mapViewState: StateFlow<MapViewState> = _mapViewState.asStateFlow()
