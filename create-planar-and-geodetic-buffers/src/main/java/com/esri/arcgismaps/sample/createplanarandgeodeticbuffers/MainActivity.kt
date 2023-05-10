@@ -145,6 +145,7 @@ class MainActivity : AppCompatActivity() {
 
                 // set button interaction
                 clearButton.isEnabled = true
+
             }
         }
         // open the option dialog
