@@ -43,6 +43,7 @@
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:text="@string/clear"
                 app:layout_constraintBottom_toTopOf="@+id/bufferLegend"
                 app:layout_constraintEnd_toStartOf="@+id/optionsButton"

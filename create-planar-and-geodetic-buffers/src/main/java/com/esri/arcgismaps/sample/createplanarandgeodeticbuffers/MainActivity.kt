@@ -142,6 +142,9 @@ class MainActivity : AppCompatActivity() {
                 planarGraphicsOverlay.graphics.add(planarBufferGraphic)
                 geodesicGraphicsOverlay.graphics.add(geodesicBufferGraphic)
                 tapLocationsOverlay.graphics.add(locationGraphic)
+
+                // set button interaction
+                clearButton.isEnabled = true
             }
         }
         // open the option dialog
@@ -175,6 +178,8 @@ class MainActivity : AppCompatActivity() {
             planarGraphicsOverlay.graphics.clear()
             geodesicGraphicsOverlay.graphics.clear()
             tapLocationsOverlay.graphics.clear()
+            // set button interaction
+            clearButton.isEnabled = false
         }
     }
 }

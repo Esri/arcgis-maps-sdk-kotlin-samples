@@ -74,7 +74,6 @@
         <item name="materialAlertDialogTheme">@style/SamplesAlertDialog</item>
         <item name="alertDialogTheme">@style/SamplesAlertDialog</item>
         <item name="alertDialogStyle">@style/SamplesAlertDialog</item>
-
     </style>
 
 </resources>
