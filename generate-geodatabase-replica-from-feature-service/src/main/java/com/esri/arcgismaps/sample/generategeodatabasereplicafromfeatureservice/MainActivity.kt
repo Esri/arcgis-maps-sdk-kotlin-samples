@@ -38,6 +38,7 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.tasks.geodatabase.GenerateGeodatabaseJob
 import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.databinding.ActivityMainBinding
@@ -62,6 +63,10 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.generateButton
     }
 
+    private val resetButton by lazy {
+        activityMainBinding.resetButton
+    }
+
     // shows the geodatabase loading progress
     private val progressDialog by lazy {
         GenerateGeodatabaseDialogLayoutBinding.inflate(layoutInflater)
@@ -72,8 +77,7 @@ class MainActivity : AppCompatActivity() {
         getExternalFilesDir(null)?.path + getString(R.string.portland_trees_geodatabase_file)
     }
 
-    // a red boundary line showing the filtered map extents for the features
-    private val boundarySymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 5f)
+    private val downloadArea: Graphic = Graphic()
 
     // creates a graphic overlay
     private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
@@ -111,10 +115,20 @@ class MainActivity : AppCompatActivity() {
 
         // set the button's onClickListener
         generateButton.setOnClickListener {
-            mapView.visibleArea?.let { polygon ->
-                // start the geodatabase generation process
-                generateGeodatabase(geodatabaseSyncTask, map, polygon.extent)
-            }
+            // start the geodatabase generation process
+            generateGeodatabase(geodatabaseSyncTask, map, downloadArea.geometry?.extent)
+        }
+
+        resetButton.setOnClickListener {
+            // clear any layers already on the map
+            map.operationalLayers.clear()
+            // clear all symbols drawn
+            graphicsOverlay.graphics.clear()
+            // add the download boundary
+            graphicsOverlay.graphics.add(downloadArea)
+            // show generate button
+            generateButton.isEnabled = true
+            resetButton.isEnabled = false
         }
 
         lifecycleScope.launch {
@@ -130,8 +144,40 @@ class MainActivity : AppCompatActivity() {
                 return@launch
             }
 
+            // show download area once map is loaded
+            updateDownloadArea()
+
             // enable the generate button since the task is now loaded
             generateButton.isEnabled = true
+
+            // create a symbol to show a box around the extent we want to download
+            downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
+            // add the graphic to the graphics overlay when it is created
+            graphicsOverlay.graphics.add(downloadArea)
+            // update the download area on viewpoint change
+            mapView.viewpointChanged.collect {
+                updateDownloadArea()
+            }
+        }
+    }
+
+    /**
+     * Displays a red border on the map to signify the [downloadArea]
+     */
+    private fun updateDownloadArea() {
+        // define screen area to create replica
+        val minScreenPoint = ScreenCoordinate(200.0, 200.0)
+        val maxScreenPoint = ScreenCoordinate(
+            mapView.measuredWidth - 200.0,
+            mapView.measuredHeight - 200.0
+        )
+        // convert screen points to map points
+        val minPoint = mapView.screenToLocation(minScreenPoint)
+        val maxPoint = mapView.screenToLocation(maxScreenPoint)
+        // use the points to define and return an envelope
+        if (minPoint != null && maxPoint != null) {
+            val envelope = Envelope(minPoint, maxPoint)
+            downloadArea.geometry = envelope
         }
     }
 
@@ -142,17 +188,11 @@ class MainActivity : AppCompatActivity() {
     private fun generateGeodatabase(
         geodatabaseSyncTask: GeodatabaseSyncTask,
         map: ArcGISMap,
-        extents: Envelope
+        extents: Envelope?
     ) {
-        // clear any layers already on the map
-        map.operationalLayers.clear()
-        // clear all symbols drawn
-        graphicsOverlay.graphics.clear()
-
-        // create a boundary representing the extents selected
-        val boundary = Graphic(extents, boundarySymbol)
-        // add this boundary to the graphics overlay
-        graphicsOverlay.graphics.add(boundary)
+        if (extents == null) {
+            return showError("Download area extent is null")
+        }
 
         lifecycleScope.launch {
             // create generate geodatabase parameters for the selected extents
@@ -161,6 +201,11 @@ class MainActivity : AppCompatActivity() {
                     // show the error and return if the task fails
                     showError("Error creating geodatabase parameters")
                     return@launch
+                }.apply {
+                    // set the parameters to only create a replica of the Trees (0) layer
+                    layerOptions.removeIf { layerOptions ->
+                        layerOptions.layerId != 0L
+                    }
                 }
 
             // set return attachments option to false
@@ -198,6 +243,9 @@ class MainActivity : AppCompatActivity() {
                     dialog.dismiss()
                     // unregister since we are not syncing
                     geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
+                    // show reset button as the task is now complete
+                    generateButton.isEnabled = false
+                    resetButton.isEnabled = true
                 }
         }
     }
@@ -206,6 +254,11 @@ class MainActivity : AppCompatActivity() {
      * Loads the [geodatabase] and renders the feature layers on to the [map]
      */
     private suspend fun loadGeodatabase(geodatabase: Geodatabase, map: ArcGISMap) {
+        // clear any layers already on the map
+        map.operationalLayers.clear()
+        // clear all symbols drawn
+        graphicsOverlay.graphics.clear()
+
         // load the geodatabase
         geodatabase.load().onFailure {
             // if the load failed, show the error and return
@@ -216,8 +269,6 @@ class MainActivity : AppCompatActivity() {
         map.operationalLayers += geodatabase.featureTables.map { featureTable ->
             FeatureLayer.createWithFeatureTable(featureTable)
         }
-        // hide the generate button as the task is now complete
-        generateButton.visibility = View.GONE
     }
 
     /**
