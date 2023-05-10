@@ -24,16 +24,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.ComposeMapView
+import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -53,19 +49,14 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun SampleApp() {
         Surface(
-                color = MaterialTheme.colors.background,
-                modifier = Modifier.fillMaxSize(),
-                content = {
-                    Column() {
-                        // a mutable/immutable state is computed by remember to store its value during
-                        // initial composition, and updates the composition on the state value change
-                        val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
-                        // composable function that wraps the MapView
-                        ComposeMapView(
-                                modifier = Modifier.fillMaxSize(),
-                                arcGISMap = map
-                        )
-                    }
-                })
+            color = MaterialTheme.colors.background,
+            modifier = Modifier.fillMaxSize(),
+            content = {
+                Column() {
+                    SampleTopAppBar(getString(R.string.app_name))
+                    // composable function that wraps the MapView
+                    ComposeMapView(modifier = Modifier.fillMaxSize())
+                }
+            })
     }
 }

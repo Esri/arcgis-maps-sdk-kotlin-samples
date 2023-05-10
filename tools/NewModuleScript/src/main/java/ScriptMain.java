@@ -100,6 +100,7 @@ public class ScriptMain {
         // Copy Kotlin template files to new sample
         File mainActivityTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainActivityTemplate.kt");
         File composeMapViewTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/ComposeMapViewTemplate.kt");
+        File mapViewModelTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MapViewModelTemplate.kt");
 
         // Perform copy
         try {
@@ -112,6 +113,10 @@ public class ScriptMain {
             FileUtils.copyFileToDirectory(composeMapViewTemplate, composeComponentsDir);
             source = Paths.get(composeComponentsDir+"/ComposeMapViewTemplate.kt");
             Files.move(source, source.resolveSibling("ComposeMapView.kt"));
+
+            FileUtils.copyFileToDirectory(mapViewModelTemplate, composeComponentsDir);
+            source = Paths.get(composeComponentsDir+"/MapViewModelTemplate.kt");
+            Files.move(source, source.resolveSibling("MapViewModel.kt"));
         } catch (IOException e) {
             e.printStackTrace();
             exitProgram(e);
@@ -191,6 +196,18 @@ public class ScriptMain {
 
         //Update ComposeMapView.kt
         file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/components/ComposeMapView.kt");
+        try {
+            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
+            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
+            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            exitProgram(e);
+        }
+
+        //Update MapViewModel.kt
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/components/MapViewModel.kt");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));

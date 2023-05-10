@@ -17,25 +17,28 @@
 package com.esri.arcgismaps.sample.displaycomposablemapview.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapView
 import kotlinx.coroutines.launch
+
 /**
  * Wraps the MapView in a Composable function.
  */
 @Composable
-fun ComposeMapView(
+fun ComposeSceneView(
+    // TODO: Modify this function to meet sample requirements
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel = viewModel(),
+    arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
+    viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7),
+    onSingleTap: (mapPoint: Point?) -> Unit = {},
 ) {
-    val mapViewState by mapViewModel.mapViewState.collectAsState()
-
     val lifecycleOwner = LocalLifecycleOwner.current
     AndroidView(
         modifier = modifier,
@@ -43,20 +46,21 @@ fun ComposeMapView(
             MapView(context).also { mapView ->
                 // add the MapView to the lifecycle observer
                 lifecycleOwner.lifecycle.addObserver(mapView)
-
+                // set the map
+                mapView.map = arcGISMap
                 // launch a coroutine to collect map taps
                 lifecycleOwner.lifecycleScope.launch {
                     mapView.onSingleTapConfirmed.collect {
-                        mapViewModel.changeBasemap()
+                        onSingleTap(it.mapPoint)
                     }
                 }
             }
         },
-        update = { mapView ->
-            // Update MapView properties defined in the MapViewState data class
-            mapView.apply {
-                map = mapViewState.arcGISMap
-                setViewpoint(mapViewState.viewpoint)
+
+        update = { view ->
+            view.map = arcGISMap
+            lifecycleOwner.lifecycleScope.launch {
+                view.setViewpointAnimated(viewpoint)
             }
         }
     )
