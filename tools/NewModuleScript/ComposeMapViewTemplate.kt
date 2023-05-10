@@ -35,8 +35,8 @@ fun ComposeMapView(
     mapViewModel: MapViewModel = viewModel(),
 ) {
     val mapViewState by mapViewModel.mapViewState.collectAsState()
-
     val lifecycleOwner = LocalLifecycleOwner.current
+
     AndroidView(
         modifier = modifier,
         factory = { context ->
