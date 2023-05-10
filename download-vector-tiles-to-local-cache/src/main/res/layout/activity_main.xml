@@ -34,7 +34,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/exportVectorTilesButton"
-                style="@style/OutlineButton"
+                style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="exportButtonClick"
@@ -45,7 +45,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/closePreviewButton"
-                style="@style/OutlineButton"
+                style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/close_vector_tile_preview"
