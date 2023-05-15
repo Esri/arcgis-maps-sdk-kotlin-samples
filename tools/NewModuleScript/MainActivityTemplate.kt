@@ -19,18 +19,13 @@ package com.esri.arcgismaps.sample.displaycomposablemapview
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.displaycomposablemapview.components.ComposeMapView
-import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.displaycomposablemapview.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -50,17 +45,12 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun SampleApp() {
         Surface(
-            color = MaterialTheme.colors.background,
-            modifier = Modifier.fillMaxSize(),
-            content = {
-                Column() {
-                    SampleTopAppBar(getString(R.string.app_name))
-                    // composable function that wraps the MapView
-                    ComposeMapView(
-                        modifier = Modifier.fillMaxSize(),
-                        mapViewModel = MapViewModel(application)
-                    )
-                }
-            })
+            color = MaterialTheme.colors.background
+        ) {
+            MainScreen(
+                sampleName = getString(R.string.app_name),
+                application = application
+            )
+        }
     }
 }

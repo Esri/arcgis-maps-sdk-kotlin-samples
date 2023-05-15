@@ -101,6 +101,7 @@ public class ScriptMain {
         File mainActivityTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainActivityTemplate.kt");
         File composeMapViewTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/ComposeMapViewTemplate.kt");
         File mapViewModelTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MapViewModelTemplate.kt");
+        File mainScreenTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainScreenTemplate.kt");
 
         // Perform copy
         try {
@@ -117,6 +118,12 @@ public class ScriptMain {
             FileUtils.copyFileToDirectory(mapViewModelTemplate, composeComponentsDir);
             source = Paths.get(composeComponentsDir+"/MapViewModelTemplate.kt");
             Files.move(source, source.resolveSibling("MapViewModel.kt"));
+
+            composeComponentsDir = new File(packageDirectory + "/screens");
+            composeComponentsDir.mkdirs();
+            FileUtils.copyFileToDirectory(mainScreenTemplate, composeComponentsDir);
+            source = Paths.get(composeComponentsDir+"/MainScreenTemplate.kt");
+            Files.move(source, source.resolveSibling("MainScreen.kt"));
         } catch (IOException e) {
             e.printStackTrace();
             exitProgram(e);
@@ -208,6 +215,18 @@ public class ScriptMain {
 
         //Update MapViewModel.kt
         file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/components/MapViewModel.kt");
+        try {
+            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
+            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
+            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            exitProgram(e);
+        }
+
+        //Update MainScreen.kt
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/screens/MainScreen.kt");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
