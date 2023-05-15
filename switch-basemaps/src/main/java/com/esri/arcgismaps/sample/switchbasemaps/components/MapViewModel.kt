@@ -22,31 +22,23 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
-    private val _mapViewState = MutableStateFlow(MapViewState())
-    val mapViewState: StateFlow<MapViewState> = _mapViewState.asStateFlow()
-
-    init {
-        _mapViewState.value =
-            MapViewState(arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight))
-    }
+    val mapViewState = MutableStateFlow(MapViewState())
 
     /**
      * Switch between two basemaps
      */
     fun changeBasemap() {
         val newArcGISMap: ArcGISMap =
-            if (_mapViewState.value.arcGISMap.basemap.value?.name.equals("ArcGIS:NavigationNight")) {
+            if (mapViewState.value.arcGISMap.basemap.value?.name.equals("ArcGIS:NavigationNight")) {
                 ArcGISMap(BasemapStyle.ArcGISStreets)
             } else {
                 ArcGISMap(BasemapStyle.ArcGISNavigationNight)
             }
-        _mapViewState.update { it.copy(arcGISMap = newArcGISMap) }
+        mapViewState.update { it.copy(arcGISMap = newArcGISMap) }
     }
 }
 

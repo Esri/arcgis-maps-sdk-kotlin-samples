@@ -24,7 +24,9 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
+
 /**
  * Wraps the MapView in a Composable function.
  */
@@ -32,8 +34,11 @@ import kotlinx.coroutines.launch
 fun ComposeMapView(
     modifier: Modifier = Modifier,
     mapViewModel: MapViewModel,
+    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
 ) {
+    // collect the latest state of the MapViewState
     val mapViewState by mapViewModel.mapViewState.collectAsState()
+    // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(
@@ -46,13 +51,14 @@ fun ComposeMapView(
                 // launch a coroutine to collect map taps
                 lifecycleOwner.lifecycleScope.launch {
                     mapView.onSingleTapConfirmed.collect {
-                        mapViewModel.changeBasemap()
+                        onSingleTap(it)
                     }
                 }
             }
         },
+
+        // recomposes the MapView on changes in the MapViewState
         update = { mapView ->
-            // update MapView properties defined in the MapViewState data class
             mapView.apply {
                 map = mapViewState.arcGISMap
                 setViewpoint(mapViewState.viewpoint)
