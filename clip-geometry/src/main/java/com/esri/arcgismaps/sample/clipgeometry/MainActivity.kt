@@ -81,8 +81,8 @@ class MainActivity : AppCompatActivity() {
 
         clipButton.setOnClickListener {
             // disable button
-            clipButton.visibility = View.GONE
-            resetButton.visibility = View.VISIBLE
+            clipButton.isEnabled = false
+            resetButton.isEnabled = true
             // for each envelope, clip the Colorado geometry and show the result,
             // replacing the original Colorado graphic
             coloradoGraphic.isVisible = false
@@ -103,8 +103,8 @@ class MainActivity : AppCompatActivity() {
             // set the visibility of the colorado graphic to true
             coloradoGraphic.isVisible = true
 
-            clipButton.visibility = View.VISIBLE
-            resetButton.visibility = View.GONE
+            clipButton.isEnabled = true
+            resetButton.isEnabled = false
         }
     }
 

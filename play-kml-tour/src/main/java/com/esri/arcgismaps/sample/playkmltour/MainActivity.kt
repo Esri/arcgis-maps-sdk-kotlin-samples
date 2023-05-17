@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                     R.drawable.ic_round_pause_24
                 )
                 // set button text
-                text = String.format("Pause")
+                text = getText(R.string.pause)
             }
         } else { // show play button if false
             playPauseButton.apply {
@@ -223,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                     R.drawable.ic_round_play_arrow_24
                 )
                 // set button text
-                text = String.format("Play")
+                text = getString(R.string.play)
             }
         }
 
