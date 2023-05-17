@@ -115,9 +115,9 @@ class MainActivity : AppCompatActivity() {
     private val graphicsOverlay = GraphicsOverlay()
 
     // represents bounds of the downloadable area of the map
-    private val downloadArea = Graphic().apply {
+    private val downloadArea = Graphic(
         symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
-    }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

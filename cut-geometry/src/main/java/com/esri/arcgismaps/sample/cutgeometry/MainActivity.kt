@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
             // recreate original graphics
             createGraphics(graphicsOverlay, mapView)
 
-            // swap button visibility
+            // swap button state
             cutButton.isEnabled = true
             resetButton.isEnabled = false
         }
