@@ -33,7 +33,7 @@ fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
 
-    Column() {
+    Column {
         // samples top app bar
         SampleTopAppBar(sampleName)
         // composable function that wraps the MapView

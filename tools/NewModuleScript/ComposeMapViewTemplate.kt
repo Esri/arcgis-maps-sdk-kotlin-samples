@@ -36,18 +36,16 @@ fun ComposeMapView(
     mapViewModel: MapViewModel,
     onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
 ) {
-    // collect the latest state of the MapViewState
-    val mapViewState by mapViewModel.mapViewState.collectAsState()
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
+    // collect the latest state of the MapViewState
+    val mapViewState by mapViewModel.mapViewState.collectAsState()
+    val mapView = createMapViewInstance(lifecycleOwner)
 
     AndroidView(
         modifier = modifier,
-        factory = { context ->
-            MapView(context).also { mapView ->
-                // add the MapView to the lifecycle observer
-                lifecycleOwner.lifecycle.addObserver(mapView)
-
+        factory = { _ ->
+            mapView.also { mapView ->
                 // launch a coroutine to collect map taps
                 lifecycleOwner.lifecycleScope.launch {
                     mapView.onSingleTapConfirmed.collect {
@@ -65,4 +63,21 @@ fun ComposeMapView(
             }
         }
     )
+}
+
+/**
+ * Create the MapView instance and add it to the Activity lifecycle
+ */
+@Composable
+fun createMapViewInstance(lifecycleOwner: LifecycleOwner): MapView {
+    // create the MapView
+    val mapView = MapView(LocalContext.current)
+    // add the side effects for MapView composition
+    DisposableEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.addObserver(mapView)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(mapView)
+        }
+    }
+    return mapView
 }
