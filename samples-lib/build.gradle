@@ -39,7 +39,7 @@ dependencies {
     implementation "androidx.core:core-ktx:$ktxAndroidCore"
     implementation "androidx.activity:activity-compose:$composeActivityVersion"
     implementation "androidx.compose.ui:ui:$composeUI"
-    implementation "androidx.compose.material:material:$composeMaterial"
+    implementation "androidx.compose.material3:material3:$composeMaterial"
     implementation "androidx.compose.ui:ui-tooling:$composeUI"
     implementation "androidx.compose.ui:ui-tooling-preview:$composeUI"
 }
