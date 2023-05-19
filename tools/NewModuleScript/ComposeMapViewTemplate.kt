@@ -17,12 +17,15 @@
 package com.esri.arcgismaps.sample.displaycomposablemapview.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
@@ -36,27 +39,17 @@ fun ComposeMapView(
     mapViewModel: MapViewModel,
     onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
 ) {
-    // collect the latest state of the MapViewState
-    val mapViewState by mapViewModel.mapViewState.collectAsState()
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
+    // collect the latest state of the MapViewState
+    val mapViewState by mapViewModel.mapViewState.collectAsState()
+    // create and add MapView to the activity lifecycle
+    val mapView = createMapViewInstance(lifecycleOwner)
 
+    // wrap the MapView as an AndroidView
     AndroidView(
         modifier = modifier,
-        factory = { context ->
-            MapView(context).also { mapView ->
-                // add the MapView to the lifecycle observer
-                lifecycleOwner.lifecycle.addObserver(mapView)
-
-                // launch a coroutine to collect map taps
-                lifecycleOwner.lifecycleScope.launch {
-                    mapView.onSingleTapConfirmed.collect {
-                        onSingleTap(it)
-                    }
-                }
-            }
-        },
-
+        factory = { mapView },
         // recomposes the MapView on changes in the MapViewState
         update = { mapView ->
             mapView.apply {
@@ -65,4 +58,30 @@ fun ComposeMapView(
             }
         }
     )
+
+    // launch coroutine functions in the composition's CoroutineContext
+    LaunchedEffect(Unit) {
+        launch {
+            mapView.onSingleTapConfirmed.collect {
+                onSingleTap(it)
+            }
+        }
+    }
+}
+
+/**
+ * Create the MapView instance and add it to the Activity lifecycle
+ */
+@Composable
+fun createMapViewInstance(lifecycleOwner: LifecycleOwner): MapView {
+    // create the MapView
+    val mapView = MapView(LocalContext.current)
+    // add the side effects for MapView composition
+    DisposableEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.addObserver(mapView)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(mapView)
+        }
+    }
+    return mapView
 }
