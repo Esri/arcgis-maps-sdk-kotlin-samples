@@ -19,9 +19,12 @@ package com.esri.arcgismaps.sample.switchbasemaps.screens
 import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.switchbasemaps.components.ComposeMapView
 import com.esri.arcgismaps.sample.switchbasemaps.components.MapViewModel
 
@@ -33,16 +36,23 @@ fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
 
-    Column() {
-        // samples top app bar
-        SampleTopAppBar(sampleName)
-        // composable function that wraps the MapView
-        ComposeMapView(
-            modifier = Modifier.fillMaxSize(),
-            mapViewModel = mapViewModel,
-            onSingleTap = {
-                mapViewModel.changeBasemap()
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(text = sampleName) }) },
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
+                // composable function that wraps the MapView
+                ComposeMapView(
+                    modifier = Modifier.fillMaxSize(),
+                    mapViewModel = mapViewModel,
+                    onSingleTap = {
+                        mapViewModel.changeBasemap()
+                    }
+                )
             }
-        )
-    }
+        }
+    )
 }
