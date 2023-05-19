@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.switchbasemaps.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -25,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
@@ -43,21 +43,13 @@ fun ComposeMapView(
     val lifecycleOwner = LocalLifecycleOwner.current
     // collect the latest state of the MapViewState
     val mapViewState by mapViewModel.mapViewState.collectAsState()
+    // create and add MapView to the activity lifecycle
     val mapView = createMapViewInstance(lifecycleOwner)
 
+    // wrap the MapView as an AndroidView
     AndroidView(
         modifier = modifier,
-        factory = { _ ->
-            mapView.also { mapView ->
-                // launch a coroutine to collect map taps
-                lifecycleOwner.lifecycleScope.launch {
-                    mapView.onSingleTapConfirmed.collect {
-                        onSingleTap(it)
-                    }
-                }
-            }
-        },
-
+        factory = { mapView },
         // recomposes the MapView on changes in the MapViewState
         update = { mapView ->
             mapView.apply {
@@ -66,6 +58,15 @@ fun ComposeMapView(
             }
         }
     )
+
+    // launch coroutine functions in the composition's CoroutineContext
+    LaunchedEffect(Unit) {
+        launch {
+            mapView.onSingleTapConfirmed.collect {
+                onSingleTap(it)
+            }
+        }
+    }
 }
 
 /**
