@@ -36,7 +36,7 @@ fun SampleAppTheme(
     MaterialTheme(
         colorScheme = colors,
         typography = SampleTypography,
-        shapes = SamplesShapes,
+        shapes = SampleShapes,
         content = content
     )
 }
