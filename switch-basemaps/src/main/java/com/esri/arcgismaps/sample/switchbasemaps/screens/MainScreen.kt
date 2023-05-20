@@ -21,12 +21,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.sampleslib.theme.colorPrimary
 import com.esri.arcgismaps.sample.switchbasemaps.components.ComposeMapView
 import com.esri.arcgismaps.sample.switchbasemaps.components.MapViewModel
 
@@ -39,9 +36,7 @@ fun MainScreen(sampleName: String, application: Application) {
     val mapViewModel = MapViewModel(application)
 
     Scaffold(
-        topBar = { TopAppBar(
-            title = { Text(text = sampleName) },
-        ) },
+        topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Column(
                 modifier = Modifier
