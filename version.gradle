@@ -15,9 +15,8 @@ ext {
     ktxAndroidCore = '1.9.0'
     kotlinCompilerExt = '1.4.7'
     // Compose versions
-    composeMaterial = '1.1.0'
-    composeUI = '1.4.3'
     composeActivityVersion = '1.7.1'
+    composeBOM = '2023.05.01'
     // Library versions
     appcompatVersion = '1.5.1'
     constraintLayoutVersion = '2.1.4'
