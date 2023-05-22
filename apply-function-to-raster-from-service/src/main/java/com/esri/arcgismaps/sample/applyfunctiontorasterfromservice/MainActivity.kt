@@ -72,14 +72,14 @@ class MainActivity : AppCompatActivity() {
             rasterButton.setOnClickListener {
                 // update the raster with simplified hillshade
                 applyRasterFunction()
-                resetButton.visibility = View.VISIBLE
-                rasterButton.visibility = View.GONE
+                resetButton.isEnabled = true
+                rasterButton.isEnabled = false
             }
             resetButton.setOnClickListener {
                 // reset map to back to the RasterLayer
                 addImageRasterLayer()
-                resetButton.visibility = View.GONE
-                rasterButton.visibility = View.VISIBLE
+                resetButton.isEnabled = false
+                rasterButton.isEnabled = true
             }
         }
     }

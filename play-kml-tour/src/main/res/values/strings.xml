@@ -4,5 +4,6 @@
     <string name="kml_tour_path">/Esri_tour.kmz</string>
     <string name="tour_status">Tour status:</string>
     <string name="reset_tour">Reset tour</string>
-    <string name="play">Play</string>
+    <string name="play">Play tour</string>
+    <string name="pause">Pause tour</string>
 </resources>

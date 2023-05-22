@@ -164,9 +164,18 @@ class MainActivity : AppCompatActivity() {
                 if (newText.isNotEmpty()) {
                     lifecycleScope.launch {
                         locatorTask.suggest(newText).onSuccess { suggestResults ->
-                            val suggestionAdapter = getSuggestionAdapter(suggestResults)
+                            // create a SimpleCursorAdapter and assign it to the suggestion adapter of the SearchView
+                            val simpleCursorAdapter = createSimpleCursorAdapter()
+                            addressSearchView.suggestionsAdapter = simpleCursorAdapter
 
-                            addressSearchView.suggestionsAdapter = suggestionAdapter
+                            // add each address suggestion to a new row
+                            for ((key, result) in suggestResults.withIndex()) {
+                                var suggestionCursor = simpleCursorAdapter.cursor as MatrixCursor
+                                suggestionCursor.addRow(arrayOf<Any>(key, result.label))
+                            }
+                            // notify the adapter when the data updates, so the view can refresh itself
+                            simpleCursorAdapter.notifyDataSetChanged()
+
                             // handle an address suggestion being chosen
                             addressSearchView.setOnSuggestionListener(object :
                                 SearchView.OnSuggestionListener {
@@ -176,7 +185,7 @@ class MainActivity : AppCompatActivity() {
 
                                 override fun onSuggestionClick(position: Int): Boolean {
                                     // get the selected row
-                                    (suggestionAdapter.getItem(position) as? MatrixCursor)?.let { selectedRow ->
+                                    (simpleCursorAdapter.getItem(position) as? MatrixCursor)?.let { selectedRow ->
                                         // get the row's index
                                         val selectedCursorIndex =
                                             selectedRow.getColumnIndex("address")
@@ -201,15 +210,13 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun getSuggestionAdapter(suggestResults: List<SuggestResult>): SimpleCursorAdapter {
+    /**
+     * Creates and returns a SimpleCursorAdapter.
+     */
+    private fun createSimpleCursorAdapter(): SimpleCursorAdapter {
         // set up parameters for searching with MatrixCursor
         val columnNames = arrayOf(BaseColumns._ID, "address")
         val suggestionsCursor = MatrixCursor(columnNames)
-
-        // add each address suggestion to a new row
-        for ((key, result) in suggestResults.withIndex()) {
-            suggestionsCursor.addRow(arrayOf<Any>(key, result.label))
-        }
         // column names for the adapter to look at when mapping data
         val cols = arrayOf("address")
         // ids that show where data should be assigned in the layout

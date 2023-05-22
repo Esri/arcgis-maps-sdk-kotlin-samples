@@ -54,7 +54,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/resetTourButton"
-                android:layout_width="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:enabled="false"
                 android:text="@string/reset_tour"
@@ -66,10 +67,10 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/playPauseButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/play"
                 android:enabled="false"
+                android:text="@string/play"
                 app:icon="@drawable/ic_round_play_arrow_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
