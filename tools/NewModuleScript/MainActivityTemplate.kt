@@ -19,8 +19,8 @@ package com.esri.arcgismaps.sample.displaycomposablemapview
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun SampleApp() {
         Surface(
-            color = MaterialTheme.colors.background
+            color = MaterialTheme.colorScheme.background
         ) {
             MainScreen(
                 sampleName = getString(R.string.app_name),
