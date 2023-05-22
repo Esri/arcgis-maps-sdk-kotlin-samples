@@ -16,7 +16,6 @@ import java.util.Scanner;
 public class ScriptMain {
 
     private String sampleName;
-
     private String sampleWithHyphen;
     private String sampleWithoutSpaces;
     private String samplesRepoPath;
@@ -59,12 +58,12 @@ public class ScriptMain {
      */
     private void deleteUnwantedFiles() {
         File buildFolder = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build");
-        File displayMapKotlinFolder = new File(
-                samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/displaymap");
-        File image = new File(samplesRepoPath + "/" + sampleWithHyphen + "/display-map.png");
+        File displayComposableMapKotlinFolder = new File(
+                samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview");
+        File image = new File(samplesRepoPath + "/" + sampleWithHyphen + "/display-composable-mapview.png");
         try {
             FileUtils.deleteDirectory(buildFolder);
-            FileUtils.deleteDirectory(displayMapKotlinFolder);
+            FileUtils.deleteDirectory(displayComposableMapKotlinFolder);
             image.delete();
         } catch (IOException e) {
             exitProgram(e);
@@ -80,9 +79,9 @@ public class ScriptMain {
         File destinationResDirectory = new File(samplesRepoPath + "/" + sampleWithHyphen);
         destinationResDirectory.mkdirs();
         // Display Map's res directory to copy over to new sample
-        File sourceResDirectory = new File(samplesRepoPath + "/display-map/");
+        File sourceResDirectory = new File(samplesRepoPath + "/display-composable-mapview/");
 
-        // Perform copy of the Android res folders from display-map sample.
+        // Perform copy of the Android res folders from display-composable-mapview sample.
         try {
             FileUtils.copyDirectory(sourceResDirectory, destinationResDirectory);
         } catch (IOException e) {
@@ -98,15 +97,33 @@ public class ScriptMain {
             exitProgram(new Exception("\"Sample already exists!\""));
         }
 
-        // Copy display-map MainActivity.kt to new sample
-        File sourceFile = new File(samplesRepoPath + "/tools/NewModuleScript/MainActivityTemplate.kt");
+        // Copy Kotlin template files to new sample
+        File mainActivityTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainActivityTemplate.kt");
+        File composeMapViewTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/ComposeMapViewTemplate.kt");
+        File mapViewModelTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MapViewModelTemplate.kt");
+        File mainScreenTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainScreenTemplate.kt");
 
         // Perform copy
         try {
-            FileUtils.copyFileToDirectory(sourceFile, packageDirectory);
+            FileUtils.copyFileToDirectory(mainActivityTemplate, packageDirectory);
             Path source = Paths.get(packageDirectory+"/MainActivityTemplate.kt");
-            // Renames the file
             Files.move(source, source.resolveSibling("MainActivity.kt"));
+
+            File composeComponentsDir = new File(packageDirectory + "/components");
+            composeComponentsDir.mkdirs();
+            FileUtils.copyFileToDirectory(composeMapViewTemplate, composeComponentsDir);
+            source = Paths.get(composeComponentsDir+"/ComposeMapViewTemplate.kt");
+            Files.move(source, source.resolveSibling("ComposeMapView.kt"));
+
+            FileUtils.copyFileToDirectory(mapViewModelTemplate, composeComponentsDir);
+            source = Paths.get(composeComponentsDir+"/MapViewModelTemplate.kt");
+            Files.move(source, source.resolveSibling("MapViewModel.kt"));
+
+            composeComponentsDir = new File(packageDirectory + "/screens");
+            composeComponentsDir.mkdirs();
+            FileUtils.copyFileToDirectory(mainScreenTemplate, composeComponentsDir);
+            source = Paths.get(composeComponentsDir+"/MainScreenTemplate.kt");
+            Files.move(source, source.resolveSibling("MainScreen.kt"));
         } catch (IOException e) {
             e.printStackTrace();
             exitProgram(e);
@@ -152,20 +169,7 @@ public class ScriptMain {
         file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build.gradle");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            fileContent = fileContent.replace("sample.displaymap", "sample." + sampleWithoutSpaces);
-            fileContent = fileContent.replace("constraintLayoutVersion\"","constraintLayoutVersion\"\n" +
-                    "    implementation \"com.google.android.material:material:$materialVersion\"");
-            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            exitProgram(e);
-        }
-
-        //Update activity_main.xml
-        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/res/layout/activity_main.xml");
-        try {
-            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            fileContent = fileContent.replace("displaymap", sampleWithoutSpaces);
+            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
             FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
@@ -177,7 +181,7 @@ public class ScriptMain {
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace(
-                    "<string name=\"app_name\">Display map</string>",
+                    "<string name=\"app_name\">Display composable mapView</string>",
                     "<string name=\"app_name\">" + sampleName +"</string>");
             FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -189,8 +193,44 @@ public class ScriptMain {
         file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/MainActivity.kt");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            fileContent = fileContent.replace("Copyright 2017", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
-            fileContent = fileContent.replace("sample.displaymap", "sample." + sampleWithoutSpaces);
+            fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
+            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
+            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            exitProgram(e);
+        }
+
+        //Update ComposeMapView.kt
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/components/ComposeMapView.kt");
+        try {
+            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
+            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
+            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            exitProgram(e);
+        }
+
+        //Update MapViewModel.kt
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/components/MapViewModel.kt");
+        try {
+            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
+            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
+            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            exitProgram(e);
+        }
+
+        //Update MainScreen.kt
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/screens/MainScreen.kt");
+        try {
+            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
+            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
             FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
