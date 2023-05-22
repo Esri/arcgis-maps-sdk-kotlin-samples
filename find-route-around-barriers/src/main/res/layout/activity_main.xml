@@ -29,10 +29,6 @@
                 android:id="@+id/optionsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="12dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -53,7 +49,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/addStopsButton"
-                        style="?attr/materialButtonOutlinedStyle"
+                        style="@style/ToggleButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
@@ -64,55 +60,49 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/addBarriersButton"
-                        style="?attr/materialButtonOutlinedStyle"
+                        style="@style/ToggleButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/barriers"
                         android:textSize="11sp" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 
-                <ImageView
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/resetButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_outline_delete_24"
+                    style="@style/IconButton"
+                    android:contentDescription="@string/reset_button"
+                    app:icon="@drawable/ic_outline_delete_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/optionsButton"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/toggleButtons"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
-                    app:tint="@color/colorAccent"
-                    android:contentDescription="@string/reset_button" />
+                    app:layout_constraintVertical_bias="0.0" />
 
-                <ImageView
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/optionsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_round_settings_24"
+                    style="@style/IconButton"
+                    android:contentDescription="@string/options_button"
+                    app:icon="@drawable/ic_round_settings_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/directionsButton"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/resetButton"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/colorAccent"
-                    android:contentDescription="@string/options_button" />
+                    app:tint="@color/colorAccent" />
 
-                <ImageView
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/directionsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/IconButton"
+                    android:contentDescription="@string/directions_button"
                     android:padding="12dp"
-                    android:src="@drawable/ic_round_directions_24"
+                    app:icon="@drawable/ic_round_directions_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/optionsButton"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/colorAccent"
-                    android:contentDescription="@string/directions_button" />
+                    app:tint="@color/colorAccent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -123,6 +113,7 @@
             layout="@layout/direction_sheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:behavior_hideable="true"
             app:behavior_peekHeight="64dp"
             app:layout_behavior="@string/bottom_sheet_behavior"

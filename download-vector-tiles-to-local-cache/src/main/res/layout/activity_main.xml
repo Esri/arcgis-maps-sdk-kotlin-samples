@@ -34,24 +34,20 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/exportVectorTilesButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="exportButtonClick"
-                android:padding="16dp"
                 android:text="@string/export_vector_tiles"
-                android:enabled="false"
-                android:textAllCaps="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/closePreviewButton"
-                android:layout_width="match_parent"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
                 android:text="@string/close_vector_tile_preview"
-                android:textAllCaps="false"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

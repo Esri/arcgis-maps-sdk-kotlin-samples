@@ -278,8 +278,8 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/border"
-                    android:textSize="16dp"
                     android:padding="16dp"
+                    android:textSize="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -293,29 +293,24 @@
             android:id="@+id/traceButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
             android:onClick="trace"
             android:text="@string/trace"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/resetButton"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/resetButton" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/resetButton"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="8dp"
             android:onClick="reset"
             android:text="@string/reset"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/traceButton"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/traceButton" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

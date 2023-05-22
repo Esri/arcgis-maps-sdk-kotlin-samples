@@ -83,6 +83,10 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.takeMapOfflineButton
     }
 
+    private val resetMapButton by lazy {
+        activityMainBinding.resetButton
+    }
+
     // instance of the WorkManager
     private val workManager by lazy {
         WorkManager.getInstance(this)
@@ -111,7 +115,9 @@ class MainActivity : AppCompatActivity() {
     private val graphicsOverlay = GraphicsOverlay()
 
     // represents bounds of the downloadable area of the map
-    private val downloadArea = Graphic()
+    private val downloadArea = Graphic(
+        symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,12 +129,31 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
+        // set up the portal item to take offline
+        setUpMapView()
+
+        // clear the preview map and display the Portal Item
+        resetMapButton.setOnClickListener {
+            // enable offline button
+            takeMapOfflineButton.isEnabled = true
+            resetMapButton.isEnabled = false
+            // clear graphic overlays
+            graphicsOverlay.graphics.clear()
+            mapView.graphicsOverlays.clear()
+
+            // set up the portal item to take offline
+            setUpMapView()
+        }
+    }
+
+    /**
+     * Sets up a portal item and displays map area to take offline
+     */
+    private fun setUpMapView() {
         // create a portal item with the itemId of the web map
         val portal = Portal(getString(R.string.portal_url))
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
-        // create a symbol to show a box around the extent we want to download
-        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
         // add the graphic to the graphics overlay when it is created
         graphicsOverlay.graphics.add(downloadArea)
         // create and add a map with with portal item
@@ -354,8 +379,9 @@ class MainActivity : AppCompatActivity() {
                 mapView.map = mapPackage.maps.first()
                 // clear all the drawn graphics
                 graphicsOverlay.graphics.clear()
-                // hide the takeMapOfflineButton
-                takeMapOfflineButton.visibility = View.GONE
+                // disable the button to take the map offline once the offline map is showing
+                takeMapOfflineButton.isEnabled = false
+                resetMapButton.isEnabled = true
                 // this removes the completed WorkInfo from the WorkManager's database
                 // otherwise, the observer will emit the WorkInfo on every launch
                 // until WorkManager auto-prunes
