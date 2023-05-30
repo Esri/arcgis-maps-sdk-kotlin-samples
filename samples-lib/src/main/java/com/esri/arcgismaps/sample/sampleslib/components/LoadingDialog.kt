@@ -27,6 +27,7 @@ fun LoadingDialog(
             onDismissRequest = { }
         ) {
             Surface(
+                tonalElevation = 4.dp,
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
