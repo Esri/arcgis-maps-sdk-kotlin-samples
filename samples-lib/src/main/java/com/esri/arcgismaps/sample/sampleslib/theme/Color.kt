@@ -18,8 +18,6 @@ package com.esri.arcgismaps.sample.sampleslib.theme
 
 import androidx.compose.ui.graphics.Color
 
-val colorPrimary = Color(0xFF9243cf)
-
 val md_theme_light_primary = Color(0xFF8434C1)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFF2DAFF)
@@ -46,7 +44,6 @@ val md_theme_light_outline = Color(0xFF7C757E)
 val md_theme_light_inverseOnSurface = Color(0xFFF6EFF3)
 val md_theme_light_inverseSurface = Color(0xFF322F33)
 val md_theme_light_inversePrimary = Color(0xFFE1B6FF)
-val md_theme_light_shadow = Color(0xFF000000)
 val md_theme_light_surfaceTint = Color(0xFF8434C1)
 val md_theme_light_outlineVariant = Color(0xFFCDC3CE)
 val md_theme_light_scrim = Color(0xFF000000)
@@ -77,9 +74,7 @@ val md_theme_dark_outline = Color(0xFF968E98)
 val md_theme_dark_inverseOnSurface = Color(0xFF1D1B1E)
 val md_theme_dark_inverseSurface = Color(0xFFE7E1E5)
 val md_theme_dark_inversePrimary = Color(0xFF8434C1)
-val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFFE1B6FF)
 val md_theme_dark_outlineVariant = Color(0xFF4B454D)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-val seed = Color(0xFF9243CF)
