@@ -94,4 +94,12 @@ fun ProgressIndicatorLoading() {
         strokeWidth = 1.dp
     )
 }
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewLoadingDialog(){
+    SampleAppTheme() {
+        LoadingDialog(title = "Dialog loading message here", showDialog = true)
+    }
+}
 
