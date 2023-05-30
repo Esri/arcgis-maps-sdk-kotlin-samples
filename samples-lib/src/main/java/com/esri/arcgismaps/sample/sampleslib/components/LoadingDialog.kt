@@ -47,14 +47,11 @@ fun LoadingDialog(
                     ProgressIndicatorLoading()
 
                     // Custom Text
-                    Text(
+                    Text( 
                         modifier = Modifier
                             .padding(30.dp),
                         text = title,
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        textAlign = TextAlign.Center
                     )
                 }
             }
