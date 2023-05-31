@@ -39,11 +39,11 @@ fun LoadingDialog(
                             .padding(top = 30.dp)
                     )
 
-                    // Custom Text
+                    // set loading message text
                     Text( 
                         modifier = Modifier
                             .padding(30.dp),
-                        text = title,
+                        text = loadingMessage,
                         textAlign = TextAlign.Center
                     )
                 }
