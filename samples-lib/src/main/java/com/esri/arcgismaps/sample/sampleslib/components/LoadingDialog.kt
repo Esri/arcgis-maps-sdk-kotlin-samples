@@ -19,7 +19,7 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 @Composable
 fun LoadingDialog(
-    title: String,
+    loadingMessage: String,
     showDialog: Boolean
 ) {
     if (showDialog) {
