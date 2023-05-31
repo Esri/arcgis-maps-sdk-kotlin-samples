@@ -33,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
+/**
+ * Composable component to display an indeterminate loading dialog along with a [loadingMessage]
+ */
 @Composable
 fun LoadingDialog(
     loadingMessage: String,
