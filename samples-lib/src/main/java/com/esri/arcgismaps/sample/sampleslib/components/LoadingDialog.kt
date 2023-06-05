@@ -1,3 +1,19 @@
+/* Copyright 2023 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.esri.arcgismaps.sample.sampleslib.components
 
 import android.content.res.Configuration
@@ -17,9 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
+/**
+ * Composable component to display an indeterminate loading dialog along with a [loadingMessage]
+ */
 @Composable
 fun LoadingDialog(
-    title: String,
+    loadingMessage: String,
     showDialog: Boolean
 ) {
     if (showDialog) {
@@ -39,11 +58,11 @@ fun LoadingDialog(
                             .padding(top = 30.dp)
                     )
 
-                    // Custom Text
+                    // set loading message text
                     Text( 
                         modifier = Modifier
                             .padding(30.dp),
-                        text = title,
+                        text = loadingMessage,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -57,7 +76,7 @@ fun LoadingDialog(
 @Composable
 fun PreviewLoadingDialog(){
     SampleAppTheme {
-        LoadingDialog(title = "Dialog loading message here", showDialog = true)
+        LoadingDialog(loadingMessage = "Dialog loading message here", showDialog = true)
     }
 }
 
