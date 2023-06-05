@@ -22,7 +22,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -56,6 +55,7 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.OfflineJobProgressDialogLayoutBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -301,6 +301,7 @@ class MainActivity : AppCompatActivity() {
      * in foreground and latest progress when the app resumes or restarts.
      */
     private fun observeWorkStatus() {
+        val jobAlertDialog: AlertDialog = progressDialog.create()
         // get the livedata observer of the unique work as a flow
         val liveDataFlow = workManager.getWorkInfosForUniqueWorkLiveData(uniqueWorkName).asFlow()
 
@@ -316,9 +317,10 @@ class MainActivity : AppCompatActivity() {
                         WorkInfo.State.SUCCEEDED -> {
                             // load and display the offline map
                             displayOfflineMap()
+
                             // dismiss the progress dialog
-                            if (progressDialog.isShowing) {
-                                progressDialog.dismiss()
+                            if (jobAlertDialog.isShowing) {
+                                jobAlertDialog.dismiss()
                             }
                         }
                         // if the work failed or was cancelled
@@ -330,8 +332,8 @@ class MainActivity : AppCompatActivity() {
                                 showMessage("Cancelled offline map generation")
                             }
                             // dismiss the progress dialog
-                            if (progressDialog.isShowing) {
-                                progressDialog.dismiss()
+                            if (jobAlertDialog.isShowing) {
+                                jobAlertDialog.dismiss()
                             }
                             // enable the takeMapOfflineButton
                             takeMapOfflineButton.isEnabled = true
@@ -348,10 +350,8 @@ class MainActivity : AppCompatActivity() {
                             progressLayout.progressBar.progress = value
                             progressLayout.progressTextView.text = "$value%"
                             // shows the progress dialog if the app is relaunched and the
-                            // dialog is not visible
-                            if (!progressDialog.isShowing) {
-                                progressDialog.show()
-                            }
+//                            // dialog is not visible
+//                            progressDialog.show()
                         }
                         else -> { /* don't have to handle other states */
                         }
@@ -398,9 +398,9 @@ class MainActivity : AppCompatActivity() {
      * Creates a progress dialog to show the OfflineMapJob worker progress. It cancels all the
      * running workers when the dialog is cancelled
      */
-    private fun createProgressDialog(): AlertDialog {
+    private fun createProgressDialog(): MaterialAlertDialogBuilder {
         // build and return a new alert dialog
-        return AlertDialog.Builder(this).apply {
+        return MaterialAlertDialogBuilder(this).apply {
             // set it title
             setTitle(getString(R.string.dialog_title))
             // allow it to be cancellable
@@ -416,7 +416,7 @@ class MainActivity : AppCompatActivity() {
             }
             // set the progressDialog Layout to this alert dialog
             setView(progressLayout.root)
-        }.create()
+        }
     }
 
     /**
@@ -458,12 +458,6 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.LENGTH_LONG
             ).show()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // dismiss the dialog when the activity is destroyed
-        progressDialog.dismiss()
     }
 
     private fun showMessage(message: String) {

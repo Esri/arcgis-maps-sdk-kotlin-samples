@@ -47,6 +47,7 @@ import com.esri.arcgismaps.sample.editfeatureattachments.databinding.ActivityMai
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentLoadingDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -182,12 +183,11 @@ class MainActivity : AppCompatActivity() {
      */
     suspend fun fetchAttachment(attachment: Attachment) {
         // display loading dialog
-        val dialog = createLoadingDialog("Fetching attachment data").also {
-            it.show()
-        }
+        val dialog = createLoadingDialog("Fetching attachment data").show()
 
         // create folder /ArcGIS/Attachments in external storage
         val fileDir = File(externalCacheDir?.path + "/Attachments")
+        fileDir.mkdirs()
         fileDir.mkdirs()
         // create the file with the attachment name
         val file = File(fileDir, attachment.name)
@@ -232,9 +232,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun addFeatureAttachment(selectedImageUri: Uri) {
         // display a loading dialog
-        val dialog = createLoadingDialog("Adding feature attachment").also {
-            it.show()
-        }
+        val dialog = createLoadingDialog("Adding feature attachment").show()
 
         // create an input stream at the selected URI
         contentResolver.openInputStream(selectedImageUri)?.use { imageInputStream ->
@@ -269,9 +267,7 @@ class MainActivity : AppCompatActivity() {
      */
     fun deleteAttachment(attachment: Attachment) {
         lifecycleScope.launch {
-            val dialog = createLoadingDialog("Deleting feature attachment").also {
-                it.show()
-            }
+            val dialog = createLoadingDialog("Deleting feature attachment").show()
             selectedArcGISFeature?.let { arcGISFeature ->
                 // delete the attachment from the selected feature
                 arcGISFeature.deleteAttachment(attachment).getOrElse {
@@ -323,10 +319,10 @@ class MainActivity : AppCompatActivity() {
     /**
      * Creates a loading dialog with the [message]
      */
-    private fun createLoadingDialog(message: String): AlertDialog {
+    private fun createLoadingDialog(message: String): MaterialAlertDialogBuilder {
         // build and return a new alert dialog
-        return AlertDialog.Builder(this).apply {
-            // set message
+        return MaterialAlertDialogBuilder(this).apply {
+            // set messagez
             setMessage(message)
             // allow it to be cancellable
             setCancelable(false)
@@ -336,7 +332,7 @@ class MainActivity : AppCompatActivity() {
             }
             // set the loading dialog layout to this alert dialog
             setView(loadingDialogBinding.root)
-        }.create()
+        }
     }
 
     private fun showError(message: String) {
