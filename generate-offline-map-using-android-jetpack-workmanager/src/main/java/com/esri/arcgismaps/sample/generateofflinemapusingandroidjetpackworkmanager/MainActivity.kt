@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -83,10 +84,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.takeMapOfflineButton
     }
 
-    private val resetMapButton by lazy {
-        activityMainBinding.resetButton
-    }
-
     // instance of the WorkManager
     private val workManager by lazy {
         WorkManager.getInstance(this)
@@ -102,11 +99,6 @@ class MainActivity : AppCompatActivity() {
         OfflineJobProgressDialogLayoutBinding.inflate(layoutInflater)
     }
 
-    // alert dialog view for the progress layout
-    private val progressDialog by lazy {
-        createProgressDialog()
-    }
-
     // used to uniquely identify the work request so that only one worker is active at a time
     // also allows us to query and observe work progress
     private val uniqueWorkName = "ArcgisMaps.Sample.OfflineMapJob.Worker"
@@ -115,9 +107,8 @@ class MainActivity : AppCompatActivity() {
     private val graphicsOverlay = GraphicsOverlay()
 
     // represents bounds of the downloadable area of the map
-    private val downloadArea = Graphic(
-        symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
-    )
+    private val downloadArea = Graphic()
+    private var dialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,31 +120,12 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
 
-        // set up the portal item to take offline
-        setUpMapView()
-
-        // clear the preview map and display the Portal Item
-        resetMapButton.setOnClickListener {
-            // enable offline button
-            takeMapOfflineButton.isEnabled = true
-            resetMapButton.isEnabled = false
-            // clear graphic overlays
-            graphicsOverlay.graphics.clear()
-            mapView.graphicsOverlays.clear()
-
-            // set up the portal item to take offline
-            setUpMapView()
-        }
-    }
-
-    /**
-     * Sets up a portal item and displays map area to take offline
-     */
-    private fun setUpMapView() {
         // create a portal item with the itemId of the web map
         val portal = Portal(getString(R.string.portal_url))
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
+        // create a symbol to show a box around the extent we want to download
+        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
         // add the graphic to the graphics overlay when it is created
         graphicsOverlay.graphics.add(downloadArea)
         // create and add a map with with portal item
@@ -209,8 +181,9 @@ class MainActivity : AppCompatActivity() {
                 val offlineMapJob = createOfflineMapJob(map, geometry)
                 // start the OfflineMapJob
                 startOfflineMapJob(offlineMapJob)
-                // show the progress dialog
-                progressDialog.show()
+
+                // create an alert dialog to show the download progress
+                dialog = createProgressDialog().show()
                 // disable the button
                 takeMapOfflineButton.isEnabled = false
             }
@@ -263,7 +236,7 @@ class MainActivity : AppCompatActivity() {
     private fun startOfflineMapJob(offlineMapJob: GenerateOfflineMapJob) {
         // create a temporary file path to save the offlineMapJob json file
         val offlineJobJsonPath = getExternalFilesDir(null)?.path +
-            getString(R.string.offlineJobJsonFile)
+                getString(R.string.offlineJobJsonFile)
 
         // create the json file
         val offlineJobJsonFile = File(offlineJobJsonPath)
@@ -301,7 +274,6 @@ class MainActivity : AppCompatActivity() {
      * in foreground and latest progress when the app resumes or restarts.
      */
     private fun observeWorkStatus() {
-        val jobAlertDialog: AlertDialog = progressDialog.create()
         // get the livedata observer of the unique work as a flow
         val liveDataFlow = workManager.getWorkInfosForUniqueWorkLiveData(uniqueWorkName).asFlow()
 
@@ -317,10 +289,9 @@ class MainActivity : AppCompatActivity() {
                         WorkInfo.State.SUCCEEDED -> {
                             // load and display the offline map
                             displayOfflineMap()
-
                             // dismiss the progress dialog
-                            if (jobAlertDialog.isShowing) {
-                                jobAlertDialog.dismiss()
+                            if (dialog?.isShowing == true) {
+                                dialog?.dismiss()
                             }
                         }
                         // if the work failed or was cancelled
@@ -332,8 +303,8 @@ class MainActivity : AppCompatActivity() {
                                 showMessage("Cancelled offline map generation")
                             }
                             // dismiss the progress dialog
-                            if (jobAlertDialog.isShowing) {
-                                jobAlertDialog.dismiss()
+                            if (dialog?.isShowing == true) {
+                                dialog?.dismiss()
                             }
                             // enable the takeMapOfflineButton
                             takeMapOfflineButton.isEnabled = true
@@ -350,8 +321,10 @@ class MainActivity : AppCompatActivity() {
                             progressLayout.progressBar.progress = value
                             progressLayout.progressTextView.text = "$value%"
                             // shows the progress dialog if the app is relaunched and the
-//                            // dialog is not visible
-//                            progressDialog.show()
+                            // dialog is not visible
+                            if (dialog?.isShowing == false) {
+                                createProgressDialog().show()
+                            }
                         }
                         else -> { /* don't have to handle other states */
                         }
@@ -379,9 +352,8 @@ class MainActivity : AppCompatActivity() {
                 mapView.map = mapPackage.maps.first()
                 // clear all the drawn graphics
                 graphicsOverlay.graphics.clear()
-                // disable the button to take the map offline once the offline map is showing
-                takeMapOfflineButton.isEnabled = false
-                resetMapButton.isEnabled = true
+                // hide the takeMapOfflineButton
+                takeMapOfflineButton.visibility = View.GONE
                 // this removes the completed WorkInfo from the WorkManager's database
                 // otherwise, the observer will emit the WorkInfo on every launch
                 // until WorkManager auto-prunes
@@ -429,7 +401,7 @@ class MainActivity : AppCompatActivity() {
             // check if push notifications permission is granted
             val permissionCheckPostNotifications =
                 ContextCompat.checkSelfPermission(this@MainActivity, POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED
+                        PackageManager.PERMISSION_GRANTED
 
             // if permission is not already granted, request permission from the user
             if (!permissionCheckPostNotifications) {
