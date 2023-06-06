@@ -30,7 +30,6 @@
                 android:id="@+id/takeMapOfflineButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:onClick="createOfflineMapJob"
                 android:text="@string/take_map_offline"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

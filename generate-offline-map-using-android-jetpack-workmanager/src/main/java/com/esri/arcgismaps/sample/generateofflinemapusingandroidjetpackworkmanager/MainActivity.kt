@@ -84,6 +84,10 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.takeMapOfflineButton
     }
 
+    private val resetMapButton by lazy {
+        activityMainBinding.resetButton
+    }
+
     // instance of the WorkManager
     private val workManager by lazy {
         WorkManager.getInstance(this)
@@ -119,10 +123,40 @@ class MainActivity : AppCompatActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
+        // set up the portal item to take offline
+        var map = setUpMap()
 
+        // set onclick listener for the takeMapOfflineButton
+        takeMapOfflineButton.setOnClickListener {
+            // if the downloadArea's geometry is not null
+            downloadArea.geometry?.let { geometry ->
+                // create an OfflineMapJob
+                val offlineMapJob = createOfflineMapJob(map, geometry)
+                // start the OfflineMapJob
+                startOfflineMapJob(offlineMapJob)
+
+                // create an alert dialog to show the download progress
+                dialog = createProgressDialog().show()
+                // disable the button
+                takeMapOfflineButton.isEnabled = false
+            }
+        }
+
+        // start observing the worker's progress and status
+        observeWorkStatus()
+    }
+
+    /**
+     * Sets up a portal item and displays map area to take offline
+     */
+    private fun setUpMap(): ArcGISMap {
         // create a portal item with the itemId of the web map
         val portal = Portal(getString(R.string.portal_url))
         val portalItem = PortalItem(portal, getString(R.string.item_id))
+
+        // clear graphic overlays
+        graphicsOverlay.graphics.clear()
+        mapView.graphicsOverlays.clear()
 
         // create a symbol to show a box around the extent we want to download
         downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
@@ -172,25 +206,7 @@ class MainActivity : AppCompatActivity() {
                 downloadArea.geometry = envelope
             }
         }
-
-        // set onclick listener for the takeMapOfflineButton
-        takeMapOfflineButton.setOnClickListener {
-            // if the downloadArea's geometry is not null
-            downloadArea.geometry?.let { geometry ->
-                // create an OfflineMapJob
-                val offlineMapJob = createOfflineMapJob(map, geometry)
-                // start the OfflineMapJob
-                startOfflineMapJob(offlineMapJob)
-
-                // create an alert dialog to show the download progress
-                dialog = createProgressDialog().show()
-                // disable the button
-                takeMapOfflineButton.isEnabled = false
-            }
-        }
-
-        // start observing the worker's progress and status
-        observeWorkStatus()
+        return map
     }
 
     /**
@@ -293,6 +309,7 @@ class MainActivity : AppCompatActivity() {
                             if (dialog?.isShowing == true) {
                                 dialog?.dismiss()
                             }
+                            resetMapButton.isEnabled = true
                         }
                         // if the work failed or was cancelled
                         WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
@@ -353,7 +370,7 @@ class MainActivity : AppCompatActivity() {
                 // clear all the drawn graphics
                 graphicsOverlay.graphics.clear()
                 // hide the takeMapOfflineButton
-                takeMapOfflineButton.visibility = View.GONE
+                takeMapOfflineButton.isEnabled = false
                 // this removes the completed WorkInfo from the WorkManager's database
                 // otherwise, the observer will emit the WorkInfo on every launch
                 // until WorkManager auto-prunes
@@ -430,6 +447,17 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.LENGTH_LONG
             ).show()
         }
+    }
+
+    /**
+     * Clear the preview map and display the Portal Item
+     */
+    fun resetButtonClick(view: View) {
+        // enable offline button
+        takeMapOfflineButton.isEnabled = true
+        resetMapButton.isEnabled = false
+        // set up the portal item to take offline
+        setUpMapView()
     }
 
     private fun showMessage(message: String) {

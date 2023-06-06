@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity() {
      * Create a progress dialog box for tracking the generate offline map job.
      *
      * @param job the generate offline map job progress to be tracked
-     * @return an AlertDialog set with the dialog layout view
+     * @return an MaterialAlertDialogBuilder set with the dialog layout view
      */
     private fun createProgressDialog(job: GenerateOfflineMapJob): MaterialAlertDialogBuilder {
         return MaterialAlertDialogBuilder(this).apply {
