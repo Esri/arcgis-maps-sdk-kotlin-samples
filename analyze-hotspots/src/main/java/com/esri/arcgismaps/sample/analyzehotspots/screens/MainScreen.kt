@@ -30,10 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 /**
  * Main screen layout for the sample app
@@ -43,6 +47,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
+    // default coroutine scope instance
+    val sampleCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
         Column(
@@ -66,9 +72,9 @@ fun MainScreen(sampleName: String, application: Application) {
             ) {
                 BottomAppContent(runAnalysisClicked = { fromDateInMillis, toDateInMillis ->
                     if (fromDateInMillis != null && toDateInMillis != null){
-                        CoroutineScope(Dispatchers.Default).launch {
-                            mapViewModel.analyzeHotspots(fromDateInMillis, toDateInMillis)
-                        }
+                        val fromDate = convertMillisToString(fromDateInMillis)
+                        val toDate = convertMillisToString(toDateInMillis)
+                        mapViewModel.analyzeHotspots(fromDate, toDate,sampleCoroutineScope)
                     }
 
                     else{
@@ -77,6 +83,23 @@ fun MainScreen(sampleName: String, application: Application) {
                 }
                 )
             }
+
+            // job progress loading dialog
+            JobLoadingDialog(
+                title = "Analyzing hotspots...",
+                showDialog = mapViewModel.showJobProgressDialog.value,
+                progress = mapViewModel.geoprocessingJobProgress.value,
+                cancelJobRequest = {
+                    mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope)
+                }
+            )
         }
     })
+}
+
+fun convertMillisToString(millis: Long): String {
+    val instant = Instant.ofEpochMilli(millis)
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    return date.format(formatter)
 }
