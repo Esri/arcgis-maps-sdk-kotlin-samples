@@ -55,7 +55,6 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.ActivityMainBinding
-import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.OfflineJobProgressDialogLayoutBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -458,7 +457,7 @@ class MainActivity : AppCompatActivity() {
         takeMapOfflineButton.isEnabled = true
         resetMapButton.isEnabled = false
         // set up the portal item to take offline
-        setUpMapView()
+        setUpMap()
     }
 
     private fun showMessage(message: String) {

@@ -188,7 +188,6 @@ class MainActivity : AppCompatActivity() {
         // create folder /ArcGIS/Attachments in external storage
         val fileDir = File(externalCacheDir?.path + "/Attachments")
         fileDir.mkdirs()
-        fileDir.mkdirs()
         // create the file with the attachment name
         val file = File(fileDir, attachment.name)
 
@@ -322,7 +321,7 @@ class MainActivity : AppCompatActivity() {
     private fun createLoadingDialog(message: String): MaterialAlertDialogBuilder {
         // build and return a new alert dialog
         return MaterialAlertDialogBuilder(this).apply {
-            // set messagez
+            // set message
             setMessage(message)
             // allow it to be cancellable
             setCancelable(false)
