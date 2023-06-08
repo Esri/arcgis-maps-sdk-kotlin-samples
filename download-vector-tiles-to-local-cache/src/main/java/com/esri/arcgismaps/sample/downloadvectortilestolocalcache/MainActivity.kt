@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.closePreviewButton
     }
 
+    // inflate the progress dialog
     private val dialogLayoutBinding by lazy {
         ProgressDialogLayoutBinding.inflate(layoutInflater)
     }

@@ -22,7 +22,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -103,6 +102,11 @@ class MainActivity : AppCompatActivity() {
         OfflineJobProgressDialogLayoutBinding.inflate(layoutInflater)
     }
 
+    // alert dialog view for the progress layout
+    private val progressDialog by lazy {
+        createProgressDialog()
+    }
+
     // used to uniquely identify the work request so that only one worker is active at a time
     // also allows us to query and observe work progress
     private val uniqueWorkName = "ArcgisMaps.Sample.OfflineMapJob.Worker"
@@ -111,7 +115,10 @@ class MainActivity : AppCompatActivity() {
     private val graphicsOverlay = GraphicsOverlay()
 
     // represents bounds of the downloadable area of the map
-    private val downloadArea = Graphic()
+    private val downloadArea = Graphic(
+        symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
+    )
+
     private var dialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,43 +130,32 @@ class MainActivity : AppCompatActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         lifecycle.addObserver(mapView)
+
         // set up the portal item to take offline
-        var map = setUpMap()
+        setUpMapView()
 
-        // set onclick listener for the takeMapOfflineButton
-        takeMapOfflineButton.setOnClickListener {
-            // if the downloadArea's geometry is not null
-            downloadArea.geometry?.let { geometry ->
-                // create an OfflineMapJob
-                val offlineMapJob = createOfflineMapJob(map, geometry)
-                // start the OfflineMapJob
-                startOfflineMapJob(offlineMapJob)
+        // clear the preview map and display the Portal Item
+        resetMapButton.setOnClickListener {
+            // enable offline button
+            takeMapOfflineButton.isEnabled = true
+            resetMapButton.isEnabled = false
+            // clear graphic overlays
+            graphicsOverlay.graphics.clear()
+            mapView.graphicsOverlays.clear()
 
-                // create an alert dialog to show the download progress
-                dialog = createProgressDialog().show()
-                // disable the button
-                takeMapOfflineButton.isEnabled = false
-            }
+            // set up the portal item to take offline
+            setUpMapView()
         }
-
-        // start observing the worker's progress and status
-        observeWorkStatus()
     }
 
     /**
      * Sets up a portal item and displays map area to take offline
      */
-    private fun setUpMap(): ArcGISMap {
+    private fun setUpMapView() {
         // create a portal item with the itemId of the web map
         val portal = Portal(getString(R.string.portal_url))
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
-        // clear graphic overlays
-        graphicsOverlay.graphics.clear()
-        mapView.graphicsOverlays.clear()
-
-        // create a symbol to show a box around the extent we want to download
-        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
         // add the graphic to the graphics overlay when it is created
         graphicsOverlay.graphics.add(downloadArea)
         // create and add a map with with portal item
@@ -206,7 +202,24 @@ class MainActivity : AppCompatActivity() {
                 downloadArea.geometry = envelope
             }
         }
-        return map
+
+        // set onclick listener for the takeMapOfflineButton
+        takeMapOfflineButton.setOnClickListener {
+            // if the downloadArea's geometry is not null
+            downloadArea.geometry?.let { geometry ->
+                // create an OfflineMapJob
+                val offlineMapJob = createOfflineMapJob(map, geometry)
+                // start the OfflineMapJob
+                startOfflineMapJob(offlineMapJob)
+                // show the progress dialog
+                dialog = createProgressDialog().show()
+                // disable the button
+                takeMapOfflineButton.isEnabled = false
+            }
+        }
+
+        // start observing the worker's progress and status
+        observeWorkStatus()
     }
 
     /**
@@ -309,7 +322,6 @@ class MainActivity : AppCompatActivity() {
                             if (dialog?.isShowing == true) {
                                 dialog?.dismiss()
                             }
-                            resetMapButton.isEnabled = true
                         }
                         // if the work failed or was cancelled
                         WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
@@ -369,8 +381,9 @@ class MainActivity : AppCompatActivity() {
                 mapView.map = mapPackage.maps.first()
                 // clear all the drawn graphics
                 graphicsOverlay.graphics.clear()
-                // hide the takeMapOfflineButton
+                // disable the button to take the map offline once the offline map is showing
                 takeMapOfflineButton.isEnabled = false
+                resetMapButton.isEnabled = true
                 // this removes the completed WorkInfo from the WorkManager's database
                 // otherwise, the observer will emit the WorkInfo on every launch
                 // until WorkManager auto-prunes
@@ -449,15 +462,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Clear the preview map and display the Portal Item
-     */
-    fun resetButtonClick(view: View) {
-        // enable offline button
-        takeMapOfflineButton.isEnabled = true
-        resetMapButton.isEnabled = false
-        // set up the portal item to take offline
-        setUpMap()
+    override fun onDestroy() {
+        super.onDestroy()
+        // dismiss the dialog when the activity is destroyed
+        dialog?.dismiss()
     }
 
     private fun showMessage(message: String) {
