@@ -19,13 +19,13 @@ package com.esri.arcgismaps.sample.sampleslib
 import android.content.Intent
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.sampleslib.databinding.ActivitySamplesBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -113,7 +113,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
         val downloadRequired: Boolean =
             suspendCancellableCoroutine { downloadRequiredContinuation ->
                 // set up the alert dialog builder
-                val provisionQuestionDialog = AlertDialog.Builder(this@DownloaderActivity)
+                val provisionQuestionDialog = MaterialAlertDialogBuilder(this@DownloaderActivity)
                     .setTitle("Download data?")
 
                 if (provisionFolder.list()?.isNotEmpty() == true) {
@@ -198,7 +198,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
 
             // build another dialog to show the progress of the download
             val dialogView: View = layoutInflater.inflate(R.layout.download_dialog, null)
-            val loadingBuilder = AlertDialog.Builder(this@DownloaderActivity).apply {
+            val loadingBuilder = MaterialAlertDialogBuilder(this@DownloaderActivity).apply {
                 setView(dialogView)
                 create()
             }

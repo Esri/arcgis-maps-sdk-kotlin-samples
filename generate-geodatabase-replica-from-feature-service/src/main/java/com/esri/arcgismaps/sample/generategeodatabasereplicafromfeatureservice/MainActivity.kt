@@ -19,9 +19,7 @@ package com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -43,6 +41,7 @@ import com.arcgismaps.tasks.geodatabase.GenerateGeodatabaseJob
 import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.databinding.GenerateGeodatabaseDialogLayoutBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
@@ -215,9 +214,11 @@ class MainActivity : AppCompatActivity() {
             geodatabaseSyncTask.createGenerateGeodatabaseJob(defaultParameters, geodatabaseFilePath)
                 .run {
                     // create a dialog to show the jobs progress
-                    val dialog = createProgressDialog(this)
-                    // show the dialog
-                    dialog.show()
+                    val materialDialogBuilder = createProgressDialog(this)
+
+                    // show the dialog and obtain a reference to it
+                    val jobProgressDialog = materialDialogBuilder.show()
+
                     // launch a progress collector to display progress
                     launch {
                         progress.collect { value ->
@@ -233,14 +234,14 @@ class MainActivity : AppCompatActivity() {
                         // show an error and return if job failed
                         showError("Error fetching geodatabase: ${it.message}")
                         // dismiss the dialog
-                        dialog.dismiss()
+                        jobProgressDialog.dismiss()
                         return@launch
                     }
 
                     // load and display the geodatabase
                     loadGeodatabase(geodatabase, map)
                     // dismiss the dialog view
-                    dialog.dismiss()
+                    jobProgressDialog.dismiss()
                     // unregister since we are not syncing
                     geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
                     // show reset button as the task is now complete
@@ -279,9 +280,9 @@ class MainActivity : AppCompatActivity() {
      *
      * @return returns an alert dialog
      */
-    private fun createProgressDialog(generateGeodatabaseJob: GenerateGeodatabaseJob): AlertDialog {
+    private fun createProgressDialog(generateGeodatabaseJob: GenerateGeodatabaseJob): MaterialAlertDialogBuilder {
         // build and return a new alert dialog
-        return AlertDialog.Builder(this).apply {
+        return MaterialAlertDialogBuilder(this).apply {
             // setting it title
             setTitle(getString(R.string.dialog_title))
             // allow it to be cancellable
@@ -299,7 +300,7 @@ class MainActivity : AppCompatActivity() {
             }
             // set the progressDialog Layout to this alert dialog
             setView(progressDialog.root)
-        }.create()
+        }
     }
 
     private fun showError(message: String) {

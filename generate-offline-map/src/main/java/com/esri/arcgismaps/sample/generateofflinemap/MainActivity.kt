@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.generateofflinemap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -26,7 +27,6 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
@@ -41,6 +41,7 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemap.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemap.databinding.GenerateOfflineMapDialogLayoutBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -69,6 +70,10 @@ class MainActivity : AppCompatActivity() {
     // create a symbol to show a box around the extent we want to download
     private val downloadArea: Graphic = Graphic().apply {
         symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
+    }
+
+    private val progressDialogLayout by lazy {
+        GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -178,16 +183,10 @@ class MainActivity : AppCompatActivity() {
             offlineMapPath
         )
         // create an alert dialog to show the download progress
-        val progressDialogLayoutBinding =
-            GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
-        val progressDialog = createProgressDialog(offlineMapJob).apply {
-            setCancelable(false)
-            setView(progressDialogLayoutBinding.root)
-            show()
-        }
+        val progressDialog = createProgressDialog(offlineMapJob).show()
         // handle offline job loading, error and succeed status
         lifecycleScope.launch {
-            displayOfflineMapFromJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
+            displayOfflineMapFromJob(offlineMapJob, progressDialog)
         }
     }
 
@@ -197,9 +196,9 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun displayOfflineMapFromJob(
         offlineMapJob: GenerateOfflineMapJob,
-        progressDialogLayout: GenerateOfflineMapDialogLayoutBinding,
         progressDialog: AlertDialog
     ) {
+
         // create a flow-collector for the job's progress
         lifecycleScope.launch {
             offlineMapJob.progress.collect {
@@ -234,20 +233,22 @@ class MainActivity : AppCompatActivity() {
      * Create a progress dialog box for tracking the generate offline map job.
      *
      * @param job the generate offline map job progress to be tracked
-     * @return an AlertDialog set with the dialog layout view
+     * @return an MaterialAlertDialogBuilder set with the dialog layout view
      */
-    private fun createProgressDialog(job: GenerateOfflineMapJob): AlertDialog {
-        val builder = AlertDialog.Builder(this).apply {
+    private fun createProgressDialog(job: GenerateOfflineMapJob): MaterialAlertDialogBuilder {
+        return MaterialAlertDialogBuilder(this).apply {
             setTitle("Generating offline map...")
             // provide a cancel button on the dialog
             setNegativeButton("Cancel") { _, _ ->
                 lifecycleScope.launch { job.cancel() }
             }
-            setCancelable(true)
-            val dialogLayoutBinding = GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
-            setView(dialogLayoutBinding.root)
+            // removes parent of the progressDialog layout, if previously assigned
+            progressDialogLayout.root.parent?.let { parent ->
+                (parent as ViewGroup).removeAllViews()
+            }
+            setCancelable(false)
+            setView(progressDialogLayout.root)
         }
-        return builder.create()
     }
 
     /**

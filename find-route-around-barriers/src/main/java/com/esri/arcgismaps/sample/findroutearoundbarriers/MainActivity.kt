@@ -240,7 +240,6 @@ class MainActivity : AppCompatActivity() {
         // set up the dialog builder
         MaterialAlertDialogBuilder(this).apply {
             setView(optionsDialogBinding.root)
-            create()
             show()
         }
 

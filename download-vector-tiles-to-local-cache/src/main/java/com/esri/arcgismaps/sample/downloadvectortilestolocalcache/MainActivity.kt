@@ -19,11 +19,11 @@ package com.esri.arcgismaps.sample.downloadvectortilestolocalcache
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
-import androidx.appcompat.app.AlertDialog
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Envelope
@@ -45,6 +45,7 @@ import com.arcgismaps.tasks.exportvectortiles.ExportVectorTilesTask
 import com.esri.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.downloadvectortilestolocalcache.databinding.ProgressDialogLayoutBinding
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -52,7 +53,6 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private val downloadArea: Graphic = Graphic()
-    private var dialog: AlertDialog? = null
     private var hasCurrentJobCompleted: Boolean = true
 
     // set up data binding for the activity
@@ -74,6 +74,11 @@ class MainActivity : AppCompatActivity() {
 
     private val closePreviewButton: MaterialButton by lazy {
         activityMainBinding.closePreviewButton
+    }
+
+    // inflate the progress dialog
+    private val dialogLayoutBinding by lazy {
+        ProgressDialogLayoutBinding.inflate(layoutInflater)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -189,10 +194,9 @@ class MainActivity : AppCompatActivity() {
             start()
         }
 
-        // inflate the progress dialog
-        val dialogLayoutBinding = createProgressDialog(exportVectorTilesJob)
         // display the progress dialog
-        dialog?.show()
+        val dialog = createProgressDialog(exportVectorTilesJob).show()
+
         // since job is now started, set to false
         hasCurrentJobCompleted = false
 
@@ -216,10 +220,10 @@ class MainActivity : AppCompatActivity() {
                     // display the path of the saved vector tiles
                     showMessage(it.vectorTileCache?.path.toString())
                     // dismiss loading dialog
-                    dialog?.dismiss()
+                    dialog.dismiss()
                 }.onFailure {
                     showMessage(it.message.toString())
-                    dialog?.dismiss()
+                    dialog.dismiss()
                     hasCurrentJobCompleted = true
                 }
             }
@@ -253,9 +257,8 @@ class MainActivity : AppCompatActivity() {
     /**
      * Create a progress dialog to track the progress of the [exportVectorTilesJob]
      */
-    private fun createProgressDialog(exportVectorTilesJob: ExportVectorTilesJob): ProgressDialogLayoutBinding {
-        val dialogLayoutBinding = ProgressDialogLayoutBinding.inflate(layoutInflater)
-        val dialogBuilder = AlertDialog.Builder(this@MainActivity).apply {
+    private fun createProgressDialog(exportVectorTilesJob: ExportVectorTilesJob): MaterialAlertDialogBuilder {
+        return MaterialAlertDialogBuilder(this@MainActivity).apply {
             setTitle("Exporting vector tiles")
             setNegativeButton("Cancel job") { _, _ ->
                 lifecycleScope.launch {
@@ -267,11 +270,13 @@ class MainActivity : AppCompatActivity() {
                     hasCurrentJobCompleted = true
                 }
             }
+            // removes parent of the progressDialog layout, if previously assigned
+            dialogLayoutBinding.root.parent?.let { parent ->
+                (parent as ViewGroup).removeAllViews()
+            }
             setCancelable(false)
             setView(dialogLayoutBinding.root)
         }
-        dialog = dialogBuilder.create()
-        return dialogLayoutBinding
     }
 
     /**

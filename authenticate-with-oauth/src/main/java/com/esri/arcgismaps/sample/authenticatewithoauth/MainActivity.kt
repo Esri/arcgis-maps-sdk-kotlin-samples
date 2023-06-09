@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.authenticatewithoauth
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -32,6 +31,7 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.portal.Portal
 import com.esri.arcgismaps.sample.authenticatewithoauth.databinding.ActivityMainBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -76,9 +76,9 @@ class MainActivity : AppCompatActivity() {
         // check if the portal can be loaded
         lifecycleScope.launch {
             portal.load().onSuccess {
-                AlertDialog.Builder(this@MainActivity).setMessage(
+                MaterialAlertDialogBuilder(this@MainActivity).setMessage(
                     "Portal succeeded to load, portal user: ${portal.user?.username}"
-                ).create().show()
+                ).show()
                 // authentication complete, display PortalItem
                 mapView.apply {
                     visibility = View.VISIBLE
