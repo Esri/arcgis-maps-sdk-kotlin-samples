@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity() {
                     val materialDialogBuilder = createProgressDialog(this)
 
                     // show the dialog and obtain a reference to it
-                    val jobProgressDialog: AlertDialog = materialDialogBuilder.show()
+                    val jobProgressDialog = materialDialogBuilder.show()
 
                     // launch a progress collector to display progress
                     launch {
