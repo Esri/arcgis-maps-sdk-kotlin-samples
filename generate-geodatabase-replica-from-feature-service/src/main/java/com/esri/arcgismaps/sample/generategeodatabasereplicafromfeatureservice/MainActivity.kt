@@ -20,7 +20,6 @@ package com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope

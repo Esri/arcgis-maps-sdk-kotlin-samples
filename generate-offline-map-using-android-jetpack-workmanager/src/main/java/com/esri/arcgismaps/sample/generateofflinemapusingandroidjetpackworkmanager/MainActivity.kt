@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
 
     // alert dialog view for the progress layout
     private val progressDialog by lazy {
-        createProgressDialog()
+        createProgressDialog().create()
     }
 
     // used to uniquely identify the work request so that only one worker is active at a time
@@ -118,8 +118,6 @@ class MainActivity : AppCompatActivity() {
     private val downloadArea = Graphic(
         symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
     )
-
-    private var dialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -212,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                 // start the OfflineMapJob
                 startOfflineMapJob(offlineMapJob)
                 // show the progress dialog
-                dialog = createProgressDialog().show()
+                progressDialog.show()
                 // disable the button
                 takeMapOfflineButton.isEnabled = false
             }
@@ -319,8 +317,8 @@ class MainActivity : AppCompatActivity() {
                             // load and display the offline map
                             displayOfflineMap()
                             // dismiss the progress dialog
-                            if (dialog?.isShowing == true) {
-                                dialog?.dismiss()
+                            if (progressDialog.isShowing) {
+                                progressDialog.dismiss()
                             }
                         }
                         // if the work failed or was cancelled
@@ -332,8 +330,8 @@ class MainActivity : AppCompatActivity() {
                                 showMessage("Cancelled offline map generation")
                             }
                             // dismiss the progress dialog
-                            if (dialog?.isShowing == true) {
-                                dialog?.dismiss()
+                            if (progressDialog.isShowing) {
+                                progressDialog.dismiss()
                             }
                             // enable the takeMapOfflineButton
                             takeMapOfflineButton.isEnabled = true
@@ -351,8 +349,8 @@ class MainActivity : AppCompatActivity() {
                             progressLayout.progressTextView.text = "$value%"
                             // shows the progress dialog if the app is relaunched and the
                             // dialog is not visible
-                            if (dialog?.isShowing == false) {
-                                createProgressDialog().show()
+                            if (!progressDialog.isShowing) {
+                                progressDialog.show()
                             }
                         }
                         else -> { /* don't have to handle other states */
@@ -465,7 +463,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // dismiss the dialog when the activity is destroyed
-        dialog?.dismiss()
+        progressDialog.dismiss()
     }
 
     private fun showMessage(message: String) {
