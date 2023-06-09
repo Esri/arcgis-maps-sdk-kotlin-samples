@@ -61,7 +61,6 @@ fun JobLoadingDialog(
             },
         ) {
             Surface(
-                modifier = Modifier.fillMaxWidth(),
                 tonalElevation = 12.dp,
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -93,7 +92,11 @@ fun JobLoadingDialog(
                             progress = progressAnimation
                         )
                         // progress percentage text
-                        Text(modifier = Modifier.padding(start = 12.dp), text = "$progress%")
+                        Text(
+                            text = "$progress%",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                     // cancel job button
                     Button(
