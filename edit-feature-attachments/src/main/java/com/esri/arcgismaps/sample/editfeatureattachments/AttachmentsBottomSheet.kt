@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.data.Attachment
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class AttachmentsBottomSheet(
@@ -55,19 +55,18 @@ class AttachmentsBottomSheet(
             listView.onItemLongClickListener =
                 AdapterView.OnItemLongClickListener { _, _, position, _ ->
                     // create a dialog to display the delete query
-                    val builder = AlertDialog.Builder(context)
-                    builder.setMessage(context.getString(R.string.delete_query))
-                    builder.setCancelable(true)
-                    builder.setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
-                        // user confirmed, delete selected attachment
-                        context.deleteAttachment(attachments[position])
-                        dialog.dismiss()
-                    }
-                    builder.setNegativeButton(context.getString(R.string.no)) { dialog, _ ->
-                        dialog.cancel()
-                    }
-                    val alert = builder.create()
-                    alert.show()
+                    MaterialAlertDialogBuilder(context).apply {
+                        setMessage(context.getString(R.string.delete_query))
+                        setCancelable(true)
+                        setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
+                            // user confirmed, delete selected attachment
+                            context.deleteAttachment(attachments[position])
+                            dialog.dismiss()
+                        }
+                        setNegativeButton(context.getString(R.string.no)) { dialog, _ ->
+                            dialog.cancel()
+                        }
+                    }.show()
                     true
                 }
 
