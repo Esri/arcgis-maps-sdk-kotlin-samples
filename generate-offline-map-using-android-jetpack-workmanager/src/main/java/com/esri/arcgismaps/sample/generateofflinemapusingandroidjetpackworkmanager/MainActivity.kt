@@ -22,9 +22,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -56,6 +54,7 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager.databinding.OfflineJobProgressDialogLayoutBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -104,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
     // alert dialog view for the progress layout
     private val progressDialog by lazy {
-        createProgressDialog()
+        createProgressDialog().create()
     }
 
     // used to uniquely identify the work request so that only one worker is active at a time
@@ -263,7 +262,7 @@ class MainActivity : AppCompatActivity() {
     private fun startOfflineMapJob(offlineMapJob: GenerateOfflineMapJob) {
         // create a temporary file path to save the offlineMapJob json file
         val offlineJobJsonPath = getExternalFilesDir(null)?.path +
-            getString(R.string.offlineJobJsonFile)
+                getString(R.string.offlineJobJsonFile)
 
         // create the json file
         val offlineJobJsonFile = File(offlineJobJsonPath)
@@ -398,9 +397,9 @@ class MainActivity : AppCompatActivity() {
      * Creates a progress dialog to show the OfflineMapJob worker progress. It cancels all the
      * running workers when the dialog is cancelled
      */
-    private fun createProgressDialog(): AlertDialog {
+    private fun createProgressDialog(): MaterialAlertDialogBuilder {
         // build and return a new alert dialog
-        return AlertDialog.Builder(this).apply {
+        return MaterialAlertDialogBuilder(this).apply {
             // set it title
             setTitle(getString(R.string.dialog_title))
             // allow it to be cancellable
@@ -416,7 +415,7 @@ class MainActivity : AppCompatActivity() {
             }
             // set the progressDialog Layout to this alert dialog
             setView(progressLayout.root)
-        }.create()
+        }
     }
 
     /**
@@ -429,7 +428,7 @@ class MainActivity : AppCompatActivity() {
             // check if push notifications permission is granted
             val permissionCheckPostNotifications =
                 ContextCompat.checkSelfPermission(this@MainActivity, POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED
+                        PackageManager.PERMISSION_GRANTED
 
             // if permission is not already granted, request permission from the user
             if (!permissionCheckPostNotifications) {

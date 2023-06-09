@@ -58,6 +58,7 @@ import com.arcgismaps.utilitynetworks.UtilityTraversability
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.LoadingOptionsDialogBinding
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -390,7 +391,7 @@ class MainActivity : AppCompatActivity() {
             val elementTraceResult = utilityTraceResults.first() as UtilityElementTraceResult
 
             showLoadingDialog(false)
-            AlertDialog.Builder(this@MainActivity).apply {
+            MaterialAlertDialogBuilder(this@MainActivity).apply {
                 // set the result dialog title
                 setTitle("Trace result")
                 // show the element result count
@@ -502,11 +503,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoadingDialog(isVisible: Boolean) {
         if (isVisible) {
-            dialog = AlertDialog.Builder(this).apply {
+            dialog = MaterialAlertDialogBuilder(this).apply {
                 setCancelable(false)
                 setView(LoadingOptionsDialogBinding.inflate(layoutInflater).root)
-            }.create()
-            dialog?.show()
+            }.show()
         } else {
             dialog?.dismiss()
         }

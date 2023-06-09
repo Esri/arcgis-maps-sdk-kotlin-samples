@@ -170,8 +170,8 @@ class MainActivity : AppCompatActivity() {
                 bufferInMiles = value
             }
 
-            // create and display the dialog
-            dialogBuilder.create().show()
+            // display the dialog
+            dialogBuilder.show()
         }
 
         // clear the graphics from the graphics overlays
