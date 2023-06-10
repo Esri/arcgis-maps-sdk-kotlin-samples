@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -17,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
@@ -33,7 +36,7 @@ fun BottomAppContent(
 
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.padding(12.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

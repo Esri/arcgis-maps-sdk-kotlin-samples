@@ -32,6 +32,10 @@ import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
@@ -116,8 +120,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             geoprocessingJob?.cancel()
         }
     }
-}
 
+    fun convertMillisToString(millis: Long): String {
+        val instant = Instant.ofEpochMilli(millis)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+        return date.format(formatter)
+    }
+}
 
 /**
  * Data class that represents the MapView state

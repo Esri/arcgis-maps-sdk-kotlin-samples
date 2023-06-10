@@ -17,27 +17,21 @@
 package com.esri.arcgismaps.sample.analyzehotspots.screens
 
 import android.app.Application
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleSnackbarHostState
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.esri.arcgismaps.sample.sampleslib.components.showMessage
 
 /**
  * Main screen layout for the sample app
@@ -45,58 +39,52 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = MapViewModel(application)
+    val mapViewModel = remember { MapViewModel(application) }
+    // default snackbar host state for this composition
+    val snackbarHostState = remember { SnackbarHostState() }
     // coroutineScope that will be cancelled when this call leaves the composition
-    val sampleCoroutineScope: CoroutineScope = remember { CoroutineScope(Dispatchers.Default) }
+    val sampleCoroutineScope = rememberCoroutineScope()
 
     Scaffold(
+        snackbarHost = { SampleSnackbarHostState(snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
+            // sample app content layout
             Column(modifier = Modifier.fillMaxSize().padding(it)) {
                 // composable function that wraps the MapView
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize().weight(1f),
                     mapViewModel = mapViewModel
                 )
-
-                // bottom row to load a portal item on button click
-                Row(
-                    modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    BottomAppContent(
-                        analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
-                            if (fromDateInMillis != null && toDateInMillis != null) {
-                                val fromDate = convertMillisToString(fromDateInMillis)
-                                val toDate = convertMillisToString(toDateInMillis)
-                                mapViewModel.analyzeHotspots(
-                                    fromDateInMillis = fromDate,
-                                    toDateInMillis = toDate,
+                // bottom layout with a button to display analyze hotspot options
+                BottomAppContent(
+                    // date range selected to analyze
+                    analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
+                        if (fromDateInMillis != null && toDateInMillis != null) {
+                            mapViewModel.apply {
+                                // create and run a geoprocessing task using date range
+                                analyzeHotspots(
+                                    fromDateInMillis = convertMillisToString(0),
+                                    toDateInMillis = convertMillisToString(toDateInMillis),
                                     jobCoroutineScope = sampleCoroutineScope
                                 )
-                            } else {
-                                // TODO
                             }
+                        } else {
+                            showMessage(
+                                scope = sampleCoroutineScope,
+                                snackbarHostState = snackbarHostState,
+                                message = "Invalid date range selected"
+                            )
                         }
-                    )
-                }
-
-                // job progress loading dialog
+                    },
+                )
+                // display progress dialog while analyzing hotspots
                 JobLoadingDialog(
                     title = "Analyzing hotspots...",
                     showDialog = mapViewModel.showJobProgressDialog.value,
                     progress = mapViewModel.geoprocessingJobProgress.value,
-                    cancelJobRequest = {
-                        mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope)
-                    }
+                    cancelJobRequest = { mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope) }
                 )
             }
         })
-}
-
-fun convertMillisToString(millis: Long): String {
-    val instant = Instant.ofEpochMilli(millis)
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-    return date.format(formatter)
 }
