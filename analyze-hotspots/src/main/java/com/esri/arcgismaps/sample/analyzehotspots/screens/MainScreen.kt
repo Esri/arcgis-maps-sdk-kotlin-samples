@@ -23,9 +23,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
@@ -42,59 +42,56 @@ import java.time.format.DateTimeFormatter
 /**
  * Main screen layout for the sample app
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
-    // default coroutine scope instance
-    val sampleCoroutineScope = CoroutineScope(Dispatchers.Default)
+    // coroutineScope that will be cancelled when this call leaves the composition
+    val sampleCoroutineScope: CoroutineScope = remember { CoroutineScope(Dispatchers.Default) }
 
-    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            // composable function that wraps the MapView
-            ComposeMapView(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f), mapViewModel = mapViewModel
-            )
+    Scaffold(
+        topBar = { SampleTopAppBar(title = sampleName) },
+        content = {
+            Column(modifier = Modifier.fillMaxSize().padding(it)) {
+                // composable function that wraps the MapView
+                ComposeMapView(
+                    modifier = Modifier.fillMaxSize().weight(1f),
+                    mapViewModel = mapViewModel
+                )
 
-            // bottom row to load a portal item on button click
-            Row(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                BottomAppContent(runAnalysisClicked = { fromDateInMillis, toDateInMillis ->
-                    if (fromDateInMillis != null && toDateInMillis != null){
-                        val fromDate = convertMillisToString(fromDateInMillis)
-                        val toDate = convertMillisToString(toDateInMillis)
-                        mapViewModel.analyzeHotspots(fromDate, toDate,sampleCoroutineScope)
-                    }
-
-                    else{
-                        // TODO
-                    }
+                // bottom row to load a portal item on button click
+                Row(
+                    modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    BottomAppContent(
+                        analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
+                            if (fromDateInMillis != null && toDateInMillis != null) {
+                                val fromDate = convertMillisToString(fromDateInMillis)
+                                val toDate = convertMillisToString(toDateInMillis)
+                                mapViewModel.analyzeHotspots(
+                                    fromDateInMillis = fromDate,
+                                    toDateInMillis = toDate,
+                                    jobCoroutineScope = sampleCoroutineScope
+                                )
+                            } else {
+                                // TODO
+                            }
+                        }
+                    )
                 }
+
+                // job progress loading dialog
+                JobLoadingDialog(
+                    title = "Analyzing hotspots...",
+                    showDialog = mapViewModel.showJobProgressDialog.value,
+                    progress = mapViewModel.geoprocessingJobProgress.value,
+                    cancelJobRequest = {
+                        mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope)
+                    }
                 )
             }
-
-            // job progress loading dialog
-            JobLoadingDialog(
-                title = "Analyzing hotspots...",
-                showDialog = mapViewModel.showJobProgressDialog.value,
-                progress = mapViewModel.geoprocessingJobProgress.value,
-                cancelJobRequest = {
-                    mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope)
-                }
-            )
-        }
-    })
+        })
 }
 
 fun convertMillisToString(millis: Long): String {
