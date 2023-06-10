@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.window.DialogProperties
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
@@ -27,7 +26,7 @@ fun MessageDialog(
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },
             title = { Text(title) },
-            text = { Text(description) },
+            text = { if (description.isNotEmpty()) Text(description) },
             confirmButton = {
                 TextButton(onClick = { onDismissRequest() }) {
                     Text("Dismiss")

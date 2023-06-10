@@ -56,12 +56,12 @@ fun MainScreen(sampleName: String, application: Application) {
                 BottomAppContent(
                     // date range selected to analyze
                     analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
-                        if (fromDateInMillis == null && toDateInMillis != null) {
+                        if (fromDateInMillis != null && toDateInMillis != null) {
                             sampleCoroutineScope.launch {
                                 mapViewModel.apply {
                                     // create and run a geoprocessing task using date range
                                     createGeoprocessingJob(
-                                        fromDate = convertMillisToString(0),
+                                        fromDate = convertMillisToString(fromDateInMillis),
                                         toDate = convertMillisToString(toDateInMillis),
                                     )
                                 }

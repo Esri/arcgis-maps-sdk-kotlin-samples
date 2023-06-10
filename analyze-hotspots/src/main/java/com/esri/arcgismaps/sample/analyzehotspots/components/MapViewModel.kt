@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.analyzehotspots.components
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.geometry.Point
@@ -48,13 +47,6 @@ class MapViewModel(
 
     // determinate job progress loading dialog
     val showJobProgressDialog = mutableStateOf(false)
-
-    // error dialog status
-    val errorDialogStatus = mutableStateOf(false)
-
-    var errorTitle = ""
-
-    var errorDescription = ""
 
     // determinate job progress percentage
     val geoprocessingJobProgress = mutableStateOf(0)
@@ -90,19 +82,13 @@ class MapViewModel(
             .append(toDate)
             .append(" 00:00:00')")
 
-        // ("DATE" > date '1998-01-01 00:00:00' AND "DATE" < date '1998-05-31 00:00:00')
-        // ("DATE" > date '1997-12-30 00:00:00' AND "DATE" < date '1998-01-13 00:00:00')
-        val geoprocessingString = GeoprocessingString(
-            value = "(\"DATE\" > date '1998-01-01 00:00:00' AND \"DATE\" < date '1998-05-31 00:00:00')"
-        )
-        geoprocessingParameters.inputs["Query"] = geoprocessingString
-        //geoprocessingParameters.inputs["Query"] = GeoprocessingString(queryString.toString())
+        //geoprocessingParameters.inputs["Query"] = geoprocessingString
+        geoprocessingParameters.inputs["Query"] = GeoprocessingString(queryString.toString())
 
         // create and start geoprocessing job
         geoprocessingJob = geoprocessingTask.createJob(geoprocessingParameters)
 
         runGeoprocessingJob()
-
     }
 
     /**
@@ -132,15 +118,12 @@ class MapViewModel(
             // resulted hotspot map image layer
             val hotspotMapImageLayer = geoprocessingResult.mapImageLayer?.apply {
                 opacity = 0.5f
-            }
-
+            } ?: return showErrorDialog("Result map image layer is null")
 
             // add new layer to map
-            if (hotspotMapImageLayer != null) {
-                mapViewState.value.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
-            }
+            mapViewState.value.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
         }?.onFailure { throwable ->
-            Log.e("TAG", "FAILURE: ${throwable.message}")
+            showErrorDialog(throwable.message.toString(), throwable.cause.toString())
             showJobProgressDialog.value = false
         }
     }
@@ -158,7 +141,11 @@ class MapViewModel(
         return date.format(formatter)
     }
 
-    fun showErrorDialog(title: String, description: String) {
+    // error dialog status
+    val errorDialogStatus = mutableStateOf(false)
+    var errorTitle = ""
+    var errorDescription = ""
+    fun showErrorDialog(title: String, description: String = "") {
         errorTitle = title
         errorDescription = description
         errorDialogStatus.value = true
@@ -169,10 +156,9 @@ class MapViewModel(
  * Data class that represents the MapView state
  */
 data class MapViewState(
-    // This would change based on each sample implementation
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic),
     var viewpoint: Viewpoint = Viewpoint(
         center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
-        scale = 57779.0
+        scale = 1e5
     ),
 )
