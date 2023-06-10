@@ -18,6 +18,7 @@
         "GeoprocessingTask"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "GeoprocessingJob",
         "GeoprocessingParameters",
@@ -25,12 +26,12 @@
         "GeoprocessingTask"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/analyzehotspots/MainActivity.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/analyzehotspots/components/ComposeMapView.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/analyzehotspots/components/MapViewModel.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/analyzehotspots/screens/BottomAppContent.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/analyzehotspots/screens/BottomSheetScreen.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/analyzehotspots/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/analyzehotspots/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/analyzehotspots/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/analyzehotspots/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/analyzehotspots/screens/BottomAppContent.kt",
+        "src/main/java/com/esri/arcgismaps/sample/analyzehotspots/screens/BottomSheetScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/analyzehotspots/screens/MainScreen.kt"
     ],
     "title": "Analyze hotspots"
 }
