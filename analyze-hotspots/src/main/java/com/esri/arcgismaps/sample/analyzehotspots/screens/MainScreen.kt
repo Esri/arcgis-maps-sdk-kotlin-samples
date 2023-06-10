@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,24 +28,21 @@ import androidx.compose.ui.Modifier
 import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
-import com.esri.arcgismaps.sample.sampleslib.components.SampleSnackbarHostState
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.sampleslib.components.showMessage
+import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
-    // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { MapViewModel(application) }
-    // default snackbar host state for this composition
-    val snackbarHostState = remember { SnackbarHostState() }
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // create a ViewModel to handle MapView interactions
+    val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
 
     Scaffold(
-        snackbarHost = { SampleSnackbarHostState(snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             // sample app content layout
@@ -60,20 +56,20 @@ fun MainScreen(sampleName: String, application: Application) {
                 BottomAppContent(
                     // date range selected to analyze
                     analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
-                        if (fromDateInMillis != null && toDateInMillis != null) {
-                            mapViewModel.apply {
-                                // create and run a geoprocessing task using date range
-                                analyzeHotspots(
-                                    fromDateInMillis = convertMillisToString(0),
-                                    toDateInMillis = convertMillisToString(toDateInMillis),
-                                    jobCoroutineScope = sampleCoroutineScope
-                                )
+                        if (fromDateInMillis == null && toDateInMillis != null) {
+                            sampleCoroutineScope.launch {
+                                mapViewModel.apply {
+                                    // create and run a geoprocessing task using date range
+                                    createGeoprocessingJob(
+                                        fromDate = convertMillisToString(0),
+                                        toDate = convertMillisToString(toDateInMillis),
+                                    )
+                                }
                             }
                         } else {
-                            showMessage(
-                                scope = sampleCoroutineScope,
-                                snackbarHostState = snackbarHostState,
-                                message = "Invalid date range selected"
+                            mapViewModel.showErrorDialog(
+                                title = "Error creating job",
+                                description = "Invalid date range selected"
                             )
                         }
                     },
@@ -84,6 +80,16 @@ fun MainScreen(sampleName: String, application: Application) {
                     showDialog = mapViewModel.showJobProgressDialog.value,
                     progress = mapViewModel.geoprocessingJobProgress.value,
                     cancelJobRequest = { mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope) }
+                )
+
+                // display a dialog if the sample encounters an error
+                MessageDialog(
+                    title = mapViewModel.errorTitle,
+                    description = mapViewModel.errorDescription,
+                    showDialog = mapViewModel.errorDialogStatus.value,
+                    onDismissRequest = {
+                        mapViewModel.errorDialogStatus.value = false
+                    }
                 )
             }
         })

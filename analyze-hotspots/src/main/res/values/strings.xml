@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Analyze hotspots</string>
+    <string name="service_url">http://sampleserver6.arcgisonline.com/arcgis/rest/services/911CallsHotspot/GPServer/911%20Calls%20Hotspot</string>
 </resources>

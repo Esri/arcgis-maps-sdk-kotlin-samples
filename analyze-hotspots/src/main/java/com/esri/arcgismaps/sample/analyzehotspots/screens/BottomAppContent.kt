@@ -19,12 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  * Bottom app content with a button to toggle the bottom sheet layout.
- * Returns a lambda for the  [analyzeHotspotsRange].
+ * Returns a lambda for the [analyzeHotspotsRange].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,33 +33,32 @@ fun BottomAppContent(
     // boolean to toggle the state of the bottom sheet layout
     var showAnalysisOptions by remember { mutableStateOf(false) }
 
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Column(
         modifier = Modifier.padding(12.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         // button to display analyze hotspot options
-        Button(onClick = {
-            // show the bottom sheet
-            showAnalysisOptions = true
-        }) {
+        Button(onClick = { showAnalysisOptions = true }) {
             Text(text = "Analyze")
+            // expands the bottom sheet if true
             if (showAnalysisOptions) {
+                // modal to control the bottom sheet state
+                val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 ModalBottomSheet(
-                    onDismissRequest = { showAnalysisOptions = false },
                     sheetState = bottomSheetState,
+                    onDismissRequest = { showAnalysisOptions = false },
                 ) {
                     // displays a date range picker using a bottom sheet
                     BottomSheetScreen(
+                        bottomSheetState = bottomSheetState,
                         onBottomSheetDismiss = {
                             // hide the bottom sheet
                             showAnalysisOptions = false
                         },
-                        runAnalysisClicked = { from, to ->
+                        onRunAnalysisClicked = { from, to ->
                             analyzeHotspotsRange(from, to)
-                        },
-                        bottomSheetState = bottomSheetState
+                        }
                     )
                 }
             }
