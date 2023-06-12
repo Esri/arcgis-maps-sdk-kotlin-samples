@@ -134,6 +134,9 @@ class MapViewModel(
         }
     }
 
+    /**
+     * Convert epoch time in [millis] to String date format
+     */
     fun convertMillisToString(millis: Long): String {
         val instant = Instant.ofEpochMilli(millis)
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -145,6 +148,10 @@ class MapViewModel(
     val errorDialogStatus = mutableStateOf(false)
     var errorTitle = ""
     var errorDescription = ""
+
+    /**
+     * Displays an error dialog with [title] and optional [description]
+     */
     fun showErrorDialog(title: String, description: String = "") {
         errorTitle = title
         errorDescription = description
