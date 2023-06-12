@@ -2,7 +2,6 @@ package com.esri.arcgismaps.sample.analyzehotspots.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -71,11 +70,8 @@ fun BottomSheetScreen(
             // from date picker
             item {
                 DatePicker(
-                    state = fromDatePickerState,
-                    modifier = Modifier.padding(16.dp),
-                    title = {
-                        Text(text = "FROM")
-                    }
+                    state = fromDatePickerState, modifier = Modifier.padding(16.dp),
+                    title = { Text(text = "FROM") }
                 )
             }
             // to date picker
@@ -83,9 +79,7 @@ fun BottomSheetScreen(
                 DatePicker(
                     state = toDatePickerState,
                     modifier = Modifier.padding(16.dp),
-                    title = {
-                        Text(text = "TO")
-                    }
+                    title = { Text(text = "TO") }
                 )
             }
         }

@@ -1,6 +1,7 @@
 package com.esri.arcgismaps.sample.sampleslib.components
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
@@ -22,6 +23,7 @@ fun MessageDialog(
     onDismissRequest: () -> Unit
 ) {
     if (showDialog) {
+        Log.e("SampleAlertMessage","$title: $description")
         AlertDialog(
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },

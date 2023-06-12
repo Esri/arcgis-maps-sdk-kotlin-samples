@@ -87,9 +87,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     title = mapViewModel.errorTitle,
                     description = mapViewModel.errorDescription,
                     showDialog = mapViewModel.errorDialogStatus.value,
-                    onDismissRequest = {
-                        mapViewModel.errorDialogStatus.value = false
-                    }
+                    onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
                 )
             }
         })
