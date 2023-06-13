@@ -30,7 +30,6 @@ Input the name of a U.S. state into the text field. When you tap "GO", a query i
 
 This sample uses U.S. State polygon features from the [USA 2016 Daytime Population](https://www.arcgis.com/home/item.html?id=f01f0eda766344e29f42031e7bfb7d04) feature service.
 
-
 ## Tags
 
-query, search 
+query, search

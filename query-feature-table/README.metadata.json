@@ -7,7 +7,8 @@
         "query-feature-table.png"
     ],
     "keywords": [
-        "Search and Query",
+        "query",
+        "search",
         "FeatureLayer",
         "FeatureQueryResult",
         "QueryParameters",
