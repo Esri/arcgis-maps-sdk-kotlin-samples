@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
@@ -55,6 +56,11 @@ fun ComposeMapView(
             mapView.apply {
                 map = mapViewState.arcGISMap
                 setViewpoint(mapViewState.viewpoint)
+                lifecycleOwner.lifecycleScope.launch {
+                    if (mapViewState.stateGeometry != null) {
+                        setViewpointGeometry(mapViewState.stateGeometry!!, 20.0)
+                    }
+                }
             }
         }
     )

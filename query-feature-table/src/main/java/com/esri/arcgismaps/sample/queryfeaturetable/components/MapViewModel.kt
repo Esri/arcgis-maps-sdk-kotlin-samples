@@ -17,28 +17,111 @@
 package com.esri.arcgismaps.sample.queryfeaturetable.components
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import com.arcgismaps.Color
+import com.arcgismaps.data.FeatureQueryResult
+import com.arcgismaps.data.QueryParameters
+import com.arcgismaps.data.ServiceFeatureTable
+import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.symbology.SimpleFillSymbol
+import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleRenderer
+import com.esri.arcgismaps.sample.queryfeaturetable.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.Locale
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
+class MapViewModel(
+    private val application: Application,
+    private val sampleCoroutineScope: CoroutineScope
+) : AndroidViewModel(application) {
+
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
 
+    // create a service feature table and a feature layer from it
+    private val serviceFeatureTable: ServiceFeatureTable by lazy {
+        ServiceFeatureTable(application.getString(R.string.us_daytime_population_url))
+    }
+
+    // create the feature layer using the service feature table
+    private val featureLayer: FeatureLayer by lazy {
+        FeatureLayer.createWithFeatureTable(serviceFeatureTable)
+    }
+
+    init {
+        // use symbols to show U.S. states with a black outline and yellow fill
+        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1.0f)
+        val fillSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.cyan, lineSymbol)
+
+        featureLayer.apply {
+            // set renderer for the feature layer
+            renderer = SimpleRenderer(fillSymbol)
+            opacity = 0.8f
+            maxScale = 10000.0
+        }
+
+        // add the feature layer to the map's operational layers
+        mapViewState.value.arcGISMap.operationalLayers.add(featureLayer)
+    }
+
     /**
-     * Switch between two basemaps
+     * Search for a U.S. state like @param searchString in the feature table, and if found add it
+     * to the featureLayer, zoom to it, and select it.
      */
-    fun changeBasemap() {
-        val newArcGISMap: ArcGISMap =
-            if (mapViewState.value.arcGISMap.basemap.value?.name.equals("ArcGIS:NavigationNight")) {
-                ArcGISMap(BasemapStyle.ArcGISStreets)
+    fun searchForState(searchString: String) {
+        // clear any previous selections
+        featureLayer.clearSelection()
+        // create a query for the state that was entered
+        val query = QueryParameters()
+        // make search case insensitive
+        query.whereClause = ("upper(STATE_NAME) LIKE '%" + searchString.uppercase(Locale.US) + "%'")
+
+        sampleCoroutineScope.launch {
+            // call select features
+            val featureQueryResult = serviceFeatureTable.queryFeatures(query).getOrElse {
+                showErrorDialog(it.message.toString(), it.cause.toString())
+            } as FeatureQueryResult
+
+            val resultIterator = featureQueryResult.iterator()
+            if (resultIterator.hasNext()) {
+                resultIterator.next().run {
+                    // select the feature
+                    featureLayer.selectFeature(this)
+                    // get the extent of the first feature in the result to zoom to
+                    val envelope = geometry?.extent
+                        ?: return@launch showErrorDialog("Error retrieving geometry extent")
+                    mapViewState.update { it.copy(stateGeometry = envelope) }
+                }
             } else {
-                ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+                showErrorDialog("No states found with name: $searchString")
             }
-        mapViewState.update { it.copy(arcGISMap = newArcGISMap) }
+        }
+    }
+
+    // error dialog status
+    val errorDialogStatus = mutableStateOf(false)
+    var errorTitle = ""
+    var errorDescription = ""
+
+    /**
+     * Displays an error dialog with [title] and optional [description]
+     */
+    private fun showErrorDialog(title: String, description: String = "") {
+        errorTitle = title
+        errorDescription = description
+        errorDialogStatus.value = true
     }
 }
 
@@ -46,7 +129,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 /**
  * Data class that represents the MapView state
  */
-data class MapViewState( // This would change based on each sample implementation
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
+data class MapViewState(
+    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic),
+    // set an initial viewpoint over the USA
+    var viewpoint: Viewpoint = Viewpoint(
+        center = Point(
+            x = -11000000.0,
+            y = 5000000.0,
+            spatialReference = SpatialReference.webMercator()
+        ),
+        scale = 100000000.0
+    ),
+    val stateGeometry: Geometry? = null
 )

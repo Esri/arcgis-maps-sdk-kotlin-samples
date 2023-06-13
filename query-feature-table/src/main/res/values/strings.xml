@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Query feature table</string>
+    <string name="us_daytime_population_url">https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/USA_Daytime_Population_2016/FeatureServer/0</string>
 </resources>

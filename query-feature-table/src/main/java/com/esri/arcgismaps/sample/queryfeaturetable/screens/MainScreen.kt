@@ -19,12 +19,17 @@ package com.esri.arcgismaps.sample.queryfeaturetable.screens
 import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.queryfeaturetable.components.ComposeMapView
 import com.esri.arcgismaps.sample.queryfeaturetable.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -32,26 +37,34 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
+    // coroutineScope that will be cancelled when this call leaves the composition
+    val sampleCoroutineScope = rememberCoroutineScope()
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = MapViewModel(application)
+    val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
+            Column(modifier = Modifier.fillMaxSize().padding(it)) {
                 // composable function that wraps the MapView
                 ComposeMapView(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxWidth().weight(1f),
                     mapViewModel = mapViewModel,
-                    onSingleTap = {
-                        mapViewModel.changeBasemap()
-                    }
                 )
+                SearchBar(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    onQuerySubmit = {query ->
+                        mapViewModel.searchForState(query)
+                })
             }
+
+            // display a dialog if the sample encounters an error
+            MessageDialog(
+                title = mapViewModel.errorTitle,
+                description = mapViewModel.errorDescription,
+                showDialog = mapViewModel.errorDialogStatus.value,
+                onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
+            )
         }
     )
 }
