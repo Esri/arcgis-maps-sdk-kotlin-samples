@@ -57,9 +57,7 @@ fun ComposeMapView(
                 map = mapViewState.arcGISMap
                 setViewpoint(mapViewState.viewpoint)
                 lifecycleOwner.lifecycleScope.launch {
-                    if (mapViewState.stateGeometry != null) {
-                        setViewpointGeometry(mapViewState.stateGeometry!!, 20.0)
-                    }
+                    mapViewState.stateGeometry?.let { setViewpointGeometry(it, 20.0) }
                 }
             }
         }

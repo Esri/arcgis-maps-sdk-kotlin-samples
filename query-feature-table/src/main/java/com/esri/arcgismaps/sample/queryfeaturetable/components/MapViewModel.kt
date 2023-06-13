@@ -62,8 +62,16 @@ class MapViewModel(
 
     init {
         // use symbols to show U.S. states with a black outline and yellow fill
-        val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1.0f)
-        val fillSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.cyan, lineSymbol)
+        val lineSymbol = SimpleLineSymbol(
+            style = SimpleLineSymbolStyle.Solid,
+            color = Color.black,
+            width = 1.0f
+        )
+        val fillSymbol = SimpleFillSymbol(
+            style = SimpleFillSymbolStyle.Solid,
+            color = Color.fromRgba(255, 255, 0, 255),
+            outline = lineSymbol
+        )
 
         featureLayer.apply {
             // set renderer for the feature layer
@@ -71,26 +79,26 @@ class MapViewModel(
             opacity = 0.8f
             maxScale = 10000.0
         }
-
         // add the feature layer to the map's operational layers
         mapViewState.value.arcGISMap.operationalLayers.add(featureLayer)
     }
 
     /**
-     * Search for a U.S. state like @param searchString in the feature table, and if found add it
+     * Search for a U.S. state using [searchQuery] in the feature table, and if found add it
      * to the featureLayer, zoom to it, and select it.
      */
-    fun searchForState(searchString: String) {
+    fun searchForState(searchQuery: String) {
         // clear any previous selections
         featureLayer.clearSelection()
         // create a query for the state that was entered
-        val query = QueryParameters()
-        // make search case insensitive
-        query.whereClause = ("upper(STATE_NAME) LIKE '%" + searchString.uppercase(Locale.US) + "%'")
+        val queryParameters = QueryParameters().apply {
+            // make search case insensitive
+            whereClause = ("upper(STATE_NAME) LIKE '%" + searchQuery.uppercase(Locale.US) + "%'")
+        }
 
         sampleCoroutineScope.launch {
             // call select features
-            val featureQueryResult = serviceFeatureTable.queryFeatures(query).getOrElse {
+            val featureQueryResult = serviceFeatureTable.queryFeatures(queryParameters).getOrElse {
                 showErrorDialog(it.message.toString(), it.cause.toString())
             } as FeatureQueryResult
 
@@ -102,10 +110,11 @@ class MapViewModel(
                     // get the extent of the first feature in the result to zoom to
                     val envelope = geometry?.extent
                         ?: return@launch showErrorDialog("Error retrieving geometry extent")
+                    // update the map view to set the viewpoint to the state geometry
                     mapViewState.update { it.copy(stateGeometry = envelope) }
                 }
             } else {
-                showErrorDialog("No states found with name: $searchString")
+                showErrorDialog("No states found with name: $searchQuery")
             }
         }
     }
@@ -131,14 +140,10 @@ class MapViewModel(
  */
 data class MapViewState(
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic),
+    var stateGeometry: Geometry? = null,
     // set an initial viewpoint over the USA
     var viewpoint: Viewpoint = Viewpoint(
-        center = Point(
-            x = -11000000.0,
-            y = 5000000.0,
-            spatialReference = SpatialReference.webMercator()
-        ),
-        scale = 100000000.0
+        center = Point(-11e6, 5e6, SpatialReference.webMercator()),
+        scale = 1e8
     ),
-    val stateGeometry: Geometry? = null
 )

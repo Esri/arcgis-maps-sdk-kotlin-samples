@@ -29,28 +29,20 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     onQuerySubmit: (String) -> Unit
 ) {
+    // query text typed in OutlinedTextField
     var text by rememberSaveable { mutableStateOf("") }
+    // remember the OutlinedTextField's focus requester to change focus on search
     val focusRequester = remember { FocusRequester() }
+    // focus manager is used to clear focus from OutlinedTextField on search
     val focusManager = LocalFocusManager.current
 
     Row(modifier) {
         OutlinedTextField(
             modifier = modifier.focusRequester(focusRequester),
             value = text,
+            maxLines = 1,
             onValueChange = { text = it },
             label = { Text("Search a US state") },
-            trailingIcon = {
-                IconButton(content = {
-                    Icon(
-                        Icons.Filled.Close,
-                        contentDescription = "ClearIcon"
-                    )
-                }, onClick = {
-                    text = ""
-                    focusManager.clearFocus()
-                })
-            },
-            maxLines = 1,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Search
@@ -60,7 +52,18 @@ fun SearchBar(
                     onQuerySubmit(text)
                     focusManager.clearFocus()
                 },
-            )
+            ),
+            trailingIcon = {
+                IconButton(onClick = {
+                    text = ""
+                    focusManager.clearFocus()
+                }) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "ClearIcon"
+                    )
+                }
+            },
         )
     }
 

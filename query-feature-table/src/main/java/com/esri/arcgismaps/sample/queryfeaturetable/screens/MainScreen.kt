@@ -53,9 +53,9 @@ fun MainScreen(sampleName: String, application: Application) {
                 )
                 SearchBar(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    onQuerySubmit = {query ->
+                    onQuerySubmit = { query ->
                         mapViewModel.searchForState(query)
-                })
+                    })
             }
 
             // display a dialog if the sample encounters an error

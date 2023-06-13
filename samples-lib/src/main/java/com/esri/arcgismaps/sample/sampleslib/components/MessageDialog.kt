@@ -24,17 +24,30 @@ fun MessageDialog(
 ) {
     if (showDialog) {
         Log.e("SampleAlertMessage","$title: $description")
-        AlertDialog(
-            onDismissRequest = { onDismissRequest() },
-            icon = { Icon(Icons.Filled.Info, contentDescription = null) },
-            title = { Text(title) },
-            text = { if (description.isNotEmpty()) Text(description) },
-            confirmButton = {
-                TextButton(onClick = { onDismissRequest() }) {
-                    Text("Dismiss")
-                }
-            },
-        )
+        if(description.isNotEmpty()){
+            AlertDialog(
+                onDismissRequest = { onDismissRequest() },
+                icon = { Icon(Icons.Filled.Info, contentDescription = null) },
+                title = { Text(title) },
+                text = { if (description.isNotEmpty()) Text(description) },
+                confirmButton = {
+                    TextButton(onClick = { onDismissRequest() }) {
+                        Text("Dismiss")
+                    }
+                },
+            )
+        } else {
+            AlertDialog(
+                onDismissRequest = { onDismissRequest() },
+                icon = { Icon(Icons.Filled.Info, contentDescription = null) },
+                title = { Text(title) },
+                confirmButton = {
+                    TextButton(onClick = { onDismissRequest() }) {
+                        Text("Dismiss")
+                    }
+                },
+            )
+        }
     }
 }
 
