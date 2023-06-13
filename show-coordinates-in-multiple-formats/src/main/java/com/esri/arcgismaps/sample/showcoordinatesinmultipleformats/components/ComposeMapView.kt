@@ -54,7 +54,8 @@ fun ComposeMapView(
         update = { mapView ->
             mapView.apply {
                 map = mapViewState.arcGISMap
-                setViewpoint(mapViewState.viewpoint)
+                mapView.graphicsOverlays.clear()
+                mapView.graphicsOverlays.add(mapViewState.graphicsOverlay)
             }
         }
     )

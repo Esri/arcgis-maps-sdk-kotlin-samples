@@ -19,13 +19,14 @@ package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.screens
 import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.ComposeMapView
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.MapViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
  * Main screen layout for the sample app
@@ -43,12 +44,19 @@ fun MainScreen(sampleName: String, application: Application) {
                     .fillMaxSize()
                     .padding(it)
             ) {
+                CoordinatesLayout(
+                    modifier = Modifier.fillMaxWidth(),
+                    decimalDegrees = mapViewModel.decimalDegrees,
+                    degreesMinutesSeconds = mapViewModel.degreesMinutesSeconds,
+                    utm = mapViewModel.utm,
+                    usng = mapViewModel.usng,
+                    onQuerySubmit = {})
                 // composable function that wraps the MapView
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize(),
                     mapViewModel = mapViewModel,
-                    onSingleTap = {
-                        mapViewModel.changeBasemap()
+                    onSingleTap = { singleTapConfirmedEvent ->
+                        mapViewModel.singleTapped(singleTapConfirmedEvent.mapPoint)
                     }
                 )
             }
