@@ -22,6 +22,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.core.view.WindowCompat
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -34,7 +35,9 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
+        // remove focus from text fields when keyboard closes
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // set compose content
         setContent {
             SampleAppTheme {
                 SampleApp()

@@ -50,7 +50,12 @@ fun MainScreen(sampleName: String, application: Application) {
                     degreesMinutesSeconds = mapViewModel.degreesMinutesSeconds,
                     utm = mapViewModel.utm,
                     usng = mapViewModel.usng,
-                    onQuerySubmit = {})
+                    onQuerySubmit = { notation, coordinateString ->
+                        mapViewModel.fromCoordinateNotationToPoint(
+                            type = notation,
+                            coordinateNotation = coordinateString
+                        )
+                    })
                 // composable function that wraps the MapView
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize(),

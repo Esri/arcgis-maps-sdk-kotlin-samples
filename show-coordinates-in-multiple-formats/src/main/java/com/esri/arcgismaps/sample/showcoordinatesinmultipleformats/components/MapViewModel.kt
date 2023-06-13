@@ -35,7 +35,6 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.R
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
@@ -55,7 +54,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             geometry = initialPoint,
             symbol = SimpleMarkerSymbol(
                 style = SimpleMarkerSymbolStyle.Cross,
-                color = Color.cyan,
+                color = Color.fromRgba(255, 255, 0, 255),
                 size = 20f
             )
         )
@@ -65,7 +64,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         // create a map that has the WGS 84 coordinate system and set this into the map
         val basemapLayer = ArcGISTiledLayer(application.getString(R.string.basemap_url))
         val map = ArcGISMap(Basemap(basemapLayer))
-        mapViewState.update { it.copy(arcGISMap = map) }
+        mapViewState.value.arcGISMap = map
         mapViewState.value.graphicsOverlay.graphics.add(coordinateLocation)
         toCoordinateNotationFromPoint(initialPoint)
     }
@@ -116,13 +115,64 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             addSpaces = true,
         ).toString()
     }
+
+    /**
+     * Uses CoordinateFormatter to update the graphic in the map from the given coordinate notation string entered by the
+     * user. Also calls corresponding method to update all the remaining coordinate notation strings.
+     * [type] the given coordinate notation type
+     * [coordinateNotation] a string containing the coordinate notation to convert to a point
+     */
+    fun fromCoordinateNotationToPoint(type: NotationType, coordinateNotation: String) {
+        // ignore empty input coordinate notation strings, do not update UI
+        if (coordinateNotation.isEmpty()) return
+        var convertedPoint: Point? = null
+
+        when (type) {
+            NotationType.DMS, NotationType.DD -> {
+                // use CoordinateFormatter to parse Latitude Longitude - different numeric notations (Decimal Degrees;
+                // Degrees, Minutes, Seconds; Degrees, Decimal Minutes) can all be passed to this same method
+                convertedPoint = CoordinateFormatter.fromLatitudeLongitudeOrNull(
+                    coordinates = coordinateNotation,
+                    spatialReference = null
+                )
+            }
+
+            NotationType.UTM -> {
+                // use CoordinateFormatter to parse UTM coordinates
+                convertedPoint = CoordinateFormatter.fromUtmOrNull(
+                    coordinates = coordinateNotation,
+                    utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
+                    spatialReference = null,
+                )
+            }
+
+            NotationType.USNG -> {
+                // use CoordinateFormatter to parse US National Grid coordinates
+                convertedPoint = CoordinateFormatter.fromUsngOrNull(
+                    coordinates = coordinateNotation,
+                    spatialReference = null
+                )
+            }
+        }
+        if (convertedPoint != null) {
+            // update the location shown in the map
+            toCoordinateNotationFromPoint(convertedPoint)
+        }
+    }
+
+    /**
+     * Coordinate notations supported by this sample
+     */
+    enum class NotationType {
+        DMS, DD, UTM, USNG
+    }
 }
 
 
 /**
  * Data class that represents the MapView state
  */
-data class MapViewState( // This would change based on each sample implementation
+data class MapViewState(
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
     var graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
 )
