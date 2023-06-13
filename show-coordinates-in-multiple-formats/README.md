@@ -1,0 +1,1 @@
+# Show coordinates in multiple formats
