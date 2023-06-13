@@ -19,10 +19,6 @@ Input the name of a U.S. state into the text field. When you tap "GO", a query i
 3. Perform the query using `queryFeatures(queryParameters)` on the service feature table.
 4. When complete, the query will return a `FeatureQueryResult` which can be iterated over to get the matching features.
 
-## About the data
-
-This sample uses U.S. State polygon features from the [USA 2016 Daytime Population](https://www.arcgis.com/home/item.html?id=f01f0eda766344e29f42031e7bfb7d04) feature service.
-
 ## Relevant API
 
 * FeatureLayer
@@ -30,6 +26,11 @@ This sample uses U.S. State polygon features from the [USA 2016 Daytime Populati
 * QueryParameters
 * ServiceFeatureTable
 
+## About the data
+
+This sample uses U.S. State polygon features from the [USA 2016 Daytime Population](https://www.arcgis.com/home/item.html?id=f01f0eda766344e29f42031e7bfb7d04) feature service.
+
+
 ## Tags
 
-Search and Query
+query, search 
