@@ -1,2 +1,32 @@
 {
+    "category": "Search and Query",
+    "description": "Find features in a feature table which match an SQL query.",
+    "formal_name": "QueryFeatureTable",
+    "ignore": false,
+    "images": [
+        "query-feature-table.png"
+    ],
+    "keywords": [
+        "Search and Query",
+        "FeatureLayer",
+        "FeatureQueryResult",
+        "QueryParameters",
+        "ServiceFeatureTable"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "FeatureQueryResult",
+        "QueryParameters",
+        "ServiceFeatureTable"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/screens/MainScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/screens/SearchBar.kt"
+    ],
+    "title": "Query feature table"
 }
