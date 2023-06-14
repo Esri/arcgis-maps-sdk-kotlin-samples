@@ -1,4 +1,4 @@
-# Show Magnifier
+# Show magnifier
 
 Tap and hold on a map to show a magnifier.
 
