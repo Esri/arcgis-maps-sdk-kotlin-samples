@@ -114,6 +114,9 @@ fun CoordinatesLayout(
     }
 }
 
+/**
+ * Composable function that returns a false state when keyboard is closed.
+ */
 @Composable
 fun keyboardAsState(): State<Boolean> {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0

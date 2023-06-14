@@ -64,22 +64,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         // create a map that has the WGS 84 coordinate system and set this into the map
         val basemapLayer = ArcGISTiledLayer(application.getString(R.string.basemap_url))
         val map = ArcGISMap(Basemap(basemapLayer))
-        mapViewState.value.arcGISMap = map
-        mapViewState.value.graphicsOverlay.graphics.add(coordinateLocation)
+        mapViewState.value.apply {
+            arcGISMap = map
+            graphicsOverlay.graphics.add(coordinateLocation)
+        }
+        // update the coordinate notations using the initial point
         toCoordinateNotationFromPoint(initialPoint)
     }
 
-    fun singleTapped(mapPoint: Point?) {
-        if (mapPoint != null) {
-            coordinateLocation.geometry = mapPoint
+    /**
+     * Updates the tapped graphic and coordinate notations using the [tappedPoint]
+     */
+    fun onMapTapped(tappedPoint: Point?) {
+        if (tappedPoint != null) {
+            // update the tapped location graphic
+            coordinateLocation.geometry = tappedPoint
             mapViewState.value.graphicsOverlay.graphics.apply {
                 clear()
                 add(coordinateLocation)
             }
-
-            toCoordinateNotationFromPoint(mapPoint)
-        } else {
-            showErrorDialog()
+            // update the coordinate notations using the tapped point
+            toCoordinateNotationFromPoint(tappedPoint)
         }
     }
 
@@ -119,17 +124,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Uses CoordinateFormatter to update the graphic in the map from the given coordinate notation string entered by the
-     * user. Also calls corresponding method to update all the remaining coordinate notation strings.
-     * [type] the given coordinate notation type
-     * [coordinateNotation] a string containing the coordinate notation to convert to a point
+     * Uses CoordinateFormatter to update the graphic in the map from the given [coordinateNotation]
+     * string entered by the user. Also calls corresponding method to update all the remaining
+     * [coordinateNotation] strings using the notation [notationType].
      */
-    fun fromCoordinateNotationToPoint(type: NotationType, coordinateNotation: String) {
+    fun fromCoordinateNotationToPoint(notationType: NotationType, coordinateNotation: String) {
         // ignore empty input coordinate notation strings, do not update UI
         if (coordinateNotation.isEmpty()) return
         val convertedPoint: Point
 
-        when (type) {
+        when (notationType) {
             NotationType.DMS, NotationType.DD -> {
                 // use CoordinateFormatter to parse Latitude Longitude - different numeric notations (Decimal Degrees;
                 // Degrees, Minutes, Seconds; Degrees, Decimal Minutes) can all be passed to this same method
@@ -141,7 +145,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
             NotationType.UTM -> {
                 // use CoordinateFormatter to parse UTM coordinates
-                convertedPoint = CoordinateFormatter.fromUtmOrNull(coordinates = coordinateNotation, utmConversionMode = UtmConversionMode.LatitudeBandIndicators, spatialReference = null) ?: return showErrorDialog()
+                convertedPoint = CoordinateFormatter.fromUtmOrNull(
+                    coordinates = coordinateNotation,
+                    utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
+                    spatialReference = null
+                ) ?: return showErrorDialog()
             }
 
             NotationType.USNG -> {

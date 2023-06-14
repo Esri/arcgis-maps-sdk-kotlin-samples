@@ -41,10 +41,9 @@ fun MainScreen(sampleName: String, application: Application) {
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
+                modifier = Modifier.fillMaxSize().padding(it)
             ) {
+                // layout to display the coordinate text fields.
                 CoordinatesLayout(
                     modifier = Modifier.fillMaxWidth(),
                     decimalDegrees = mapViewModel.decimalDegrees,
@@ -53,7 +52,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     usng = mapViewModel.usng,
                     onQuerySubmit = { notation, coordinateString ->
                         mapViewModel.fromCoordinateNotationToPoint(
-                            type = notation,
+                            notationType = notation,
                             coordinateNotation = coordinateString
                         )
                     })
@@ -62,7 +61,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     modifier = Modifier.fillMaxSize(),
                     mapViewModel = mapViewModel,
                     onSingleTap = { singleTapConfirmedEvent ->
-                        mapViewModel.singleTapped(singleTapConfirmedEvent.mapPoint)
+                        mapViewModel.onMapTapped(singleTapConfirmedEvent.mapPoint)
                     }
                 )
 
