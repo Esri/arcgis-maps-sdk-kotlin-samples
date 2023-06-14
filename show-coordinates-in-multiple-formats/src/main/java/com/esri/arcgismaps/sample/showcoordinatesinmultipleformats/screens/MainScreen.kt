@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.ComposeMapView
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.MapViewModel
@@ -63,6 +64,13 @@ fun MainScreen(sampleName: String, application: Application) {
                     onSingleTap = { singleTapConfirmedEvent ->
                         mapViewModel.singleTapped(singleTapConfirmedEvent.mapPoint)
                     }
+                )
+
+                // display a dialog if the sample encounters an error
+                MessageDialog(
+                    title = mapViewModel.errorTitle,
+                    showDialog = mapViewModel.errorDialogStatus.value,
+                    onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
                 )
             }
         }

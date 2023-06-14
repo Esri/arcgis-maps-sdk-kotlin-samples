@@ -78,6 +78,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             toCoordinateNotationFromPoint(mapPoint)
+        } else {
+            showErrorDialog()
         }
     }
 
@@ -92,28 +94,28 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             point = newLocation,
             format = LatitudeLongitudeFormat.DecimalDegrees,
             decimalPlaces = 4
-        ).toString()
+        ) ?: return showErrorDialog()
 
         // use CoordinateFormatter to convert to Latitude Longitude, formatted as Degrees, Minutes, Seconds
         degreesMinutesSeconds.value = CoordinateFormatter.toLatitudeLongitudeOrNull(
             point = newLocation,
             format = LatitudeLongitudeFormat.DegreesMinutesSeconds,
             decimalPlaces = 4
-        ).toString()
+        ) ?: return showErrorDialog()
 
         // use CoordinateFormatter to convert to Universal Transverse Mercator, using latitudinal bands indicator
         utm.value = CoordinateFormatter.toUtmOrNull(
             point = newLocation,
             utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
             addSpaces = true
-        ).toString()
+        ) ?: return showErrorDialog()
 
         // use CoordinateFormatter to convert to United States National Grid (USNG)
         usng.value = CoordinateFormatter.toUsngOrNull(
             point = newLocation,
             precision = 4,
             addSpaces = true,
-        ).toString()
+        ) ?: return showErrorDialog()
     }
 
     /**
@@ -125,7 +127,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun fromCoordinateNotationToPoint(type: NotationType, coordinateNotation: String) {
         // ignore empty input coordinate notation strings, do not update UI
         if (coordinateNotation.isEmpty()) return
-        var convertedPoint: Point? = null
+        val convertedPoint: Point
 
         when (type) {
             NotationType.DMS, NotationType.DD -> {
@@ -134,16 +136,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 convertedPoint = CoordinateFormatter.fromLatitudeLongitudeOrNull(
                     coordinates = coordinateNotation,
                     spatialReference = null
-                )
+                ) ?: return showErrorDialog()
             }
 
             NotationType.UTM -> {
                 // use CoordinateFormatter to parse UTM coordinates
-                convertedPoint = CoordinateFormatter.fromUtmOrNull(
-                    coordinates = coordinateNotation,
-                    utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
-                    spatialReference = null,
-                )
+                convertedPoint = CoordinateFormatter.fromUtmOrNull(coordinates = coordinateNotation, utmConversionMode = UtmConversionMode.LatitudeBandIndicators, spatialReference = null) ?: return showErrorDialog()
             }
 
             NotationType.USNG -> {
@@ -151,13 +149,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 convertedPoint = CoordinateFormatter.fromUsngOrNull(
                     coordinates = coordinateNotation,
                     spatialReference = null
-                )
+                ) ?: return showErrorDialog()
             }
         }
-        if (convertedPoint != null) {
-            // update the location shown in the map
-            toCoordinateNotationFromPoint(convertedPoint)
-        }
+
+        // update the location shown in the map
+        toCoordinateNotationFromPoint(convertedPoint)
     }
 
     /**
@@ -165,6 +162,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     enum class NotationType {
         DMS, DD, UTM, USNG
+    }
+
+    // error dialog status
+    val errorDialogStatus = mutableStateOf(false)
+    var errorTitle = ""
+
+    /**
+     * Displays an error dialog
+     */
+    private fun showErrorDialog() {
+        errorTitle = "Invalid date format"
+        errorDialogStatus.value = true
     }
 }
 
