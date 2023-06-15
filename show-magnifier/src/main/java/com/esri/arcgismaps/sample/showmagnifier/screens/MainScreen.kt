@@ -38,11 +38,7 @@ fun MainScreen(sampleName: String, application: Application) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
+            Column(modifier = Modifier.fillMaxSize().padding(it)) {
                 // composable function that wraps the MapView
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize().weight(1f),
