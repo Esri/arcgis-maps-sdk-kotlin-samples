@@ -35,7 +35,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 /**
  * Data class that represents the MapView state
  */
-data class MapViewState( // This would change based on each sample implementation
+data class MapViewState( 
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic),
     var viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0),
     var interactionOptions: MapViewInteractionOptions = MapViewInteractionOptions(
