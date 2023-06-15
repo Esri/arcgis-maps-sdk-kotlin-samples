@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.screens
 import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -44,18 +43,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 modifier = Modifier.fillMaxSize().padding(it)
             ) {
                 // layout to display the coordinate text fields.
-                CoordinatesLayout(
-                    modifier = Modifier.fillMaxWidth(),
-                    decimalDegrees = mapViewModel.decimalDegrees,
-                    degreesMinutesSeconds = mapViewModel.degreesMinutesSeconds,
-                    utm = mapViewModel.utm,
-                    usng = mapViewModel.usng,
-                    onQuerySubmit = { notation, coordinateString ->
-                        mapViewModel.fromCoordinateNotationToPoint(
-                            notationType = notation,
-                            coordinateNotation = coordinateString
-                        )
-                    })
+                CoordinatesLayout(mapViewModel = mapViewModel)
                 // composable function that wraps the MapView
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize(),

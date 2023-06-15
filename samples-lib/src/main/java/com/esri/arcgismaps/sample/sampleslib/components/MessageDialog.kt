@@ -22,12 +22,13 @@ fun MessageDialog(
     onDismissRequest: () -> Unit
 ) {
     Log.e("SampleAlertMessage", "$title: $description")
+    // display a dialog with a description text
     if (description.isNotEmpty()) {
         AlertDialog(
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },
             title = { Text(title) },
-            text = { if (description.isNotEmpty()) Text(description) },
+            text = { Text(description) },
             confirmButton = {
                 TextButton(onClick = { onDismissRequest() }) {
                     Text("Dismiss")
@@ -35,6 +36,7 @@ fun MessageDialog(
             },
         )
     } else {
+        // display a dialog without a description text
         AlertDialog(
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },

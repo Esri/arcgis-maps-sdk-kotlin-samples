@@ -17,7 +17,9 @@
 package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.CoordinateFormatter
@@ -40,10 +42,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
 
-    var decimalDegrees = mutableStateOf("")
-    var degreesMinutesSeconds = mutableStateOf("")
-    var utm = mutableStateOf("")
-    var usng = mutableStateOf("")
+    var decimalDegrees by mutableStateOf("")
+        private set
+    var degreesMinutesSeconds by mutableStateOf("")
+        private set
+
+    var utm by mutableStateOf("")
+        private set
+
+    var usng by mutableStateOf("")
+        private set
 
     // set up a graphic to indicate where the coordinates relate to, with an initial location
     private val initialPoint by lazy {
@@ -95,28 +103,28 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private fun toCoordinateNotationFromPoint(newLocation: Point) {
         coordinateLocation.geometry = newLocation
         // use CoordinateFormatter to convert to Latitude Longitude, formatted as Decimal Degrees
-        decimalDegrees.value = CoordinateFormatter.toLatitudeLongitudeOrNull(
+        decimalDegrees = CoordinateFormatter.toLatitudeLongitudeOrNull(
             point = newLocation,
             format = LatitudeLongitudeFormat.DecimalDegrees,
             decimalPlaces = 4
         ) ?: return showErrorDialog()
 
         // use CoordinateFormatter to convert to Latitude Longitude, formatted as Degrees, Minutes, Seconds
-        degreesMinutesSeconds.value = CoordinateFormatter.toLatitudeLongitudeOrNull(
+        degreesMinutesSeconds = CoordinateFormatter.toLatitudeLongitudeOrNull(
             point = newLocation,
             format = LatitudeLongitudeFormat.DegreesMinutesSeconds,
             decimalPlaces = 4
         ) ?: return showErrorDialog()
 
         // use CoordinateFormatter to convert to Universal Transverse Mercator, using latitudinal bands indicator
-        utm.value = CoordinateFormatter.toUtmOrNull(
+        utm = CoordinateFormatter.toUtmOrNull(
             point = newLocation,
             utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
             addSpaces = true
         ) ?: return showErrorDialog()
 
         // use CoordinateFormatter to convert to United States National Grid (USNG)
-        usng.value = CoordinateFormatter.toUsngOrNull(
+        usng = CoordinateFormatter.toUsngOrNull(
             point = newLocation,
             precision = 4,
             addSpaces = true,
@@ -183,8 +191,36 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         errorTitle = "Invalid date format"
         errorDialogStatus.value = true
     }
-}
 
+    /**
+     * Set's [decimalDegrees] entered in the text field to the [inputString]
+     */
+    fun setDecimalDegreesCoordinate(inputString: String) {
+        decimalDegrees = inputString
+    }
+
+    /**
+     * Set's [degreesMinutesSeconds] entered in the text field to the [inputString]
+     */
+    fun degreesMinutesSecondsCoordinate(inputString: String) {
+        degreesMinutesSeconds = inputString
+    }
+
+    /**
+     * Set's [utm] entered in the text field to the [inputString]
+     */
+    fun setUTMCoordinate(inputString: String) {
+        utm = inputString
+
+    }
+
+    /**
+     * Set's [usng] entered in the text field to the [inputString]
+     */
+    fun setUSNGDegreesCoordinate(inputString: String) {
+        usng = inputString
+    }
+}
 
 /**
  * Data class that represents the MapView state
