@@ -66,11 +66,12 @@ fun MainScreen(sampleName: String, application: Application) {
                 )
 
                 // display a dialog if the sample encounters an error
-                MessageDialog(
-                    title = mapViewModel.errorTitle,
-                    showDialog = mapViewModel.errorDialogStatus.value,
-                    onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
-                )
+                if (mapViewModel.errorDialogStatus.value) {
+                    MessageDialog(
+                        title = mapViewModel.errorTitle,
+                        onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
+                    )
+                }
             }
         }
     )

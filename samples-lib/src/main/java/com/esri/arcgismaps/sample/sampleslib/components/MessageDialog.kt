@@ -19,35 +19,32 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 fun MessageDialog(
     title: String,
     description: String = "",
-    showDialog: Boolean,
     onDismissRequest: () -> Unit
 ) {
-    if (showDialog) {
-        Log.e("SampleAlertMessage", "$title: $description")
-        if (description.isNotEmpty()) {
-            AlertDialog(
-                onDismissRequest = { onDismissRequest() },
-                icon = { Icon(Icons.Filled.Info, contentDescription = null) },
-                title = { Text(title) },
-                text = { if (description.isNotEmpty()) Text(description) },
-                confirmButton = {
-                    TextButton(onClick = { onDismissRequest() }) {
-                        Text("Dismiss")
-                    }
-                },
-            )
-        } else {
-            AlertDialog(
-                onDismissRequest = { onDismissRequest() },
-                icon = { Icon(Icons.Filled.Info, contentDescription = null) },
-                title = { Text(title) },
-                confirmButton = {
-                    TextButton(onClick = { onDismissRequest() }) {
-                        Text("Dismiss")
-                    }
-                },
-            )
-        }
+    Log.e("SampleAlertMessage", "$title: $description")
+    if (description.isNotEmpty()) {
+        AlertDialog(
+            onDismissRequest = { onDismissRequest() },
+            icon = { Icon(Icons.Filled.Info, contentDescription = null) },
+            title = { Text(title) },
+            text = { if (description.isNotEmpty()) Text(description) },
+            confirmButton = {
+                TextButton(onClick = { onDismissRequest() }) {
+                    Text("Dismiss")
+                }
+            },
+        )
+    } else {
+        AlertDialog(
+            onDismissRequest = { onDismissRequest() },
+            icon = { Icon(Icons.Filled.Info, contentDescription = null) },
+            title = { Text(title) },
+            confirmButton = {
+                TextButton(onClick = { onDismissRequest() }) {
+                    Text("Dismiss")
+                }
+            },
+        )
     }
 }
 
@@ -59,7 +56,6 @@ fun PreviewMessageDialog() {
         MessageDialog(
             title = "Message title",
             description = "Dialog loading message here",
-            showDialog = true,
             onDismissRequest = { }
         )
     }
