@@ -55,8 +55,11 @@ fun ComposeMapView(
             mapView.apply {
                 map = mapViewState.arcGISMap
                 setViewpoint(mapViewState.viewpoint)
-                interactionOptions.isMagnifierEnabled = mapViewState.interactionOptions.isMagnifierEnabled
-                interactionOptions.allowMagnifierToPan = mapViewState.interactionOptions.allowMagnifierToPan
+                // set the MapView's interaction options using the MapViewState
+                mapViewState.interactionOptions.apply {
+                    interactionOptions.isMagnifierEnabled = isMagnifierEnabled
+                    interactionOptions.allowMagnifierToPan = allowMagnifierToPan
+                }
             }
         }
     )
