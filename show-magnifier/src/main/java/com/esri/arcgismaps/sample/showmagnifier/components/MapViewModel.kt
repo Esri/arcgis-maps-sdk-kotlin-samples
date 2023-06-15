@@ -21,16 +21,13 @@ import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.arcgismaps.mapping.view.InteractionOptions
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
 }
-
 
 /**
  * Data class that represents the MapView state
