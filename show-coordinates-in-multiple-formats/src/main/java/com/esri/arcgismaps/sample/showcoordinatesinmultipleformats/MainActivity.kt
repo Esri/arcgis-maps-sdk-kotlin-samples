@@ -40,13 +40,13 @@ class MainActivity : ComponentActivity() {
         // set compose content
         setContent {
             SampleAppTheme {
-                SampleApp()
+                ShowCoordinatesInMultipleFormatsApp()
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun ShowCoordinatesInMultipleFormatsApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {

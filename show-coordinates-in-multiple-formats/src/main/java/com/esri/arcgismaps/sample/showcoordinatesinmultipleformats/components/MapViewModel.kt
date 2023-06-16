@@ -208,9 +208,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 /**
- * Data class that represents the MapView state
+ * Class that represents the MapView's current state
  */
-data class MapViewState(
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
-)
+class MapViewState {
+    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight))
+    var graphicsOverlay: GraphicsOverlay by mutableStateOf(GraphicsOverlay())
+}
