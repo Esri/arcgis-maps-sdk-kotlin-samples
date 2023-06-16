@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.screens
 
 import android.content.res.Configuration
+import android.view.KeyEvent
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -94,7 +96,14 @@ fun CoordinateField(
     )
 
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth().focusRequester(focusRequester),
+        modifier = modifier.fillMaxWidth().focusRequester(focusRequester).onKeyEvent {
+            // submit query when enter is tapped
+            if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+                onQuerySubmit(notationType, text)
+                focusManager.clearFocus()
+            }
+            false
+        },
         value = text,
         maxLines = 1,
         singleLine = true,
@@ -103,6 +112,7 @@ fun CoordinateField(
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(
             onSearch = {
+                // submit query when search is tapped
                 onQuerySubmit(notationType, text)
                 focusManager.clearFocus()
             },
