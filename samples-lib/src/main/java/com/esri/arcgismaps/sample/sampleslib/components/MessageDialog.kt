@@ -95,7 +95,7 @@ class MessageDialogViewModel : ViewModel() {
     /**
      * Displays an message dialog
      */
-    fun showErrorDialog(title: String, description: String = "") {
+    fun showMessageDialog(title: String, description: String = "") {
         messageTitle = title
         messageDescription = description
         dialogStatus.value = true

@@ -58,7 +58,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
                         if (fromDateInMillis != null && toDateInMillis != null) {
                             if (fromDateInMillis > toDateInMillis) {
-                                mapViewModel.messageDialogVM.showErrorDialog(
+                                mapViewModel.messageDialogVM.showMessageDialog(
                                     title = "Invalid date range",
                                     description = "The selected \"TO\" date cannot be before the \"FROM\" date"
                                 )
@@ -74,7 +74,7 @@ fun MainScreen(sampleName: String, application: Application) {
                                 }
                             }
                         } else {
-                            mapViewModel.messageDialogVM.showErrorDialog(
+                            mapViewModel.messageDialogVM.showMessageDialog(
                                 title = "Error creating job",
                                 description = "Invalid date range selected"
                             )

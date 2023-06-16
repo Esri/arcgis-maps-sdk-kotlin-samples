@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                SampleApp()
+                AnalyzeHotspotsApp()
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun AnalyzeHotspotsApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {

@@ -18,7 +18,9 @@ package com.esri.arcgismaps.sample.analyzehotspots.components
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
@@ -33,7 +35,6 @@ import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingS
 import com.esri.arcgismaps.sample.analyzehotspots.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
@@ -44,8 +45,8 @@ class MapViewModel(
     private val application: Application,
     private val sampleCoroutineScope: CoroutineScope,
 ) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
+    // set the MapView state
+    val mapViewState = MapViewState()
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -68,17 +69,17 @@ class MapViewModel(
         toDate: String,
     ) {
         // a map image layer might be generated, clear previous results
-        mapViewState.value.arcGISMap.operationalLayers.clear()
+        mapViewState.arcGISMap.operationalLayers.clear()
 
         // create and load geoprocessing task
         val geoprocessingTask = GeoprocessingTask(application.getString(R.string.service_url))
         geoprocessingTask.load().getOrElse {
-            messageDialogVM.showErrorDialog(it.message.toString(), it.cause.toString())
+            messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
         }
 
         // create parameters for geoprocessing job
         val geoprocessingParameters = geoprocessingTask.createDefaultParameters().getOrElse {
-            messageDialogVM.showErrorDialog(it.message.toString(), it.cause.toString())
+            messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
         } as GeoprocessingParameters
 
         val queryString = StringBuilder("(\"DATE\" > date '")
@@ -119,17 +120,17 @@ class MapViewModel(
             showJobProgressDialog.value = false
             // get the job's result
             val geoprocessingResult = geoprocessingJob?.result()?.getOrElse {
-                messageDialogVM.showErrorDialog(it.message.toString(), it.cause.toString())
+                messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
             } as GeoprocessingResult
             // resulted hotspot map image layer
             val hotspotMapImageLayer = geoprocessingResult.mapImageLayer?.apply {
                 opacity = 0.5f
-            } ?: return messageDialogVM.showErrorDialog("Result map image layer is null")
+            } ?: return messageDialogVM.showMessageDialog("Result map image layer is null")
 
             // add new layer to map
-            mapViewState.value.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
+            mapViewState.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
         }?.onFailure { throwable ->
-            messageDialogVM.showErrorDialog(throwable.message.toString(), throwable.cause.toString())
+            messageDialogVM.showMessageDialog(throwable.message.toString(), throwable.cause.toString())
             showJobProgressDialog.value = false
         }
     }
@@ -152,12 +153,12 @@ class MapViewModel(
 }
 
 /**
- * Data class that represents the MapView state
+ * Class that represents the MapView's current state
  */
-data class MapViewState(
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic),
+class MapViewState {
+    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
     var viewpoint: Viewpoint = Viewpoint(
         center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
         scale = 1e5
-    ),
-)
+    )
+}
