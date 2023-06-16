@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                SampleApp()
+                ShowMagnifierApp()
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun ShowMagnifierApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {

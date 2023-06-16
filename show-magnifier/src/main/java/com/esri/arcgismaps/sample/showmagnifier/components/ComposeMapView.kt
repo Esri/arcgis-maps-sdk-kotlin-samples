@@ -41,8 +41,8 @@ fun ComposeMapView(
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
-    // collect the latest state of the MapViewState
-    val mapViewState by mapViewModel.mapViewState.collectAsState()
+    // get an instance of the MapView state
+    val mapViewState = mapViewModel.mapViewState
     // create and add MapView to the activity lifecycle
     val mapView = createMapViewInstance(lifecycleOwner)
 
