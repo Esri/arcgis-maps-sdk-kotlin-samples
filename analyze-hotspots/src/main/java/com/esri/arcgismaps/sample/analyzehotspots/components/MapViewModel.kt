@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.analyzehotspots.components
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.geometry.Point
@@ -30,6 +31,7 @@ import com.arcgismaps.tasks.geoprocessing.GeoprocessingResult
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingTask
 import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingString
 import com.esri.arcgismaps.sample.analyzehotspots.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -40,10 +42,13 @@ import java.time.format.DateTimeFormatter
 
 class MapViewModel(
     private val application: Application,
-    private val sampleCoroutineScope: CoroutineScope
+    private val sampleCoroutineScope: CoroutineScope,
 ) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // determinate job progress loading dialog
     val showJobProgressDialog = mutableStateOf(false)
@@ -68,12 +73,12 @@ class MapViewModel(
         // create and load geoprocessing task
         val geoprocessingTask = GeoprocessingTask(application.getString(R.string.service_url))
         geoprocessingTask.load().getOrElse {
-            showErrorDialog(it.message.toString(), it.cause.toString())
+            messageDialogVM.showErrorDialog(it.message.toString(), it.cause.toString())
         }
 
         // create parameters for geoprocessing job
         val geoprocessingParameters = geoprocessingTask.createDefaultParameters().getOrElse {
-            showErrorDialog(it.message.toString(), it.cause.toString())
+            messageDialogVM.showErrorDialog(it.message.toString(), it.cause.toString())
         } as GeoprocessingParameters
 
         val queryString = StringBuilder("(\"DATE\" > date '")
@@ -105,6 +110,7 @@ class MapViewModel(
             geoprocessingJob?.progress?.collect { progress ->
                 // updates the job progress dialog
                 geoprocessingJobProgress.value = progress
+                Log.i("Progress","geoprocessingJobProgress: ${geoprocessingJobProgress.value}")
             }
         }
         // get the result of the job on completion
@@ -113,17 +119,17 @@ class MapViewModel(
             showJobProgressDialog.value = false
             // get the job's result
             val geoprocessingResult = geoprocessingJob?.result()?.getOrElse {
-                showErrorDialog(it.message.toString(), it.cause.toString())
+                messageDialogVM.showErrorDialog(it.message.toString(), it.cause.toString())
             } as GeoprocessingResult
             // resulted hotspot map image layer
             val hotspotMapImageLayer = geoprocessingResult.mapImageLayer?.apply {
                 opacity = 0.5f
-            } ?: return showErrorDialog("Result map image layer is null")
+            } ?: return messageDialogVM.showErrorDialog("Result map image layer is null")
 
             // add new layer to map
             mapViewState.value.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
         }?.onFailure { throwable ->
-            showErrorDialog(throwable.message.toString(), throwable.cause.toString())
+            messageDialogVM.showErrorDialog(throwable.message.toString(), throwable.cause.toString())
             showJobProgressDialog.value = false
         }
     }
@@ -142,20 +148,6 @@ class MapViewModel(
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
         return date.format(formatter)
-    }
-
-    // error dialog status
-    val errorDialogStatus = mutableStateOf(false)
-    var errorTitle = ""
-    var errorDescription = ""
-
-    /**
-     * Displays an error dialog with [title] and optional [description]
-     */
-    fun showErrorDialog(title: String, description: String = "") {
-        errorTitle = title
-        errorDescription = description
-        errorDialogStatus.value = true
     }
 }
 

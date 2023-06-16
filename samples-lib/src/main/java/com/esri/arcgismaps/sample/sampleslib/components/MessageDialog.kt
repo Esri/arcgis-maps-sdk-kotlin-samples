@@ -1,3 +1,19 @@
+/* Copyright 2023 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.esri.arcgismaps.sample.sampleslib.components
 
 import android.content.res.Configuration
@@ -9,7 +25,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
@@ -18,17 +36,29 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 @Composable
 fun MessageDialog(
     title: String,
-    description: String,
-    showDialog: Boolean,
+    description: String = "",
     onDismissRequest: () -> Unit
 ) {
-    if (showDialog) {
-        Log.e("SampleAlertMessage","$title: $description")
+    Log.e("SampleAlertMessage", "$title: $description")
+    // display a dialog with a description text
+    if (description.isNotEmpty()) {
         AlertDialog(
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },
             title = { Text(title) },
-            text = { if (description.isNotEmpty()) Text(description) },
+            text = { Text(description) },
+            confirmButton = {
+                TextButton(onClick = { onDismissRequest() }) {
+                    Text("Dismiss")
+                }
+            },
+        )
+    } else {
+        // display a dialog without a description text
+        AlertDialog(
+            onDismissRequest = { onDismissRequest() },
+            icon = { Icon(Icons.Filled.Info, contentDescription = null) },
+            title = { Text(title) },
             confirmButton = {
                 TextButton(onClick = { onDismissRequest() }) {
                     Text("Dismiss")
@@ -46,9 +76,35 @@ fun PreviewMessageDialog() {
         MessageDialog(
             title = "Message title",
             description = "Dialog loading message here",
-            showDialog = true,
             onDismissRequest = { }
         )
     }
 }
 
+class MessageDialogViewModel : ViewModel() {
+    // display dialog when status is true
+    var dialogStatus = mutableStateOf(false)
+        private set
+
+    var messageTitle = ""
+        private set
+
+    var messageDescription = ""
+        private set
+
+    /**
+     * Displays an message dialog
+     */
+    fun showErrorDialog(title: String, description: String = "") {
+        messageTitle = title
+        messageDescription = description
+        dialogStatus.value = true
+    }
+
+    /**
+     * Dismiss the message dialog
+     */
+    fun dismissDialog() {
+        dialogStatus.value = false
+    }
+}

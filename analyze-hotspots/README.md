@@ -10,7 +10,7 @@ This tool identifies statistically significant spatial clusters of high values (
 
 ## How to use the sample
 
-Select a date range (between 1998-01-01 and 1998-05-31) from the dialog and tap on Analyze. The results will be shown on the map upon successful completion of the `GeoprocessingJob`.
+Tap on Analyze, and select a date from the "FROM" DatePicker and "TO" DatePicker to get a date range from the BottomSheet and tap on Run analysis. The results will be shown on the map upon successful completion of the `GeoprocessingJob`.
 
 ## How it works
 

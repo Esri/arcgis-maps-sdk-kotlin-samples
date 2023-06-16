@@ -29,6 +29,7 @@ import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.launch
 
@@ -39,6 +40,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String, application: Application) {
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // message dialog view model
+    val messageDialogViewModel = MessageDialogViewModel()
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
 
@@ -57,17 +60,24 @@ fun MainScreen(sampleName: String, application: Application) {
                     // date range selected to analyze
                     analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
                         if (fromDateInMillis != null && toDateInMillis != null) {
-                            sampleCoroutineScope.launch {
-                                mapViewModel.apply {
-                                    // create and run a geoprocessing task using date range
-                                    createGeoprocessingJob(
-                                        fromDate = convertMillisToString(fromDateInMillis),
-                                        toDate = convertMillisToString(toDateInMillis),
-                                    )
+                            if (fromDateInMillis > toDateInMillis) {
+                                messageDialogViewModel.showErrorDialog(
+                                    title = "Invalid date range",
+                                    description = "The selected \"TO\" date cannot be before the \"FROM\" date"
+                                )
+                            } else {
+                                sampleCoroutineScope.launch {
+                                    mapViewModel.apply {
+                                        // create and run a geoprocessing task using date range
+                                        createGeoprocessingJob(
+                                            fromDate = convertMillisToString(fromDateInMillis),
+                                            toDate = convertMillisToString(toDateInMillis),
+                                        )
+                                    }
                                 }
                             }
                         } else {
-                            mapViewModel.showErrorDialog(
+                            messageDialogViewModel.showErrorDialog(
                                 title = "Error creating job",
                                 description = "Invalid date range selected"
                             )
@@ -82,13 +92,17 @@ fun MainScreen(sampleName: String, application: Application) {
                     cancelJobRequest = { mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope) }
                 )
 
+
                 // display a dialog if the sample encounters an error
-                MessageDialog(
-                    title = mapViewModel.errorTitle,
-                    description = mapViewModel.errorDescription,
-                    showDialog = mapViewModel.errorDialogStatus.value,
-                    onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
-                )
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus.value) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
         })
 }
