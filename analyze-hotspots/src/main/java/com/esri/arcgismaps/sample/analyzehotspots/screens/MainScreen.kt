@@ -29,7 +29,6 @@ import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.launch
 
@@ -40,8 +39,6 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String, application: Application) {
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
-    // message dialog view model
-    val messageDialogViewModel = MessageDialogViewModel()
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
 
@@ -61,7 +58,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
                         if (fromDateInMillis != null && toDateInMillis != null) {
                             if (fromDateInMillis > toDateInMillis) {
-                                messageDialogViewModel.showErrorDialog(
+                                mapViewModel.messageDialogVM.showErrorDialog(
                                     title = "Invalid date range",
                                     description = "The selected \"TO\" date cannot be before the \"FROM\" date"
                                 )
@@ -77,7 +74,7 @@ fun MainScreen(sampleName: String, application: Application) {
                                 }
                             }
                         } else {
-                            messageDialogViewModel.showErrorDialog(
+                            mapViewModel.messageDialogVM.showErrorDialog(
                                 title = "Error creating job",
                                 description = "Invalid date range selected"
                             )
