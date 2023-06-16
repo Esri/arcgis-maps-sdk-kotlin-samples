@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.ComposeMapView
@@ -34,7 +35,7 @@ import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.Ma
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = MapViewModel(application)
+    val mapViewModel: MapViewModel = viewModel()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -54,11 +55,13 @@ fun MainScreen(sampleName: String, application: Application) {
                 )
 
                 // display a dialog if the sample encounters an error
-                if (mapViewModel.errorDialogStatus.value) {
-                    MessageDialog(
-                        title = mapViewModel.errorTitle,
-                        onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
-                    )
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus.value) {
+                        MessageDialog(
+                            title = messageTitle,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
                 }
             }
         }

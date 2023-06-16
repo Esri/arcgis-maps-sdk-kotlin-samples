@@ -9,7 +9,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
@@ -60,5 +62,33 @@ fun PreviewMessageDialog() {
             description = "Dialog loading message here",
             onDismissRequest = { }
         )
+    }
+}
+
+class MessageDialogViewModel : ViewModel() {
+    // display dialog when status is true
+    var dialogStatus = mutableStateOf(false)
+        private set
+
+    var messageTitle = ""
+        private set
+
+    var messageDescription = ""
+        private set
+
+    /**
+     * Displays an message dialog
+     */
+    fun showErrorDialog(title: String, description: String = "") {
+        messageTitle = title
+        messageDescription = description
+        dialogStatus.value = true
+    }
+
+    /**
+     * Dismiss the message dialog
+     */
+    fun dismissDialog() {
+        dialogStatus.value = false
     }
 }

@@ -19,8 +19,6 @@ package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -41,8 +39,8 @@ fun ComposeMapView(
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
-    // collect the latest state of the MapViewState
-    val mapViewState by mapViewModel.mapViewState.collectAsState()
+    // get an instance of the ViewModel's MapViewState
+    val mapViewState = mapViewModel.mapViewState
     // create and add MapView to the activity lifecycle
     val mapView = createMapViewInstance(lifecycleOwner)
 

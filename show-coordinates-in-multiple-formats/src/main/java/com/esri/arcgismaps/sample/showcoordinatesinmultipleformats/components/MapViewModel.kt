@@ -35,12 +35,12 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.R
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
+    // set the MapView state
+    val mapViewState by mutableStateOf(MapViewState())
 
     var decimalDegrees by mutableStateOf("")
         private set
@@ -54,28 +54,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         private set
 
     // set up a graphic to indicate where the coordinates relate to, with an initial location
-    private val initialPoint by lazy {
-        Point(0.0, 0.0, SpatialReference.wgs84())
-    }
-    private val coordinateLocation by lazy {
-        Graphic(
-            geometry = initialPoint,
-            symbol = SimpleMarkerSymbol(
-                style = SimpleMarkerSymbolStyle.Cross,
-                color = Color.fromRgba(255, 255, 0, 255),
-                size = 20f
-            )
+    private val initialPoint = Point(0.0, 0.0, SpatialReference.wgs84())
+
+    private val coordinateLocation = Graphic(
+        geometry = initialPoint,
+        symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Cross,
+            color = Color.fromRgba(255, 255, 0, 255),
+            size = 20f
         )
-    }
+    )
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     init {
         // create a map that has the WGS 84 coordinate system and set this into the map
         val basemapLayer = ArcGISTiledLayer(application.getString(R.string.basemap_url))
         val map = ArcGISMap(Basemap(basemapLayer))
-        mapViewState.value.apply {
-            arcGISMap = map
-            graphicsOverlay.graphics.add(coordinateLocation)
-        }
+        mapViewState.arcGISMap = map
+        mapViewState.graphicsOverlay.graphics.add(coordinateLocation)
+
         // update the coordinate notations using the initial point
         toCoordinateNotationFromPoint(initialPoint)
     }
@@ -87,7 +86,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         if (tappedPoint != null) {
             // update the tapped location graphic
             coordinateLocation.geometry = tappedPoint
-            mapViewState.value.graphicsOverlay.graphics.apply {
+            mapViewState.graphicsOverlay.graphics.apply {
                 clear()
                 add(coordinateLocation)
             }
@@ -107,28 +106,28 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             point = newLocation,
             format = LatitudeLongitudeFormat.DecimalDegrees,
             decimalPlaces = 4
-        ) ?: return showErrorDialog()
+        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point DD coordinate")
 
         // use CoordinateFormatter to convert to Latitude Longitude, formatted as Degrees, Minutes, Seconds
         degreesMinutesSeconds = CoordinateFormatter.toLatitudeLongitudeOrNull(
             point = newLocation,
             format = LatitudeLongitudeFormat.DegreesMinutesSeconds,
             decimalPlaces = 4
-        ) ?: return showErrorDialog()
+        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point DMS coordinate")
 
         // use CoordinateFormatter to convert to Universal Transverse Mercator, using latitudinal bands indicator
         utm = CoordinateFormatter.toUtmOrNull(
             point = newLocation,
             utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
             addSpaces = true
-        ) ?: return showErrorDialog()
+        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point UTM coordinate")
 
         // use CoordinateFormatter to convert to United States National Grid (USNG)
         usng = CoordinateFormatter.toUsngOrNull(
             point = newLocation,
             precision = 4,
             addSpaces = true,
-        ) ?: return showErrorDialog()
+        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point USNG coordinate")
     }
 
     /**
@@ -139,33 +138,31 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun fromCoordinateNotationToPoint(notationType: NotationType, coordinateNotation: String) {
         // ignore empty input coordinate notation strings, do not update UI
         if (coordinateNotation.isEmpty()) return
-        val convertedPoint: Point
-
-        when (notationType) {
+        val convertedPoint: Point = when (notationType) {
             NotationType.DMS, NotationType.DD -> {
                 // use CoordinateFormatter to parse Latitude Longitude - different numeric notations (Decimal Degrees;
                 // Degrees, Minutes, Seconds; Degrees, Decimal Minutes) can all be passed to this same method
-                convertedPoint = CoordinateFormatter.fromLatitudeLongitudeOrNull(
+                CoordinateFormatter.fromLatitudeLongitudeOrNull(
                     coordinates = coordinateNotation,
                     spatialReference = null
-                ) ?: return showErrorDialog()
+                ) ?: return messageDialogVM.showErrorDialog("Failed to convert DMS/DD coordinate to point")
             }
 
             NotationType.UTM -> {
                 // use CoordinateFormatter to parse UTM coordinates
-                convertedPoint = CoordinateFormatter.fromUtmOrNull(
+                CoordinateFormatter.fromUtmOrNull(
                     coordinates = coordinateNotation,
                     utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
                     spatialReference = null
-                ) ?: return showErrorDialog()
+                ) ?: return messageDialogVM.showErrorDialog("Failed to convert UTM coordinate to point")
             }
 
             NotationType.USNG -> {
                 // use CoordinateFormatter to parse US National Grid coordinates
-                convertedPoint = CoordinateFormatter.fromUsngOrNull(
+                CoordinateFormatter.fromUsngOrNull(
                     coordinates = coordinateNotation,
                     spatialReference = null
-                ) ?: return showErrorDialog()
+                ) ?: return messageDialogVM.showErrorDialog("Failed to convert USNG coordinate to point")
             }
         }
 
@@ -178,18 +175,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     enum class NotationType {
         DMS, DD, UTM, USNG
-    }
-
-    // error dialog status
-    val errorDialogStatus = mutableStateOf(false)
-    var errorTitle = ""
-
-    /**
-     * Displays an error dialog
-     */
-    private fun showErrorDialog() {
-        errorTitle = "Invalid date format"
-        errorDialogStatus.value = true
     }
 
     /**
