@@ -1,6 +1,7 @@
 package com.esri.arcgismaps.sample.queryfeaturetable.screens
 
 import android.content.res.Configuration
+import android.view.KeyEvent
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,10 +40,18 @@ fun SearchBar(
 
     Row(modifier) {
         OutlinedTextField(
-            modifier = modifier.focusRequester(focusRequester),
+            modifier = modifier.focusRequester(focusRequester).onKeyEvent {
+                // submit query when enter is tapped
+                if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+                    onQuerySubmit(text)
+                    focusManager.clearFocus()
+                }
+                false
+            },
             value = text,
             maxLines = 1,
-            onValueChange = { text = it },
+            singleLine = true,
+            onValueChange = { text = it.lines()[0] },
             label = { Text("Search a US state") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,

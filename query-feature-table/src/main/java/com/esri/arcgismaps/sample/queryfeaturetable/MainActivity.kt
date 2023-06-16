@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                SampleApp()
+                QueryFeatureTableApp()
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun QueryFeatureTableApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {

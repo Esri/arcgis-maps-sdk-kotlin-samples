@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.queryfeaturetable.components.ComposeMapView
 import com.esri.arcgismaps.sample.queryfeaturetable.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -52,19 +51,21 @@ fun MainScreen(sampleName: String, application: Application) {
                     mapViewModel = mapViewModel,
                 )
                 SearchBar(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    onQuerySubmit = { query ->
-                        mapViewModel.searchForState(query)
-                    })
+                    modifier = Modifier.fillMaxWidth(),
+                    onQuerySubmit = mapViewModel::searchForState
+                )
             }
 
-            // display a dialog if the sample encounters an error
-            MessageDialog(
-                title = mapViewModel.errorTitle,
-                description = mapViewModel.errorDescription,
-                showDialog = mapViewModel.errorDialogStatus.value,
-                onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
-            )
+            mapViewModel.messageDialogVM.apply {
+                if (dialogStatus.value) {
+                    // display a dialog if the sample encounters an error
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
+            }
         }
     )
 }

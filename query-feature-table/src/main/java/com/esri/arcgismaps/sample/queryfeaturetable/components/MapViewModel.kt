@@ -17,7 +17,9 @@
 package com.esri.arcgismaps.sample.queryfeaturetable.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.Color
 import com.arcgismaps.data.FeatureQueryResult
@@ -36,9 +38,8 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.esri.arcgismaps.sample.queryfeaturetable.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -47,8 +48,11 @@ class MapViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
 
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
+    // get an instance of the MapView state
+    val mapViewState = MapViewState()
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // create a service feature table and a feature layer from it
     private val serviceFeatureTable: ServiceFeatureTable by lazy {
@@ -80,7 +84,7 @@ class MapViewModel(
             maxScale = 10000.0
         }
         // add the feature layer to the map's operational layers
-        mapViewState.value.arcGISMap.operationalLayers.add(featureLayer)
+        mapViewState.arcGISMap.operationalLayers.add(featureLayer)
     }
 
     /**
@@ -99,7 +103,7 @@ class MapViewModel(
         sampleCoroutineScope.launch {
             // call select features
             val featureQueryResult = serviceFeatureTable.queryFeatures(queryParameters).getOrElse {
-                showErrorDialog(it.message.toString(), it.cause.toString())
+                messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
             } as FeatureQueryResult
 
             val resultIterator = featureQueryResult.iterator()
@@ -109,41 +113,33 @@ class MapViewModel(
                     featureLayer.selectFeature(this)
                     // get the extent of the first feature in the result to zoom to
                     val envelope = geometry?.extent
-                        ?: return@launch showErrorDialog("Error retrieving geometry extent")
+                        ?: return@launch messageDialogVM.showMessageDialog("Error retrieving geometry extent")
                     // update the map view to set the viewpoint to the state geometry
-                    mapViewState.update { it.copy(stateGeometry = envelope) }
+                    mapViewState.stateGeometry = envelope
                 }
             } else {
-                showErrorDialog("No states found with name: $searchQuery")
+                messageDialogVM.showMessageDialog("No states found with name: $searchQuery")
             }
         }
-    }
-
-    // error dialog status
-    val errorDialogStatus = mutableStateOf(false)
-    var errorTitle = ""
-    var errorDescription = ""
-
-    /**
-     * Displays an error dialog with [title] and optional [description]
-     */
-    private fun showErrorDialog(title: String, description: String = "") {
-        errorTitle = title
-        errorDescription = description
-        errorDialogStatus.value = true
     }
 }
 
 
 /**
- * Data class that represents the MapView state
+ * Class that represents the MapView state
  */
-data class MapViewState(
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic),
-    var stateGeometry: Geometry? = null,
+class MapViewState {
+    // map used to display the feature layer
+    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
+
+    // geometry of the queried state
+    var stateGeometry: Geometry? by mutableStateOf(null)
+
     // set an initial viewpoint over the USA
-    var viewpoint: Viewpoint = Viewpoint(
-        center = Point(-11e6, 5e6, SpatialReference.webMercator()),
-        scale = 1e8
-    ),
-)
+    var viewpoint: Viewpoint by mutableStateOf(
+        Viewpoint(
+            center = Point(-11e6, 5e6, SpatialReference.webMercator()),
+            scale = 1e8
+        )
+    )
+}
