@@ -40,7 +40,7 @@ import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.R
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView state
-    val mapViewState by mutableStateOf(MapViewState())
+    val mapViewState = MapViewState()
 
     var decimalDegrees by mutableStateOf("")
         private set

@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.screens
 
-import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,7 +32,7 @@ import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.Ma
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
 
