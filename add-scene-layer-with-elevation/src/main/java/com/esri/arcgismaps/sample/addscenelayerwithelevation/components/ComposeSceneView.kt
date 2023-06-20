@@ -19,8 +19,6 @@ package com.esri.arcgismaps.sample.addscenelayerwithelevation.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -42,7 +40,7 @@ fun ComposeSceneView(
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
     // collect the latest state of the MapViewState
-    val sceneViewState by sceneViewModel.sceneViewState.collectAsState()
+    val sceneViewState = sceneViewModel.sceneViewState
     // create and add MapView to the activity lifecycle
     val sceneView = createSceneViewInstance(lifecycleOwner)
 

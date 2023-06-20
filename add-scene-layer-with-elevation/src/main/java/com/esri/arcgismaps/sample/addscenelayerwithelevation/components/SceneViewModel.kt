@@ -22,11 +22,10 @@ import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.Camera
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class SceneViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
-    val sceneViewState = MutableStateFlow(SceneViewState())
+    val sceneViewState = SceneViewState()
 }
 
 /**
