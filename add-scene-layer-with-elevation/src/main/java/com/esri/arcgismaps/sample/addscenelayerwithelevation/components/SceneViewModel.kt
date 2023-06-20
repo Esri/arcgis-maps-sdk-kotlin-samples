@@ -22,19 +22,24 @@ import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.Camera
+import com.esri.arcgismaps.sample.addscenelayerwithelevation.R
 
-class SceneViewModel(application: Application) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
+class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
+    // set the SceneView state
     val sceneViewState = SceneViewState()
+
+    fun addSceneLayer() {
+        // create a scene layer from a scene service for viewing buildings
+        var sceneLayer =  ArcGISSceneLayer(application.getString(R.string.brest_buildings))
+        // add the scene layer to the scene's operational layer
+        sceneViewState.arcGISScene.operationalLayers.add(sceneLayer)
+    }
 }
 
 /**
- * Data class that represents the MapView state
+ * Data class that represents the SceneView state
  */
-data class SceneViewState( // This would change based on each sample implementation
-    var arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
-        // add a scene service to the scene for viewing buildings
-        operationalLayers.add(ArcGISSceneLayer("https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer"))
-    },
+class SceneViewState(
+    var arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic),
     var camera: Camera = Camera(48.378, -4.494, 200.0, 345.0, 65.0, 0.0)
 )

@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.addscenelayerwithelevation.components
 
+import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect

@@ -49,6 +49,7 @@ fun MainScreen(sampleName: String, application: Application) {
                         .fillMaxSize(),
                     sceneViewModel = sceneViewModel,
                     onSingleTap = {
+                        sceneViewModel.addSceneLayer()
                     }
                 )
             }
