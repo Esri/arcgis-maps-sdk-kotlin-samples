@@ -36,7 +36,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
  * Class that represents the MapView's current state
  */
 class MapViewState {
-    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
+    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
     var viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
     var interactionOptions: MapViewInteractionOptions = MapViewInteractionOptions(
         isMagnifierEnabled = true,
