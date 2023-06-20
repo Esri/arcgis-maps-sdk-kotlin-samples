@@ -39,17 +39,18 @@ fun MainScreen(sampleName: String, application: Application) {
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
+                modifier = Modifier.fillMaxSize().padding(it)
             ) {
                 // composable function that wraps the MapView
                 ComposeMapView(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().weight(1f),
                     mapViewModel = mapViewModel,
-                    onSingleTap = {
-                        mapViewModel.changeBasemap()
-                    }
+                )
+                LayersList(
+                    layerNames = mapViewModel.layerNames,
+                    onMoveLayerDown = mapViewModel::moveLayerDown,
+                    onMoveLayerUp = mapViewModel::moveLayerUp,
+                    onToggleLayerVisibility = mapViewModel::toggleLayerVisibility
                 )
             }
         }

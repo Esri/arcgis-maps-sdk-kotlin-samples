@@ -17,36 +17,92 @@
 package com.esri.arcgismaps.sample.manageoperationallayers.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
+import com.esri.arcgismaps.sample.manageoperationallayers.R
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
+class MapViewModel(
+    application: Application
+) : AndroidViewModel(application) {
 
-    /**
-     * Switch between two basemaps
-     */
-    fun changeBasemap() {
-        val newArcGISMap: ArcGISMap =
-            if (mapViewState.value.arcGISMap.basemap.value?.name.equals("ArcGIS:NavigationNight")) {
-                ArcGISMap(BasemapStyle.ArcGISStreets)
-            } else {
-                ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+    // get an instance of the MapView state
+    val mapViewState = MapViewState()
+
+    // a list of the map image layer names
+    var layerNames: List<String> = listOf()
+
+    init {
+        // set the three map image layers
+        val imageLayerElevation = ArcGISMapImageLayer(
+            url = application.getString(R.string.elevationServiceURL)
+        )
+        val imageLayerCensus = ArcGISMapImageLayer(
+            url = application.getString(R.string.censusServiceURL)
+        )
+        val imageLayerDamage = ArcGISMapImageLayer(
+            url = application.getString(R.string.damageServiceURL)
+        )
+        // get a list of the layer names
+        layerNames = listOf(
+            imageLayerElevation.name,
+            imageLayerCensus.name,
+            imageLayerDamage.name
+        )
+
+        // add the layers to the map's operational layers
+        mapViewState.arcGISMap.apply {
+            operationalLayers.addAll(
+                listOf(
+                    imageLayerElevation,
+                    imageLayerCensus,
+                    imageLayerDamage
+                )
+            )
+        }
+    }
+
+    fun moveLayerUp(layerName: String) {
+        val operationalLayers = mapViewState.arcGISMap.operationalLayers
+
+        if (operationalLayers.first().name == layerName) {
+            return
+        }
+
+        val layerIndex = operationalLayers.indexOf(operationalLayers.find { it.name == layerName })
+        val swapLayer = operationalLayers[layerIndex]
+        operationalLayers[layerIndex] = operationalLayers[layerIndex - 1]
+        operationalLayers[layerIndex - 1] = swapLayer
+
+        layerNames = operationalLayers.map { layer -> layer.name }
+
+        mapViewState.arcGISMap.operationalLayers.clear()
+        mapViewState.arcGISMap.operationalLayers.addAll(operationalLayers)
+    }
+
+    fun moveLayerDown(layerName: String) {
+    }
+
+    fun toggleLayerVisibility(layerName: String) {
+        mapViewState.arcGISMap.operationalLayers.forEach { layer ->
+            if (layer.name == layerName) {
+                layer.isVisible = !layer.isVisible
             }
-        mapViewState.update { it.copy(arcGISMap = newArcGISMap) }
+        }
     }
 }
 
 
 /**
- * Data class that represents the MapView state
+ * Class that represents the MapView state
  */
-data class MapViewState( // This would change based on each sample implementation
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
-)
+class MapViewState {
+    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
+    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 5e7)
+
+}
