@@ -19,15 +19,15 @@ Tap on the scene, to display a scene service with an `ArcGISSceneLayer`. Pan and
 3. Create an `ArcGISSceneLayer` using a data source URI: `new ArcGISSceneLayer(Uri)`.
 4. Add the new scene layer to the scene as an operational layer with `ArcGISScene.getOperationalLayers().add(sceneLayer)`.
 
-## About the data
-
-The scene launches with a northward view of the city of Brest, France. A 3D scene layer representing buildings (some textured) is used as an example.
-
 ## Relevant API
 
 * ArcGISScene
 * ArcGISSceneLayer
 * SceneView
+
+## About the data
+
+The scene launches with a northward view of the city of Brest, France. A 3D scene layer representing buildings (some textured) is used as an example.
 
 ## Tags
 
