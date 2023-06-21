@@ -1,2 +1,31 @@
 {
+    "category": "Layers",
+    "description": "Add a scene layer to a scene.",
+    "formal_name": "AddSceneLayerWithElevation",
+    "ignore": false,
+    "images": [
+        "scene-layer.png"
+    ],
+    "keywords": [
+        "3D",
+        "layer",
+        "scene",
+        "ArcGISScene",
+        "ArcGISSceneLayer",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISScene",
+        "ArcGISSceneLayer",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/components/ComposeSceneView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/screens/MainScreen.kt"
+    ],
+    "title": "Add scene layer with elevation"
 }
