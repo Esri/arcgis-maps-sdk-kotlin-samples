@@ -28,6 +28,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     // set the SceneView state
     val sceneViewState = SceneViewState()
 
+    // add a scene layer to the ArcGISScene
     fun addSceneLayer() {
         // create a scene layer from a scene service for viewing buildings
         var sceneLayer =  ArcGISSceneLayer(application.getString(R.string.brest_buildings))
