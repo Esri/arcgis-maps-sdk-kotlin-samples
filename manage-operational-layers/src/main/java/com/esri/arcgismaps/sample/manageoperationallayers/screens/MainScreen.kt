@@ -48,9 +48,11 @@ fun MainScreen(sampleName: String, application: Application) {
                 )
                 LayersList(
                     layerNames = mapViewModel.layerNames,
+                    inactiveLayers = mapViewModel.inactiveLayers,
                     onMoveLayerDown = mapViewModel::moveLayerDown,
                     onMoveLayerUp = mapViewModel::moveLayerUp,
-                    onToggleLayerVisibility = mapViewModel::toggleLayerVisibility
+                    onRemoveLayer = mapViewModel::removeLayerFromMap,
+                    onAddLayer = mapViewModel::addLayerToMap
                 )
             }
         }
