@@ -48,7 +48,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 // composable function that wraps the MapView
                 ComposeMapView(
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    mapViewModel = mapViewModel,
+                    mapViewModel = mapViewModel
                 )
                 SearchBar(
                     modifier = Modifier.fillMaxWidth(),

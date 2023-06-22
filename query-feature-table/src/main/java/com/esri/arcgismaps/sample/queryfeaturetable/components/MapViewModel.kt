@@ -124,7 +124,6 @@ class MapViewModel(
     }
 }
 
-
 /**
  * Class that represents the MapView state
  */
@@ -136,10 +135,8 @@ class MapViewState {
     var stateGeometry: Geometry? by mutableStateOf(null)
 
     // set an initial viewpoint over the USA
-    var viewpoint: Viewpoint by mutableStateOf(
-        Viewpoint(
-            center = Point(-11e6, 5e6, SpatialReference.webMercator()),
-            scale = 1e8
-        )
+    var viewpoint: Viewpoint = Viewpoint(
+        center = Point(-11e6, 5e6, SpatialReference.webMercator()),
+        scale = 1e8
     )
 }
