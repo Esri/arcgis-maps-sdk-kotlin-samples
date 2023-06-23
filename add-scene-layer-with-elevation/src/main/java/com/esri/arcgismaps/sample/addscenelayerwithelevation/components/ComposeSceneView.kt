@@ -30,7 +30,7 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
 
 /**
- * Wraps the MapView in a Composable function.
+ * Wraps the SceneView in a Composable function.
  */
 @Composable
 fun ComposeSceneView(
