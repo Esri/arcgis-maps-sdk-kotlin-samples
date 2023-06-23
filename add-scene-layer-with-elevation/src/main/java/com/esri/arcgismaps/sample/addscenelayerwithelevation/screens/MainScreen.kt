@@ -32,7 +32,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
-    // create a ViewModel to handle MapView interactions
+    // create a ViewModel to handle SceneView interactions
     val sceneViewModel = SceneViewModel(application)
 
     Scaffold(
@@ -43,7 +43,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     .fillMaxSize()
                     .padding(it)
             ) {
-                // composable function that wraps the MapView
+                // composable function that wraps the SceneView
                 ComposeSceneView(
                     modifier = Modifier
                         .fillMaxSize(),
