@@ -40,16 +40,16 @@ fun ComposeSceneView(
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
-    // collect the latest state of the MapViewState
+    // collect the latest state of the SceneViewState
     val sceneViewState = sceneViewModel.sceneViewState
-    // create and add MapView to the activity lifecycle
+    // create and add SceneView to the activity lifecycle
     val sceneView = createSceneViewInstance(lifecycleOwner)
 
-    // wrap the MapView as an AndroidView
+    // wrap the SceneView as an AndroidView
     AndroidView(
         modifier = modifier,
         factory = { sceneView },
-        // recomposes the MapView on changes in the MapViewState
+        // recomposes the SceneView on changes in the SceneViewState
         update = { sceneView ->
             sceneView.apply {
                 scene = sceneViewState.arcGISScene
@@ -69,13 +69,13 @@ fun ComposeSceneView(
 }
 
 /**
- * Create the MapView instance and add it to the Activity lifecycle
+ * Create the SceneView instance and add it to the Activity lifecycle
  */
 @Composable
 fun createSceneViewInstance(lifecycleOwner: LifecycleOwner): SceneView {
-    // create the MapView
+    // create the SceneView
     val sceneView = SceneView(LocalContext.current)
-    // add the side effects for MapView composition
+    // add the side effects for SceneView composition
     DisposableEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.addObserver(sceneView)
         onDispose {
