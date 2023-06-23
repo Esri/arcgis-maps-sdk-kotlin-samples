@@ -47,10 +47,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 ComposeSceneView(
                     modifier = Modifier
                         .fillMaxSize(),
-                    sceneViewModel = sceneViewModel,
-                    onSingleTap = {
-                        sceneViewModel.addSceneLayer()
-                    }
+                    sceneViewModel = sceneViewModel
                 )
             }
         }
