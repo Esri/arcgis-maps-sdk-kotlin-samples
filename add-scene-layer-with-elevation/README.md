@@ -10,14 +10,14 @@ Each scene layer added to a scene can assist in performing helpful visual analys
 
 ## How to use the sample
 
-Tap on the scene, to display a scene service with an `ArcGISSceneLayer`. Pan and zoom to explore the scene.
+Run the sample to display a scene service with an `ArcGISSceneLayer`. Pan and zoom to explore the scene.
 
 ## How it works
 
-1. Create an `ArcGISScene` and set its `Basemap` with `ArcGISScene.setBasemap()`.
-2. Create a `SceneView` and set the scene to the view with `sceneView.setScene(scene)`.
-3. Create an `ArcGISSceneLayer` using a data source URI: `new ArcGISSceneLayer(Uri)`.
-4. Add the new scene layer to the scene as an operational layer with `ArcGISScene.getOperationalLayers().add(sceneLayer)`.
+1. Create an `ArcGISScene` having a `BasemapStyle.ArcGISTopographic`.
+2. Create a `SceneView` and set the scene to the view.
+3. Create an `ArcGISSceneLayer` using a data source URI: `ArcGISSceneLayer(Uri)`.
+4. Add the new scene layer to the scene as an operational layer with `scene.operationalLayers.add(sceneLayer)`.
 
 ## Relevant API
 
