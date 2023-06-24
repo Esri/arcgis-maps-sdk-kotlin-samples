@@ -18,17 +18,12 @@ package com.esri.arcgismaps.sample.manageoperationallayers.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.MapView
-import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
-import kotlinx.coroutines.launch
 
 /**
  * Wraps the MapView in a Composable function.
@@ -36,8 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComposeMapView(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel,
-    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
+    mapViewModel: MapViewModel
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -58,15 +52,6 @@ fun ComposeMapView(
             }
         }
     )
-
-    // launch coroutine functions in the composition's CoroutineContext
-    LaunchedEffect(Unit) {
-        launch {
-            mapView.onSingleTapConfirmed.collect {
-                onSingleTap(it)
-            }
-        }
-    }
 }
 
 /**
