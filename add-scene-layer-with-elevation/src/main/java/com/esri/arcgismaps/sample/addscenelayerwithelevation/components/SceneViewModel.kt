@@ -31,7 +31,7 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
     // add a scene layer to the ArcGISScene
     init {
         // create a scene layer from a scene service for viewing buildings
-        var sceneLayer =  ArcGISSceneLayer(application.getString(R.string.brest_buildings))
+        val sceneLayer =  ArcGISSceneLayer(application.getString(R.string.brest_buildings))
         // add the scene layer to the scene's operational layer
         sceneViewState.arcGISScene.operationalLayers.add(sceneLayer)
     }
