@@ -24,7 +24,7 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.addscenelayerwithelevation.R
 
-class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
+class SceneViewModel(application: Application) : AndroidViewModel(application) {
     // set the SceneView state
     val sceneViewState = SceneViewState()
 
