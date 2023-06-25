@@ -84,7 +84,6 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
             arcGISScene = buildingsScene
             // add the viewshed to the analysisOverlay of the  scene view
             analysisOverlay.analyses.apply {
-                clear()
                 add(viewShed)
             }
         }
