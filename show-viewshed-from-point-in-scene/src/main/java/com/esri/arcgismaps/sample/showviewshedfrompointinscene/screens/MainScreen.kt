@@ -55,12 +55,9 @@ fun MainScreen(sampleName: String, application: Application) {
                 // composable function that wraps the MapView
                 ComposeSceneView(
                     modifier = Modifier.fillMaxSize().weight(1f),
-                    sceneViewModel = sceneViewModel,
-                    onSingleTap = {
-                        sceneViewModel.changeBasemap()
-                    }
+                    sceneViewModel = sceneViewModel
                 )
-                // slider
+                // sliders
                 HeadingSlider()
                 PitchSlider()
                 HorizontalAngleSlider()

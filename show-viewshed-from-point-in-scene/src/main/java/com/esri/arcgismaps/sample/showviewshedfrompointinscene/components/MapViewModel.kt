@@ -87,21 +87,6 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
                 add(viewShed)
             }
         }
-
-
-
-    }
-    /**
-     * Switch between two basemaps
-     */
-    fun changeBasemap() {
-        val newArcGISScene: ArcGISScene =
-            if (sceneViewState.arcGISScene.basemap.value?.name.equals("ArcGIS:NavigationNight")) {
-                ArcGISScene(BasemapStyle.ArcGISStreets)
-            } else {
-                ArcGISScene(BasemapStyle.ArcGISNavigationNight)
-            }
-        sceneViewState.arcGISScene = newArcGISScene
     }
 }
 
