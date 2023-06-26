@@ -17,8 +17,6 @@
 package com.esri.arcgismaps.sample.sampleslib
 
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.TextView
@@ -32,6 +30,7 @@ import com.esri.arcgismaps.sample.sampleslib.databinding.ActivitySamplesBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +41,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.apache.commons.io.FileUtils
 import java.io.BufferedInputStream
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -234,7 +232,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 return@flow
             }
             // set up the file at the download path
-            val destinationFilePath = provisionLocation.path + File.separator + portalItem.name
+            val destinationFilePath = File(provisionLocation.path, portalItem.name).toString()
             // set up the download URL
             val downloadURL =
                 "${portalItem.portal.url}/sharing/rest/content/items/${portalItem.itemId}/data"
@@ -246,7 +244,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 if (totalBytes != null) {
                     // update the download percentage progress
                     val percentage = ((100.0 * bytesRead) / totalBytes).roundToInt()
-                    Handler(Looper.getMainLooper()).post {
+                    lifecycleScope.launch(Dispatchers.Main) {
                         progressIndicator.progress = percentage
                         progressTV.text = "$percentage%"
                     }
@@ -256,31 +254,33 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 if (portalItem.name.contains(".zip")) {
                     // set up the file at the download path
                     val provisionFile = File(destinationFilePath)
-                    // set up the zip input stream
-                    val fileInputStream = FileInputStream(destinationFilePath)
-                    val zipInputStream = ZipInputStream(BufferedInputStream(fileInputStream))
-                    var zipEntry: ZipEntry? = zipInputStream.nextEntry
-                    val buffer = ByteArray(1024)
-                    while (zipEntry != null) {
-                        if (zipEntry.isDirectory) {
-                            File(provisionLocation.path, zipEntry.name).mkdirs()
-                        } else {
-                            val file = File(provisionLocation.path, zipEntry.name)
-                            val fout = FileOutputStream(file)
-                            var count = zipInputStream.read(buffer)
-                            while (count != -1) {
-                                fout.write(buffer, 0, count)
-                                count = zipInputStream.read(buffer)
-                            }
-                            fout.close()
-                        }
+                    // set up the input streams
+                    FileInputStream(destinationFilePath).use { fileInputStream ->
+                        ZipInputStream(BufferedInputStream(fileInputStream)).use { zipInputStream ->
+                            var zipEntry: ZipEntry? = zipInputStream.nextEntry
+                            val buffer = ByteArray(1024)
+                            while (zipEntry != null) {
+                                if (zipEntry.isDirectory) {
+                                    File(provisionLocation.path, zipEntry.name).mkdirs()
+                                } else {
+                                    val file = File(provisionLocation.path, zipEntry.name)
+                                    val fout = FileOutputStream(file)
+                                    var count = zipInputStream.read(buffer)
+                                    while (count != -1) {
+                                        fout.write(buffer, 0, count)
+                                        count = zipInputStream.read(buffer)
+                                    }
+                                    fout.close()
+                                }
 
-                        zipInputStream.closeEntry()
-                        zipEntry = zipInputStream.nextEntry
+                                zipInputStream.closeEntry()
+                                zipEntry = zipInputStream.nextEntry
+                            }
+                            zipInputStream.close()
+                            // delete the .zip file, since unzipping is complete
+                            FileUtils.delete(provisionFile)
+                        }
                     }
-                    zipInputStream.close()
-                    // delete the .zip file, since unzipping is complete
-                    FileUtils.delete(provisionFile)
                 }
 
                 // close dialog and emit status
