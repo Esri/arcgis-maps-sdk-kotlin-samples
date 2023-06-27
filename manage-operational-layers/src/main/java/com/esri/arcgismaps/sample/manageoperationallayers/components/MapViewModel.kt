@@ -37,7 +37,7 @@ class MapViewModel(
     val mapViewState = MapViewState()
 
     // a list of the active map image layer names
-    var layerNames = mutableStateListOf<String>()
+    var activateLayerNames = mutableStateListOf<String>()
         private set
 
     // a list of the inactive map image layer names
@@ -56,7 +56,7 @@ class MapViewModel(
             url = application.getString(R.string.damageServiceURL)
         )
         // get a list of the layer names
-        layerNames.addAll(
+        activateLayerNames.addAll(
             listOf(
                 imageLayerElevation.name,
                 imageLayerCensus.name,
@@ -91,7 +91,7 @@ class MapViewModel(
         // swap the selected layer with the layer on top
         operationalLayers.swap(layerIndex, layerIndex - 1)
         // update the layer names list
-        layerNames.apply {
+        activateLayerNames.apply {
             clear()
             addAll(operationalLayers.map { layer -> layer.name })
         }
@@ -117,7 +117,7 @@ class MapViewModel(
         // swap the selected layer with the layer on bottom
         operationalLayers.swap(layerIndex, layerIndex + 1)
         // update the layer names list
-        layerNames.apply {
+        activateLayerNames.apply {
             clear()
             addAll(operationalLayers.map { layer -> layer.name })
         }
@@ -136,7 +136,7 @@ class MapViewModel(
             val layerIndex = indexOf(find { it.name == layerName })
             inactiveLayers.add(get(layerIndex))
             removeAt(layerIndex)
-            layerNames.removeAt(layerIndex)
+            activateLayerNames.removeAt(layerIndex)
         }
     }
 
@@ -147,18 +147,9 @@ class MapViewModel(
         inactiveLayers.apply {
             val layerIndex = indexOf(find { it.name == layerName })
             mapViewState.arcGISMap.operationalLayers.add(get(layerIndex))
-            layerNames.add(get(layerIndex).name)
+            activateLayerNames.add(get(layerIndex).name)
             removeAt(layerIndex)
         }
-    }
-
-    /**
-     * Extension function to swap two values of a mutable list.
-     */
-    private fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
-        val tmp = this[index1]
-        this[index1] = this[index2]
-        this[index2] = tmp
     }
 }
 
@@ -167,7 +158,15 @@ class MapViewModel(
  * Class that represents the MapView state
  */
 class MapViewState {
-    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
-    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 5e7)
+    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+    val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 5e7)
+}
 
+/**
+ * Extension function to swap two values of a mutable list.
+ */
+private fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    val tmp = this[index1]
+    this[index1] = this[index2]
+    this[index2] = tmp
 }

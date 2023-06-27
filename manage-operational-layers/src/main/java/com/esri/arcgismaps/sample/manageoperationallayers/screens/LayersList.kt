@@ -40,12 +40,12 @@ import com.arcgismaps.mapping.layers.Layer
 import com.esri.arcgismaps.sample.manageoperationallayers.R
 
 /**
- * Layout to display a list of operational layers on the map using [layerNames].
+ * Layout to display a list of operational layers on the map using [activateLayerNames].
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LayersList(
-    layerNames: List<String>,
+    activateLayerNames: List<String>,
     inactiveLayers: List<Layer>,
     onMoveLayerUp: (String) -> Unit = {},
     onMoveLayerDown: (String) -> Unit = {},
@@ -58,10 +58,10 @@ fun LayersList(
             text = "Active layers"
         )
         LazyColumn(modifier = Modifier.padding(12.dp)) {
-            items(layerNames.size, key = { layerNames[it] }) { index ->
+            items(activateLayerNames.size, key = { activateLayerNames[it] }) { index ->
                 LayerRow(
                     modifier = Modifier.fillMaxWidth().animateItemPlacement(),
-                    layerName = layerNames[index],
+                    layerName = activateLayerNames[index],
                     onMoveLayerUp = onMoveLayerUp,
                     onMoveLayerDown = onMoveLayerDown,
                     onRemoveLayer = onRemoveLayer
@@ -109,7 +109,7 @@ fun LayerRow(
                 IconButton(onClick = { onMoveLayerDown(layerName) }) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Up arrow"
+                        contentDescription = "Down arrow"
                     )
                 }
                 IconButton(onClick = { onRemoveLayer(layerName) }) {
@@ -140,7 +140,7 @@ fun InactiveLayerRow(
                 IconButton(onClick = { onAddLayer(layerName) }) {
                     Icon(
                         painter = painterResource(R.drawable.hide),
-                        contentDescription = "Show icon"
+                        contentDescription = "Hide icon"
                     )
                 }
             }
@@ -154,7 +154,7 @@ fun InactiveLayerRow(
 @Composable
 fun PreviewLayersList() {
     LayersList(
-        layerNames = listOf("Layer 1", "Layer 2", "Layer 3"),
+        activateLayerNames = listOf("Layer 1", "Layer 2", "Layer 3"),
         inactiveLayers = listOf()
     )
 }
