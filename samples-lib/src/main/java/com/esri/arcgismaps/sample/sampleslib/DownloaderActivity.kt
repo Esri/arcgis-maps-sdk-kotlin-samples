@@ -232,14 +232,14 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 return@flow
             }
             // set up the file at the download path
-            val destinationFilePath = File(provisionLocation.path, portalItem.name).toString()
+            val destinationFile = File(provisionLocation.path, portalItem.name)
             // set up the download URL
             val downloadURL =
                 "${portalItem.portal.url}/sharing/rest/content/items/${portalItem.itemId}/data"
             // get the data of the PortalItem
             ArcGISEnvironment.arcGISHttpClient.download(
                 url = downloadURL,
-                destinationFile = File(destinationFilePath)
+                destinationFile = destinationFile
             ) { totalBytes, bytesRead ->
                 if (totalBytes != null) {
                     // update the download percentage progress
@@ -252,10 +252,8 @@ abstract class DownloaderActivity : AppCompatActivity() {
             }.onSuccess {
                 // unzip the file if it is a .zip
                 if (portalItem.name.contains(".zip")) {
-                    // set up the file at the download path
-                    val provisionFile = File(destinationFilePath)
                     // set up the input streams
-                    FileInputStream(destinationFilePath).use { fileInputStream ->
+                    FileInputStream(destinationFile).use { fileInputStream ->
                         ZipInputStream(BufferedInputStream(fileInputStream)).use { zipInputStream ->
                             var zipEntry: ZipEntry? = zipInputStream.nextEntry
                             val buffer = ByteArray(1024)
@@ -264,21 +262,20 @@ abstract class DownloaderActivity : AppCompatActivity() {
                                     File(provisionLocation.path, zipEntry.name).mkdirs()
                                 } else {
                                     val file = File(provisionLocation.path, zipEntry.name)
-                                    val fout = FileOutputStream(file)
-                                    var count = zipInputStream.read(buffer)
-                                    while (count != -1) {
-                                        fout.write(buffer, 0, count)
-                                        count = zipInputStream.read(buffer)
+                                    FileOutputStream(file).use {fileOutputStream ->
+                                        var count = zipInputStream.read(buffer)
+                                        while (count != -1) {
+                                            fileOutputStream.write(buffer, 0, count)
+                                            count = zipInputStream.read(buffer)
+                                        }
                                     }
-                                    fout.close()
                                 }
-
+                                // close this entry, and move to the next zipped file
                                 zipInputStream.closeEntry()
                                 zipEntry = zipInputStream.nextEntry
                             }
-                            zipInputStream.close()
                             // delete the .zip file, since unzipping is complete
-                            FileUtils.delete(provisionFile)
+                            FileUtils.delete(destinationFile)
                         }
                     }
                 }
