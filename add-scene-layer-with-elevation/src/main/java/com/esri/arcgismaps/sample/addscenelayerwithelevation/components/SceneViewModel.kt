@@ -41,6 +41,6 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
  * Data class that represents the SceneView state
  */
 class SceneViewState(
-    var arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic),
-    var camera: Camera = Camera(48.378, -4.494, 200.0, 345.0, 65.0, 0.0)
+    val arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic),
+    val camera: Camera = Camera(48.378, -4.494, 200.0, 345.0, 65.0, 0.0)
 )
