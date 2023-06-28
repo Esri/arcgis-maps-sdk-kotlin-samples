@@ -133,7 +133,7 @@ class MapViewState {
     var stateGeometry: Geometry? by mutableStateOf(null)
 
     // set an initial viewpoint over the USA
-    var initialViewpoint: Viewpoint = Viewpoint(
+    val initialViewpoint: Viewpoint = Viewpoint(
         center = Point(-11e6, 5e6, SpatialReference.webMercator()),
         scale = 1e8
     )
