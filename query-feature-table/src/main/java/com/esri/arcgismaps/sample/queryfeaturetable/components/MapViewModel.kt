@@ -55,9 +55,9 @@ class MapViewModel(
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // create a service feature table and a feature layer from it
-    private val serviceFeatureTable: ServiceFeatureTable by lazy {
-        ServiceFeatureTable(application.getString(R.string.us_daytime_population_url))
-    }
+    private val serviceFeatureTable: ServiceFeatureTable = ServiceFeatureTable(
+        application.getString(R.string.us_daytime_population_url)
+    )
 
     // create the feature layer using the service feature table
     private val featureLayer: FeatureLayer by lazy {
@@ -106,17 +106,15 @@ class MapViewModel(
                 messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
             } as FeatureQueryResult
 
-            val resultIterator = featureQueryResult.iterator()
-            if (resultIterator.hasNext()) {
-                resultIterator.next().run {
-                    // select the feature
-                    featureLayer.selectFeature(this)
-                    // get the extent of the first feature in the result to zoom to
-                    val envelope = geometry?.extent
-                        ?: return@launch messageDialogVM.showMessageDialog("Error retrieving geometry extent")
-                    // update the map view to set the viewpoint to the state geometry
-                    mapViewState.stateGeometry = envelope
-                }
+            val feature = featureQueryResult.firstOrNull()
+            if (feature != null) {
+                // select the feature
+                featureLayer.selectFeature(feature)
+                // get the extent of the first feature in the result to zoom to
+                val envelope = feature.geometry?.extent
+                    ?: return@launch messageDialogVM.showMessageDialog("Error retrieving geometry extent")
+                // update the map view to set the viewpoint to the state geometry
+                mapViewState.stateGeometry = envelope
             } else {
                 messageDialogVM.showMessageDialog("No states found with name: $searchQuery")
             }
@@ -135,7 +133,7 @@ class MapViewState {
     var stateGeometry: Geometry? by mutableStateOf(null)
 
     // set an initial viewpoint over the USA
-    var viewpoint: Viewpoint = Viewpoint(
+    var initialViewpoint: Viewpoint = Viewpoint(
         center = Point(-11e6, 5e6, SpatialReference.webMercator()),
         scale = 1e8
     )

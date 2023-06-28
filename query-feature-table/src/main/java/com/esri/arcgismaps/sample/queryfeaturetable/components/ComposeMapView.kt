@@ -50,7 +50,7 @@ fun ComposeMapView(
         update = { mapView ->
             mapView.apply {
                 map = mapViewState.arcGISMap
-                setViewpoint(mapViewState.viewpoint)
+                setViewpoint(mapViewState.initialViewpoint)
                 lifecycleOwner.lifecycleScope.launch {
                     mapViewState.stateGeometry?.let { setViewpointGeometry(it, 20.0) }
                 }

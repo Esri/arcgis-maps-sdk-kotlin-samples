@@ -106,28 +106,28 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             point = newLocation,
             format = LatitudeLongitudeFormat.DecimalDegrees,
             decimalPlaces = 4
-        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point DD coordinate")
+        ) ?: return messageDialogVM.showMessageDialog("Failed to convert from point DD coordinate")
 
         // use CoordinateFormatter to convert to Latitude Longitude, formatted as Degrees, Minutes, Seconds
         degreesMinutesSeconds = CoordinateFormatter.toLatitudeLongitudeOrNull(
             point = newLocation,
             format = LatitudeLongitudeFormat.DegreesMinutesSeconds,
             decimalPlaces = 4
-        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point DMS coordinate")
+        ) ?: return messageDialogVM.showMessageDialog("Failed to convert from point DMS coordinate")
 
         // use CoordinateFormatter to convert to Universal Transverse Mercator, using latitudinal bands indicator
         utm = CoordinateFormatter.toUtmOrNull(
             point = newLocation,
             utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
             addSpaces = true
-        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point UTM coordinate")
+        ) ?: return messageDialogVM.showMessageDialog("Failed to convert from point UTM coordinate")
 
         // use CoordinateFormatter to convert to United States National Grid (USNG)
         usng = CoordinateFormatter.toUsngOrNull(
             point = newLocation,
             precision = 4,
             addSpaces = true,
-        ) ?: return messageDialogVM.showErrorDialog("Failed to convert from point USNG coordinate")
+        ) ?: return messageDialogVM.showMessageDialog("Failed to convert from point USNG coordinate")
     }
 
     /**
@@ -145,7 +145,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 CoordinateFormatter.fromLatitudeLongitudeOrNull(
                     coordinates = coordinateNotation,
                     spatialReference = null
-                ) ?: return messageDialogVM.showErrorDialog("Failed to convert DMS/DD coordinate to point")
+                ) ?: return messageDialogVM.showMessageDialog("Failed to convert DMS/DD coordinate to point")
             }
 
             NotationType.UTM -> {
@@ -154,7 +154,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                     coordinates = coordinateNotation,
                     utmConversionMode = UtmConversionMode.LatitudeBandIndicators,
                     spatialReference = null
-                ) ?: return messageDialogVM.showErrorDialog("Failed to convert UTM coordinate to point")
+                ) ?: return messageDialogVM.showMessageDialog("Failed to convert UTM coordinate to point")
             }
 
             NotationType.USNG -> {
@@ -162,7 +162,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 CoordinateFormatter.fromUsngOrNull(
                     coordinates = coordinateNotation,
                     spatialReference = null
-                ) ?: return messageDialogVM.showErrorDialog("Failed to convert USNG coordinate to point")
+                ) ?: return messageDialogVM.showMessageDialog("Failed to convert USNG coordinate to point")
             }
         }
 

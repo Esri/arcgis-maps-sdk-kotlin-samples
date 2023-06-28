@@ -68,7 +68,7 @@ fun SearchBar(
             maxLines = 1,
             singleLine = true,
             onValueChange = { text = it.lines()[0] },
-            label = { Text("Search a US state") },
+            label = { Text("Search for a US state") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Search
