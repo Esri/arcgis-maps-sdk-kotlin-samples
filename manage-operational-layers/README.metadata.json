@@ -1,0 +1,34 @@
+{
+    "category": "Maps and Scenes",
+    "description": "Add, remove, and reorder operational layers in a map.",
+    "formal_name": "ManageOperationalLayers",
+    "ignore": false,
+    "images": [
+        "manage-operational-layers.png"
+    ],
+    "keywords": [
+        "add",
+        "delete",
+        "layer",
+        "map",
+        "remove",
+        "ArcGISMap",
+        "ArcGISMapImageLayer",
+        "LayerList"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "ArcGISMapImageLayer",
+        "LayerList"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/LayersList.kt",
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/MainScreen.kt"
+    ],
+    "title": "Manage operational layers"
+}

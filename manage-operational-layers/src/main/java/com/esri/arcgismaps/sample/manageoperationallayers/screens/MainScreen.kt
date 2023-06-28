@@ -14,27 +14,26 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.screens
+package com.esri.arcgismaps.sample.manageoperationallayers.screens
 
+import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.manageoperationallayers.components.ComposeMapView
+import com.esri.arcgismaps.sample.manageoperationallayers.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.ComposeMapView
-import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.MapViewModel
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String) {
+fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
-    val mapViewModel: MapViewModel = viewModel()
+    val mapViewModel = MapViewModel(application)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -42,26 +41,19 @@ fun MainScreen(sampleName: String) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(it)
             ) {
-                // layout to display the coordinate text fields.
-                CoordinatesLayout(mapViewModel = mapViewModel)
                 // composable function that wraps the MapView
                 ComposeMapView(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().weight(1f),
                     mapViewModel = mapViewModel,
-                    onSingleTap = { singleTapConfirmedEvent ->
-                        mapViewModel.onMapTapped(singleTapConfirmedEvent.mapPoint)
-                    }
                 )
-
-                // display a dialog if the sample encounters an error
-                mapViewModel.messageDialogVM.apply {
-                    if (dialogStatus) {
-                        MessageDialog(
-                            title = messageTitle,
-                            onDismissRequest = ::dismissDialog
-                        )
-                    }
-                }
+                LayersList(
+                    activateLayerNames = mapViewModel.activateLayerNames,
+                    inactiveLayers = mapViewModel.inactiveLayers,
+                    onMoveLayerDown = mapViewModel::moveLayerDown,
+                    onMoveLayerUp = mapViewModel::moveLayerUp,
+                    onRemoveLayer = mapViewModel::removeLayerFromMap,
+                    onAddLayer = mapViewModel::addLayerToMap
+                )
             }
         }
     )
