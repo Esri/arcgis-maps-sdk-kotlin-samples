@@ -25,7 +25,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -83,13 +85,13 @@ fun PreviewMessageDialog() {
 
 class MessageDialogViewModel : ViewModel() {
     // display dialog when status is true
-    var dialogStatus = mutableStateOf(false)
+    var dialogStatus by mutableStateOf(false)
         private set
 
-    var messageTitle = ""
+    var messageTitle by mutableStateOf("")
         private set
 
-    var messageDescription = ""
+    var messageDescription by mutableStateOf("")
         private set
 
     /**
@@ -98,13 +100,13 @@ class MessageDialogViewModel : ViewModel() {
     fun showMessageDialog(title: String, description: String = "") {
         messageTitle = title
         messageDescription = description
-        dialogStatus.value = true
+        dialogStatus = true
     }
 
     /**
      * Dismiss the message dialog
      */
     fun dismissDialog() {
-        dialogStatus.value = false
+        dialogStatus = false
     }
 }

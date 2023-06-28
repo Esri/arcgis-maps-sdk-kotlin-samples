@@ -88,7 +88,6 @@ class MapViewModel(
             .append(toDate)
             .append(" 00:00:00')")
 
-        //geoprocessingParameters.inputs["Query"] = geoprocessingString
         geoprocessingParameters.inputs["Query"] = GeoprocessingString(queryString.toString())
 
         // create and start geoprocessing job
@@ -102,41 +101,46 @@ class MapViewModel(
      * displays the result hotspot map image layer to the MapView
      */
     private suspend fun runGeoprocessingJob() {
-        // display the progress dialog
-        showJobProgressDialog.value = true
-        // start the job
-        geoprocessingJob?.start()
-        // collect the job progress
-        sampleCoroutineScope.launch {
-            geoprocessingJob?.progress?.collect { progress ->
-                // updates the job progress dialog
-                geoprocessingJobProgress.value = progress
-                Log.i("Progress","geoprocessingJobProgress: ${geoprocessingJobProgress.value}")
+        geoprocessingJob?.let { geoprocessingJob ->
+            // display the progress dialog
+            showJobProgressDialog.value = true
+            // start the job
+            geoprocessingJob.start()
+            // collect the job progress
+            sampleCoroutineScope.launch {
+                geoprocessingJob.progress.collect { progress ->
+                    // updates the job progress dialog
+                    geoprocessingJobProgress.value = progress
+                    Log.i("Progress", "geoprocessingJobProgress: ${geoprocessingJobProgress.value}")
+                }
             }
-        }
-        // get the result of the job on completion
-        geoprocessingJob?.result()?.onSuccess {
-            // dismiss the progress dialog
-            showJobProgressDialog.value = false
-            // get the job's result
-            val geoprocessingResult = geoprocessingJob?.result()?.getOrElse {
-                messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
-            } as GeoprocessingResult
-            // resulted hotspot map image layer
-            val hotspotMapImageLayer = geoprocessingResult.mapImageLayer?.apply {
-                opacity = 0.5f
-            } ?: return messageDialogVM.showMessageDialog("Result map image layer is null")
+            // get the result of the job on completion
+            geoprocessingJob.result().onSuccess {
+                // dismiss the progress dialog
+                showJobProgressDialog.value = false
+                // get the job's result
+                val geoprocessingResult = geoprocessingJob.result().getOrElse {
+                    messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
+                } as GeoprocessingResult
+                // resulted hotspot map image layer
+                val hotspotMapImageLayer = geoprocessingResult.mapImageLayer?.apply {
+                    opacity = 0.5f
+                } ?: return messageDialogVM.showMessageDialog("Result map image layer is null")
 
-            // add new layer to map
-            mapViewState.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
-        }?.onFailure { throwable ->
-            messageDialogVM.showMessageDialog(throwable.message.toString(), throwable.cause.toString())
-            showJobProgressDialog.value = false
+                // add new layer to map
+                mapViewState.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
+            }.onFailure { throwable ->
+                messageDialogVM.showMessageDialog(
+                    title = throwable.message.toString(),
+                    description = throwable.cause.toString()
+                )
+                showJobProgressDialog.value = false
+            }
         }
     }
 
-    fun cancelGeoprocessingJob(coroutineScope: CoroutineScope) {
-        coroutineScope.launch {
+    fun cancelGeoprocessingJob() {
+        sampleCoroutineScope.launch {
             geoprocessingJob?.cancel()
         }
     }

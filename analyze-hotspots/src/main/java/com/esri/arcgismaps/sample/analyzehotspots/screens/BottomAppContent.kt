@@ -39,7 +39,7 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  * Bottom app content with a button to toggle the bottom sheet layout.
- * Returns a lambda for the [analyzeHotspotsRange].
+ * Accepts a lambda for the [analyzeHotspotsRange].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +66,7 @@ fun BottomAppContent(
                     onDismissRequest = { showAnalysisOptions = false },
                 ) {
                     // displays a date range picker using a bottom sheet
-                    BottomSheetScreen(
+                    DateRangeSelectorLayout(
                         bottomSheetState = bottomSheetState,
                         onBottomSheetDismiss = {
                             // hide the bottom sheet

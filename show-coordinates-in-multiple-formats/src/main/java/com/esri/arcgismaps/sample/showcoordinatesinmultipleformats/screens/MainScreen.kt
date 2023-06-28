@@ -55,7 +55,7 @@ fun MainScreen(sampleName: String) {
 
                 // display a dialog if the sample encounters an error
                 mapViewModel.messageDialogVM.apply {
-                    if (dialogStatus.value) {
+                    if (dialogStatus) {
                         MessageDialog(
                             title = messageTitle,
                             onDismissRequest = ::dismissDialog

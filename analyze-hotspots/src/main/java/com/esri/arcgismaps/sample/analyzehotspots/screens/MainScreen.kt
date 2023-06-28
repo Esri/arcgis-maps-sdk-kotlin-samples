@@ -64,13 +64,11 @@ fun MainScreen(sampleName: String, application: Application) {
                                 )
                             } else {
                                 sampleCoroutineScope.launch {
-                                    mapViewModel.apply {
-                                        // create and run a geoprocessing task using date range
-                                        createGeoprocessingJob(
-                                            fromDate = convertMillisToString(fromDateInMillis),
-                                            toDate = convertMillisToString(toDateInMillis),
-                                        )
-                                    }
+                                    // create and run a geoprocessing task using date range
+                                    mapViewModel.createGeoprocessingJob(
+                                        fromDate = mapViewModel.convertMillisToString(fromDateInMillis),
+                                        toDate = mapViewModel.convertMillisToString(toDateInMillis),
+                                    )
                                 }
                             }
                         } else {
@@ -82,17 +80,17 @@ fun MainScreen(sampleName: String, application: Application) {
                     },
                 )
                 // display progress dialog while analyzing hotspots
-                JobLoadingDialog(
-                    title = "Analyzing hotspots...",
-                    showDialog = mapViewModel.showJobProgressDialog.value,
-                    progress = mapViewModel.geoprocessingJobProgress.value,
-                    cancelJobRequest = { mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope) }
-                )
-
+                if (mapViewModel.showJobProgressDialog.value) {
+                    JobLoadingDialog(
+                        title = "Analyzing hotspots...",
+                        progress = mapViewModel.geoprocessingJobProgress.value,
+                        cancelJobRequest = { mapViewModel.cancelGeoprocessingJob() }
+                    )
+                }
 
                 // display a dialog if the sample encounters an error
                 mapViewModel.messageDialogVM.apply {
-                    if (dialogStatus.value) {
+                    if (dialogStatus) {
                         MessageDialog(
                             title = messageTitle,
                             description = messageDescription,

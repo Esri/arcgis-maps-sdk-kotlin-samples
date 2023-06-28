@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheetScreen(
+fun DateRangeSelectorLayout(
     onBottomSheetDismiss: () -> Unit,
     onRunAnalysisClicked: (Long?, Long?) -> Unit,
     bottomSheetState: SheetState,
@@ -108,7 +108,7 @@ fun BottomSheetScreen(
 @Composable
 fun PreviewBottomSheetScreen() {
     SampleAppTheme {
-        BottomSheetScreen(
+        DateRangeSelectorLayout(
             onBottomSheetDismiss = {},
             onRunAnalysisClicked = { _, _ -> },
             bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
