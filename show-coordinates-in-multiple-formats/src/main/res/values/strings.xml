@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Show coordinates in multiple formats</string>
+    <string name="basemap_url">https://wi.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer</string>
+</resources>
