@@ -28,6 +28,7 @@ import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.sampleslib.databinding.ActivitySamplesBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -206,8 +207,15 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 setView(dialogView)
                 create()
             }
+            // download progress indicator layout
+            val downloadProgressLayout = dialogView.findViewById<View>(R.id.downloadLayout)
+            // show progress indicator for determinate downloads
             val progressIndicator: LinearProgressIndicator =
                 dialogView.findViewById(R.id.downloadProgressIndicator)
+            // show circular spinner for indeterminate downloads
+            val circularSpinner: CircularProgressIndicator =
+                dialogView.findViewById(R.id.downloadCircularIndicator)
+            // display a percentage text of the download progress
             val progressTV: TextView = dialogView.findViewById(R.id.downloadProgressTV)
 
             // show the loading dialog
@@ -242,11 +250,19 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 destinationFile = destinationFile
             ) { totalBytes, bytesRead ->
                 if (totalBytes != null) {
-                    // update the download percentage progress
                     val percentage = ((100.0 * bytesRead) / totalBytes).roundToInt()
                     lifecycleScope.launch(Dispatchers.Main) {
+                        // show the download progress layout
+                        downloadProgressLayout.visibility = View.VISIBLE
+                        circularSpinner.visibility = View.GONE
                         progressIndicator.progress = percentage
                         progressTV.text = "$percentage%"
+                    }
+                } else {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        // show the indeterminate loading spinner
+                        downloadProgressLayout.visibility = View.GONE
+                        circularSpinner.visibility = View.VISIBLE
                     }
                 }
             }.onSuccess {
@@ -262,7 +278,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                                     File(provisionLocation.path, zipEntry.name).mkdirs()
                                 } else {
                                     val file = File(provisionLocation.path, zipEntry.name)
-                                    FileOutputStream(file).use {fileOutputStream ->
+                                    FileOutputStream(file).use { fileOutputStream ->
                                         var count = zipInputStream.read(buffer)
                                         while (count != -1) {
                                             fileOutputStream.write(buffer, 0, count)
