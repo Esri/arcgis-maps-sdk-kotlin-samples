@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.analyzehotspots
+package com.esri.arcgismaps.sample.addscenelayerwithelevation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,8 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.addscenelayerwithelevation.screens.MainScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.analyzehotspots.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                AnalyzeHotspotsApp()
+                SceneLayerWithElevationApp()
             }
         }
     }
 
     @Composable
-    private fun AnalyzeHotspotsApp() {
+    private fun SceneLayerWithElevationApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {

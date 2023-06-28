@@ -17,7 +17,10 @@
 package com.esri.arcgismaps.sample.analyzehotspots.components
 
 import android.app.Application
+import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
@@ -30,8 +33,8 @@ import com.arcgismaps.tasks.geoprocessing.GeoprocessingResult
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingTask
 import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingString
 import com.esri.arcgismaps.sample.analyzehotspots.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
@@ -40,10 +43,13 @@ import java.time.format.DateTimeFormatter
 
 class MapViewModel(
     private val application: Application,
-    private val sampleCoroutineScope: CoroutineScope
+    private val sampleCoroutineScope: CoroutineScope,
 ) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
+    // set the MapView state
+    val mapViewState = MapViewState()
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // determinate job progress loading dialog
     val showJobProgressDialog = mutableStateOf(false)
@@ -63,17 +69,17 @@ class MapViewModel(
         toDate: String,
     ) {
         // a map image layer might be generated, clear previous results
-        mapViewState.value.arcGISMap.operationalLayers.clear()
+        mapViewState.arcGISMap.operationalLayers.clear()
 
         // create and load geoprocessing task
         val geoprocessingTask = GeoprocessingTask(application.getString(R.string.service_url))
         geoprocessingTask.load().getOrElse {
-            showErrorDialog(it.message.toString(), it.cause.toString())
+            messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
         }
 
         // create parameters for geoprocessing job
         val geoprocessingParameters = geoprocessingTask.createDefaultParameters().getOrElse {
-            showErrorDialog(it.message.toString(), it.cause.toString())
+            messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
         } as GeoprocessingParameters
 
         val queryString = StringBuilder("(\"DATE\" > date '")
@@ -82,7 +88,6 @@ class MapViewModel(
             .append(toDate)
             .append(" 00:00:00')")
 
-        //geoprocessingParameters.inputs["Query"] = geoprocessingString
         geoprocessingParameters.inputs["Query"] = GeoprocessingString(queryString.toString())
 
         // create and start geoprocessing job
@@ -96,40 +101,46 @@ class MapViewModel(
      * displays the result hotspot map image layer to the MapView
      */
     private suspend fun runGeoprocessingJob() {
-        // display the progress dialog
-        showJobProgressDialog.value = true
-        // start the job
-        geoprocessingJob?.start()
-        // collect the job progress
-        sampleCoroutineScope.launch {
-            geoprocessingJob?.progress?.collect { progress ->
-                // updates the job progress dialog
-                geoprocessingJobProgress.value = progress
+        geoprocessingJob?.let { geoprocessingJob ->
+            // display the progress dialog
+            showJobProgressDialog.value = true
+            // start the job
+            geoprocessingJob.start()
+            // collect the job progress
+            sampleCoroutineScope.launch {
+                geoprocessingJob.progress.collect { progress ->
+                    // updates the job progress dialog
+                    geoprocessingJobProgress.value = progress
+                    Log.i("Progress", "geoprocessingJobProgress: ${geoprocessingJobProgress.value}")
+                }
             }
-        }
-        // get the result of the job on completion
-        geoprocessingJob?.result()?.onSuccess {
-            // dismiss the progress dialog
-            showJobProgressDialog.value = false
-            // get the job's result
-            val geoprocessingResult = geoprocessingJob?.result()?.getOrElse {
-                showErrorDialog(it.message.toString(), it.cause.toString())
-            } as GeoprocessingResult
-            // resulted hotspot map image layer
-            val hotspotMapImageLayer = geoprocessingResult.mapImageLayer?.apply {
-                opacity = 0.5f
-            } ?: return showErrorDialog("Result map image layer is null")
+            // get the result of the job on completion
+            geoprocessingJob.result().onSuccess {
+                // dismiss the progress dialog
+                showJobProgressDialog.value = false
+                // get the job's result
+                val geoprocessingResult = geoprocessingJob.result().getOrElse {
+                    messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
+                } as GeoprocessingResult
+                // resulted hotspot map image layer
+                val hotspotMapImageLayer = geoprocessingResult.mapImageLayer?.apply {
+                    opacity = 0.5f
+                } ?: return messageDialogVM.showMessageDialog("Result map image layer is null")
 
-            // add new layer to map
-            mapViewState.value.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
-        }?.onFailure { throwable ->
-            showErrorDialog(throwable.message.toString(), throwable.cause.toString())
-            showJobProgressDialog.value = false
+                // add new layer to map
+                mapViewState.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
+            }.onFailure { throwable ->
+                messageDialogVM.showMessageDialog(
+                    title = throwable.message.toString(),
+                    description = throwable.cause.toString()
+                )
+                showJobProgressDialog.value = false
+            }
         }
     }
 
-    fun cancelGeoprocessingJob(coroutineScope: CoroutineScope) {
-        coroutineScope.launch {
+    fun cancelGeoprocessingJob() {
+        sampleCoroutineScope.launch {
             geoprocessingJob?.cancel()
         }
     }
@@ -143,29 +154,15 @@ class MapViewModel(
         val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
         return date.format(formatter)
     }
-
-    // error dialog status
-    val errorDialogStatus = mutableStateOf(false)
-    var errorTitle = ""
-    var errorDescription = ""
-
-    /**
-     * Displays an error dialog with [title] and optional [description]
-     */
-    fun showErrorDialog(title: String, description: String = "") {
-        errorTitle = title
-        errorDescription = description
-        errorDialogStatus.value = true
-    }
 }
 
 /**
- * Data class that represents the MapView state
+ * Class that represents the MapView's current state
  */
-data class MapViewState(
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic),
+class MapViewState {
+    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
     var viewpoint: Viewpoint = Viewpoint(
         center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
         scale = 1e5
-    ),
-)
+    )
+}

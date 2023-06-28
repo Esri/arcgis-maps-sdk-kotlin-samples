@@ -57,17 +57,22 @@ fun MainScreen(sampleName: String, application: Application) {
                     // date range selected to analyze
                     analyzeHotspotsRange = { fromDateInMillis, toDateInMillis ->
                         if (fromDateInMillis != null && toDateInMillis != null) {
-                            sampleCoroutineScope.launch {
-                                mapViewModel.apply {
+                            if (fromDateInMillis > toDateInMillis) {
+                                mapViewModel.messageDialogVM.showMessageDialog(
+                                    title = "Invalid date range",
+                                    description = "The selected \"TO\" date cannot be before the \"FROM\" date"
+                                )
+                            } else {
+                                sampleCoroutineScope.launch {
                                     // create and run a geoprocessing task using date range
-                                    createGeoprocessingJob(
-                                        fromDate = convertMillisToString(fromDateInMillis),
-                                        toDate = convertMillisToString(toDateInMillis),
+                                    mapViewModel.createGeoprocessingJob(
+                                        fromDate = mapViewModel.convertMillisToString(fromDateInMillis),
+                                        toDate = mapViewModel.convertMillisToString(toDateInMillis),
                                     )
                                 }
                             }
                         } else {
-                            mapViewModel.showErrorDialog(
+                            mapViewModel.messageDialogVM.showMessageDialog(
                                 title = "Error creating job",
                                 description = "Invalid date range selected"
                             )
@@ -75,20 +80,24 @@ fun MainScreen(sampleName: String, application: Application) {
                     },
                 )
                 // display progress dialog while analyzing hotspots
-                JobLoadingDialog(
-                    title = "Analyzing hotspots...",
-                    showDialog = mapViewModel.showJobProgressDialog.value,
-                    progress = mapViewModel.geoprocessingJobProgress.value,
-                    cancelJobRequest = { mapViewModel.cancelGeoprocessingJob(sampleCoroutineScope) }
-                )
+                if (mapViewModel.showJobProgressDialog.value) {
+                    JobLoadingDialog(
+                        title = "Analyzing hotspots...",
+                        progress = mapViewModel.geoprocessingJobProgress.value,
+                        cancelJobRequest = { mapViewModel.cancelGeoprocessingJob() }
+                    )
+                }
 
                 // display a dialog if the sample encounters an error
-                MessageDialog(
-                    title = mapViewModel.errorTitle,
-                    description = mapViewModel.errorDescription,
-                    showDialog = mapViewModel.errorDialogStatus.value,
-                    onDismissRequest = { mapViewModel.errorDialogStatus.value = false }
-                )
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
         })
 }
