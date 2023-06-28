@@ -53,90 +53,87 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 @Composable
 fun JobLoadingDialog(
     title: String,
-    showDialog: Boolean,
     progress: Int,
     isPauseJobEnabled: Boolean = false,
     cancelJobRequest: (Unit) -> Unit = {},
     pauseJobRequest: (Unit) -> Unit = {},
     resumeJobRequest: (Unit) -> Unit = {},
 ) {
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                // No dismiss allowed, instead use 'Cancel job' button
-            },
+    AlertDialog(
+        onDismissRequest = {
+            // No dismiss allowed, instead use 'Cancel job' button
+        },
+    ) {
+        Surface(
+            tonalElevation = 12.dp,
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Surface(
-                tonalElevation = 12.dp,
-                shape = RoundedCornerShape(16.dp)
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                // loading message text
+                Text(
+                    modifier = Modifier.padding(24.dp),
+                    text = title,
+                    textAlign = TextAlign.Center
+                )
+                // row of progress indicator and percentage text.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // loading message text
-                    Text(
-                        modifier = Modifier.padding(24.dp),
-                        text = title,
-                        textAlign = TextAlign.Center
+                    // set ease animation when progress state changes
+                    val progressAnimation by animateFloatAsState(
+                        targetValue = progress.toFloat() / 100f,
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
                     )
-                    // row of progress indicator and percentage text.
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // set ease animation when progress state changes
-                        val progressAnimation by animateFloatAsState(
-                            targetValue = progress.toFloat() / 100f,
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        )
-                        // create the linear progress indicator
-                        LinearProgressIndicator(
-                            progress = progressAnimation
-                        )
-                        // progress percentage text
-                        Text(
-                            text = "$progress%",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    // create the linear progress indicator
+                    LinearProgressIndicator(
+                        progress = progressAnimation
+                    )
+                    // progress percentage text
+                    Text(
+                        text = "$progress%",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                    // display pause/resume job based on the boolean state
-                    var isJobPaused by remember { mutableStateOf(false) }
-                    Row(modifier = Modifier.align(Alignment.End)) {
-                        // display pause button if enabled
-                        if (isPauseJobEnabled) {
-                            // pause job button
-                            Button(colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.background,
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ), onClick = {
-                                if (!isJobPaused)
-                                    pauseJobRequest(Unit)
-                                else
-                                    resumeJobRequest(Unit)
-
-                                isJobPaused = !isJobPaused
-                            }) {
-                                if (!isJobPaused) {
-                                    Text(text = "Pause Job")
-                                } else {
-                                    Text(text = "Resume Job")
-                                }
-                            }
-                        }
-                        // cancel job button
+                // display pause/resume job based on the boolean state
+                var isJobPaused by remember { mutableStateOf(false) }
+                Row(modifier = Modifier.align(Alignment.End)) {
+                    // display pause button if enabled
+                    if (isPauseJobEnabled) {
+                        // pause job button
                         Button(colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             contentColor = MaterialTheme.colorScheme.primary
-                        ),
-                            onClick = { cancelJobRequest(Unit) }) {
-                            Text(text = "Cancel Job")
+                        ), onClick = {
+                            if (!isJobPaused)
+                                pauseJobRequest(Unit)
+                            else
+                                resumeJobRequest(Unit)
+
+                            isJobPaused = !isJobPaused
+                        }) {
+                            if (!isJobPaused) {
+                                Text(text = "Pause Job")
+                            } else {
+                                Text(text = "Resume Job")
+                            }
                         }
+                    }
+                    // cancel job button
+                    Button(colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                        onClick = { cancelJobRequest(Unit) }) {
+                        Text(text = "Cancel Job")
                     }
                 }
             }
@@ -151,7 +148,6 @@ fun PreviewJobLoadingDialog() {
     SampleAppTheme {
         JobLoadingDialog(
             title = "Job dialog loading message here",
-            showDialog = true,
             isPauseJobEnabled = true,
             progress = 75
         )

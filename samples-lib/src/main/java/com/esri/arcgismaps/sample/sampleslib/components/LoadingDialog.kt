@@ -39,33 +39,30 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 @Composable
 fun LoadingDialog(
     loadingMessage: String,
-    showDialog: Boolean
 ) {
-    if (showDialog) {
-        Dialog(
-            onDismissRequest = { }
+    Dialog(
+        onDismissRequest = { }
+    ) {
+        Surface(
+            tonalElevation = 4.dp,
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Surface(
-                tonalElevation = 4.dp,
-                shape = RoundedCornerShape(16.dp)
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(top = 30.dp)
-                    )
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                )
 
-                    // set loading message text
-                    Text( 
-                        modifier = Modifier
-                            .padding(30.dp),
-                        text = loadingMessage,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                // set loading message text
+                Text(
+                    modifier = Modifier
+                        .padding(30.dp),
+                    text = loadingMessage,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -74,9 +71,9 @@ fun LoadingDialog(
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun PreviewLoadingDialog(){
+fun PreviewLoadingDialog() {
     SampleAppTheme {
-        LoadingDialog(loadingMessage = "Dialog loading message here", showDialog = true)
+        LoadingDialog(loadingMessage = "Dialog loading message here")
     }
 }
 
