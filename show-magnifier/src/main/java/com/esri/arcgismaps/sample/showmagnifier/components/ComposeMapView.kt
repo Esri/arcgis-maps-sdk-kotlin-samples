@@ -57,6 +57,7 @@ fun ComposeMapView(
                 // set the MapView's interaction options using the MapViewState
                 mapViewState.interactionOptions.apply {
                     interactionOptions.isMagnifierEnabled = isMagnifierEnabled
+                    interactionOptions.allowMagnifierToPan = allowMagnifierToPan
                 }
             }
         }
