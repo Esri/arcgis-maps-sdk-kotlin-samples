@@ -21,28 +21,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import com.arcgismaps.Color
 import com.arcgismaps.analysis.LocationViewshed
 import com.arcgismaps.analysis.Viewshed
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Surface
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.OrbitLocationCameraController
 
 class SceneViewModel(application: Application) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
+    // set the SceneView mutable stateflow
     val sceneViewState = SceneViewState()
 
-    private lateinit var viewShed: LocationViewshed
+    private var viewShed: LocationViewshed
 
     // initialize location viewshed parameters
-    private val initHeading = 0
+    private val initHeading = 82
     private val initPitch = 60
     private val initHorizontalAngle = 75
     private val initVerticalAngle = 90
@@ -56,7 +55,8 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         // create a layer of buildings
-        val buildingsSceneLayer = ArcGISSceneLayer("https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer/layers/0")
+        val buildingsSceneLayer =
+            ArcGISSceneLayer("https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer/layers/0")
 
         // create a scene and add imagery basemap, elevation surface, and buildings layer to it
         val buildingsScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
@@ -76,28 +76,55 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
             initMaxDistance.toDouble()
         ).apply {
             frustumOutlineVisible = true
+            isVisible = true
         }
-        Viewshed.frustumOutlineColor.blue
 
         sceneViewState.apply {
             // add the buildings scene to the sceneView
             arcGISScene = buildingsScene
             // add the viewshed to the analysisOverlay of the  scene view
-            analysisOverlay.analyses.apply {
-                add(viewShed)
+            analysisOverlay.apply {
+                analyses.add(viewShed)
+                isVisible = true
             }
         }
+    }
+
+    fun setHeading(sliderHeading: Float) {
+        viewShed.heading = sliderHeading.toDouble()
+    }
+
+    fun setMaximumDistanceSlider(sliderValue: Float) {
+        viewShed.maxDistance = sliderValue.toDouble()
+
+    }
+
+    fun setMinimumDistanceSlider(sliderValue: Float) {
+        viewShed.minDistance = sliderValue.toDouble()
+    }
+
+    fun setVerticalAngleSlider(sliderValue: Float) {
+        viewShed.verticalAngle = sliderValue.toDouble()
+    }
+
+    fun setHorizontalAngleSlider(sliderValue: Float) {
+        viewShed.horizontalAngle = sliderValue.toDouble()
+    }
+
+    fun setPitch(sliderValue: Float) {
+        viewShed.pitch = sliderValue.toDouble()
     }
 }
 
 /**
- * Data class that represents the MapView state
+ * Data class that represents the SceneView state
  */
 class SceneViewState {
     var arcGISScene: ArcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISNavigationNight))
     private val initLocation = Point(-4.50, 48.4, 1000.0)
     var camera: Camera = Camera(initLocation, 20000000.0, 0.0, 55.0, 0.0)
-    var cameraController: OrbitLocationCameraController = OrbitLocationCameraController(initLocation, 5000.0)
+    var cameraController: OrbitLocationCameraController =
+        OrbitLocationCameraController(initLocation, 5000.0)
     var analysisOverlay: AnalysisOverlay by mutableStateOf(AnalysisOverlay())
 }
 

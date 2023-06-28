@@ -41,7 +41,7 @@ import com.esri.arcgismaps.sample.showviewshedfrompointinscene.components.SceneV
  */
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
-    // create a ViewModel to handle MapView interactions
+    // create a ViewModel to handle SceneView interactions
     val sceneViewModel = SceneViewModel(application)
 
     Scaffold(
@@ -52,18 +52,18 @@ fun MainScreen(sampleName: String, application: Application) {
                     .fillMaxSize()
                     .padding(it)
             ) {
-                // composable function that wraps the MapView
+                // composable function that wraps the SceneView
                 ComposeSceneView(
                     modifier = Modifier.fillMaxSize().weight(1f),
                     sceneViewModel = sceneViewModel
                 )
                 // sliders
-                HeadingSlider()
-                PitchSlider()
-                HorizontalAngleSlider()
-                VerticalAngleSlider()
-                MinimumDistanceSlider()
-                MaximumDistanceSlider()
+                HeadingSlider(sceneViewModel)
+                PitchSlider(sceneViewModel)
+                HorizontalAngleSlider(sceneViewModel)
+                VerticalAngleSlider(sceneViewModel)
+                MinimumDistanceSlider(sceneViewModel)
+                MaximumDistanceSlider(sceneViewModel)
 
             }
         }
@@ -71,10 +71,10 @@ fun MainScreen(sampleName: String, application: Application) {
 }
 
 @Composable
-private fun HeadingSlider() {
+private fun HeadingSlider(sceneViewModel: SceneViewModel) {
 
     var sliderValue by remember {
-        mutableStateOf(0f)
+        mutableStateOf(82f)
     }
     Row {
         Text(text = "Heading")
@@ -87,6 +87,7 @@ private fun HeadingSlider() {
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
+                sceneViewModel.setHeading(sliderValue)
             },
             valueRange = 0f..360f
         )
@@ -95,10 +96,10 @@ private fun HeadingSlider() {
 }
 
 @Composable
-private fun PitchSlider() {
+private fun PitchSlider(sceneViewModel: SceneViewModel) {
 
     var sliderValue by remember {
-        mutableStateOf(0f)
+        mutableStateOf(60f)
     }
     Row {
         Text(text = "Pitch")
@@ -111,6 +112,7 @@ private fun PitchSlider() {
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
+                sceneViewModel.setPitch(sliderValue)
             },
             valueRange = 0f..180f
         )
@@ -119,10 +121,10 @@ private fun PitchSlider() {
 }
 
 @Composable
-private fun HorizontalAngleSlider() {
+private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
 
     var sliderValue by remember {
-        mutableStateOf(0f)
+        mutableStateOf(75f)
     }
     Row {
         Text(text = "Horizontal Angle")
@@ -135,6 +137,7 @@ private fun HorizontalAngleSlider() {
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
+                sceneViewModel.setHorizontalAngleSlider(sliderValue)
             },
             valueRange = 0f..120f
         )
@@ -143,10 +146,10 @@ private fun HorizontalAngleSlider() {
 }
 
 @Composable
-private fun VerticalAngleSlider() {
+private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
 
     var sliderValue by remember {
-        mutableStateOf(0f)
+        mutableStateOf(90f)
     }
     Row {
         Text(text = "Vertical Angle")
@@ -159,6 +162,7 @@ private fun VerticalAngleSlider() {
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
+                sceneViewModel.setVerticalAngleSlider(sliderValue)
             },
             valueRange = 0f..120f
         )
@@ -167,7 +171,7 @@ private fun VerticalAngleSlider() {
 }
 
 @Composable
-private fun MinimumDistanceSlider() {
+private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
 
     var sliderValue by remember {
         mutableStateOf(0f)
@@ -183,6 +187,7 @@ private fun MinimumDistanceSlider() {
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
+                sceneViewModel.setMinimumDistanceSlider(sliderValue)
             },
             valueRange = 0f..8999f
         )
@@ -191,10 +196,10 @@ private fun MinimumDistanceSlider() {
 }
 
 @Composable
-private fun MaximumDistanceSlider() {
+private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
 
     var sliderValue by remember {
-        mutableStateOf(0f)
+        mutableStateOf(1500f)
     }
     Row {
         Text(text = "Maximum Distance")
@@ -207,6 +212,7 @@ private fun MaximumDistanceSlider() {
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
+                sceneViewModel.setMaximumDistanceSlider(sliderValue)
             },
             valueRange = 0f..9999f
         )
