@@ -16,7 +16,7 @@ Tap and hold on the map to show a magnifier, then drag across the map to move th
 
 1. Create a new `MapView`, and add an `ArcGISMap` having `ArcGISTopographic` BasemapStyle to it.
 2. Enable the magnifier using by setting `mapView.interactionOptions.isMagnifierEnabled` to `true`. This will set the magnifier to be shown on the map when the user performs a long press gesture. Note: The default value is `false`.
-3. Optionally, you can also set `mapView.interactionOptions.allowMagnifierToPan` to `true` to allow the map to be panned automatically when the magnifier gets near the edge of the map.
+3. The default value of `mapView.interactionOptions.allowMagnifierToPan` is `true` which allows the map to be panned automatically when the magnifier gets near the edge of the map.
 
 ## Relevant API
 

@@ -36,8 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComposeMapView(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel,
-    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
+    mapViewModel: MapViewModel
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -63,15 +62,6 @@ fun ComposeMapView(
             }
         }
     )
-
-    // launch coroutine functions in the composition's CoroutineContext
-    LaunchedEffect(Unit) {
-        launch {
-            mapView.onSingleTapConfirmed.collect {
-                onSingleTap(it)
-            }
-        }
-    }
 }
 
 /**

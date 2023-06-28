@@ -36,11 +36,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
  * Class that represents the MapView's current state
  */
 class MapViewState {
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
-    var viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
-    var interactionOptions: MapViewInteractionOptions = MapViewInteractionOptions(
-        isMagnifierEnabled = true,
-        allowMagnifierToPan = true
+    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+    val viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
+    // setting `isMagnifierEnabled` property to true. `allowMagnifierToPan` by default is true
+    val interactionOptions: MapViewInteractionOptions = MapViewInteractionOptions(
+        isMagnifierEnabled = true
     )
 }
 
