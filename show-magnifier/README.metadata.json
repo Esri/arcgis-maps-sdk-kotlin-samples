@@ -1,0 +1,33 @@
+{
+    "category": "MapViews, SceneViews and UI",
+    "description": "Tap and hold on a map to show a magnifier.",
+    "formal_name": "ShowMagnifier",
+    "ignore": false,
+    "images": [
+        "show-magnifier.png"
+    ],
+    "keywords": [
+        "magnify",
+        "map",
+        "zoom",
+        "ArcGISMap",
+        "MapView",
+        "MapView.interactionOptions.allowMagnifierToPan",
+        "MapView.interactionOptions.isMagnifierEnabled"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "MapView",
+        "MapView.interactionOptions.allowMagnifierToPan",
+        "MapView.interactionOptions.isMagnifierEnabled"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showmagnifier/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showmagnifier/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showmagnifier/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showmagnifier/screens/MainScreen.kt"
+    ],
+    "title": "Show magnifier"
+}

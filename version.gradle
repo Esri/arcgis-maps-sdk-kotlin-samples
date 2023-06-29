@@ -6,7 +6,7 @@ ext {
     minSdkVersion = 26
     targetSdkVersion = 33
     versionCode = 2001001
-    versionName = '200.1.0'
+    versionName = '200.2.0'
     // Kotlin versions
     kotlinVersion = '1.8.21'
     ktxLifecycle = '2.5.1'
