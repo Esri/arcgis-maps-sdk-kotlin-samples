@@ -8,12 +8,49 @@
     android:orientation="horizontal"
     android:padding="12dp">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/download_spinner"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/downloadLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/downloadProgressIndicator"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/downloadProgressTV"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/downloadProgressTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:text="0%"
+            android:textAppearance="?android:textAppearanceSmall"
+            app:layout_constraintBottom_toBottomOf="@+id/downloadProgressIndicator"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/downloadProgressIndicator"
+            app:layout_constraintTop_toTopOf="@+id/downloadProgressIndicator" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/downloadCircularIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/download_tv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,7 +66,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/download_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/downloadLayout" />
 
     <TextView
         android:id="@+id/cancelButton"
