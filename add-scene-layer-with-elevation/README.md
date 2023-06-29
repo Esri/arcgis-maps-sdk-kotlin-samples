@@ -2,7 +2,7 @@
 
 Add a scene layer to a scene.
 
-![Image of scene layer](scene-layer.png)
+![Image of scene layer](add-scene-layer-with-elevation.png)
 
 ## Use case
 
