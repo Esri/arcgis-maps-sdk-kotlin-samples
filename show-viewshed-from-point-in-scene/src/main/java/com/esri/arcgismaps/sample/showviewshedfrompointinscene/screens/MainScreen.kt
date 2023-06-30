@@ -18,10 +18,12 @@ package com.esri.arcgismaps.sample.showviewshedfrompointinscene.screens
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -47,23 +49,29 @@ fun MainScreen(sampleName: String, application: Application) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                // composable function that wraps the SceneView
-                ComposeSceneView(
-                    modifier = Modifier.fillMaxSize().weight(1f),
-                    sceneViewModel = sceneViewModel
-                )
-                // sliders
-                HeadingSlider(sceneViewModel)
-                PitchSlider(sceneViewModel)
-                HorizontalAngleSlider(sceneViewModel)
-                VerticalAngleSlider(sceneViewModel)
-                MinimumDistanceSlider(sceneViewModel)
-                MaximumDistanceSlider(sceneViewModel)
+            Box {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    // composable function that wraps the SceneView
+                    ComposeSceneView(
+                        modifier = Modifier.fillMaxSize().weight(1f),
+                        sceneViewModel = sceneViewModel
+                    )
+                    // sliders
+                    HeadingSlider(sceneViewModel)
+                    PitchSlider(sceneViewModel)
+                    HorizontalAngleSlider(sceneViewModel)
+                    VerticalAngleSlider(sceneViewModel)
+                    MinimumDistanceSlider(sceneViewModel)
+                    MaximumDistanceSlider(sceneViewModel)
+                    Row {
+                        FrustumCheckBox(sceneViewModel)
+                        AnalysisCheckBox(sceneViewModel)
+                    }
+                }
 
             }
         }
@@ -86,7 +94,6 @@ private fun HeadingSlider(sceneViewModel: SceneViewModel) {
             },
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
-                Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
                 sceneViewModel.setHeading(sliderValue)
             },
             valueRange = 0f..360f
@@ -111,7 +118,6 @@ private fun PitchSlider(sceneViewModel: SceneViewModel) {
             },
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
-                Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
                 sceneViewModel.setPitch(sliderValue)
             },
             valueRange = 0f..180f
@@ -136,7 +142,6 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
             },
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
-                Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
                 sceneViewModel.setHorizontalAngleSlider(sliderValue)
             },
             valueRange = 0f..120f
@@ -161,7 +166,6 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
             },
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
-                Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
                 sceneViewModel.setVerticalAngleSlider(sliderValue)
             },
             valueRange = 0f..120f
@@ -186,7 +190,6 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
             },
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
-                Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
                 sceneViewModel.setMinimumDistanceSlider(sliderValue)
             },
             valueRange = 0f..8999f
@@ -217,5 +220,59 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
             valueRange = 0f..9999f
         )
         Text(text = sliderValue.toInt().toString())
+    }
+}
+
+@Composable
+fun FrustumCheckBox(sceneViewModel: SceneViewModel) {
+    // in below line we are setting
+    // the state of our checkbox.
+    val checkedState = remember { mutableStateOf(true) }
+    // in below line we are displaying a row
+    // and we are creating a checkbox in a row.
+    Row {
+        Checkbox(
+            // below line we are setting
+            // the state of checkbox.
+            checked = checkedState.value,
+            // below line is use to add padding
+            // to our checkbox.
+
+            // below line is use to add on check
+            // change to our checkbox.
+            onCheckedChange = {
+                checkedState.value = it
+                sceneViewModel.frustumVisibility(checkedState.value) },
+        )
+        // below line is use to add text to our check box and we are
+        // adding padding to our text of checkbox
+        Text(text = "Frustum Outline")
+    }
+}
+
+@Composable
+fun AnalysisCheckBox(sceneViewModel: SceneViewModel) {
+    // in below line we are setting
+    // the state of our checkbox.
+    val checkedState = remember { mutableStateOf(true) }
+    // in below line we are displaying a row
+    // and we are creating a checkbox in a row.
+    Row {
+        Checkbox(
+            // below line we are setting
+            // the state of checkbox.
+            checked = checkedState.value,
+            // below line is use to add padding
+            // to our checkbox.
+
+            // below line is use to add on check
+            // change to our checkbox.
+            onCheckedChange = {
+                checkedState.value = it
+                sceneViewModel.analysisVisibility(checkedState.value) },
+        )
+        // below line is use to add text to our check box and we are
+        // adding padding to our text of checkbox
+        Text(text = "Analysis Overlay")
     }
 }

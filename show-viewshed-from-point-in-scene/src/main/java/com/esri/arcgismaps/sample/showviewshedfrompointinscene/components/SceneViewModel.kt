@@ -76,7 +76,6 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
             initMaxDistance.toDouble()
         ).apply {
             frustumOutlineVisible = true
-            isVisible = true
         }
 
         sceneViewState.apply {
@@ -113,6 +112,14 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setPitch(sliderValue: Float) {
         viewShed.pitch = sliderValue.toDouble()
+    }
+
+    fun frustumVisibility(checkedValue: Boolean) {
+        viewShed.frustumOutlineVisible = checkedValue
+    }
+
+    fun analysisVisibility(checkedValue: Boolean) {
+        viewShed.isVisible = checkedValue
     }
 }
 
