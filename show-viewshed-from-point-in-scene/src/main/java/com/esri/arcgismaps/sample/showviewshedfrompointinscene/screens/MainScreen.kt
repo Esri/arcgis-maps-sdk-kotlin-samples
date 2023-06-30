@@ -85,7 +85,7 @@ private fun HeadingSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(82f)
     }
     Row {
-        Text(text = "Heading")
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Heading")
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
@@ -98,7 +98,7 @@ private fun HeadingSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..360f
         )
-        Text(text = sliderValue.toInt().toString())
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
     }
 }
 
@@ -109,9 +109,9 @@ private fun PitchSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(60f)
     }
     Row {
-        Text(text = "Pitch")
+        Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp), text = "Pitch")
         Slider(
-            modifier = Modifier.weight(1f).padding(5.dp),
+            modifier = Modifier.weight(1f),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -122,7 +122,7 @@ private fun PitchSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..180f
         )
-        Text(text = sliderValue.toInt().toString())
+        Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp), text = sliderValue.toInt().toString())
     }
 }
 
@@ -133,9 +133,9 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(75f)
     }
     Row {
-        Text(text = "Horizontal Angle")
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Horizontal Angle")
         Slider(
-            modifier = Modifier.weight(1f).padding(5.dp),
+            modifier = Modifier.weight(1f),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -146,7 +146,7 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..120f
         )
-        Text(text = sliderValue.toInt().toString())
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
     }
 }
 
@@ -157,9 +157,9 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(90f)
     }
     Row {
-        Text(text = "Vertical Angle")
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Vertical Angle")
         Slider(
-            modifier = Modifier.weight(1f).padding(5.dp),
+            modifier = Modifier.weight(1f),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -170,7 +170,7 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..120f
         )
-        Text(text = sliderValue.toInt().toString())
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
     }
 }
 
@@ -181,9 +181,9 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(0f)
     }
     Row {
-        Text(text = "Minimum Distance")
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Minimum Distance")
         Slider(
-            modifier = Modifier.weight(1f).padding(5.dp),
+            modifier = Modifier.weight(1f),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -194,7 +194,7 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..8999f
         )
-        Text(text = sliderValue.toInt().toString())
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
     }
 }
 
@@ -205,7 +205,7 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(1500f)
     }
     Row {
-        Text(text = "Maximum Distance")
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Maximum Distance")
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
@@ -219,7 +219,7 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..9999f
         )
-        Text(text = sliderValue.toInt().toString())
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
     }
 }
 
@@ -246,7 +246,7 @@ fun FrustumCheckBox(sceneViewModel: SceneViewModel) {
         )
         // below line is use to add text to our check box and we are
         // adding padding to our text of checkbox
-        Text(text = "Frustum Outline")
+        Text(modifier = Modifier.padding(top = 10.dp), text = "Frustum Outline")
     }
 }
 
@@ -273,6 +273,6 @@ fun AnalysisCheckBox(sceneViewModel: SceneViewModel) {
         )
         // below line is use to add text to our check box and we are
         // adding padding to our text of checkbox
-        Text(text = "Analysis Overlay")
+        Text(modifier = Modifier.padding(top = 10.dp), text = "Analysis Overlay")
     }
 }
