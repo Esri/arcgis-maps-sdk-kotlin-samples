@@ -34,8 +34,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComposeSceneView(
     modifier: Modifier = Modifier,
-    sceneViewModel: SceneViewModel,
-    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
+    sceneViewModel: SceneViewModel
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -59,15 +58,6 @@ fun ComposeSceneView(
             }
         }
     )
-
-    // launch coroutine functions in the composition's CoroutineContext
-    LaunchedEffect(Unit) {
-        launch {
-            sceneView.onSingleTapConfirmed.collect {
-                onSingleTap(it)
-            }
-        }
-    }
 }
 
 /**

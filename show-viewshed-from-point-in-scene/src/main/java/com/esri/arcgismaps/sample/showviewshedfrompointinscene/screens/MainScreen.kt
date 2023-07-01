@@ -66,6 +66,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     VerticalAngleSlider(sceneViewModel)
                     MinimumDistanceSlider(sceneViewModel)
                     MaximumDistanceSlider(sceneViewModel)
+                    // checkbox
                     Row {
                         FrustumCheckBox(sceneViewModel)
                         AnalysisCheckBox(sceneViewModel)
