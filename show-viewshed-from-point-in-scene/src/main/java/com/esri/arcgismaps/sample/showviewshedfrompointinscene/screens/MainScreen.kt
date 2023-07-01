@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.showviewshedfrompointinscene.screens
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -98,7 +97,10 @@ private fun HeadingSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..360f
         )
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = sliderValue.toInt().toString()
+        )
     }
 }
 
@@ -122,7 +124,10 @@ private fun PitchSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..180f
         )
-        Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp), text = sliderValue.toInt().toString())
+        Text(
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp),
+            text = sliderValue.toInt().toString()
+        )
     }
 }
 
@@ -133,7 +138,10 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(75f)
     }
     Row {
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Horizontal Angle")
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = "Horizontal Angle"
+        )
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
@@ -146,7 +154,10 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..120f
         )
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = sliderValue.toInt().toString()
+        )
     }
 }
 
@@ -157,7 +168,10 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(90f)
     }
     Row {
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Vertical Angle")
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = "Vertical Angle"
+        )
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
@@ -170,7 +184,10 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..120f
         )
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = sliderValue.toInt().toString()
+        )
     }
 }
 
@@ -181,9 +198,12 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(0f)
     }
     Row {
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Minimum Distance")
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = "Minimum Distance"
+        )
         Slider(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).alignByBaseline(),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -194,7 +214,10 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
             },
             valueRange = 0f..8999f
         )
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = sliderValue.toInt().toString()
+        )
     }
 }
 
@@ -205,7 +228,10 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(1500f)
     }
     Row {
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Maximum Distance")
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = "Maximum Distance"
+        )
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
@@ -214,65 +240,47 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
             },
             onValueChangeFinished = {
                 // this is called when the user completed selecting the value
-                Log.d("MainActivity", "sliderValue = ${sliderValue.toInt()}")
                 sceneViewModel.setMaximumDistanceSlider(sliderValue)
             },
             valueRange = 0f..9999f
         )
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = sliderValue.toInt().toString())
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            text = sliderValue.toInt().toString()
+        )
     }
 }
 
 @Composable
 fun FrustumCheckBox(sceneViewModel: SceneViewModel) {
-    // in below line we are setting
-    // the state of our checkbox.
+    // set the state of the checkbox
     val checkedState = remember { mutableStateOf(true) }
-    // in below line we are displaying a row
-    // and we are creating a checkbox in a row.
+    // display a row and create a checkbox and text in a row
     Row {
         Checkbox(
-            // below line we are setting
-            // the state of checkbox.
             checked = checkedState.value,
-            // below line is use to add padding
-            // to our checkbox.
-
-            // below line is use to add on check
-            // change to our checkbox.
             onCheckedChange = {
                 checkedState.value = it
-                sceneViewModel.frustumVisibility(checkedState.value) },
+                sceneViewModel.frustumVisibility(checkedState.value)
+            },
         )
-        // below line is use to add text to our check box and we are
-        // adding padding to our text of checkbox
         Text(modifier = Modifier.padding(top = 10.dp), text = "Frustum Outline")
     }
 }
 
 @Composable
 fun AnalysisCheckBox(sceneViewModel: SceneViewModel) {
-    // in below line we are setting
-    // the state of our checkbox.
+    // set the state of the checkbox
     val checkedState = remember { mutableStateOf(true) }
-    // in below line we are displaying a row
-    // and we are creating a checkbox in a row.
+    // display a row and create a checkbox and text in a row
     Row {
         Checkbox(
-            // below line we are setting
-            // the state of checkbox.
             checked = checkedState.value,
-            // below line is use to add padding
-            // to our checkbox.
-
-            // below line is use to add on check
-            // change to our checkbox.
             onCheckedChange = {
                 checkedState.value = it
-                sceneViewModel.analysisVisibility(checkedState.value) },
+                sceneViewModel.analysisVisibility(checkedState.value)
+            },
         )
-        // below line is use to add text to our check box and we are
-        // adding padding to our text of checkbox
         Text(modifier = Modifier.padding(top = 10.dp), text = "Analysis Overlay")
     }
 }

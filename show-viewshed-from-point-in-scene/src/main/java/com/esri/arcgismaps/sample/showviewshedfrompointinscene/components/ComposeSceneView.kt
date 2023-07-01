@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.showviewshedfrompointinscene.components
 
-import android.view.MotionEvent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect

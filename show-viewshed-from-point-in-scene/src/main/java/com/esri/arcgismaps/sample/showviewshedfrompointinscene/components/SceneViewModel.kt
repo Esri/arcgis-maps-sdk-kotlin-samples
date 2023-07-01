@@ -21,9 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.Color
 import com.arcgismaps.analysis.LocationViewshed
-import com.arcgismaps.analysis.Viewshed
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
@@ -33,8 +31,9 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.OrbitLocationCameraController
+import com.esri.arcgismaps.sample.showviewshedfrompointinscene.R
 
-class SceneViewModel(application: Application) : AndroidViewModel(application) {
+class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
     // set the SceneView mutable stateflow
     val sceneViewState = SceneViewState()
 
@@ -51,12 +50,12 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
     init {
         // create a surface for elevation data
         val surface = Surface().apply {
-            elevationSources.add(ArcGISTiledElevationSource("https://scene.arcgis.com/arcgis/rest/services/BREST_DTM_1M/ImageServer"))
+            elevationSources.add(ArcGISTiledElevationSource(application.getString(R.string.elevation_service)))
         }
 
         // create a layer of buildings
         val buildingsSceneLayer =
-            ArcGISSceneLayer("https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer/layers/0")
+            ArcGISSceneLayer(application.getString(R.string.buildings_layer))
 
         // create a scene and add imagery basemap, elevation surface, and buildings layer to it
         val buildingsScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
@@ -129,8 +128,8 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
 class SceneViewState {
     var arcGISScene: ArcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISNavigationNight))
     private val initLocation = Point(-4.50, 48.4, 1000.0)
-    var camera: Camera = Camera(initLocation, 20000000.0, 0.0, 55.0, 0.0)
-    var cameraController: OrbitLocationCameraController =
+    val camera: Camera = Camera(initLocation, 20000000.0, 0.0, 55.0, 0.0)
+    val cameraController: OrbitLocationCameraController =
         OrbitLocationCameraController(initLocation, 5000.0)
     var analysisOverlay: AnalysisOverlay by mutableStateOf(AnalysisOverlay())
 }
