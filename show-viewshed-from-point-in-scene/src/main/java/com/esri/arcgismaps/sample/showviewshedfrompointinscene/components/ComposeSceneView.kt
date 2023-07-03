@@ -18,15 +18,12 @@ package com.esri.arcgismaps.sample.showviewshedfrompointinscene.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.SceneView
-import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
-import kotlinx.coroutines.launch
 
 /**
  * Wraps the SceneView in a Composable function.
