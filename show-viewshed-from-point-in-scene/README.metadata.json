@@ -1,2 +1,37 @@
 {
+    "category": "Analysis",
+    "description": "Perform a viewshed analysis from a defined vantage point.",
+    "formal_name": "ShowViewshedFromPointInScene",
+    "ignore": false,
+    "images": [
+        "show-viewshed-from-point-in-scene.png"
+    ],
+    "keywords": [
+        "3D",
+        "frustum",
+        "scene",
+        "viewshed",
+        "visibility analysis",
+        "AnalysisOverlay",
+        "ArcGISSceneLayer",
+        "ArcGISTiledElevationSource",
+        "LocationViewshed",
+        "Viewshed"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "AnalysisOverlay",
+        "ArcGISSceneLayer",
+        "ArcGISTiledElevationSource",
+        "LocationViewshed",
+        "Viewshed"
+    ],
+    "snippets": [
+        "/src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/MainActivity.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/components/ComposeSceneView.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/components/SceneViewModel.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/MainScreen.kt"
+    ],
+    "title": "Show viewshed from point in scene"
 }
