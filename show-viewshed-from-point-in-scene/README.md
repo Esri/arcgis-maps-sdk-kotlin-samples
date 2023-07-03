@@ -10,7 +10,7 @@ A 3D viewshed analysis is a type of visual analysis you can perform on a scene. 
 
 ## How to use the sample
 
-Use the sliders to change the properties (heading, pitch, etc.), of the viewshed and see them updated in real time. 
+Use the sliders to change the properties (heading, pitch, etc.), of the viewshed and see them updated in real time.
 
 ## How it works
 
@@ -20,8 +20,8 @@ Use the sliders to change the properties (heading, pitch, etc.), of the viewshed
 ## Relevant API
 
 * AnalysisOverlay
-* ArcGISTiledElevationSource
 * ArcGISSceneLayer
+* ArcGISTiledElevationSource
 * LocationViewshed
 * Viewshed
 
