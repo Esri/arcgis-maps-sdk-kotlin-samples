@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -85,21 +87,20 @@ private fun HeadingSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(82f)
     }
     Row {
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp), text = "Heading")
+        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
+            text = "Heading")
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-            },
-            onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setHeading(sliderValue)
             },
             valueRange = 0f..360f
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
             text = sliderValue.toInt().toString()
         )
     }
@@ -112,21 +113,20 @@ private fun PitchSlider(sceneViewModel: SceneViewModel) {
         mutableStateOf(60f)
     }
     Row {
-        Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp), text = "Pitch")
+        Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).width(150.dp),
+            text = "Pitch")
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-            },
-            onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setPitch(sliderValue)
             },
             valueRange = 0f..180f
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).size(40.dp),
             text = sliderValue.toInt().toString()
         )
     }
@@ -140,7 +140,7 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
     }
     Row {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
             text = "Horizontal Angle"
         )
         Slider(
@@ -148,15 +148,13 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-            },
-            onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setHorizontalAngleSlider(sliderValue)
             },
             valueRange = 0f..120f
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
             text = sliderValue.toInt().toString()
         )
     }
@@ -170,7 +168,7 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
     }
     Row {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
             text = "Vertical Angle"
         )
         Slider(
@@ -178,15 +176,13 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-            },
-            onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setVerticalAngleSlider(sliderValue)
             },
             valueRange = 0f..120f
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
             text = sliderValue.toInt().toString()
         )
     }
@@ -200,23 +196,21 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
     }
     Row {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
             text = "Minimum Distance"
         )
         Slider(
-            modifier = Modifier.weight(1f).alignByBaseline(),
+            modifier = Modifier.weight(1f),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-            },
-            onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setMinimumDistanceSlider(sliderValue)
             },
             valueRange = 0f..8999f
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
             text = sliderValue.toInt().toString()
         )
     }
@@ -230,7 +224,7 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
     }
     Row {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
             text = "Maximum Distance"
         )
         Slider(
@@ -238,15 +232,13 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-            },
-            onValueChangeFinished = {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setMaximumDistanceSlider(sliderValue)
             },
             valueRange = 0f..9999f
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
             text = sliderValue.toInt().toString()
         )
     }
