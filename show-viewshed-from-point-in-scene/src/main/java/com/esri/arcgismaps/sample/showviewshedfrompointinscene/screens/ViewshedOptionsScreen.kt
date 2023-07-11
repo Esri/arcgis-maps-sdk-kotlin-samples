@@ -123,7 +123,7 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setHorizontalAngleSlider(sliderValue)
             },
-            valueRange = 0f..120f
+            valueRange = 1f..120f
         )
         Text(
             modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
@@ -151,7 +151,7 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
                 // this is called when the user completed selecting the value
                 sceneViewModel.setVerticalAngleSlider(sliderValue)
             },
-            valueRange = 0f..120f
+            valueRange = 1f..120f
         )
         Text(
             modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
