@@ -47,17 +47,19 @@ fun ViewshedOptionsScreen(
     isAnalysisVisible: (Boolean) -> Unit = {}
 ) {
 
-    // sliders
-    HeadingSlider(sceneViewModel)
-    PitchSlider(sceneViewModel)
-    HorizontalAngleSlider(sceneViewModel)
-    VerticalAngleSlider(sceneViewModel)
-    MinimumDistanceSlider(sceneViewModel)
-    MaximumDistanceSlider(sceneViewModel)
-    // checkbox
-    Row {
-        FrustumCheckBox(sceneViewModel)
-        AnalysisCheckBox(sceneViewModel)
+    Column() {
+        // sliders
+        HeadingSlider(onHeadingChanged)
+        PitchSlider(onPitchChanged)
+        HorizontalAngleSlider(onHorizontalAngleChanged)
+        VerticalAngleSlider(onVerticalAngleChanged)
+        MinimumDistanceSlider(onMinDistanceChanged)
+        MaximumDistanceSlider(onMaxDistanceChanged)
+        // checkbox
+        Row {
+            FrustumCheckBox(isFrustumVisible)
+            AnalysisCheckBox(isAnalysisVisible)
+        }
     }
 }
 
