@@ -64,7 +64,7 @@ fun ViewshedOptionsScreen(
 }
 
 @Composable
-private fun HeadingSlider(sceneViewModel: SceneViewModel) {
+private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
 
     var sliderValue by remember {
         mutableStateOf(82f)
@@ -77,8 +77,8 @@ private fun HeadingSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-                // this is called when the user completed selecting the value
-                sceneViewModel.setHeading(sliderValue)
+                // update view model viewshed value
+                onHeadingChanged(sliderValue)
             },
             valueRange = 0f..360f
         )
