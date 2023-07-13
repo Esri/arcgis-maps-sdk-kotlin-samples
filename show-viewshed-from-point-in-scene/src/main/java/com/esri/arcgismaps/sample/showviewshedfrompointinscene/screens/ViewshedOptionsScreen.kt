@@ -50,7 +50,6 @@ fun ViewshedOptionsScreen(
     isFrustumVisible: (Boolean) -> Unit = {},
     isAnalysisVisible: (Boolean) -> Unit = {}
 ) {
-
     Column() {
         // sliders
         HeadingSlider(onHeadingChanged)
