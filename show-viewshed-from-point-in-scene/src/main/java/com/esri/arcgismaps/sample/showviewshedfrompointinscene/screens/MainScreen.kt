@@ -62,7 +62,6 @@ fun MainScreen(sampleName: String, application: Application) {
                         isAnalysisVisible = sceneViewModel::analysisVisibility
                     )
                 }
-
             }
         }
     )
