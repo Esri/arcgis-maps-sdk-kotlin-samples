@@ -40,12 +40,12 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     private var viewShed: LocationViewshed
 
     // initialize location viewshed parameters
-    private val initHeading = 82
-    private val initPitch = 60
-    private val initHorizontalAngle = 75
-    private val initVerticalAngle = 90
-    private val initMinDistance = 0
-    private val initMaxDistance = 1500
+    private val initHeading = 82.0
+    private val initPitch = 60.0
+    private val initHorizontalAngle = 75.0
+    private val initVerticalAngle = 90.0
+    private val initMinDistance = 0.0
+    private val initMaxDistance = 1500.0
 
     init {
         // create a surface for elevation data
