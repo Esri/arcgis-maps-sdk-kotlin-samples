@@ -50,7 +50,17 @@ fun MainScreen(sampleName: String, application: Application) {
                         modifier = Modifier.fillMaxSize().weight(1f),
                         sceneViewModel = sceneViewModel
                     )
-                    ViewshedOptionsScreen(sceneViewModel)
+                    // display list of options modify viewshed properties
+                    ViewshedOptionsScreen(
+                        onHeadingChanged = sceneViewModel::setHeading,
+                        onPitchChanged = sceneViewModel::setPitch,
+                        onHorizontalAngleChanged = sceneViewModel::setHorizontalAngleSlider,
+                        onVerticalAngleChanged = sceneViewModel::setVerticalAngleSlider,
+                        onMinDistanceChanged = sceneViewModel::setMinimumDistanceSlider,
+                        onMaxDistanceChanged = sceneViewModel::setMaximumDistanceSlider,
+                        isFrustumVisible = sceneViewModel::frustumVisibility,
+                        isAnalysisVisible = sceneViewModel::analysisVisibility
+                    )
                 }
 
             }
