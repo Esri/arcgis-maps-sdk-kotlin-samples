@@ -16,12 +16,15 @@
 
 package com.esri.arcgismaps.sample.showviewshedfrompointinscene.screens
 
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,8 +32,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.showviewshedfrompointinscene.components.SceneViewModel
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  * Viewshed options screen for sliders and checkbox's
@@ -90,7 +94,7 @@ private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
 }
 
 @Composable
-private fun PitchSlider(sceneViewModel: SceneViewModel) {
+private fun PitchSlider(onPitchChanged: (Float) -> Unit) {
 
     var sliderValue by remember {
         mutableStateOf(60f)
@@ -103,8 +107,8 @@ private fun PitchSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-                // this is called when the user completed selecting the value
-                sceneViewModel.setPitch(sliderValue)
+                // update view model viewshed value
+                onPitchChanged(sliderValue)
             },
             valueRange = 0f..180f
         )
@@ -116,7 +120,7 @@ private fun PitchSlider(sceneViewModel: SceneViewModel) {
 }
 
 @Composable
-private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
+private fun HorizontalAngleSlider(onHorizontalAngleChanged: (Float) -> Unit) {
 
     var sliderValue by remember {
         mutableStateOf(75f)
@@ -131,8 +135,8 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-                // this is called when the user completed selecting the value
-                sceneViewModel.setHorizontalAngleSlider(sliderValue)
+                // update view model viewshed value
+                onHorizontalAngleChanged(sliderValue)
             },
             valueRange = 1f..120f
         )
@@ -144,7 +148,7 @@ private fun HorizontalAngleSlider(sceneViewModel: SceneViewModel) {
 }
 
 @Composable
-private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
+private fun VerticalAngleSlider(onVerticalAngleChanged: (Float) -> Unit) {
 
     var sliderValue by remember {
         mutableStateOf(90f)
@@ -159,8 +163,8 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-                // this is called when the user completed selecting the value
-                sceneViewModel.setVerticalAngleSlider(sliderValue)
+                // update view model viewshed value
+                onVerticalAngleChanged(sliderValue)
             },
             valueRange = 1f..120f
         )
@@ -172,7 +176,7 @@ private fun VerticalAngleSlider(sceneViewModel: SceneViewModel) {
 }
 
 @Composable
-private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
+private fun MinimumDistanceSlider(onMinDistanceChanged: (Float) -> Unit) {
 
     var sliderValue by remember {
         mutableStateOf(0f)
@@ -187,8 +191,8 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-                // this is called when the user completed selecting the value
-                sceneViewModel.setMinimumDistanceSlider(sliderValue)
+                // update view model viewshed value
+                onMinDistanceChanged(sliderValue)
             },
             valueRange = 0f..8999f
         )
@@ -200,7 +204,7 @@ private fun MinimumDistanceSlider(sceneViewModel: SceneViewModel) {
 }
 
 @Composable
-private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
+private fun MaximumDistanceSlider(onMaxDistanceChanged: (Float) -> Unit) {
 
     var sliderValue by remember {
         mutableStateOf(1500f)
@@ -215,8 +219,8 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-                // this is called when the user completed selecting the value
-                sceneViewModel.setMaximumDistanceSlider(sliderValue)
+                // update view model viewshed value
+                onMaxDistanceChanged(sliderValue)
             },
             valueRange = 0f..9999f
         )
@@ -245,7 +249,7 @@ fun FrustumCheckBox(isFrustumVisible: (Boolean) -> Unit) {
 }
 
 @Composable
-fun AnalysisCheckBox(sceneViewModel: SceneViewModel) {
+fun AnalysisCheckBox(isAnalysisVisible: (Boolean) -> Unit) {
     // set the state of the checkbox
     val checkedState = remember { mutableStateOf(true) }
     // display a row and create a checkbox and text in a row
@@ -254,7 +258,7 @@ fun AnalysisCheckBox(sceneViewModel: SceneViewModel) {
             checked = checkedState.value,
             onCheckedChange = {
                 checkedState.value = it
-                sceneViewModel.analysisVisibility(checkedState.value)
+                isAnalysisVisible(checkedState.value)
             },
         )
         Text(modifier = Modifier.padding(top = 10.dp), text = "Analysis Overlay")

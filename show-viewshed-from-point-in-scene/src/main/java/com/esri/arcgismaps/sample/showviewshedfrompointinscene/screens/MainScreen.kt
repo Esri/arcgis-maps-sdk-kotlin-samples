@@ -50,7 +50,7 @@ fun MainScreen(sampleName: String, application: Application) {
                         modifier = Modifier.fillMaxSize().weight(1f),
                         sceneViewModel = sceneViewModel
                     )
-                    // display list of options modify viewshed properties
+                    // display list of options to modify viewshed properties
                     ViewshedOptionsScreen(
                         onHeadingChanged = sceneViewModel::setHeading,
                         onPitchChanged = sceneViewModel::setPitch,
