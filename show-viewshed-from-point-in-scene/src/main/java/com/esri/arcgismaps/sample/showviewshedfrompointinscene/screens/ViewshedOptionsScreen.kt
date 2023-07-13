@@ -260,3 +260,15 @@ fun AnalysisCheckBox(sceneViewModel: SceneViewModel) {
         Text(modifier = Modifier.padding(top = 10.dp), text = "Analysis Overlay")
     }
 }
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun PreviewViewshedOptions() {
+    SampleAppTheme {
+        Surface {
+            ViewshedOptionsScreen()
+        }
+    }
+}
+
