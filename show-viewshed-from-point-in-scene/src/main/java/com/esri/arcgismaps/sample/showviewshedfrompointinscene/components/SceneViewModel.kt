@@ -134,4 +134,3 @@ class SceneViewState {
     var analysisOverlay: AnalysisOverlay by mutableStateOf(AnalysisOverlay())
 }
 
-
