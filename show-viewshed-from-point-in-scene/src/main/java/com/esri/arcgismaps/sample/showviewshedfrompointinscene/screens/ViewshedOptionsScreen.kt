@@ -36,7 +36,16 @@ import com.esri.arcgismaps.sample.showviewshedfrompointinscene.components.SceneV
  * Viewshed options screen for sliders and checkbox's
  */
 @Composable
-fun ViewshedOptionsScreen(sceneViewModel: SceneViewModel) {
+fun ViewshedOptionsScreen(
+    onHeadingChanged: (Float) -> Unit = {},
+    onPitchChanged: (Float) -> Unit = {},
+    onHorizontalAngleChanged: (Float) -> Unit = {},
+    onVerticalAngleChanged: (Float) -> Unit = {},
+    onMinDistanceChanged: (Float) -> Unit = {},
+    onMaxDistanceChanged: (Float) -> Unit = {},
+    isFrustumVisible: (Boolean) -> Unit = {},
+    isAnalysisVisible: (Boolean) -> Unit = {}
+) {
 
     // sliders
     HeadingSlider(sceneViewModel)
