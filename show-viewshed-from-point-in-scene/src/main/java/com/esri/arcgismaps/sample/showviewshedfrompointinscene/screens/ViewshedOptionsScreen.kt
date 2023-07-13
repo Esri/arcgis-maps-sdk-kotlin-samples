@@ -228,7 +228,7 @@ private fun MaximumDistanceSlider(sceneViewModel: SceneViewModel) {
 }
 
 @Composable
-fun FrustumCheckBox(sceneViewModel: SceneViewModel) {
+fun FrustumCheckBox(isFrustumVisible: (Boolean) -> Unit) {
     // set the state of the checkbox
     val checkedState = remember { mutableStateOf(true) }
     // display a row and create a checkbox and text in a row
@@ -237,7 +237,7 @@ fun FrustumCheckBox(sceneViewModel: SceneViewModel) {
             checked = checkedState.value,
             onCheckedChange = {
                 checkedState.value = it
-                sceneViewModel.frustumVisibility(checkedState.value)
+                isFrustumVisible(checkedState.value)
             },
         )
         Text(modifier = Modifier.padding(top = 10.dp), text = "Frustum Outline")
