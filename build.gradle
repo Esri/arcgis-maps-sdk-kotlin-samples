@@ -34,7 +34,7 @@ subprojects {
                 exclude 'META-INF/DEPENDENCIES'
             }
             kotlinOptions {
-                jvmTarget = "17"
+                jvmTarget = "1.8"
             }
         }
     }
