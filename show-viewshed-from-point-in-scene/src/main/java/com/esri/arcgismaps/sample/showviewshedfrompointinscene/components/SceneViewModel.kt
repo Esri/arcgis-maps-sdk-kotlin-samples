@@ -67,12 +67,12 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
         // create viewshed from the initial location
         viewShed = LocationViewshed(
             location = initLocation,
-            heading = initHeading.toDouble(),
-            pitch = initPitch.toDouble(),
-            horizontalAngle = initHorizontalAngle.toDouble(),
-            verticalAngle = initVerticalAngle.toDouble(),
-            minDistance = initMinDistance.toDouble(),
-            maxDistance = initMaxDistance.toDouble()
+            heading = initHeading,
+            pitch = initPitch,
+            horizontalAngle = initHorizontalAngle,
+            verticalAngle = initVerticalAngle,
+            minDistance = initMinDistance,
+            maxDistance = initMaxDistance
         ).apply {
             frustumOutlineVisible = true
         }
