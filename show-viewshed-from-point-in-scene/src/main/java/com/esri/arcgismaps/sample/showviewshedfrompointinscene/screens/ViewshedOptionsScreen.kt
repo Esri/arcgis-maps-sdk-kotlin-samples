@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
- * Viewshed options screen for sliders and checkbox's
+ * Viewshed options screen for sliders and checkboxes
  */
 @Composable
 fun ViewshedOptionsScreen(
