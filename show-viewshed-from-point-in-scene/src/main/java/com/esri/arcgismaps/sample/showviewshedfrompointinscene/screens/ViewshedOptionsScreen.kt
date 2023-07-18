@@ -20,17 +20,12 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,166 +63,62 @@ fun ViewshedOptionsScreen(
 
 @Composable
 private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
-
-    var sliderValue by remember {
-        mutableStateOf(82f)
-    }
-    Row {
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = "Heading")
-        Slider(
-            modifier = Modifier.weight(1f),
-            value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                // update view model viewshed value
-                onHeadingChanged(sliderValue)
-            },
-            valueRange = 0f..360f
-        )
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
-        )
-    }
+    ViewshedSlider(
+        title = "Heading",
+        intialSliderValue = 82f,
+        sliderRangeValue = 0f..360f,
+        functionChanged = onHeadingChanged
+    )
 }
 
 @Composable
 private fun PitchSlider(onPitchChanged: (Float) -> Unit) {
-
-    var sliderValue by remember {
-        mutableStateOf(60f)
-    }
-    Row {
-        Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).width(150.dp),
-            text = "Pitch")
-        Slider(
-            modifier = Modifier.weight(1f),
-            value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                // update view model viewshed value
-                onPitchChanged(sliderValue)
-            },
-            valueRange = 0f..180f
-        )
-        Text(
-            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
-        )
-    }
+    ViewshedSlider(
+        title = "Pitch",
+        intialSliderValue = 60f,
+        sliderRangeValue = 0f..180f,
+        functionChanged = onPitchChanged
+    )
 }
 
 @Composable
 private fun HorizontalAngleSlider(onHorizontalAngleChanged: (Float) -> Unit) {
-
-    var sliderValue by remember {
-        mutableStateOf(75f)
-    }
-    Row {
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = "Horizontal Angle"
-        )
-        Slider(
-            modifier = Modifier.weight(1f),
-            value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                // update view model viewshed value
-                onHorizontalAngleChanged(sliderValue)
-            },
-            valueRange = 1f..120f
-        )
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
-        )
-    }
+    ViewshedSlider(
+        title = "Horizontal Angle",
+        intialSliderValue = 75f,
+        sliderRangeValue = 1f..120f,
+        functionChanged = onHorizontalAngleChanged
+    )
 }
 
 @Composable
 private fun VerticalAngleSlider(onVerticalAngleChanged: (Float) -> Unit) {
-
-    var sliderValue by remember {
-        mutableStateOf(90f)
-    }
-    Row {
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = "Vertical Angle"
-        )
-        Slider(
-            modifier = Modifier.weight(1f),
-            value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                // update view model viewshed value
-                onVerticalAngleChanged(sliderValue)
-            },
-            valueRange = 1f..120f
-        )
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
-        )
-    }
+    ViewshedSlider(
+        title = "Vertical Angle",
+        intialSliderValue = 90f,
+        sliderRangeValue = 1f..120f,
+        functionChanged = onVerticalAngleChanged
+    )
 }
 
 @Composable
 private fun MinimumDistanceSlider(onMinDistanceChanged: (Float) -> Unit) {
-
-    var sliderValue by remember {
-        mutableStateOf(0f)
-    }
-    Row {
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = "Minimum Distance"
-        )
-        Slider(
-            modifier = Modifier.weight(1f),
-            value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                // update view model viewshed value
-                onMinDistanceChanged(sliderValue)
-            },
-            valueRange = 0f..8999f
-        )
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
-        )
-    }
+    ViewshedSlider(
+        title = "Minimum Distance",
+        intialSliderValue = 0f,
+        sliderRangeValue = 0f..8999f,
+        functionChanged = onMinDistanceChanged
+    )
 }
 
 @Composable
 private fun MaximumDistanceSlider(onMaxDistanceChanged: (Float) -> Unit) {
-
-    var sliderValue by remember {
-        mutableStateOf(1500f)
-    }
-    Row {
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = "Maximum Distance"
-        )
-        Slider(
-            modifier = Modifier.weight(1f),
-            value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                // update view model viewshed value
-                onMaxDistanceChanged(sliderValue)
-            },
-            valueRange = 0f..9999f
-        )
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
-        )
-    }
+    ViewshedSlider(
+        title = "Maximum Distance",
+        intialSliderValue = 1500f,
+        sliderRangeValue = 0f..9999f,
+        functionChanged = onMaxDistanceChanged
+    )
 }
 
 @Composable
