@@ -28,8 +28,10 @@ fun ViewshedSlider(
         mutableStateOf(intialSliderValue)
     }
     Row {
-        Text(modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = title)
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
+            text = title
+        )
         Slider(
             modifier = Modifier.weight(1f),
             value = sliderValue,
