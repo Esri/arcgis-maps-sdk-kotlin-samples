@@ -35,9 +35,13 @@ class SceneViewModel(
 
     // create a mutable state holder for the first scene
     private val _firstScene = MutableStateFlow<ArcGISScene?>(null)
-
     // expose a read-only state flow for observing changes to the first scene
     val firstScene: StateFlow<ArcGISScene?> = _firstScene.asStateFlow()
+
+    // create a mutable state holder for the snackbar message
+    private val _snackbarMessage = MutableStateFlow<String?>(null)
+    // expose a read-only state flow for observing changes to the snackbar message
+    val snackbarMessage: StateFlow<String?> = _snackbarMessage.asStateFlow()
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
@@ -61,8 +65,11 @@ class SceneViewModel(
             mobileScenePackage.load().onSuccess {
                 // update the mutable state holder with the first scene from the MobileScenePackage
                 _firstScene.value = mobileScenePackage.scenes.first()
-            }.onFailure {
-                // show snackbar
+                // set the value to null on successful load
+                _snackbarMessage.value = null
+            }.onFailure { error->
+                // set the value to be displayed in the snackbar
+                _snackbarMessage.value = error.message.toString()
             }
         }
     }
