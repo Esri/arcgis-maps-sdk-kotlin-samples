@@ -26,43 +26,42 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
-import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.mapping.view.SceneView
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
 
 /**
- * Wraps the MapView in a Composable function.
+ * Wraps the SceneView in a Composable function.
  */
 @Composable
-fun ComposeMapView(
+fun ComposeSceneView(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel,
+    sceneViewModel: SceneViewModel,
     onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
-    // collect the latest state of the MapViewState
-    val mapViewState by mapViewModel.mapViewState.collectAsState()
-    // create and add MapView to the activity lifecycle
-    val mapView = createMapViewInstance(lifecycleOwner)
 
-    // wrap the MapView as an AndroidView
+    // collect the latest state of the SceneView from the package
+    val sceneViewState by sceneViewModel.firstScene.collectAsState()
+
+    // create and add SceneView to the activity lifecycle
+    val sceneView = createSceneViewInstance(lifecycleOwner)
+
+    // wrap the SceneView as an AndroidView
     AndroidView(
         modifier = modifier,
-        factory = { mapView },
-        // recomposes the MapView on changes in the MapViewState
-        update = { mapView ->
-            mapView.apply {
-                map = mapViewState.arcGISMap
-                setViewpoint(mapViewState.viewpoint)
-            }
+        factory = { sceneView },
+        // recomposes the SceneView on changes in sceneViewState
+        update = { sceneView ->
+            sceneView.scene = sceneViewState
         }
     )
 
     // launch coroutine functions in the composition's CoroutineContext
     LaunchedEffect(Unit) {
         launch {
-            mapView.onSingleTapConfirmed.collect {
+            sceneView.onSingleTapConfirmed.collect {
                 onSingleTap(it)
             }
         }
@@ -70,18 +69,18 @@ fun ComposeMapView(
 }
 
 /**
- * Create the MapView instance and add it to the Activity lifecycle
+ * Create the SceneView instance and add it to the Activity lifecycle
  */
 @Composable
-fun createMapViewInstance(lifecycleOwner: LifecycleOwner): MapView {
-    // create the MapView
-    val mapView = MapView(LocalContext.current)
-    // add the side effects for MapView composition
+fun createSceneViewInstance(lifecycleOwner: LifecycleOwner): SceneView {
+    // create the SceneView
+    val sceneView = SceneView(LocalContext.current)
+    // add the side effects for SceneView composition
     DisposableEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.addObserver(mapView)
+        lifecycleOwner.lifecycle.addObserver(sceneView)
         onDispose {
-            lifecycleOwner.lifecycle.removeObserver(mapView)
+            lifecycleOwner.lifecycle.removeObserver(sceneView)
         }
     }
-    return mapView
+    return sceneView
 }
