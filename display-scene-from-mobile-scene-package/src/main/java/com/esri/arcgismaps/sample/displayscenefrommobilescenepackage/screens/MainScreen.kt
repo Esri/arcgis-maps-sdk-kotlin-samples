@@ -21,7 +21,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -37,6 +43,23 @@ fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle SceneView interactions
     val sampleCoroutineScope = rememberCoroutineScope()
     val sceneViewModel = remember { SceneViewModel(application, sampleCoroutineScope) }
+
+    // observe the snackbar message from the viewmodel
+    val snackbarMessage by sceneViewModel.snackbarMessage.collectAsState()
+
+    // create a snackbarHostState to manage snackbar display
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // use LaunchedEffect to trigger the display of the snackbar when snackbarMessage is not empty.
+    LaunchedEffect(snackbarMessage) {
+        if (snackbarMessage?.isNotEmpty() == true) {
+            // show the snackbar and set the duration to short.
+            snackbarHostState.showSnackbar(
+                message = snackbarMessage!!,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -55,6 +78,9 @@ fun MainScreen(sampleName: String, application: Application) {
                     }
                 )
             }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     )
 }
