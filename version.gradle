@@ -28,5 +28,5 @@ ext {
     // Plugin versions
     gradleVersion = '7.3.1'
     // Java version
-    javaVersion = 1.11
+    javaVersion = 1.17
 }
