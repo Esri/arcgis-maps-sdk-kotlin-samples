@@ -22,9 +22,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components.ComposeMapView
-import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components.MapViewModel
+import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components.ComposeSceneView
+import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components.SceneViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -32,8 +34,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
-    // create a ViewModel to handle MapView interactions
-    val mapViewModel = MapViewModel(application)
+    // create a ViewModel to handle SceneView interactions
+    val sampleCoroutineScope = rememberCoroutineScope()
+    val sceneViewModel = remember { SceneViewModel(application, sampleCoroutineScope) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -43,12 +46,12 @@ fun MainScreen(sampleName: String, application: Application) {
                     .fillMaxSize()
                     .padding(it)
             ) {
-                // composable function that wraps the MapView
-                ComposeMapView(
+                // composable function that wraps the SceneView
+                ComposeSceneView(
                     modifier = Modifier.fillMaxSize(),
-                    mapViewModel = mapViewModel,
+                    sceneViewModel = sceneViewModel,
                     onSingleTap = {
-                        mapViewModel.changeBasemap()
+                        sceneViewModel.onSingleTap()
                     }
                 )
             }

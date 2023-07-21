@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Display scene from mobile scene package</string>
+    <string name="philadelphia_mspk">/philadelphia.mspk</string>
 </resources>

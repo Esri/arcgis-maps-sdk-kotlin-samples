@@ -24,8 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.screens.MainScreen
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
