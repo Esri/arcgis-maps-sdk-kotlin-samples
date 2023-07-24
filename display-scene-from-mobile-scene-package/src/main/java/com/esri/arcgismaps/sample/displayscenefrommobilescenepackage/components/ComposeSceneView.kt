@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,8 +26,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.SceneView
-import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
-import kotlinx.coroutines.launch
 
 /**
  * Wraps the SceneView in a Composable function.
@@ -36,8 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComposeSceneView(
     modifier: Modifier = Modifier,
-    sceneViewModel: SceneViewModel,
-    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
+    sceneViewModel: SceneViewModel
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -57,15 +53,6 @@ fun ComposeSceneView(
             sceneView.scene = sceneViewState
         }
     )
-
-    // launch coroutine functions in the composition's CoroutineContext
-    LaunchedEffect(Unit) {
-        launch {
-            sceneView.onSingleTapConfirmed.collect {
-                onSingleTap(it)
-            }
-        }
-    }
 }
 
 /**

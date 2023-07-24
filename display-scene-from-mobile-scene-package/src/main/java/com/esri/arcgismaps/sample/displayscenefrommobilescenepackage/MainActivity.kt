@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                SampleApp()
+                DisplaySceneFromMobileScenePackageApp()
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun DisplaySceneFromMobileScenePackageApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {

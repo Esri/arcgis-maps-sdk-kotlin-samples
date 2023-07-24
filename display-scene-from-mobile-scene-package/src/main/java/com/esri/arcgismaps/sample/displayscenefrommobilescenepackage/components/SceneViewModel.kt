@@ -21,6 +21,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.MobileScenePackage
 import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,11 +40,8 @@ class SceneViewModel(
     // expose a read-only state flow for observing changes to the first scene
     val firstScene: StateFlow<ArcGISScene?> = _firstScene.asStateFlow()
 
-    // create a mutable state holder for the snackbar message
-    private val _snackbarMessage = MutableStateFlow<String?>(null)
-
-    // expose a read-only state flow for observing changes to the snackbar message
-    val snackbarMessage: StateFlow<String?> = _snackbarMessage.asStateFlow()
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
@@ -67,16 +65,10 @@ class SceneViewModel(
             mobileScenePackage.load().onSuccess {
                 // update the mutable state holder with the first scene from the MobileScenePackage
                 _firstScene.value = mobileScenePackage.scenes.first()
-                // set the value to null on successful load
-                _snackbarMessage.value = null
             }.onFailure { error ->
-                // set the value to be displayed in the snackbar
-                _snackbarMessage.value = error.message.toString()
+                // show the message dialog and pass the error message to be displayed in the dialog
+                messageDialogVM.showMessageDialog(error.message.toString(), error.cause.toString())
             }
         }
-    }
-
-    fun onSingleTap() {
-        // do nothing
     }
 }
