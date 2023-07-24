@@ -1,5 +1,5 @@
 {
-    "category": "TODO",
+    "category": "Edit and Manage Data",
     "description": "Display a scene from a mobile scene package (.mspk)",
     "formal_name": "DisplaySceneFromMobileScenePackage",
     "ignore": false,
@@ -17,20 +17,20 @@
         "SceneView"
     ],
     "language": "kotlin",
-    "provision_from": "TODO",
-    "provision_to": "TODO",
-    "redirect_from": "TODO",
+    "provision_from": "",
+    "provision_to": "",
+    "redirect_from": "",
     "relevant_apis": [
         "ArcGISScene",
         "MobileScenePackage",
         "SceneView"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/DownloadActivity.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/MainActivity.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/ComposeSceneView.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/SceneViewModel.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/ComposeSceneView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/screens/MainScreen.kt"
     ],
     "title": "Display scene from mobile scene package"
 }

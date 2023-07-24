@@ -17,9 +17,9 @@ When the sample opens, it will automatically display the Scene in the mobile sce
 This sample takes a mobile scene package that was created in ArcGIS Pro, and displays a `Scene` from within the package in a `SceneView`.
 
 1. Create a `MobileScenePackage` using the path to the local .mspk file.
-2. Call `MobileScenePackage::load` and check for any errors.
-3. When the `MobileScenePackage` is loaded, obtain the first `Scene` from the `MobileScenePackage::scenes` property.
-4. Create a `SceneView` and call `SceneView::setView` to display the scene from the package.
+2. Call `MobileScenePackage.load()` and check for any errors.
+3. When the `MobileScenePackage` is loaded, obtain the first `Scene` from the `MobileScenePackage.scenes()` property.
+4. Create a `SceneView` and call `SceneView.scene` to display the scene from the package.
 
 ## Relevant API
 
