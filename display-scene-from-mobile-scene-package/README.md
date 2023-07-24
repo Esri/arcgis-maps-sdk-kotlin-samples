@@ -23,10 +23,10 @@ This sample takes a mobile scene package that was created in ArcGIS Pro, and dis
 
 ## Relevant API
 
-* SceneView
-* MobileScenePackage
 * ArcGISScene
+* MobileScenePackage
+* SceneView
 
 ## Tags
 
-mspk, mobile scene package, offline, 3d, scene
+3d, mobile scene package, mspk, offline, scene
