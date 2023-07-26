@@ -1,5 +1,5 @@
 {
-    "category": "MapViews, SceneViews and UI",
+    "category": "Maps",
     "description": "Tap and hold on a map to show a magnifier.",
     "formal_name": "ShowMagnifier",
     "ignore": false,

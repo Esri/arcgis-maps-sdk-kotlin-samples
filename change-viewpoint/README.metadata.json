@@ -1,5 +1,5 @@
 {
-  "category": "MapViews, SceneViews and UI",
+  "category": "Maps",
   "description": "Set the map view to a new viewpoint.",
   "formal_name": "ChangeViewpoint",
   "ignore": false,

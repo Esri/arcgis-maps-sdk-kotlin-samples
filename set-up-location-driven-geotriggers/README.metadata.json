@@ -1,5 +1,5 @@
 {
-    "category": "Maps and Scenes",
+    "category": "Maps",
     "description": "Create a notification every time a given location data source has entered and/or exited a set of features or graphics.",
     "formal_name": "SetUpLocationDrivenGeotriggers",
     "ignore": false,
