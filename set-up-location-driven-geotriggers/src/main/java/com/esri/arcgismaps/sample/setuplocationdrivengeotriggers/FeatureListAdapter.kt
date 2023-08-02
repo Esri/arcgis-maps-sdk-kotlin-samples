@@ -51,7 +51,7 @@ class FeatureListAdapter(
         // set the title
         holder.titleView.text = feature.attributes["name"].toString()
         // set the onClickListener to pass the item's feature
-        holder.itemView.setOnClickListener {
+        holder.titleView.setOnClickListener {
             onItemClickListener(feature)
         }
     }
