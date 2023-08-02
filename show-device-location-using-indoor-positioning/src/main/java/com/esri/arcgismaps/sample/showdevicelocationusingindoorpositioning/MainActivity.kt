@@ -142,10 +142,8 @@ class MainActivity : AppCompatActivity() {
             // load each FeatureTable
             featureTable.load().onSuccess {
                 // IPS_Positioning table needs to be present
-                if (featureTable.tableName == "IPS_Positioning") {
+                if (featureTable.tableName == "ips_positioning") {
                     setupIndoorsLocationDataSource(featureTable)
-                } else {
-                    showError("Positioning Table not found in FeatureTables")
                 }
             }.onFailure {
                 showError("Error loading FeatureTable: ${it.message}")
