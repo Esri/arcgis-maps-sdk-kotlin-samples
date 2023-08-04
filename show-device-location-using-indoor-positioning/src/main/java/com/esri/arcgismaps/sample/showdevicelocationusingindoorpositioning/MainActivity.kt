@@ -140,17 +140,19 @@ class MainActivity : AppCompatActivity() {
     private suspend fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
         featureTables.forEach { featureTable ->
             // load each FeatureTable
-            featureTable.load().onSuccess {
-                // IPS_Positioning table needs to be present
-                if (featureTable.tableName == "IPS_Positioning") {
-                    setupIndoorsLocationDataSource(featureTable)
-                } else {
-                    showError("Positioning Table not found in FeatureTables")
-                }
-            }.onFailure {
+            featureTable.load().onFailure {
                 showError("Error loading FeatureTable: ${it.message}")
             }
         }
+        // retrieve the loaded feature tables
+        featureTables.forEach{ featureTable ->
+            // ips_positioning table needs to be present
+            if (featureTable.tableName == "ips_positioning") {
+                 return setupIndoorsLocationDataSource(featureTable)
+            }
+        }
+        // ips_positioning table not found
+        showError("Positioning Table not found in FeatureTables")
     }
 
     /**
