@@ -41,7 +41,8 @@
                 android:contentDescription="@string/display_directions_button"
                 android:src="@drawable/ic_navigate"
                 app:layout_constraintBottom_toBottomOf="@id/mapView"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:contentDescription="@string/display_directions_button" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
