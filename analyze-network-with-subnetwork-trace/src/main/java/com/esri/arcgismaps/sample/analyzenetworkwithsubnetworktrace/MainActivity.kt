@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                 setAdapter(sourcesList?.let { utilityNetworkAttributes ->
                     ArrayAdapter(
                         applicationContext,
-                        R.layout.custom_dropdown_item,
+                        com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                         utilityNetworkAttributes.map { it.name })
                 })
 
@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
                 // add the list of sources to the drop down view
                 setAdapter(operatorsList?.let { utilityAttributeComparisonOperator ->
                     ArrayAdapter(applicationContext,
-                        R.layout.custom_dropdown_item,
+                        com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                         utilityAttributeComparisonOperator.map { it::class.simpleName })
                 })
 
@@ -258,7 +258,7 @@ class MainActivity : AppCompatActivity() {
                 setVisible(valuesBackgroundView.id)
                 // update the values dropdown adapter
                 valuesDropdown.setAdapter(ArrayAdapter(applicationContext,
-                    R.layout.custom_dropdown_item,
+                    com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                     // add the coded values from the coded value domain to the values dropdown
                     codedValueDomain.codedValues.map { it.name }))
                 // add an on item selected listener which calls on comparison source changed

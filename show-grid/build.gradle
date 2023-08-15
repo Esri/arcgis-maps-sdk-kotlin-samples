@@ -22,7 +22,10 @@ android {
 
     buildFeatures {
         dataBinding true
+        buildConfig = true
     }
+
+    namespace 'com.esri.arcgismaps.sample.showgrid'
 }
 
 dependencies {

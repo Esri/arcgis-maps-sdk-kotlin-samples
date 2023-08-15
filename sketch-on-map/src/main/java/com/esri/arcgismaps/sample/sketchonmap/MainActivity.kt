@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
             setAdapter(
                 ArrayAdapter(
                     applicationContext,
-                    R.layout.custom_dropdown_item,
+                    com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                     resources.getStringArray(R.array.geometry_list)
                 )
             )

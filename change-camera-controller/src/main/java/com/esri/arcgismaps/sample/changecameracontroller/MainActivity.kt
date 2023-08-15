@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         // create an array adapter data source using the list of camera controller modes
         val arrayAdapter = ArrayAdapter(
             this,
-            R.layout.custom_dropdown_item,
+            com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
             CameraControllerMode.getValuesByDisplayName()
         )
         activityMainBinding.bottomListItems.apply {

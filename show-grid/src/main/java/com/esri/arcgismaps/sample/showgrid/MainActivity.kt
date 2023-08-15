@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             // set the grid type adapter
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.layers_array))
             )
 
@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity() {
             // set the grid color adapter
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.colors_array))
             )
 
@@ -210,7 +210,7 @@ class MainActivity : AppCompatActivity() {
         popupDialogBinding.labelColorDropdown.apply {
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.colors_array))
             )
             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         popupDialogBinding.labelPositionDropdown.apply {
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.positions_array))
             )
 
