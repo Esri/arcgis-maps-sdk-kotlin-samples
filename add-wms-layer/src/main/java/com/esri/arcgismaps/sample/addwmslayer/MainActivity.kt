@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                 return@launch showError("Error loading map")
             }
             // create a list representing names of layers to load from the WMS service
-            val wmsLayerNames = listOf("1")
+            val wmsLayerNames = listOf("conus_base_reflectivity_mosaic")
             // create a new WmsLayer with the WMS service url and the layers name list
             val wmsLayer = WmsLayer(getString(R.string.wms_layer_url), wmsLayerNames)
             // add the wmsLayer to the map as an operational layer

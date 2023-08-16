@@ -1,5 +1,5 @@
 {
-    "category": "Maps and Scenes",
+    "category": "Maps",
     "description": "Display a map using Jetpack Compose.",
     "formal_name": "DisplayComposableMapview",
     "ignore": false,

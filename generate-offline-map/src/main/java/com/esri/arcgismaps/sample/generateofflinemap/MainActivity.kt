@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.generateofflinemap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -26,7 +27,6 @@ import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
@@ -41,6 +41,7 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.esri.arcgismaps.sample.generateofflinemap.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.generateofflinemap.databinding.GenerateOfflineMapDialogLayoutBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -60,9 +61,20 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.takeMapOfflineButton
     }
 
+    private val resetMapButton by lazy {
+        activityMainBinding.resetButton
+    }
+
     private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
 
-    private val downloadArea: Graphic = Graphic()
+    // create a symbol to show a box around the extent we want to download
+    private val downloadArea: Graphic = Graphic().apply {
+        symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
+    }
+
+    private val progressDialogLayout by lazy {
+        GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,17 +84,23 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
         // add mapView to the lifecycle
         lifecycle.addObserver(mapView)
+        // set up the portal item to take offline
+        setUpMapView()
+    }
 
-        // disable the button until the map is loaded
-        takeMapOfflineButton.isEnabled = false
-
+    /**
+     * Sets up a portal item and displays map area to take offline
+     */
+    private fun setUpMapView() {
         // create a portal item with the itemId of the web map
         val portal = Portal(getString(R.string.portal_url))
         val portalItem = PortalItem(portal, getString(R.string.item_id))
 
-        // create a symbol to show a box around the extent we want to download
-        downloadArea.symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2F)
-        // add the graphic to the graphics overlay when it is created
+        // clear graphic overlays
+        graphicsOverlay.graphics.clear()
+        mapView.graphicsOverlays.clear()
+
+        // add the download graphic to the graphics overlay
         graphicsOverlay.graphics.add(downloadArea)
         val map = ArcGISMap(portalItem)
         lifecycleScope.launch {
@@ -116,9 +134,6 @@ class MainActivity : AppCompatActivity() {
                 if (minPoint != null && maxPoint != null) {
                     val envelope = Envelope(minPoint, maxPoint)
                     downloadArea.geometry = envelope
-                    // enable the take map offline button only after the map is loaded
-                    if (!takeMapOfflineButton.isEnabled && map.loadStatus.value is LoadStatus.Loaded)
-                        takeMapOfflineButton.isEnabled = true
                 }
             }
         }
@@ -168,16 +183,10 @@ class MainActivity : AppCompatActivity() {
             offlineMapPath
         )
         // create an alert dialog to show the download progress
-        val progressDialogLayoutBinding =
-            GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
-        val progressDialog = createProgressDialog(offlineMapJob).apply {
-            setCancelable(false)
-            setView(progressDialogLayoutBinding.root)
-            show()
-        }
+        val progressDialog = createProgressDialog(offlineMapJob).show()
         // handle offline job loading, error and succeed status
         lifecycleScope.launch {
-            displayOfflineMapFromJob(offlineMapJob, progressDialogLayoutBinding, progressDialog)
+            displayOfflineMapFromJob(offlineMapJob, progressDialog)
         }
     }
 
@@ -187,9 +196,9 @@ class MainActivity : AppCompatActivity() {
      */
     private suspend fun displayOfflineMapFromJob(
         offlineMapJob: GenerateOfflineMapJob,
-        progressDialogLayout: GenerateOfflineMapDialogLayoutBinding,
         progressDialog: AlertDialog
     ) {
+
         // create a flow-collector for the job's progress
         lifecycleScope.launch {
             offlineMapJob.progress.collect {
@@ -205,9 +214,9 @@ class MainActivity : AppCompatActivity() {
         offlineMapJob.result().onSuccess {
             mapView.map = it.offlineMap
             graphicsOverlay.graphics.clear()
-            // disable and remove the button to take the map offline once the offline map is showing
+            // disable the button to take the map offline once the offline map is showing
             takeMapOfflineButton.isEnabled = false
-            takeMapOfflineButton.visibility = View.GONE
+            resetMapButton.isEnabled = true
 
             showMessage("Map saved at: " + offlineMapJob.downloadDirectoryPath)
 
@@ -224,20 +233,33 @@ class MainActivity : AppCompatActivity() {
      * Create a progress dialog box for tracking the generate offline map job.
      *
      * @param job the generate offline map job progress to be tracked
-     * @return an AlertDialog set with the dialog layout view
+     * @return an MaterialAlertDialogBuilder set with the dialog layout view
      */
-    private fun createProgressDialog(job: GenerateOfflineMapJob): AlertDialog {
-        val builder = AlertDialog.Builder(this).apply {
+    private fun createProgressDialog(job: GenerateOfflineMapJob): MaterialAlertDialogBuilder {
+        return MaterialAlertDialogBuilder(this).apply {
             setTitle("Generating offline map...")
             // provide a cancel button on the dialog
             setNegativeButton("Cancel") { _, _ ->
                 lifecycleScope.launch { job.cancel() }
             }
-            setCancelable(true)
-            val dialogLayoutBinding = GenerateOfflineMapDialogLayoutBinding.inflate(layoutInflater)
-            setView(dialogLayoutBinding.root)
+            // removes parent of the progressDialog layout, if previously assigned
+            progressDialogLayout.root.parent?.let { parent ->
+                (parent as ViewGroup).removeAllViews()
+            }
+            setCancelable(false)
+            setView(progressDialogLayout.root)
         }
-        return builder.create()
+    }
+
+    /**
+     * Clear the preview map and display the Portal Item
+     */
+    fun resetButtonClick(view: View) {
+        // enable offline button
+        takeMapOfflineButton.isEnabled = true
+        resetMapButton.isEnabled = false
+        // set up the portal item to take offline
+        setUpMapView()
     }
 
     private fun showMessage(message: String) {

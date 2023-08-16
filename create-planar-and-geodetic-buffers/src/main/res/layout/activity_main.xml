@@ -27,36 +27,37 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <EditText
-                android:id="@+id/bufferInput"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/optionsButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/Enter_miles_string"
-                android:inputType="number"
-                android:text="@string/default_buffer_distance"
-                app:layout_constraintEnd_toStartOf="@id/unitsDisplay"
+                android:text="Buffer options"
+                app:layout_constraintBottom_toTopOf="@+id/bufferLegend"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/clearButton"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/clearButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/clear"
+                app:layout_constraintBottom_toTopOf="@+id/bufferLegend"
+                app:layout_constraintEnd_toStartOf="@+id/optionsButton"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/unitsDisplay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:text="@string/units"
-                android:textColor="@android:color/darker_gray"
-                app:layout_constraintBaseline_toBaselineOf="@+id/bufferInput"
-                app:layout_constraintEnd_toStartOf="@id/clearButton" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bufferLegend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/clearButton">
+                app:layout_constraintStart_toStartOf="parent">
 
                 <View
                     android:id="@+id/geodesicSwatch2"
@@ -72,10 +73,10 @@
                     android:id="@+id/geodesicSwatch"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/geodesic_swatch"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
                     android:id="@+id/geodesicBufferTextView"
@@ -95,8 +96,7 @@
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/planar_swatch"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/geodesicBufferTextView"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toEndOf="@+id/geodesicBufferTextView" />
 
                 <TextView
                     android:id="@+id/planarBufferTextView"
@@ -108,19 +108,12 @@
                     app:layout_constraintStart_toEndOf="@+id/planarSwatch"
                     app:layout_constraintTop_toTopOf="@+id/planarSwatch" />
 
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/clearButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:text="@string/clear"
-                android:textAllCaps="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

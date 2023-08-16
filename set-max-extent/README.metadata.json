@@ -1,5 +1,5 @@
 {
-    "category": "Maps and Scenes",
+    "category": "Maps",
     "description": "Limit the view of a map to a particular area.",
     "formal_name": "SetMaxExtent",
     "ignore": false,

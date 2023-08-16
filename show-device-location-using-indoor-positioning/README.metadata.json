@@ -1,5 +1,5 @@
 {
-    "category": "Maps and Scenes",
+    "category": "Maps",
     "description": "Show your device's real-time location while inside a building by using signals from indoor positioning beacons.",
     "formal_name": "ShowDeviceLocationUsingIndoorPositioning",
     "ignore": false,

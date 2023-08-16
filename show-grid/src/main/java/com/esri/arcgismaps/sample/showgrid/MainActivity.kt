@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
@@ -46,6 +45,7 @@ import com.arcgismaps.mapping.view.UtmGrid
 import com.esri.arcgismaps.sample.showgrid.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.showgrid.databinding.PopupDialogBinding
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
@@ -80,6 +80,11 @@ class MainActivity : AppCompatActivity() {
     // boolean set if the layer is visible
     private var isLabelVisible = true
 
+    // create a popup dialog to manage grid settings
+    private val popUpDialogBinding by lazy {
+        PopupDialogBinding.inflate(layoutInflater)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,13 +103,10 @@ class MainActivity : AppCompatActivity() {
             grid = LatitudeLongitudeGrid()
         }
 
-        // create a popup dialog to manage grid settings
-        val popUpDialogBinding = PopupDialogBinding.inflate(layoutInflater)
-        val builder = AlertDialog.Builder(this@MainActivity).apply {
+        val dialog = MaterialAlertDialogBuilder(this@MainActivity).apply {
             setView(popUpDialogBinding.root)
             setTitle(getString(R.string.change_grid_button))
-        }
-        val dialog = builder.create()
+        }.create()
 
         // set up options in popup menu
         // create drop-down list of different layer types
@@ -123,7 +125,9 @@ class MainActivity : AppCompatActivity() {
         setupLabelsCheckbox(popUpDialogBinding)
 
         // display pop-up box when button is clicked
-        menuButton.setOnClickListener { dialog.show() }
+        menuButton.setOnClickListener {
+            dialog.show()
+        }
     }
 
     /**
@@ -135,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             // set the grid type adapter
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.layers_array))
             )
 
@@ -181,7 +185,7 @@ class MainActivity : AppCompatActivity() {
             // set the grid color adapter
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.colors_array))
             )
 
@@ -206,7 +210,7 @@ class MainActivity : AppCompatActivity() {
         popupDialogBinding.labelColorDropdown.apply {
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.colors_array))
             )
             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -230,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         popupDialogBinding.labelPositionDropdown.apply {
             setAdapter(ArrayAdapter(
                 applicationContext,
-                R.layout.custom_dropdown_item,
+                com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 resources.getStringArray(R.array.positions_array))
             )
 

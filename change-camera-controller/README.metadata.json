@@ -1,5 +1,5 @@
 {
-    "category": "MapViews, SceneViews and UI",
+    "category": "Scenes",
     "description": "Control the behavior of the camera in a scene.",
     "formal_name": "ChangeCameraController",
     "ignore": false,

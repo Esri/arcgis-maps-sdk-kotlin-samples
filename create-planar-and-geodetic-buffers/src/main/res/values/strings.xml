@@ -4,6 +4,6 @@
     <string name="geodesic_buffer">Geodesic Buffer</string>
     <string name="planar_buffer">Planar Buffer</string>
     <string name="default_buffer_distance">2000</string>
-    <string name="clear">Clear buffers</string>
+    <string name="clear">Clear all</string>
     <string name="units">miles</string>
 </resources>

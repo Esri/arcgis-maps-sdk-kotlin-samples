@@ -219,6 +219,7 @@ class MainActivity : AppCompatActivity() {
 
         // display the bottom sheet with directions when the button is clicked
         directionsButton.setOnClickListener {
+            if (directionsList.isEmpty()) return@setOnClickListener showError("Add stops on map to find route")
             setupBottomSheet(directionsList)
         }
 
@@ -239,7 +240,6 @@ class MainActivity : AppCompatActivity() {
         // set up the dialog builder
         MaterialAlertDialogBuilder(this).apply {
             setView(optionsDialogBinding.root)
-            create()
             show()
         }
 

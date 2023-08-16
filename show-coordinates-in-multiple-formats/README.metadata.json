@@ -1,0 +1,38 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Format coordinates in a variety of common notations.",
+    "formal_name": "ShowCoordinatesInMultipleFormats",
+    "ignore": false,
+    "images": [
+        "show-coordinates-in-multiple-formats.png"
+    ],
+    "keywords": [
+        "USNG",
+        "UTM",
+        "convert",
+        "coordinate",
+        "decimal degrees",
+        "degree minutes seconds",
+        "format",
+        "latitude",
+        "longitude",
+        "CoordinateFormatter",
+        "CoordinateFormatter.LatitudeLongitudeFormat",
+        "CoordinateFormatter.UtmConversionMode"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "CoordinateFormatter",
+        "CoordinateFormatter.LatitudeLongitudeFormat",
+        "CoordinateFormatter.UtmConversionMode"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/screens/CoordinatesLayout.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/screens/MainScreen.kt"
+    ],
+    "title": "Show coordinates in multiple formats"
+}

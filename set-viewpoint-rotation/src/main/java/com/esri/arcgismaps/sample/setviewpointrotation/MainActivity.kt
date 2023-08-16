@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.setviewpointrotation
 
 import android.os.Bundle
-import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -42,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         val activityMainBinding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         val mapView = activityMainBinding.mapView
-        val rotationSeekBar = activityMainBinding.rotationSeekBar
+        val rotationSlider = activityMainBinding.rotationSlider
         val rotationValueText = activityMainBinding.rotationValueText
         lifecycle.addObserver(mapView)
 
@@ -52,17 +51,13 @@ class MainActivity : AppCompatActivity() {
         mapView.map = map
         mapView.setViewpoint(Viewpoint(34.056295, -117.195800, 10000.0))
 
-        rotationSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, angle: Int, b: Boolean) {
-                // set the text to the value
-                rotationValueText.text = angle.toString()
-                // rotate map view to the progress angle
-                lifecycleScope.launch {
-                    mapView.setViewpointRotation(angle.toDouble())
-                }
+        rotationSlider.addOnChangeListener { _, angle, _ ->
+            // set the text to the value
+            rotationValueText.text = angle.toInt().toString()
+            // rotate map view to the progress angle
+            lifecycleScope.launch {
+                mapView.setViewpointRotation(angle.toDouble())
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
+        }
     }
 }

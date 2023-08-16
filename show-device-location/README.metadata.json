@@ -1,5 +1,5 @@
 {
-    "category": "MapViews, SceneViews and UI",
+    "category": "Maps",
     "description": "Show your current position on the map, as well as switch between different types of auto pan modes.",
     "formal_name": "ShowDeviceLocation",
     "ignore": false,

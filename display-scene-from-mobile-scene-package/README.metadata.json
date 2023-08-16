@@ -1,0 +1,34 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Display a scene from a mobile scene package (.mspk)",
+    "formal_name": "DisplaySceneFromMobileScenePackage",
+    "ignore": false,
+    "images": [
+        "display-scene-from-mobile-scene-package.png"
+    ],
+    "keywords": [
+        "3d",
+        "mobile scene package",
+        "mspk",
+        "offline",
+        "scene",
+        "ArcGISScene",
+        "MobileScenePackage",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISScene",
+        "MobileScenePackage",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/ComposeSceneView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/screens/MainScreen.kt"
+    ],
+    "title": "Display scene from mobile scene package"
+}

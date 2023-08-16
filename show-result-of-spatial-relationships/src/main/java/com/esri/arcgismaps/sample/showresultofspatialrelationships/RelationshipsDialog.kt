@@ -38,21 +38,21 @@ class RelationshipsDialog(
         // display list if polyline has relationships
         if (polylineRelationships.isNotEmpty()) {
             polylineListView.adapter = ArrayAdapter(
-                dialogView.context, R.layout.custom_dropdown_item,
+                dialogView.context, com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 polylineRelationships
             )
         } else polylineTitle.visibility = View.GONE
         // display list if polygon has relationships
         if (polygonRelationships.isNotEmpty()) {
             polygonListView.adapter = ArrayAdapter(
-                dialogView.context, R.layout.custom_dropdown_item,
+                dialogView.context, com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 polygonRelationships
             )
         } else polygonTitle.visibility = View.GONE
         // display list if point has relationships
         if (pointRelationships.isNotEmpty()) {
             pointListView.adapter = ArrayAdapter(
-                dialogView.context, R.layout.custom_dropdown_item,
+                dialogView.context, com.esri.arcgismaps.sample.sampleslib.R.layout.custom_dropdown_item,
                 pointRelationships
             )
         } else pointTitle.visibility = View.GONE

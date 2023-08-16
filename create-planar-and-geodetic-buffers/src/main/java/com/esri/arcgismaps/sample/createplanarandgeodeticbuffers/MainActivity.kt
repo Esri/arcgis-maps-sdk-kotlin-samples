@@ -17,11 +17,14 @@
 package com.esri.arcgismaps.sample.createplanarandgeodeticbuffers
 
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeodeticCurveType
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.LinearUnit
@@ -37,9 +40,9 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.Color
 import com.esri.arcgismaps.sample.createplanarandgeodeticbuffers.databinding.ActivityMainBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.slider.Slider
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -54,9 +57,10 @@ class MainActivity : AppCompatActivity() {
         // set up data binding for the activity
         val activityMainBinding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
+
         // get the views from the layout
         val mapView = activityMainBinding.mapView
-        val bufferInput = activityMainBinding.bufferInput
+        val optionsButton = activityMainBinding.optionsButton
         val clearButton = activityMainBinding.clearButton
         // add mapview to the lifecycle
         lifecycle.addObserver(mapView)
@@ -107,53 +111,76 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
+        // set the default buffer distance in miles
+        var bufferInMiles = 500f
+
         // create a buffer around the clicked location
         lifecycleScope.launch {
             mapView.onSingleTapConfirmed.collect { event ->
                 // get map point tapped, return if null
                 val mapPoint = event.mapPoint ?: return@collect
 
-                // only draw a buffer if a value was entered
-                if (bufferInput.text.toString().isNotEmpty()) {
-                    // get the buffer distance (miles) entered in the text box
-                    val bufferInMiles = bufferInput.text.toString().toDouble()
+                // convert the input distance to meters, 1609.34 meters in one mile
+                val bufferInMeters = bufferInMiles * 1609.34
 
-                    // convert the input distance to meters, 1609.34 meters in one mile
-                    val bufferInMeters = bufferInMiles * 1609.34
+                // create a planar buffer graphic around the input location at the specified distance
+                val bufferGeometryPlanar = GeometryEngine.bufferOrNull(mapPoint, bufferInMeters)
+                val planarBufferGraphic = Graphic(bufferGeometryPlanar)
 
-                    // create a planar buffer graphic around the input location at the specified distance
-                    val bufferGeometryPlanar = GeometryEngine.bufferOrNull(mapPoint, bufferInMeters)
-                    val planarBufferGraphic = Graphic(bufferGeometryPlanar)
+                // create a geodesic buffer graphic using the same location and distance
+                val bufferGeometryGeodesic =
+                    GeometryEngine.bufferGeodeticOrNull(
+                        mapPoint, bufferInMeters,
+                        LinearUnit(LinearUnitId.Meters), Double.NaN, GeodeticCurveType.Geodesic
+                    )
+                val geodesicBufferGraphic = Graphic(bufferGeometryGeodesic)
 
-                    // create a geodesic buffer graphic using the same location and distance
-                    val bufferGeometryGeodesic =
-                        GeometryEngine.bufferGeodeticOrNull(
-                            mapPoint, bufferInMeters,
-                            LinearUnit(LinearUnitId.Meters), Double.NaN, GeodeticCurveType.Geodesic
-                        )
-                    val geodesicBufferGraphic = Graphic(bufferGeometryGeodesic)
+                // create a graphic for the user tap location
+                val locationGraphic = Graphic(mapPoint)
 
-                    // create a graphic for the user tap location
-                    val locationGraphic = Graphic(mapPoint)
+                // add the buffer polygons and tap location graphics to the appropriate graphic overlays
+                planarGraphicsOverlay.graphics.add(planarBufferGraphic)
+                geodesicGraphicsOverlay.graphics.add(geodesicBufferGraphic)
+                tapLocationsOverlay.graphics.add(locationGraphic)
 
-                    // add the buffer polygons and tap location graphics to the appropriate graphic overlays
-                    planarGraphicsOverlay.graphics.add(planarBufferGraphic)
-                    geodesicGraphicsOverlay.graphics.add(geodesicBufferGraphic)
-                    tapLocationsOverlay.graphics.add(locationGraphic)
-                } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Please enter a buffer distance first.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                // set button interaction
+                clearButton.isEnabled = true
+
             }
         }
+        // open the option dialog
+        optionsButton.setOnClickListener {
+            val optionsDialog: View = layoutInflater.inflate(R.layout.buffer_options_dialog, null)
+            // set up the dialog builder and the title
+            val dialogBuilder = MaterialAlertDialogBuilder(this)
+                .setView(optionsDialog)
+                .setPositiveButton("Set buffer", null)
+
+            dialogBuilder.setTitle("Set buffer radius")
+            // set up the dialog views
+            val bufferValue = optionsDialog.findViewById<TextView>(R.id.bufferValue)
+            val bufferSlider = optionsDialog.findViewById<Slider>(R.id.bufferInput)
+            bufferSlider.value = bufferInMiles
+
+            // set initial buffer text
+            bufferValue.text = String.format("%d miles", bufferSlider.value.toInt())
+            bufferSlider.addOnChangeListener { _, value, _ ->
+                // update buffer text value on slider change
+                bufferValue.text = String.format("%d miles", value.toInt())
+                bufferInMiles = value
+            }
+
+            // display the dialog
+            dialogBuilder.show()
+        }
+
         // clear the graphics from the graphics overlays
         clearButton.setOnClickListener {
             planarGraphicsOverlay.graphics.clear()
             geodesicGraphicsOverlay.graphics.clear()
             tapLocationsOverlay.graphics.clear()
+            // set button interaction
+            clearButton.isEnabled = false
         }
     }
 }

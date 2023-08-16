@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.displaydimensions
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +27,7 @@ import com.arcgismaps.mapping.MobileMapPackage
 import com.arcgismaps.mapping.layers.DimensionLayer
 import com.esri.arcgismaps.sample.displaydimensions.databinding.ActivityMainBinding
 import com.esri.arcgismaps.sample.displaydimensions.databinding.DimensionsDialogLayoutBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // set up the dialog
-            AlertDialog.Builder(this).apply {
+            MaterialAlertDialogBuilder(this).apply {
                 setView(dialogBinding.root)
                 setTitle("${getString(R.string.settings)}: ${dimensionLayer?.name}")
             }.show()

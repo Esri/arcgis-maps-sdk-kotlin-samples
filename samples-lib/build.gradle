@@ -19,6 +19,11 @@ android {
 
     buildFeatures {
         dataBinding true
+        buildConfig = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "$kotlinCompilerExt"
     }
 
     namespace 'com.esri.arcgismaps.sample.sampleslib'
@@ -30,4 +35,15 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "commons-io:commons-io:2.11.0"
+
+    // lib dependencies for samples using Jetpack Compose
+    implementation "androidx.core:core-ktx:$ktxAndroidCore"
+    implementation "androidx.activity:activity-compose:$composeActivityVersion"
+    // Jetpack Compose Bill of Materials
+    implementation platform("androidx.compose:compose-bom:$composeBOM")
+    // Jetpack Compose dependencies
+    implementation "androidx.compose.ui:ui"
+    implementation "androidx.compose.material3:material3"
+    implementation "androidx.compose.ui:ui-tooling"
+    implementation "androidx.compose.ui:ui-tooling-preview"
 }

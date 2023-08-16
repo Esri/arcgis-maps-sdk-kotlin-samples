@@ -53,6 +53,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import com.esri.arcgismaps.sample.sampleslib.*
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -369,7 +370,7 @@ class MainActivity : AppCompatActivity() {
             routeGeometry,
             SimpleLineSymbol(
                 SimpleLineSymbolStyle.Dash,
-                Color(getColor(R.color.colorPrimary)),
+                Color(getColor(com.esri.arcgismaps.sample.sampleslib.R.color.colorPrimary)),
                 5f
             )
         )
