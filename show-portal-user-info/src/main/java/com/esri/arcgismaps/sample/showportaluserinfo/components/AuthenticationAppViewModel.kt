@@ -38,6 +38,10 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
 
     private val noPortalInfoText = application.getString(R.string.no_portal_info)
     private val startInfoText = application.getString(R.string.start_info_text)
+    var portalUser: String = ""
+    var email: String = ""
+    var creatinDate: String = ""
+    var portalName: String = ""
     private val arcGISUrl = "https://www.arcgis.com"
     private val oAuthUserConfiguration = OAuthUserConfiguration(
         arcGISUrl,
@@ -55,13 +59,19 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
 
     private val _url: MutableStateFlow<String> = MutableStateFlow(arcGISUrl)
     val url: StateFlow<String> = _url.asStateFlow()
-    fun setUrl(newUrl: String) { _url.value = newUrl }
+    fun setUrl(newUrl: String) {
+        _url.value = newUrl
+    }
 
     fun signOut() = viewModelScope.launch {
         _isLoading.value = true
         ArcGISEnvironment.authenticationManager.signOut()
         _infoText.value = startInfoText
         _isLoading.value = false
+        portalUser = ""
+        email = ""
+        creatinDate = ""
+        portalName = ""
     }
 
     fun loadPortal() = viewModelScope.launch {
@@ -73,10 +83,27 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
         }.onFailure {
             _infoText.value = it.toString()
         }.onSuccess {
-            val text = portal.portalInfo?.let {
-                it.user?.username
+            val fullName = portal.portalInfo?.let {
+                it.user?.fullName
             } ?: noPortalInfoText
-            _infoText.value = text
+            val userEmail = portal.portalInfo?.let {
+                it.user?.email
+            } ?: noPortalInfoText
+            val memberSince = portal.portalInfo?.let {
+                // get the created date
+                it.user?.creationDate.toString()
+
+            } ?: noPortalInfoText
+            val portal = portal.portalInfo?.let {
+                it.user?.portal?.portalInfo?.portalName
+            } ?: noPortalInfoText
+            _infoText.value =
+                "The Portal is loaded successfully. Please check the Portal details below"
+            portalUser = fullName
+            email = userEmail
+            creatinDate = memberSince
+            portalName = portal
+
         }
     }
 }

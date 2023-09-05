@@ -18,18 +18,17 @@ package com.esri.arcgismaps.sample.showportaluserinfo.screens
 
 import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -41,6 +40,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -75,8 +75,12 @@ fun MainScreen(sampleName: String, application: Application) {
                     onSignOut = authenticationAppViewModel::signOut,
                     onLoadPortal = authenticationAppViewModel::loadPortal
                 )
-                InfoScreen(text = infoText, isLoading = isLoading)
-
+                InfoScreen(infoText = infoText,
+                    username = authenticationAppViewModel.portalUser,
+                    email =  authenticationAppViewModel.email,
+                    creationDate = authenticationAppViewModel.creatinDate,
+                    portalName = authenticationAppViewModel.portalName,
+                    isLoading = isLoading)
             }
             DialogAuthenticator(authenticatorState = authenticatorState)
         }
@@ -165,20 +169,42 @@ private fun PortalDetails(
  */
 @Composable
 private fun InfoScreen(
-    text: String,
+    infoText: String,
+    username: String,
+    email: String,
+    creationDate: String,
+    portalName: String,
     isLoading: Boolean
 ) {
-    Box(
+    Column(
         Modifier
             .fillMaxSize()
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
+            .padding(8.dp)
     ) {
-        LazyColumn {
-            item {
-                Text(text = text)
-            }
+        Text(text = infoText, modifier = Modifier.padding(top = 40.dp, bottom = 40.dp))
+        Divider()
+        Row(modifier = Modifier.padding(20.dp)) {
+            Text(text = "Username: ", fontWeight = FontWeight.Bold)
+            Text(text = username)
         }
+        Divider()
+        Row(modifier = Modifier.padding(20.dp)) {
+            Text(text = "E-mail: ", fontWeight = FontWeight.Bold)
+            Text(text = email)
+        }
+
+        Divider()
+        Row(modifier = Modifier.padding(20.dp)) {
+            Text(text = "Member Since: ", fontWeight = FontWeight.Bold)
+            Text(text = creationDate.toString())
+        }
+        Divider()
+        Row(modifier = Modifier.padding(20.dp)) {
+            Text(text = "Portal: ", fontWeight = FontWeight.Bold)
+            Text(text = portalName)
+        }
+        Divider()
+
         if (isLoading) CircularProgressIndicator()
     }
 }
