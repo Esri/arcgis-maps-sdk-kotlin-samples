@@ -17,6 +17,8 @@
 package com.esri.arcgismaps.sample.showportaluserinfo.screens
 
 import android.app.Application
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,10 +36,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -80,6 +86,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     email =  authenticationAppViewModel.emailID.collectAsState().value,
                     creationDate = authenticationAppViewModel.userCreationDate.collectAsState().value,
                     portalName = authenticationAppViewModel.portalName.collectAsState().value,
+                    userThumbnail = authenticationAppViewModel.userThumbnail.collectAsState().value,
                     isLoading = isLoading)
             }
             DialogAuthenticator(authenticatorState = authenticatorState)
@@ -174,32 +181,46 @@ private fun InfoScreen(
     email: String,
     creationDate: String,
     portalName: String,
+    userThumbnail: Bitmap?,
     isLoading: Boolean
 ) {
+    //val mapBitmap: MutableState<Bitmap?> = remember { mutableStateOf(null) }
+
     Column(
         Modifier
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        Text(text = infoText, modifier = Modifier.padding(top = 40.dp, bottom = 40.dp))
+        Text(text = infoText, modifier = Modifier.padding( bottom = 10.dp))
         Divider()
-        Row(modifier = Modifier.padding(20.dp)) {
+        Row(modifier = Modifier.padding(10.dp)) {
+            Text(text = "Thumbnail: ", fontWeight = FontWeight.Bold)
+            if (userThumbnail != null) {
+                Image(
+                    bitmap = userThumbnail.asImageBitmap(),
+                    contentDescription = "User Thumbnail"
+                )
+            }
+        }
+
+        Divider()
+        Row(modifier = Modifier.padding(10.dp)) {
             Text(text = "Username: ", fontWeight = FontWeight.Bold)
             Text(text = username)
         }
         Divider()
-        Row(modifier = Modifier.padding(20.dp)) {
+        Row(modifier = Modifier.padding(10.dp)) {
             Text(text = "E-mail: ", fontWeight = FontWeight.Bold)
             Text(text = email)
         }
 
         Divider()
-        Row(modifier = Modifier.padding(20.dp)) {
+        Row(modifier = Modifier.padding(10.dp)) {
             Text(text = "Member Since: ", fontWeight = FontWeight.Bold)
-            Text(text = creationDate.toString())
+            Text(text = creationDate)
         }
         Divider()
-        Row(modifier = Modifier.padding(20.dp)) {
+        Row(modifier = Modifier.padding(10.dp)) {
             Text(text = "Portal: ", fontWeight = FontWeight.Bold)
             Text(text = portalName)
         }
