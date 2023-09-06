@@ -21,9 +21,6 @@ package com.esri.arcgismaps.sample.showportaluserinfo.components
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.ArcGISEnvironment
@@ -67,7 +64,7 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
     private val _portalName = MutableStateFlow(String())
     val portalName: StateFlow<String> = _portalName.asStateFlow()
 
-    val defaultBitmap = BitmapFactory.decodeResource(application.resources, R.drawable.user)
+    private val defaultBitmap = BitmapFactory.decodeResource(application.resources, R.drawable.user)
 
     private val _userThumbnail: MutableStateFlow<Bitmap?> = MutableStateFlow(defaultBitmap)
     val userThumbnail: StateFlow<Bitmap?> = _userThumbnail.asStateFlow()
