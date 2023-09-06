@@ -31,6 +31,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class AuthenticationAppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -38,10 +41,6 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
 
     private val noPortalInfoText = application.getString(R.string.no_portal_info)
     private val startInfoText = application.getString(R.string.start_info_text)
-    var portalUser: String = ""
-    var email: String = ""
-    var creatinDate: String = ""
-    var portalName: String = ""
     private val arcGISUrl = "https://www.arcgis.com"
     private val oAuthUserConfiguration = OAuthUserConfiguration(
         arcGISUrl,
@@ -50,6 +49,18 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
         "lgAdHkYZYlwwfAhC",
         "my-ags-app://auth"
     )
+
+    private val _portalUserName = MutableStateFlow(String())
+    val portalUserName: StateFlow<String> = _portalUserName.asStateFlow()
+
+    private val _emailID = MutableStateFlow(String())
+    val emailID: StateFlow<String> = _emailID.asStateFlow()
+
+    private val _userCreationDate = MutableStateFlow(String())
+    val userCreationDate: StateFlow<String> = _userCreationDate.asStateFlow()
+
+    private val _portalName = MutableStateFlow(String())
+    val portalName: StateFlow<String> = _portalName.asStateFlow()
 
     private val _infoText: MutableStateFlow<String> = MutableStateFlow(startInfoText)
     val infoText: StateFlow<String> = _infoText.asStateFlow()
@@ -68,10 +79,10 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
         ArcGISEnvironment.authenticationManager.signOut()
         _infoText.value = startInfoText
         _isLoading.value = false
-        portalUser = ""
-        email = ""
-        creatinDate = ""
-        portalName = ""
+        _portalUserName.value = ""
+        _emailID.value = ""
+        _userCreationDate.value = ""
+        _portalName.value = ""
     }
 
     fun loadPortal() = viewModelScope.launch {
@@ -83,27 +94,19 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
         }.onFailure {
             _infoText.value = it.toString()
         }.onSuccess {
-            val fullName = portal.portalInfo?.let {
-                it.user?.fullName
-            } ?: noPortalInfoText
-            val userEmail = portal.portalInfo?.let {
-                it.user?.email
-            } ?: noPortalInfoText
-            val memberSince = portal.portalInfo?.let {
+            portal.portalInfo?.apply {
+                _portalUserName.value = this.user?.fullName ?: noPortalInfoText
+                _emailID.value = this.user?.email ?: noPortalInfoText
+                _portalName.value = this.portalName ?: noPortalInfoText
                 // get the created date
-                it.user?.creationDate.toString()
-
-            } ?: noPortalInfoText
-            val portal = portal.portalInfo?.let {
-                it.user?.portal?.portalInfo?.portalName
-            } ?: noPortalInfoText
+                val date: Date? = Date.from(this.user?.creationDate)
+                val formatter = SimpleDateFormat("dd-MMM-yyyy", Locale.US)
+                val formattedDate: String = formatter.format(date)
+                _userCreationDate.value = formattedDate
+               // this.user?.thumbnail?.image?.bitmap
+            }
             _infoText.value =
                 "The Portal is loaded successfully. Please check the Portal details below"
-            portalUser = fullName
-            email = userEmail
-            creatinDate = memberSince
-            portalName = portal
-
         }
     }
 }

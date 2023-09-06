@@ -76,10 +76,10 @@ fun MainScreen(sampleName: String, application: Application) {
                     onLoadPortal = authenticationAppViewModel::loadPortal
                 )
                 InfoScreen(infoText = infoText,
-                    username = authenticationAppViewModel.portalUser,
-                    email =  authenticationAppViewModel.email,
-                    creationDate = authenticationAppViewModel.creatinDate,
-                    portalName = authenticationAppViewModel.portalName,
+                    username = authenticationAppViewModel.portalUserName.collectAsState().value,
+                    email =  authenticationAppViewModel.emailID.collectAsState().value,
+                    creationDate = authenticationAppViewModel.userCreationDate.collectAsState().value,
+                    portalName = authenticationAppViewModel.portalName.collectAsState().value,
                     isLoading = isLoading)
             }
             DialogAuthenticator(authenticatorState = authenticatorState)
