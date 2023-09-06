@@ -20,11 +20,13 @@ import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -186,46 +188,49 @@ private fun InfoScreen(
 ) {
     //val mapBitmap: MutableState<Bitmap?> = remember { mutableStateOf(null) }
 
-    Column(
+    Box(
         Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
-        Text(text = infoText, modifier = Modifier.padding( bottom = 10.dp))
-        Divider()
-        Row(modifier = Modifier.padding(10.dp)) {
-            Text(text = "Thumbnail: ", fontWeight = FontWeight.Bold)
-            if (userThumbnail != null) {
-                Image(
-                    bitmap = userThumbnail.asImageBitmap(),
-                    contentDescription = "User Thumbnail"
-                )
+        LazyColumn {
+            item {
+                Text(text = infoText, modifier = Modifier.padding( bottom = 10.dp))
+                Divider()
+                Row(modifier = Modifier.padding(10.dp)) {
+                    Text(text = "Thumbnail: ", fontWeight = FontWeight.Bold)
+                    if (userThumbnail != null) {
+                        Image(
+                            bitmap = userThumbnail.asImageBitmap(),
+                            contentDescription = "User Thumbnail"
+                        )
+                    }
+                }
+
+                Divider()
+                Row(modifier = Modifier.padding(10.dp)) {
+                    Text(text = "Username: ", fontWeight = FontWeight.Bold)
+                    Text(text = username)
+                }
+                Divider()
+                Row(modifier = Modifier.padding(10.dp)) {
+                    Text(text = "E-mail: ", fontWeight = FontWeight.Bold)
+                    Text(text = email)
+                }
+
+                Divider()
+                Row(modifier = Modifier.padding(10.dp)) {
+                    Text(text = "Member Since: ", fontWeight = FontWeight.Bold)
+                    Text(text = creationDate)
+                }
+                Divider()
+                Row(modifier = Modifier.padding(10.dp)) {
+                    Text(text = "Portal: ", fontWeight = FontWeight.Bold)
+                    Text(text = portalName)
+                }
+                Divider()
             }
         }
-
-        Divider()
-        Row(modifier = Modifier.padding(10.dp)) {
-            Text(text = "Username: ", fontWeight = FontWeight.Bold)
-            Text(text = username)
-        }
-        Divider()
-        Row(modifier = Modifier.padding(10.dp)) {
-            Text(text = "E-mail: ", fontWeight = FontWeight.Bold)
-            Text(text = email)
-        }
-
-        Divider()
-        Row(modifier = Modifier.padding(10.dp)) {
-            Text(text = "Member Since: ", fontWeight = FontWeight.Bold)
-            Text(text = creationDate)
-        }
-        Divider()
-        Row(modifier = Modifier.padding(10.dp)) {
-            Text(text = "Portal: ", fontWeight = FontWeight.Bold)
-            Text(text = portalName)
-        }
-        Divider()
-
         if (isLoading) CircularProgressIndicator()
     }
 }
