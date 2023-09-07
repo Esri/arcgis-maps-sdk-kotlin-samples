@@ -1,2 +1,41 @@
 {
+    "category": "Cloud and Portal",
+    "description": "Retrieve a user's details via a Portal.",
+    "formal_name": "ShowPortalUserInfo",
+    "ignore": false,
+    "images": [
+        "show-portal-user-info.png"
+    ],
+    "keywords": [
+        "account",
+        "avatar",
+        "bio",
+        "cloud and portal",
+        "email",
+        "login",
+        "picture",
+        "profile",
+        "user",
+        "username",
+        "ArcGISAuthenticationChallenge",
+        "OAuthUserConfiguration",
+        "Portal",
+        "PortalInfo",
+        "PortalUser"
+    ],
+    "language": "kotlin",
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ArcGISAuthenticationChallenge",
+        "OAuthUserConfiguration",
+        "Portal",
+        "PortalInfo",
+        "PortalUser"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showportaluserinfo/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showportaluserinfo/components/AuthenticationAppViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showportaluserinfo/screens/MainScreen.kt"
+    ],
+    "title": "Show portal user info"
 }

@@ -38,10 +38,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -198,15 +195,9 @@ private fun InfoScreen(
                 Text(text = infoText, modifier = Modifier.padding( bottom = 10.dp))
                 Divider()
                 Row(modifier = Modifier.padding(10.dp)) {
-                    Text(text = "Thumbnail: ", fontWeight = FontWeight.Bold)
-                    if (userThumbnail != null) {
-                        Image(
-                            bitmap = userThumbnail.asImageBitmap(),
-                            contentDescription = "User Thumbnail"
-                        )
-                    }
+                    Text(text = "Portal Name: ", fontWeight = FontWeight.Bold)
+                    Text(text = portalName)
                 }
-
                 Divider()
                 Row(modifier = Modifier.padding(10.dp)) {
                     Text(text = "Username: ", fontWeight = FontWeight.Bold)
@@ -217,7 +208,6 @@ private fun InfoScreen(
                     Text(text = "E-mail: ", fontWeight = FontWeight.Bold)
                     Text(text = email)
                 }
-
                 Divider()
                 Row(modifier = Modifier.padding(10.dp)) {
                     Text(text = "Member Since: ", fontWeight = FontWeight.Bold)
@@ -225,8 +215,13 @@ private fun InfoScreen(
                 }
                 Divider()
                 Row(modifier = Modifier.padding(10.dp)) {
-                    Text(text = "Portal: ", fontWeight = FontWeight.Bold)
-                    Text(text = portalName)
+                    Text(text = "Thumbnail: ", fontWeight = FontWeight.Bold)
+                    if (userThumbnail != null) {
+                        Image(
+                            bitmap = userThumbnail.asImageBitmap(),
+                            contentDescription = "User Thumbnail"
+                        )
+                    }
                 }
                 Divider()
             }
