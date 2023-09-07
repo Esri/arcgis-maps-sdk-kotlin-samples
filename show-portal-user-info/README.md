@@ -14,8 +14,8 @@ Enter your ArcGIS Online credentials for the specified Url.
 
 ## How it works
 
-1. On startup, the app presents the user with a editable text field containing a portal URL. 
-2. Upon pressing the "Load" button, a portal will be created and loaded. 
+1. On startup, the app presents the user with a editable text field containing a portal URL.
+2. Upon pressing the "Load" button, a portal will be created and loaded.
 3. If the portal is secured, it may potentially issue an authentication challenge.
 4. If the portal is successfully loaded, the info screen below will display the portal info, otherwise it will display the loading error.
 5. Upon successful login, get a `PortalUser` using `portal.user`. Get user attributes using:
