@@ -22,6 +22,7 @@ Enter your ArcGIS Online credentials for the specified Url.
    * `portalUser.portalName`
    * `portalUser.fullName`
    * `portalUser.email`
+   * `portalUser.creationDate`
    * `portalUser.thumbnail.image`
 6. The "Sign out" button clears any saved credentials.
 
