@@ -95,12 +95,10 @@ fun MainScreen(sampleName: String, application: Application) {
 
 /**
  * Allows the user to enter a url and load a portal.
- * Also displays a checkbox for using OAuth, and a button to clear credentials.
+ * It uses OAuth under the hood, and has a button to clear credentials.
  *
  * @param url the string url to display in the text field
  * @param onSetUrl called when the url should be changed
- * @param useOAuth whether oAuth should be used to load the portal
- * @param onSetUseOAuth called when [useOAuth] should be changed
  * @param onSignOut called when any stored credentials should be cleared
  * @param onLoadPortal called when the [url] should be loaded
  * @since 200.2.0
@@ -169,7 +167,12 @@ private fun PortalDetails(
 /**
  * Displays messages to the user. This may be used to display instructions, portal info, or error messages.
  *
- * @param text the text to display
+ * @param infoText the text to display
+ * @param username to display username
+ * @param email to display email
+ * @param creationDate to display creationDate
+ * @param portalName to display portalName
+ * @param userThumbnail to display userThumbnail
  * @param isLoading whether a progress indicator should be displayed
  * @since 200.2.0
  */
@@ -183,8 +186,6 @@ private fun InfoScreen(
     userThumbnail: Bitmap?,
     isLoading: Boolean
 ) {
-    //val mapBitmap: MutableState<Bitmap?> = remember { mutableStateOf(null) }
-
     Box(
         Modifier
             .fillMaxSize()

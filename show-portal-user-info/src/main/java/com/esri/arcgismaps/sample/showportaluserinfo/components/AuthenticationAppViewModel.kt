@@ -46,9 +46,9 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
     private val arcGISUrl = "https://www.arcgis.com"
     private val oAuthUserConfiguration = OAuthUserConfiguration(
         arcGISUrl,
-        // This client ID is for demo purposes only. For use of the Authenticator in your own app,
+        // This client ID is for sample purposes only. For use of the Authenticator in your own app,
         // create your own client ID. For more info see: https://developers.arcgis.com/documentation/mapping-apis-and-services/security/tutorials/register-your-application/
-        "lgAdHkYZYlwwfAhC",
+        "rR5K4TEyhkPDcTkf",
         "my-ags-app://auth"
     )
 
