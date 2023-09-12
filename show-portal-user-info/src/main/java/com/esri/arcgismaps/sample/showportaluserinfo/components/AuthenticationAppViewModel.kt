@@ -99,7 +99,7 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
         portal.load().also {
             _isLoading.value = false
         }.onFailure {
-            _infoText.value = it.toString()
+            messageDialogVM.showMessageDialog("Failed to load portal", it.message.toString())
         }.onSuccess {
             portal.portalInfo?.apply {
                 _portalUserName.value = this.user?.fullName ?: noPortalInfoText
