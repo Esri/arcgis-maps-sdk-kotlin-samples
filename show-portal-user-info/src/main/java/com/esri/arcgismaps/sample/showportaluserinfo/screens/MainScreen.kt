@@ -87,6 +87,16 @@ fun MainScreen(sampleName: String, application: Application) {
                     portalName = authenticationAppViewModel.portalName.collectAsState().value,
                     userThumbnail = authenticationAppViewModel.userThumbnail.collectAsState().value,
                     isLoading = isLoading)
+                // display a dialog if the sample encounters an error
+                authenticationAppViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
             DialogAuthenticator(authenticatorState = authenticatorState)
         }
