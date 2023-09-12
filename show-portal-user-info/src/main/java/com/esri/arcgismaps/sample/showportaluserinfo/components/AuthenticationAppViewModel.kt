@@ -107,9 +107,8 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
                 _portalName.value = this.portalName ?: noPortalInfoText
                 // get the created date
                 val date = Date.from(this.user?.creationDate)
-                val formatter = SimpleDateFormat("dd-MMM-yyyy", Locale.US)
-                val formattedDate: String = formatter.format(date)
-                _userCreationDate.value = formattedDate
+                val dateFormat = SimpleDateFormat("dd-MMM-yyyy", Locale.US)
+                _userCreationDate.value = dateFormat.format(date)
                 _userThumbnail.value = this.user?.thumbnail?.image?.bitmap ?: defaultBitmap
             }
             _infoText.value =
