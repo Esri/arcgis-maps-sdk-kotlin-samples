@@ -10,7 +10,7 @@ This portal information can be used to provide a customized UI experience for th
 
 ## How to use the sample
 
-Enter your ArcGIS Online credentials for the specified Url.
+Enter your ArcGIS Online credentials for the specified URL.
 
 ## How it works
 
