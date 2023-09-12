@@ -203,7 +203,16 @@ private fun InfoScreen(
     ) {
         LazyColumn {
             item {
-                Text(text = infoText, modifier = Modifier.padding( bottom = 10.dp))
+                Box(Modifier.fillMaxWidth()) {
+                    if (isLoading) CircularProgressIndicator(
+                        Modifier.align(Center).padding(10.dp)
+                    )
+                    else Text(
+                        modifier = Modifier.align(Center).padding(10.dp),
+                        textAlign = TextAlign.Center,
+                        text = infoText
+                    )
+                }
                 Divider()
                 Row(modifier = Modifier.padding(10.dp)) {
                     Text(text = "Portal Name: ", fontWeight = FontWeight.Bold)
