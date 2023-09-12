@@ -28,7 +28,6 @@ Enter your ArcGIS Online credentials for the specified Url.
 
 ## Relevant API
 
-* ArcGISAuthenticationChallenge
 * OAuthUserConfiguration
 * Portal
 * PortalInfo
