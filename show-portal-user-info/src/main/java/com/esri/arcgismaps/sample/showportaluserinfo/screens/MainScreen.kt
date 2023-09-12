@@ -123,7 +123,7 @@ private fun PortalDetails(
             modifier = Modifier.fillMaxWidth(),
             value = url,
             onValueChange = onSetUrl,
-            label = { Text("Url") },
+            label = { Text("Portal URL") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Uri,
                 imeAction = ImeAction.Go
