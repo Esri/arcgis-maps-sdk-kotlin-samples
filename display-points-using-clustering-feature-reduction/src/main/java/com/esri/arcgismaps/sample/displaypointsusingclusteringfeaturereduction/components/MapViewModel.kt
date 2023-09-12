@@ -17,7 +17,10 @@
 package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components
 
 import android.app.Application
+import android.text.Html
 import android.util.Log
+import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.LoadStatus
@@ -26,6 +29,11 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.popup.TextPopupElement
+import com.arcgismaps.mapping.view.Callout
+import com.arcgismaps.mapping.view.IdentifyLayerResult
+import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,9 +48,14 @@ class MapViewModel(private val application: Application,
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
 
+
     // Flag indicating whether feature reduction is enabled or not
     private val _isEnabled: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val isEnabled: StateFlow<Boolean> = _isEnabled.asStateFlow()
+
+    // Formatted content of popups
+    private val _popupText: MutableStateFlow<String> = MutableStateFlow("")
+    val popupText: StateFlow<String> = _popupText.asStateFlow()
 
     init {
         // load the portal and create a map from the portal item
@@ -53,7 +66,6 @@ class MapViewModel(private val application: Application,
 
         // set the map to be displayed in the layout's MapView
         mapViewState.value.arcGISMap = ArcGISMap(portalItem)
-
     }
 
     fun toggleFeatureReduction() {
@@ -70,6 +82,38 @@ class MapViewModel(private val application: Application,
             }
         }
     }
+
+    fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
+
+        sampleCoroutineScope.launch {
+            result.onSuccess { identifyResultList ->
+                val popupOutput = StringBuilder()
+                identifyResultList.forEach { identifyLayerResult ->
+                    val popups = identifyLayerResult.popups
+                    popups.forEach { popup ->
+                        popupOutput.appendLine(popup.title)
+                        popup.evaluateExpressions().onSuccess {
+                            popup.evaluatedElements.forEach { popupElement ->
+                                when (popupElement) {
+                                    is TextPopupElement -> {
+                                        popupOutput.appendLine("\n ${HtmlCompat.fromHtml(popupElement.text, HtmlCompat.FROM_HTML_OPTION_USE_CSS_COLORS)}")
+                                    }
+                                    else -> {}
+                                }
+                            }
+
+                        }.onFailure {
+
+                        }
+                    }
+                }
+                _popupText.value = popupOutput.toString()
+            }.onFailure {
+
+            }
+        }
+    }
+
 }
 
 
@@ -78,6 +122,5 @@ class MapViewModel(private val application: Application,
  */
 class MapViewState( // This would change based on each sample implementation
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
-)
+    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7))
 

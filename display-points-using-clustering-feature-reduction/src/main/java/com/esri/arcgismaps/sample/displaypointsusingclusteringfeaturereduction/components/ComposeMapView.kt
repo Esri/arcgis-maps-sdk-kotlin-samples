@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
+import com.arcgismaps.mapping.view.Callout
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
@@ -36,8 +37,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComposeMapView(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel
-) {
+    mapViewModel: MapViewModel) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
     // collect the latest state of the MapViewState
@@ -57,6 +57,17 @@ fun ComposeMapView(
             }
         }
     )
+
+    // launch coroutine functions in the composition's CoroutineContext
+    LaunchedEffect(Unit) {
+        launch {
+            mapView.onSingleTapConfirmed.collect {
+                var callout = mapView.callout
+                val identifyResult = mapView.identifyLayers(it.screenCoordinate, 3.0, false)
+                mapViewModel.handleIdentifyResult(identifyResult)
+            }
+        }
+    }
 }
 
 /**
