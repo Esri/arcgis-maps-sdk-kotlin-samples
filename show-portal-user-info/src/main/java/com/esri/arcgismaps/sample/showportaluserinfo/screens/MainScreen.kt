@@ -158,7 +158,7 @@ private fun PortalDetails(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text(text = "Load")
+                Text(text = "Load portal")
             }
         }
     }
