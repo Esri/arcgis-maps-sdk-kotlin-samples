@@ -106,7 +106,7 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
                 _emailID.value = this.user?.email ?: noPortalInfoText
                 _portalName.value = this.portalName ?: noPortalInfoText
                 // get the created date
-                val date: Date? = Date.from(this.user?.creationDate)
+                val date = Date.from(this.user?.creationDate)
                 val formatter = SimpleDateFormat("dd-MMM-yyyy", Locale.US)
                 val formattedDate: String = formatter.format(date)
                 _userCreationDate.value = formattedDate
