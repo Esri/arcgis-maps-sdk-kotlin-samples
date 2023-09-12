@@ -82,7 +82,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 )
                 InfoScreen(infoText = infoText,
                     username = authenticationAppViewModel.portalUserName.collectAsState().value,
-                    email =  authenticationAppViewModel.emailID.collectAsState().value,
+                    email = authenticationAppViewModel.emailID.collectAsState().value,
                     creationDate = authenticationAppViewModel.userCreationDate.collectAsState().value,
                     portalName = authenticationAppViewModel.portalName.collectAsState().value,
                     userThumbnail = authenticationAppViewModel.userThumbnail.collectAsState().value,
