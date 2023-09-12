@@ -21,6 +21,7 @@ package com.esri.arcgismaps.sample.showportaluserinfo.components
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.ArcGISEnvironment
@@ -28,6 +29,7 @@ import com.arcgismaps.httpcore.authentication.OAuthUserConfiguration
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import com.arcgismaps.toolkit.authentication.signOut
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showportaluserinfo.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,6 +42,9 @@ import java.util.Locale
 class AuthenticationAppViewModel(application: Application) : AndroidViewModel(application) {
 
     val authenticatorState: AuthenticatorState = AuthenticatorState()
+
+    // create a ViewModel to handle dialog interactions as a public val
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     private val noPortalInfoText = application.getString(R.string.no_portal_info)
     private val startInfoText = application.getString(R.string.start_info_text)
@@ -109,7 +114,9 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
                 val date = Date.from(this.user?.creationDate)
                 val dateFormat = SimpleDateFormat("dd-MMM-yyyy", Locale.US)
                 _userCreationDate.value = dateFormat.format(date)
-                _userThumbnail.value = this.user?.thumbnail?.image?.bitmap ?: defaultBitmap
+                this.user?.thumbnail?.load()?.onSuccess {
+                    _userThumbnail.value = this.user?.thumbnail?.image?.bitmap ?: defaultBitmap
+                }
             }
             _infoText.value =
                 "The Portal is loaded successfully. Please check the Portal details below"
