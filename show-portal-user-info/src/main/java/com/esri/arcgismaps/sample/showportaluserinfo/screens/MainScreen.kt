@@ -110,14 +110,9 @@ fun MainScreen(sampleName: String, application: Application) {
 }
 
 /**
- * Allows the user to enter a url and load a portal.
+ * Allows the user to enter a [url] and load a portal.
  * It uses OAuth under the hood, and has a button to clear credentials.
  *
- * @param url the string url to display in the text field
- * @param onSetUrl called when the url should be changed
- * @param onSignOut called when any stored credentials should be cleared
- * @param onLoadPortal called when the [url] should be loaded
- * @since 200.2.0
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -183,14 +178,6 @@ private fun PortalDetails(
 /**
  * Displays messages to the user. This may be used to display instructions, portal info, or error messages.
  *
- * @param infoText the text to display
- * @param username to display username
- * @param email to display email
- * @param creationDate to display creationDate
- * @param portalName to display portalName
- * @param userThumbnail to display userThumbnail
- * @param isLoading whether a progress indicator should be displayed
- * @since 200.2.0
  */
 @Composable
 private fun InfoScreen(
