@@ -26,8 +26,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -47,6 +48,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -86,13 +88,15 @@ fun MainScreen(sampleName: String, application: Application) {
                     onSignOut = authenticationAppViewModel::signOut,
                     onLoadPortal = authenticationAppViewModel::loadPortal
                 )
-                InfoScreen(infoText = infoText,
+                InfoScreen(
+                    infoText = infoText,
                     username = authenticationAppViewModel.portalUserName.collectAsState().value,
                     email = authenticationAppViewModel.emailID.collectAsState().value,
                     creationDate = authenticationAppViewModel.userCreationDate.collectAsState().value,
                     portalName = authenticationAppViewModel.portalName.collectAsState().value,
                     userThumbnail = authenticationAppViewModel.userThumbnail.collectAsState().value,
-                    isLoading = isLoading)
+                    isLoading = isLoading
+                )
                 // display a dialog if the sample encounters an error
                 authenticationAppViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
@@ -186,7 +190,7 @@ private fun InfoScreen(
     email: String,
     creationDate: String,
     portalName: String,
-    userThumbnail: Bitmap?,
+    userThumbnail: Bitmap,
     isLoading: Boolean
 ) {
     Box(
@@ -207,15 +211,20 @@ private fun InfoScreen(
                     )
                 }
                 Divider()
-                Row(modifier = Modifier.padding(10.dp)) {
-                    Text(text = "Thumbnail: ", fontWeight = FontWeight.Bold)
-                    if (userThumbnail != null) {
-                        Image(
-                            bitmap = userThumbnail.asImageBitmap(),
-                            contentDescription = "User Thumbnail",
-                            modifier = Modifier.clip(RoundedCornerShape(10.dp))
-                        )
-                    }
+                Row(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        bitmap = userThumbnail.asImageBitmap(),
+                        contentDescription = "User Thumbnail",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(150.dp)
+                    )
                 }
                 Divider()
                 Row(modifier = Modifier.padding(10.dp)) {

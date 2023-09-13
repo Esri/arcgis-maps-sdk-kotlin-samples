@@ -21,7 +21,6 @@ package com.esri.arcgismaps.sample.showportaluserinfo.components
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.ArcGISEnvironment
@@ -71,8 +70,8 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
 
     private val defaultBitmap = BitmapFactory.decodeResource(application.resources, R.drawable.user)
 
-    private val _userThumbnail: MutableStateFlow<Bitmap?> = MutableStateFlow(defaultBitmap)
-    val userThumbnail: StateFlow<Bitmap?> = _userThumbnail.asStateFlow()
+    private val _userThumbnail: MutableStateFlow<Bitmap> = MutableStateFlow(defaultBitmap)
+    val userThumbnail: StateFlow<Bitmap> = _userThumbnail.asStateFlow()
 
     private val _infoText: MutableStateFlow<String> = MutableStateFlow(startInfoText)
     val infoText: StateFlow<String> = _infoText.asStateFlow()
@@ -95,6 +94,7 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
         _emailID.value = ""
         _userCreationDate.value = ""
         _portalName.value = ""
+        _userThumbnail.value = defaultBitmap
     }
 
     fun loadPortal() = viewModelScope.launch {
