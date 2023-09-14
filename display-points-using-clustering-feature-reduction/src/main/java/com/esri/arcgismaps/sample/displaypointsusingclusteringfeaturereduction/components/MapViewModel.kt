@@ -18,49 +18,48 @@ package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.
 
 import android.app.Application
 import android.text.Html
-import android.util.Log
-import android.widget.TextView
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.popup.FieldsPopupElement
 import com.arcgismaps.mapping.popup.TextPopupElement
-import com.arcgismaps.mapping.view.Callout
 import com.arcgismaps.mapping.view.IdentifyLayerResult
-import com.arcgismaps.mapping.view.MapView
-import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
+import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MapViewModel(private val application: Application,
-                   private val sampleCoroutineScope: CoroutineScope)
-    : AndroidViewModel(application) {
+class MapViewModel(
+    private val application: Application,
+    private val sampleCoroutineScope: CoroutineScope
+) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
 
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // Flag indicating whether feature reduction is enabled or not
-    private val _isEnabled: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    val isEnabled: StateFlow<Boolean> = _isEnabled.asStateFlow()
+    val isEnabled = mutableStateOf(true)
 
     // Formatted content of popups
-    private val _popupText: MutableStateFlow<String> = MutableStateFlow("")
-    val popupText: StateFlow<String> = _popupText.asStateFlow()
+    val popupText = mutableStateOf("")
+
+    // Flag indicating whether feature reduction is enabled or not
+    val showPopupDialog = mutableStateOf(false)
 
     init {
         // load the portal and create a map from the portal item
         val portalItem = PortalItem(
-            Portal("https://www.arcgis.com/"),
+            Portal(application.getString(R.string.portal_url)),
             "8916d50c44c746c1aafae001552bad23"
         )
 
@@ -70,21 +69,21 @@ class MapViewModel(private val application: Application,
 
     fun toggleFeatureReduction() {
         val map = mapViewState.value.arcGISMap
-        _isEnabled.value = !_isEnabled.value
+        isEnabled.value = !isEnabled.value
         if (map.loadStatus.value == LoadStatus.Loaded) {
             map.operationalLayers.forEach { layer ->
                 when (layer) {
                     is FeatureLayer -> {
-                        layer.featureReduction?.isEnabled = _isEnabled.value
+                        layer.featureReduction?.isEnabled = isEnabled.value
                     }
-                    else -> { }
+                    else -> {}
                 }
             }
         }
     }
 
     fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
-
+        showPopupDialog.value = true
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
                 val popupOutput = StringBuilder()
@@ -95,25 +94,49 @@ class MapViewModel(private val application: Application,
                         popup.evaluateExpressions().onSuccess {
                             popup.evaluatedElements.forEach { popupElement ->
                                 when (popupElement) {
-                                    is TextPopupElement -> {
-                                        popupOutput.appendLine("\n ${HtmlCompat.fromHtml(popupElement.text, HtmlCompat.FROM_HTML_OPTION_USE_CSS_COLORS)}")
+                                    is FieldsPopupElement -> {
+                                        popupElement.fields.forEach { popupField ->
+                                            popupOutput.appendLine(
+                                                "\n${
+                                                    Html.fromHtml(
+                                                        popupField.label,
+                                                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                                                    )
+                                                }: ${popup.getFormattedValue(popupField)}"
+                                            )
+                                        }
                                     }
-                                    else -> {}
+
+                                    is TextPopupElement -> {
+                                        popupOutput.appendLine(
+                                            "\n${
+                                                Html.fromHtml(
+                                                    popupElement.text,
+                                                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                                                )
+                                            }"
+                                        )
+                                    }
+
+                                    else -> {
+                                        popupOutput.appendLine("Unsupported popup element: ${popupElement.javaClass.name}")
+                                    }
                                 }
                             }
-
                         }.onFailure {
 
                         }
                     }
                 }
-                _popupText.value = popupOutput.toString()
-            }.onFailure {
-
+                popupText.value = popupOutput.toString()
+            }.onFailure { throwable ->
+                messageDialogVM.showMessageDialog(
+                    title = throwable.message.toString(),
+                    description = throwable.cause.toString()
+                )
             }
         }
     }
-
 }
 
 
@@ -122,5 +145,6 @@ class MapViewModel(private val application: Application,
  */
 class MapViewState( // This would change based on each sample implementation
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7))
+    val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
+)
 

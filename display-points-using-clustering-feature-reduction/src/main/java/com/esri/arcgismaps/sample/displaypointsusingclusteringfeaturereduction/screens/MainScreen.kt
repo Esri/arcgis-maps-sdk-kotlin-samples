@@ -17,32 +17,20 @@
 package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.screens
 
 import android.app.Application
-import android.widget.TextView
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ComposeMapView
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.PopupDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -65,54 +53,37 @@ fun MainScreen(sampleName: String, application: Application) {
                     .padding(it)
             ) {
                 Button(onClick = { mapViewModel.toggleFeatureReduction() }) {
-                    Text(text =
-                        if (mapViewModel.isEnabled.collectAsState().value)
+                    Text(
+                        text =
+                        if (mapViewModel.isEnabled.value)
                             "Disable Feature Reduction"
                         else "Enable Feature Reduction"
                     )
                 }
                 // composable function that wraps the MapView
                 ComposeMapView(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(fraction = 0.8f),
+                    modifier = Modifier.fillMaxSize().weight(1f),
                     mapViewModel = mapViewModel
                 )
-                // Formatted popup content
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LazyColumn {
-                        item {
-                            Text(text = mapViewModel.popupText.collectAsState().value)
-                        }
+
+                if (mapViewModel.showPopupDialog.value) {
+                    PopupDialog(
+                        isOpen = mapViewModel.showPopupDialog.value,
+                        onClose = { mapViewModel.showPopupDialog.value = false },
+                        detailedText = mapViewModel.popupText.value
+                    )
+                }
+                // display a dialog if the sample encounters an error
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
                     }
                 }
-
             }
         }
     )
-}
-
-/**
- * Displays messages in html text or plain text.
- *
- * @since 200.3.0
- */
-@Composable
-private fun InfoScreen(
-    text: String,
-    modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        LazyColumn {
-            item {
-                text
-            }
-        }
-    }
 }
