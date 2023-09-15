@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class AuthenticationAppViewModel(application: Application) : AndroidViewModel(application) {
+class AppViewModel(private val application: Application) : AndroidViewModel(application) {
 
     val authenticatorState: AuthenticatorState = AuthenticatorState()
 
@@ -47,13 +47,13 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
 
     private val noPortalInfoText = application.getString(R.string.no_portal_info)
     private val startInfoText = application.getString(R.string.start_info_text)
-    private val arcGISUrl = "https://www.arcgis.com"
+    private val arcGISUrl = application.getString(R.string.portal_url)
     private val oAuthUserConfiguration = OAuthUserConfiguration(
         arcGISUrl,
         // This client ID is for sample purposes only. For use of the Authenticator in your own app,
         // create your own client ID. For more info see: https://developers.arcgis.com/documentation/mapping-apis-and-services/security/tutorials/register-your-application/
-        "rR5K4TEyhkPDcTkf",
-        "my-ags-app://auth"
+        application.getString(R.string.clientId),
+        application.getString(R.string.redirect_url)
     )
 
     private val _portalUserName = MutableStateFlow(String())
@@ -104,7 +104,7 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
         portal.load().also {
             _isLoading.value = false
         }.onFailure {
-            messageDialogVM.showMessageDialog("Failed to load portal", it.message.toString())
+            messageDialogVM.showMessageDialog(application.getString(R.string.load_portal_fail), it.message.toString())
         }.onSuccess {
             portal.portalInfo?.apply {
                 _portalUserName.value = this.user?.fullName ?: noPortalInfoText
@@ -118,8 +118,7 @@ class AuthenticationAppViewModel(application: Application) : AndroidViewModel(ap
                     _userThumbnail.value = this.user?.thumbnail?.image?.bitmap ?: defaultBitmap
                 }
             }
-            _infoText.value =
-                "The Portal is loaded successfully. Please check the Portal details below"
+            _infoText.value = application.getString(R.string.load_portal_success)
         }
     }
 }

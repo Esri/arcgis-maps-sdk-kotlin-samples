@@ -61,7 +61,7 @@ import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import com.arcgismaps.toolkit.authentication.DialogAuthenticator
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.showportaluserinfo.components.AuthenticationAppViewModel
+import com.esri.arcgismaps.sample.showportaluserinfo.components.AppViewModel
 
 /**
  * Main screen layout for the sample app
@@ -69,8 +69,8 @@ import com.esri.arcgismaps.sample.showportaluserinfo.components.AuthenticationAp
 @Composable
 fun MainScreen(sampleName: String, application: Application) {
 
-    val authenticationAppViewModel = viewModel { AuthenticationAppViewModel(application) }
-    val authenticatorState: AuthenticatorState = authenticationAppViewModel.authenticatorState
+    val appViewModel = viewModel { AppViewModel(application) }
+    val authenticatorState: AuthenticatorState = appViewModel.authenticatorState
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -80,25 +80,25 @@ fun MainScreen(sampleName: String, application: Application) {
                     .fillMaxSize()
                     .padding(it)
             ) {
-                val infoText = authenticationAppViewModel.infoText.collectAsState().value
-                val isLoading = authenticationAppViewModel.isLoading.collectAsState().value
+                val infoText = appViewModel.infoText.collectAsState().value
+                val isLoading = appViewModel.isLoading.collectAsState().value
                 PortalDetails(
-                    url = authenticationAppViewModel.url.collectAsState().value,
-                    onSetUrl = authenticationAppViewModel::setUrl,
-                    onSignOut = authenticationAppViewModel::signOut,
-                    onLoadPortal = authenticationAppViewModel::loadPortal
+                    url = appViewModel.url.collectAsState().value,
+                    onSetUrl = appViewModel::setUrl,
+                    onSignOut = appViewModel::signOut,
+                    onLoadPortal = appViewModel::loadPortal
                 )
                 InfoScreen(
                     infoText = infoText,
-                    username = authenticationAppViewModel.portalUserName.collectAsState().value,
-                    email = authenticationAppViewModel.emailID.collectAsState().value,
-                    creationDate = authenticationAppViewModel.userCreationDate.collectAsState().value,
-                    portalName = authenticationAppViewModel.portalName.collectAsState().value,
-                    userThumbnail = authenticationAppViewModel.userThumbnail.collectAsState().value,
+                    username = appViewModel.portalUserName.collectAsState().value,
+                    email = appViewModel.emailID.collectAsState().value,
+                    creationDate = appViewModel.userCreationDate.collectAsState().value,
+                    portalName = appViewModel.portalName.collectAsState().value,
+                    userThumbnail = appViewModel.userThumbnail.collectAsState().value,
                     isLoading = isLoading
                 )
                 // display a dialog if the sample encounters an error
-                authenticationAppViewModel.messageDialogVM.apply {
+                appViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
                         MessageDialog(
                             title = messageTitle,

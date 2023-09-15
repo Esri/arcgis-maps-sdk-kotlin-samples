@@ -32,7 +32,7 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showportaluserinfo/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showportaluserinfo/components/AuthenticationAppViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showportaluserinfo/components/AppViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showportaluserinfo/screens/MainScreen.kt"
     ],
     "title": "Show portal user info"

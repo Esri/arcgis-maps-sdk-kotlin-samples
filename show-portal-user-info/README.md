@@ -6,7 +6,7 @@ Retrieve a user's details via a Portal.
 
 ## Use case
 
-This portal information can be used to provide a customized UI experience for the user. For example, you can show a thumbnail of the user in the application to indicate that they are currently logged in. Additionally, apps such as Collector and Explorer use this functionality to integrate with Portal.
+This portal information can be used to provide a customized UI experience for the user. For example, you can show a thumbnail of the user in the application to indicate that they are currently logged in. Additionally, apps such as ArcGIS Field Maps use this functionality to integrate with Portal.
 
 ## How to use the sample
 

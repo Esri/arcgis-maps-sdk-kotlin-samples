@@ -6,4 +6,10 @@
         Enter a valid portal url to load it and see the portal details displayed here.
     </string>
     <string name="no_portal_info">Portal loaded successfully but no portal info was found.</string>
+    <string name="load_portal_success">The Portal is loaded successfully. Please check the Portal details below</string>
+    <string name="load_portal_fail">Failed to load portal</string>
+    <string name="portal_url">https://www.arcgis.com</string>
+    <string name="clientId">rR5K4TEyhkPDcTkf</string>
+    <string name="redirect_url">my-ags-app://auth</string>
+
 </resources>
