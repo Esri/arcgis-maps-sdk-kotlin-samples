@@ -53,7 +53,7 @@ class MapViewModel(
     // Formatted content of popups
     val popupText = mutableStateOf("")
 
-    // Flag indicating whether feature reduction is enabled or not
+    // Flag indicating whether to show the popup dialog or not
     val showPopupDialog = mutableStateOf(false)
 
     init {
@@ -76,6 +76,7 @@ class MapViewModel(
                     is FeatureLayer -> {
                         layer.featureReduction?.isEnabled = isEnabled.value
                     }
+
                     else -> {}
                 }
             }
@@ -83,13 +84,13 @@ class MapViewModel(
     }
 
     fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
-        showPopupDialog.value = true
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
                 val popupOutput = StringBuilder()
                 identifyResultList.forEach { identifyLayerResult ->
                     val popups = identifyLayerResult.popups
                     popups.forEach { popup ->
+                        showPopupDialog.value = true
                         popupOutput.appendLine(popup.title)
                         popup.evaluateExpressions().onSuccess {
                             popup.evaluatedElements.forEach { popupElement ->

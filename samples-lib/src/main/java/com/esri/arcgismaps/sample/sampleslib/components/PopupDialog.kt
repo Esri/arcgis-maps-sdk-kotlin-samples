@@ -3,11 +3,11 @@ package com.esri.arcgismaps.sample.sampleslib.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,37 +33,37 @@ fun PopupDialog(
             properties = DialogProperties(dismissOnBackPress = true)
         ) {
             Surface(
-                modifier = Modifier.padding(16.dp),
-                shape = MaterialTheme.shapes.medium,
-                tonalElevation = 8.dp
+                modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                tonalElevation = 4.dp,
+                shape = RoundedCornerShape(16.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier.padding(16.dp)
-                ) { item {
-                    Text(
-                        text = "Details",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = detailedText,
-                        fontSize = 16.sp,
-                        color = Color.Black
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = { onClose() }
+                    modifier = Modifier.padding(12.dp).fillMaxWidth()
+                ) {
+                    item {
+                        Text(
+                            text = "Details",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = detailedText,
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Text(text = "Close")
+                            TextButton(
+                                onClick = { onClose() }
+                            ) {
+                                Text(text = "Close")
+                            }
                         }
                     }
-                }
                 }
             }
         }
