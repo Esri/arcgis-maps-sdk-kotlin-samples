@@ -52,8 +52,8 @@ class AppViewModel(private val application: Application) : AndroidViewModel(appl
         arcGISUrl,
         // This client ID is for sample purposes only. For use of the Authenticator in your own app,
         // create your own client ID. For more info see: https://developers.arcgis.com/documentation/mapping-apis-and-services/security/tutorials/register-your-application/
-        application.getString(R.string.clientId),
-        application.getString(R.string.redirect_url)
+        application.getString(R.string.oauth_client_id),
+        application.getString(R.string.oauth_redirect_uri)
     )
 
     private val _portalUserName = MutableStateFlow(String())
