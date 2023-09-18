@@ -48,13 +48,14 @@ class MapViewModel(
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // Flag indicating whether feature reduction is enabled or not
-    val isEnabled = mutableStateOf(true)
+    val isFeatureReductionEnabled = mutableStateOf(true)
 
-    // Flag indicating whether to show the popup dialog or not
-    val showProgressDialog = mutableStateOf(false)
+    // Flag indicating whether to show the loading dialog
+    val showLoadingDialog = mutableStateOf(false)
 
     init {
-        showProgressDialog.value = true
+        // show loading dialog to indicate that the map is loading
+        showLoadingDialog.value = true
         // load the portal and create a map from the portal item
         val portalItem = PortalItem(
             Portal(application.getString(R.string.portal_url)),
@@ -66,19 +67,22 @@ class MapViewModel(
 
         sampleCoroutineScope.launch {
             mapViewState.value.arcGISMap.load().onSuccess {
-                showProgressDialog.value = false
+                showLoadingDialog.value = false
             }
         }
     }
 
+    /**
+    `* Toggle the FeatureLayer's featureReduction property
+     */
     fun toggleFeatureReduction() {
         val map = mapViewState.value.arcGISMap
-        isEnabled.value = !isEnabled.value
+        isFeatureReductionEnabled.value = !isFeatureReductionEnabled.value
         if (map.loadStatus.value == LoadStatus.Loaded) {
             map.operationalLayers.forEach { layer ->
                 when (layer) {
                     is FeatureLayer -> {
-                        layer.featureReduction?.isEnabled = isEnabled.value
+                        layer.featureReduction?.isEnabled = isFeatureReductionEnabled.value
                     }
 
                     else -> {}
@@ -87,6 +91,9 @@ class MapViewModel(
         }
     }
 
+    /**
+     * Identify the feature layer results to fetch and display details for each popup element
+     */
     fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
@@ -101,27 +108,15 @@ class MapViewModel(
                                     is FieldsPopupElement -> {
                                         popupElement.fields.forEach { popupField ->
                                             popupOutput.appendLine(
-                                                "\n${
-                                                    Html.fromHtml(
-                                                        popupField.label,
-                                                        HtmlCompat.FROM_HTML_MODE_LEGACY
-                                                    )
-                                                }: ${popup.getFormattedValue(popupField)}"
+                                                "\n${Html.fromHtml(popupField.label, HtmlCompat.FROM_HTML_MODE_LEGACY)}: ${popup.getFormattedValue(popupField)}"
                                             )
                                         }
                                     }
-
                                     is TextPopupElement -> {
                                         popupOutput.appendLine(
-                                            "\n${
-                                                Html.fromHtml(
-                                                    popupElement.text,
-                                                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                                                )
-                                            }"
+                                            "\n${Html.fromHtml(popupElement.text, HtmlCompat.FROM_HTML_MODE_LEGACY)}"
                                         )
                                     }
-
                                     else -> {
                                         popupOutput.appendLine("Unsupported popup element: ${popupElement.javaClass.name}")
                                     }

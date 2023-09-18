@@ -61,18 +61,19 @@ fun MainScreen(sampleName: String, application: Application) {
                     modifier = Modifier.fillMaxSize().weight(1f),
                     mapViewModel = mapViewModel
                 )
+                // Button to enable/disable featureReduction property
                 Button(
                     onClick = {
                         mapViewModel.toggleFeatureReduction()
                     })
                 {
                     Text(
-                        text = if (mapViewModel.isEnabled.value)
+                        text = if (mapViewModel.isFeatureReductionEnabled.value)
                             "Disable Feature Reduction"
                         else "Enable Feature Reduction"
                     )
                 }
-                // display a dialog if the sample encounters an error
+                // display a MessageDialog to show popup details or if the sample encounters an error
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
                         MessageDialog(
@@ -83,7 +84,8 @@ fun MainScreen(sampleName: String, application: Application) {
                     }
                 }
 
-                if (mapViewModel.showProgressDialog.value) {
+                // display a LoadingDialog to indicate the map load status
+                if (mapViewModel.showLoadingDialog.value) {
                     LoadingDialog(loadingMessage = "Loading map...")
                 }
             }

@@ -17,18 +17,21 @@ Pan and zoom the map to view how clustering is dynamically updated. Disable clus
 
 1. Create a map from a web map `PortalItem`.
 2. Get the cluster enabled layer from the map's operational layers.
-3. Get the `FeatureReduction` from the feature layer and call `setEnabled(bool enabled)` to enable or disable clustering on the feature layer.
-4. When the user clicks on the map, call `identifyFeatureLayerAsync` on the feature layer and pass in the map click location.
-5. Get the `Popup` from the resulting `IdentifyLayerResult` and use it to construct a `PopupManager`.
-6. Get the feature's `customHtmlDescription` from the created `PopupManager` and use it to set the MapView's `CalloutData` detail and display the callout.
+3. Get the `FeatureReduction` from the feature layer and set `isEnabled` value to enable or disable clustering on the feature layer.
+4. When the user clicks on the map, call `identifyLayers` and pass in the map's screen coordinates.
+5. Get the `Popup` and the corresponding `PopupElement` from the resulting `IdentifyLayerResult` and use it to construct a popup output string.
+6. Use `Html.fromHtml` to convert the html tags in the output string to a styled text and display it to the user.
 
 ## Relevant API
 
-- AggregateGeoElement
 - FeatureLayer
 - FeatureReduction
-- GeoElement
 - IdentifyLayerResult
+- Popup
+- PopupElement
+- PopupField
+- Portal
+- PortalItem
 
 ## About the data
 
