@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.screens
 
 import android.app.Application
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,11 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ComposeMapView
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
-import com.esri.arcgismaps.sample.sampleslib.components.PopupDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -50,27 +52,24 @@ fun MainScreen(sampleName: String, application: Application) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it)
+                    .padding(it),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Button(onClick = { mapViewModel.toggleFeatureReduction() }) {
-                    Text(
-                        text =
-                        if (mapViewModel.isEnabled.value)
-                            "Disable Feature Reduction"
-                        else "Enable Feature Reduction"
-                    )
-                }
                 // composable function that wraps the MapView
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize().weight(1f),
                     mapViewModel = mapViewModel
                 )
-
-                if (mapViewModel.showPopupDialog.value) {
-                    PopupDialog(
-                        isOpen = mapViewModel.showPopupDialog.value,
-                        onClose = { mapViewModel.showPopupDialog.value = false },
-                        detailedText = mapViewModel.popupText.value
+                Button(
+                    onClick = {
+                        mapViewModel.toggleFeatureReduction()
+                    })
+                {
+                    Text(
+                        text = if (mapViewModel.isEnabled.value)
+                            "Disable Feature Reduction"
+                        else "Enable Feature Reduction"
                     )
                 }
                 // display a dialog if the sample encounters an error
@@ -82,6 +81,10 @@ fun MainScreen(sampleName: String, application: Application) {
                             onDismissRequest = ::dismissDialog
                         )
                     }
+                }
+
+                if (mapViewModel.showProgressDialog.value) {
+                    LoadingDialog(loadingMessage = "Loading map...")
                 }
             }
         }

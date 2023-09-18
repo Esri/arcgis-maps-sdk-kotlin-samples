@@ -50,13 +50,11 @@ class MapViewModel(
     // Flag indicating whether feature reduction is enabled or not
     val isEnabled = mutableStateOf(true)
 
-    // Formatted content of popups
-    val popupText = mutableStateOf("")
-
     // Flag indicating whether to show the popup dialog or not
-    val showPopupDialog = mutableStateOf(false)
+    val showProgressDialog = mutableStateOf(false)
 
     init {
+        showProgressDialog.value = true
         // load the portal and create a map from the portal item
         val portalItem = PortalItem(
             Portal(application.getString(R.string.portal_url)),
@@ -65,6 +63,12 @@ class MapViewModel(
 
         // set the map to be displayed in the layout's MapView
         mapViewState.value.arcGISMap = ArcGISMap(portalItem)
+
+        sampleCoroutineScope.launch {
+            mapViewState.value.arcGISMap.load().onSuccess {
+                showProgressDialog.value = false
+            }
+        }
     }
 
     fun toggleFeatureReduction() {
@@ -90,7 +94,6 @@ class MapViewModel(
                 identifyResultList.forEach { identifyLayerResult ->
                     val popups = identifyLayerResult.popups
                     popups.forEach { popup ->
-                        showPopupDialog.value = true
                         popupOutput.appendLine(popup.title)
                         popup.evaluateExpressions().onSuccess {
                             popup.evaluatedElements.forEach { popupElement ->
@@ -124,27 +127,34 @@ class MapViewModel(
                                     }
                                 }
                             }
-                        }.onFailure {
-
+                        }.onFailure { error ->
+                            messageDialogVM.showMessageDialog(
+                                title = "Error in evaluating popup expression: ${error.message.toString()}",
+                                description = error.cause.toString()
+                            )
                         }
                     }
                 }
-                popupText.value = popupOutput.toString()
-            }.onFailure { throwable ->
+                if (popupOutput.toString().isNotEmpty()) {
+                    messageDialogVM.showMessageDialog(
+                        title = "Popup Details",
+                        description = popupOutput.toString()
+                    )
+                }
+            }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    title = throwable.message.toString(),
-                    description = throwable.cause.toString()
+                    title = "Error in identify: ${error.message.toString()}",
+                    description = error.cause.toString()
                 )
             }
         }
     }
 }
 
-
 /**
- * Data class that represents the MapView state
+ * Class that represents the MapView state
  */
-class MapViewState( // This would change based on each sample implementation
+data class MapViewState(
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
     val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
 )
