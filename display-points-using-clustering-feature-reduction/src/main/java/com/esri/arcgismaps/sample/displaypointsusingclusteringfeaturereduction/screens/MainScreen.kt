@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ComposeMapView
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.HtmlMessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -73,7 +74,16 @@ fun MainScreen(sampleName: String, application: Application) {
                         else "Enable Feature Reduction"
                     )
                 }
-                // display a MessageDialog to show popup details or if the sample encounters an error
+
+                // display a HtmlMessageDialog to show popup details
+                if (mapViewModel.showPopupDetailsDialog.value) {
+                    HtmlMessageDialog(
+                        description = mapViewModel.annotatedPopupString.value,
+                        onDismissRequest = { mapViewModel.showPopupDetailsDialog.value = false }
+                    )
+                }
+
+                // display a MessageDialog if the sample encounters an error
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
                         MessageDialog(
@@ -84,7 +94,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     }
                 }
 
-                // display a LoadingDialog to indicate the map load status
+                // display a LoadingDialog to indicate the map loading status
                 if (mapViewModel.showLoadingDialog.value) {
                     LoadingDialog(loadingMessage = "Loading map...")
                 }
@@ -92,3 +102,5 @@ fun MainScreen(sampleName: String, application: Application) {
         }
     )
 }
+
+

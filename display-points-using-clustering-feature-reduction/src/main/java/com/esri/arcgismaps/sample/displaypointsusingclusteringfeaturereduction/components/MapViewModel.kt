@@ -17,8 +17,19 @@
 package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components
 
 import android.app.Application
-import android.text.Html
+import android.graphics.Typeface
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.LoadStatus
@@ -47,11 +58,20 @@ class MapViewModel(
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
+    // create a ViewModel to handle dialog interactions
+//    val popupDialogVM: PopupDialogViewModel = PopupDialogViewModel()
+
     // Flag indicating whether feature reduction is enabled or not
     val isFeatureReductionEnabled = mutableStateOf(true)
 
-    // Flag indicating whether to show the loading dialog
+    // Flag to show or dismiss the LoadingDialog
     val showLoadingDialog = mutableStateOf(false)
+
+    // Flag to show or dismiss the HtmlMessageDialog dialog having the popup details
+    val showPopupDetailsDialog = mutableStateOf(false)
+
+    // Initialize annotatedString which holds the popup details
+    val annotatedPopupString = mutableStateOf(AnnotatedString(""))
 
     init {
         // show loading dialog to indicate that the map is loading
@@ -84,7 +104,6 @@ class MapViewModel(
                     is FeatureLayer -> {
                         layer.featureReduction?.isEnabled = isFeatureReductionEnabled.value
                     }
-
                     else -> {}
                 }
             }
@@ -92,33 +111,39 @@ class MapViewModel(
     }
 
     /**
-     * Identify the feature layer results to fetch and display details for each popup element
+     * Identify the feature layer results and display the resulting popup element information
      */
     fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
-                val popupOutput = StringBuilder()
+                // initialize the string for each tap event resulting in a new identifyResultList
+                annotatedPopupString.value = AnnotatedString("")
                 identifyResultList.forEach { identifyLayerResult ->
                     val popups = identifyLayerResult.popups
                     popups.forEach { popup ->
-                        popupOutput.appendLine(popup.title)
+                        // show the HtmlMessageDialog for the popup content
+                        showPopupDetailsDialog.value = true
                         popup.evaluateExpressions().onSuccess {
                             popup.evaluatedElements.forEach { popupElement ->
                                 when (popupElement) {
                                     is FieldsPopupElement -> {
                                         popupElement.fields.forEach { popupField ->
-                                            popupOutput.appendLine(
-                                                "\n${Html.fromHtml(popupField.label, HtmlCompat.FROM_HTML_MODE_LEGACY)}: ${popup.getFormattedValue(popupField)}"
-                                            )
+                                            // convert popupField.label embedded with html tags using HtmlCompat.fromHtml
+                                            annotatedPopupString.value += HtmlCompat.fromHtml(
+                                                popupField.label,
+                                                HtmlCompat.FROM_HTML_MODE_COMPACT
+                                            ).toAnnotatedString()
                                         }
                                     }
                                     is TextPopupElement -> {
-                                        popupOutput.appendLine(
-                                            "\n${Html.fromHtml(popupElement.text, HtmlCompat.FROM_HTML_MODE_LEGACY)}"
-                                        )
+                                        // convert popupElement.text message embedded with html tags using HtmlCompat.fromHtml
+                                        annotatedPopupString.value += HtmlCompat.fromHtml(
+                                            popupElement.text,
+                                            HtmlCompat.FROM_HTML_MODE_COMPACT
+                                        ).toAnnotatedString()
                                     }
                                     else -> {
-                                        popupOutput.appendLine("Unsupported popup element: ${popupElement.javaClass.name}")
+                                        annotatedPopupString.value += AnnotatedString("Unsupported popup element: ${popupElement.javaClass.name}")
                                     }
                                 }
                             }
@@ -130,16 +155,52 @@ class MapViewModel(
                         }
                     }
                 }
-                if (popupOutput.toString().isNotEmpty()) {
-                    messageDialogVM.showMessageDialog(
-                        title = "Popup Details",
-                        description = popupOutput.toString()
-                    )
-                }
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     title = "Error in identify: ${error.message.toString()}",
                     description = error.cause.toString()
+                )
+            }
+        }
+    }
+
+    /**
+     * Helper function which converts a [Spanned] into an [AnnotatedString] trying to keep as much formatting as possible.
+     * [AnnotatedString] is supported in compose via the [Text] composable
+     *
+     * Currently supports `bold`, `italic`, `underline` and `color`.
+     * More info can be found at:
+     * https://stackoverflow.com/questions/66494838/android-compose-how-to-use-html-tags-in-a-text-view and
+     * https://medium.com/@kevinskrei/annotated-text-in-jetpack-compose-8dc596ed62d
+     */
+    private fun Spanned.toAnnotatedString(): AnnotatedString = buildAnnotatedString {
+        val spanned = this@toAnnotatedString
+        append(spanned.toString())
+        getSpans(0, spanned.length, Any::class.java).forEach { span ->
+            val start = getSpanStart(span)
+            val end = getSpanEnd(span)
+            when (span) {
+                is StyleSpan -> when (span.style) {
+                    Typeface.BOLD -> addStyle(SpanStyle(fontWeight = FontWeight.Bold), start, end)
+                    Typeface.ITALIC -> addStyle(SpanStyle(fontStyle = FontStyle.Italic), start, end)
+                    Typeface.BOLD_ITALIC -> addStyle(
+                        SpanStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic
+                        ), start, end
+                    )
+                }
+
+                is UnderlineSpan -> addStyle(
+                    SpanStyle(textDecoration = TextDecoration.Underline),
+                    start,
+                    end
+                )
+
+                is ForegroundColorSpan -> addStyle(
+                    SpanStyle(color = Color(span.foregroundColor)),
+                    start,
+                    end
                 )
             }
         }
