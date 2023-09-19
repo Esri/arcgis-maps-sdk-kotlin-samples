@@ -2,8 +2,7 @@
 
 Display a web map with a point feature layer that has feature reduction enabled to aggregate points into clusters.
 
-![Feature reduction map](display-points-using-clustering-feature-reduction.png)
-![Cluster details popup](display-points-using-clustering-feature-reduction-popup.png)
+![Feature reduction map](display-points-using-clustering-feature-reduction.png)  ![Cluster details popup](display-points-using-clustering-feature-reduction-popup.png)
 
 ## Use case
 
