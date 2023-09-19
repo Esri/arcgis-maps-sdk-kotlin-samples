@@ -15,20 +15,26 @@
         "normalize",
         "reduce",
         "summarize",
-        "AggregateGeoElement",
         "FeatureLayer",
         "FeatureReduction",
-        "GeoElement",
-        "IdentifyLayerResult"
+        "IdentifyLayerResult",
+        "Popup",
+        "PopupElement",
+        "PopupField",
+        "Portal",
+        "PortalItem"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
-        "AggregateGeoElement",
         "FeatureLayer",
         "FeatureReduction",
-        "GeoElement",
-        "IdentifyLayerResult"
+        "IdentifyLayerResult",
+        "Popup",
+        "PopupElement",
+        "PopupField",
+        "Portal",
+        "PortalItem"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/MainActivity.kt",

@@ -34,6 +34,7 @@ fun HtmlMessageDialog(
     onDismissRequest: () -> Unit) {
     // display a dialog having an Annotated string
     AlertDialog(
+        // AnnotatedString displayed using Text composable which takes it as an input parameter
         text = { Text(text = description) },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {

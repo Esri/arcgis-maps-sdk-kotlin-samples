@@ -24,14 +24,14 @@ Pan and zoom the map to view how clustering is dynamically updated. Disable clus
 
 ## Relevant API
 
-- FeatureLayer
-- FeatureReduction
-- IdentifyLayerResult
-- Popup
-- PopupElement
-- PopupField
-- Portal
-- PortalItem
+* FeatureLayer
+* FeatureReduction
+* IdentifyLayerResult
+* Popup
+* PopupElement
+* PopupField
+* Portal
+* PortalItem
 
 ## About the data
 
