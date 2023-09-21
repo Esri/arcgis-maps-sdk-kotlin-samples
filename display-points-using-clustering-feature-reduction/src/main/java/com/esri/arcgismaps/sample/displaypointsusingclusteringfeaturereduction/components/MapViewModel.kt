@@ -58,9 +58,6 @@ class MapViewModel(
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
-    // create a ViewModel to handle dialog interactions
-//    val popupDialogVM: PopupDialogViewModel = PopupDialogViewModel()
-
     // Flag indicating whether feature reduction is enabled or not
     val isFeatureReductionEnabled = mutableStateOf(true)
 
@@ -121,6 +118,7 @@ class MapViewModel(
                 identifyResultList.forEach { identifyLayerResult ->
                     val popups = identifyLayerResult.popups
                     popups.forEach { popup ->
+                        annotatedPopupString.value += AnnotatedString(("${popup.title}" + "\n\n"))
                         // show the HtmlMessageDialog for the popup content
                         showPopupDetailsDialog.value = true
                         popup.evaluateExpressions().onSuccess {
