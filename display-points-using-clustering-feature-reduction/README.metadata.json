@@ -39,6 +39,7 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/ClusterInfoContent.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/ComposeMapView.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/screens/MainScreen.kt"
