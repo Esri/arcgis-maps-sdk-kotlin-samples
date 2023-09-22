@@ -86,19 +86,6 @@ fun MainScreen(sampleName: String, application: Application) {
                         })
                 }
 
-                // display a bottom sheet to show popup details
-                if (mapViewModel.showClusterSummaryBottomSheet.value) {
-                    BottomSheet({
-                        ClusterInfoContent(
-                            popupTitle = mapViewModel.popupTitle.value,
-                            clusterInfoList = mapViewModel.clusterInfoList
-                        )
-                    }) {
-                        // on dismiss...
-                        mapViewModel.showClusterSummaryBottomSheet.value = false
-                    }
-                }
-
                 // display a MessageDialog if the sample encounters an error
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
@@ -115,8 +102,16 @@ fun MainScreen(sampleName: String, application: Application) {
                     LoadingDialog(loadingMessage = "Loading map...")
                 }
             }
+
+            // display a bottom sheet to show popup details
+            BottomSheet(isVisible = mapViewModel.showClusterSummaryBottomSheet.value) {
+                ClusterInfoContent(
+                    popupTitle = mapViewModel.popupTitle.value,
+                    clusterInfoList = mapViewModel.clusterInfoList
+                ){
+                    mapViewModel.showClusterSummaryBottomSheet.value = false
+                }
+            }
         }
     )
 }
-
-

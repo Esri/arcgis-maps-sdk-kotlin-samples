@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(
-    private val application: Application,
+    application: Application,
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
@@ -182,7 +182,7 @@ class MapViewModel(
 
     /**
      * Helper function which converts a [Spanned] into an [AnnotatedString] trying to keep as much formatting as possible.
-     * [AnnotatedString] is supported in compose via the [Text] composable
+     * [AnnotatedString] is supported in compose via the Text composable
      *
      * Currently supports `bold`, `italic`, `underline` and `color`.
      * More info can be found at:
@@ -230,4 +230,3 @@ data class MapViewState(
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
     val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
 )
-

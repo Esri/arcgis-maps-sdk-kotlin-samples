@@ -16,32 +16,37 @@
 
 package com.esri.arcgismaps.sample.sampleslib.components
 
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 
 /**
  * Composable component used to display a custom bottom sheet for samples.
  * The bottom sheet can display any @Composable content passed to the [bottomSheetContent],
- * and returns a lambda when bottom sheet is [onDismiss].
+ * and the visibility can be toggled using [isVisible]
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(
-    bottomSheetContent: @Composable() () -> Unit,
-    onDismiss: () -> Unit
+    isVisible: Boolean,
+    bottomSheetContent: @Composable() () -> Unit
 ) {
-    val modalBottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-
-    ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
-        sheetState = modalBottomSheetState,
-        dragHandle = { BottomSheetDefaults.DragHandle() },
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
     ) {
-        bottomSheetContent()
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            visible = isVisible,
+            enter = slideInVertically{height -> height} + fadeIn(),
+            exit = slideOutVertically{height -> height} + fadeOut()
+        ) {
+            bottomSheetContent()
+        }
     }
 }

@@ -61,9 +61,15 @@ fun ComposeMapView(
     LaunchedEffect(Unit) {
         launch {
             mapView.onSingleTapConfirmed.collect {
+                mapViewModel.showClusterSummaryBottomSheet.value = false
                 // call identifyLayers when a tap event occurs
                 val identifyResult = mapView.identifyLayers(it.screenCoordinate, 3.0, false)
                 mapViewModel.handleIdentifyResult(identifyResult)
+            }
+        }
+        launch {
+            mapView.onPan.collect{
+                mapViewModel.showClusterSummaryBottomSheet.value = false
             }
         }
     }
