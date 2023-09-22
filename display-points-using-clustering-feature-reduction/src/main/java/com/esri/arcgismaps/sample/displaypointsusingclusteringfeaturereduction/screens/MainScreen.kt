@@ -36,7 +36,6 @@ import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.c
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ComposeMapView
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
-import com.esri.arcgismaps.sample.sampleslib.components.HtmlMessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar

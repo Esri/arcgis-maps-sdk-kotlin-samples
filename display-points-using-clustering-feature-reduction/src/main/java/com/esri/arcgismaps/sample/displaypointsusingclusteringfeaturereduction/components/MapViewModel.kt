@@ -105,6 +105,7 @@ class MapViewModel(
                     is FeatureLayer -> {
                         layer.featureReduction?.isEnabled = isFeatureReductionEnabled.value
                     }
+
                     else -> {}
                 }
             }
@@ -124,7 +125,7 @@ class MapViewModel(
                     val popups = identifyLayerResult.popups
                     popups.forEach { popup ->
                         // set the popup title
-                        popupTitle.value= popup.title
+                        popupTitle.value = popup.title
                         // show the bottom sheet for the popup content
                         showClusterSummaryBottomSheet.value = true
                         popup.evaluateExpressions().onSuccess {
@@ -141,6 +142,7 @@ class MapViewModel(
                                             )
                                         }
                                     }
+
                                     is TextPopupElement -> {
                                         // convert popupElement.text message embedded with html tags using HtmlCompat.fromHtml
                                         clusterInfoList.add(
@@ -150,6 +152,7 @@ class MapViewModel(
                                             ).toAnnotatedString()
                                         )
                                     }
+
                                     else -> {
                                         clusterInfoList.add(
                                             HtmlCompat.fromHtml(
