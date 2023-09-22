@@ -22,6 +22,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -64,11 +65,14 @@ class MapViewModel(
     // Flag to show or dismiss the LoadingDialog
     val showLoadingDialog = mutableStateOf(false)
 
-    // Flag to show or dismiss the HtmlMessageDialog dialog having the popup details
-    val showPopupDetailsDialog = mutableStateOf(false)
+    // Flag to show or dismiss the bottom sheet
+    val showClusterSummaryBottomSheet = mutableStateOf(false)
 
-    // Initialize annotatedString which holds the popup details
-    val annotatedPopupString = mutableStateOf(AnnotatedString(""))
+    // Initialize clusterInfoList which holds the popup details
+    val clusterInfoList = mutableStateListOf<AnnotatedString>()
+
+    // the title of the popup result
+    val popupTitle = mutableStateOf("")
 
     init {
         // show loading dialog to indicate that the map is loading
@@ -114,34 +118,45 @@ class MapViewModel(
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
                 // initialize the string for each tap event resulting in a new identifyResultList
-                annotatedPopupString.value = AnnotatedString("")
+                clusterInfoList.clear()
+                popupTitle.value = ""
                 identifyResultList.forEach { identifyLayerResult ->
                     val popups = identifyLayerResult.popups
                     popups.forEach { popup ->
-                        annotatedPopupString.value += AnnotatedString(("${popup.title}" + "\n\n"))
-                        // show the HtmlMessageDialog for the popup content
-                        showPopupDetailsDialog.value = true
+                        // set the popup title
+                        popupTitle.value= popup.title
+                        // show the bottom sheet for the popup content
+                        showClusterSummaryBottomSheet.value = true
                         popup.evaluateExpressions().onSuccess {
                             popup.evaluatedElements.forEach { popupElement ->
                                 when (popupElement) {
                                     is FieldsPopupElement -> {
                                         popupElement.fields.forEach { popupField ->
                                             // convert popupField.label embedded with html tags using HtmlCompat.fromHtml
-                                            annotatedPopupString.value += HtmlCompat.fromHtml(
-                                                popupField.label,
-                                                HtmlCompat.FROM_HTML_MODE_COMPACT
-                                            ).toAnnotatedString()
+                                            clusterInfoList.add(
+                                                HtmlCompat.fromHtml(
+                                                    popupField.label,
+                                                    HtmlCompat.FROM_HTML_MODE_COMPACT
+                                                ).toAnnotatedString()
+                                            )
                                         }
                                     }
                                     is TextPopupElement -> {
                                         // convert popupElement.text message embedded with html tags using HtmlCompat.fromHtml
-                                        annotatedPopupString.value += HtmlCompat.fromHtml(
-                                            popupElement.text,
-                                            HtmlCompat.FROM_HTML_MODE_COMPACT
-                                        ).toAnnotatedString()
+                                        clusterInfoList.add(
+                                            HtmlCompat.fromHtml(
+                                                popupElement.text,
+                                                HtmlCompat.FROM_HTML_MODE_COMPACT
+                                            ).toAnnotatedString()
+                                        )
                                     }
                                     else -> {
-                                        annotatedPopupString.value += AnnotatedString("Unsupported popup element: ${popupElement.javaClass.name}")
+                                        clusterInfoList.add(
+                                            HtmlCompat.fromHtml(
+                                                "Unsupported popup element: ${popupElement.javaClass.name}",
+                                                HtmlCompat.FROM_HTML_MODE_COMPACT
+                                            ).toAnnotatedString()
+                                        )
                                     }
                                 }
                             }
