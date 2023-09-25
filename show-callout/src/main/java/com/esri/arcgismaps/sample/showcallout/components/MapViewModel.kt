@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.showcallout.components
 
 import android.app.Application
-import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -27,16 +26,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
-
-    val calloutView = TextView(application)
-
 }
-
 
 /**
  * Data class that represents the MapView state
  */
 data class MapViewState(
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
+    var viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
 )

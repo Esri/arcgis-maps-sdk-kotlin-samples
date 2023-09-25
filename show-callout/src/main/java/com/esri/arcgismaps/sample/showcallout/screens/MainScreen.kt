@@ -47,9 +47,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize(),
                     mapViewModel = mapViewModel,
-//                    onSingleTap = { tapEvent ->
-//                        mapViewModel.displayLocationCoordinates(tapEvent)
-//                    }
+                    application = application
                 )
             }
         }

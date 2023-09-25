@@ -16,6 +16,8 @@
 
 package com.esri.arcgismaps.sample.showcallout.components
 
+import android.app.Application
+import android.widget.TextView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +32,7 @@ import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.view.MapView
+import com.esri.arcgismaps.sample.showcallout.R
 import kotlinx.coroutines.launch
 
 /**
@@ -39,7 +42,7 @@ import kotlinx.coroutines.launch
 fun ComposeMapView(
     modifier: Modifier = Modifier,
     mapViewModel: MapViewModel,
-    onSingleTap: (mapPoint: Point?) -> Unit = {}
+    application: Application
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -71,13 +74,12 @@ fun ComposeMapView(
                 if (mapPoint != null) {
                     val wgs84Point =
                         GeometryEngine.projectOrNull(mapPoint, SpatialReference.wgs84()) as Point
-                    val lat = "%.4f".format(wgs84Point.y)
-                    val lon = "%.4f".format(wgs84Point.x)
+
                     // create a textview for the callout
-                    mapViewModel.calloutView.apply {
-                        text = "Lat: $lat , Lon: $lon"
+                    val calloutView = TextView(application).apply {
+                        text = application.getString(R.string.callout_text, wgs84Point.y, wgs84Point.x)
                     }
-                    mapView.callout.show(mapViewModel.calloutView, wgs84Point)
+                    mapView.callout.show(calloutView, wgs84Point)
                     // center the map on the tapped location
                     mapView.setViewpointCenter(mapPoint)
                 }
