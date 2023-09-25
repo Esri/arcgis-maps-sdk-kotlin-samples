@@ -69,16 +69,15 @@ fun ComposeMapView(
         launch {
             mapView.onSingleTapConfirmed.collect {
                 // get map point from the Single tap event
-                val mapPoint = it.mapPoint
-                // convert the point to WGS84 for obtaining lat/lon format
-                if (mapPoint != null) {
+                it.mapPoint?.let { mapPoint ->
+                    // convert the point to WGS84 for obtaining lat/lon format
                     val wgs84Point =
                         GeometryEngine.projectOrNull(mapPoint, SpatialReference.wgs84()) as Point
-
                     // create a textview for the callout
                     val calloutView = TextView(application).apply {
                         text = application.getString(R.string.callout_text, wgs84Point.y, wgs84Point.x)
                     }
+                    // show callout at the tapped location using the set View
                     mapView.callout.show(calloutView, wgs84Point)
                     // center the map on the tapped location
                     mapView.setViewpointCenter(mapPoint)

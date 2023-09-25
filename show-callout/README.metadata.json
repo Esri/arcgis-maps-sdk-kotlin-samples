@@ -1,2 +1,38 @@
 {
+    "category": "Maps",
+    "description": "Show a callout with the latitude and longitude of user-tapped points.",
+    "formal_name": "ShowCallout",
+    "ignore": false,
+    "images": [
+        "show-callout.png"
+    ],
+    "keywords": [
+        "balloon",
+        "bubble",
+        "callout",
+        "flyout",
+        "flyover",
+        "info window",
+        "popup",
+        "tap",
+        "Callout",
+        "GeometryEngine",
+        "MapView",
+        "Point"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Callout",
+        "GeometryEngine",
+        "MapView",
+        "Point"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showcallout/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcallout/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcallout/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcallout/screens/MainScreen.kt"
+    ],
+    "title": "Show callout"
 }
