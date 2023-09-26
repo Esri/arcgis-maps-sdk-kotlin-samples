@@ -28,10 +28,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.esri.arcgismaps.sample.showcallout.R
 import kotlinx.coroutines.launch
 
@@ -42,7 +44,7 @@ import kotlinx.coroutines.launch
 fun ComposeMapView(
     modifier: Modifier = Modifier,
     mapViewModel: MapViewModel,
-    application: Application
+    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -60,6 +62,12 @@ fun ComposeMapView(
             mapView.apply {
                 map = mapViewState.arcGISMap
                 setViewpoint(mapViewState.viewpoint)
+                // show callout at the tapped location using the set View
+                mapView.callout.show(mapViewState.calloutContent, mapViewState.latLongPoint)
+                lifecycleOwner.lifecycleScope.launch {
+                    // center the map on the tapped location
+                    setViewpointCenter(mapViewState.latLongPoint)
+                }
             }
         }
     )
@@ -68,20 +76,7 @@ fun ComposeMapView(
     LaunchedEffect(Unit) {
         launch {
             mapView.onSingleTapConfirmed.collect {
-                // get map point from the Single tap event
-                it.mapPoint?.let { mapPoint ->
-                    // convert the point to WGS84 for obtaining lat/lon format
-                    val wgs84Point =
-                        GeometryEngine.projectOrNull(mapPoint, SpatialReference.wgs84()) as Point
-                    // create a textview for the callout
-                    val calloutView = TextView(application).apply {
-                        text = application.getString(R.string.callout_text, wgs84Point.y, wgs84Point.x)
-                    }
-                    // show callout at the tapped location using the set View
-                    mapView.callout.show(calloutView, wgs84Point)
-                    // center the map on the tapped location
-                    mapView.setViewpointCenter(mapPoint)
-                }
+                onSingleTap(it)
             }
         }
     }

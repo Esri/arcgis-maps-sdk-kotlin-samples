@@ -47,7 +47,10 @@ fun MainScreen(sampleName: String, application: Application) {
                 ComposeMapView(
                     modifier = Modifier.fillMaxSize(),
                     mapViewModel = mapViewModel,
-                    application = application
+                    onSingleTap = { singleTapConfirmedEvent ->
+                        mapViewModel.onMapTapped(singleTapConfirmedEvent.mapPoint)
+                    }
+
                 )
             }
         }
