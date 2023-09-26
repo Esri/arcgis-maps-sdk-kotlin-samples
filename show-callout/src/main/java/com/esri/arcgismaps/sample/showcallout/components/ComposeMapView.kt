@@ -16,8 +16,6 @@
 
 package com.esri.arcgismaps.sample.showcallout.components
 
-import android.app.Application
-import android.widget.TextView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -29,12 +27,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.geometry.GeometryEngine
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
-import com.esri.arcgismaps.sample.showcallout.R
 import kotlinx.coroutines.launch
 
 /**
@@ -51,7 +45,12 @@ fun ComposeMapView(
     // collect the latest state of the MapViewState
     val mapViewState by mapViewModel.mapViewState.collectAsState()
     // create and add MapView to the activity lifecycle
-    val mapView = createMapViewInstance(lifecycleOwner)
+    val mapView = createMapViewInstance(lifecycleOwner).apply {
+        map = mapViewState.arcGISMap
+        setViewpoint(mapViewState.viewpoint)
+        // enable animated callout
+        callout.isAnimationEnabled = true
+    }
 
     // wrap the MapView as an AndroidView
     AndroidView(
@@ -60,13 +59,17 @@ fun ComposeMapView(
         // recomposes the MapView on changes in the MapViewState
         update = { mapView ->
             mapView.apply {
-                map = mapViewState.arcGISMap
-                setViewpoint(mapViewState.viewpoint)
-                // show callout at the tapped location using the set View
-                mapView.callout.show(mapViewState.calloutContent, mapViewState.latLongPoint)
-                lifecycleOwner.lifecycleScope.launch {
-                    // center the map on the tapped location
-                    setViewpointCenter(mapViewState.latLongPoint)
+                val latlonPoint = mapViewState.latLonPoint
+                latlonPoint?.let {
+                    // show callout at the tapped location using the set View
+                    callout.show(
+                        mapViewState.calloutContent,
+                        latlonPoint
+                    )
+                    lifecycleOwner.lifecycleScope.launch {
+                        // center the map on the tapped location
+                        setViewpointCenter(latlonPoint)
+                    }
                 }
             }
         }

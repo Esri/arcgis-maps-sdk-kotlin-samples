@@ -39,14 +39,19 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         // get map point from the Single tap event
         mapPoint?.let { mapPoint ->
             // convert the point to WGS84 for obtaining lat/lon format
-            mapViewState.value.latLongPoint =
-                GeometryEngine.projectOrNull(mapPoint, SpatialReference.wgs84()) as Point
+            mapViewState.value.latLonPoint = GeometryEngine.projectOrNull(
+                mapPoint,
+                SpatialReference.wgs84()
+            ) as Point
             // create a textview for the callout
-            mapViewState.value.calloutContent.text = application.getString(R.string.callout_text, mapViewState.value.latLongPoint.y, mapViewState.value.latLongPoint.x)
-            }
+            mapViewState.value.calloutContent.text = application.getString(
+                R.string.callout_text,
+                mapViewState.value.latLonPoint?.y,
+                mapViewState.value.latLonPoint?.x
+            )
         }
     }
-
+}
 
 /**
  * Data class that represents the MapView state
@@ -55,5 +60,5 @@ data class MapViewState(val application: Application) {
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
     var viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
     var calloutContent: TextView by mutableStateOf(TextView(application))
-    var latLongPoint: Point by mutableStateOf(Point(0.0, 0.0, SpatialReference.wgs84()))
+    var latLonPoint: Point? by mutableStateOf(null)
 }
