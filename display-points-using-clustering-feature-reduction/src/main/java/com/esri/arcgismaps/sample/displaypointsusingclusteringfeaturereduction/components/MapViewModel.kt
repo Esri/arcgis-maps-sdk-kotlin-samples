@@ -82,7 +82,6 @@ class MapViewModel(
             Portal(application.getString(R.string.portal_url)),
             "8916d50c44c746c1aafae001552bad23"
         )
-
         // set the map to be displayed in the layout's MapView
         mapViewState.value.arcGISMap = ArcGISMap(portalItem)
 
@@ -136,7 +135,7 @@ class MapViewModel(
                                             // convert popupField.label embedded with html tags using HtmlCompat.fromHtml
                                             clusterInfoList.add(
                                                 HtmlCompat.fromHtml(
-                                                    popupField.label,
+                                                    "${popupField.label}: ${popup.getFormattedValue(popupField)}",
                                                     HtmlCompat.FROM_HTML_MODE_COMPACT
                                                 ).toAnnotatedString()
                                             )
@@ -178,6 +177,13 @@ class MapViewModel(
                 )
             }
         }
+    }
+
+    /**
+     * Dismiss the bottomsheet
+     */
+    fun dismissBottomSheet() {
+        showClusterSummaryBottomSheet.value = false
     }
 
     /**

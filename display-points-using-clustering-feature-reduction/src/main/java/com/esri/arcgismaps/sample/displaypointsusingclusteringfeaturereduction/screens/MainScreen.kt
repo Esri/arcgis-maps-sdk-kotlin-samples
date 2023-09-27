@@ -64,7 +64,9 @@ fun MainScreen(sampleName: String, application: Application) {
             ) {
                 // composable function that wraps the MapView
                 ComposeMapView(
-                    modifier = Modifier.fillMaxSize().weight(1f),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
                     mapViewModel = mapViewModel
                 )
                 // Button to enable/disable featureReduction property
@@ -107,10 +109,9 @@ fun MainScreen(sampleName: String, application: Application) {
             BottomSheet(isVisible = mapViewModel.showClusterSummaryBottomSheet.value) {
                 ClusterInfoContent(
                     popupTitle = mapViewModel.popupTitle.value,
-                    clusterInfoList = mapViewModel.clusterInfoList
-                ){
-                    mapViewModel.showClusterSummaryBottomSheet.value = false
-                }
+                    clusterInfoList = mapViewModel.clusterInfoList,
+                    onDismiss = { mapViewModel.dismissBottomSheet() }
+                )
             }
         }
     )
