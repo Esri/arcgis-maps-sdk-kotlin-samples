@@ -34,20 +34,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class MapViewModel(private val application: Application) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState(application))
+    // View to show callout
+    var calloutContent: TextView by mutableStateOf(TextView(application))
+    // initialize lat long point
+    var latLonPoint: Point? by mutableStateOf(null)
 
     fun onMapTapped(mapPoint: Point?) {
         // get map point from the Single tap event
-        mapPoint?.let { mapPoint ->
+        mapPoint?.let { point ->
             // convert the point to WGS84 for obtaining lat/lon format
-            mapViewState.value.latLonPoint = GeometryEngine.projectOrNull(
-                mapPoint,
+            latLonPoint = GeometryEngine.projectOrNull(
+                point,
                 SpatialReference.wgs84()
             ) as Point
             // set the callout text to display point coordinates
-            mapViewState.value.calloutContent.text = application.getString(
+            calloutContent.text = application.getString(
                 R.string.callout_text,
-                mapViewState.value.latLonPoint?.y,
-                mapViewState.value.latLonPoint?.x
+                latLonPoint?.y,
+                latLonPoint?.x
             )
         }
     }
@@ -59,6 +63,4 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
 data class MapViewState(val application: Application) {
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
     var viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
-    var calloutContent: TextView by mutableStateOf(TextView(application))
-    var latLonPoint: Point? by mutableStateOf(null)
 }

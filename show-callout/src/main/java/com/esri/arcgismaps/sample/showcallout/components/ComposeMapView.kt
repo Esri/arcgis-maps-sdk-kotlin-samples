@@ -59,11 +59,11 @@ fun ComposeMapView(
         // recomposes the MapView on changes in the MapViewState
         update = { mapView ->
             mapView.apply {
-                val latlonPoint = mapViewState.latLonPoint
+                val latlonPoint = mapViewModel.latLonPoint
                 latlonPoint?.let {
                     // show callout at the tapped location using the set View
                     callout.show(
-                        mapViewState.calloutContent,
+                        mapViewModel.calloutContent,
                         latlonPoint
                     )
                     lifecycleOwner.lifecycleScope.launch {
