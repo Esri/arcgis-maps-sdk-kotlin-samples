@@ -43,7 +43,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                 mapPoint,
                 SpatialReference.wgs84()
             ) as Point
-            // create a textview for the callout
+            // set the callout text to display point coordinates
             mapViewState.value.calloutContent.text = application.getString(
                 R.string.callout_text,
                 mapViewState.value.latLonPoint?.y,

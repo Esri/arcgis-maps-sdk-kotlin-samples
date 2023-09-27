@@ -77,10 +77,8 @@ fun ComposeMapView(
 
     // launch coroutine functions in the composition's CoroutineContext
     LaunchedEffect(Unit) {
-        launch {
-            mapView.onSingleTapConfirmed.collect {
-                onSingleTap(it)
-            }
+        mapView.onSingleTapConfirmed.collect {
+            onSingleTap(it)
         }
     }
 }
