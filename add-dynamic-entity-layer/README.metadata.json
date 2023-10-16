@@ -27,6 +27,7 @@
     "redirect_from": "",
     "relevant_apis": [
         "ArcGISStreamService",
+        "ConnectionStatus",
         "DynamicEntity",
         "DynamicEntityFilter",
         "DynamicEntityLayer",
