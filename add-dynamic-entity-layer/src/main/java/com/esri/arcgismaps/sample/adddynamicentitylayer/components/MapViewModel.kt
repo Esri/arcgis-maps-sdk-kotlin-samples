@@ -17,83 +17,118 @@
 package com.esri.arcgismaps.sample.adddynamicentitylayer.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.DynamicEntityLayer
 import com.arcgismaps.realtime.ArcGISStreamService
-import com.arcgismaps.realtime.ConnectionStatus
+import com.arcgismaps.realtime.ArcGISStreamServiceFilter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MapViewModel(application: Application,
-                   private val sampleCoroutineScope: CoroutineScope,) : AndroidViewModel(application) {
+class MapViewModel(
+    application: Application,
+    private val sampleCoroutineScope: CoroutineScope,
+) : AndroidViewModel(application) {
 
-    // set the state of the switch
-    var trackLineCheckedState =  mutableStateOf(false)
-    var prevObservationCheckedState =  mutableStateOf(false)
-    var trackSliderValue = mutableStateOf(5f)
+    // set the state of the switches and slider
+    val trackLineCheckedState = mutableStateOf(false)
+    val prevObservationCheckedState = mutableStateOf(false)
+    val trackSliderValue = mutableStateOf(5f)
 
     // Flag to show or dismiss the bottom sheet
     val isBottomSheetVisible = mutableStateOf(false)
 
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
-    var streamService =
+
+    // create ArcGIS Stream Service
+    private val streamService =
         ArcGISStreamService("https://realtimegis2016.esri.com:6443/arcgis/rest/services/SandyVehicles/StreamServer")
-    var dynamicEntityLayer = DynamicEntityLayer(streamService)
+
+    // create ArcGISStreamServiceFilter
+    private val streamServiceFilter = ArcGISStreamServiceFilter()
+
+    // layer displaying the dynamic entities on the map
+    private val dynamicEntityLayer: DynamicEntityLayer
 
     /**
-     * Create ArcGIS Stream Service
+     * set the data source for the dynamic entity layer.
      */
     init {
+        // set condition on the ArcGISStreamServiceFilter to limit the amount of data coming from the server
+        streamServiceFilter.apply {
+            whereClause = "speed > 0"
+        }
+        streamService.apply {
+            filter = streamServiceFilter
+            // sets the maximum time (in seconds) an observation remains in the application.
+            purgeOptions.maximumDuration = 300.0
+        }
+        dynamicEntityLayer = DynamicEntityLayer(streamService)
+
+        // add the dynamic entity layer to the map's operational layers
         mapViewState.value.arcGISMap.operationalLayers.add(dynamicEntityLayer)
+
+        sampleCoroutineScope.launch {
+            mapViewState.value.arcGISMap.load().onSuccess {
+                println("TEST MAP LOADED")
+            }.onFailure {
+                println("TEST MAP NOT LOADED")
+            }
+        }
+
     }
 
+
+    // disconnects the stream service
     fun disconnectStreamService() {
         sampleCoroutineScope.launch {
             streamService.disconnect()
         }
     }
 
+    // connects the stream service
     fun connectStreamService() {
         sampleCoroutineScope.launch {
             streamService.connect()
         }
     }
 
+    // to dismiss the bottom sheet
     fun dismissBottomSheet() {
         isBottomSheetVisible.value = false
     }
 
+    // to manage bottomSheet visibility
     fun showBottomSheet() {
         isBottomSheetVisible.value = true
     }
 
+    // to manage track lines visibility
     fun trackLineVisibility(checkedValue: Boolean) {
         trackLineCheckedState.value = checkedValue
         dynamicEntityLayer.trackDisplayProperties.showTrackLine = trackLineCheckedState.value
     }
 
+    // to manage previous observations visibility
     fun prevObservationsVisibility(checkedValue: Boolean) {
         prevObservationCheckedState.value = checkedValue
-        dynamicEntityLayer.trackDisplayProperties.showPreviousObservations = prevObservationCheckedState.value
+        dynamicEntityLayer.trackDisplayProperties.showPreviousObservations =
+            prevObservationCheckedState.value
     }
 
+    // to set the maximum number of observations displayed per track
     fun setObservations(sliderValue: Float) {
         trackSliderValue.value = sliderValue
-        dynamicEntityLayer.trackDisplayProperties.maximumObservations = trackSliderValue.value.toInt()
+        dynamicEntityLayer.trackDisplayProperties.maximumObservations =
+            trackSliderValue.value.toInt()
     }
 
+    // remove all dynamic entity observations from the in-memory data cache as well as from the map
     fun purgeAllObservations() {
         sampleCoroutineScope.launch {
             streamService.purgeAll()

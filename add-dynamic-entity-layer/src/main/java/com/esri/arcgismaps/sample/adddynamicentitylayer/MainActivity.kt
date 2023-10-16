@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
         setContent {
             SampleAppTheme {
                 AddDynamicEntityLayerApp()

@@ -28,7 +28,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
-import kotlinx.coroutines.launch
 
 /**
  * Wraps the MapView in a Composable function.
@@ -61,10 +60,8 @@ fun ComposeMapView(
 
     // launch coroutine functions in the composition's CoroutineContext
     LaunchedEffect(Unit) {
-        launch {
-            mapView.onSingleTapConfirmed.collect {
-                onSingleTap(it)
-            }
+        mapView.onSingleTapConfirmed.collect {
+            onSingleTap(it)
         }
     }
 }

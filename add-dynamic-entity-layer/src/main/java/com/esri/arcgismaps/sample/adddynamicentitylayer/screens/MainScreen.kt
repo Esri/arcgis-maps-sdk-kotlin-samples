@@ -84,19 +84,16 @@ fun MainScreen(sampleName: String, application: Application) {
                         isDisconnected = !isDisconnected
                     }) {
                         if (!isDisconnected)
-                            Text(text = "Disconnect" )
+                            Text(text = "Disconnect")
                         else
                             Text("Connect")
                     }
-
                     TextButton(onClick = {
                         mapViewModel.showBottomSheet()
                     }) {
                         Text(text = "Dynamic Entity Settings")
                     }
                 }
-
-
 
             }
             // display a bottom sheet to show popup details
@@ -109,7 +106,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     trackLineCheckedState = mapViewModel.trackLineCheckedState.value,
                     prevObservationCheckedState = mapViewModel.prevObservationCheckedState.value,
                     trackSliderValue = mapViewModel.trackSliderValue.value,
-                    onDismiss = { mapViewModel.dismissBottomSheet() },
+                    onDismiss = { mapViewModel.dismissBottomSheet() }
                 )
             }
         }

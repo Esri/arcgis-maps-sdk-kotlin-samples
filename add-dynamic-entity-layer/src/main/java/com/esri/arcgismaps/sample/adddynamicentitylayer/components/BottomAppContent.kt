@@ -33,11 +33,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -47,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
 
 @Composable
@@ -58,7 +57,7 @@ fun DynamicEntityLayerProperties(
     trackLineCheckedState: Boolean,
     prevObservationCheckedState: Boolean,
     trackSliderValue: Float,
-    onDismiss: () -> Unit = { },
+    onDismiss: () -> Unit = { }
 ) {
     var sliderValue by remember { mutableStateOf(trackSliderValue) }
     // set the state of the switch
@@ -107,8 +106,8 @@ fun DynamicEntityLayerProperties(
                         style = SampleTypography.bodyLarge
                     )
                     Switch(
-                        checked =  trackLineState,
-                        onCheckedChange =  {
+                        checked = trackLineState,
+                        onCheckedChange = {
                             trackLineState = it
                             isTrackLineVisible(trackLineState)
                         }
@@ -128,8 +127,8 @@ fun DynamicEntityLayerProperties(
                         style = SampleTypography.bodyLarge
                     )
                     Switch(
-                        checked =  prevObservationState,
-                        onCheckedChange =  {
+                        checked = prevObservationState,
+                        onCheckedChange = {
                             prevObservationState = it
                             arePrevObservationsVisible(prevObservationState)
                         }
@@ -166,14 +165,15 @@ fun DynamicEntityLayerProperties(
                             // update view model viewshed value
                             onObservationsChanged(sliderValue)
                         },
-                        valueRange = 1f..15f
+                        valueRange = 1f..16f
                     )
                 }
                 Divider(thickness = 0.5.dp)
                 // Button to enable/disable featureReduction property
                 TextButton(
                     modifier = Modifier.align(CenterHorizontally),
-                    onClick = purgeAllObservations)
+                    onClick = purgeAllObservations
+                )
                 {
                     Text(text = "Purge All Observations")
                 }
@@ -186,8 +186,11 @@ fun DynamicEntityLayerProperties(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun DynamicEntityLayerPropertiesPreview() {
-//    SampleAppTheme {
-//        DynamicEntityLayerProperties(
-//        )
-//    }
+    SampleAppTheme {
+        DynamicEntityLayerProperties(
+            trackLineCheckedState = true,
+            prevObservationCheckedState = true,
+            trackSliderValue = 5f
+        )
+    }
 }
