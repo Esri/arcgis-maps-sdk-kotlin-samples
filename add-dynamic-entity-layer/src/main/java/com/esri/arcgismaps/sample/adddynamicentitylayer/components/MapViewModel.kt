@@ -72,17 +72,7 @@ class MapViewModel(
 
         // add the dynamic entity layer to the map's operational layers
         mapViewState.value.arcGISMap.operationalLayers.add(dynamicEntityLayer)
-
-        sampleCoroutineScope.launch {
-            mapViewState.value.arcGISMap.load().onSuccess {
-                println("TEST MAP LOADED")
-            }.onFailure {
-                println("TEST MAP NOT LOADED")
-            }
-        }
-
     }
-
 
     // disconnects the stream service
     fun disconnectStreamService() {
@@ -139,7 +129,7 @@ class MapViewModel(
 /**
  * Data class that represents the MapView state
  */
-data class MapViewState( // This would change based on each sample implementation
+data class MapViewState(
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets),
     var viewpoint: Viewpoint = Viewpoint(40.559691, -111.869001, 150000.0)
 )

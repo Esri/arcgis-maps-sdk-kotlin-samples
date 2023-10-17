@@ -51,7 +51,7 @@ fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
 
-    // display pause/resume job based on the boolean state
+    // display connect/disconnect based on the boolean state
     var isDisconnected by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -96,7 +96,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 }
 
             }
-            // display a bottom sheet to show popup details
+            // display a bottom sheet to set dynamic entity layer properties
             BottomSheet(isVisible = mapViewModel.isBottomSheetVisible.value) {
                 DynamicEntityLayerProperties(
                     isTrackLineVisible = mapViewModel::trackLineVisibility,
