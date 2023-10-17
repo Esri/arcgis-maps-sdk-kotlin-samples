@@ -25,6 +25,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.DynamicEntityLayer
 import com.arcgismaps.realtime.ArcGISStreamService
 import com.arcgismaps.realtime.ArcGISStreamServiceFilter
+import com.esri.arcgismaps.sample.adddynamicentitylayer.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -47,7 +48,7 @@ class MapViewModel(
 
     // create ArcGIS Stream Service
     private val streamService =
-        ArcGISStreamService("https://realtimegis2016.esri.com:6443/arcgis/rest/services/SandyVehicles/StreamServer")
+        ArcGISStreamService(application.getString(R.string.stream_server_url))
 
     // create ArcGISStreamServiceFilter
     private val streamServiceFilter = ArcGISStreamServiceFilter()
