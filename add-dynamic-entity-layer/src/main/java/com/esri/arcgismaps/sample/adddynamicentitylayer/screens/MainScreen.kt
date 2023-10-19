@@ -48,6 +48,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun MainScreen(sampleName: String, application: Application) {
     /// coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
 
