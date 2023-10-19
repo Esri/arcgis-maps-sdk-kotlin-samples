@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Add dynamic entity layer</string>
-    <string name="stream_server_url">https://realtimegis2016.esri.com:6443/arcgis/rest/services/SandyVehicles/StreamServer</string>
+    <string name="stream_service_url">https://realtimegis2016.esri.com:6443/arcgis/rest/services/SandyVehicles/StreamServer</string>
 </resources>
