@@ -83,10 +83,7 @@ fun MainScreen(sampleName: String, application: Application) {
                             mapViewModel.connectStreamService()
                         isDisconnected = !isDisconnected
                     }) {
-                        if (!isDisconnected)
-                            Text(text = "Disconnect")
-                        else
-                            Text("Connect")
+                        Text(text = if (!isDisconnected) "Disconnect" else "Connect")
                     }
                     TextButton(onClick = {
                         mapViewModel.showBottomSheet()
