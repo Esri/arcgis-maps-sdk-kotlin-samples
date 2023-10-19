@@ -50,13 +50,13 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
 
 @Composable
 fun DynamicEntityLayerProperties(
-    isTrackLineVisible: (Boolean) -> Unit = { },
-    arePrevObservationsVisible: (Boolean) -> Unit = { },
+    onTrackLineVisibilityChanged: (Boolean) -> Unit = { },
+    onPrevObservationsVisibilityChanged: (Boolean) -> Unit = { },
     onObservationsChanged: (Float) -> Unit = { },
-    purgeAllObservations: () -> Unit = { },
-    trackLineCheckedState: Boolean,
-    prevObservationCheckedState: Boolean,
-    trackSliderValue: Float,
+    onPurgeAllObservations: () -> Unit = { },
+    isTrackLineVisible: Boolean,
+    isPrevObservationsVisible: Boolean,
+    observationsPerTrack: Float,
     onDismiss: () -> Unit = { }
 ) {
     var sliderValue by remember { mutableStateOf(trackSliderValue) }
