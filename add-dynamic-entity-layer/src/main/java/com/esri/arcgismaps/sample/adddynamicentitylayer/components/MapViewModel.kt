@@ -40,7 +40,7 @@ class MapViewModel(
     val prevObservationCheckedState = mutableStateOf(false)
     val trackSliderValue = mutableStateOf(5f)
 
-    // Flag to show or dismiss the bottom sheet
+    // flag to show or dismiss the bottom sheet
     val isBottomSheetVisible = mutableStateOf(false)
 
     // set the MapView mutable stateflow
