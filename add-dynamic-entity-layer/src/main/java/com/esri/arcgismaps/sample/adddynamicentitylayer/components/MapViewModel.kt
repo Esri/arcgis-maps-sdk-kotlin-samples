@@ -61,9 +61,7 @@ class MapViewModel(
      */
     init {
         // set condition on the ArcGISStreamServiceFilter to limit the amount of data coming from the server
-        streamServiceFilter.apply {
-            whereClause = "speed > 0"
-        }
+        streamServiceFilter.whereClause = "speed > 0"
         streamService.apply {
             filter = streamServiceFilter
             // sets the maximum time (in seconds) an observation remains in the application.
