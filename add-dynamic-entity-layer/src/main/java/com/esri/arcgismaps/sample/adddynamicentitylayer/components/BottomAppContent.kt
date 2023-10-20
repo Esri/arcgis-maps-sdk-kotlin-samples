@@ -88,9 +88,9 @@ fun DynamicEntityLayerProperties(
 
         Surface(
             modifier = Modifier.padding(20.dp),
-            color = Color.White,
+            tonalElevation = 1.dp,
             shape = RoundedCornerShape(20.dp),
-            border = BorderStroke(1.dp, Color.LightGray)
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
             Column(
                 modifier = Modifier.padding(14.dp)
