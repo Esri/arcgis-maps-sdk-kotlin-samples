@@ -40,12 +40,10 @@ fun BottomSheet(
     bottomSheetContent: @Composable() () -> Unit
 ) {
     BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         AnimatedVisibility(
-            modifier = Modifier
-                .align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.BottomCenter),
             visible = isVisible,
             enter = slideInVertically{height -> height} + fadeIn(),
             exit = slideOutVertically{height -> height} + fadeOut()

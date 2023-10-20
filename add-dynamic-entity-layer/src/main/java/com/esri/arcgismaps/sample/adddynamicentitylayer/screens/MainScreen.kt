@@ -97,13 +97,13 @@ fun MainScreen(sampleName: String, application: Application) {
             // display a bottom sheet to set dynamic entity layer properties
             BottomSheet(isVisible = mapViewModel.isBottomSheetVisible.value) {
                 DynamicEntityLayerProperties(
-                    isTrackLineVisible = mapViewModel::trackLineVisibility,
-                    arePrevObservationsVisible = mapViewModel::prevObservationsVisibility,
+                    onTrackLineVisibilityChanged = mapViewModel::trackLineVisibility,
+                    onPrevObservationsVisibilityChanged = mapViewModel::prevObservationsVisibility,
                     onObservationsChanged = mapViewModel::setObservations,
-                    purgeAllObservations = mapViewModel::purgeAllObservations,
-                    trackLineCheckedState = mapViewModel.trackLineCheckedState.value,
-                    prevObservationCheckedState = mapViewModel.prevObservationCheckedState.value,
-                    trackSliderValue = mapViewModel.trackSliderValue.value,
+                    onPurgeAllObservations = mapViewModel::purgeAllObservations,
+                    isTrackLineVisible = mapViewModel.trackLineCheckedState.value,
+                    isPrevObservationsVisible = mapViewModel.prevObservationCheckedState.value,
+                    observationsPerTrack = mapViewModel.trackSliderValue.value,
                     onDismiss = { mapViewModel.dismissBottomSheet() }
                 )
             }

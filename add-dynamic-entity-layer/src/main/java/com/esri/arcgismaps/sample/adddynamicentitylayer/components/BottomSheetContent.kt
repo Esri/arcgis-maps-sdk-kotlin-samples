@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -47,7 +48,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
-
+/**
+ * Composable component to display Dynamic Entity Layer Settings
+ */
 @Composable
 fun DynamicEntityLayerProperties(
     onTrackLineVisibilityChanged: (Boolean) -> Unit = { },
@@ -59,14 +62,9 @@ fun DynamicEntityLayerProperties(
     observationsPerTrack: Float,
     onDismiss: () -> Unit = { }
 ) {
-    var sliderValue by remember { mutableStateOf(trackSliderValue) }
-    // set the state of the switch
-    var trackLineState by remember { mutableStateOf(trackLineCheckedState) }
-    var prevObservationState by remember { mutableStateOf(prevObservationCheckedState) }
+    var sliderValue by remember { mutableStateOf(observationsPerTrack) }
 
-    Column(
-        Modifier.background(MaterialTheme.colorScheme.background)
-    ) {
+    Column(Modifier.background(MaterialTheme.colorScheme.background)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -105,15 +103,13 @@ fun DynamicEntityLayerProperties(
                         style = SampleTypography.bodyLarge
                     )
                     Switch(
-                        checked = trackLineState,
+                        checked = isTrackLineVisible,
                         onCheckedChange = {
-                            trackLineState = it
-                            isTrackLineVisible(trackLineState)
+                            onTrackLineVisibilityChanged(it)
                         }
                     )
                 }
                 Divider(thickness = 0.5.dp)
-                // Button to enable/disable featureReduction property
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -126,10 +122,9 @@ fun DynamicEntityLayerProperties(
                         style = SampleTypography.bodyLarge
                     )
                     Switch(
-                        checked = prevObservationState,
+                        checked = isPrevObservationsVisible,
                         onCheckedChange = {
-                            prevObservationState = it
-                            arePrevObservationsVisible(prevObservationState)
+                            onPrevObservationsVisibilityChanged(it)
                         }
                     )
                 }
@@ -138,14 +133,13 @@ fun DynamicEntityLayerProperties(
 
         Surface(
             modifier = Modifier.padding(20.dp),
-            color = Color.White,
+            tonalElevation = 1.dp,
             shape = RoundedCornerShape(20.dp),
-            border = BorderStroke(1.dp, Color.LightGray)
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
             Column(
                 modifier = Modifier.padding(14.dp)
             ) {
-                // Button to enable/disable featureReduction property
                 Column {
                     Row {
                         Text(
@@ -161,17 +155,15 @@ fun DynamicEntityLayerProperties(
                         value = sliderValue,
                         onValueChange = {
                             sliderValue = it
-                            // update view model viewshed value
                             onObservationsChanged(sliderValue)
                         },
                         valueRange = 1f..16f
                     )
                 }
                 Divider(thickness = 0.5.dp)
-                // Button to enable/disable featureReduction property
                 TextButton(
                     modifier = Modifier.align(CenterHorizontally),
-                    onClick = purgeAllObservations
+                    onClick = onPurgeAllObservations
                 )
                 {
                     Text(text = "Purge All Observations")
@@ -187,9 +179,9 @@ fun DynamicEntityLayerProperties(
 fun DynamicEntityLayerPropertiesPreview() {
     SampleAppTheme {
         DynamicEntityLayerProperties(
-            trackLineCheckedState = true,
-            prevObservationCheckedState = true,
-            trackSliderValue = 5f
+            isTrackLineVisible = true,
+            isPrevObservationsVisible = true,
+            observationsPerTrack = 5f
         )
     }
 }

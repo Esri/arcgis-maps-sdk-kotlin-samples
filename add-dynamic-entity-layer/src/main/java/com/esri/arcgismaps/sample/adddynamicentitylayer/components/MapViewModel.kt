@@ -48,7 +48,7 @@ class MapViewModel(
 
     // create ArcGIS Stream Service
     private val streamService =
-        ArcGISStreamService(application.getString(R.string.stream_server_url))
+        ArcGISStreamService(application.getString(R.string.stream_service_url))
 
     // create ArcGISStreamServiceFilter
     private val streamServiceFilter = ArcGISStreamServiceFilter()
