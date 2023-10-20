@@ -100,7 +100,6 @@ fun DynamicEntityLayerProperties(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
                     Text(
                         text = "Track Lines",
                         style = SampleTypography.bodyLarge
