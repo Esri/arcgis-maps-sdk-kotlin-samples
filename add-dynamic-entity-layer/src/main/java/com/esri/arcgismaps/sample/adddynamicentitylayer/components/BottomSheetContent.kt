@@ -33,10 +33,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -44,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
+import kotlin.math.roundToInt
 
 /**
  * Composable component to display Dynamic Entity Layer Settings
@@ -59,8 +56,6 @@ fun DynamicEntityLayerProperties(
     observationsPerTrack: Float,
     onDismiss: () -> Unit = { }
 ) {
-    var sliderValue by remember { mutableStateOf(observationsPerTrack) }
-
     Column(Modifier.background(MaterialTheme.colorScheme.background)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(20.dp, 20.dp, 20.dp, 0.dp),
@@ -143,14 +138,13 @@ fun DynamicEntityLayerProperties(
                         )
                         Text(
                             modifier = Modifier.weight(1f),
-                            text = sliderValue.toInt().toString()
+                            text = observationsPerTrack.roundToInt().toString()
                         )
                     }
                     Slider(
-                        value = sliderValue,
+                        value = observationsPerTrack,
                         onValueChange = {
-                            sliderValue = it
-                            onObservationsChanged(sliderValue)
+                            onObservationsChanged(it)
                         },
                         valueRange = 1f..16f
                     )
