@@ -63,7 +63,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 Row(
                     modifier = Modifier
                         .padding(12.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
                 ) {
                     Text(text = mapViewModel.bottomTextBanner.value)
                 }
