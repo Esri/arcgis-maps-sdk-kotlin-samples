@@ -36,8 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComposeMapView(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel,
-    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
+    mapViewModel: MapViewModel
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -63,7 +62,9 @@ fun ComposeMapView(
     LaunchedEffect(Unit) {
         launch {
             mapView.onSingleTapConfirmed.collect {
-                onSingleTap(it)
+                // call identifyLayers when a tap event occurs
+                val identifyResult = mapView.identifyLayers(it.screenCoordinate, 12.0, false, 10)
+                mapViewModel.handleIdentifyResult(identifyResult)
             }
         }
     }

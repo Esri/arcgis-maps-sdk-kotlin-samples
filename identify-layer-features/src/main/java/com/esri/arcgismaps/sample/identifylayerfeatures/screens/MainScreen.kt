@@ -18,13 +18,17 @@ package com.esri.arcgismaps.sample.identifylayerfeatures.screens
 
 import android.app.Application
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.identifylayerfeatures.components.ComposeMapView
 import com.esri.arcgismaps.sample.identifylayerfeatures.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -50,12 +54,21 @@ fun MainScreen(sampleName: String, application: Application) {
             ) {
                 // composable function that wraps the MapView
                 ComposeMapView(
-                    modifier = Modifier.fillMaxSize(),
-                    mapViewModel = mapViewModel,
-                    onSingleTap = {
-                        mapViewModel.changeBasemap()
-                    }
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    mapViewModel = mapViewModel
                 )
+                //
+                Row(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth(),
+                ) {
+                    Text(
+                        text = mapViewModel.displayMessage.value
+                    )
+                }
                 // display a dialog if the sample encounters an error
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {

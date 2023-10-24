@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.identifylayerfeatures.components
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Point
@@ -25,22 +26,24 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
-import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.layers.FeatureLayer.Companion.createWithFeatureTable
+import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.esri.arcgismaps.sample.identifylayerfeatures.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MapViewModel(private val application: Application,
-                   private val sampleCoroutineScope: CoroutineScope
+class MapViewModel(
+    private val application: Application,
+    private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
     val mapViewState = MutableStateFlow(MapViewState())
+
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+    val displayMessage = mutableStateOf(String())
 
     init {
         // create a feature layer of damaged property data
@@ -61,40 +64,83 @@ class MapViewModel(private val application: Application,
             }
         }
 
-
         // create a topographic map
         val map = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
             // add world cities layer
             operationalLayers.add(mapImageLayer)
-
             // add damaged property data
             operationalLayers.add(featureLayer)
         }
-
         // assign the map to the map view
         mapViewState.value.arcGISMap = map
     }
 
     /**
-     * Switch between two basemaps
+     * Identify the feature layer results and display the resulting information
      */
-    fun changeBasemap() {
-        val newArcGISMap: ArcGISMap =
-            if (mapViewState.value.arcGISMap.basemap.value?.name.equals("ArcGIS:NavigationNight")) {
-                ArcGISMap(BasemapStyle.ArcGISStreets)
-            } else {
-                ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+    fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
+        sampleCoroutineScope.launch {
+            result.onSuccess { identifyResultList ->
+                displayMessage.value = ""
+                val message = StringBuilder()
+                var totalCount = 0
+                identifyResultList.forEach { identifyLayerResult ->
+                    val count = recursivelyCountIdentifyResultsForSublayers(identifyLayerResult)
+                    val layerName = identifyLayerResult.layerContent.name
+                    message.append(layerName).append(": ").append(count)
+
+                    // add new line character if not the final element in array
+                    if (identifyLayerResult != identifyResultList[identifyResultList.size - 1]) {
+                        message.append("\n")
+                    }
+                    totalCount += count
+                }
+                // if any elements were found show the results, else notify user that no elements were found
+                if (totalCount > 0) {
+                    displayMessage.value = "Number of elements found:\n${message}"
+                } else {
+                    messageDialogVM.showMessageDialog(
+                        title = "No element found",
+                        description = message.toString()
+                    )
+                }
+
+            }.onFailure { error ->
+                messageDialogVM.showMessageDialog(
+                    title = "Error identifying results: ${error.message.toString()}",
+                    description = error.cause.toString()
+                )
             }
-        mapViewState.update { it.copy(arcGISMap = newArcGISMap) }
+        }
+    }
+
+    /**
+     * Gets a count of the GeoElements in the passed result layer.
+     * This method recursively calls itself to descend into sublayers and count their results.
+     * @param result from a single layer.
+     * @return the total count of GeoElements.
+     */
+    private fun recursivelyCountIdentifyResultsForSublayers(result: IdentifyLayerResult): Int {
+        var subLayerGeoElementCount = 0
+
+        for (sublayerResult in result.sublayerResults) {
+            // recursively call this function to accumulate elements from all sublayers
+            subLayerGeoElementCount += recursivelyCountIdentifyResultsForSublayers(sublayerResult)
+        }
+
+        return subLayerGeoElementCount + result.geoElements.size
     }
 }
-
 
 /**
  * Data class that represents the MapView state
  */
 data class MapViewState( // This would change based on each sample implementation
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(Point(-10977012.785807, 4514257.550369,
-        SpatialReference(wkid = 3857)), 68015210.0)
+    var viewpoint: Viewpoint = Viewpoint(
+        Point(
+            -10977012.785807, 4514257.550369,
+            SpatialReference(wkid = 3857)
+        ), 68015210.0
+    )
 )
