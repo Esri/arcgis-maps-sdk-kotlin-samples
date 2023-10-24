@@ -1,2 +1,32 @@
 {
+    "category": "Search and Query",
+    "description": "Identify features in all layers in a map.",
+    "formal_name": "IdentifyLayerFeatures",
+    "ignore": false,
+    "images": [
+        "identify-layer-features.png"
+    ],
+    "keywords": [
+        "identify",
+        "recursion",
+        "recursive",
+        "sublayers",
+        "IdentifyLayerResult",
+        "IdentifyLayerResult.sublayerResults",
+        "MapView.identifyLayers(...)"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "IdentifyLayerResult",
+        "IdentifyLayerResult.sublayerResults",
+        "MapView.identifyLayers(...)"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/screens/MainScreen.kt"
+    ],
+    "title": "Identify layer features"
 }

@@ -59,15 +59,13 @@ fun MainScreen(sampleName: String, application: Application) {
                         .weight(1f),
                     mapViewModel = mapViewModel
                 )
-                //
+                // Bottom text to display the identify results
                 Row(
                     modifier = Modifier
                         .padding(12.dp)
                         .fillMaxWidth(),
                 ) {
-                    Text(
-                        text = mapViewModel.displayMessage.value
-                    )
+                    Text(text = mapViewModel.bottomTextBanner.value)
                 }
                 // display a dialog if the sample encounters an error
                 mapViewModel.messageDialogVM.apply {

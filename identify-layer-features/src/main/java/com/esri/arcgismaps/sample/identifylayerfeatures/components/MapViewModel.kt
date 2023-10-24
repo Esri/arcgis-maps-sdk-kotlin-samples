@@ -43,7 +43,9 @@ class MapViewModel(
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
-    val displayMessage = mutableStateOf(String())
+
+    // string text to display the identify layer results
+    val bottomTextBanner = mutableStateOf(String())
 
     init {
         // create a feature layer of damaged property data
@@ -81,30 +83,29 @@ class MapViewModel(
     fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
-                displayMessage.value = ""
+                bottomTextBanner.value = ""
                 val message = StringBuilder()
                 var totalCount = 0
                 identifyResultList.forEach { identifyLayerResult ->
-                    val count = recursivelyCountIdentifyResultsForSublayers(identifyLayerResult)
+                    val geoElementsCount = geoElementsCountFromResult(identifyLayerResult)
                     val layerName = identifyLayerResult.layerContent.name
-                    message.append(layerName).append(": ").append(count)
+                    message.append(layerName).append(": ").append(geoElementsCount)
 
                     // add new line character if not the final element in array
                     if (identifyLayerResult != identifyResultList[identifyResultList.size - 1]) {
                         message.append("\n")
                     }
-                    totalCount += count
+                    totalCount += geoElementsCount
                 }
                 // if any elements were found show the results, else notify user that no elements were found
                 if (totalCount > 0) {
-                    displayMessage.value = "Number of elements found:\n${message}"
+                    bottomTextBanner.value = "Number of elements found:\n${message}"
                 } else {
                     messageDialogVM.showMessageDialog(
                         title = "No element found",
                         description = message.toString()
                     )
                 }
-
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     title = "Error identifying results: ${error.message.toString()}",
@@ -120,14 +121,12 @@ class MapViewModel(
      * @param result from a single layer.
      * @return the total count of GeoElements.
      */
-    private fun recursivelyCountIdentifyResultsForSublayers(result: IdentifyLayerResult): Int {
+    private fun geoElementsCountFromResult(result: IdentifyLayerResult): Int {
         var subLayerGeoElementCount = 0
-
         for (sublayerResult in result.sublayerResults) {
             // recursively call this function to accumulate elements from all sublayers
-            subLayerGeoElementCount += recursivelyCountIdentifyResultsForSublayers(sublayerResult)
+            subLayerGeoElementCount += geoElementsCountFromResult(sublayerResult)
         }
-
         return subLayerGeoElementCount + result.geoElements.size
     }
 }

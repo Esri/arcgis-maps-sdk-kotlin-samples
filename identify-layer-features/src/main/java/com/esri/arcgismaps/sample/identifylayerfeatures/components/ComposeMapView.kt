@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.MapView
-import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import kotlinx.coroutines.launch
 
 /**

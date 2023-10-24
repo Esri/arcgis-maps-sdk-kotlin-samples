@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                SampleApp()
+                IdentifyLayerFeaturesApp()
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun IdentifyLayerFeaturesApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
