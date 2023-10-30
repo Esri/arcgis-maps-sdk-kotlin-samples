@@ -100,6 +100,7 @@ class MapViewModel(
                 if (totalCount > 0) {
                     bottomTextBanner.value = "Number of elements found:\n${message}"
                 } else {
+                   bottomTextBanner.value = "Number of elements found: N/A"
                     messageDialogVM.showMessageDialog(
                         title = "No element found",
                         description = "Tap an area on the map with visible features"
