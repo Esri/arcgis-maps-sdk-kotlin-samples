@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.MapView
-import kotlinx.coroutines.launch
 
 /**
  * Wraps the MapView in a Composable function.
@@ -59,16 +58,15 @@ fun ComposeMapView(
 
     // launch coroutine functions in the composition's CoroutineContext
     LaunchedEffect(Unit) {
-            mapView.onSingleTapConfirmed.collect {
-                // call identifyLayers when a tap event occurs
-                val identifyResult = mapView.identifyLayers(
-                    screenCoordinate = it.screenCoordinate,
-                    tolerance = 12.0,
-                    returnPopupsOnly = false,
-                    maximumResults = 10
-                )
-                mapViewModel.handleIdentifyResult(identifyResult)
-            }
+        mapView.onSingleTapConfirmed.collect {
+            // call identifyLayers when a tap event occurs
+            val identifyResult = mapView.identifyLayers(
+                screenCoordinate = it.screenCoordinate,
+                tolerance = 12.0,
+                returnPopupsOnly = false,
+                maximumResults = 10
+            )
+            mapViewModel.handleIdentifyResult(identifyResult)
         }
     }
 }

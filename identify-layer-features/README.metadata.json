@@ -13,14 +13,14 @@
         "sublayers",
         "IdentifyLayerResult",
         "IdentifyLayerResult.sublayerResults",
-        "MapView.identifyLayers(...)"
+        "LayerContent"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
         "IdentifyLayerResult",
         "IdentifyLayerResult.sublayerResults",
-        "MapView.identifyLayers(...)"
+        "LayerContent"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/MainActivity.kt",
