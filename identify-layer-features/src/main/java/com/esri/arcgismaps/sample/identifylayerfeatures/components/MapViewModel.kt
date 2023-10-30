@@ -83,7 +83,6 @@ class MapViewModel(
     fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
-                bottomTextBanner.value = ""
                 val message = StringBuilder()
                 var totalCount = 0
                 identifyResultList.forEach { identifyLayerResult ->
