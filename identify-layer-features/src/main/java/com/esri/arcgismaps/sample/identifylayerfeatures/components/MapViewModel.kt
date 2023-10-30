@@ -102,7 +102,7 @@ class MapViewModel(
                 } else {
                     messageDialogVM.showMessageDialog(
                         title = "No element found",
-                        description = message.toString()
+                        description = "Tap an area on the map with visible features"
                     )
                 }
             }.onFailure { error ->
