@@ -45,7 +45,7 @@ class MapViewModel(
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // string text to display the identify layer results
-    val bottomTextBanner = mutableStateOf(String())
+    val bottomTextBanner = mutableStateOf("Tap on the map to identify feature layers")
 
     init {
         // create a feature layer of damaged property data
