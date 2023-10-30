@@ -22,7 +22,7 @@ Tap to identify features. A bottom text banner will show all layers with feature
 
 * IdentifyLayerResult
 * IdentifyLayerResult.sublayerResults
-* MapView.identifyLayers(...)
+* LayerContent
 
 ## Additional information
 
