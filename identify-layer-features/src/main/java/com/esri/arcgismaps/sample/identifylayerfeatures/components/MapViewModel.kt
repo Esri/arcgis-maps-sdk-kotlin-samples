@@ -136,9 +136,11 @@ class MapViewModel(
 data class MapViewState( 
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
     var viewpoint: Viewpoint = Viewpoint(
-        Point(
-            -10977012.785807, 4514257.550369,
-            SpatialReference(wkid = 3857)
-        ), 68015210.0
+        center = Point(
+            x = -10977012.785807,
+            y = 4514257.550369,
+            spatialReference = SpatialReference(wkid = 3857)
+        ),
+        scale = 68015210.0
     )
 )
