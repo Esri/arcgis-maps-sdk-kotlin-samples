@@ -59,7 +59,6 @@ fun ComposeMapView(
 
     // launch coroutine functions in the composition's CoroutineContext
     LaunchedEffect(Unit) {
-        launch {
             mapView.onSingleTapConfirmed.collect {
                 // call identifyLayers when a tap event occurs
                 val identifyResult = mapView.identifyLayers(it.screenCoordinate, 12.0, false, 10)
