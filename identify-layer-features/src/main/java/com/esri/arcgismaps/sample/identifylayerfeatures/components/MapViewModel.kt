@@ -133,7 +133,7 @@ class MapViewModel(
 /**
  * Data class that represents the MapView state
  */
-data class MapViewState( // This would change based on each sample implementation
+data class MapViewState( 
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
     var viewpoint: Viewpoint = Viewpoint(
         Point(
