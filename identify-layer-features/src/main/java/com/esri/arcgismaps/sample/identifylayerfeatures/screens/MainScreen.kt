@@ -56,7 +56,8 @@ fun MainScreen(sampleName: String, application: Application) {
                 ComposeMapView(
                     modifier = Modifier
                         .fillMaxSize()
-                        .weight(1f),
+                        .weight(1f)
+                        .animateContentSize(),
                     mapViewModel = mapViewModel
                 )
                 // Bottom text to display the identify results
@@ -64,6 +65,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     modifier = Modifier
                         .padding(12.dp)
                         .fillMaxWidth()
+                        .animateContentSize()
                 ) {
                     Text(text = mapViewModel.bottomTextBanner.value)
                 }
