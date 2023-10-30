@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(
-    private val application: Application,
+    application: Application,
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
     // set the MapView mutable stateflow
