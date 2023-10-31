@@ -1,0 +1,44 @@
+{
+    "category": "Layers",
+    "description": "Display data from an ArcGIS stream service using a dynamic entity layer.",
+    "formal_name": "AddDynamicEntityLayer",
+    "ignore": false,
+    "images": [
+        "add-dynamic-entity-layer.png"
+    ],
+    "keywords": [
+        "data",
+        "dynamic",
+        "entity",
+        "live",
+        "purge",
+        "real-time",
+        "service",
+        "stream",
+        "track",
+        "ArcGISStreamService",
+        "DynamicEntity",
+        "DynamicEntityFilter",
+        "DynamicEntityLayer",
+        "DynamicEntityPurgeOptions",
+        "TrackDisplayProperties"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISStreamService",
+        "DynamicEntity",
+        "DynamicEntityFilter",
+        "DynamicEntityLayer",
+        "DynamicEntityPurgeOptions",
+        "TrackDisplayProperties"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/components/BottomSheetContent.kt",
+        "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/components/ComposeMapView.kt",
+        "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/screens/MainScreen.kt"
+    ],
+    "title": "Add dynamic entity layer"
+}
