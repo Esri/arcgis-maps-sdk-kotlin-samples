@@ -10,17 +10,17 @@ ext {
     versionCode = 2002002
     versionName = '200.3.0'
     // Kotlin versions
-    kotlinVersion = '1.8.21'
+    kotlinVersion = '1.9.10'
     ktxLifecycle = '2.5.1'
-    ktxFragmentsExt = '1.5.4'
-    ktxActivityExt = '1.6.1'
-    ktxAndroidCore = '1.9.0'
-    kotlinCompilerExt = '1.4.7'
+    ktxFragmentsExt = '1.6.1'
+    ktxActivityExt = '1.7.2'
+    ktxAndroidCore = '1.10.1'
+    kotlinCompilerExt = '1.5.3'
     // Compose versions
     composeActivityVersion = '1.7.1'
     composeBOM = '2023.05.01'
     // Library versions
-    appcompatVersion = '1.5.1'
+    appcompatVersion = '1.6.1'
     constraintLayoutVersion = '2.1.4'
     workVersion = '2.7.1'
     multidexVersion = '2.0.1'
@@ -28,7 +28,7 @@ ext {
     recyclerViewVersion = '1.1.0'
     androidBrowserVersion = '1.5.0'
     // Plugin versions
-    gradleVersion = '8.0.0'
+    gradleVersion = '8.1.1'
     // Java version
     javaVersion = 1.17
 }
