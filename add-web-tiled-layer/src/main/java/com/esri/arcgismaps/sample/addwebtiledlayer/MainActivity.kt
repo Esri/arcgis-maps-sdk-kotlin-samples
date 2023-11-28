@@ -39,18 +39,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(mapView)
 
-        // list of sub-domains
-        val subDomains = listOf("a", "b", "c", "d")
-
         // build the web tiled layer from stamen url and subDomains
-        val webTiledLayer =
-            WebTiledLayer.create(
-                getString(R.string.template_uri_stamen),
-                subDomains
-            ).apply {
-                // set the attribution on the layer
-                attribution = getString(R.string.stamen_attribution)
-            }
+        val webTiledLayer = WebTiledLayer.create(
+            urlTemplate = getString(R.string.template_uri_stamen)
+        ).apply {
+            // set the attribution on the layer
+            attribution = getString(R.string.stamen_attribution)
+        }
 
         // use web tiled layer as Basemap
         val map = ArcGISMap(Basemap(webTiledLayer))
