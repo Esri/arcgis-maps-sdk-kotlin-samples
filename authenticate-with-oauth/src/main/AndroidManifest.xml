@@ -32,7 +32,7 @@
                 <!-- used as a redirect URI to navigate back to the app after prompting for OAuth credentials -->
                 <data
                     android:host="auth"
-                    android:scheme="my-ags-app" />
+                    android:scheme="authenticate-with-oauth" />
             </intent-filter>
         </activity>
     </application>
