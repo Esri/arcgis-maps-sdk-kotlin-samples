@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Add web tiled layer</string>
-    <string name="template_uri_stamen">https://server.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{level}/{row}/{col}.jpg</string>
-    <string name="stamen_attribution">Map tiles by <a href="https://livingatlas.arcgis.com">ArcGIS Living Atlas of the World</a>, under <a href="https://www.esri.com/en-us/legal/terms/full-master-agreement">Esri Master License Agreement</a>. Data by Esri, Garmin, GEBCO, NOAA NGDC, and other contributors.</string>
+    <string name="template_uri_living_atlas">https://server.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{level}/{row}/{col}.jpg</string>
+    <string name="living_atlas_attribution">Map tiles by <a href="https://livingatlas.arcgis.com">ArcGIS Living Atlas of the World</a>, under <a href="https://www.esri.com/en-us/legal/terms/full-master-agreement">Esri Master License Agreement</a>. Data by Esri, Garmin, GEBCO, NOAA NGDC, and other contributors.</string>
 </resources>

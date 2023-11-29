@@ -41,10 +41,10 @@ class MainActivity : AppCompatActivity() {
 
         // build the web tiled layer from stamen url and subDomains
         val webTiledLayer = WebTiledLayer.create(
-            urlTemplate = getString(R.string.template_uri_stamen)
+            urlTemplate = getString(R.string.template_uri_living_atlas)
         ).apply {
             // set the attribution on the layer
-            attribution = getString(R.string.stamen_attribution)
+            attribution = getString(R.string.living_atlas_attribution)
         }
 
         // use web tiled layer as Basemap
