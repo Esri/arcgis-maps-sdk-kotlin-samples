@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(mapView)
 
-        // build the web tiled layer from stamen url and subDomains
+        // build the web tiled layer from ArcGIS Living Atlas of the World tile service url
         val webTiledLayer = WebTiledLayer.create(
             urlTemplate = getString(R.string.template_uri_living_atlas)
         ).apply {
