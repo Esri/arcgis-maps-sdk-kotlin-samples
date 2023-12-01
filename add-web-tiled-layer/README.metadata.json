@@ -7,11 +7,9 @@
         "add-web-tiled-layer.png"
     ],
     "keywords": [
+        "ArcGIS Living Atlas",
         "OGC",
-        "Open Street Map",
-        "OpenStreetMap",
         "layer",
-        "stamen.com",
         "tiled",
         "tiles",
         "Basemap",
