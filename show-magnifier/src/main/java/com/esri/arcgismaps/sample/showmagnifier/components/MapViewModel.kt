@@ -17,15 +17,11 @@
 package com.esri.arcgismaps.sample.showmagnifier.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // get an instance of the MapView state

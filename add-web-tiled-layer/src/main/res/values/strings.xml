@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Add web tiled layer</string>
-    <string name="template_uri_stamen">https://stamen-tiles-{subdomain}.a.ssl.fastly.net/terrain/{level}/{col}/{row}.png</string>
-    <string name="stamen_attribution">Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.</string>
+    <string name="template_uri_living_atlas">https://server.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{level}/{row}/{col}.jpg</string>
+    <string name="living_atlas_attribution">Map tiles by <a href="https://livingatlas.arcgis.com">ArcGIS Living Atlas of the World</a>, under <a href="https://www.esri.com/en-us/legal/terms/full-master-agreement">Esri Master License Agreement</a>. Data by Esri, Garmin, GEBCO, NOAA NGDC, and other contributors.</string>
 </resources>

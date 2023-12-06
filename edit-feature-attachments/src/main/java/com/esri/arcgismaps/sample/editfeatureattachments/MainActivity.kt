@@ -186,14 +186,14 @@ class MainActivity : AppCompatActivity() {
         val dialog = createLoadingDialog("Fetching attachment data").show()
 
         // create folder /ArcGIS/Attachments in external storage
-        val fileDir = File(externalCacheDir?.path + "/Attachments")
+        val fileDir = File(getExternalFilesDir(null)?.path + "/Attachments")
         fileDir.mkdirs()
         // create the file with the attachment name
         val file = File(fileDir, attachment.name)
 
         // file provider URI
         val contentUri = FileProvider.getUriForFile(
-            applicationContext, getString(R.string.provider_authority), file
+            this, getString(R.string.provider_authority), file
         )
         // open the file in gallery
         val imageIntent = Intent().apply {
