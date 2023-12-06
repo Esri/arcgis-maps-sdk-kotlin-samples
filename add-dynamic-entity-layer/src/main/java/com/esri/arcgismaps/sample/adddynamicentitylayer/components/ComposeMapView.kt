@@ -18,16 +18,16 @@ package com.esri.arcgismaps.sample.adddynamicentitylayer.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.arcgismaps.mapping.view.MapView
+<<<<<<<< HEAD:add-dynamic-entity-layer/src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/components/ComposeMapView.kt
 import kotlinx.coroutines.launch
+========
+>>>>>>>> 4d3e86b6 (Release v200.3.0 (#141)):show-magnifier/src/main/java/com/esri/arcgismaps/sample/showmagnifier/components/ComposeMapView.kt
 
 /**
  * Wraps the MapView in a Composable function.
