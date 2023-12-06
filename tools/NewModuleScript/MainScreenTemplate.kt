@@ -17,13 +17,18 @@
 package com.esri.arcgismaps.sample.displaycomposablemapview.screens
 
 import android.app.Application
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.esri.arcgismaps.sample.displaycomposablemapview.components.ComposeMapView
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -34,24 +39,19 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun MainScreen(sampleName: String, application: Application) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
+    val arcGISMap by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                // composable function that wraps the MapView
-                ComposeMapView(
-                    modifier = Modifier.fillMaxSize(),
-                    mapViewModel = mapViewModel,
-                    onSingleTap = {
-                        mapViewModel.changeBasemap()
-                    }
-                )
-            }
+            MapView(
+                modifier = Modifier.fillMaxSize().padding(it),
+                arcGISMap = arcGISMap,
+                viewpointOperation = MapViewpointOperation.Set(viewpoint = mapViewModel.viewpoint.value),
+                onSingleTapConfirmed = {
+                    mapViewModel.changeBasemap()
+                }
+            )
         }
     )
 }

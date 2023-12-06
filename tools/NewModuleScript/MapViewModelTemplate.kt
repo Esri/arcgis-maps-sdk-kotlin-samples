@@ -17,36 +17,19 @@
 package com.esri.arcgismaps.sample.displaycomposablemapview.components
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
-
+    private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
+    private val viewpointAsia = Viewpoint(39.8, 98.6, 10e7)
+    var viewpoint =  mutableStateOf(viewpointAmerica)
     /**
      * Switch between two basemaps
      */
     fun changeBasemap() {
-        val newArcGISMap: ArcGISMap =
-            if (mapViewState.value.arcGISMap.basemap.value?.name.equals("ArcGIS:NavigationNight")) {
-                ArcGISMap(BasemapStyle.ArcGISStreets)
-            } else {
-                ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-            }
-        mapViewState.update { it.copy(arcGISMap = newArcGISMap) }
+        viewpoint.value =
+            if (viewpoint.value == viewpointAmerica) viewpointAsia else viewpointAmerica
     }
 }
-
-
-/**
- * Data class that represents the MapView state
- */
-data class MapViewState( // This would change based on each sample implementation
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
-)

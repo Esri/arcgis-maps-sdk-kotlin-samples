@@ -19,19 +19,19 @@ package com.esri.arcgismaps.sample.displaycomposablemapview
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,27 +47,21 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                Column(
+                // a mutable/immutable state is computed by remember to store its value during
+                // initial composition, and updates the composition on the state value change
+                var viewpoint by remember { mutableStateOf(viewpointAmerica) }
+                val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
+                // Toolkit's Composable MapView function
+                MapView(
                     modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // a mutable/immutable state is computed by remember to store its value during
-                    // initial composition, and updates the composition on the state value change
-                    var viewpoint by remember { mutableStateOf(viewpointAmerica) }
-                    val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
+                    arcGISMap = map,
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
+                    onSingleTapConfirmed = {
+                        viewpoint =
+                            if (viewpoint == viewpointAmerica) viewpointAsia else viewpointAmerica
+                    }
+                )
 
-                    // Composable function that wraps the MapView
-                    MapViewWithCompose(
-                        arcGISMap = map,
-                        viewpoint = viewpoint,
-                        // lambda to retrieve the MapView's onSingleTapConfirmed
-                        onSingleTap = {
-                            // swap between America and Asia viewpoints
-                            viewpoint =
-                                if (viewpoint == viewpointAmerica) viewpointAsia else viewpointAmerica
-                        }
-                    )
-                }
             }
         }
     }
