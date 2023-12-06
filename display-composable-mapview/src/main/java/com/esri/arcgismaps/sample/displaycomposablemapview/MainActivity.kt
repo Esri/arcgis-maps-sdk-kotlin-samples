@@ -51,7 +51,6 @@ class MainActivity : ComponentActivity() {
                 // initial composition, and updates the composition on the state value change
                 var viewpoint by remember { mutableStateOf(viewpointAmerica) }
                 val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
-                // Toolkit's Composable MapView function
                 MapView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = map,
