@@ -45,4 +45,7 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling"
     implementation "androidx.compose.ui:ui-tooling-preview"
     implementation project(path: ':samples-lib')
+    // Toolkit dependencies
+    implementation(platform("com.esri:arcgis-maps-kotlin-toolkit-bom:200.3.0-1"))
+    implementation('com.esri:arcgis-maps-kotlin-toolkit-geo-compose')
 }
