@@ -34,7 +34,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
+    // Create an ArcGISMap and Viewpoint
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
     val viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
 
