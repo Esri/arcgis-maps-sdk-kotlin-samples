@@ -22,9 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.Color
@@ -32,13 +30,11 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.toolkit.geocompose.GraphicsOverlayCollection
 import com.arcgismaps.toolkit.geocompose.MapView
 import com.arcgismaps.toolkit.geocompose.rememberGraphicsOverlayCollection
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -58,36 +54,55 @@ fun MainScreen(sampleName: String, application: Application) {
     val arcGISMap = ArcGISMap(Basemap(basemapLayer))
     // the collection of graphics overlays used by the MapView
     val graphicsOverlays = rememberGraphicsOverlayCollection()
+    // the collection of graphics overlays used by the MapView
+    val graphicsOverlay = remember { GraphicsOverlay() }
+    // set up a graphic to indicate where the coordinates relate to, with an initial location
+    val initialPoint = Point(0.0, 0.0, SpatialReference.wgs84())
 
+    val coordinateLocation = Graphic(
+        geometry = initialPoint,
+        symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Cross,
+            color = Color.fromRgba(255, 255, 0, 255),
+            size = 20f
+        )
+    )
 
+    graphicsOverlay.graphics.add(coordinateLocation)
+    // update the coordinate notations using the initial point
+    coordinateLocation.geometry = initialPoint
+    mapViewModel.toCoordinateNotationFromPoint(initialPoint)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { it ->
             Column(
-                modifier = Modifier.fillMaxSize().padding(it)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
             ) {
                 // layout to display the coordinate text fields.
                 CoordinatesLayout(mapViewModel = mapViewModel)
                 MapView(
-                    modifier = Modifier.fillMaxSize().padding(it),
+                    modifier = Modifier.fillMaxSize(),
                     arcGISMap = arcGISMap,
-                    graphicsOverlays = graphicsOverlays,
+                    graphicsOverlays = graphicsOverlays.apply {
+                        this.add(graphicsOverlay)
+                    },
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
                         /**
                          * Updates the tapped graphic and coordinate notations using the [tappedPoint]
                          */
                         if (singleTapConfirmedEvent.mapPoint != null) {
                             // update the tapped location graphic
-                            mapViewModel.coordinateLocation.geometry = singleTapConfirmedEvent.mapPoint
-                            graphicsOverlays.onEach {
-                                it.graphics.apply {
-                                    clear()
-                                    add(mapViewModel.coordinateLocation)
-                                }
-                                // update the coordinate notations using the tapped point
-                                mapViewModel.toCoordinateNotationFromPoint(singleTapConfirmedEvent.mapPoint!!)
-                            }
+                            coordinateLocation.geometry = singleTapConfirmedEvent.mapPoint
+                            graphicsOverlay.graphics.clear()
+                            graphicsOverlay.graphics.add(coordinateLocation)
+                            // update the coordinate notations using the tapped point
+                            coordinateLocation.geometry = singleTapConfirmedEvent.mapPoint
+                            mapViewModel.toCoordinateNotationFromPoint(
+                                singleTapConfirmedEvent.mapPoint!!
+                            )
                         }
                     }
                 )
