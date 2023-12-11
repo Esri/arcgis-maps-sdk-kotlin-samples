@@ -39,8 +39,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.R
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    // set the MapView state
-    val mapViewState = MapViewState()
 
     var decimalDegrees by mutableStateOf("")
         private set
@@ -53,10 +51,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var usng by mutableStateOf("")
         private set
 
-    // set up a graphic to indicate where the coordinates relate to, with an initial location
-    private val initialPoint = Point(0.0, 0.0, SpatialReference.wgs84())
 
-    private val coordinateLocation = Graphic(
+    // set up a graphic to indicate where the coordinates relate to, with an initial location
+    val initialPoint = Point(0.0, 0.0, SpatialReference.wgs84())
+
+    val coordinateLocation = Graphic(
         geometry = initialPoint,
         symbol = SimpleMarkerSymbol(
             style = SimpleMarkerSymbolStyle.Cross,
@@ -64,42 +63,20 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             size = 20f
         )
     )
-
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
-    init {
-        // create a map that has the WGS 84 coordinate system and set this into the map
-        val basemapLayer = ArcGISTiledLayer(application.getString(R.string.basemap_url))
-        val map = ArcGISMap(Basemap(basemapLayer))
-        mapViewState.arcGISMap = map
-        mapViewState.graphicsOverlay.graphics.add(coordinateLocation)
+//    init {
+//        // update the coordinate notations using the initial point
+//        toCoordinateNotationFromPoint(initialPoint)
+//    }
 
-        // update the coordinate notations using the initial point
-        toCoordinateNotationFromPoint(initialPoint)
-    }
-
-    /**
-     * Updates the tapped graphic and coordinate notations using the [tappedPoint]
-     */
-    fun onMapTapped(tappedPoint: Point?) {
-        if (tappedPoint != null) {
-            // update the tapped location graphic
-            coordinateLocation.geometry = tappedPoint
-            mapViewState.graphicsOverlay.graphics.apply {
-                clear()
-                add(coordinateLocation)
-            }
-            // update the coordinate notations using the tapped point
-            toCoordinateNotationFromPoint(tappedPoint)
-        }
-    }
 
     /**
      * Uses CoordinateFormatter to update the UI with coordinate notation strings based on the
      * given [newLocation] point to convert to coordinate notations
      */
-    private fun toCoordinateNotationFromPoint(newLocation: Point) {
+    fun toCoordinateNotationFromPoint(newLocation: Point) {
         coordinateLocation.geometry = newLocation
         // use CoordinateFormatter to convert to Latitude Longitude, formatted as Decimal Degrees
         decimalDegrees = CoordinateFormatter.toLatitudeLongitudeOrNull(
@@ -205,12 +182,4 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun setUSNGDegreesCoordinate(inputString: String) {
         usng = inputString
     }
-}
-
-/**
- * Class that represents the MapView's current state
- */
-class MapViewState {
-    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight))
-    var graphicsOverlay: GraphicsOverlay by mutableStateOf(GraphicsOverlay())
 }

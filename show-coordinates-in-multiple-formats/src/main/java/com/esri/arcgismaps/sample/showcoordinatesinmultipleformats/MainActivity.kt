@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -48,7 +49,9 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun ShowCoordinatesInMultipleFormatsApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            MainScreen(sampleName = getString(R.string.app_name))
+            MainScreen(sampleName = getString(R.string.app_name),
+                application = application
+            )
         }
     }
 }
