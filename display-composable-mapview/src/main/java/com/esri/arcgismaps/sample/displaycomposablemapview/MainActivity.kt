@@ -41,6 +41,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
+                // a mutable/immutable state is computed by remember to store its value during
+                // initial composition, and updates the composition on the state value change
                 // create and add a map with a navigation night basemap style
                 val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
                 MapView(
