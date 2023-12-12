@@ -67,7 +67,6 @@ fun MainScreen(sampleName: String, application: Application) {
             size = 20f
         )
     )
-
     graphicsOverlay.graphics.add(coordinateLocation)
     // update the coordinate notations using the initial point
     coordinateLocation.geometry = initialPoint

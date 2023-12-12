@@ -25,7 +25,6 @@ import com.arcgismaps.geometry.CoordinateFormatter
 import com.arcgismaps.geometry.LatitudeLongitudeFormat
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.UtmConversionMode
-import com.arcgismaps.mapping.view.Graphic
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
