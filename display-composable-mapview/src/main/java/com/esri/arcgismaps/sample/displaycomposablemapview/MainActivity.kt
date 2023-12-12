@@ -23,21 +23,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
-
-    private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
-    private val viewpointAsia = Viewpoint(39.8, 98.6, 10e7)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,20 +41,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                // a mutable/immutable state is computed by remember to store its value during
-                // initial composition, and updates the composition on the state value change
-                var viewpoint by remember { mutableStateOf(viewpointAmerica) }
+                // create and add a map with a navigation night basemap style
                 val map by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
                 MapView(
                     modifier = Modifier.fillMaxSize(),
-                    arcGISMap = map,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
-                    onSingleTapConfirmed = {
-                        viewpoint =
-                            if (viewpoint == viewpointAmerica) viewpointAsia else viewpointAmerica
-                    }
+                    arcGISMap = map
                 )
-
             }
         }
     }
