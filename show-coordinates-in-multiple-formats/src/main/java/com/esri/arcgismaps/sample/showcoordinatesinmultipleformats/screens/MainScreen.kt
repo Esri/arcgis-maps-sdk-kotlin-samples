@@ -92,16 +92,16 @@ fun MainScreen(sampleName: String, application: Application) {
                         /**
                          * Updates the tapped graphic and coordinate notations using the [tappedPoint]
                          */
-                        if (singleTapConfirmedEvent.mapPoint != null) {
+                        val tappedPoint = singleTapConfirmedEvent.mapPoint
+                        if (tappedPoint != null) {
                             // update the tapped location graphic
-                            coordinateLocation.geometry = singleTapConfirmedEvent.mapPoint
-                            graphicsOverlay.graphics.clear()
-                            graphicsOverlay.graphics.add(coordinateLocation)
+                            coordinateLocation.geometry = tappedPoint
+                            graphicsOverlay.graphics.apply {
+                                clear()
+                                add(coordinateLocation)
+                            }
                             // update the coordinate notations using the tapped point
-                            coordinateLocation.geometry = singleTapConfirmedEvent.mapPoint
-                            mapViewModel.toCoordinateNotationFromPoint(
-                                singleTapConfirmedEvent.mapPoint!!
-                            )
+                            mapViewModel.toCoordinateNotationFromPoint(tappedPoint)
                         }
                     }
                 )
