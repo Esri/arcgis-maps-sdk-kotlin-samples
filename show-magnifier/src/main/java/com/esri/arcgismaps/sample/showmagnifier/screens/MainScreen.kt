@@ -37,7 +37,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun MainScreen(sampleName: String) {
     // Create an ArcGISMap and Viewpoint
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
-    val viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
+    val californiaViewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -45,7 +45,7 @@ fun MainScreen(sampleName: String) {
             MapView(
                 modifier = Modifier.fillMaxSize().padding(it),
                 arcGISMap = arcGISMap,
-                viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
+                viewpointOperation = MapViewpointOperation.Set(viewpoint = californiaViewpoint),
                 mapViewInteractionOptions = MapViewInteractionOptions(isMagnifierEnabled = true)
             )
         }
