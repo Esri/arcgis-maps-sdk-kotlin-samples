@@ -53,7 +53,7 @@ fun MainScreen(sampleName: String, application: Application) {
     val basemapLayer = ArcGISTiledLayer(application.getString(R.string.basemap_url))
     val arcGISMap = ArcGISMap(Basemap(basemapLayer))
     // the collection of graphics overlays used by the MapView
-    val graphicsOverlays = rememberGraphicsOverlayCollection()
+    val graphicsOverlayCollection = rememberGraphicsOverlayCollection()
     // the collection of graphics overlays used by the MapView
     val graphicsOverlay = remember { GraphicsOverlay() }
     // set up a graphic to indicate where the coordinates relate to, with an initial location
@@ -85,7 +85,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 MapView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = arcGISMap,
-                    graphicsOverlays = graphicsOverlays.apply {
+                    graphicsOverlays = graphicsOverlayCollection.apply {
                         this.add(graphicsOverlay)
                     },
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
