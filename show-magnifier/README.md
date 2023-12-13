@@ -22,7 +22,6 @@ Tap and hold on the map to show a magnifier, then drag across the map to move th
 
 * ArcGISMap
 * MapView
-* MapView.interactionOptions.allowMagnifierToPan
 * MapView.interactionOptions.isMagnifierEnabled
 
 ## Additional information
