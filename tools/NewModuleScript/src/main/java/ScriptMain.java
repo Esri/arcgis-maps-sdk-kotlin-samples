@@ -108,17 +108,17 @@ public class ScriptMain {
             Path source = Paths.get(packageDirectory+"/MainActivityTemplate.kt");
             Files.move(source, source.resolveSibling("MainActivity.kt"));
 
-            File composeComponentsDir = new File(packageDirectory + "/components");
-            composeComponentsDir.mkdirs();
+            File componentsDir = new File(packageDirectory + "/components");
+            componentsDir.mkdirs();
 
-            FileUtils.copyFileToDirectory(mapViewModelTemplate, composeComponentsDir);
-            source = Paths.get(composeComponentsDir+"/MapViewModelTemplate.kt");
+            FileUtils.copyFileToDirectory(mapViewModelTemplate, componentsDir);
+            source = Paths.get(componentsDir+"/MapViewModelTemplate.kt");
             Files.move(source, source.resolveSibling("MapViewModel.kt"));
 
-            composeComponentsDir = new File(packageDirectory + "/screens");
-            composeComponentsDir.mkdirs();
-            FileUtils.copyFileToDirectory(mainScreenTemplate, composeComponentsDir);
-            source = Paths.get(composeComponentsDir+"/MainScreenTemplate.kt");
+            componentsDir = new File(packageDirectory + "/screens");
+            componentsDir.mkdirs();
+            FileUtils.copyFileToDirectory(mainScreenTemplate, componentsDir);
+            source = Paths.get(componentsDir+"/MainScreenTemplate.kt");
             Files.move(source, source.resolveSibling("MainScreen.kt"));
         } catch (IOException e) {
             e.printStackTrace();
