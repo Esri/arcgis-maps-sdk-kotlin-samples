@@ -14,8 +14,10 @@
         "decimal degrees",
         "degree minutes seconds",
         "format",
+        "geocompose",
         "latitude",
         "longitude",
+        "toolkit",
         "CoordinateFormatter",
         "CoordinateFormatter.LatitudeLongitudeFormat",
         "CoordinateFormatter.UtmConversionMode"
