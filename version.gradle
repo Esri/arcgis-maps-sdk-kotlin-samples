@@ -1,14 +1,14 @@
 ext {
     // ArcGIS Maps SDK for Kotlin version
-    arcgisVersion = '200.3.0-4075'
+    arcgisVersion = '200.4.0-4085'
     // ArcGIS Maps SDK for Kotlin Toolkit version
-    arcgisToolkitVersion = '200.3.0-1'
+    arcgisToolkitVersion = '200.4.0-4085'
     // SDK versions
-    compileSdkVersion = 33
+    compileSdkVersion = 34
     minSdkVersion = 26
-    targetSdkVersion = 33
-    versionCode = 2003000
-    versionName = '200.3.0'
+    targetSdkVersion = 34
+    versionCode = 2004000
+    versionName = '200.4.0'
     // Kotlin versions
     kotlinVersion = '1.9.10'
     ktxLifecycle = '2.5.1'
@@ -18,7 +18,7 @@ ext {
     kotlinCompilerExt = '1.5.3'
     // Compose versions
     composeActivityVersion = '1.7.1'
-    composeBOM = '2023.05.01'
+    composeBOM = '2023.10.01'
     // Library versions
     appcompatVersion = '1.6.1'
     constraintLayoutVersion = '2.1.4'
