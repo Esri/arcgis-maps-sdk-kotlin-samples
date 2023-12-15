@@ -17,34 +17,37 @@
 package com.esri.arcgismaps.sample.showmagnifier.screens
 
 import android.app.Application
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.MapViewInteractionOptions
+import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.showmagnifier.components.ComposeMapView
-import com.esri.arcgismaps.sample.showmagnifier.components.MapViewModel
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
-    // create a ViewModel to handle MapView interactions
-    var mapViewModel = MapViewModel(application)
+fun MainScreen(sampleName: String) {
+    // Create an ArcGISMap and Viewpoint
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+    val californiaViewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(modifier = Modifier.fillMaxSize().padding(it)) {
-                // composable function that wraps the MapView
-                ComposeMapView(
-                    modifier = Modifier.fillMaxSize().weight(1f),
-                    mapViewModel = mapViewModel,
-                )
-            }
+            MapView(
+                modifier = Modifier.fillMaxSize().padding(it),
+                arcGISMap = arcGISMap,
+                viewpointOperation = MapViewpointOperation.Set(viewpoint = californiaViewpoint),
+                mapViewInteractionOptions = MapViewInteractionOptions(isMagnifierEnabled = true)
+            )
         }
     )
 }
