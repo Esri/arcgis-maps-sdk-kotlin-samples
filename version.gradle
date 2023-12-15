@@ -2,7 +2,7 @@ ext {
     // ArcGIS Maps SDK for Kotlin version
     arcgisVersion = '200.4.0-4085'
     // ArcGIS Maps SDK for Kotlin Toolkit version
-    arcgisToolkitVersion = '200.4.0-4085'
+    arcgisToolkitVersion = '200.3.0-1'
     // SDK versions
     compileSdkVersion = 34
     minSdkVersion = 26
