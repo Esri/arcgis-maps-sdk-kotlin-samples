@@ -25,15 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.Color
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
-import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.toolkit.geocompose.MapView
 import com.arcgismaps.toolkit.geocompose.rememberGraphicsOverlayCollection
@@ -52,25 +46,16 @@ fun MainScreen(sampleName: String) {
     // create a map that has the WGS 84 coordinate system and set this into the map
     val basemapLayer = ArcGISTiledLayer(LocalContext.current.applicationContext.getString(R.string.basemap_url))
     val arcGISMap = ArcGISMap(Basemap(basemapLayer))
-    // the collection of graphics overlays used by the MapView
-    val graphicsOverlayCollection = rememberGraphicsOverlayCollection()
     // graphics overlay for the MapView to draw the graphics
     val graphicsOverlay = remember { GraphicsOverlay() }
-    // set up a graphic to indicate where the coordinates relate to, with an initial location
-    val initialPoint = Point(0.0, 0.0, SpatialReference.wgs84())
+    // the collection of graphics overlays used by the MapView
+    val graphicsOverlayCollection = rememberGraphicsOverlayCollection().apply {
+        add(graphicsOverlay)
+    }
 
-    val coordinateLocation = Graphic(
-        geometry = initialPoint,
-        symbol = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Cross,
-            color = Color.fromRgba(255, 255, 0, 255),
-            size = 20f
-        )
-    )
-    graphicsOverlay.graphics.add(coordinateLocation)
+    graphicsOverlay.graphics.add(mapViewModel.coordinateLocationGraphic)
     // update the coordinate notations using the initial point
-    coordinateLocation.geometry = initialPoint
-    mapViewModel.toCoordinateNotationFromPoint(initialPoint)
+    mapViewModel.toCoordinateNotationFromPoint(mapViewModel.initialPoint)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -85,20 +70,16 @@ fun MainScreen(sampleName: String) {
                 MapView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = arcGISMap,
-                    graphicsOverlays = graphicsOverlayCollection.apply {
-                        this.add(graphicsOverlay)
-                    },
+                    graphicsOverlays = graphicsOverlayCollection,
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
-                        /**
-                         * Updates the tapped graphic and coordinate notations using the [tappedPoint]
-                         */
+                        // retrieve the map point on MapView tapped
                         val tappedPoint = singleTapConfirmedEvent.mapPoint
                         if (tappedPoint != null) {
                             // update the tapped location graphic
-                            coordinateLocation.geometry = tappedPoint
+                            mapViewModel.coordinateLocationGraphic.geometry = tappedPoint
                             graphicsOverlay.graphics.apply {
                                 clear()
-                                add(coordinateLocation)
+                                add(mapViewModel.coordinateLocationGraphic)
                             }
                             // update the coordinate notations using the tapped point
                             mapViewModel.toCoordinateNotationFromPoint(tappedPoint)

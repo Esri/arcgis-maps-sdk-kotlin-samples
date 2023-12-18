@@ -21,10 +21,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import com.arcgismaps.Color
 import com.arcgismaps.geometry.CoordinateFormatter
 import com.arcgismaps.geometry.LatitudeLongitudeFormat
 import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.geometry.UtmConversionMode
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
@@ -43,12 +48,24 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
+    // set up a graphic to indicate where the coordinates relate to, with an initial location
+    val initialPoint = Point(0.0, 0.0, SpatialReference.wgs84())
+
+    val coordinateLocationGraphic = Graphic(
+        geometry = initialPoint,
+        symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Cross,
+            color = Color.fromRgba(255, 255, 0, 255),
+            size = 20f
+        )
+    )
+
     /**
      * Uses CoordinateFormatter to update the UI with coordinate notation strings based on the
      * given [newLocation] point to convert to coordinate notations
      */
     fun toCoordinateNotationFromPoint(newLocation: Point) {
-
+        coordinateLocationGraphic.geometry = newLocation
         // use CoordinateFormatter to convert to Latitude Longitude, formatted as Decimal Degrees
         decimalDegrees = CoordinateFormatter.toLatitudeLongitudeOrNull(
             point = newLocation,
