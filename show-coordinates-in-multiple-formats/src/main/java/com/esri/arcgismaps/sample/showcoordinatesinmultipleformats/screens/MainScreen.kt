@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.screens
 
-import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Point
@@ -46,15 +46,15 @@ import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.components.Ma
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
     // create a map that has the WGS 84 coordinate system and set this into the map
-    val basemapLayer = ArcGISTiledLayer(application.getString(R.string.basemap_url))
+    val basemapLayer = ArcGISTiledLayer(LocalContext.current.applicationContext.getString(R.string.basemap_url))
     val arcGISMap = ArcGISMap(Basemap(basemapLayer))
     // the collection of graphics overlays used by the MapView
     val graphicsOverlayCollection = rememberGraphicsOverlayCollection()
-    // the collection of graphics overlays used by the MapView
+    // graphics overlay for the MapView to draw the graphics
     val graphicsOverlay = remember { GraphicsOverlay() }
     // set up a graphic to indicate where the coordinates relate to, with an initial location
     val initialPoint = Point(0.0, 0.0, SpatialReference.wgs84())
@@ -74,7 +74,7 @@ fun MainScreen(sampleName: String, application: Application) {
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = { it ->
+        content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
