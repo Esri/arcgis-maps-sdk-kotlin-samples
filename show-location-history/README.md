@@ -17,7 +17,7 @@ Tap anywhere on the screen to start tracking your location, which will appear as
 1. Create a graphics overlay to show each point and another graphics overlay to display the route polyline.
 2. Create a `SimulatedLocationDataSource` and initialize it with a polyline. Start the `SimulatedLocationDataSource` to begin receiving location updates.
 3. Use `LocationChanged` on the `simulatedLocationDataSource` to get location updates.
-4. On location updates, store that location, display the location as a point on the map, and recreate the route polyline.:q
+4. On location updates, store that location, display the location as a point on the map, and recreate the route polyline.
 
 ## Relevant API
 
