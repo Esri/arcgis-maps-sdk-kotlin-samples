@@ -17,10 +17,7 @@
 package com.esri.arcgismaps.sample.manageoperationallayers.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -33,8 +30,9 @@ class MapViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
-    // get an instance of the MapView state
-    val mapViewState = MapViewState()
+    // create an ArcGISMap and Viewpoint
+    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+    val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 5e7)
 
     // a list of the active map image layer names
     var activateLayerNames = mutableStateListOf<String>()
@@ -65,7 +63,7 @@ class MapViewModel(
         )
 
         // add the layers to the map's operational layers
-        mapViewState.arcGISMap.apply {
+        arcGISMap.apply {
             operationalLayers.addAll(
                 listOf(
                     imageLayerElevation,
@@ -81,7 +79,7 @@ class MapViewModel(
      */
     fun moveLayerUp(layerName: String) {
         // get a copy of the operational layers
-        val operationalLayers = mapViewState.arcGISMap.operationalLayers.toMutableList()
+        val operationalLayers = arcGISMap.operationalLayers.toMutableList()
         // if move up on the first item is selected, then return
         if (operationalLayers.first().name == layerName) {
             return
@@ -96,7 +94,7 @@ class MapViewModel(
             addAll(operationalLayers.map { layer -> layer.name })
         }
         // update the operational layers
-        mapViewState.arcGISMap.operationalLayers.apply {
+        arcGISMap.operationalLayers.apply {
             clear()
             addAll(operationalLayers)
         }
@@ -107,7 +105,7 @@ class MapViewModel(
      */
     fun moveLayerDown(layerName: String) {
         // get a copy of the operational layers
-        val operationalLayers = mapViewState.arcGISMap.operationalLayers.toMutableList()
+        val operationalLayers = arcGISMap.operationalLayers.toMutableList()
         // if move down on the last item is selected, then return
         if (operationalLayers.last().name == layerName) {
             return
@@ -122,7 +120,7 @@ class MapViewModel(
             addAll(operationalLayers.map { layer -> layer.name })
         }
         // update the operational layers
-        mapViewState.arcGISMap.operationalLayers.apply {
+        arcGISMap.operationalLayers.apply {
             clear()
             addAll(operationalLayers)
         }
@@ -132,7 +130,7 @@ class MapViewModel(
      * Removes [layerName] from map and adds it to the list of [inactiveLayers].
      */
     fun removeLayerFromMap(layerName: String) {
-        mapViewState.arcGISMap.operationalLayers.apply {
+        arcGISMap.operationalLayers.apply {
             val layerIndex = indexOf(find { it.name == layerName })
             inactiveLayers.add(get(layerIndex))
             removeAt(layerIndex)
@@ -146,20 +144,11 @@ class MapViewModel(
     fun addLayerToMap(layerName: String) {
         inactiveLayers.apply {
             val layerIndex = indexOf(find { it.name == layerName })
-            mapViewState.arcGISMap.operationalLayers.add(get(layerIndex))
+            arcGISMap.operationalLayers.add(get(layerIndex))
             activateLayerNames.add(get(layerIndex).name)
             removeAt(layerIndex)
         }
     }
-}
-
-
-/**
- * Class that represents the MapView state
- */
-class MapViewState {
-    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
-    val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 5e7)
 }
 
 /**

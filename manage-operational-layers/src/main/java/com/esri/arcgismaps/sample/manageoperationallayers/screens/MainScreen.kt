@@ -24,6 +24,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
 import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.manageoperationallayers.components.MapViewModel
@@ -36,8 +39,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(LocalContext.current.applicationContext as Application)
-    // get the instance of the MapView state
-    val mapViewState = mapViewModel.mapViewState
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -47,8 +48,8 @@ fun MainScreen(sampleName: String) {
             ) {
                 MapView(
                     modifier = Modifier.fillMaxSize().weight(1f),
-                    arcGISMap = mapViewState.arcGISMap,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = mapViewState.viewpoint)
+                    arcGISMap = mapViewModel.arcGISMap,
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = mapViewModel.viewpoint)
                 )
                 LayersList(
                     activateLayerNames = mapViewModel.activateLayerNames,
