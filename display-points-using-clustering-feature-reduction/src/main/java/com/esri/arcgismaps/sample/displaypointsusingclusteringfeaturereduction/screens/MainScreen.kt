@@ -32,11 +32,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.portal.Portal
+import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
+import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.R
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ClusterInfoContent
-import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ComposeMapView
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
@@ -51,6 +56,13 @@ fun MainScreen(sampleName: String, application: Application) {
     val sampleCoroutineScope = rememberCoroutineScope()
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
+    // load the portal and create a map from the portal item
+    val portalItem = PortalItem(
+        Portal(application.getString(R.string.portal_url)),
+        "8916d50c44c746c1aafae001552bad23"
+    )
+    // set the map to be displayed in the layout's MapView
+    val map = ArcGISMap(portalItem)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -62,12 +74,17 @@ fun MainScreen(sampleName: String, application: Application) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // composable function that wraps the MapView
-                ComposeMapView(
+                MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    mapViewModel = mapViewModel
+                    arcGISMap = map,
+                    viewpointOperation = MapViewpointOperation.Set(
+                        viewpoint = Viewpoint(39.8, -98.6, 10e7)
+                    ),
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    onSingleTapConfirmed = mapViewModel::identify,
+                    onPan = { mapViewModel.dismissBottomSheet() }
                 )
                 // Button to enable/disable featureReduction property
                 Row(
@@ -84,7 +101,7 @@ fun MainScreen(sampleName: String, application: Application) {
                     Switch(
                         checked = mapViewModel.isFeatureReductionEnabled.value,
                         onCheckedChange = {
-                            mapViewModel.toggleFeatureReduction()
+                            mapViewModel.toggleFeatureReduction(map)
                         })
                 }
 
@@ -97,11 +114,6 @@ fun MainScreen(sampleName: String, application: Application) {
                             onDismissRequest = ::dismissDialog
                         )
                     }
-                }
-
-                // display a LoadingDialog to indicate the map loading status
-                if (mapViewModel.showLoadingDialog.value) {
-                    LoadingDialog(loadingMessage = "Loading map...")
                 }
             }
 

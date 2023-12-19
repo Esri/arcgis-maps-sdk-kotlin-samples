@@ -31,39 +31,31 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.PortalItem
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.popup.FieldsPopupElement
 import com.arcgismaps.mapping.popup.TextPopupElement
 import com.arcgismaps.mapping.view.IdentifyLayerResult
-import com.arcgismaps.portal.Portal
-import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.R
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.toolkit.geocompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(
     application: Application,
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // Flag indicating whether feature reduction is enabled or not
     val isFeatureReductionEnabled = mutableStateOf(true)
-
-    // Flag to show or dismiss the LoadingDialog
-    val showLoadingDialog = mutableStateOf(false)
 
     // Flag to show or dismiss the bottom sheet
     val showClusterSummaryBottomSheet = mutableStateOf(false)
@@ -74,29 +66,14 @@ class MapViewModel(
     // the title of the popup result
     val popupTitle = mutableStateOf("")
 
-    init {
-        // show loading dialog to indicate that the map is loading
-        showLoadingDialog.value = true
-        // load the portal and create a map from the portal item
-        val portalItem = PortalItem(
-            Portal(application.getString(R.string.portal_url)),
-            "8916d50c44c746c1aafae001552bad23"
-        )
-        // set the map to be displayed in the layout's MapView
-        mapViewState.value.arcGISMap = ArcGISMap(portalItem)
-
-        sampleCoroutineScope.launch {
-            mapViewState.value.arcGISMap.load().onSuccess {
-                showLoadingDialog.value = false
-            }
-        }
-    }
+    // The MapViewProxy that the viewmodel will use to identify features in the MapView.
+    // This object also needs to be passed to the composable `MapView()` in MainScreen that this view model is associated with.
+    val mapViewProxy = MapViewProxy()
 
     /**
     `* Toggle the FeatureLayer's featureReduction property
      */
-    fun toggleFeatureReduction() {
-        val map = mapViewState.value.arcGISMap
+    fun toggleFeatureReduction(map: ArcGISMap) {
         isFeatureReductionEnabled.value = !isFeatureReductionEnabled.value
         if (map.loadStatus.value == LoadStatus.Loaded) {
             map.operationalLayers.forEach { layer ->
@@ -112,9 +89,21 @@ class MapViewModel(
     }
 
     /**
+     * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
+     */
+    fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+        sampleCoroutineScope.launch {
+            dismissBottomSheet()
+            // call identifyLayers when a tap event occurs
+            val identifyResult = mapViewProxy.identifyLayers(singleTapConfirmedEvent.screenCoordinate, 3.dp)
+            handleIdentifyResult(identifyResult)
+        }
+    }
+
+    /**
      * Identify the feature layer results and display the resulting popup element information
      */
-    fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
+    private fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
                 // initialize the string for each tap event resulting in a new identifyResultList
@@ -229,10 +218,3 @@ class MapViewModel(
     }
 }
 
-/**
- * Class that represents the MapView state
- */
-data class MapViewState(
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 10e7)
-)
