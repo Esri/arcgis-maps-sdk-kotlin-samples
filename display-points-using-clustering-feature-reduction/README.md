@@ -40,6 +40,10 @@ Pan and zoom the map to view how clustering is dynamically updated. Disable clus
 
 This sample uses a [web map](https://www.arcgis.com/home/item.html?id=8916d50c44c746c1aafae001552bad23) that displays the Esri [Global Power Plants](https://www.arcgis.com/home/item.html?id=eb54b44c65b846cca12914b87b315169) feature layer with feature reduction enabled. When enabled, the aggregate features symbology shows the color of the most common power plant type, and a size relative to the average plant capacity of the cluster.
 
+## Additional information
+
+This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
+
 ## Tags
 
-aggregate, bin, cluster, group, merge, normalize, reduce, summarize
+aggregate, bin, cluster, geocompose, group, merge, normalize, reduce, summarize, toolkit
