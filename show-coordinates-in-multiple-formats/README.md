@@ -24,6 +24,10 @@ Tap on the map to see a marker with the tapped location's coordinate formatted i
 * CoordinateFormatter.LatitudeLongitudeFormat
 * CoordinateFormatter.UtmConversionMode
 
+## Additional information
+
+This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
+
 ## Tags
 
-convert, coordinate, decimal degrees, degree minutes seconds, format, latitude, longitude, USNG, UTM
+convert, coordinate, decimal degrees, degree minutes seconds, format, geocompose, latitude, longitude, toolkit, USNG, UTM
