@@ -29,21 +29,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.identifylayerfeatures.components.ComposeMapView
+import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geocompose.MapViewProxy
+import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.identifylayerfeatures.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // get the application property that will be used to construct MapViewModel
+    val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
+    val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
+    // create a mapViewProxy that will be used to identify features in the MapView
+    // should also be passed to the MapView composable this mapViewProxy is associated with
+    val mapViewProxy = MapViewProxy()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -53,13 +62,24 @@ fun MainScreen(sampleName: String, application: Application) {
                     .fillMaxSize()
                     .padding(it)
             ) {
-                // composable function that wraps the MapView
-                ComposeMapView(
+                MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
                         .animateContentSize(),
-                    mapViewModel = mapViewModel
+                    arcGISMap = mapViewModel.arcGISMap,
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = mapViewModel.viewpoint),
+                    mapViewProxy = mapViewProxy,
+                    onSingleTapConfirmed = { singleTapConfirmedEvent ->
+                        sampleCoroutineScope.launch {
+                            val identifyResult = mapViewProxy.identifyLayers(
+                                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
+                                tolerance = 12.dp,
+                                maximumResults = 10
+                            )
+                            mapViewModel.handleIdentifyResult(identifyResult)
+                        }
+                    }
                 )
                 // Bottom text to display the identify results
                 Row(

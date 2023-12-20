@@ -31,15 +31,23 @@ import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.esri.arcgismaps.sample.identifylayerfeatures.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(
     application: Application,
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
+
+    // create an ArcGISMap and Viewpoint
+    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+    var viewpoint: Viewpoint = Viewpoint(
+        center = Point(
+            x = -10977012.785807,
+            y = 4514257.550369,
+            spatialReference = SpatialReference(wkid = 3857)
+        ),
+        scale = 68015210.0
+    )
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -74,7 +82,7 @@ class MapViewModel(
             operationalLayers.add(featureLayer)
         }
         // assign the map to the map view
-        mapViewState.value.arcGISMap = map
+        arcGISMap = map
     }
 
     /**
@@ -130,18 +138,3 @@ class MapViewModel(
         return subLayerGeoElementCount + result.geoElements.size
     }
 }
-
-/**
- * Data class that represents the MapView state
- */
-data class MapViewState( 
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(
-        center = Point(
-            x = -10977012.785807,
-            y = 4514257.550369,
-            spatialReference = SpatialReference(wkid = 3857)
-        ),
-        scale = 68015210.0
-    )
-)
