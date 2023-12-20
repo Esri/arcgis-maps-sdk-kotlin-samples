@@ -57,7 +57,7 @@ fun MainScreen(sampleName: String) {
     // should also be passed to the MapView composable this mapViewProxy is associated with
     val mapViewProxy = MapViewProxy()
     // create a Viewpoint
-    val viewpoint = Viewpoint(
+    val northAmericaViewpoint = Viewpoint(
         center = Point(
             x = -10977012.785807,
             y = 4514257.550369,
@@ -80,15 +80,17 @@ fun MainScreen(sampleName: String) {
                         .weight(1f)
                         .animateContentSize(),
                     arcGISMap = mapViewModel.arcGISMap,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = northAmericaViewpoint),
                     mapViewProxy = mapViewProxy,
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
                         sampleCoroutineScope.launch {
+                            // identify the layers on the tapped coordinate
                             val identifyResult = mapViewProxy.identifyLayers(
                                 screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
                                 tolerance = 12.dp,
                                 maximumResults = 10
                             )
+                            // use the layer result to display feature information
                             mapViewModel.handleIdentifyResult(identifyResult)
                         }
                     }
