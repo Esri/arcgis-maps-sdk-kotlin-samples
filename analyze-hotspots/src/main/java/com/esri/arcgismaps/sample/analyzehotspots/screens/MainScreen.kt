@@ -25,7 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
+import androidx.compose.ui.platform.LocalContext
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -36,21 +41,31 @@ import kotlinx.coroutines.launch
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // get the application property that will be used to construct MapViewModel
+    val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
+    val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
+    // create a Viewpoint
+    val viewpoint = Viewpoint(
+        center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
+        scale = 1e5
+    )
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             // sample app content layout
             Column(modifier = Modifier.fillMaxSize().padding(it)) {
-                // composable function that wraps the MapView
-                ComposeMapView(
-                    modifier = Modifier.fillMaxSize().weight(1f),
-                    mapViewModel = mapViewModel
+                MapView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    arcGISMap = mapViewModel.arcGISMap,
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
+                    onSingleTapConfirmed = {}
                 )
                 // bottom layout with a button to display analyze hotspot options
                 BottomAppContent(
