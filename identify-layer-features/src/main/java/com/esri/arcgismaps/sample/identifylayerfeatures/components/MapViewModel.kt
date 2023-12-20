@@ -20,11 +20,8 @@ import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.data.ServiceFeatureTable
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.FeatureLayer.Companion.createWithFeatureTable
 import com.arcgismaps.mapping.view.IdentifyLayerResult
@@ -38,16 +35,8 @@ class MapViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
 
-    // create an ArcGISMap and Viewpoint
+    // create an ArcGISMap
     var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-    var viewpoint: Viewpoint = Viewpoint(
-        center = Point(
-            x = -10977012.785807,
-            y = 4514257.550369,
-            spatialReference = SpatialReference(wkid = 3857)
-        ),
-        scale = 68015210.0
-    )
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()

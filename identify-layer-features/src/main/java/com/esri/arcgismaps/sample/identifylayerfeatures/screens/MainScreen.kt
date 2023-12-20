@@ -31,6 +31,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
 import com.arcgismaps.toolkit.geocompose.MapViewProxy
 import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
@@ -53,6 +56,15 @@ fun MainScreen(sampleName: String) {
     // create a mapViewProxy that will be used to identify features in the MapView
     // should also be passed to the MapView composable this mapViewProxy is associated with
     val mapViewProxy = MapViewProxy()
+    // create a Viewpoint
+    val viewpoint = Viewpoint(
+        center = Point(
+            x = -10977012.785807,
+            y = 4514257.550369,
+            spatialReference = SpatialReference(wkid = 3857)
+        ),
+        scale = 68015210.0
+    )
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -68,7 +80,7 @@ fun MainScreen(sampleName: String) {
                         .weight(1f)
                         .animateContentSize(),
                     arcGISMap = mapViewModel.arcGISMap,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = mapViewModel.viewpoint),
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
                     mapViewProxy = mapViewProxy,
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
                         sampleCoroutineScope.launch {
