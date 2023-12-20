@@ -36,12 +36,16 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.popup.FieldsPopupElement
 import com.arcgismaps.mapping.popup.TextPopupElement
 import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geocompose.MapViewProxy
+import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -57,6 +61,9 @@ class MapViewModel(
     // Flag indicating whether feature reduction is enabled or not
     val isFeatureReductionEnabled = mutableStateOf(true)
 
+    // Flag to show or dismiss the LoadingDialog
+    val showLoadingDialog = mutableStateOf(false)
+
     // Flag to show or dismiss the bottom sheet
     val showClusterSummaryBottomSheet = mutableStateOf(false)
 
@@ -70,10 +77,30 @@ class MapViewModel(
     // This object also needs to be passed to the composable `MapView()` in MainScreen that this view model is associated with.
     val mapViewProxy = MapViewProxy()
 
+    var map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+
+    init {
+        // show loading dialog to indicate that the map is loading
+        showLoadingDialog.value = true
+        // load the portal and create a map from the portal item
+        val portalItem = PortalItem(
+            Portal(application.getString(R.string.portal_url)),
+            "8916d50c44c746c1aafae001552bad23"
+        )
+        // set the map to be displayed in the layout's MapView
+        map = ArcGISMap(portalItem)
+
+        sampleCoroutineScope.launch {
+            map.load().onSuccess {
+                showLoadingDialog.value = false
+            }
+        }
+    }
+
     /**
     `* Toggle the FeatureLayer's featureReduction property
      */
-    fun toggleFeatureReduction(map: ArcGISMap) {
+    fun toggleFeatureReduction() {
         isFeatureReductionEnabled.value = !isFeatureReductionEnabled.value
         if (map.loadStatus.value == LoadStatus.Loaded) {
             map.operationalLayers.forEach { layer ->
