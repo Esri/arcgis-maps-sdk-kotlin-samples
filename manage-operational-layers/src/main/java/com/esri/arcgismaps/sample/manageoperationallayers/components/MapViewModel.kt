@@ -21,7 +21,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.Layer
 import com.esri.arcgismaps.sample.manageoperationallayers.R
@@ -30,9 +29,8 @@ class MapViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
-    // create an ArcGISMap and Viewpoint
+    // create an ArcGISMap
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
-    val viewpoint: Viewpoint = Viewpoint(39.8, -98.6, 5e7)
 
     // a list of the active map image layer names
     var activateLayerNames = mutableStateListOf<String>()
