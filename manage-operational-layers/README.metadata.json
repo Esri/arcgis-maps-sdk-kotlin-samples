@@ -9,9 +9,11 @@
     "keywords": [
         "add",
         "delete",
+        "geocompose",
         "layer",
         "map",
         "remove",
+        "toolkit",
         "ArcGISMap",
         "ArcGISMapImageLayer",
         "LayerList"
@@ -25,7 +27,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/components/ComposeMapView.kt",
         "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/LayersList.kt",
         "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/MainScreen.kt"
