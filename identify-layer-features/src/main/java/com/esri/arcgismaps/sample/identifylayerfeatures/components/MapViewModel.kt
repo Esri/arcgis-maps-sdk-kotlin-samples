@@ -35,8 +35,8 @@ class MapViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
 
-    // create an ArcGISMap
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
+    // create a map using the topographic basemap style
+    val map: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -63,15 +63,9 @@ class MapViewModel(
             }
         }
 
-        // create a topographic map
-        val map = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            // add world cities layer
-            operationalLayers.add(mapImageLayer)
-            // add damaged property data
-            operationalLayers.add(featureLayer)
-        }
-        // assign the map to the map view
-        arcGISMap = map
+        // add the world cities layer with and the damaged properties feature layer
+        map.operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
+
     }
 
     /**

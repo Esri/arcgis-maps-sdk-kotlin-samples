@@ -79,7 +79,7 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f)
                         .animateContentSize(),
-                    arcGISMap = mapViewModel.arcGISMap,
+                    arcGISMap = mapViewModel.map,
                     viewpointOperation = MapViewpointOperation.Set(viewpoint = northAmericaViewpoint),
                     mapViewProxy = mapViewProxy,
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
