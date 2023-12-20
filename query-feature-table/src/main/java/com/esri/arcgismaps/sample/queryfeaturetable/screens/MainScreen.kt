@@ -57,8 +57,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 )
                 SearchBar(
                     modifier = Modifier.fillMaxWidth(),
-                    onQuerySubmit = { searchQuery ->
-                        mapViewModel.searchForState(searchQuery) }
+                    onQuerySubmit = mapViewModel::searchForState
                 )
             }
 
