@@ -77,6 +77,7 @@ class MapViewModel(
     // This object also needs to be passed to the composable `MapView()` in MainScreen that this view model is associated with.
     val mapViewProxy = MapViewProxy()
 
+    // define ArcGIS map using Night Navigation basemap
     var map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
 
     init {
