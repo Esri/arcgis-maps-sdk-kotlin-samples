@@ -31,4 +31,4 @@ The GeoView supports two methods of identify: `identifyLayer`, which identifies 
 
 ## Tags
 
-identify, geocompose, recursion, recursive, sublayers, toolkit
+geocompose, identify, recursion, recursive, sublayers, toolkit
