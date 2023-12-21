@@ -35,12 +35,10 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewProxy
 import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.identifylayerfeatures.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -53,9 +51,6 @@ fun MainScreen(sampleName: String) {
     val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
-    // create a mapViewProxy that will be used to identify features in the MapView
-    // should also be passed to the composable MapView this mapViewProxy is associated with
-    val mapViewProxy = MapViewProxy()
     // create a Viewpoint
     val northAmericaViewpoint = Viewpoint(
         center = Point(
@@ -81,19 +76,8 @@ fun MainScreen(sampleName: String) {
                         .animateContentSize(),
                     arcGISMap = mapViewModel.map,
                     viewpointOperation = MapViewpointOperation.Set(viewpoint = northAmericaViewpoint),
-                    mapViewProxy = mapViewProxy,
-                    onSingleTapConfirmed = { singleTapConfirmedEvent ->
-                        sampleCoroutineScope.launch {
-                            // identify the layers on the tapped coordinate
-                            val identifyResult = mapViewProxy.identifyLayers(
-                                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
-                                tolerance = 12.dp,
-                                maximumResults = 10
-                            )
-                            // use the layer result to display feature information
-                            mapViewModel.handleIdentifyResult(identifyResult)
-                        }
-                    }
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    onSingleTapConfirmed = mapViewModel::identify
                 )
                 // Bottom text to display the identify results
                 Row(

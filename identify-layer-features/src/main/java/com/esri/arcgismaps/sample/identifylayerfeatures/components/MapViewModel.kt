@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.identifylayerfeatures.components
 
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.mapping.ArcGISMap
@@ -25,6 +26,8 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.FeatureLayer.Companion.createWithFeatureTable
 import com.arcgismaps.mapping.view.IdentifyLayerResult
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.toolkit.geocompose.MapViewProxy
 import com.esri.arcgismaps.sample.identifylayerfeatures.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +40,10 @@ class MapViewModel(
 
     // create a map using the topographic basemap style
     val map: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+
+    // create a mapViewProxy that will be used to identify features in the MapView
+    // should also be passed to the composable MapView this mapViewProxy is associated with
+    val mapViewProxy = MapViewProxy()
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -119,5 +126,21 @@ class MapViewModel(
             subLayerGeoElementCount += geoElementsCountFromResult(sublayerResult)
         }
         return subLayerGeoElementCount + result.geoElements.size
+    }
+
+    /**
+     * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
+     */
+    fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+        sampleCoroutineScope.launch {
+            // identify the layers on the tapped coordinate
+            val identifyResult = mapViewProxy.identifyLayers(
+                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
+                tolerance = 12.dp,
+                maximumResults = 10
+            )
+            // use the layer result to display feature information
+            handleIdentifyResult(identifyResult)
+        }
     }
 }
