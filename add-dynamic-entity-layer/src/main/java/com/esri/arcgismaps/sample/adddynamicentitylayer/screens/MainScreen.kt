@@ -34,8 +34,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.adddynamicentitylayer.components.ComposeMapView
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.adddynamicentitylayer.components.DynamicEntityLayerProperties
 import com.esri.arcgismaps.sample.adddynamicentitylayer.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
@@ -45,9 +48,11 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     /// coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // get the application context
+    val application = LocalContext.current.applicationContext as Application
     
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
@@ -64,11 +69,12 @@ fun MainScreen(sampleName: String, application: Application) {
                     .padding(it)
             ) {
                 // composable function that wraps the MapView
-                ComposeMapView(
+                MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    mapViewModel = mapViewModel
+                    arcGISMap = mapViewModel.map,
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = Viewpoint(40.559691, -111.869001, 150000.0))
                 )
                 Row(
                     modifier = Modifier
