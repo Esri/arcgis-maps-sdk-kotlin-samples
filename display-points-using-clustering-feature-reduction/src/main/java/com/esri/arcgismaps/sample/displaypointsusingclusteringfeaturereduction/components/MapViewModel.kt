@@ -73,8 +73,8 @@ class MapViewModel(
     // the title of the popup result
     val popupTitle = mutableStateOf("")
 
-    // The MapViewProxy that the viewmodel will use to identify features in the MapView.
-    // This object also needs to be passed to the composable `MapView()` in MainScreen that this view model is associated with.
+    // create a MapViewProxy that the view model will use to identify features in the MapView.
+    // this also needs to be passed to the composable MapView() function.
     val mapViewProxy = MapViewProxy()
 
     // define ArcGIS map using Night Navigation basemap
