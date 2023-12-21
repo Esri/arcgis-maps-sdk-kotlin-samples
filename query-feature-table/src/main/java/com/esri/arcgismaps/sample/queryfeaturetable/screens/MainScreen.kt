@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.toolkit.geocompose.MapView
 import com.esri.arcgismaps.sample.queryfeaturetable.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -35,9 +36,11 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // get the application context
+    val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
 

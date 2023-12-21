@@ -69,8 +69,8 @@ class MapViewModel(
         scale = 1e8
     )
 
-    // define a MapViewpointOperation to set the initial viewpoint and update it when the viewpoint changes
-    var mapViewpointOperation: MapViewpointOperation? by mutableStateOf(null)
+    // define a mutable MapViewpointOperation and set the initial viewpoint
+    var mapViewpointOperation: MapViewpointOperation by mutableStateOf(MapViewpointOperation.Set(usaViewpoint))
 
     init {
         // use symbols to show U.S. states with a black outline and yellow fill
@@ -94,8 +94,6 @@ class MapViewModel(
         }
         // add the feature layer to the map's operational layers
         map.operationalLayers.add(featureLayer)
-        // set initial mapView viewpoint using MapViewpointOperation class
-        mapViewpointOperation = MapViewpointOperation.Set(usaViewpoint)
     }
 
     /**
@@ -124,7 +122,7 @@ class MapViewModel(
                 // get the extent of the first feature in the result to zoom to
                 val envelope = feature.geometry?.extent
                     ?: return@launch messageDialogVM.showMessageDialog("Error retrieving geometry extent")
-                // update the MapViewpointOperation to set the geometry of the returned feature
+                // update the viewpoint to the bounding geometry of the returned feature
                 mapViewpointOperation = MapViewpointOperation.SetBoundingGeometry(envelope)
             } else {
                 messageDialogVM.showMessageDialog("No states found with name: $searchQuery")
