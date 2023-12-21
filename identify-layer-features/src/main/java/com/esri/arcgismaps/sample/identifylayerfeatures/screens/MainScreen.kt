@@ -54,7 +54,7 @@ fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
     // create a mapViewProxy that will be used to identify features in the MapView
-    // should also be passed to the MapView composable this mapViewProxy is associated with
+    // should also be passed to the composable MapView this mapViewProxy is associated with
     val mapViewProxy = MapViewProxy()
     // create a Viewpoint
     val northAmericaViewpoint = Viewpoint(
