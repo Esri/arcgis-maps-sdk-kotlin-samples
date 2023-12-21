@@ -27,7 +27,7 @@ Run the sample to display a scene service with an `ArcGISSceneLayer`. Pan and zo
 
 ## About the data
 
-The scene launches with a northward view of the city of Brest, France. A 3D scene layer representing buildings (some textured) is used as an example.
+The scene launches with a northward view of the city of Brest, France ([SceneServer](https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer)). A 3D scene layer representing buildings (some textured) is used as an example.
 
 ## Tags
 
