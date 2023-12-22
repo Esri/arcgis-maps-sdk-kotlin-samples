@@ -18,28 +18,32 @@ package com.esri.arcgismaps.sample.identifylayerfeatures.components
 
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.data.ServiceFeatureTable
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.FeatureLayer.Companion.createWithFeatureTable
 import com.arcgismaps.mapping.view.IdentifyLayerResult
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.toolkit.geocompose.MapViewProxy
 import com.esri.arcgismaps.sample.identifylayerfeatures.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(
     application: Application,
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
+
+    // create a map using the topographic basemap style
+    val map: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+
+    // create a mapViewProxy that will be used to identify features in the MapView
+    // should also be passed to the composable MapView this mapViewProxy is associated with
+    val mapViewProxy = MapViewProxy()
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -66,15 +70,9 @@ class MapViewModel(
             }
         }
 
-        // create a topographic map
-        val map = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            // add world cities layer
-            operationalLayers.add(mapImageLayer)
-            // add damaged property data
-            operationalLayers.add(featureLayer)
-        }
-        // assign the map to the map view
-        mapViewState.value.arcGISMap = map
+        // add the world cities layer with and the damaged properties feature layer
+        map.operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
+
     }
 
     /**
@@ -129,19 +127,20 @@ class MapViewModel(
         }
         return subLayerGeoElementCount + result.geoElements.size
     }
-}
 
-/**
- * Data class that represents the MapView state
- */
-data class MapViewState( 
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight),
-    var viewpoint: Viewpoint = Viewpoint(
-        center = Point(
-            x = -10977012.785807,
-            y = 4514257.550369,
-            spatialReference = SpatialReference(wkid = 3857)
-        ),
-        scale = 68015210.0
-    )
-)
+    /**
+     * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
+     */
+    fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+        sampleCoroutineScope.launch {
+            // identify the layers on the tapped coordinate
+            val identifyResult = mapViewProxy.identifyLayers(
+                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
+                tolerance = 12.dp,
+                maximumResults = 10
+            )
+            // use the layer result to display feature information
+            handleIdentifyResult(identifyResult)
+        }
+    }
+}
