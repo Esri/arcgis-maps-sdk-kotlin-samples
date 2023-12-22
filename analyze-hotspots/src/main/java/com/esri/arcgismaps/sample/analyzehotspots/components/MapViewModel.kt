@@ -20,13 +20,9 @@ import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingJob
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingParameters
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingResult
