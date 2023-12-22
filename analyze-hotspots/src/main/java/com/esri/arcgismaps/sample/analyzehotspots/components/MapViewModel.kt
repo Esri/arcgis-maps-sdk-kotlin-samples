@@ -41,8 +41,8 @@ class MapViewModel(
     private val application: Application,
     private val sampleCoroutineScope: CoroutineScope,
 ) : AndroidViewModel(application) {
-    // create an ArcGISMap
-    val arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
+    // create a map using the topographic basemap style
+    val map: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -65,7 +65,7 @@ class MapViewModel(
         toDate: String,
     ) {
         // a map image layer might be generated, clear previous results
-        arcGISMap.operationalLayers.clear()
+        map.operationalLayers.clear()
 
         // create and load geoprocessing task
         val geoprocessingTask = GeoprocessingTask(application.getString(R.string.service_url))
@@ -124,7 +124,7 @@ class MapViewModel(
                 } ?: return messageDialogVM.showMessageDialog("Result map image layer is null")
 
                 // add new layer to map
-                arcGISMap.operationalLayers.add(hotspotMapImageLayer)
+                map.operationalLayers.add(hotspotMapImageLayer)
             }.onFailure { throwable ->
                 messageDialogVM.showMessageDialog(
                     title = throwable.message.toString(),

@@ -63,7 +63,7 @@ fun MainScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
+                    arcGISMap = mapViewModel.map,
                     viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
                     onSingleTapConfirmed = {}
                 )
