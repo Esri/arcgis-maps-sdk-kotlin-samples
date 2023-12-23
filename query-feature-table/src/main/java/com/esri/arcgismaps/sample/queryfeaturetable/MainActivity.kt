@@ -48,8 +48,7 @@ class MainActivity : ComponentActivity() {
             color = MaterialTheme.colorScheme.background
         ) {
             MainScreen(
-                sampleName = getString(R.string.app_name),
-                application = application
+                sampleName = getString(R.string.app_name)
             )
         }
     }
