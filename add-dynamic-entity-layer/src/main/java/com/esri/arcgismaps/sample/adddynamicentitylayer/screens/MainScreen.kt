@@ -74,7 +74,9 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.map,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = Viewpoint(40.559691, -111.869001, 150000.0))
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = Viewpoint(40.559691, -111.869001, 150000.0)),
+                    onSingleTapConfirmed = { mapViewModel.dismissBottomSheet() },
+                    onPan = { mapViewModel.dismissBottomSheet() }
                 )
                 Row(
                     modifier = Modifier
