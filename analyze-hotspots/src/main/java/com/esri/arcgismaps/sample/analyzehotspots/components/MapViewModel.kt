@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.analyzehotspots.components
 import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
@@ -51,7 +52,7 @@ class MapViewModel(
     val showJobProgressDialog = mutableStateOf(false)
 
     // determinate job progress percentage
-    val geoprocessingJobProgress = mutableStateOf(0)
+    val geoprocessingJobProgress = mutableIntStateOf(0)
 
     // job used to run the geoprocessing task on a service
     private var geoprocessingJob: GeoprocessingJob? = null

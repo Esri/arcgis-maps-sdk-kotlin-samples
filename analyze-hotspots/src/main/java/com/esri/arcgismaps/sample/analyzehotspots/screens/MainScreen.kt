@@ -64,8 +64,7 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.map,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint),
-                    onSingleTapConfirmed = {}
+                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint)
                 )
                 // bottom layout with a button to display analyze hotspot options
                 BottomAppContent(
