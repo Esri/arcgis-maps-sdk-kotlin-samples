@@ -19,14 +19,11 @@ package com.esri.arcgismaps.sample.analyzehotspots.components
 import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingJob
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingParameters
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingResult
@@ -45,8 +42,8 @@ class MapViewModel(
     private val application: Application,
     private val sampleCoroutineScope: CoroutineScope,
 ) : AndroidViewModel(application) {
-    // set the MapView state
-    val mapViewState = MapViewState()
+    // create a map using the topographic basemap style
+    val map: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -55,7 +52,7 @@ class MapViewModel(
     val showJobProgressDialog = mutableStateOf(false)
 
     // determinate job progress percentage
-    val geoprocessingJobProgress = mutableStateOf(0)
+    val geoprocessingJobProgress = mutableIntStateOf(0)
 
     // job used to run the geoprocessing task on a service
     private var geoprocessingJob: GeoprocessingJob? = null
@@ -69,7 +66,7 @@ class MapViewModel(
         toDate: String,
     ) {
         // a map image layer might be generated, clear previous results
-        mapViewState.arcGISMap.operationalLayers.clear()
+        map.operationalLayers.clear()
 
         // create and load geoprocessing task
         val geoprocessingTask = GeoprocessingTask(application.getString(R.string.service_url))
@@ -128,7 +125,7 @@ class MapViewModel(
                 } ?: return messageDialogVM.showMessageDialog("Result map image layer is null")
 
                 // add new layer to map
-                mapViewState.arcGISMap.operationalLayers.add(hotspotMapImageLayer)
+                map.operationalLayers.add(hotspotMapImageLayer)
             }.onFailure { throwable ->
                 messageDialogVM.showMessageDialog(
                     title = throwable.message.toString(),
@@ -154,15 +151,4 @@ class MapViewModel(
         val date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
         return date.format(formatter)
     }
-}
-
-/**
- * Class that represents the MapView's current state
- */
-class MapViewState {
-    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
-    var viewpoint: Viewpoint = Viewpoint(
-        center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
-        scale = 1e5
-    )
 }
