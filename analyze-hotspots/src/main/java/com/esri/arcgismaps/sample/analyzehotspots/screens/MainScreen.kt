@@ -48,23 +48,25 @@ fun MainScreen(sampleName: String) {
     val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
-    // create a Viewpoint
-    val viewpoint = Viewpoint(
-        center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
-        scale = 1e5
-    )
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             // sample app content layout
-            Column(modifier = Modifier.fillMaxSize().padding(it)) {
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(it)) {
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.map,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = viewpoint)
+                    viewpointOperation = MapViewpointOperation.Set(
+                        viewpoint = Viewpoint(
+                            center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
+                            scale = 1e5
+                        )
+                    )
                 )
                 // bottom layout with a button to display analyze hotspot options
                 BottomAppContent(
@@ -97,7 +99,7 @@ fun MainScreen(sampleName: String) {
                 if (mapViewModel.showJobProgressDialog.value) {
                     JobLoadingDialog(
                         title = "Analyzing hotspots...",
-                        progress = mapViewModel.geoprocessingJobProgress.value,
+                        progress = mapViewModel.geoprocessingJobProgress.intValue,
                         cancelJobRequest = { mapViewModel.cancelGeoprocessingJob() }
                     )
                 }
