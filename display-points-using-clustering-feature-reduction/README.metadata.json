@@ -4,18 +4,20 @@
     "formal_name": "DisplayPointsUsingClusteringFeatureReduction",
     "ignore": false,
     "images": [
-        "display-points-using-clustering-feature-reduction.png",
+        "display-points-using-clustering-feature-reduction-main.png",
         "display-points-using-clustering-feature-reduction-popup.png"
     ],
     "keywords": [
         "aggregate",
         "bin",
         "cluster",
+        "geocompose",
         "group",
         "merge",
         "normalize",
         "reduce",
         "summarize",
+        "toolkit",
         "FeatureLayer",
         "FeatureReduction",
         "IdentifyLayerResult",
@@ -40,7 +42,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/ClusterInfoContent.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/ComposeMapView.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/screens/MainScreen.kt"
     ],
