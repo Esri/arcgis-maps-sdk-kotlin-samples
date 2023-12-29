@@ -17,17 +17,16 @@
 package com.esri.arcgismaps.sample.adddynamicentitylayer.components
 
 import android.app.Application
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.DynamicEntityLayer
 import com.arcgismaps.realtime.ArcGISStreamService
 import com.arcgismaps.realtime.ArcGISStreamServiceFilter
 import com.esri.arcgismaps.sample.adddynamicentitylayer.R
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(
@@ -38,13 +37,10 @@ class MapViewModel(
     // set the state of the switches and slider
     val trackLineCheckedState = mutableStateOf(false)
     val prevObservationCheckedState = mutableStateOf(false)
-    val trackSliderValue = mutableStateOf(5f)
+    val trackSliderValue = mutableFloatStateOf(5f)
 
     // flag to show or dismiss the bottom sheet
     val isBottomSheetVisible = mutableStateOf(false)
-
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState())
 
     // create ArcGIS Stream Service
     private val streamService =
@@ -55,6 +51,9 @@ class MapViewModel(
 
     // layer displaying the dynamic entities on the map
     private val dynamicEntityLayer: DynamicEntityLayer
+
+    // define ArcGIS map using Streets basemap
+    val map = ArcGISMap(BasemapStyle.ArcGISStreets)
 
     /**
      * set the data source for the dynamic entity layer.
@@ -70,7 +69,7 @@ class MapViewModel(
         dynamicEntityLayer = DynamicEntityLayer(streamService)
 
         // add the dynamic entity layer to the map's operational layers
-        mapViewState.value.arcGISMap.operationalLayers.add(dynamicEntityLayer)
+        map.operationalLayers.add(dynamicEntityLayer)
     }
 
     // disconnects the stream service
@@ -125,10 +124,3 @@ class MapViewModel(
     }
 }
 
-/**
- * Data class that represents the MapView state
- */
-data class MapViewState(
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets),
-    var viewpoint: Viewpoint = Viewpoint(40.559691, -111.869001, 150000.0)
-)
