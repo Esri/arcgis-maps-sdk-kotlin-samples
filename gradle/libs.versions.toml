@@ -3,9 +3,9 @@ arcgisVersion = "200.4.0-4085"
 #ArcGIS Maps SDK for Kotlin Toolkit version
 arcgisToolkitVersion = "200.4.0-4085"
 # SDK versions
-compileSdkVersion = "34"
-minSdkVersion = "26"
-targetSdkVersion = "34"
+compileSdk = "34"
+minSdk = "26"
+targetSdk = "34"
 versionCode = "2004000"
 versionName = "200.4.0"
 # Kotlin versions
@@ -32,6 +32,15 @@ gradleVersion = "8.1.1"
 javaVersion = "1.17"
 
 [libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktxAndroidCore"}
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "ktxLifecycle"}
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "ktxLifecycle"}
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivityVersion"}
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBOM"}
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 
 [bundles]
 

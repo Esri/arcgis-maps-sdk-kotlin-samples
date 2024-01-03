@@ -1,17 +1,15 @@
-//apply(plugin = "com.android.application")
-//apply(plugin = "org.jetbrains.kotlin.android")
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
 android {
-    compileSdkVersion(libs.versions.compileSdkVersion.get().toInt())
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
     defaultConfig {
         applicationId = "com.esri.arcgismaps.sample.adddynamicentitylayer"
-        minSdkVersion(libs.versions.minSdkVersion.get())
-        targetSdkVersion(libs.versions.targetSdkVersion.get())
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
         buildConfigField("String", "API_KEY", project.properties["API_KEY"].toString())
@@ -38,16 +36,16 @@ android {
 
 dependencies {
     // lib dependencies from rootProject build.gradle.kts
-    implementation("androidx.core:core-ktx:${libs.versions.ktxAndroidCore.get()}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${libs.versions.ktxLifecycle.get()}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${libs.versions.ktxLifecycle.get()}")
-    implementation("androidx.activity:activity-compose:${libs.versions.composeActivityVersion.get()}")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
     // Jetpack Compose Bill of Materials
-    implementation(platform("androidx.compose:compose-bom:${libs.versions.composeBOM.get()}"))
+    implementation(platform(libs.androidx.compose.bom))
     // Jetpack Compose dependencies
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(project(":samples-lib"))
 }
