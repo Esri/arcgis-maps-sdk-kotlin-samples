@@ -7,7 +7,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.esri.arcgismaps.sample.addscenelayerwithelevation"
+        applicationId = "com.esri.arcgismaps.sample.addwmslayer"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
@@ -23,29 +23,17 @@ android {
     }
 
     buildFeatures {
-        compose = true
+        //noinspection DataBindingWithoutKapt
+        dataBinding = true
         buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExt.get()
-    }
-
-    namespace = "com.esri.arcgismaps.sample.addscenelayerwithelevation"
+    namespace = "com.esri.arcgismaps.sample.addwmslayer"
 }
 
 dependencies {
     // lib dependencies from rootProject build.gradle.kts
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.activity.compose)
-    // Jetpack Compose Bill of Materials
-    implementation(platform(libs.androidx.compose.bom))
-    // Jetpack Compose dependencies
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.android.material)
     implementation(project(":samples-lib"))
 }
