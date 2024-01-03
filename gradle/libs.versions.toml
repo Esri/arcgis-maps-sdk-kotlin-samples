@@ -32,6 +32,9 @@ gradleVersion = "8.1.1"
 javaVersion = "1.17"
 
 [libraries]
+android-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion"}
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion"}
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayoutVersion"}
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktxAndroidCore"}
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "ktxLifecycle"}
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "ktxLifecycle"}
