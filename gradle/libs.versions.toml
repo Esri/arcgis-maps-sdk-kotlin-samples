@@ -20,6 +20,7 @@ composeActivityVersion = "1.7.1"
 composeBOM = "2023.10.01"
 # Library versions
 appcompatVersion = "1.6.1"
+commonsIoVersion = "2.11.0"
 constraintLayoutVersion = "2.1.4"
 coordinateLayoutVersion = "1.2.0"
 workVersion = "2.7.1"
@@ -52,6 +53,7 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "ktxFragmentsExt" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workVersion" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
 
 [bundles]
 

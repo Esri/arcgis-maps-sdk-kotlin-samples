@@ -10,7 +10,7 @@ ext {
     versionCode = 2004000
     versionName = '200.4.0'
     // Kotlin versions
-    kotlinVersion = '1.9.10'
+    kotlinVersion = '1.9.22'
     ktxLifecycle = '2.5.1'
     ktxFragmentsExt = '1.6.1'
     ktxActivityExt = '1.7.2'
