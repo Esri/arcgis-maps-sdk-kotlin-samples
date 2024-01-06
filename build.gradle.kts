@@ -28,8 +28,8 @@ subprojects {
 
         extensions.findByType(BaseExtension::class.java)?.let { android ->
             android.compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_7
-                targetCompatibility = JavaVersion.VERSION_1_7
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
             }
             android.defaultConfig {
                 multiDexEnabled = true
