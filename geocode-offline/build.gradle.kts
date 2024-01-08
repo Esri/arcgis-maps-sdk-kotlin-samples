@@ -35,6 +35,6 @@ dependencies {
     // lib dependencies from rootProject build.gradle.kts
     implementation(libs.androidx.constraintlayout)
     implementation(libs.android.material)
-    implementation(project(":samples-lib"))
     implementation(libs.androidx.appcompat)
+    implementation(project(":samples-lib"))
 }

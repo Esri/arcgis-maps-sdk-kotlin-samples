@@ -50,6 +50,6 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(project(":samples-lib"))
     // Toolkit dependencies
-    implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
+    implementation(platform("com.esri:arcgis-maps-kotlin-toolkit-bom:200.4.0-4085"))
     implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
 }
