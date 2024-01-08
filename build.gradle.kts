@@ -1,8 +1,6 @@
 import com.android.build.gradle.BaseExtension
 import java.net.URL
 
-apply(from = "version.gradle")
-
 buildscript {
     repositories {
         google()
