@@ -22,3 +22,4 @@ rootDir.listFiles()?.forEach {
         include(":${it.name}")
     }
 }
+
