@@ -1,6 +1,7 @@
 [versions]
+# ArcGIS Maps SDK for Kotlin version
 arcgisMapsKotlinVersion = "200.4.0-4085"
-#ArcGIS Maps SDK for Kotlin Toolkit version
+# ArcGIS Maps SDK for Kotlin Toolkit version
 arcgisToolkitVersion = "200.4.0-1"
 # SDK versions
 compileSdk = "34"
@@ -26,12 +27,9 @@ coordinateLayoutVersion = "1.2.0"
 workVersion = "2.7.1"
 multidexVersion = "2.0.1"
 materialVersion = "1.7.0"
-recyclerViewVersion = "1.1.0"
 androidBrowserVersion = "1.5.0"
 # Plugin versions
 gradleVersion = "8.1.1"
-# Java version
-javaVersion = "1.17"
 
 [libraries]
 android-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion"}
@@ -59,7 +57,3 @@ arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis
 arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisToolkitVersion"}
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
 stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlinVersion"}
-
-[bundles]
-
-[plugins]
