@@ -19,7 +19,6 @@ android {
     }
 
     buildFeatures {
-        //noinspection DataBindingWithoutKapt
         dataBinding = true
         buildConfig = true
         compose = true
