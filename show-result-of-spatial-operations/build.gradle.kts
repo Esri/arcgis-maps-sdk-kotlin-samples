@@ -7,7 +7,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.esri.arcgismaps.sample.showresultofspatialrelationships"
+        applicationId = "com.esri.arcgismaps.sample.showresultofspatialoperations"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
@@ -27,7 +27,7 @@ android {
         buildConfig = true
     }
 
-    namespace = "com.esri.arcgismaps.sample.showresultofspatialrelationships"
+    namespace = "com.esri.arcgismaps.sample.showresultofspatialoperations"
 }
 
 dependencies {
