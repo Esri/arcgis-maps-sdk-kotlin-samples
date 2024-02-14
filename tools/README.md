@@ -34,13 +34,13 @@ Example:
 
 To build a new `NewModuleSript.jar` using IntelliJ IDEA:
 
-- Open `NewModuleScript` as the project in the IDE.
-- In IDE, go to `File` -> `Project Structure` -> `Artifacts`.
-- Add a new artifact of type `JAR` from module with dependencies.
-  - Select `NewModuleScript.main` as `Module`.
-  - Select `ScriptMain` as `Main Class`.
-  - Click `OK`.
-  - Click `Apply` and `OK`.
-- In IDE, go to `Build` -> `Build Artifacts`, select `NewModuleScript.main:jar` and click `Rebuild`.
-- The `.jar` file will be generated in the `out` directory of the project.
-- Move the `.jar` file to the `tools` directory of the repository. Rename it to `NewModuleScript.jar`.
+ - Open `NewModuleScript` as the project in the IDE.
+ - In IDE, go to `File` -> `Project Structure` -> `Artifacts`.
+ - Add a new artifact of type `JAR` from module with dependencies.
+   - Select `NewModuleScript.main` as `Module`.
+   - Select `ScriptMain` as `Main Class`.
+   - Click `OK`.
+   - Click `Apply` and `OK`.
+ - In IDE, go to `Build` -> `Build Artifacts`, select `NewModuleScript.main:jar` and click `Rebuild`.
+ - The `.jar` file will be generated in the `out` directory of the project.
+ - Move the `.jar` file to the `tools` directory of the repository. Rename it to `NewModuleScript.jar`.
