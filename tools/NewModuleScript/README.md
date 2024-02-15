@@ -17,4 +17,4 @@ The script uses the sample `Display Map` as a template to create a new sample. H
 
 ## How to use the script
 
-Refer to the `README.md` at `arcgis-maps-sdk-kotlin-samples/tools/`
+Refer to the `README.md` at `arcgis-maps-sdk-kotlin-samples/tools/`.
