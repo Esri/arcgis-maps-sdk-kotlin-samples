@@ -9,8 +9,10 @@
     "keywords": [
         "basemap",
         "compose",
+        "geocompose",
         "jetpack",
         "map",
+        "toolkit",
         "ArcGISMap",
         "BasemapStyle",
         "MapView"
