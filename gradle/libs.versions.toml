@@ -58,8 +58,8 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidexVersion"}
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workVersion" }
 arcgis-maps-kotlin = { group = "com.esri", name = "arcgis-maps-kotlin", version.ref = "arcgisMapsKotlinVersion"}
-arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
 arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisToolkitVersion"}
+arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
 arcgis-maps-kotlin-toolkit-geo-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geo-compose" }
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
 stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlinVersion"}
