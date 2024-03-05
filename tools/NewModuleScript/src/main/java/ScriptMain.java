@@ -139,7 +139,7 @@ public class ScriptMain {
 
     /**
      * Updates the content in the copied files to reflect the name of the sample
-     * Eg. README.md, build.gradle, MainActivity.kt, etc.
+     * Eg. README.md, build.gradle.kts, MainActivity.kt, etc.
      */
     private void updateSampleContent() {
 
@@ -161,8 +161,8 @@ public class ScriptMain {
             exitProgram(e);
         }
 
-        //Update build.gradle
-        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build.gradle");
+        //Update build.gradle.kts
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build.gradle.kts");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
