@@ -18,6 +18,8 @@
 package com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager
 
 import android.content.Context
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+import android.os.Build
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -59,10 +61,18 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
      */
     private fun createForegroundInfo(progress: Int): ForegroundInfo {
         // create a ForegroundInfo using the notificationId and a new progress notification
-        return ForegroundInfo(
-            notificationId,
-            workerNotification.createProgressNotification(progress)
-        )
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ForegroundInfo(
+                notificationId,
+                workerNotification.createProgressNotification(progress),
+                FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
+        } else {
+            ForegroundInfo(
+                notificationId,
+                workerNotification.createProgressNotification(progress)
+            )
+        }
     }
 
     override suspend fun doWork(): Result {
