@@ -36,9 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.adddynamicentitylayer.components.DynamicEntityLayerProperties
 import com.esri.arcgismaps.sample.adddynamicentitylayer.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
@@ -74,7 +72,6 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.map,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = Viewpoint(40.559691, -111.869001, 150000.0)),
                     onSingleTapConfirmed = { mapViewModel.dismissBottomSheet() },
                     onPan = { mapViewModel.dismissBottomSheet() }
                 )
