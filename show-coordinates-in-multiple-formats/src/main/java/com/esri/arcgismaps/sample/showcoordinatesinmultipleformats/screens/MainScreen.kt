@@ -30,7 +30,6 @@ import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.rememberGraphicsOverlayCollection
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.R
@@ -49,9 +48,7 @@ fun MainScreen(sampleName: String) {
     // graphics overlay for the MapView to draw the graphics
     val graphicsOverlay = remember { GraphicsOverlay() }
     // the collection of graphics overlays used by the MapView
-    val graphicsOverlayCollection = rememberGraphicsOverlayCollection().apply {
-        add(graphicsOverlay)
-    }
+    val graphicsOverlays = remember { listOf(graphicsOverlay) }
 
     graphicsOverlay.graphics.add(mapViewModel.coordinateLocationGraphic)
     // update the coordinate notations using the initial point
@@ -70,7 +67,7 @@ fun MainScreen(sampleName: String) {
                 MapView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = arcGISMap,
-                    graphicsOverlays = graphicsOverlayCollection,
+                    graphicsOverlays = graphicsOverlays,
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
                         // retrieve the map point on MapView tapped
                         val tappedPoint = singleTapConfirmedEvent.mapPoint
