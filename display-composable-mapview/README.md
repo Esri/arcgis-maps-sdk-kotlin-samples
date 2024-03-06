@@ -19,7 +19,7 @@ Run the sample to view the map. Pan and zoom to navigate the map.
 3. Set its `Modifier` to define the MapView layout parameters
 4. Use its `factory` parameter to provide context and create `MapView(context)`
 5. Add the `MapView` to the lifecycle observer
-6. Add the composable content to the Activity using `setContent { }` 
+6. Add the composable content to the Activity using `setContent { }`
 
 ## Relevant API
 
@@ -27,6 +27,10 @@ Run the sample to view the map. Pan and zoom to navigate the map.
 * BasemapStyle
 * MapView
 
+## Additional information
+
+This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
+
 ## Tags
 
-basemap, compose, jetpack, map
+basemap, compose, geocompose, jetpack, map, toolkit

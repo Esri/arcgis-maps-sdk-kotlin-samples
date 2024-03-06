@@ -9,8 +9,10 @@
     "keywords": [
         "basemap",
         "compose",
+        "geocompose",
         "jetpack",
         "map",
+        "toolkit",
         "ArcGISMap",
         "BasemapStyle",
         "MapView"
@@ -23,9 +25,7 @@
         "MapView"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/MapViewWithCompose.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/theme/Theme.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/MainActivity.kt"
     ],
     "title": "Display Composable MapView"
 }
