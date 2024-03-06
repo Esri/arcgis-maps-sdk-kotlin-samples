@@ -24,9 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.manageoperationallayers.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -46,8 +44,7 @@ fun MainScreen(sampleName: String) {
             ) {
                 MapView(
                     modifier = Modifier.fillMaxSize().weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = Viewpoint(39.8, -98.6, 5e7))
+                    arcGISMap = mapViewModel.arcGISMap
                 )
                 LayersList(
                     activateLayerNames = mapViewModel.activateLayerNames,
