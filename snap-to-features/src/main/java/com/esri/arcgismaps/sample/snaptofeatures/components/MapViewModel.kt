@@ -32,6 +32,7 @@ import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.layers.FeatureTilingMode
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
@@ -48,8 +49,9 @@ class MapViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
 
-    // URL for the service feature layer of the OilSandsProjectBoundaries map
-    private val boundariesURL = application.getString(R.string.sample_service_url)
+    // Uris for the service feature layers of the Oil Sands project map
+    private val boundariesServiceURL = application.getString(R.string.oilSandsBoundaries_url)
+    private val pointsServiceURL = application.getString(R.string.oilSandsPoints_url)
 
     // create a map using the ArcGISNavigation basemap
     val map = ArcGISMap(Basemap(BasemapStyle.ArcGISNavigation))
@@ -76,19 +78,27 @@ class MapViewModel(
      */
     init {
         sampleCoroutineScope.launch {
-            // create feature tables from the OSProjectBoundaries2015 service layer
-            val featureTableBoundaries = ServiceFeatureTable(boundariesURL)
+            // create feature tables from the Uri
+            val featureTableBoundaries = ServiceFeatureTable(boundariesServiceURL)
+            val featureTablePoints = ServiceFeatureTable(pointsServiceURL)
 
             // create feature layers from the feature tables
             val featureLayerBoundaries = FeatureLayer.createWithFeatureTable(featureTableBoundaries)
+            val featureLayerPoints = FeatureLayer.createWithFeatureTable(featureTablePoints)
 
-            // load the layer and add it to the map's operational layers
-            if (featureLayerBoundaries.load().isSuccess){
+            // Set the tiling mode of the feature tables to disabled to ensure full-resolution geometries
+            featureLayerBoundaries.tilingMode = FeatureTilingMode.Disabled
+            featureLayerPoints.tilingMode = FeatureTilingMode.Disabled
+
+            // load the layers and add them to the map's operational layers
+            if (featureLayerBoundaries.load().isSuccess && featureLayerPoints.load().isSuccess){
                 map.operationalLayers.add(featureLayerBoundaries)
+                map.operationalLayers.add(featureLayerPoints)
 
                 // set the map's initial viewpoint to the featureLayerBoundaries full extent
-                map.initialViewpoint =
-                    featureLayerBoundaries.fullExtent?.let { Viewpoint(it.extent) }
+                featureLayerBoundaries.fullExtent?.let {
+                    mapViewProxy.setViewpointAnimated(Viewpoint(it.extent))
+                }
 
                 // call syncSourceSettings() to synchronise the snap source collection with
                 // the Map's operational layers
@@ -101,7 +111,7 @@ class MapViewModel(
             } else {
                 messageDialogVM.showMessageDialog(
                     "Error",
-                    "The OSProjectBoundaries2015 data layer failed to load."
+                    "The data layers failed to load."
                 )
             }
         }
