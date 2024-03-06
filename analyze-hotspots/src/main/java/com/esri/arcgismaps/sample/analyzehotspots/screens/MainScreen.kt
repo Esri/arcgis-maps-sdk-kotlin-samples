@@ -26,11 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -60,13 +56,7 @@ fun MainScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.map,
-                    viewpointOperation = MapViewpointOperation.Set(
-                        viewpoint = Viewpoint(
-                            center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
-                            scale = 1e5
-                        )
-                    )
+                    arcGISMap = mapViewModel.map
                 )
                 // bottom layout with a button to display analyze hotspot options
                 BottomAppContent(

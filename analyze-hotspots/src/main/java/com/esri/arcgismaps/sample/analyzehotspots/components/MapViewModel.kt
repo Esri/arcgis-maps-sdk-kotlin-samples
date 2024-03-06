@@ -22,8 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingJob
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingParameters
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingResult
@@ -57,6 +60,14 @@ class MapViewModel(
     // job used to run the geoprocessing task on a service
     private var geoprocessingJob: GeoprocessingJob? = null
 
+    init {
+       map.apply {
+           initialViewpoint = Viewpoint(
+               center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
+               scale = 1e5
+           )
+       }
+    }
     /**
      * Creates a [geoprocessingJob] with the default [GeoprocessingParameters]
      * and a custom query date range between [fromDate] & [toDate]
