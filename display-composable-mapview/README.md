@@ -1,4 +1,4 @@
-# Display composable mapView
+# Display composable mapview
 
 Display a map using Jetpack Compose.
 
