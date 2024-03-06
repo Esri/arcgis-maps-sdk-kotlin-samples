@@ -1,38 +1,18 @@
 {
     "category": "Maps",
-    "description": "Drag a vertex to a nearby snappable feature.",
+    "description": "Move a vertex to a nearby snappable feature.",
     "formal_name": "SnapToFeatures",
     "ignore": false,
     "images": [
         "snap-to-features.png"
     ],
     "keywords": [
-        "draw",
-        "edit",
-        "geocompose",
-        "magnify",
-        "toolkit",
-        "zoom",
-        "Geometry",
-        "GeometryEditor",
-        "Graphic",
-        "GraphicsOverlay",
-        "ArcGISMap",
-        "MapView",
-        "MapView.interactionOptions.isMagnifierEnabled",
-        "Snapping"
+        "MapView"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
-        "Geometry",
-        "GeometryEditor",
-        "Graphic",
-        "GraphicsOverlay",
-        "ArcGISMap",
-        "MapView",
-        "MapView.interactionOptions.isMagnifierEnabled",
-        "Snapping"
+        "MapView"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/snaptofeatures/MainActivity.kt",
