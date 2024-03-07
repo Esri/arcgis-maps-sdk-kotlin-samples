@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.showmagnifier.screens
 
-import android.app.Application
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -27,7 +26,6 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -36,8 +34,10 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun MainScreen(sampleName: String) {
     // Create an ArcGISMap and Viewpoint
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
     val californiaViewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        initialViewpoint = californiaViewpoint
+    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -45,7 +45,6 @@ fun MainScreen(sampleName: String) {
             MapView(
                 modifier = Modifier.fillMaxSize().padding(it),
                 arcGISMap = arcGISMap,
-                viewpointOperation = MapViewpointOperation.Set(viewpoint = californiaViewpoint),
                 mapViewInteractionOptions = MapViewInteractionOptions(isMagnifierEnabled = true)
             )
         }
