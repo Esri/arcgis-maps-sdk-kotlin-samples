@@ -21,8 +21,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.data.ServiceFeatureTable
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.FeatureLayer.Companion.createWithFeatureTable
 import com.arcgismaps.mapping.view.IdentifyLayerResult
@@ -39,7 +42,17 @@ class MapViewModel(
 ) : AndroidViewModel(application) {
 
     // create a map using the topographic basemap style
-    val map: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+    val map: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        // set initial Viewpoint to North America
+        initialViewpoint = Viewpoint(
+            center = Point(
+                x = -10977012.785807,
+                y = 4514257.550369,
+                spatialReference = SpatialReference(wkid = 3857)
+            ),
+            scale = 68015210.0
+        )
+    }
 
     // create a mapViewProxy that will be used to identify features in the MapView
     // should also be passed to the composable MapView this mapViewProxy is associated with
