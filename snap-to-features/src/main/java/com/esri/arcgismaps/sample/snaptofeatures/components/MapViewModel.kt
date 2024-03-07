@@ -79,7 +79,7 @@ class MapViewModel(
     init {
         sampleCoroutineScope.launch {
             // set the map's viewpoint to Naperville, Illinois
-            mapViewProxy.setViewpointCenter(Point(-9812726.0, 5126959.0), 5000.0)
+            mapViewProxy.setViewpointCenter(Point(-9812798.0, 5126406.0), 2000.0)
 
             // create a service geodatabase from the uri and load it
             val layerErrorList = mutableListOf<Throwable>()
@@ -90,7 +90,7 @@ class MapViewModel(
                     val featureTable = serviceGeodatabase.getTable(x.toLong())
                     val featureLayer = FeatureLayer.createWithFeatureTable(featureTable!!)
                     // set the feature tiling mode and load the layer
-                    featureLayer.tilingMode = FeatureTilingMode.Disabled
+                    featureLayer.tilingMode = FeatureTilingMode.EnabledWithFullResolutionWhenSupported
                     featureLayer.load().onSuccess {
                         // add the layer to the Map's operational layers
                         map.operationalLayers.add(featureLayer)
@@ -270,6 +270,14 @@ class MapViewModel(
      * Show the BottomSheet.
      */
     fun showBottomSheet() {
-        isBottomSheetVisible.value = true
+        if (geometryEditor.snapSettings.sourceSettings.isEmpty()) {
+            messageDialogVM.showMessageDialog(
+                "Information",
+                "The snap settings menu is only available after all layers have" +
+                        " finished loading.\n\nPlease try again in a moment."
+            )
+        } else {
+            isBottomSheetVisible.value = true
+        }
     }
 }

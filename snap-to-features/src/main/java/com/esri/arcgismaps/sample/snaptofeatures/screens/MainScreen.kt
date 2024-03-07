@@ -25,10 +25,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -140,7 +140,7 @@ fun MainScreen (sampleName: String) {
                         }
                     }
                     IconButton(onClick = { mapViewModel.editorUndo() }) {
-                        Icon(Icons.Filled.Refresh, contentDescription = "Undo")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Undo")
                     }
                     IconButton(onClick = { mapViewModel.editorStopped() }) {
                         Icon(Icons.Default.Done, contentDescription = "Stop")
@@ -152,7 +152,7 @@ fun MainScreen (sampleName: String) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ){
-                        TextButton(onClick = { mapViewModel.showBottomSheet() },
+                        TextButton(onClick = { mapViewModel.showBottomSheet() }
                         ) {
                             Text(text = "Snap Settings")
                         }
