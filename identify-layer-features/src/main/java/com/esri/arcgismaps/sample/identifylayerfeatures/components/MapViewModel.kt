@@ -42,17 +42,7 @@ class MapViewModel(
 ) : AndroidViewModel(application) {
 
     // create a map using the topographic basemap style
-    val map: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-        // set initial Viewpoint to North America
-        initialViewpoint = Viewpoint(
-            center = Point(
-                x = -10977012.785807,
-                y = 4514257.550369,
-                spatialReference = SpatialReference(wkid = 3857)
-            ),
-            scale = 68015210.0
-        )
-    }
+    val map: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
 
     // create a mapViewProxy that will be used to identify features in the MapView
     // should also be passed to the composable MapView this mapViewProxy is associated with
@@ -84,14 +74,25 @@ class MapViewModel(
         }
 
         // add the world cities layer with and the damaged properties feature layer
-        map.operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
+        map.apply {
+            // set initial Viewpoint to North America
+            initialViewpoint = Viewpoint(
+                center = Point(
+                    x = -10977012.785807,
+                    y = 4514257.550369,
+                    spatialReference = SpatialReference(wkid = 3857)
+                ),
+                scale = 68015210.0
+            )
+            operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
+        }
 
     }
 
     /**
      * Identify the feature layer results and display the resulting information
      */
-    fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
+    private fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
                 val message = StringBuilder()
