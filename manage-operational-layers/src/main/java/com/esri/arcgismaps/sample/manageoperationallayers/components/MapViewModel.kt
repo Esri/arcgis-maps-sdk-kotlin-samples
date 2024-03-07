@@ -31,9 +31,7 @@ class MapViewModel(
 ) : AndroidViewModel(application) {
 
     // create an ArcGISMap
-    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-        initialViewpoint = Viewpoint(39.8, -98.6, 5e7)
-    }
+    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
 
     // a list of the active map image layer names
     var activateLayerNames = mutableStateListOf<String>()
@@ -65,6 +63,7 @@ class MapViewModel(
 
         // add the layers to the map's operational layers
         arcGISMap.apply {
+            initialViewpoint = Viewpoint(39.8, -98.6, 5e7)
             operationalLayers.addAll(
                 listOf(
                     imageLayerElevation,
