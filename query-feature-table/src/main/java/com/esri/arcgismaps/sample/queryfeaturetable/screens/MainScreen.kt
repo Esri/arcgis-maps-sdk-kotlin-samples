@@ -56,7 +56,7 @@ fun MainScreen(sampleName: String) {
                         .fillMaxWidth()
                         .weight(1f),
                     arcGISMap = mapViewModel.map,
-                    viewpointOperation = mapViewModel.mapViewpointOperation
+                    mapViewProxy = mapViewModel.mapViewProxy
                 )
                 SearchBar(
                     modifier = Modifier.fillMaxWidth(),
