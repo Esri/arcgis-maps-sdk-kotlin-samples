@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">Snap To Features</string>
-    <string name="oilSandsPoints_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/OilSandsProjectBoundaries/MapServer/0</string>
-    <string name="oilSandsBoundaries_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/OilSandsProjectBoundaries/MapServer/1</string>
+    <string name="service_url">https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/ArcGIS/rest/services/WaterDistributionNetwork/FeatureServer</string>
 </resources>

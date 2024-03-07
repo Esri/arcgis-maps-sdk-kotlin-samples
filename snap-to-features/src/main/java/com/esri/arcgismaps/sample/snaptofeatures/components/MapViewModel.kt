@@ -21,7 +21,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.data.ServiceFeatureTable
+import com.arcgismaps.data.FeatureQueryResult
+import com.arcgismaps.data.QueryParameters
+import com.arcgismaps.data.ServiceGeodatabase
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
@@ -30,7 +32,6 @@ import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.layers.FeatureTilingMode
 import com.arcgismaps.mapping.view.Graphic
@@ -49,12 +50,11 @@ class MapViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
 
-    // Uris for the service feature layers of the Oil Sands project map
-    private val boundariesServiceURL = application.getString(R.string.oilSandsBoundaries_url)
-    private val pointsServiceURL = application.getString(R.string.oilSandsPoints_url)
+    // Uri for the feature server
+    private val serviceURL = application.getString(R.string.service_url)
 
-    // create a map using the ArcGISNavigation basemap
-    val map = ArcGISMap(Basemap(BasemapStyle.ArcGISNavigation))
+    // create a map using a basemap
+    val map = ArcGISMap(Basemap(BasemapStyle.ArcGISStreetsNight))
 
     // create a geometryEditor, graphic, and graphicsOverlay
     val geometryEditor = GeometryEditor()
@@ -78,40 +78,48 @@ class MapViewModel(
      */
     init {
         sampleCoroutineScope.launch {
-            // create feature tables from the Uri
-            val featureTableBoundaries = ServiceFeatureTable(boundariesServiceURL)
-            val featureTablePoints = ServiceFeatureTable(pointsServiceURL)
+            // set the map's viewpoint to Naperville, Illinois
+            mapViewProxy.setViewpointCenter(Point(-9812726.0, 5126959.0), 5000.0)
 
-            // create feature layers from the feature tables
-            val featureLayerBoundaries = FeatureLayer.createWithFeatureTable(featureTableBoundaries)
-            val featureLayerPoints = FeatureLayer.createWithFeatureTable(featureTablePoints)
-
-            // Set the tiling mode of the feature tables to disabled to ensure full-resolution geometries
-            featureLayerBoundaries.tilingMode = FeatureTilingMode.Disabled
-            featureLayerPoints.tilingMode = FeatureTilingMode.Disabled
-
-            // load the layers and add them to the map's operational layers
-            if (featureLayerBoundaries.load().isSuccess && featureLayerPoints.load().isSuccess){
-                map.operationalLayers.add(featureLayerBoundaries)
-                map.operationalLayers.add(featureLayerPoints)
-
-                // set the map's initial viewpoint to the featureLayerBoundaries full extent
-                featureLayerBoundaries.fullExtent?.let {
-                    mapViewProxy.setViewpointAnimated(Viewpoint(it.extent))
+            // create a service geodatabase from the uri and load it
+            val layerErrorList = mutableListOf<Throwable>()
+            val serviceGeodatabase = ServiceGeodatabase(serviceURL)
+            serviceGeodatabase.load().onSuccess {
+                for ( x in serviceGeodatabase.serviceInfo?.layerInfos?.indices!!) {
+                    // create a feature layer from the service feature table
+                    val featureTable = serviceGeodatabase.getTable(x.toLong())
+                    val featureLayer = FeatureLayer.createWithFeatureTable(featureTable!!)
+                    // set the feature tiling mode and load the layer
+                    featureLayer.tilingMode = FeatureTilingMode.Disabled
+                    featureLayer.load().onSuccess {
+                        // add the layer to the Map's operational layers
+                        map.operationalLayers.add(featureLayer)
+                    }.onFailure { error -> layerErrorList.add(error) }
                 }
-
+                if (layerErrorList.isNotEmpty()) {
+                    var errorString = String()
+                    layerErrorList.forEach {
+                        errorString = it.message.toString()
+                        errorString.plus("\n${it.cause.toString()}\n\n")
+                    }
+                    messageDialogVM.showMessageDialog(
+                        "Error loading data layers.",
+                        errorString
+                    )
+                }
                 // call syncSourceSettings() to synchronise the snap source collection with
                 // the Map's operational layers
                 geometryEditor.snapSettings.syncSourceSettings()
-
                 // populate the snapSourceCheckedState list with default values
                 geometryEditor.snapSettings.sourceSettings.forEach {
                     snapSourceCheckedState.add(it.isEnabled)
                 }
-            } else {
+                // Update the geometry editor line symbol style
+                setGeometryEditorStyle()
+            }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Error",
-                    "The data layers failed to load."
+                    error.message.toString(),
+                    error.cause.toString()
                 )
             }
         }
@@ -154,24 +162,17 @@ class MapViewModel(
     }
 
     /**
-     * Stops the GeometryEditor adding the current edit to the GraphicsOverlay.
+     * Stop the GeometryEditor and update the Graphic or GraphicsOverlay.
      */
     fun editorStopped() {
         if (identifiedGraphic.geometry != null) {
-            updateSelectedGraphic()
+            identifiedGraphic.geometry = geometryEditor.stop()
+            identifiedGraphic.isSelected = false
         } else {
             if (geometryEditor.isStarted.value) {
                 createNewGraphic()
             }
         }
-    }
-
-    /**
-     * Update the current graphic's geometry and unselect it.
-     */
-    private fun updateSelectedGraphic() {
-        identifiedGraphic.geometry = geometryEditor.stop()
-        identifiedGraphic.isSelected = false
     }
 
     /**
@@ -182,12 +183,11 @@ class MapViewModel(
         val geometry = geometryEditor.stop()
         // create a new graphic from the geometry
         val graphic = Graphic(geometry)
-
         // apply symbology to the graphic based on the geometry
         when (geometry!!) {
             is Point -> graphic.symbol = GeometryEditorStyle().vertexSymbol
             is Multipoint -> graphic.symbol = GeometryEditorStyle().vertexSymbol
-            is Polyline -> graphic.symbol = GeometryEditorStyle().lineSymbol
+            is Polyline -> graphic.symbol = geometryEditor.tool.style.lineSymbol
             is Polygon -> graphic.symbol = GeometryEditorStyle().fillSymbol
             else -> {
                 messageDialogVM.showMessageDialog(
@@ -209,11 +209,16 @@ class MapViewModel(
     }
 
     /**
-     * Stop the GeometryEditor and clear the GraphicsOverlay.
+     * Stop the GeometryEditor and remove the selected Graphic or clear the GraphicsOverlay.
      */
     fun clearGraphics() {
-        editorStopped()
-        graphicsOverlay.graphics.clear()
+        identifiedGraphic.geometry = geometryEditor.stop()
+        if (identifiedGraphic.geometry != null) {
+            graphicsOverlay.graphics.remove(identifiedGraphic)
+            identifiedGraphic.geometry = null
+        } else {
+            graphicsOverlay.graphics.clear()
+        }
     }
 
     /**
@@ -231,6 +236,27 @@ class MapViewModel(
     fun sourceEnabledStatus(checkedValue: Boolean, index: Int) {
         snapSourceCheckedState[index] = checkedValue
         geometryEditor.snapSettings.sourceSettings[index].isEnabled = snapSourceCheckedState[index]
+    }
+
+    /**
+     * Set the GeometryEditor LineSymbol to the queried line feature symbol.
+     */
+    private fun setGeometryEditorStyle() {
+        val queryParameters = QueryParameters()
+        queryParameters.whereClause = "OBJECTID=139118"
+        sampleCoroutineScope.launch {
+            val featureQueryResult =
+                (map.operationalLayers[8] as FeatureLayer).featureTable?.queryFeatures(
+                    queryParameters
+                )?.getOrElse {
+                    messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
+                } as FeatureQueryResult
+            val feature = featureQueryResult.firstOrNull()
+            val renderer = (map.operationalLayers[8] as FeatureLayer).renderer
+            geometryEditor.tool.style.lineSymbol = feature?.let {
+                renderer?.getSymbol(it, true)
+            }
+        }
     }
 
     /**
