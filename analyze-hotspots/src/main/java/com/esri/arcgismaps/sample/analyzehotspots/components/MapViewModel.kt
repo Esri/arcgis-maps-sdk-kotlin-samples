@@ -119,8 +119,8 @@ class MapViewModel(
             sampleCoroutineScope.launch {
                 geoprocessingJob.progress.collect { progress ->
                     // updates the job progress dialog
-                    geoprocessingJobProgress.value = progress
-                    Log.i("Progress", "geoprocessingJobProgress: ${geoprocessingJobProgress.value}")
+                    geoprocessingJobProgress.intValue = progress
+                    Log.i("Progress", "geoprocessingJobProgress: ${geoprocessingJobProgress.intValue}")
                 }
             }
             // get the result of the job on completion
