@@ -89,7 +89,7 @@ class MapViewModel(
             Portal(application.getString(R.string.portal_url)),
             "8916d50c44c746c1aafae001552bad23"
         )
-        // set the map to be displayed in the layout's MapView
+        // set the map to be displayed in the layout's MapView and set the initialViewpoint
         map = ArcGISMap(portalItem).apply {
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
         }
