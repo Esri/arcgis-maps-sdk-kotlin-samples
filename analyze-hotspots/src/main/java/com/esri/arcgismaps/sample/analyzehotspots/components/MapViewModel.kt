@@ -62,6 +62,7 @@ class MapViewModel(
 
     init {
        map.apply {
+           // Set the map's initialViewpoint
            initialViewpoint = Viewpoint(
                center = Point(-13671170.0, 5693633.0, SpatialReference(wkid = 3857)),
                scale = 1e5
