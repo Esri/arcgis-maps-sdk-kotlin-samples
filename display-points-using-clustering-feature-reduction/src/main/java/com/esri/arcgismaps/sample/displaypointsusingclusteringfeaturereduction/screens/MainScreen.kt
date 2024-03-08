@@ -33,9 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ClusterInfoContent
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
@@ -72,9 +70,6 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.map,
-                    viewpointOperation = MapViewpointOperation.Set(
-                        viewpoint = Viewpoint(39.8, -98.6, 10e7)
-                    ),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onSingleTapConfirmed = mapViewModel::identify,
                     onPan = { mapViewModel.dismissBottomSheet() }
