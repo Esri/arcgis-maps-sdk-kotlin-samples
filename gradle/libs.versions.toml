@@ -1,6 +1,6 @@
 [versions]
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.4.0-4122"
+arcgisMapsKotlinVersion = "200.4.0-4170"
 # ArcGIS Maps SDK for Kotlin Toolkit version
 arcgisToolkitVersion = "200.4.0-4183"
 # SDK versions
