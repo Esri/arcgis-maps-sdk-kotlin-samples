@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.DynamicEntityLayer
 import com.arcgismaps.realtime.ArcGISStreamService
 import com.arcgismaps.realtime.ArcGISStreamServiceFilter
@@ -53,7 +54,9 @@ class MapViewModel(
     private val dynamicEntityLayer: DynamicEntityLayer
 
     // define ArcGIS map using Streets basemap
-    val map = ArcGISMap(BasemapStyle.ArcGISStreets)
+    val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
+        initialViewpoint = Viewpoint(40.559691, -111.869001, 150000.0)
+    }
 
     /**
      * set the data source for the dynamic entity layer.
