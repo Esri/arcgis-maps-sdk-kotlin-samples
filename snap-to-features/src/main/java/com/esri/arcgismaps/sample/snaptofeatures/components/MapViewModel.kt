@@ -50,16 +50,14 @@ class MapViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
 
-    // Uri for the feature server
-    private val serviceURL = application.getString(R.string.service_url)
-
     // create a map using a basemap
     val map = ArcGISMap(Basemap(BasemapStyle.ArcGISStreetsNight))
 
-    // create a geometryEditor, graphic, and graphicsOverlay
-    val geometryEditor = GeometryEditor()
-    var identifiedGraphic = Graphic()
+    // create a service geodatabase, graphic, graphic overlay, and geometry editor
+    private var serviceGeodatabase = ServiceGeodatabase("")
+    private var identifiedGraphic = Graphic()
     val graphicsOverlay = GraphicsOverlay()
+    val geometryEditor = GeometryEditor()
 
     // create a mapViewProxy that will be used to identify features in the MapView
     // should also be passed to the  composable MapView this mapViewProxy is associated with
@@ -82,30 +80,27 @@ class MapViewModel(
             mapViewProxy.setViewpointCenter(Point(-9812798.0, 5126406.0), 2000.0)
 
             // create a service geodatabase from the uri and load it
-            val layerErrorList = mutableListOf<Throwable>()
-            val serviceGeodatabase = ServiceGeodatabase(serviceURL)
+            serviceGeodatabase = ServiceGeodatabase(application.getString(R.string.service_url))
             serviceGeodatabase.load().onSuccess {
-                for ( x in serviceGeodatabase.serviceInfo?.layerInfos?.indices!!) {
+                for (layerID in serviceGeodatabase.serviceInfo?.layerInfos?.indices!!) {
                     // create a feature layer from the service feature table
-                    val featureTable = serviceGeodatabase.getTable(x.toLong())
+                    val featureTable = serviceGeodatabase.getTable(layerID.toLong())
                     val featureLayer = FeatureLayer.createWithFeatureTable(featureTable!!)
                     // set the feature tiling mode and load the layer
                     featureLayer.tilingMode = FeatureTilingMode.EnabledWithFullResolutionWhenSupported
                     featureLayer.load().onSuccess {
                         // add the layer to the Map's operational layers
                         map.operationalLayers.add(featureLayer)
-                    }.onFailure { error -> layerErrorList.add(error) }
-                }
-                if (layerErrorList.isNotEmpty()) {
-                    var errorString = String()
-                    layerErrorList.forEach {
-                        errorString = it.message.toString()
-                        errorString.plus("\n${it.cause.toString()}\n\n")
+                        // set the line symbology when the lateral layer is loaded
+                        if (featureLayer.name == "Lateral") {
+                            setGeometryEditorStyle(featureLayer)
+                        }
+                    }.onFailure { error ->
+                        messageDialogVM.showMessageDialog(
+                            error.message.toString(),
+                            error.cause.toString()
+                        )
                     }
-                    messageDialogVM.showMessageDialog(
-                        "Error loading data layers.",
-                        errorString
-                    )
                 }
                 // call syncSourceSettings() to synchronise the snap source collection with
                 // the Map's operational layers
@@ -114,8 +109,6 @@ class MapViewModel(
                 geometryEditor.snapSettings.sourceSettings.forEach {
                     snapSourceCheckedState.add(it.isEnabled)
                 }
-                // Update the geometry editor line symbol style
-                setGeometryEditorStyle()
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     error.message.toString(),
@@ -241,18 +234,20 @@ class MapViewModel(
     /**
      * Set the GeometryEditor LineSymbol to the queried line feature symbol.
      */
-    private fun setGeometryEditorStyle() {
+    private fun setGeometryEditorStyle(layer: FeatureLayer) {
+        // create query parameters
         val queryParameters = QueryParameters()
-        queryParameters.whereClause = "OBJECTID=139118"
+        queryParameters.whereClause = "1=1"
+
         sampleCoroutineScope.launch {
-            val featureQueryResult =
-                (map.operationalLayers[8] as FeatureLayer).featureTable?.queryFeatures(
-                    queryParameters
-                )?.getOrElse {
-                    messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
-                } as FeatureQueryResult
+            // query for all features in the lateral layer
+            val featureQueryResult = layer.featureTable?.queryFeatures(queryParameters)?.getOrElse {
+                messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
+            } as FeatureQueryResult
+            // get a feature from the result and the renderer from the layer
             val feature = featureQueryResult.firstOrNull()
-            val renderer = (map.operationalLayers[8] as FeatureLayer).renderer
+            val renderer = layer.renderer
+            // set the geometry editor line symbol
             geometryEditor.tool.style.lineSymbol = feature?.let {
                 renderer?.getSymbol(it, true)
             }
@@ -273,8 +268,7 @@ class MapViewModel(
         if (geometryEditor.snapSettings.sourceSettings.isEmpty()) {
             messageDialogVM.showMessageDialog(
                 "Information",
-                "The snap settings menu is only available after all layers have" +
-                        " finished loading.\n\nPlease try again in a moment."
+                "Layers are still loading. Please try again later."
             )
         } else {
             isBottomSheetVisible.value = true
