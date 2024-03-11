@@ -23,6 +23,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.FeatureLayer.Companion.createWithFeatureTable
 import com.arcgismaps.mapping.view.IdentifyLayerResult
@@ -71,14 +72,18 @@ class MapViewModel(
         }
 
         // add the world cities layer with and the damaged properties feature layer
-        map.operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
+        map.apply {
+            // set initial Viewpoint to North America
+            initialViewpoint = Viewpoint(39.8, -98.6, 5e7)
+            operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
+        }
 
     }
 
     /**
      * Identify the feature layer results and display the resulting information
      */
-    fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
+    private fun handleIdentifyResult(result: Result<List<IdentifyLayerResult>>) {
         sampleCoroutineScope.launch {
             result.onSuccess { identifyResultList ->
                 val message = StringBuilder()

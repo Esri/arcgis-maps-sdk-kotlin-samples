@@ -31,11 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.identifylayerfeatures.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -52,14 +48,7 @@ fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
     // create a Viewpoint
-    val northAmericaViewpoint = Viewpoint(
-        center = Point(
-            x = -10977012.785807,
-            y = 4514257.550369,
-            spatialReference = SpatialReference(wkid = 3857)
-        ),
-        scale = 68015210.0
-    )
+
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -75,7 +64,6 @@ fun MainScreen(sampleName: String) {
                         .weight(1f)
                         .animateContentSize(),
                     arcGISMap = mapViewModel.map,
-                    viewpointOperation = MapViewpointOperation.Set(viewpoint = northAmericaViewpoint),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onSingleTapConfirmed = mapViewModel::identify
                 )
