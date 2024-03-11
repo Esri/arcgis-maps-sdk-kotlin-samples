@@ -38,6 +38,7 @@ import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.popup.FieldsPopupElement
 import com.arcgismaps.mapping.popup.TextPopupElement
@@ -88,8 +89,10 @@ class MapViewModel(
             Portal(application.getString(R.string.portal_url)),
             "8916d50c44c746c1aafae001552bad23"
         )
-        // set the map to be displayed in the layout's MapView
-        map = ArcGISMap(portalItem)
+        // set the map to be displayed in the layout's MapView and set it's initialViewpoint
+        map = ArcGISMap(portalItem).apply {
+            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+        }
 
         sampleCoroutineScope.launch {
             map.load().onSuccess {
