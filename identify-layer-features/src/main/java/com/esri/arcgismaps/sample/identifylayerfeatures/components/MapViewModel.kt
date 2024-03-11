@@ -21,8 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.data.ServiceFeatureTable
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -76,14 +74,7 @@ class MapViewModel(
         // add the world cities layer with and the damaged properties feature layer
         map.apply {
             // set initial Viewpoint to North America
-            initialViewpoint = Viewpoint(
-                center = Point(
-                    x = -10977012.785807,
-                    y = 4514257.550369,
-                    spatialReference = SpatialReference(wkid = 3857)
-                ),
-                scale = 68015210.0
-            )
+            initialViewpoint = Viewpoint(39.8, -98.6, 5e7)
             operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
         }
 
