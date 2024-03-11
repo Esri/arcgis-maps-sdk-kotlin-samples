@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.Layer
 import com.esri.arcgismaps.sample.manageoperationallayers.R
@@ -62,6 +63,7 @@ class MapViewModel(
 
         // add the layers to the map's operational layers
         arcGISMap.apply {
+            initialViewpoint = Viewpoint(39.8, -98.6, 5e7)
             operationalLayers.addAll(
                 listOf(
                     imageLayerElevation,
