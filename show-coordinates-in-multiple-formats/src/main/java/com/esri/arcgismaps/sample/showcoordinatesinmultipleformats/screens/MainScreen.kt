@@ -30,7 +30,6 @@ import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.rememberGraphicsOverlayCollection
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showcoordinatesinmultipleformats.R
@@ -46,14 +45,12 @@ fun MainScreen(sampleName: String) {
     // create a map that has the WGS 84 coordinate system and set this into the map
     val basemapLayer = ArcGISTiledLayer(LocalContext.current.applicationContext.getString(R.string.basemap_url))
     val arcGISMap = ArcGISMap(Basemap(basemapLayer))
-    // graphics overlay for the MapView to draw the graphics
-    val graphicsOverlay = remember { GraphicsOverlay() }
-    // the collection of graphics overlays used by the MapView
-    val graphicsOverlayCollection = rememberGraphicsOverlayCollection().apply {
-        add(graphicsOverlay)
+    // graphics overlay to display a graphics of the coordinate location
+    val graphicsOverlay = GraphicsOverlay().apply {
+        graphics.add(mapViewModel.coordinateLocationGraphic)
     }
-
-    graphicsOverlay.graphics.add(mapViewModel.coordinateLocationGraphic)
+    // the collection of graphics overlays used by the MapView
+    val graphicsOverlays = remember { listOf(graphicsOverlay) }
     // update the coordinate notations using the initial point
     mapViewModel.toCoordinateNotationFromPoint(mapViewModel.initialPoint)
 
@@ -70,7 +67,7 @@ fun MainScreen(sampleName: String) {
                 MapView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = arcGISMap,
-                    graphicsOverlays = graphicsOverlayCollection,
+                    graphicsOverlays = graphicsOverlays,
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
                         // retrieve the map point on MapView tapped
                         val tappedPoint = singleTapConfirmedEvent.mapPoint
