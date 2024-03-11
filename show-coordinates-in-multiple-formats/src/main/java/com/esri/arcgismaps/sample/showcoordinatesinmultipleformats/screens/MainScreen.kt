@@ -45,12 +45,12 @@ fun MainScreen(sampleName: String) {
     // create a map that has the WGS 84 coordinate system and set this into the map
     val basemapLayer = ArcGISTiledLayer(LocalContext.current.applicationContext.getString(R.string.basemap_url))
     val arcGISMap = ArcGISMap(Basemap(basemapLayer))
-    // graphics overlay for the MapView to draw the graphics
-    val graphicsOverlay = remember { GraphicsOverlay() }
+    // graphics overlay to display a graphics of the coordinate location
+    val graphicsOverlay = GraphicsOverlay().apply {
+        graphics.add(mapViewModel.coordinateLocationGraphic)
+    }
     // the collection of graphics overlays used by the MapView
     val graphicsOverlays = remember { listOf(graphicsOverlay) }
-
-    graphicsOverlay.graphics.add(mapViewModel.coordinateLocationGraphic)
     // update the coordinate notations using the initial point
     mapViewModel.toCoordinateNotationFromPoint(mapViewModel.initialPoint)
 
