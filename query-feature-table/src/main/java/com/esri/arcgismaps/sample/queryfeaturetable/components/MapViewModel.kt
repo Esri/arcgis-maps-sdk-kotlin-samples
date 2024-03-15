@@ -125,7 +125,7 @@ class MapViewModel(
                 // get the extent of the first feature in the result to zoom to
                 val envelope = feature.geometry?.extent
                     ?: return@launch messageDialogVM.showMessageDialog("Error retrieving geometry extent")
-                // update the viewpoint to the bounding geometry of the returned feature
+                // update the map's viewpoint to the feature's geometry
                 mapViewProxy.setViewpointGeometry(envelope)
             } else {
                 messageDialogVM.showMessageDialog("No states found with name: $searchQuery")
