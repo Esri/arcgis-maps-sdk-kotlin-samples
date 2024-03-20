@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.ClusterInfoContent
 import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
