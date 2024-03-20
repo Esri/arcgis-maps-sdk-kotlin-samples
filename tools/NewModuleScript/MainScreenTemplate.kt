@@ -25,10 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.toolkit.geocompose.MapView
-import com.arcgismaps.toolkit.geocompose.MapViewpointOperation
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -36,10 +36,13 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
+    val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
-    val arcGISMap by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight)) }
+    val arcGISMap by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply{
+        initialViewpoint = mapViewModel.viewpoint.value
+    }) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -47,7 +50,6 @@ fun MainScreen(sampleName: String, application: Application) {
             MapView(
                 modifier = Modifier.fillMaxSize().padding(it),
                 arcGISMap = arcGISMap,
-                viewpointOperation = MapViewpointOperation.Set(viewpoint = mapViewModel.viewpoint.value),
                 onSingleTapConfirmed = {
                     mapViewModel.changeBasemap()
                 }
