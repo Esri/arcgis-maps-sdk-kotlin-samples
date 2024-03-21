@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -40,9 +40,11 @@ fun MainScreen(sampleName: String) {
     val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
-    val arcGISMap by remember { mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply{
-        initialViewpoint = mapViewModel.viewpoint.value
-    }) }
+    val arcGISMap by remember {
+        mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
+            initialViewpoint = mapViewModel.viewpoint.value
+        })
+    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
