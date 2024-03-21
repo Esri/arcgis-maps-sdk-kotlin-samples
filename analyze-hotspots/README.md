@@ -34,4 +34,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
-analysis, density, geoviewcompose, geoprocessing, hot spots, hotspots, toolkit
+analysis, density, geoprocessing, geoviewcompose, hot spots, hotspots, toolkit
