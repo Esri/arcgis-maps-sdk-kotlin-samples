@@ -29,8 +29,8 @@ Run the sample to view the map. Pan and zoom to navigate the map.
 
 ## Additional information
 
-This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-basemap, compose, geocompose, jetpack, map, toolkit
+basemap, compose, geoviewcompose, jetpack, map, toolkit
