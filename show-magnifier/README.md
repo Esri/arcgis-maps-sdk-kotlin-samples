@@ -26,9 +26,9 @@ Tap and hold on the map to show a magnifier, then drag across the map to move th
 
 ## Additional information
 
-This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 It only works on a device with a touch screen. The magnifier will not appear via a mouse click.
 
 ## Tags
 
-geocompose, magnify, map, toolkit, zoom
+geoviewcompose, magnify, map, toolkit, zoom

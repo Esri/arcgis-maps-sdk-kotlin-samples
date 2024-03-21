@@ -24,7 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.manageoperationallayers.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 

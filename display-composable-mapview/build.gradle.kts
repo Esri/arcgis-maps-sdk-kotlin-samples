@@ -50,5 +50,5 @@ dependencies {
     implementation(project(":samples-lib"))
     // Toolkit dependencies
     implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
-    implementation(libs.arcgis.maps.kotlin.toolkit.geo.compose)
+    implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
 }

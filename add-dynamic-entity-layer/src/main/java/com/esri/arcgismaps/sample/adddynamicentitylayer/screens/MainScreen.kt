@@ -36,7 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.adddynamicentitylayer.components.DynamicEntityLayerProperties
 import com.esri.arcgismaps.sample.adddynamicentitylayer.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
