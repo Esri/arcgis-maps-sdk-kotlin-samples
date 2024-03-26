@@ -25,7 +25,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showmagnifier/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showmagnifier/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showmagnifier/screens/MainScreen.kt"
     ],
     "title": "Show magnifier"
