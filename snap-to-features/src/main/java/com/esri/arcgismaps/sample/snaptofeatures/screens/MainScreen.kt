@@ -48,7 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
-import com.arcgismaps.toolkit.geocompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar

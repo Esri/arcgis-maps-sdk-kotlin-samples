@@ -39,7 +39,7 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
 import com.arcgismaps.mapping.view.geometryeditor.SnapSourceSettings
-import com.arcgismaps.toolkit.geocompose.MapViewProxy
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.snaptofeatures.R
 import kotlinx.coroutines.CoroutineScope
