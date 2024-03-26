@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - v.next
+      - feature-branch/geo-compose
 
 # A workflow run is made up of one or more jobs that can run sequentially or
 # in parallel.

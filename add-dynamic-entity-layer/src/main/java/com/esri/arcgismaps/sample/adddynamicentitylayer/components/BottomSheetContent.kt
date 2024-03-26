@@ -106,7 +106,6 @@ fun DynamicEntityLayerProperties(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
                     Text(
                         text = "Previous Observations",
                         style = SampleTypography.bodyLarge

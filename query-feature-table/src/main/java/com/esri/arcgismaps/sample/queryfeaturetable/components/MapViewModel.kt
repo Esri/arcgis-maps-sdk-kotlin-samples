@@ -25,7 +25,6 @@ import com.arcgismaps.Color
 import com.arcgismaps.data.FeatureQueryResult
 import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.data.ServiceFeatureTable
-import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
@@ -37,6 +36,7 @@ import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleRenderer
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.queryfeaturetable.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -44,12 +44,9 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 class MapViewModel(
-    private val application: Application,
+    application: Application,
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
-
-    // get an instance of the MapView state
-    val mapViewState = MapViewState()
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -64,6 +61,17 @@ class MapViewModel(
         FeatureLayer.createWithFeatureTable(serviceFeatureTable)
     }
 
+    // map used to display the feature layer
+    val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+
+    private var usaViewpoint = Viewpoint(
+        center = Point(-11e6, 5e6, SpatialReference.webMercator()),
+        scale = 1e8
+    )
+
+    // create a MapViewProxy to handle MapView operations
+    var mapViewProxy by mutableStateOf(MapViewProxy())
+
     init {
         // use symbols to show U.S. states with a black outline and yellow fill
         val lineSymbol = SimpleLineSymbol(
@@ -77,6 +85,7 @@ class MapViewModel(
             outline = lineSymbol
         )
 
+        // set featurelayer properties
         featureLayer.apply {
             // set renderer for the feature layer
             renderer = SimpleRenderer(fillSymbol)
@@ -84,7 +93,10 @@ class MapViewModel(
             maxScale = 10000.0
         }
         // add the feature layer to the map's operational layers
-        mapViewState.arcGISMap.operationalLayers.add(featureLayer)
+        map.apply {
+            initialViewpoint = usaViewpoint
+            operationalLayers.add(featureLayer)
+        }
     }
 
     /**
@@ -113,28 +125,11 @@ class MapViewModel(
                 // get the extent of the first feature in the result to zoom to
                 val envelope = feature.geometry?.extent
                     ?: return@launch messageDialogVM.showMessageDialog("Error retrieving geometry extent")
-                // update the map view to set the viewpoint to the state geometry
-                mapViewState.stateGeometry = envelope
+                // update the map's viewpoint to the feature's geometry
+                mapViewProxy.setViewpointGeometry(envelope)
             } else {
                 messageDialogVM.showMessageDialog("No states found with name: $searchQuery")
             }
         }
     }
-}
-
-/**
- * Class that represents the MapView state
- */
-class MapViewState {
-    // map used to display the feature layer
-    var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
-
-    // geometry of the queried state
-    var stateGeometry: Geometry? by mutableStateOf(null)
-
-    // set an initial viewpoint over the USA
-    val initialViewpoint: Viewpoint = Viewpoint(
-        center = Point(-11e6, 5e6, SpatialReference.webMercator()),
-        scale = 1e8
-    )
 }

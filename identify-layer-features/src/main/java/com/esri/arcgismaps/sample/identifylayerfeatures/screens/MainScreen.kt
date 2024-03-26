@@ -29,8 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.identifylayerfeatures.components.ComposeMapView
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.identifylayerfeatures.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -39,11 +40,15 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // get the application property that will be used to construct MapViewModel
+    val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
+    val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
+    // create a Viewpoint
+
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -53,13 +58,14 @@ fun MainScreen(sampleName: String, application: Application) {
                     .fillMaxSize()
                     .padding(it)
             ) {
-                // composable function that wraps the MapView
-                ComposeMapView(
+                MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
                         .animateContentSize(),
-                    mapViewModel = mapViewModel
+                    arcGISMap = mapViewModel.map,
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    onSingleTapConfirmed = mapViewModel::identify
                 )
                 // Bottom text to display the identify results
                 Row(
