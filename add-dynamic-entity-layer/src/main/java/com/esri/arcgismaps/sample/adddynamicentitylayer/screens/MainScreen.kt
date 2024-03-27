@@ -108,7 +108,7 @@ fun MainScreen(sampleName: String) {
                     onPurgeAllObservations = mapViewModel::purgeAllObservations,
                     isTrackLineVisible = mapViewModel.trackLineCheckedState.value,
                     isPrevObservationsVisible = mapViewModel.prevObservationCheckedState.value,
-                    observationsPerTrack = mapViewModel.trackSliderValue.value,
+                    observationsPerTrack = mapViewModel.trackSliderValue.floatValue,
                     onDismiss = { mapViewModel.dismissBottomSheet() }
                 )
             }

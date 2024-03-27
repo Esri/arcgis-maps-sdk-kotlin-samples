@@ -47,7 +47,6 @@ import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.tasks.geocode.GeocodeParameters
 import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
-import com.arcgismaps.tasks.geocode.SuggestResult
 import com.esri.arcgismaps.sample.searchwithgeocode.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -170,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
                             // add each address suggestion to a new row
                             for ((key, result) in suggestResults.withIndex()) {
-                                var suggestionCursor = simpleCursorAdapter.cursor as MatrixCursor
+                                val suggestionCursor = simpleCursorAdapter.cursor as MatrixCursor
                                 suggestionCursor.addRow(arrayOf<Any>(key, result.label))
                             }
                             // notify the adapter when the data updates, so the view can refresh itself
