@@ -114,9 +114,9 @@ class MapViewModel(
 
     // to set the maximum number of observations displayed per track
     fun setObservations(sliderValue: Float) {
-        trackSliderValue.value = sliderValue
+        trackSliderValue.floatValue = sliderValue
         dynamicEntityLayer.trackDisplayProperties.maximumObservations =
-            trackSliderValue.value.toInt()
+            trackSliderValue.floatValue.toInt()
     }
 
     // remove all dynamic entity observations from the in-memory data cache as well as from the map

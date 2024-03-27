@@ -223,7 +223,7 @@ class MainActivity : AppCompatActivity() {
             // click listener when feature layer source is selected
             setOnItemClickListener { _, _, i, _ ->
                 // get the selected feature layer source
-                val selectedSource = FeatureLayerSource.values().find { it.menuPosition == i }
+                val selectedSource = FeatureLayerSource.entries.find { it.menuPosition == i }
                 // check if the same feature is selected
                 if (previousSource != null && (previousSource == selectedSource)) {
                     // same feature layer selected, return

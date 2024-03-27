@@ -35,7 +35,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun BottomSheet(
     isVisible: Boolean,
-    bottomSheetContent: @Composable() () -> Unit
+    bottomSheetContent: @Composable () -> Unit
 ) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()

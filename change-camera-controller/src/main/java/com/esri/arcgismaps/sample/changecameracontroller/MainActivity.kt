@@ -263,7 +263,7 @@ enum class CameraControllerMode(val displayName: String) {
          * Returns a List containing the [displayName] property of this enum type.
          * */
         fun getValuesByDisplayName(): List<String> {
-            return values().map { cameraControllerMode ->
+            return entries.map { cameraControllerMode ->
                 cameraControllerMode.displayName
             }
         }
@@ -272,7 +272,7 @@ enum class CameraControllerMode(val displayName: String) {
          * Returns the enum constant of this type with the specified [displayName] property.
          */
         fun getValue(displayName: String): CameraControllerMode {
-            return values().first {
+            return entries.first {
                 it.displayName == displayName
             }
         }

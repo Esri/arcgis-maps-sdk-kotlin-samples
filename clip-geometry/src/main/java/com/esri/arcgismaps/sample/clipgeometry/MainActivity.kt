@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.clipgeometry
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
