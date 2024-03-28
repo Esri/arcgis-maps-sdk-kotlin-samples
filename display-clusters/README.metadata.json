@@ -28,7 +28,7 @@
         "PortalItem"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": ["/kotlin/sample-code/display-points-using-clustering-feature-reduction/"],
     "relevant_apis": [
         "FeatureLayer",
         "FeatureReduction",
