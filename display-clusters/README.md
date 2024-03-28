@@ -1,12 +1,12 @@
-# Display points using clustering feature reduction
+# Display clusters
 
 Display a web map with a point feature layer that has feature reduction enabled to aggregate points into clusters.
 
 Map displaying the feature layer with feature reduction property enabled by default:
-![Feature reduction map](display-points-using-clustering-feature-reduction-main.png)
+![Feature reduction map](display-clusters-main.png)
 
 Popup message displaying the cluster details:
-![Cluster details popup](display-points-using-clustering-feature-reduction-popup.png)
+![Cluster details popup](display-clusters-popup.png)
 
 ## Use case
 

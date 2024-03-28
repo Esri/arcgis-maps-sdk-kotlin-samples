@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction
+package com.esri.arcgismaps.sample.displayclusters
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.screens.MainScreen
+import com.esri.arcgismaps.sample.displayclusters.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
 
