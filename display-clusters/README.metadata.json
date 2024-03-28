@@ -4,8 +4,8 @@
     "formal_name": "DisplayClusters",
     "ignore": false,
     "images": [
-        "display-points-using-clustering-feature-reduction-main.png",
-        "display-points-using-clustering-feature-reduction-popup.png"
+        "display-clusters-main.png",
+        "display-clusters-popup.png"
     ],
     "keywords": [
         "aggregate",
