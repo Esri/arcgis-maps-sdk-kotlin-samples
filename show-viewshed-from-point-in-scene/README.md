@@ -29,6 +29,10 @@ Use the sliders to change the properties (heading, pitch, etc.), of the viewshed
 
 The scene shows a [buildings layer in Brest, France](https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer/layers/0) hosted on ArcGIS Online.
 
+## Additional information
+
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+
 ## Tags
 
-3D, frustum, scene, viewshed, visibility analysis
+3D, frustum, geoviewcompose, scene, viewshed, visibility analysis

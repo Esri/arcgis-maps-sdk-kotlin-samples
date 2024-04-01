@@ -16,7 +16,8 @@
         "ArcGISSceneLayer",
         "ArcGISTiledElevationSource",
         "LocationViewshed",
-        "Viewshed"
+        "Viewshed",
+        "geoviewcompose"
     ],
     "language": "kotlin",
     "redirect_from": "",
@@ -29,7 +30,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/components/ComposeSceneView.kt",
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/components/SceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/MainScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/ViewshedOptionsScreen.kt",
