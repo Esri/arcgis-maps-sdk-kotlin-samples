@@ -1,11 +1,11 @@
 {
     "category": "Visualization",
     "description": "Display a web map with a point feature layer that has feature reduction enabled to aggregate points into clusters.",
-    "formal_name": "DisplayPointsUsingClusteringFeatureReduction",
+    "formal_name": "DisplayClusters",
     "ignore": false,
     "images": [
-        "display-points-using-clustering-feature-reduction-main.png",
-        "display-points-using-clustering-feature-reduction-popup.png"
+        "display-clusters-main.png",
+        "display-clusters-popup.png"
     ],
     "keywords": [
         "aggregate",
@@ -28,7 +28,7 @@
         "PortalItem"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": ["/kotlin/sample-code/display-points-using-clustering-feature-reduction/"],
     "relevant_apis": [
         "FeatureLayer",
         "FeatureReduction",
@@ -40,10 +40,10 @@
         "PortalItem"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/ClusterInfoContent.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/components/MapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaypointsusingclusteringfeaturereduction/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displayclusters/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayclusters/components/ClusterInfoContent.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayclusters/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayclusters/screens/MainScreen.kt"
     ],
-    "title": "Display points using clustering feature reduction"
+    "title": "Display clusters"
 }

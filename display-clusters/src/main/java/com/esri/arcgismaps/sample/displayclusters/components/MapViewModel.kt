@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components
+package com.esri.arcgismaps.sample.displayclusters.components
 
 import android.app.Application
 import android.graphics.Typeface
@@ -46,7 +46,7 @@ import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
-import com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.R
+import com.esri.arcgismaps.sample.displayclusters.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
