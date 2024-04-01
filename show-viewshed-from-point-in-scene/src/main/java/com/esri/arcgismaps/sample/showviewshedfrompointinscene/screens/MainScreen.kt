@@ -24,15 +24,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.showviewshedfrompointinscene.components.ComposeSceneView
 import com.esri.arcgismaps.sample.showviewshedfrompointinscene.components.SceneViewModel
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
+    // get the application context
+    val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle SceneView interactions
     val sceneViewModel = SceneViewModel(application)
 
@@ -46,9 +49,13 @@ fun MainScreen(sampleName: String, application: Application) {
                         .padding(it)
                 ) {
                     // composable function that wraps the SceneView
-                    ComposeSceneView(
-                        modifier = Modifier.fillMaxSize().weight(1f),
-                        sceneViewModel = sceneViewModel
+                    SceneView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
+                        arcGISScene = sceneViewModel.scene,
+                        cameraController = sceneViewModel.cameraController,
+                        analysisOverlays = listOf(sceneViewModel.analysisOverlay)
                     )
                     // display list of options to modify viewshed properties
                     ViewshedOptionsScreen(

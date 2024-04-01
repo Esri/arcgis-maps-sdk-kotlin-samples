@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ViewshedSlider(
     title: String,
-    intialSliderValue: Float,
+    initialSliderValue: Float,
     sliderRangeValue: ClosedFloatingPointRange<Float>,
     functionChanged: (Float) -> Unit
 ) {
     var sliderValue by remember {
-        mutableStateOf(intialSliderValue)
+        mutableStateOf(initialSliderValue)
     }
     Row {
         Text(
