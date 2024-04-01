@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components.ComposeSceneView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components.SceneViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -48,9 +48,9 @@ fun MainScreen(sampleName: String, application: Application) {
                     .padding(it)
             ) {
                 // composable function that wraps the SceneView
-                ComposeSceneView(
+                SceneView(
                     modifier = Modifier.fillMaxSize(),
-                    sceneViewModel = sceneViewModel
+                    arcGISScene = sceneViewModel.scene
                 )
                 // display a dialog if the sample encounters an error
                 sceneViewModel.messageDialogVM.apply {

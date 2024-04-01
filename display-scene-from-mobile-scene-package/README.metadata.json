@@ -14,7 +14,8 @@
         "scene",
         "ArcGISScene",
         "MobileScenePackage",
-        "SceneView"
+        "SceneView",
+        "geoviewcompose"
     ],
     "language": "kotlin",
     "redirect_from": "",
@@ -26,7 +27,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/ComposeSceneView.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/SceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/screens/MainScreen.kt"
     ],
