@@ -56,7 +56,6 @@ fun MainScreen(sampleName: String) {
                         arcGISScene = sceneViewModel.scene,
                         cameraController = sceneViewModel.cameraController,
                         analysisOverlays = listOf(sceneViewModel.analysisOverlay)
-
                     )
                     // display list of options to modify viewshed properties
                     ViewshedOptionsScreen(
