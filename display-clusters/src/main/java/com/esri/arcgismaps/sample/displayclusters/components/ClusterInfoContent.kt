@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaypointsusingclusteringfeaturereduction.components
+package com.esri.arcgismaps.sample.displayclusters.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
