@@ -29,7 +29,7 @@ This sample takes a mobile scene package that was created in ArcGIS Pro, and dis
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
 
 ## Tags
 

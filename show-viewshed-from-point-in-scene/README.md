@@ -31,7 +31,7 @@ The scene shows a [buildings layer in Brest, France](https://tiles.arcgis.com/ti
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
 
 ## Tags
 
