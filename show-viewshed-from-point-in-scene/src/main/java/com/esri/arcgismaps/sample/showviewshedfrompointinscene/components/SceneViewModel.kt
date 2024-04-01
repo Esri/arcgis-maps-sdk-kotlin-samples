@@ -32,13 +32,13 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.OrbitLocationCameraController
+import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.showviewshedfrompointinscene.R
 
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
 
-    private var viewShed: LocationViewshed
-
     // initialize location viewshed parameters
+    private var viewShed: LocationViewshed
     private val initHeading = 82.0
     private val initPitch = 60.0
     private val initHorizontalAngle = 75.0
@@ -51,7 +51,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
         y = 48.4,
         z = 1000.0
     )
-    val camera = Camera(
+    private val camera = Camera(
         lookAtPoint = initLocation,
         distance = 20000000.0,
         heading = 0.0,

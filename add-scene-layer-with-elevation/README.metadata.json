@@ -12,7 +12,8 @@
         "scene",
         "ArcGISScene",
         "ArcGISSceneLayer",
-        "SceneView"
+        "SceneView",
+        "geoviewcompose"
     ],
     "language": "kotlin",
     "redirect_from": "",
@@ -23,7 +24,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/components/ComposeSceneView.kt",
         "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/components/SceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/screens/MainScreen.kt"
     ],

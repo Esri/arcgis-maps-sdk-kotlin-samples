@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.esri.arcgismaps.sample.addscenelayerwithelevation.components.ComposeSceneView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.addscenelayerwithelevation.components.SceneViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -44,10 +44,9 @@ fun MainScreen(sampleName: String, application: Application) {
                     .padding(it)
             ) {
                 // composable function that wraps the SceneView
-                ComposeSceneView(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    sceneViewModel = sceneViewModel
+                SceneView(
+                    modifier = Modifier.fillMaxSize(),
+                    arcGISScene = sceneViewModel.scene
                 )
             }
         }
