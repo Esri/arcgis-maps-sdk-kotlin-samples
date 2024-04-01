@@ -8,12 +8,12 @@
     ],
     "keywords": [
         "3D",
+        "geoviewcompose",
         "layer",
         "scene",
         "ArcGISScene",
         "ArcGISSceneLayer",
-        "SceneView",
-        "geoviewcompose"
+        "SceneView"
     ],
     "language": "kotlin",
     "redirect_from": "",

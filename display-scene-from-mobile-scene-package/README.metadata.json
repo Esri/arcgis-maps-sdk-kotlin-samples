@@ -8,14 +8,14 @@
     ],
     "keywords": [
         "3d",
+        "geoviewcompose",
         "mobile scene package",
         "mspk",
         "offline",
         "scene",
         "ArcGISScene",
         "MobileScenePackage",
-        "SceneView",
-        "geoviewcompose"
+        "SceneView"
     ],
     "language": "kotlin",
     "redirect_from": "",

@@ -9,6 +9,7 @@
     "keywords": [
         "3D",
         "frustum",
+        "geoviewcompose",
         "scene",
         "viewshed",
         "visibility analysis",
@@ -16,8 +17,7 @@
         "ArcGISSceneLayer",
         "ArcGISTiledElevationSource",
         "LocationViewshed",
-        "Viewshed",
-        "geoviewcompose"
+        "Viewshed"
     ],
     "language": "kotlin",
     "redirect_from": "",
