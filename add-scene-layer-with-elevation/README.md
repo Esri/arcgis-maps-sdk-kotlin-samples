@@ -35,4 +35,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
-3D, layer, geoviewcompose, scene
+3D, geoviewcompose, layer, scene
