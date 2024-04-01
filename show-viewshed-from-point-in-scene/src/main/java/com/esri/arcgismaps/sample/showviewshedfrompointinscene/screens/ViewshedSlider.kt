@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ViewshedSlider(
     title: String,
-    intialSliderValue: Float,
+    initialSliderValue: Float,
     sliderRangeValue: ClosedFloatingPointRange<Float>,
     functionChanged: (Float) -> Unit
 ) {
