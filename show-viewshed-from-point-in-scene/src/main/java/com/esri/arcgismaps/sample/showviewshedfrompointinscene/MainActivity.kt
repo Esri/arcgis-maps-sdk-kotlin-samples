@@ -44,13 +44,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun ViewshedLocationApp() {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            MainScreen(
-                sampleName = getString(R.string.app_name),
-                application = application
-            )
+        Surface(color = MaterialTheme.colorScheme.background) {
+            MainScreen(sampleName = getString(R.string.app_name))
         }
     }
 }

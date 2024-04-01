@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.addscenelayerwithelevation.components.SceneViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -31,7 +32,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
+    // get the application context
+    val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle SceneView interactions
     val sceneViewModel = SceneViewModel(application)
 

@@ -32,7 +32,6 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.OrbitLocationCameraController
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.showviewshedfrompointinscene.R
 
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
