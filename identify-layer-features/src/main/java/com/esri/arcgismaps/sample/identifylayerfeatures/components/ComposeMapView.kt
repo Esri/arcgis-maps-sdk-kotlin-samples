@@ -14,16 +14,18 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showcallout.components
+package com.esri.arcgismaps.sample.identifylayerfeatures.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.mapping.view.MapView
 
 /**
@@ -32,20 +34,14 @@ import com.arcgismaps.mapping.view.MapView
 @Composable
 fun ComposeMapView(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel,
-    onSingleTap: (SingleTapConfirmedEvent) -> Unit = {}
+    mapViewModel: MapViewModel
 ) {
     // get an instance of the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
     // collect the latest state of the MapViewState
     val mapViewState by mapViewModel.mapViewState.collectAsState()
     // create and add MapView to the activity lifecycle
-    val mapView = createMapViewInstance(lifecycleOwner).apply {
-        map = mapViewState.arcGISMap
-        setViewpoint(mapViewState.viewpoint)
-        // enable animated callout
-        callout.isAnimationEnabled = true
-    }
+    val mapView = createMapViewInstance(lifecycleOwner)
 
     // wrap the MapView as an AndroidView
     AndroidView(
@@ -54,18 +50,8 @@ fun ComposeMapView(
         // recomposes the MapView on changes in the MapViewState
         update = { mapView ->
             mapView.apply {
-                val latlonPoint = mapViewModel.latLonPoint
-                latlonPoint?.let {
-                    // show callout at the tapped location using the set View
-                    callout.show(
-                        mapViewModel.calloutContent,
-                        latlonPoint
-                    )
-                    lifecycleOwner.lifecycleScope.launch {
-                        // center the map on the tapped location
-                        setViewpointCenter(latlonPoint)
-                    }
-                }
+                map = mapViewState.arcGISMap
+                setViewpoint(mapViewState.viewpoint)
             }
         }
     )
@@ -73,7 +59,14 @@ fun ComposeMapView(
     // launch coroutine functions in the composition's CoroutineContext
     LaunchedEffect(Unit) {
         mapView.onSingleTapConfirmed.collect {
-            onSingleTap(it)
+            // call identifyLayers when a tap event occurs
+            val identifyResult = mapView.identifyLayers(
+                screenCoordinate = it.screenCoordinate,
+                tolerance = 12.0,
+                returnPopupsOnly = false,
+                maximumResults = 10
+            )
+            mapViewModel.handleIdentifyResult(identifyResult)
         }
     }
 }
