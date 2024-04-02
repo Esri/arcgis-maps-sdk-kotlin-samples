@@ -146,8 +146,8 @@ fun MainScreen (sampleName: String) {
                     IconButton(onClick = { mapViewModel.stopEditor() }) {
                         Icon(vector.vectorResource(R.drawable.save), contentDescription = "Save")
                     }
-                    IconButton(onClick = { mapViewModel.clearGraphics() }) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Clear")
+                    IconButton(onClick = { mapViewModel.deleteSelection() }) {
+                        Icon(Icons.Filled.Delete, contentDescription = "Delete")
                     }
                     Row (
                         modifier = Modifier.fillMaxWidth(),

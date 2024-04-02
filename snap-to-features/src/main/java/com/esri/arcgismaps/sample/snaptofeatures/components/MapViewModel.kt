@@ -17,11 +17,12 @@
 package com.esri.arcgismaps.sample.snaptofeatures.components
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.data.ServiceGeodatabase
+import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
@@ -29,9 +30,6 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.layers.FeatureTilingMode
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
@@ -41,7 +39,6 @@ import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
 import com.arcgismaps.mapping.view.geometryeditor.SnapSourceSettings
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import com.esri.arcgismaps.sample.snaptofeatures.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,12 +48,10 @@ class MapViewModel(
     application: Application,
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
+    // create a map using a Uri
+    val map = ArcGISMap("https://www.arcgis.com/home/item.html?id=b95fe18073bc4f7788f0375af2bb445e")
 
-    // create a map using a basemap
-    val map = ArcGISMap(Basemap(BasemapStyle.ArcGISStreetsNight))
-
-    // create a service geodatabase, graphic, graphic overlay, and geometry editor
-    private var serviceGeodatabase = ServiceGeodatabase("")
+    // create a graphic, graphic overlay, and geometry editor
     private var identifiedGraphic = Graphic()
     val graphicsOverlay = GraphicsOverlay()
     val geometryEditor = GeometryEditor()
@@ -68,7 +63,7 @@ class MapViewModel(
     // create a messageDialogViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
-    // create a list to be used for displaying the snap sources in the bottom sheet
+    // create lists for displaying the snap sources in the bottom sheet and their symbology
     private val _snapSourceSettingsList = MutableStateFlow(listOf<SnapSourceSettings>())
     val snapSourceList: StateFlow<List<SnapSourceSettings>> = _snapSourceSettingsList
 
@@ -80,40 +75,29 @@ class MapViewModel(
     val snapSourceCheckedState = mutableStateListOf(false)
 
     /**
-     * Add the data layer to the map and sync the snap source collection.
+     * Set the viewpoint and configure operational layers.
      */
     init {
         sampleCoroutineScope.launch {
             // set the map's viewpoint to Naperville, Illinois
             mapViewProxy.setViewpointCenter(Point(-9812798.0, 5126406.0), 2000.0)
-            // create a service geodatabase from the uri and load it
-            serviceGeodatabase = ServiceGeodatabase(application.getString(R.string.service_url))
-            serviceGeodatabase.load().onSuccess {
-                for (layerID in serviceGeodatabase.serviceInfo?.layerInfos?.indices!!.reversed()) {
-                    // create a feature layer from the service feature table
-                    val featureTable = serviceGeodatabase.getTable(layerID.toLong())
-                    val featureLayer = FeatureLayer.createWithFeatureTable(featureTable!!)
-                    // set the feature tiling mode and load the layer
-                    featureLayer.tilingMode = FeatureTilingMode.EnabledWithFullResolutionWhenSupported
-                    featureLayer.load().onSuccess {
-                        // add the layer to the Map's operational layers
-                        map.operationalLayers.add(featureLayer)
-                    }.onFailure { error ->
+            // set the feature layer's feature tiling mode
+            map.loadSettings.featureTilingMode = FeatureTilingMode.EnabledWithFullResolutionWhenSupported
+            // load or wait for loading to finish for the feature layers that are not loaded
+            map.operationalLayers.forEach { layer ->
+                Log.i("Test", "${layer.loadStatus.value}")
+                if (layer.loadStatus.value != LoadStatus.Loaded) {
+                    layer.load().onFailure { error ->
                         messageDialogVM.showMessageDialog(
                             error.message.toString(),
                             error.cause.toString()
                         )
                     }
                 }
-                // enable the create and snap settings buttons
-                isCreateButtonEnabled.value = true
-                isSnapSettingsButtonEnabled.value = true
-            }.onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    error.message.toString(),
-                    error.cause.toString()
-                )
             }
+            // enable the create and snap settings buttons
+            isCreateButtonEnabled.value = true
+            isSnapSettingsButtonEnabled.value = true
         }
     }
 
@@ -199,17 +183,17 @@ class MapViewModel(
     }
 
     /**
-     * Stop the GeometryEditor and remove the selected Graphic or clear the GraphicsOverlay.
+     * Delete the selected element and stop the geometry editor if there are no
+     * more elements.
      */
-    fun clearGraphics() {
-        identifiedGraphic.geometry = geometryEditor.stop()
-        if (identifiedGraphic.geometry != null) {
-            graphicsOverlay.graphics.remove(identifiedGraphic)
-            identifiedGraphic.geometry = null
-        } else {
-            graphicsOverlay.graphics.clear()
+    fun deleteSelection() {
+        if(geometryEditor.selectedElement.value != null) {
+            geometryEditor.deleteSelectedElement()
+            if(geometryEditor.geometry.value?.isEmpty == true) {
+                geometryEditor.stop()
+                isCreateButtonEnabled.value = true
+            }
         }
-        isCreateButtonEnabled.value = true
     }
 
     /**

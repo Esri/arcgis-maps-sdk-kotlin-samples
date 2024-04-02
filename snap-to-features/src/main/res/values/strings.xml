@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">Snap to features</string>
-    <string name="service_url">https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/ArcGIS/rest/services/WaterDistributionNetwork/FeatureServer</string>
+    <string name="app_name">Snap geometry edits</string>
 </resources>

@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -35,9 +34,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.geometryeditor.SnapSourceSettings
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
@@ -69,7 +68,7 @@ fun SnapSettings(
             ) {
                 Text(
                     style = SampleTypography.titleMedium,
-                    text = "Snap Settings",
+                    text = "Snapping",
                     color = MaterialTheme.colorScheme.primary
                 )
                 TextButton( onClick = onDismiss )
@@ -100,7 +99,7 @@ fun SnapSettings(
                 }
             } else {
                 Surface(
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier.padding(20.dp, 20.dp, 20.dp, 0.dp),
                     tonalElevation = 1.dp,
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -108,17 +107,6 @@ fun SnapSettings(
                     Column(
                         modifier = Modifier.padding(14.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Snapping",
-                                style = SampleTypography.bodyLarge
-                            )
-                        }
-                        Divider(color = MaterialTheme.colorScheme.primary, thickness = 0.5.dp)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -137,8 +125,32 @@ fun SnapSettings(
                         }
                     }
                 }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp, 10.dp, 20.dp, 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        style = SampleTypography.titleMedium,
+                        text = "Point Layers",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    TextButton(
+                        onClick = {
+                            snapSourceList.value.forEachIndexed { index, snapSource ->
+                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Point) {
+                                    onSnapSourceChanged(true, index)
+                                }
+                            }
+                        }
+                    ) {
+                        Text(text = "Enable All Sources")
+                    }
+                }
                 Surface(
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier.padding(20.dp, 0.dp, 20.dp, 10.dp),
                     tonalElevation = 1.dp,
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -147,47 +159,83 @@ fun SnapSettings(
                         modifier = Modifier.padding(14.dp)
                     ) {
                         Column {
-                            Row {
-                                Text(
-                                    modifier = Modifier.weight(12f),
-                                    text = "Snap Sources",
-                                )
-                            }
-                            Divider(color = MaterialTheme.colorScheme.primary, thickness = 0.5.dp)
-                            for (index in snapSourceList.value.indices) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        modifier = Modifier.weight(1f),
-                                        text = "\t\t${(snapSourceList.value[index].source as FeatureLayer).name}"
-                                    )
-                                    Switch(
-                                        checked = isSnapSourceEnabled[index],
-                                        onCheckedChange = { newValue ->
-                                            onSnapSourceChanged(newValue, index)
-                                        }
-                                    )
+                            snapSourceList.value.forEachIndexed { index, snapSource ->
+                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Point) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.weight(0.5f),
+                                            text = "\t\t${(snapSource.source as FeatureLayer).name}"
+                                        )
+                                        Switch(
+                                            checked = isSnapSourceEnabled[index],
+                                            onCheckedChange = { newValue ->
+                                                onSnapSourceChanged(newValue, index)
+                                            }
+                                        )
+                                    }
                                 }
-                                Divider(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    thickness = 0.5.dp
-                                )
                             }
                         }
-                        Divider(thickness = 0.5.dp)
-                        TextButton(
-                            modifier = Modifier.align(CenterHorizontally),
-                            onClick = {
-                                for (x in snapSourceList.value.indices) {
-                                    onSnapSourceChanged(true, x)
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp, 0.dp, 20.dp, 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        style = SampleTypography.titleMedium,
+                        text = "Polyline Layers",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    TextButton(
+                        onClick = {
+                            snapSourceList.value.forEachIndexed { index, snapSource ->
+                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Polyline) {
+                                    onSnapSourceChanged(true, index)
                                 }
                             }
-                        )
-                        {
-                            Text(text = "Enable All Sources")
+                        }
+                    ) {
+                        Text(text = "Enable All Sources")
+                    }
+                }
+                Surface(
+                    modifier = Modifier.padding(20.dp, 0.dp, 20.dp, 10.dp),
+                    tonalElevation = 1.dp,
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp)
+                    ) {
+                        Column {
+                            snapSourceList.value.forEachIndexed { index, snapSource ->
+                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Polyline) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.weight(0.5f),
+                                            text = "\t\t${(snapSource.source as FeatureLayer).name}"
+                                        )
+                                        Switch(
+                                            checked = isSnapSourceEnabled[index],
+                                            onCheckedChange = { newValue ->
+                                                onSnapSourceChanged(newValue, index)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
