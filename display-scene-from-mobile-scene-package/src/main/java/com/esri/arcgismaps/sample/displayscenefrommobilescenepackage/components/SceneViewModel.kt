@@ -17,15 +17,16 @@
 package com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.MobileScenePackage
 import com.esri.arcgismaps.sample.displayscenefrommobilescenepackage.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -34,11 +35,8 @@ class SceneViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
 
-    // create a mutable state holder for the first scene
-    private val _firstScene = MutableStateFlow<ArcGISScene?>(null)
-
-    // expose a read-only state flow for observing changes to the first scene
-    val firstScene: StateFlow<ArcGISScene?> = _firstScene.asStateFlow()
+    // create a base scene to be used to load the mobile scene package
+    var scene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISStreets))
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -64,7 +62,7 @@ class SceneViewModel(
             // load the mobile scene package
             mobileScenePackage.load().onSuccess {
                 // update the mutable state holder with the first scene from the MobileScenePackage
-                _firstScene.value = mobileScenePackage.scenes.first()
+                scene = mobileScenePackage.scenes.first()
             }.onFailure { error ->
                 // show the message dialog and pass the error message to be displayed in the dialog
                 messageDialogVM.showMessageDialog(error.message.toString(), error.cause.toString())

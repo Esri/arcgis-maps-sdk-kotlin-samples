@@ -7,12 +7,13 @@
         "show-magnifier.png"
     ],
     "keywords": [
+        "geoviewcompose",
         "magnify",
         "map",
+        "toolkit",
         "zoom",
         "ArcGISMap",
         "MapView",
-        "MapView.interactionOptions.allowMagnifierToPan",
         "MapView.interactionOptions.isMagnifierEnabled"
     ],
     "language": "kotlin",
@@ -20,13 +21,10 @@
     "relevant_apis": [
         "ArcGISMap",
         "MapView",
-        "MapView.interactionOptions.allowMagnifierToPan",
         "MapView.interactionOptions.isMagnifierEnabled"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showmagnifier/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showmagnifier/components/ComposeMapView.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showmagnifier/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showmagnifier/screens/MainScreen.kt"
     ],
     "title": "Show magnifier"

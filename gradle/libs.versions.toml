@@ -1,0 +1,65 @@
+[versions]
+# ArcGIS Maps SDK for Kotlin version
+arcgisMapsKotlinVersion = "200.4.0-4189"
+# ArcGIS Maps SDK for Kotlin Toolkit version
+arcgisToolkitVersion = "200.4.0-4189"
+# SDK versions
+compileSdk = "34"
+minSdk = "26"
+targetSdk = "34"
+versionCode = "2004000"
+versionName = "200.4.0"
+# Kotlin versions
+kotlinVersion = "1.9.10"
+ktxLifecycle = "2.5.1"
+ktxFragmentsExt = "1.6.1"
+ktxActivityExt = "1.7.2"
+ktxAndroidCore = "1.10.1"
+kotlinCompilerExt = "1.5.3"
+# Compose versions
+composeActivityVersion = "1.7.1"
+composeBOM = "2023.10.01"
+# Library versions
+appcompatVersion = "1.6.1"
+commonsIoVersion = "2.11.0"
+constraintLayoutVersion = "2.1.4"
+coordinateLayoutVersion = "1.2.0"
+workVersion = "2.7.1"
+multidexVersion = "2.0.1"
+materialVersion = "1.7.0"
+androidBrowserVersion = "1.5.0"
+# Plugin versions
+gradleVersion = "8.1.1"
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "gradleVersion" }
+android-library = { id = "com.android.library", version.ref = "gradleVersion" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
+
+[libraries]
+android-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion"}
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion"}
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivityVersion"}
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "ktxActivityExt"}
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidBrowserVersion"}
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBOM"}
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayoutVersion"}
+androidx-coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinateLayoutVersion"}
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktxAndroidCore"}
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "ktxFragmentsExt" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "ktxLifecycle"}
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "ktxLifecycle"}
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "ktxLifecycle"}
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "ktxLifecycle"}
+androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidexVersion"}
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workVersion" }
+arcgis-maps-kotlin = { group = "com.esri", name = "arcgis-maps-kotlin", version.ref = "arcgisMapsKotlinVersion"}
+arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisToolkitVersion"}
+arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
+arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geoview-compose" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
+stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlinVersion"}

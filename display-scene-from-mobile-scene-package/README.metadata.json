@@ -8,6 +8,7 @@
     ],
     "keywords": [
         "3d",
+        "geoviewcompose",
         "mobile scene package",
         "mspk",
         "offline",
@@ -26,7 +27,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/ComposeSceneView.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/SceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/screens/MainScreen.kt"
     ],

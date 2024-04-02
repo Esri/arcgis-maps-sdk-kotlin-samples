@@ -18,29 +18,41 @@ package com.esri.arcgismaps.sample.addscenelayerwithelevation.components
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.addscenelayerwithelevation.R
 
 class SceneViewModel(application: Application) : AndroidViewModel(application) {
-    // set the SceneView state
-    val sceneViewState = SceneViewState()
+
+    private val initLocation = Point(
+        x = 48.378,
+        y = -4.494
+    )
+
+    // create a camera position for the scene
+    private val camera: Camera = Camera(
+        latitude = 48.378,
+        longitude = -4.494,
+        altitude = 200.0,
+        heading = 345.0,
+        pitch = 65.0,
+        roll = 0.0
+    )
+    // the scene used to display on the SceneView
+    val scene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
+        initialViewpoint = Viewpoint(initLocation,camera)
+    }
 
     // add a scene layer to the ArcGISScene
     init {
         // create a scene layer from a scene service for viewing buildings
         val sceneLayer =  ArcGISSceneLayer(application.getString(R.string.brest_buildings))
         // add the scene layer to the scene's operational layer
-        sceneViewState.arcGISScene.operationalLayers.add(sceneLayer)
+        scene.operationalLayers.add(sceneLayer)
     }
 }
 
-/**
- * Data class that represents the SceneView state
- */
-class SceneViewState(
-    val arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic),
-    val camera: Camera = Camera(48.378, -4.494, 200.0, 345.0, 65.0, 0.0)
-)

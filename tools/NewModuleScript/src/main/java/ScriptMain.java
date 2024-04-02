@@ -99,7 +99,6 @@ public class ScriptMain {
 
         // Copy Kotlin template files to new sample
         File mainActivityTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainActivityTemplate.kt");
-        File composeMapViewTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/ComposeMapViewTemplate.kt");
         File mapViewModelTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MapViewModelTemplate.kt");
         File mainScreenTemplate = new File(samplesRepoPath + "/tools/NewModuleScript/MainScreenTemplate.kt");
 
@@ -109,20 +108,17 @@ public class ScriptMain {
             Path source = Paths.get(packageDirectory+"/MainActivityTemplate.kt");
             Files.move(source, source.resolveSibling("MainActivity.kt"));
 
-            File composeComponentsDir = new File(packageDirectory + "/components");
-            composeComponentsDir.mkdirs();
-            FileUtils.copyFileToDirectory(composeMapViewTemplate, composeComponentsDir);
-            source = Paths.get(composeComponentsDir+"/ComposeMapViewTemplate.kt");
-            Files.move(source, source.resolveSibling("ComposeMapView.kt"));
+            File componentsDir = new File(packageDirectory + "/components");
+            componentsDir.mkdirs();
 
-            FileUtils.copyFileToDirectory(mapViewModelTemplate, composeComponentsDir);
-            source = Paths.get(composeComponentsDir+"/MapViewModelTemplate.kt");
+            FileUtils.copyFileToDirectory(mapViewModelTemplate, componentsDir);
+            source = Paths.get(componentsDir+"/MapViewModelTemplate.kt");
             Files.move(source, source.resolveSibling("MapViewModel.kt"));
 
-            composeComponentsDir = new File(packageDirectory + "/screens");
-            composeComponentsDir.mkdirs();
-            FileUtils.copyFileToDirectory(mainScreenTemplate, composeComponentsDir);
-            source = Paths.get(composeComponentsDir+"/MainScreenTemplate.kt");
+            componentsDir = new File(packageDirectory + "/screens");
+            componentsDir.mkdirs();
+            FileUtils.copyFileToDirectory(mainScreenTemplate, componentsDir);
+            source = Paths.get(componentsDir+"/MainScreenTemplate.kt");
             Files.move(source, source.resolveSibling("MainScreen.kt"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -143,7 +139,7 @@ public class ScriptMain {
 
     /**
      * Updates the content in the copied files to reflect the name of the sample
-     * Eg. README.md, build.gradle, MainActivity.kt, etc.
+     * Eg. README.md, build.gradle.kts, MainActivity.kt, etc.
      */
     private void updateSampleContent() {
 
@@ -165,8 +161,8 @@ public class ScriptMain {
             exitProgram(e);
         }
 
-        //Update build.gradle
-        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build.gradle");
+        //Update build.gradle.kts
+        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/build.gradle.kts");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
@@ -191,18 +187,6 @@ public class ScriptMain {
 
         //Update MainActivity.kt
         file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/MainActivity.kt");
-        try {
-            String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));
-            fileContent = fileContent.replace("sample.displaycomposablemapview", "sample." + sampleWithoutSpaces);
-            FileUtils.write(file,fileContent, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            exitProgram(e);
-        }
-
-        //Update ComposeMapView.kt
-        file = new File(samplesRepoPath + "/" + sampleWithHyphen + "/src/main/java/com/esri/arcgismaps/sample/"+sampleWithoutSpaces+"/components/ComposeMapView.kt");
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance().get(Calendar.YEAR));

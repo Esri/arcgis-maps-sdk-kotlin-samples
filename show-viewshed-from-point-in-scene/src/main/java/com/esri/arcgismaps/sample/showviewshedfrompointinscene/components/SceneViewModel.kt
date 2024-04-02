@@ -27,6 +27,7 @@ import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Surface
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
@@ -34,18 +35,35 @@ import com.arcgismaps.mapping.view.OrbitLocationCameraController
 import com.esri.arcgismaps.sample.showviewshedfrompointinscene.R
 
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
-    // set the SceneView mutable stateflow
-    val sceneViewState = SceneViewState()
-
-    private var viewShed: LocationViewshed
 
     // initialize location viewshed parameters
+    private var viewShed: LocationViewshed
     private val initHeading = 82.0
     private val initPitch = 60.0
     private val initHorizontalAngle = 75.0
     private val initVerticalAngle = 90.0
     private val initMinDistance = 0.0
     private val initMaxDistance = 1500.0
+
+    private val initLocation = Point(
+        x = -4.50,
+        y = 48.4,
+        z = 1000.0
+    )
+    private val camera = Camera(
+        lookAtPoint = initLocation,
+        distance = 20000000.0,
+        heading = 0.0,
+        pitch = 55.0,
+        roll = 0.0
+    )
+    val cameraController = OrbitLocationCameraController(
+        targetPoint = initLocation,
+        distance = 5000.0
+    )
+    var scene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISNavigationNight))
+    var analysisOverlay by mutableStateOf(AnalysisOverlay())
+
 
     init {
         // create a surface for elevation data
@@ -54,8 +72,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
         }
 
         // create a layer of buildings
-        val buildingsSceneLayer =
-            ArcGISSceneLayer(application.getString(R.string.buildings_layer))
+        val buildingsSceneLayer = ArcGISSceneLayer(application.getString(R.string.buildings_layer))
 
         // create a scene and add imagery basemap, elevation surface, and buildings layer to it
         val buildingsScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
@@ -77,14 +94,15 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
             frustumOutlineVisible = true
         }
 
-        sceneViewState.apply {
-            // add the buildings scene to the sceneView
-            arcGISScene = buildingsScene
-            // add the viewshed to the analysisOverlay of the  scene view
-            analysisOverlay.apply {
-                analyses.add(viewShed)
-                isVisible = true
-            }
+        // add the buildings scene to the sceneView
+        scene = buildingsScene.apply {
+            baseSurface = surface
+            initialViewpoint = Viewpoint(initLocation, camera)
+        }
+        // add the viewshed to the analysisOverlay of the  scene view
+        analysisOverlay.apply {
+            analyses.add(viewShed)
+            isVisible = true
         }
     }
 
@@ -120,17 +138,5 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     fun analysisVisibility(checkedValue: Boolean) {
         viewShed.isVisible = checkedValue
     }
-}
-
-/**
- * Data class that represents the SceneView state
- */
-class SceneViewState {
-    var arcGISScene: ArcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISNavigationNight))
-    private val initLocation = Point(-4.50, 48.4, 1000.0)
-    val camera: Camera = Camera(initLocation, 20000000.0, 0.0, 55.0, 0.0)
-    val cameraController: OrbitLocationCameraController =
-        OrbitLocationCameraController(initLocation, 5000.0)
-    var analysisOverlay: AnalysisOverlay by mutableStateOf(AnalysisOverlay())
 }
 
