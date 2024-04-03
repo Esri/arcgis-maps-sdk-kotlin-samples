@@ -72,7 +72,7 @@ fun ClusterInfoContent(
             }
         }
 
-        LazyColumn() {
+        LazyColumn {
             items(clusterInfoList.size) { index ->
                 Divider(
                     modifier = Modifier.padding(horizontal = 12.dp),
