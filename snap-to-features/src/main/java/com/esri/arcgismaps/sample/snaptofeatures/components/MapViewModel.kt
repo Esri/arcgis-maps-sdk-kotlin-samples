@@ -83,16 +83,13 @@ class MapViewModel(
             mapViewProxy.setViewpointCenter(Point(-9812798.0, 5126406.0), 2000.0)
             // set the feature layer's feature tiling mode
             map.loadSettings.featureTilingMode = FeatureTilingMode.EnabledWithFullResolutionWhenSupported
-            // load or wait for loading to finish for the feature layers that are not loaded
+            // load the map's operational layers
             map.operationalLayers.forEach { layer ->
-                Log.i("Test", "${layer.loadStatus.value}")
-                if (layer.loadStatus.value != LoadStatus.Loaded) {
-                    layer.load().onFailure { error ->
-                        messageDialogVM.showMessageDialog(
-                            error.message.toString(),
-                            error.cause.toString()
-                        )
-                    }
+                layer.load().onFailure { error ->
+                    messageDialogVM.showMessageDialog(
+                        error.message.toString(),
+                        error.cause.toString()
+                    )
                 }
             }
             // enable the create and snap settings buttons
