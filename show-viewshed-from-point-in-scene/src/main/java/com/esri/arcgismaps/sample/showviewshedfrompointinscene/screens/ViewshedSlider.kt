@@ -25,7 +25,7 @@ fun ViewshedSlider(
     functionChanged: (Float) -> Unit
 ) {
     var sliderValue by remember {
-        mutableFloatStateOf(intialSliderValue)
+        mutableFloatStateOf(initialSliderValue)
     }
     Row {
         Text(
