@@ -79,8 +79,6 @@ class MapViewModel(
      */
     init {
         sampleCoroutineScope.launch {
-            // set the map's viewpoint to Naperville, Illinois
-            mapViewProxy.setViewpointCenter(Point(-9812798.0, 5126406.0), 2000.0)
             // set the feature layer's feature tiling mode
             map.loadSettings.featureTilingMode =
                 FeatureTilingMode.EnabledWithFullResolutionWhenSupported
