@@ -93,11 +93,7 @@ class MapViewModel(
                     )
                 }
             }
-            // enable the UI
-            isCreateButtonEnabled.value = true
-            isUndoButtonEnabled.value = true
-            isSaveButtonEnabled.value = true
-            isDeleteButtonEnabled.value = true
+            toggleButtons()
             isSnapSettingsButtonEnabled.value = true
         }
     }
@@ -110,7 +106,7 @@ class MapViewModel(
         if (geometryEditor.snapSettings.sourceSettings.isEmpty()) {
             // sync the snap source collection
             geometryEditor.snapSettings.syncSourceSettings()
-            // initialise the lists used for the snapping UI
+            // initialise the snap source lists used for the bottom sheet
             geometryEditor.snapSettings.sourceSettings.forEach { snapSource ->
                 snapSourceCheckedState.add(snapSource.isEnabled)
             }
@@ -149,11 +145,7 @@ class MapViewModel(
     fun startEditor(selectedGeometry: GeometryType) {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(selectedGeometry)
-            // update the UI
-            isCreateButtonEnabled.value = false
-            isUndoButtonEnabled.value = true
-            isSaveButtonEnabled.value = true
-            isDeleteButtonEnabled.value = true
+            toggleButtons()
         }
     }
 
@@ -169,11 +161,7 @@ class MapViewModel(
                 createGraphic()
             }
         }
-        // update the UI
-        isCreateButtonEnabled.value = true
-        isUndoButtonEnabled.value = false
-        isSaveButtonEnabled.value = false
-        isDeleteButtonEnabled.value = false
+        toggleButtons()
     }
 
     /**
@@ -203,11 +191,7 @@ class MapViewModel(
             geometryEditor.deleteSelectedElement()
             if (geometryEditor.geometry.value?.isEmpty == true) {
                 geometryEditor.stop()
-                // update the UI
-                isCreateButtonEnabled.value = true
-                isUndoButtonEnabled.value = false
-                isSaveButtonEnabled.value = false
-                isDeleteButtonEnabled.value = false
+                toggleButtons()
             }
         }
     }
@@ -238,17 +222,28 @@ class MapViewModel(
                         identifiedGraphic = graphicsResult[0].graphics[0]
                         identifiedGraphic.isSelected = true
                         identifiedGraphic.geometry?.let { geometryEditor.start(it) }
-
-                        // update the UI
-                        isCreateButtonEnabled.value = false
-                        isUndoButtonEnabled.value = true
-                        isSaveButtonEnabled.value = true
-                        isDeleteButtonEnabled.value = true
+                        toggleButtons()
                     }
                 }
                 identifiedGraphic.geometry = null
             }
         }
         dismissBottomSheet()
+    }
+
+    /**
+     * Enables or disables the UI buttons when an editing session is started or stopped.
+     */
+    private fun toggleButtons() {
+        isCreateButtonEnabled.value = !isCreateButtonEnabled.value
+        if (isCreateButtonEnabled.value) {
+            isUndoButtonEnabled.value = false
+            isSaveButtonEnabled.value = false
+            isDeleteButtonEnabled.value = false
+        } else {
+            isUndoButtonEnabled.value = true
+            isSaveButtonEnabled.value = true
+            isDeleteButtonEnabled.value = true
+        }
     }
 }
