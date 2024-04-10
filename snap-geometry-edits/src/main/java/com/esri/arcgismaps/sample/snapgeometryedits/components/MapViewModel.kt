@@ -21,7 +21,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
@@ -65,8 +64,8 @@ class MapViewModel(
     val snapSourceList: StateFlow<List<SnapSourceSettings>> = _snapSourceSettingsList
 
     // create boolean flags to track the state of UI components
+    val isUndoButtonEnabled = geometryEditor.canUndo
     val isCreateButtonEnabled = mutableStateOf(false)
-    val isUndoButtonEnabled = mutableStateOf(false)
     val isSaveButtonEnabled = mutableStateOf(false)
     val isDeleteButtonEnabled = mutableStateOf(false)
     val isSnapSettingsButtonEnabled = mutableStateOf(false)
@@ -82,14 +81,22 @@ class MapViewModel(
             // set the feature layer's feature tiling mode
             map.loadSettings.featureTilingMode =
                 FeatureTilingMode.EnabledWithFullResolutionWhenSupported
-            // load the map's operational layers
-            map.operationalLayers.forEach { layer ->
-                layer.load().onFailure { error ->
-                    messageDialogVM.showMessageDialog(
-                        error.message.toString(),
-                        error.cause.toString()
-                    )
+            // load the map
+            map.load().onSuccess {
+                // load the map's operational layers
+                map.operationalLayers.forEach { layer ->
+                    layer.load().onFailure { error ->
+                        messageDialogVM.showMessageDialog(
+                            error.message.toString(),
+                            error.cause.toString()
+                        )
+                    }
                 }
+            }.onFailure { error ->
+                messageDialogVM.showMessageDialog(
+                    error.message.toString(),
+                    error.cause.toString()
+                )
             }
             toggleButtons()
             isSnapSettingsButtonEnabled.value = true
@@ -167,14 +174,17 @@ class MapViewModel(
      */
     private fun createGraphic() {
         val geometry = geometryEditor.stop()
+            ?: return messageDialogVM.showMessageDialog(
+                "Error!",
+                "Error stopping editing session"
+            )
         val graphic = Graphic(geometry)
 
-        when (geometry!!) {
-            is Point -> graphic.symbol = GeometryEditorStyle().vertexSymbol
-            is Multipoint -> graphic.symbol = GeometryEditorStyle().vertexSymbol
+        when (geometry) {
+            is Point, is Multipoint -> graphic.symbol = GeometryEditorStyle().vertexSymbol
             is Polyline -> graphic.symbol = GeometryEditorStyle().lineSymbol
             is Polygon -> graphic.symbol = GeometryEditorStyle().fillSymbol
-            is Envelope -> graphic.symbol = GeometryEditorStyle().lineSymbol
+            else -> {}
         }
         graphicsOverlay.graphics.add(graphic)
         graphic.isSelected = false
@@ -235,11 +245,9 @@ class MapViewModel(
     private fun toggleButtons() {
         isCreateButtonEnabled.value = !isCreateButtonEnabled.value
         if (isCreateButtonEnabled.value) {
-            isUndoButtonEnabled.value = false
             isSaveButtonEnabled.value = false
             isDeleteButtonEnabled.value = false
         } else {
-            isUndoButtonEnabled.value = true
             isSaveButtonEnabled.value = true
             isDeleteButtonEnabled.value = true
         }
