@@ -116,11 +116,9 @@ class MainActivity : AppCompatActivity() {
         createPolygons()
 
         // center the map view on the input geometries
-        val envelope = GeometryEngine.union(inputPolygon1, inputPolygon2)?.extent
-        if (envelope != null) {
-            lifecycleScope.launch {
-                mapView.setViewpointGeometry(envelope, 20.0)
-            }
+        val envelope = GeometryEngine.union(inputPolygon1, inputPolygon2).extent
+        lifecycleScope.launch {
+            mapView.setViewpointGeometry(envelope, 20.0)
         }
     }
 
@@ -130,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         // create a result geometry of the spatial operation
         var resultGeometry: Geometry? = null
         // get the selected operation
-        when (SpatialOperation.values().find { it.menuPosition == position }) {
+        when (SpatialOperation.entries.find { it.menuPosition == position }) {
             SpatialOperation.NO_OPERATION -> { /* No operation needed */
             }
             SpatialOperation.INTERSECTION -> {

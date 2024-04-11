@@ -30,6 +30,10 @@ Input the name of a U.S. state into the text field. When you click the search ic
 
 This sample uses U.S. State polygon features from the [USA 2016 Daytime Population](https://www.arcgis.com/home/item.html?id=f01f0eda766344e29f42031e7bfb7d04) feature service.
 
+## Additional information
+
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+
 ## Tags
 
-query, search
+geoviewcompose, query, search, toolkit

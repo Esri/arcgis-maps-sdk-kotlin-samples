@@ -25,7 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.esri.arcgismaps.sample.analyzehotspots.components.ComposeMapView
+import androidx.compose.ui.platform.LocalContext
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.analyzehotspots.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -36,21 +37,26 @@ import kotlinx.coroutines.launch
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String, application: Application) {
+fun MainScreen(sampleName: String) {
     // coroutineScope that will be cancelled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
+    // get the application property that will be used to construct MapViewModel
+    val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
+    val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             // sample app content layout
-            Column(modifier = Modifier.fillMaxSize().padding(it)) {
-                // composable function that wraps the MapView
-                ComposeMapView(
-                    modifier = Modifier.fillMaxSize().weight(1f),
-                    mapViewModel = mapViewModel
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(it)) {
+                MapView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    arcGISMap = mapViewModel.map
                 )
                 // bottom layout with a button to display analyze hotspot options
                 BottomAppContent(
@@ -83,7 +89,7 @@ fun MainScreen(sampleName: String, application: Application) {
                 if (mapViewModel.showJobProgressDialog.value) {
                     JobLoadingDialog(
                         title = "Analyzing hotspots...",
-                        progress = mapViewModel.geoprocessingJobProgress.value,
+                        progress = mapViewModel.geoprocessingJobProgress.intValue,
                         cancelJobRequest = { mapViewModel.cancelGeoprocessingJob() }
                     )
                 }

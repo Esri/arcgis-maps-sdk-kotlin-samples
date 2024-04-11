@@ -45,7 +45,7 @@ fun ViewshedOptionsScreen(
     isFrustumVisible: (Boolean) -> Unit = {},
     isAnalysisVisible: (Boolean) -> Unit = {}
 ) {
-    Column() {
+    Column {
         // sliders
         HeadingSlider(onHeadingChanged)
         PitchSlider(onPitchChanged)
@@ -65,7 +65,7 @@ fun ViewshedOptionsScreen(
 private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Heading",
-        intialSliderValue = 82f,
+        initialSliderValue = 82f,
         sliderRangeValue = 0f..360f,
         functionChanged = onHeadingChanged
     )
@@ -75,7 +75,7 @@ private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
 private fun PitchSlider(onPitchChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Pitch",
-        intialSliderValue = 60f,
+        initialSliderValue = 60f,
         sliderRangeValue = 0f..180f,
         functionChanged = onPitchChanged
     )
@@ -85,7 +85,7 @@ private fun PitchSlider(onPitchChanged: (Float) -> Unit) {
 private fun HorizontalAngleSlider(onHorizontalAngleChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Horizontal Angle",
-        intialSliderValue = 75f,
+        initialSliderValue = 75f,
         sliderRangeValue = 1f..120f,
         functionChanged = onHorizontalAngleChanged
     )
@@ -95,7 +95,7 @@ private fun HorizontalAngleSlider(onHorizontalAngleChanged: (Float) -> Unit) {
 private fun VerticalAngleSlider(onVerticalAngleChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Vertical Angle",
-        intialSliderValue = 90f,
+        initialSliderValue = 90f,
         sliderRangeValue = 1f..120f,
         functionChanged = onVerticalAngleChanged
     )
@@ -105,7 +105,7 @@ private fun VerticalAngleSlider(onVerticalAngleChanged: (Float) -> Unit) {
 private fun MinimumDistanceSlider(onMinDistanceChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Minimum Distance",
-        intialSliderValue = 0f,
+        initialSliderValue = 0f,
         sliderRangeValue = 0f..8999f,
         functionChanged = onMinDistanceChanged
     )
@@ -115,7 +115,7 @@ private fun MinimumDistanceSlider(onMinDistanceChanged: (Float) -> Unit) {
 private fun MaximumDistanceSlider(onMaxDistanceChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Maximum Distance",
-        intialSliderValue = 1500f,
+        initialSliderValue = 1500f,
         sliderRangeValue = 0f..9999f,
         functionChanged = onMaxDistanceChanged
     )

@@ -22,13 +22,13 @@ Tap and hold on the map to show a magnifier, then drag across the map to move th
 
 * ArcGISMap
 * MapView
-* MapView.interactionOptions.allowMagnifierToPan
 * MapView.interactionOptions.isMagnifierEnabled
 
 ## Additional information
 
-This sample only works on a device with a touch screen. The magnifier will not appear via a mouse click.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+It only works on a device with a touch screen. The magnifier will not appear via a mouse click.
 
 ## Tags
 
-magnify, map, zoom
+geoviewcompose, magnify, map, toolkit, zoom

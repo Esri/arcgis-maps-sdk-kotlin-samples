@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity() {
         // call get on the future to get the result
         val featureResultList = featureQueryResult?.toList()
 
-        if (featureResultList != null && featureResultList.isNotEmpty()) {
+        if (!featureResultList.isNullOrEmpty()) {
             // create list of graphics for each query result
             val graphics = featureResultList.map { createGraphic(it) }
             // add the graphics to the graphics overlay

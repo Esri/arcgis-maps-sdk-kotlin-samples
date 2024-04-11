@@ -7,8 +7,10 @@
         "query-feature-table.png"
     ],
     "keywords": [
+        "geoviewcompose",
         "query",
         "search",
+        "toolkit",
         "FeatureLayer",
         "FeatureQueryResult",
         "QueryParameters",
@@ -24,7 +26,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/components/ComposeMapView.kt",
         "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/screens/MainScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/queryfeaturetable/screens/SearchBar.kt"
