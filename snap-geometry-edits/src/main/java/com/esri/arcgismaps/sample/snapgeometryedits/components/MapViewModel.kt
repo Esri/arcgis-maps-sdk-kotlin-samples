@@ -36,6 +36,7 @@ import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
 import com.arcgismaps.mapping.view.geometryeditor.SnapSourceSettings
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import com.esri.arcgismaps.sample.snapgeometryedits.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,7 +47,7 @@ class MapViewModel(
     private val sampleCoroutineScope: CoroutineScope
 ) : AndroidViewModel(application) {
     // create a map using the URL of the web map
-    val map = ArcGISMap("https://www.arcgis.com/home/item.html?id=b95fe18073bc4f7788f0375af2bb445e")
+    val map = ArcGISMap(application.getString(R.string.web_map))
 
     // create a graphic, graphic overlay, and geometry editor
     private var identifiedGraphic = Graphic()
@@ -64,14 +65,14 @@ class MapViewModel(
     val snapSourceList: StateFlow<List<SnapSourceSettings>> = _snapSourceSettingsList
 
     // create boolean flags to track the state of UI components
-    val isUndoButtonEnabled = geometryEditor.canUndo
     val isCreateButtonEnabled = mutableStateOf(false)
-    val isSaveButtonEnabled = mutableStateOf(false)
-    val isDeleteButtonEnabled = mutableStateOf(false)
     val isSnapSettingsButtonEnabled = mutableStateOf(false)
     val isBottomSheetVisible = mutableStateOf(false)
     val snappingCheckedState = mutableStateOf(false)
-    val snapSourceCheckedState = mutableStateListOf(false)
+    val snapSourceCheckedState = mutableStateListOf<Boolean>()
+    val isUndoButtonEnabled = geometryEditor.canUndo
+    val isSaveButtonEnabled = geometryEditor.isStarted
+    val isDeleteButtonEnabled = geometryEditor.isStarted
 
     /**
      * Configure the map and enable the UI after the map's layers are loaded.
@@ -98,7 +99,7 @@ class MapViewModel(
                     error.cause.toString()
                 )
             }
-            toggleButtons()
+            isCreateButtonEnabled.value = true
             isSnapSettingsButtonEnabled.value = true
         }
     }
@@ -150,7 +151,7 @@ class MapViewModel(
     fun startEditor(selectedGeometry: GeometryType) {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(selectedGeometry)
-            toggleButtons()
+            isCreateButtonEnabled.value = false
         }
     }
 
@@ -161,12 +162,10 @@ class MapViewModel(
         if (identifiedGraphic.geometry != null) {
             identifiedGraphic.geometry = geometryEditor.stop()
             identifiedGraphic.isSelected = false
-        } else {
-            if (geometryEditor.isStarted.value) {
-                createGraphic()
-            }
+        } else if (geometryEditor.isStarted.value) {
+            createGraphic()
         }
-        toggleButtons()
+        isCreateButtonEnabled.value = true
     }
 
     /**
@@ -199,7 +198,7 @@ class MapViewModel(
             geometryEditor.deleteSelectedElement()
             if (geometryEditor.geometry.value?.isEmpty == true) {
                 geometryEditor.stop()
-                toggleButtons()
+                isCreateButtonEnabled.value = true
             }
         }
     }
@@ -229,27 +228,15 @@ class MapViewModel(
                     if (graphicsResult.isNotEmpty()) {
                         identifiedGraphic = graphicsResult[0].graphics[0]
                         identifiedGraphic.isSelected = true
-                        identifiedGraphic.geometry?.let { geometryEditor.start(it) }
-                        toggleButtons()
+                        identifiedGraphic.geometry?.let {
+                            geometryEditor.start(it)
+                            isCreateButtonEnabled.value = false
+                        }
                     }
                 }
                 identifiedGraphic.geometry = null
             }
         }
         dismissBottomSheet()
-    }
-
-    /**
-     * Enables or disables the UI buttons when an editing session is started or stopped.
-     */
-    private fun toggleButtons() {
-        isCreateButtonEnabled.value = !isCreateButtonEnabled.value
-        if (isCreateButtonEnabled.value) {
-            isSaveButtonEnabled.value = false
-            isDeleteButtonEnabled.value = false
-        } else {
-            isSaveButtonEnabled.value = true
-            isDeleteButtonEnabled.value = true
-        }
     }
 }

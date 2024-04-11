@@ -50,7 +50,7 @@ fun SnapSettings(
     onSnappingChanged: (Boolean) -> Unit = { },
     onSnapSourceChanged: (Boolean, Int) -> Unit = { _: Boolean, _: Int -> },
     isSnappingEnabled: Boolean,
-    isSnapSourceEnabled: MutableList<Boolean>,
+    isSnapSourceEnabled: List<Boolean>,
     onDismiss: () -> Unit = { }
 ) {
     Surface(
@@ -113,8 +113,9 @@ fun SnapSettings(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "\t\tEnabled",
+                                modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
                                 style = SampleTypography.bodyLarge,
+                                text = "Enabled",
                             )
                             Switch(
                                 checked = isSnappingEnabled,
@@ -167,8 +168,8 @@ fun SnapSettings(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            modifier = Modifier.weight(0.5f),
-                                            text = "\t\t${(snapSource.source as FeatureLayer).name}"
+                                            modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                            text = (snapSource.source as FeatureLayer).name
                                         )
                                         Switch(
                                             checked = isSnapSourceEnabled[index],
@@ -224,8 +225,8 @@ fun SnapSettings(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            modifier = Modifier.weight(0.5f),
-                                            text = "\t\t${(snapSource.source as FeatureLayer).name}"
+                                            modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                            text = (snapSource.source as FeatureLayer).name
                                         )
                                         Switch(
                                             checked = isSnapSourceEnabled[index],
