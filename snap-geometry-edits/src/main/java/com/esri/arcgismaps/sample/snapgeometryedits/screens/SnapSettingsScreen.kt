@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.snapgeometryedits.components
+package com.esri.arcgismaps.sample.snapgeometryedits.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

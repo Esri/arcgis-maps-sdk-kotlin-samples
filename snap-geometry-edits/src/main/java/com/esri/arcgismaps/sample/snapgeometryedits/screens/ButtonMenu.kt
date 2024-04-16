@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.snapgeometryedits.components
+package com.esri.arcgismaps.sample.snapgeometryedits.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +42,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
 import com.esri.arcgismaps.sample.snapgeometryedits.R
+import com.esri.arcgismaps.sample.snapgeometryedits.components.MapViewModel
 
 /**
  * Composable component to display the menu buttons.
