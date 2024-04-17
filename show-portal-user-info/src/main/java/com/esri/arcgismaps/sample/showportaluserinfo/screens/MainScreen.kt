@@ -34,7 +34,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -44,7 +44,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
@@ -118,7 +117,6 @@ fun MainScreen(sampleName: String, application: Application) {
  * It uses OAuth under the hood, and has a button to clear credentials.
  *
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun PortalDetails(
     url: String,
@@ -210,7 +208,7 @@ private fun InfoScreen(
                         text = infoText
                     )
                 }
-                Divider()
+                HorizontalDivider()
                 Row(
                     modifier = Modifier
                         .padding(10.dp)
@@ -226,28 +224,28 @@ private fun InfoScreen(
                             .size(150.dp)
                     )
                 }
-                Divider()
+                HorizontalDivider()
                 Row(modifier = Modifier.padding(10.dp)) {
                     Text(text = "Username: ", fontWeight = FontWeight.Bold)
                     Text(text = username)
                 }
-                Divider()
+                HorizontalDivider()
                 Row(modifier = Modifier.padding(10.dp)) {
                     Text(text = "E-mail: ", fontWeight = FontWeight.Bold)
                     Text(text = email)
                 }
-                Divider()
+                HorizontalDivider()
                 Row(modifier = Modifier.padding(10.dp)) {
                     Text(text = "Member Since: ", fontWeight = FontWeight.Bold)
                     Text(text = creationDate)
                 }
-                Divider()
+                HorizontalDivider()
 
                 Row(modifier = Modifier.padding(10.dp)) {
                     Text(text = "Portal Name: ", fontWeight = FontWeight.Bold)
                     Text(text = portalName)
                 }
-                Divider()
+                HorizontalDivider()
             }
         }
     }

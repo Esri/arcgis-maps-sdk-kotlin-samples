@@ -27,7 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -74,7 +74,7 @@ fun ClusterInfoContent(
 
         LazyColumn {
             items(clusterInfoList.size) { index ->
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     color = Color.LightGray
                 )
