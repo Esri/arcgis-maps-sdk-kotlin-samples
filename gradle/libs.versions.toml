@@ -1,8 +1,8 @@
 [versions]
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.5.0-4190"
+arcgisMapsKotlinVersion = "200.5.0-4211"
 # ArcGIS Maps SDK for Kotlin Toolkit version
-arcgisToolkitVersion = "200.5.0-4190"
+arcgisToolkitVersion = "200.4.0" ## TODO: Waiting for a successfull build
 # SDK versions
 compileSdk = "34"
 minSdk = "26"
@@ -13,12 +13,12 @@ versionName = "200.4.0"
 kotlinVersion = "1.9.23"
 ktxLifecycle = "2.7.0"
 ktxFragmentsExt = "1.6.2"
-ktxActivityExt = "1.8.2"
-ktxAndroidCore = "1.12.0"
+ktxActivityExt = "1.9.0"
+ktxAndroidCore = "1.13.0"
 kotlinCompilerExt = "1.5.11"
 # Compose versions
-composeActivityVersion = "1.8.2"
-composeBOM = "2024.04.00"
+composeActivityVersion = "1.9.0"
+composeBOM = "2024.04.01"
 # Library versions
 appcompatVersion = "1.6.1"
 commonsIoVersion = "2.15.1"
@@ -29,7 +29,7 @@ multidexVersion = "2.0.1"
 materialVersion = "1.11.0"
 androidBrowserVersion = "1.8.0"
 # Plugin versions
-gradleVersion = "8.3.1"
+gradleVersion = "8.3.2"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradleVersion" }
