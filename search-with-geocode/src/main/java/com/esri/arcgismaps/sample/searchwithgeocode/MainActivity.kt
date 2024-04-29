@@ -188,12 +188,12 @@ class MainActivity : AppCompatActivity() {
                                         // get the row's index
                                         val selectedCursorIndex =
                                             selectedRow.getColumnIndex("address")
-                                        // get the string from the row at index
+                                        // get the string from the row at index and set it to query
                                         val selectedAddress =
                                             selectedRow.getString(selectedCursorIndex)
+                                        addressSearchView.setQuery(selectedAddress, false)
                                         // geocode the typed address
                                         geocodeAddress(selectedAddress, false)
-                                        addressSearchView.isIconified = true
                                         addressSearchView.clearAndHideKeyboard()
                                     }
                                     return true
