@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.configurebasemapstyleparameters.screens
 
 import android.app.Application
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,16 +29,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,32 +54,66 @@ import androidx.compose.ui.unit.dp
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.configurebasemapstyleparameters.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction1
 
 /**
  * Main screen layout for the sample app
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(sampleName: String) {
     // get the application context
     val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle SceneView interactions
     val mapViewModel = MapViewModel(application)
+    val languageStrategyOptions = mapViewModel.languageStrategyOptions
+    val chosenStrategy: MutableState<String> = mapViewModel.chosenStrategy
+    val specificLanguageOptions = mapViewModel.specificLanguageOptions
+    val chosenLanguage = mapViewModel.chosenLanguage
 
+    val setBasemap = mapViewModel::setNewBasemap
+
+    val bottomSheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
             ) {
                 MapView(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                        .fillMaxSize(),
                     arcGISMap = mapViewModel.map
                 )
-                Controls(mapViewModel)
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp),
+                    onClick = {
+                        scope.launch {
+                            showBottomSheet = true
+                        }
+                    },
+                ) {
+                    Text(
+                        text = "Show controls"
+                    )
+                }
+            }
+            if (showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheet = false
+                    },
+                    sheetState = bottomSheetState
+                ) {
+                    Controls(setBasemap, languageStrategyOptions, chosenStrategy, specificLanguageOptions, chosenLanguage)
+                }
             }
         }
     )
@@ -85,46 +124,66 @@ fun MainScreen(sampleName: String) {
  *
  */
 @Composable
-private fun Controls(mapViewModel: MapViewModel) {
-    mapViewModel.setNewBasemap("Local")
+private fun Controls(
+    setBasemap: KFunction1<String, Unit>,
+    languageStrategyOptions: List<String>,
+    chosenStrategy: MutableState<String>,
+    specificLanguageOptions: List<String>,
+    chosenLanguage: MutableState<String>
+) {
+
     Box(
         Modifier
             .padding(8.dp)
             .height(200.dp)
             .wrapContentHeight()
     ) {
+
+
         Column {
-            SetLanguageStrategy(mapViewModel)
-            SetSpecificLanguage(mapViewModel)
+            SetLanguageStrategy(setBasemap, languageStrategyOptions, chosenStrategy, chosenLanguage.value == "None")
+            SetSpecificLanguage(setBasemap, specificLanguageOptions, chosenLanguage)
         }
     }
 }
 
-
+/**
+ * Define the UI radio buttons for selecting language strategy: "Global" or "Local".
+ */
 @Composable
-private fun SetLanguageStrategy(mapViewModel: MapViewModel) {
+private fun SetLanguageStrategy(
+    setBasemap: KFunction1<String, Unit>,
+    languageStrategies: List<String>,
+    chosenStrategy: MutableState<String>,
+    enabled: Boolean
+) {
     Text(
         text = "Set language strategy:"
     )
-    val languageStrategies = listOf("Global", "Local")
-    val (selectedStrategy, onStrategySelected) = remember { mutableStateOf(languageStrategies[1]) }
+
     languageStrategies.forEach { text ->
         Row(
             Modifier
                 .fillMaxWidth()
                 .selectable(
-                    selected = (text == selectedStrategy),
+                    selected = (text == chosenStrategy.value),
                     onClick = {
-                        onStrategySelected(text)
+                        if (enabled) {
+                            chosenStrategy.value = text
+                            setBasemap(text)
+                        }
                     }
                 )
         ) {
             RadioButton(
-                selected = (text == selectedStrategy),
+                selected = (text == chosenStrategy.value),
                 onClick = {
-                    onStrategySelected(text)
-                    mapViewModel.setNewBasemap(text)
-                }
+                    if (enabled) {
+                        chosenStrategy.value = text
+                        setBasemap(text)
+                    }
+                },
+                enabled = enabled
             )
             Text(
                 text = text,
@@ -134,14 +193,20 @@ private fun SetLanguageStrategy(mapViewModel: MapViewModel) {
     }
 }
 
+/**
+ * Define the UI dropdown menu for selecting specific language: "None", "Bulgarian", "Greek" or
+ * "Turkish".
+ */
 @Composable
-private fun SetSpecificLanguage(mapViewModel: MapViewModel) {
+private fun SetSpecificLanguage(
+    setBasemap: KFunction1<String, Unit>,
+    specificLanguageOptions: List<String>,
+    chosenLanguage: MutableState<String>
+) {
     Text(
         text = "Set specific language:"
     )
     var expanded by remember { mutableStateOf(false) }
-    val specificLanguages = listOf("None", "Bulgarian", "Greek", "Turkish")
-    val (selectedLanguage, onLanguageSelected) = remember { mutableStateOf(specificLanguages[3]) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -149,10 +214,11 @@ private fun SetSpecificLanguage(mapViewModel: MapViewModel) {
             .padding(8.dp)
     ) {
         Text(
-            selectedLanguage,
+            chosenLanguage.value,
             modifier = Modifier
                 .clickable(onClick = { expanded = true })
-                .border(2.dp,
+                .border(
+                    2.dp,
                     Color.LightGray
                 )
                 .padding(horizontal = 24.dp, vertical = 12.dp)
@@ -163,16 +229,16 @@ private fun SetSpecificLanguage(mapViewModel: MapViewModel) {
             modifier = Modifier
                 .wrapContentSize()
         ) {
-            specificLanguages.forEachIndexed { index, specificLanguage ->
+            specificLanguageOptions.forEachIndexed { index, specificLanguage ->
                 DropdownMenuItem(
                     text = { Text(specificLanguage) },
                     onClick = {
-                        mapViewModel.setNewBasemap(specificLanguage)
-                        onLanguageSelected(specificLanguage)
+                        setBasemap(specificLanguage)
+                        chosenLanguage.value = specificLanguage
                         expanded = false
                     })
                 // show a divider between dropdown menu options
-                if (index < specificLanguages.lastIndex) {
+                if (index < specificLanguageOptions.lastIndex) {
                     Divider()
                 }
             }

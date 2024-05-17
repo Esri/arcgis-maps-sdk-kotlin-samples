@@ -24,6 +24,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.License
+import com.arcgismaps.LicenseInfo
+import com.arcgismaps.LicenseKey
+import com.arcgismaps.LicenseType
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.configurebasemapstyleparameters.screens.MainScreen
 
@@ -34,6 +38,8 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+
+        ArcGISEnvironment.setLicense(LicenseKey.create("runtimestandard,1000,rud000228325,none,LHF97XLS1MJH2T8AG159")!!)
 
         setContent {
             SampleAppTheme {
