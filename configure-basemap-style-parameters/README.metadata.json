@@ -1,2 +1,36 @@
 {
+    "category": "Maps",
+    "description": "Apply basemap style parameters customization for a basemap, such as displaying all labels in a specific language or displaying every label in their corresponding local language.",
+    "formal_name": "ConfigureBasemapStyleParameters",
+    "ignore": false,
+    "images": [
+        "configure-basemap-style-parameters.png"
+    ],
+    "keywords": [
+        "basemap style",
+        "language",
+        "language strategy",
+        "map",
+        "point",
+        "viewpoint",
+        "Basemap",
+        "BasemapStyleLanguageStrategy",
+        "BasemapStyleParameters",
+        "Map",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "relevant_apis": [
+        "Basemap",
+        "BasemapStyleLanguageStrategy",
+        "BasemapStyleParameters",
+        "Map",
+        "MapView"
+    ],
+    "snippets": [
+        "/src/main/java/com/esri/arcgismaps/sample/configurebasemapstyleparameters/MainActivity.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/configurebasemapstyleparameters/components/MapViewModel.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/configurebasemapstyleparameters/screens/MainScreen.kt"
+    ],
+    "title": "Configure basemap style parameters"
 }
