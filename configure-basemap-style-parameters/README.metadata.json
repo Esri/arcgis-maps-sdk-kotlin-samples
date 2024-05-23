@@ -20,6 +20,7 @@
         "MapView"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "Basemap",
         "BasemapStyleLanguageStrategy",
