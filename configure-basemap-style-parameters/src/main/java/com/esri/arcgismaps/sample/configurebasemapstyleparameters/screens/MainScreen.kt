@@ -67,17 +67,22 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
+    // get a reference to the createNewBasemapStyleParameters function
     val createNewBasemapStyleParameters = mapViewModel::createNewBasemapStyleParameters
+    // keep track of the language strategy selection
     val languageStrategyOptions = mapViewModel.languageStrategyOptions
     val languageStrategy = mapViewModel.languageStrategy
     val onLanguageStrategyChange = mapViewModel.onLanguageStrategyChange
+    // keep track of the specific language selection
     val specificLanguageOptions = mapViewModel.specificLanguageOptions
     val specificLanguage = mapViewModel.specificLanguage
     val onSpecificLanguageChange = mapViewModel.onSpecificLanguageChange
 
+    // handle the BottomSheetScaffold state
     val bottomSheetScope = rememberCoroutineScope()
     val bottomSheetState = rememberBottomSheetScaffoldState().apply {
         bottomSheetScope.launch {
+            // show the bottom sheet on launch
             bottomSheetState.show()
         }
     }
@@ -96,6 +101,7 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize(),
                     arcGISMap = mapViewModel.map
                 )
+                // show the "Show controls" button only when the bottom sheet is not visible
                 if (!bottomSheetState.bottomSheetState.isVisible) {
                     Button(
                         modifier = Modifier
@@ -112,6 +118,7 @@ fun MainScreen(sampleName: String) {
                         )
                     }
                 }
+                // constrain the bottom sheet to a maximum width of 380dp
                 Box(
                     modifier = Modifier
                         .widthIn(0.dp, 380.dp)
@@ -120,24 +127,25 @@ fun MainScreen(sampleName: String) {
                         scaffoldState = bottomSheetState,
                         sheetContent = {
                             BoxWithConstraints(
+                                // constrain the height of the bottom sheet to 160dp
                                 Modifier
                                     .heightIn(max = 160.dp)
                                     .padding(8.dp)
-                                    .align(Alignment.CenterHorizontally)
                             ) {
                                 Row {
                                     Column {
+                                        // UI for setting the language strategy
                                         SetLanguageStrategy(
                                             languageStrategyOptions = languageStrategyOptions,
                                             onLanguageStrategyChange = { languageStrategy ->
                                                 createNewBasemapStyleParameters(
                                                     languageStrategy,
-                                                    specificLanguage.value
+                                                    specificLanguage
                                                 )
                                                 onLanguageStrategyChange(languageStrategy)
                                             },
-                                            languageStrategy = languageStrategy.value,
-                                            enabled = (specificLanguage.value == "None")
+                                            languageStrategy = languageStrategy,
+                                            enabled = (specificLanguage == "None")
                                         )
                                     }
                                     Divider(
@@ -149,16 +157,17 @@ fun MainScreen(sampleName: String) {
 
                                     )
                                     Column {
+                                        // UI for setting the specific language
                                         SetSpecificLanguage(
                                             specificLanguageOptions = specificLanguageOptions,
                                             onSpecificLanguageChange = { specificLanguage ->
                                                 createNewBasemapStyleParameters(
-                                                    languageStrategy.value,
+                                                    languageStrategy,
                                                     specificLanguage
                                                 )
                                                 onSpecificLanguageChange(specificLanguage)
                                             },
-                                            specificLanguage = specificLanguage.value
+                                            specificLanguage = specificLanguage
                                         )
                                     }
                                 }

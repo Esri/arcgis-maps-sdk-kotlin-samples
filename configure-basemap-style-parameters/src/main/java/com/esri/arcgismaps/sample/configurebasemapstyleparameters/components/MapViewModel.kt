@@ -17,7 +17,9 @@
 package com.esri.arcgismaps.sample.configurebasemapstyleparameters.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
@@ -32,6 +34,9 @@ import java.util.Locale
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     val map = ArcGISMap(BasemapStyle.OsmLightGrayBase).apply {
+        //  Focus the viewpoint on an area where the different languages are best showcased:
+        //  Bulgaria / Greece / Turkey, as they use three different alphabets: Cyrillic, Greek, and
+        //  Latin, respectively.
         initialViewpoint = Viewpoint(
             center = Point(3144804.0, 4904598.0),
             scale = 1e7
@@ -40,17 +45,19 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // a list of language strategies options
     val languageStrategyOptions = listOf("Global", "Local")
-    var languageStrategy = mutableStateOf(languageStrategyOptions[1])
-    val onLanguageStrategyChange: (String) -> Unit = { languageStrategy.value = it }
+    // keep track of selected language strategy state
+    var languageStrategy by mutableStateOf(languageStrategyOptions[1])
+    val onLanguageStrategyChange: (String) -> Unit = { languageStrategy = it }
 
-    // a set of some sample language options
+    // a list of sample language options
     val specificLanguageOptions = listOf("None", "Bulgarian", "Greek", "Turkish")
-    var specificLanguage = mutableStateOf(specificLanguageOptions[0])
-    val onSpecificLanguageChange: (String) -> Unit = { specificLanguage.value = it }
+    // keep track of selected specific language state
+    var specificLanguage by  mutableStateOf(specificLanguageOptions[0])
+    val onSpecificLanguageChange: (String) -> Unit = { specificLanguage = it }
 
     init {
-        // start the app with a local basemap style strategy
-        createNewBasemapStyleParameters(languageStrategy.value, specificLanguage.value)
+        // initialize the app with a local basemap style strategy
+        createNewBasemapStyleParameters(languageStrategy, specificLanguage)
     }
 
     /**
@@ -59,14 +66,20 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun createNewBasemapStyleParameters(languageStrategy: String, specificLanguage: String) {
         val basemapStyleParameters = BasemapStyleParameters().apply {
+            // A SpecificLanguage setting overrides the BasemapStyleLanguageStrategy settings when
+            // the BasemapStyleParameters.Specific(Locale.forLanguageTag("...") is a non-empty string.
+            // Setting the specific language back to an empty string allows the strategy to be used.
             this.languageStrategy = when (specificLanguage) {
                 "None" -> {
+                    BasemapStyleLanguageStrategy.Specific(Locale.forLanguageTag(""))
                     when (languageStrategy) {
+                        // set the language strategy based on the selected radio buttons
                         "Global" -> BasemapStyleLanguageStrategy.Global
                         "Local" -> BasemapStyleLanguageStrategy.Local
                         else -> { throw(IllegalArgumentException("Invalid language strategy"))}
                     }
                 }
+                // set the specific language based on the selected drop down option
                 "Bulgarian" -> BasemapStyleLanguageStrategy.Specific(Locale.forLanguageTag("bg"))
                 "Greek" -> BasemapStyleLanguageStrategy.Specific(Locale.forLanguageTag("el"))
                 "Turkish" -> BasemapStyleLanguageStrategy.Specific(Locale.forLanguageTag("tr"))
