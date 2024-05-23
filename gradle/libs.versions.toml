@@ -1,8 +1,6 @@
 [versions]
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.4.0"
-# ArcGIS Maps SDK for Kotlin Toolkit version
-arcgisToolkitVersion = "200.4.0"
+arcgisMapsKotlinVersion = "200.5.0-4223"
 # SDK versions
 compileSdk = "34"
 minSdk = "26"
@@ -10,26 +8,26 @@ targetSdk = "34"
 versionCode = "2004000"
 versionName = "200.4.0"
 # Kotlin versions
-kotlinVersion = "1.9.21"
-ktxLifecycle = "2.6.2"
+kotlinVersion = "1.9.23"
+ktxLifecycle = "2.7.0"
 ktxFragmentsExt = "1.6.2"
-ktxActivityExt = "1.8.2"
-ktxAndroidCore = "1.12.0"
-kotlinCompilerExt = "1.5.6"
+ktxActivityExt = "1.9.0"
+ktxAndroidCore = "1.13.0"
+kotlinCompilerExt = "1.5.11"
 # Compose versions
-composeActivityVersion = "1.7.1"
-composeBOM = "2023.10.01"
+composeActivityVersion = "1.9.0"
+composeBOM = "2024.04.01"
 # Library versions
 appcompatVersion = "1.6.1"
-commonsIoVersion = "2.11.0"
+commonsIoVersion = "2.15.1"
 constraintLayoutVersion = "2.1.4"
 coordinateLayoutVersion = "1.2.0"
-workVersion = "2.7.1"
+workVersion = "2.9.0"
 multidexVersion = "2.0.1"
-materialVersion = "1.7.0"
-androidBrowserVersion = "1.7.0"
+materialVersion = "1.11.0"
+androidBrowserVersion = "1.8.0"
 # Plugin versions
-gradleVersion = "8.2.0"
+gradleVersion = "8.3.2"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradleVersion" }
@@ -58,7 +56,7 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidexVersion"}
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workVersion" }
 arcgis-maps-kotlin = { group = "com.esri", name = "arcgis-maps-kotlin", version.ref = "arcgisMapsKotlinVersion"}
-arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisToolkitVersion"}
+arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisMapsKotlinVersion"}
 arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
 arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geoview-compose" }
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }

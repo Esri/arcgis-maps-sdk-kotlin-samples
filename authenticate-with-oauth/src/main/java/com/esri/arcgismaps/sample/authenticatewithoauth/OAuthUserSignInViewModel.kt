@@ -56,7 +56,7 @@ class OAuthUserSignInViewModel(
 
     fun promptForOAuthUserSignIn(oAuthUserSignIn: OAuthUserSignIn) {
         pendingSignIn = oAuthUserSignIn
-        oAuthLauncher.launch(pendingSignIn)
+        oAuthLauncher.launch(pendingSignIn!!)
     }
 
     private fun complete(redirectUri: String?) {

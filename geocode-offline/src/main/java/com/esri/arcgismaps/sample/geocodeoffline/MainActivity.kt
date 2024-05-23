@@ -169,8 +169,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSuggestionClick(position: Int): Boolean {
                 // geocode the typed address
-                geocodeAddress(suggestions[position])
-                addressSearchView.clearFocus()
+                addressSearchView.setQuery(suggestions[position], true)
                 return true
             }
         })
@@ -198,7 +197,8 @@ class MainActivity : AppCompatActivity() {
         // load the locator task
         locatorTask.load().getOrThrow()
         // run the locatorTask geocode task, passing in the address
-        val geocodeResults = locatorTask.geocode(address, geocodeParameters).getOrElse {
+        val geocodeResults = locatorTask.geocode(address, geocodeParameters).getOrThrow()
+        geocodeResults.ifEmpty {
             // no address found in geocode so return
             showError("No address found for $address")
             return@launch
