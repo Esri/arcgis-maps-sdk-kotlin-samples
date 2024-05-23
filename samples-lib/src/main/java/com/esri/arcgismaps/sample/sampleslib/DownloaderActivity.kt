@@ -119,6 +119,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                 // set up the alert dialog builder
                 val provisionQuestionDialog = MaterialAlertDialogBuilder(this@DownloaderActivity)
                     .setTitle("Download data?")
+                    .setCancelable(false)
 
                 if (provisionFolder.list()?.isNotEmpty() == true) {
                     // folder is not empty, prompt user to download again
@@ -204,6 +205,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
             val dialogView: View = layoutInflater.inflate(R.layout.download_dialog, null)
             val loadingBuilder = MaterialAlertDialogBuilder(this@DownloaderActivity).apply {
                 setView(dialogView)
+                setCancelable(false)
                 create()
             }
             // download progress indicator layout
