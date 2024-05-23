@@ -45,15 +45,29 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // a list of language strategies options
     val languageStrategyOptions = listOf("Global", "Local")
+
     // keep track of selected language strategy state
     var languageStrategy by mutableStateOf(languageStrategyOptions[1])
-    val onLanguageStrategyChange: (String) -> Unit = { languageStrategy = it }
+        private set
+
+    // set language strategy and call createNewBasemapStyleParameters
+    fun updateLanguageStrategy(strategy: String) {
+        languageStrategy = strategy
+        createNewBasemapStyleParameters(languageStrategy, specificLanguage)
+    }
 
     // a list of sample language options
     val specificLanguageOptions = listOf("None", "Bulgarian", "Greek", "Turkish")
+
     // keep track of selected specific language state
-    var specificLanguage by  mutableStateOf(specificLanguageOptions[0])
-    val onSpecificLanguageChange: (String) -> Unit = { specificLanguage = it }
+    var specificLanguage by mutableStateOf(specificLanguageOptions[0])
+        private set
+
+    // set specific language and call createNewBasemapStyleParameters
+    fun updateSpecificStrategy(language: String) {
+        specificLanguage = language
+        createNewBasemapStyleParameters(languageStrategy, specificLanguage)
+    }
 
     init {
         // initialize the app with a local basemap style strategy
@@ -64,7 +78,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * Basemap is immutable so we need to create a new one to set new parameters. Uses an
      * OpenStreetMap basemap style, because they support localization.
      */
-    fun createNewBasemapStyleParameters(languageStrategy: String, specificLanguage: String) {
+    private fun createNewBasemapStyleParameters(
+        languageStrategy: String,
+        specificLanguage: String
+    ) {
         val basemapStyleParameters = BasemapStyleParameters().apply {
             // A SpecificLanguage setting overrides the BasemapStyleLanguageStrategy settings when
             // the BasemapStyleParameters.Specific(Locale.forLanguageTag("...") is a non-empty string.
@@ -76,14 +93,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                         // set the language strategy based on the selected radio buttons
                         "Global" -> BasemapStyleLanguageStrategy.Global
                         "Local" -> BasemapStyleLanguageStrategy.Local
-                        else -> { throw(IllegalArgumentException("Invalid language strategy"))}
+                        else -> throw IllegalArgumentException("Invalid language strategy")
                     }
                 }
                 // set the specific language based on the selected drop down option
                 "Bulgarian" -> BasemapStyleLanguageStrategy.Specific(Locale.forLanguageTag("bg"))
                 "Greek" -> BasemapStyleLanguageStrategy.Specific(Locale.forLanguageTag("el"))
                 "Turkish" -> BasemapStyleLanguageStrategy.Specific(Locale.forLanguageTag("tr"))
-                else -> {throw IllegalArgumentException("Invalid language")}
+                else -> throw IllegalArgumentException("Invalid specific language")
             }
         }
         // set a new basemap with the chosen style parameters

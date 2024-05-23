@@ -67,26 +67,15 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
-    // get a reference to the createNewBasemapStyleParameters function
-    val createNewBasemapStyleParameters = mapViewModel::createNewBasemapStyleParameters
-    // keep track of the language strategy selection
-    val languageStrategyOptions = mapViewModel.languageStrategyOptions
-    val languageStrategy = mapViewModel.languageStrategy
-    val onLanguageStrategyChange = mapViewModel.onLanguageStrategyChange
-    // keep track of the specific language selection
-    val specificLanguageOptions = mapViewModel.specificLanguageOptions
-    val specificLanguage = mapViewModel.specificLanguage
-    val onSpecificLanguageChange = mapViewModel.onSpecificLanguageChange
 
     // handle the BottomSheetScaffold state
     val bottomSheetScope = rememberCoroutineScope()
     val bottomSheetState = rememberBottomSheetScaffoldState().apply {
         bottomSheetScope.launch {
             // show the bottom sheet on launch
-            bottomSheetState.show()
+            bottomSheetState.expand()
         }
     }
-
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -135,17 +124,13 @@ fun MainScreen(sampleName: String) {
                                 Row {
                                     Column {
                                         // UI for setting the language strategy
-                                        SetLanguageStrategy(
-                                            languageStrategyOptions = languageStrategyOptions,
+                                        LanguageStrategyControls(
+                                            languageStrategyOptions = mapViewModel.languageStrategyOptions,
                                             onLanguageStrategyChange = { languageStrategy ->
-                                                createNewBasemapStyleParameters(
-                                                    languageStrategy,
-                                                    specificLanguage
-                                                )
-                                                onLanguageStrategyChange(languageStrategy)
+                                                mapViewModel.updateLanguageStrategy(languageStrategy)
                                             },
-                                            languageStrategy = languageStrategy,
-                                            enabled = (specificLanguage == "None")
+                                            languageStrategy = mapViewModel.languageStrategy,
+                                            enabled = (mapViewModel.specificLanguage == "None")
                                         )
                                     }
                                     Divider(
@@ -154,20 +139,15 @@ fun MainScreen(sampleName: String) {
                                             .padding(8.dp)
                                             .fillMaxHeight()
                                             .width(2.dp)
-
                                     )
                                     Column {
                                         // UI for setting the specific language
-                                        SetSpecificLanguage(
-                                            specificLanguageOptions = specificLanguageOptions,
+                                        SpecificLanguageControls(
+                                            specificLanguageOptions = mapViewModel.specificLanguageOptions,
                                             onSpecificLanguageChange = { specificLanguage ->
-                                                createNewBasemapStyleParameters(
-                                                    languageStrategy,
-                                                    specificLanguage
-                                                )
-                                                onSpecificLanguageChange(specificLanguage)
+                                                mapViewModel.updateSpecificStrategy(specificLanguage)
                                             },
-                                            specificLanguage = specificLanguage
+                                            specificLanguage = mapViewModel.specificLanguage
                                         )
                                     }
                                 }
@@ -185,7 +165,7 @@ fun MainScreen(sampleName: String) {
  * Define the UI radio buttons for selecting language strategy: "Global" or "Local".
  */
 @Composable
-private fun SetLanguageStrategy(
+private fun LanguageStrategyControls(
     languageStrategyOptions: List<String>,
     onLanguageStrategyChange: (String) -> Unit,
     languageStrategy: String,
@@ -234,7 +214,7 @@ private fun SetLanguageStrategy(
  * "Turkish".
  */
 @Composable
-private fun SetSpecificLanguage(
+private fun SpecificLanguageControls(
     specificLanguageOptions: List<String>,
     onSpecificLanguageChange: (String) -> Unit,
     specificLanguage: String
