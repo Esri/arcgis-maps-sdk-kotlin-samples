@@ -36,7 +36,9 @@ Pan and zoom to navigate the map and see how different labels are displayed in t
 ## About the data
 
 The main data for this sample is the `BasemapStyle` which includes basemaps that support both language localization and global language setting. The supported languages, along with their language code, can be found in the [API's documentation](https://developers.arcgis.com/rest/basemap-styles/#languages).
+### Additional Information
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-basemap style, language, language strategy, map, point, viewpoint
+basemap style, geoviewcompose , language, language strategy, map, point, toolkit, viewpoint
