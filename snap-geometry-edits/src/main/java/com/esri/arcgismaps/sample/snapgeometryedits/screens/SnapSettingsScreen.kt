@@ -127,16 +127,16 @@ fun SnapSettings(
                         }
                     }
                 }
-                SetupSnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, GeometryType.Point)
-                SetupSnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, GeometryType.Polyline)
-                SetupSnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, null)
+                SnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, GeometryType.Point)
+                SnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, GeometryType.Polyline)
+                SnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, null)
             }
         }
     }
 }
 
 @Composable
-fun SetupSnapSourceUI(
+fun SnapSourceUI(
     snapSourceList: State<List<SnapSourceSettings>>,
     isSnapSourceEnabled: List<Boolean>,
     onSnapSourceChanged: (Boolean, Int) -> Unit,
@@ -161,7 +161,8 @@ fun SetupSnapSourceUI(
         TextButton(
             onClick = {
                 snapSourceList.value.forEachIndexed { index, snapSource ->
-                    if ((snapSource.source as? FeatureLayer)?.featureTable?.geometryType == geometryType) {
+                    if (geometryType != null &&
+                        (snapSource.source as? FeatureLayer)?.featureTable?.geometryType == geometryType) {
                         onSnapSourceChanged(true, index)
                     } else if (geometryType == null && snapSource.source is GraphicsOverlay) {
                         onSnapSourceChanged(true, index)

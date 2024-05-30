@@ -196,12 +196,13 @@ class MapViewModel(
      * more elements in the geometry.
      */
     fun deleteSelection() {
+        if (geometryEditor.geometry.value?.isEmpty == true) {
+            geometryEditor.stop()
+            isCreateButtonEnabled.value = true
+        }
+
         if (geometryEditor.selectedElement.value != null) {
             geometryEditor.deleteSelectedElement()
-            if (geometryEditor.geometry.value?.isEmpty == true) {
-                geometryEditor.stop()
-                isCreateButtonEnabled.value = true
-            }
         }
     }
 
