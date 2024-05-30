@@ -115,7 +115,7 @@ fun MainScreen(sampleName: String) {
                     BottomSheetScaffold(
                         scaffoldState = bottomSheetState,
                         sheetContent = {
-                            BoxWithConstraints(
+                            Box(
                                 // constrain the height of the bottom sheet to 160dp
                                 Modifier
                                     .heightIn(max = 160.dp)
