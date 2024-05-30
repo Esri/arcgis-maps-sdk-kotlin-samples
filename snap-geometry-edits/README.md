@@ -12,11 +12,11 @@ A field worker can create new features by editing and snapping the vertices of a
 
 To create a geometry, press the create button to choose the geometry type you want to create (i.e. points, multipoints, polyline, or polygon) and interactively tap and drag on the map view to create the geometry.
 
-To configure snapping, press the snap settings button to enable or disable snapping and choose which layers to snap to.
+To configure snapping, press the snap settings button to enable or disable snapping and choose which snap sources to snap to.
 
-To interactively snap a vertex, ensure that snapping is enabled and move the mouse pointer or drag a vertex to nearby an existing feature. When the pointer is close to a feature, the edit position will be adjusted to coincide with (or snap to), edges and vertices of that feature. Click or release the touch pointer to place the vertex at the snapped location.
+To interactively snap a vertex to a feature or graphic, ensure that snapping is enabled for the relevant snap source and move the mouse pointer or drag a vertex to nearby an existing feature or graphic. When the pointer is close to that existing geoelement, the edit position will be adjusted to coincide with (or snap to), edges and vertices of its geometry. Click or release the touch pointer to place the vertex at the snapped location.
 
-To edit a geometry, tap the geometry to be edited in the map to select it and then edit the geometry by tapping and dragging its vertices and snapping them to nearby features.
+To edit a geometry, tap the geometry to be edited in the map to select it and then edit the geometry by tapping and dragging its vertices and snapping them to nearby features or graphics.
 
 To edit a vertex using the magnifier, tap and hold on the vertex and then drag it along with the magnifier.
 
@@ -41,6 +41,7 @@ To save your edits, press the save button.
 * Geometry
 * GeometryEditor
 * GeometryEditorStyle
+* GraphicsOverlay
 * MapView
 * MapView.interactionOptions.isMagnifierEnabled
 * SnapSettings
@@ -63,4 +64,4 @@ Snapping can be used during interactive edits that move existing vertices using 
 
 ## Tags
 
-edit, feature, geometryeditor, geoviewcompose, layers, magnify, map, snapping
+edit, feature, geometryeditor, geoviewcompose, graphics, layers, magnify, map, snapping

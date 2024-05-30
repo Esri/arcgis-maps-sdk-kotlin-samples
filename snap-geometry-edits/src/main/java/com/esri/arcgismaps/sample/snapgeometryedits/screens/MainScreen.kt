@@ -49,13 +49,13 @@ fun MainScreen(sampleName: String) {
     val graphicsOverlayCollection = listOf(mapViewModel.graphicsOverlay)
 
     Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
             ) {
+                SampleTopAppBar(title = sampleName)
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
