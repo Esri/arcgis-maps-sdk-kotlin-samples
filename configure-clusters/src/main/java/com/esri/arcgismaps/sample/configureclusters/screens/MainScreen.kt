@@ -44,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -95,18 +96,26 @@ fun MainScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize(),
                     mapViewProxy = mapViewModel.mapViewProxy,
+                    // identify on single tap
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
                         mapViewModel.identify(singleTapConfirmedEvent)
                     },
                     arcGISMap = mapViewModel.arcGISMap,
+                    // update the map scale in the UI on map scale change
                     onMapScaleChanged = { currentMapScale ->
                         if (!currentMapScale.isNaN()) {
                             mapScale = currentMapScale.roundToInt()
                         }
                     },
                 )
+
                 // boolean to toggle the state of the bottom sheet layout
                 var showControlsBottomSheet by rememberSaveable { mutableStateOf(true) }
+                fun updateShowControlsBottomSheet(show: Boolean) {
+                    showControlsBottomSheet = show
+                }
+
+
                 val controlsBottomSheetState = rememberModalBottomSheetState()
                 // show the "Show controls" button only when the bottom sheet is not visible
                 if (!showControlsBottomSheet) {
@@ -129,64 +138,127 @@ fun MainScreen(sampleName: String) {
                         .widthIn(0.dp, 380.dp)
                 ) {
                     if (showControlsBottomSheet) {
-                        ModalBottomSheet(
-                            sheetState = controlsBottomSheetState,
-                            onDismissRequest = {
-                                showControlsBottomSheet = false
-                            }) {
-                            Column {
-                                Text("Cluster labels visibility:")
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text("Show labels")
-                                    Switch(
-                                        checked = mapViewModel.showClusterLabels,
-                                        onCheckedChange = { showClusterLabels ->
-                                            mapViewModel.updateClusterLabelState(
-                                                showClusterLabels
-                                            )
-                                        },
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                }
-                                Divider(
-                                    color = Color.LightGray,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .width(2.dp)
-                                )
-                                ClusterRadiusControls(
-                                    mapViewModel.clusterRadiusOptions,
-                                    mapViewModel.clusterRadius,
-                                    mapViewModel::updateClusterRadius
-                                )
-                                ClusterMaxScaleControls(
-                                    mapViewModel.clusterMaxScaleOptions,
-                                    mapViewModel.clusterMaxScale,
-                                    mapViewModel::updateClusterMaxScale
-                                )
-                                Row(modifier = Modifier.padding(bottom = 40.dp)) {
-                                    Text("Current map scale: 1:${mapScale}")
-                                }
-                            }
-
-                        }
+                        ClusterControlsBottomSheet(
+                            showControlsBottomSheet = ::updateShowControlsBottomSheet,
+                            controlsBottomSheetState = controlsBottomSheetState,
+                            showClusterLabels = mapViewModel.showClusterLabels,
+                            updateClusterLabelState = mapViewModel::updateShowClusterLabelState,
+                            clusterRadiusOptions = mapViewModel.clusterRadiusOptions,
+                            clusterRadius = mapViewModel.clusterRadius,
+                            updateClusterRadiusState = mapViewModel::updateClusterRadiusState,
+                            clusterMaxScaleOptions = mapViewModel.clusterMaxScaleOptions,
+                            clusterMaxScale = mapViewModel.clusterMaxScale,
+                            updateClusterMaxScaleState = mapViewModel::updateClusterMaxScaleState,
+                            mapScale = mapScale
+                        )
                     }
-
                 }
+
                 // display a bottom sheet to show popup details
-                BottomSheet(isVisible = mapViewModel.showPopUp, bottomSheetContent = {
-                    ClusterInfoContent(
-                        popUpTitle = mapViewModel.popUpTitle,
-                        popUpInfo = mapViewModel.popUpInfo,
-                        onShow = { showControlsBottomSheet = false },
-                        onDismiss = { mapViewModel.updateShowPopUpState(false) }
-                    )
-                })
+                BottomSheet(
+                    isVisible = mapViewModel.showPopUpContent,
+                    bottomSheetContent = {
+                        ClusterInfoContent(
+                            popUpTitle = mapViewModel.popUpTitle,
+                            popUpInfo = mapViewModel.popUpInfo,
+                            onDismiss = { mapViewModel.updateShowPopUpContentState(false) }
+                        )
+                    })
             }
         }
     )
 }
 
+/**
+ * Composable function to display the cluster controls bottom sheet.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ClusterControlsBottomSheet(
+    showControlsBottomSheet: (Boolean) -> Unit,
+    controlsBottomSheetState: SheetState,
+    showClusterLabels: Boolean,
+    updateClusterLabelState: (Boolean) -> Unit,
+    clusterRadiusOptions: List<Int>,
+    clusterRadius: Int,
+    updateClusterRadiusState: (Int) -> Unit,
+    clusterMaxScaleOptions: List<Int>,
+    clusterMaxScale: Int,
+    updateClusterMaxScaleState: (Int) -> Unit,
+    mapScale: Int
+) {
+    ModalBottomSheet(
+        sheetState = controlsBottomSheetState,
+        onDismissRequest = {
+            showControlsBottomSheet(false)
+        }) {
+        Row {
+            Column {
+                Text(
+                    "Cluster labels visibility:",
+                    modifier = Modifier.padding(8.dp)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "Show labels",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Switch(
+                        checked = showClusterLabels,
+                        onCheckedChange = { showClusterLabels ->
+                            updateClusterLabelState(
+                                showClusterLabels
+                            )
+                        },
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+            Column {
+                Row {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Box(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .background(Color.LightGray, MaterialTheme.shapes.medium)
+                    ) {
+                        Text(
+                            "Current map \nscale: 1:${mapScale}",
+                            modifier = Modifier.padding(8.dp),
+                            color = Color.Black
+                        )
+                    }
+                }
+            }
+        }
+        Row {
+            Column {
+                Divider(
+                    color = Color.LightGray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .width(2.dp)
+                )
+                ClusterRadiusControls(
+                    clusterRadiusOptions,
+                    clusterRadius,
+                    updateClusterRadiusState
+                )
+                ClusterMaxScaleControls(
+                    clusterMaxScaleOptions,
+                    clusterMaxScale,
+                    updateClusterMaxScaleState
+                )
+                Spacer(modifier = Modifier.size(40.dp))
+            }
+        }
+    }
+}
+
+/**
+ * Composable function to display the cluster radius controls within the cluster controls bottom
+ * sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClusterRadiusControls(
@@ -194,10 +266,16 @@ private fun ClusterRadiusControls(
     clusterRadius: Int,
     updateClusterRadius: (Int) -> Unit
 ) {
-    Text("Clustering properties:")
+    Text(
+        "Clustering properties:",
+        modifier = Modifier.padding(8.dp)
+    )
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Cluster radius")
-        var expanded by remember { mutableStateOf(false) }
+        Text(
+            "Cluster radius",
+            modifier = Modifier.padding(8.dp)
+        )
+        var expanded by rememberSaveable { mutableStateOf(false) }
         Box(
             modifier = Modifier
                 .wrapContentHeight()
@@ -240,6 +318,10 @@ private fun ClusterRadiusControls(
     }
 }
 
+/**
+ * Composable function to display the cluster max scale controls within the cluster controls bottom
+ * sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClusterMaxScaleControls(
@@ -248,8 +330,11 @@ private fun ClusterMaxScaleControls(
     updateClusterMaxScale: (Int) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Cluster max scale")
-        var expanded by remember { mutableStateOf(false) }
+        Text(
+            "Cluster max scale",
+            modifier = Modifier.padding(8.dp)
+        )
+        var expanded by rememberSaveable { mutableStateOf(false) }
         Box(
             modifier = Modifier
                 .wrapContentHeight()
@@ -292,15 +377,16 @@ private fun ClusterMaxScaleControls(
     }
 }
 
+/**
+ * Composable function to display the cluster info content from the pop up within a bottom sheet.
+
+ */
 @Composable
 private fun ClusterInfoContent(
     popUpTitle: String,
     popUpInfo: Map<String, Any?>,
-    onShow: () -> Unit,
     onDismiss: () -> Unit
 ) {
-
-    onShow()
     Column(Modifier.background(MaterialTheme.colorScheme.background)) {
         Row(
             modifier = Modifier.fillMaxWidth(),

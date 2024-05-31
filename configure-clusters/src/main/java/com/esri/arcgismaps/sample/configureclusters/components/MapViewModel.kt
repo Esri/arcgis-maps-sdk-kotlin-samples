@@ -55,12 +55,14 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
 
     private val clusteringFeatureReduction = createCustomFeatureReduction()
 
-    // create a mapViewProxy that will be used to identify features in the MapView
-    // should also be passed to the composable MapView this mapViewProxy is associated with
+    // Create a mapViewProxy that will be used to identify features in the MapView.
+    // This should also be passed to the composable MapView this mapViewProxy is associated with.
     val mapViewProxy = MapViewProxy()
 
+    // Keep track of the feature layer that will be used to identify features in the MapView.
     var featureLayer: FeatureLayer? = null
 
+    // Create a map with a feature layer that contains building data.
     val arcGISMap = ArcGISMap(
         PortalItem(
             Portal("https://www.arcgis.com"),
@@ -70,6 +72,7 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
         initialViewpoint = Viewpoint(47.38, 8.53, 8e4)
         sampleCoroutineScope.launch {
             load().onSuccess {
+                // Apply the custom feature reduction to the first feature layer.
                 featureLayer = operationalLayers.first() as FeatureLayer
                 featureLayer?.featureReduction = clusteringFeatureReduction
             }.onFailure {
@@ -190,22 +193,43 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
             ).onSuccess {
                 if (it.popups.isEmpty()) {
                     updateShowPopUpContentState(false)
-                    updateShowPopUpState(false)
                 } else {
                     updateShowPopUpContentState(true)
-                    updateShowPopUpState(true)
-                    updatePopUpTitle(it.popups.first().title)
-                    updatePopUpInfo(it.popups.first().geoElement.attributes)
+                    updatePopUpTitleState(it.popups.first().title)
+                    updatePopUpInfoState(it.popups.first().geoElement.attributes)
                 }
             }
         }
     }
 
-    var showPopUp by mutableStateOf(false)
+    var showClusterLabels by mutableStateOf(true)
         private set
 
-    fun updateShowPopUpState(show: Boolean) {
-        showPopUp = show
+    fun updateShowClusterLabelState(show: Boolean) {
+        showClusterLabels = show
+        clusteringFeatureReduction.showLabels = showClusterLabels
+    }
+
+    // Note that the default value for cluster radius is 60.
+    // Increasing the cluster radius increases the number of features that are grouped together into a cluster.
+    val clusterRadiusOptions = listOf(30, 45, 60, 75, 90)
+    var clusterRadius by mutableIntStateOf(clusterRadiusOptions[2])
+        private set
+
+    fun updateClusterRadiusState(index: Int) {
+        clusterRadius = clusterRadiusOptions[index]
+        clusteringFeatureReduction.radius = clusterRadius.toDouble()
+    }
+
+    // Note that the default value for max scale is 0.
+    // The max scale value is the maximum scale at which clustering is applied.
+    val clusterMaxScaleOptions = listOf(0, 1000, 5000, 10000, 50000, 100000, 500000)
+    var clusterMaxScale by mutableIntStateOf(clusterMaxScaleOptions[0])
+        private set
+
+    fun updateClusterMaxScaleState(index: Int) {
+        clusterMaxScale = clusterMaxScaleOptions[index]
+        clusteringFeatureReduction.maxScale = clusterMaxScale.toDouble()
     }
 
     var showPopUpContent by mutableStateOf(false)
@@ -218,45 +242,15 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
     var popUpTitle by mutableStateOf("")
         private set
 
-    fun updatePopUpTitle(title: String) {
+    fun updatePopUpTitleState(title: String) {
         popUpTitle = title
     }
 
     var popUpInfo by mutableStateOf<Map<String, Any?>>(emptyMap())
         private set
 
-    fun updatePopUpInfo(info: Map<String, Any?>) {
+    fun updatePopUpInfoState(info: Map<String, Any?>) {
         popUpInfo = info
-    }
-
-    var showClusterLabels by mutableStateOf(true)
-        private set
-
-    fun updateClusterLabelState(show: Boolean) {
-        showClusterLabels = show
-        clusteringFeatureReduction.showLabels = showClusterLabels
-    }
-
-    // Note that the default value for cluster radius is 60.
-    // Increasing the cluster radius increases the number of features that are grouped together into a cluster.
-    val clusterRadiusOptions = listOf(30, 45, 60, 75, 90)
-    var clusterRadius by mutableIntStateOf(clusterRadiusOptions[2])
-        private set
-
-    fun updateClusterRadius(index: Int) {
-        clusterRadius = clusterRadiusOptions[index]
-        clusteringFeatureReduction.radius = clusterRadius.toDouble()
-    }
-
-    // Note that the default value for max scale is 0.
-    // The max scale value is the maximum scale at which clustering is applied.
-    val clusterMaxScaleOptions = listOf(0, 1000, 5000, 10000, 50000, 100000, 500000)
-    var clusterMaxScale by mutableIntStateOf(clusterMaxScaleOptions[0])
-        private set
-
-    fun updateClusterMaxScale(index: Int) {
-        clusterMaxScale = clusterMaxScaleOptions[index]
-        clusteringFeatureReduction.maxScale = clusterMaxScale.toDouble()
     }
 }
 
