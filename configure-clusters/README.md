@@ -43,4 +43,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
-aggregate, bin, cluster, group, merge, normalize, popup, reduce, renderer, summarize
+aggregate, bin, cluster, geoviewcompose, group, merge, normalize, popup, reduce, renderer, summarize, toolkit
