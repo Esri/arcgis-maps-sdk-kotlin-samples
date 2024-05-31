@@ -8,10 +8,12 @@
     ],
     "keywords": [
         "basemap style",
+        "geoviewcompose",
         "language",
         "language strategy",
         "map",
         "point",
+        "toolkit",
         "viewpoint",
         "Basemap",
         "BasemapStyleLanguageStrategy",
