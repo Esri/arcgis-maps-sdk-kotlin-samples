@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.geometryeditor.SnapSourceSettings
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
 
@@ -126,117 +127,103 @@ fun SnapSettings(
                         }
                     }
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp, 10.dp, 20.dp, 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        style = SampleTypography.titleMedium,
-                        text = "Point Layers",
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    TextButton(
-                        onClick = {
-                            snapSourceList.value.forEachIndexed { index, snapSource ->
-                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Point) {
-                                    onSnapSourceChanged(true, index)
-                                }
-                            }
-                        }
-                    ) {
-                        Text(text = "Enable All Sources")
+                SnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, GeometryType.Point)
+                SnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, GeometryType.Polyline)
+                SnapSourceUI(snapSourceList, isSnapSourceEnabled, onSnapSourceChanged, null)
+            }
+        }
+    }
+}
+
+@Composable
+fun SnapSourceUI(
+    snapSourceList: State<List<SnapSourceSettings>>,
+    isSnapSourceEnabled: List<Boolean>,
+    onSnapSourceChanged: (Boolean, Int) -> Unit,
+    geometryType : GeometryType?
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp, 10.dp, 20.dp, 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            style = SampleTypography.titleMedium,
+            text = when (geometryType) {
+                is GeometryType.Point -> "Point Layer"
+                is GeometryType.Polyline -> "Polyline Layer"
+                else -> "Graphics Overlays"
+            },
+            color = MaterialTheme.colorScheme.primary
+        )
+        TextButton(
+            onClick = {
+                snapSourceList.value.forEachIndexed { index, snapSource ->
+                    if (geometryType != null &&
+                        (snapSource.source as? FeatureLayer)?.featureTable?.geometryType == geometryType) {
+                        onSnapSourceChanged(true, index)
+                    } else if (geometryType == null && snapSource.source is GraphicsOverlay) {
+                        onSnapSourceChanged(true, index)
                     }
                 }
-                Surface(
-                    modifier = Modifier.padding(20.dp, 0.dp, 20.dp, 10.dp),
-                    tonalElevation = 1.dp,
-                    shape = RoundedCornerShape(20.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(14.dp)
-                    ) {
-                        Column {
-                            snapSourceList.value.forEachIndexed { index, snapSource ->
-                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Point) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
-                                            text = (snapSource.source as FeatureLayer).name
-                                        )
-                                        Switch(
-                                            checked = isSnapSourceEnabled[index],
-                                            onCheckedChange = { newValue ->
-                                                onSnapSourceChanged(newValue, index)
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+            }
+        ) {
+            Text(
+                text = if (geometryType != null) {
+                    "Enable All Layers"
+                } else {
+                    "Enable All Overlays"
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp, 0.dp, 20.dp, 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        style = SampleTypography.titleMedium,
-                        text = "Polyline Layers",
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    TextButton(
-                        onClick = {
-                            snapSourceList.value.forEachIndexed { index, snapSource ->
-                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Polyline) {
-                                    onSnapSourceChanged(true, index)
+            )
+        }
+    }
+    Surface(
+        modifier = Modifier.padding(20.dp, 0.dp, 20.dp, 10.dp),
+        tonalElevation = 1.dp,
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(
+            modifier = Modifier.padding(14.dp)
+        ) {
+            Column {
+                snapSourceList.value.forEachIndexed { index, snapSource ->
+                    if (geometryType != null &&
+                        (snapSource.source as? FeatureLayer)?.featureTable?.geometryType == geometryType) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                text = (snapSource.source as FeatureLayer).name
+                            )
+                            Switch(
+                                checked = isSnapSourceEnabled[index],
+                                onCheckedChange = { newValue ->
+                                    onSnapSourceChanged(newValue, index)
                                 }
-                            }
+                            )
                         }
-                    ) {
-                        Text(text = "Enable All Sources")
-                    }
-                }
-                Surface(
-                    modifier = Modifier.padding(20.dp, 0.dp, 20.dp, 10.dp),
-                    tonalElevation = 1.dp,
-                    shape = RoundedCornerShape(20.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(14.dp)
-                    ) {
-                        Column {
-                            snapSourceList.value.forEachIndexed { index, snapSource ->
-                                if ((snapSource.source as FeatureLayer).featureTable?.geometryType == GeometryType.Polyline) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
-                                            text = (snapSource.source as FeatureLayer).name
-                                        )
-                                        Switch(
-                                            checked = isSnapSourceEnabled[index],
-                                            onCheckedChange = { newValue ->
-                                                onSnapSourceChanged(newValue, index)
-                                            }
-                                        )
-                                    }
+                    } else if (geometryType == null && snapSource.source is GraphicsOverlay) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                text = (snapSource.source as GraphicsOverlay).id
+                            )
+                            Switch(
+                                checked = isSnapSourceEnabled[index],
+                                onCheckedChange = { newValue ->
+                                    onSnapSourceChanged(newValue, index)
                                 }
-                            }
+                            )
                         }
                     }
                 }

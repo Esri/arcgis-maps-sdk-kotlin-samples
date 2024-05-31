@@ -79,7 +79,9 @@ class MapViewModel(
      */
     init {
         sampleCoroutineScope.launch {
-            // set the feature layer's feature tiling mode
+            // set the id for the graphics overlay
+            graphicsOverlay.id = "Editor Graphics Overlay"
+            // set the feature layer's tiling mode
             map.loadSettings.featureTilingMode =
                 FeatureTilingMode.EnabledWithFullResolutionWhenSupported
             // load the map
@@ -194,12 +196,13 @@ class MapViewModel(
      * more elements in the geometry.
      */
     fun deleteSelection() {
+        if (geometryEditor.geometry.value?.isEmpty == true) {
+            geometryEditor.stop()
+            isCreateButtonEnabled.value = true
+        }
+
         if (geometryEditor.selectedElement.value != null) {
             geometryEditor.deleteSelectedElement()
-            if (geometryEditor.geometry.value?.isEmpty == true) {
-                geometryEditor.stop()
-                isCreateButtonEnabled.value = true
-            }
         }
     }
 
