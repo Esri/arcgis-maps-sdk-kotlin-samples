@@ -43,4 +43,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
-basemap style, geoviewcompose , language, language strategy, map, point, toolkit, viewpoint
+basemap style, geoviewcompose, language, language strategy, map, point, toolkit, viewpoint
