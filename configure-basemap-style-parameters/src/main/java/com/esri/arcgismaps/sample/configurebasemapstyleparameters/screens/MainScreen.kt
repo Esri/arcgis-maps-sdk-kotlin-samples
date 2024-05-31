@@ -121,8 +121,8 @@ fun MainScreen(sampleName: String) {
                                     .heightIn(max = 160.dp)
                                     .padding(8.dp)
                             ) {
-                                Row {
-                                    Column {
+                                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Column(Modifier.weight(0.5f)) {
                                         // UI for setting the language strategy
                                         LanguageStrategyControls(
                                             languageStrategyOptions = mapViewModel.languageStrategyOptions,
@@ -133,14 +133,8 @@ fun MainScreen(sampleName: String) {
                                             enabled = (mapViewModel.specificLanguage == "None")
                                         )
                                     }
-                                    Divider(
-                                        color = Color.LightGray,
-                                        modifier = Modifier
-                                            .padding(8.dp)
-                                            .fillMaxHeight()
-                                            .width(2.dp)
-                                    )
-                                    Column {
+
+                                    Column(Modifier.weight(0.5f)) {
                                         // UI for setting the specific language
                                         SpecificLanguageControls(
                                             specificLanguageOptions = mapViewModel.specificLanguageOptions,
