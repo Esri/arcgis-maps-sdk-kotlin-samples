@@ -62,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.configureclusters.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
@@ -80,7 +81,7 @@ fun MainScreen(sampleName: String) {
     // get the application context
     val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { MapViewModel(application, sampleCoroutineScope) }
+    val mapViewModel: MapViewModel = viewModel()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },

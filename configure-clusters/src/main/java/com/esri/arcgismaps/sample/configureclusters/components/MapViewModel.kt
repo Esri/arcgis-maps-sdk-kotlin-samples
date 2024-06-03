@@ -16,14 +16,14 @@
 
 package com.esri.arcgismaps.sample.configureclusters.components
 
-import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.arcgisservices.LabelingPlacement
 import com.arcgismaps.mapping.ArcGISMap
@@ -46,12 +46,10 @@ import com.arcgismaps.mapping.symbology.VerticalAlignment
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-class MapViewModel(application: Application, private val sampleCoroutineScope: CoroutineScope) :
-    AndroidViewModel(application) {
+class MapViewModel : ViewModel() {
 
     private val clusteringFeatureReduction = createCustomFeatureReduction()
 
@@ -60,7 +58,7 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
     val mapViewProxy = MapViewProxy()
 
     // Keep track of the feature layer that will be used to identify features in the MapView.
-    var featureLayer: FeatureLayer? = null
+    private var featureLayer: FeatureLayer? = null
 
     // Create a map with a feature layer that contains building data.
     val arcGISMap = ArcGISMap(
@@ -70,7 +68,7 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
         )
     ).apply {
         initialViewpoint = Viewpoint(47.38, 8.53, 8e4)
-        sampleCoroutineScope.launch {
+        viewModelScope.launch {
             load().onSuccess {
                 // Apply the custom feature reduction to the first feature layer.
                 featureLayer = operationalLayers.first() as FeatureLayer
@@ -153,7 +151,7 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
             isEnabled = true
 
             // Create a label definition with a simple label expression.
-            val simpleLabelExpression = SimpleLabelExpression("[cluster_count]");
+            val simpleLabelExpression = SimpleLabelExpression("[cluster_count]")
             val textSymbol = TextSymbol(
                 "",
                 Color.black,
@@ -182,7 +180,7 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
      * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
-        sampleCoroutineScope.launch {
+        viewModelScope.launch {
             // identify the cluster in the feature layer on the tapped coordinate
             mapViewProxy.identify(
                 featureLayer as Layer,
@@ -242,14 +240,14 @@ class MapViewModel(application: Application, private val sampleCoroutineScope: C
     var popUpTitle by mutableStateOf("")
         private set
 
-    fun updatePopUpTitleState(title: String) {
+    private fun updatePopUpTitleState(title: String) {
         popUpTitle = title
     }
 
     var popUpInfo by mutableStateOf<Map<String, Any?>>(emptyMap())
         private set
 
-    fun updatePopUpInfoState(info: Map<String, Any?>) {
+    private fun updatePopUpInfoState(info: Map<String, Any?>) {
         popUpInfo = info
     }
 }
