@@ -38,9 +38,10 @@ Interact with the controls to customize clustering feature reduction properties.
 
 This sample uses a [web map](https://www.arcgis.com/home/item.html?id=aa44e79a4836413c89908e1afdace2ea) that displays residential data for Zurich, Switzerland.
 
-### Additional Information
+## Additional information
+
 This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-aggregate, bin, cluster, group, merge, normalize, popup, reduce, renderer, summarize
+aggregate, bin, cluster, geoviewcompose, group, merge, normalize, popup, reduce, renderer, summarize, toolkit
