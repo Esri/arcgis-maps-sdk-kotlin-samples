@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.configureclusters.screens
 
-import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,13 +53,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -76,10 +73,6 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(sampleName: String) {
-    // coroutineScope that will be cancelled when this call leaves the composition
-    val sampleCoroutineScope = rememberCoroutineScope()
-    // get the application context
-    val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
 
