@@ -99,30 +99,16 @@ class MapViewModel : ViewModel() {
             // Add a class break for each intended value range and define a symbol to display for features in that range.
             // In this case, the average building height ranges from 0 to 8 storeys.
             // For each cluster of features with a given average building height, a symbol is defined with a specified color.
-            classBreaks.add(
-                ClassBreak("0", "0", 0.0, 1.0, SimpleMarkerSymbol().apply { color = colors[0] })
-            )
-            classBreaks.add(
-                ClassBreak("1", "1", 1.0, 2.0, SimpleMarkerSymbol().apply { color = colors[1] })
-            )
-            classBreaks.add(
-                ClassBreak("2", "2", 2.0, 3.0, SimpleMarkerSymbol().apply { color = colors[2] })
-            )
-            classBreaks.add(
-                ClassBreak("3", "3", 3.0, 4.0, SimpleMarkerSymbol().apply { color = colors[3] })
-            )
-            classBreaks.add(
-                ClassBreak("4", "4", 4.0, 5.0, SimpleMarkerSymbol().apply { color = colors[4] })
-            )
-            classBreaks.add(
-                ClassBreak("5", "5", 5.0, 6.0, SimpleMarkerSymbol().apply { color = colors[5] })
-            )
-            classBreaks.add(
-                ClassBreak("6", "6", 6.0, 7.0, SimpleMarkerSymbol().apply { color = colors[6] })
-            )
-            classBreaks.add(
-                ClassBreak("7", "7", 7.0, 8.0, SimpleMarkerSymbol().apply { color = colors[7] })
-            )
+            for (i in 0..7) {
+                classBreaks.add(
+                    ClassBreak(
+                        i.toString(),
+                        i.toString(),
+                        i.toDouble(),
+                        (i + 1).toDouble(),
+                        SimpleMarkerSymbol().apply { color = colors[i] })
+                )
+            }
 
             // Define a default symbol to use for features that do not fall within any of the ranges defined by the class breaks.
             defaultSymbol = SimpleMarkerSymbol().apply { color = Color.red }

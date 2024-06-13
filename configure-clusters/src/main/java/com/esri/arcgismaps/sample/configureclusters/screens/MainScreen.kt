@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.configureclusters.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,18 +27,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,11 +52,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -65,6 +64,8 @@ import com.esri.arcgismaps.sample.configureclusters.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
@@ -75,6 +76,8 @@ import kotlin.math.roundToInt
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
+
+    val composableScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -103,62 +106,50 @@ fun MainScreen(sampleName: String) {
                     },
                 )
 
-                // boolean to toggle the state of the bottom sheet layout
-                var showControlsBottomSheet by rememberSaveable { mutableStateOf(true) }
-                fun updateShowControlsBottomSheet(show: Boolean) {
-                    showControlsBottomSheet = show
-                }
-
-
                 val controlsBottomSheetState = rememberModalBottomSheetState()
                 // show the "Show controls" button only when the bottom sheet is not visible
-                if (!showControlsBottomSheet) {
-                    Button(
+                if (!controlsBottomSheetState.isVisible) {
+                    FloatingActionButton(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 24.dp),
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 36.dp, end = 24.dp),
                         onClick = {
-                            showControlsBottomSheet = true
+                            composableScope.launch {
+                                controlsBottomSheetState.show()
+                            }
                         },
                     ) {
-                        Text(
-                            text = "Show controls"
-                        )
+                        Icon(Icons.Filled.Settings, contentDescription = "Show controls")
                     }
                 }
-                // constrain the bottom sheet to a maximum width of 380dp
-                Box(
-                    modifier = Modifier
-                        .widthIn(0.dp, 380.dp)
-                ) {
-                    if (showControlsBottomSheet) {
-                        ClusterControlsBottomSheet(
-                            showControlsBottomSheet = ::updateShowControlsBottomSheet,
-                            controlsBottomSheetState = controlsBottomSheetState,
-                            showClusterLabels = mapViewModel.showClusterLabels,
-                            updateClusterLabelState = mapViewModel::updateShowClusterLabelState,
-                            clusterRadiusOptions = mapViewModel.clusterRadiusOptions,
-                            clusterRadius = mapViewModel.clusterRadius,
-                            updateClusterRadiusState = mapViewModel::updateClusterRadiusState,
-                            clusterMaxScaleOptions = mapViewModel.clusterMaxScaleOptions,
-                            clusterMaxScale = mapViewModel.clusterMaxScale,
-                            updateClusterMaxScaleState = mapViewModel::updateClusterMaxScaleState,
-                            mapScale = mapScale
-                        )
-                    }
+                if (controlsBottomSheetState.isVisible) {
+                    ClusterControlsBottomSheet(
+                        composableScope = composableScope,
+                        controlsBottomSheetState = controlsBottomSheetState,
+                        showClusterLabels = mapViewModel.showClusterLabels,
+                        updateClusterLabelState = mapViewModel::updateShowClusterLabelState,
+                        clusterRadiusOptions = mapViewModel.clusterRadiusOptions,
+                        clusterRadius = mapViewModel.clusterRadius,
+                        updateClusterRadiusState = mapViewModel::updateClusterRadiusState,
+                        clusterMaxScaleOptions = mapViewModel.clusterMaxScaleOptions,
+                        clusterMaxScale = mapViewModel.clusterMaxScale,
+                        updateClusterMaxScaleState = mapViewModel::updateClusterMaxScaleState,
+                        mapScale = mapScale
+                    )
                 }
-
-                // display a bottom sheet to show popup details
-                BottomSheet(
-                    isVisible = mapViewModel.showPopUpContent,
-                    bottomSheetContent = {
-                        ClusterInfoContent(
-                            popUpTitle = mapViewModel.popUpTitle,
-                            popUpInfo = mapViewModel.popUpInfo,
-                            onDismiss = { mapViewModel.updateShowPopUpContentState(false) }
-                        )
-                    })
             }
+
+            // display a bottom sheet to show popup details
+            BottomSheet(
+                isVisible = mapViewModel.showPopUpContent,
+                bottomSheetContent = {
+                    ClusterInfoContent(
+                        popUpTitle = mapViewModel.popUpTitle,
+                        popUpInfo = mapViewModel.popUpInfo,
+                        onDismiss = { mapViewModel.updateShowPopUpContentState(false) }
+                    )
+                })
+
         }
     )
 }
@@ -169,7 +160,7 @@ fun MainScreen(sampleName: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClusterControlsBottomSheet(
-    showControlsBottomSheet: (Boolean) -> Unit,
+    composableScope: CoroutineScope,
     controlsBottomSheetState: SheetState,
     showClusterLabels: Boolean,
     updateClusterLabelState: (Boolean) -> Unit,
@@ -179,71 +170,67 @@ private fun ClusterControlsBottomSheet(
     clusterMaxScaleOptions: List<Int>,
     clusterMaxScale: Int,
     updateClusterMaxScaleState: (Int) -> Unit,
-    mapScale: Int
+    mapScale: Int,
 ) {
     ModalBottomSheet(
+        modifier = Modifier.wrapContentHeight(),
         sheetState = controlsBottomSheetState,
         onDismissRequest = {
-            showControlsBottomSheet(false)
+            composableScope.launch {
+                controlsBottomSheetState.hide()
+            }
         }) {
         Row {
-            Column {
+            Column(
+                Modifier
+                    .padding(12.dp)
+            ) {
                 Text(
                     "Cluster labels visibility:",
-                    modifier = Modifier.padding(8.dp)
+                    style = MaterialTheme.typography.titleMedium
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        "Show labels",
-                        modifier = Modifier.padding(8.dp)
-                    )
+                Spacer(Modifier.size(8.dp))
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Show labels")
                     Switch(
                         checked = showClusterLabels,
                         onCheckedChange = { showClusterLabels ->
                             updateClusterLabelState(
                                 showClusterLabels
                             )
-                        },
-                        modifier = Modifier.padding(8.dp)
+                        }
                     )
                 }
-            }
-            Column {
-                Row {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .background(Color.LightGray, MaterialTheme.shapes.medium)
-                    ) {
-                        Text(
-                            "Current map \nscale: 1:${mapScale}",
-                            modifier = Modifier.padding(8.dp),
-                            color = Color.Black
-                        )
-                    }
+                Spacer(Modifier.size(8.dp))
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Current map scale:")
+                    Text("1:$mapScale")
                 }
-            }
-        }
-        Row {
-            Column {
-                Divider(
-                    color = Color.LightGray,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .width(2.dp)
+                Divider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
+                Text(
+                    "Clustering properties:",
+                    style = MaterialTheme.typography.titleMedium
                 )
+                Spacer(Modifier.size(8.dp))
                 ClusterRadiusControls(
                     clusterRadiusOptions,
                     clusterRadius,
                     updateClusterRadiusState
                 )
+                Spacer(Modifier.size(8.dp))
                 ClusterMaxScaleControls(
                     clusterMaxScaleOptions,
                     clusterMaxScale,
                     updateClusterMaxScaleState
                 )
-                Spacer(modifier = Modifier.size(40.dp))
             }
         }
     }
@@ -260,51 +247,44 @@ private fun ClusterRadiusControls(
     clusterRadius: Int,
     updateClusterRadius: (Int) -> Unit
 ) {
-    Text(
-        "Clustering properties:",
-        modifier = Modifier.padding(8.dp)
-    )
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Text(
             "Cluster radius",
             modifier = Modifier.padding(8.dp)
         )
         var expanded by rememberSaveable { mutableStateOf(false) }
-        Box(
-            modifier = Modifier
-                .wrapContentHeight()
-                .wrapContentWidth()
-                .wrapContentSize(Alignment.TopStart)
-                .padding(8.dp)
+        ExposedDropdownMenuBox(
+            modifier = Modifier.width(150.dp),
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
         ) {
-            ExposedDropdownMenuBox(
+            TextField(
+                value = clusterRadius.toString(),
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor()
+            )
+            ExposedDropdownMenu(
                 expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                onDismissRequest = { expanded = false }
             ) {
-                TextField(
-                    value = clusterRadius.toString(),
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    clusterRadiusOptions.forEachIndexed { index, clusterRadius ->
-                        DropdownMenuItem(
-                            text = { Text(clusterRadius.toString()) },
-                            onClick = {
-                                updateClusterRadius(
-                                    index
-                                )
-                                expanded = false
-                            })
-                        // show a divider between dropdown menu options
-                        if (index < clusterRadiusOptions.lastIndex) {
-                            Divider()
-                        }
+                clusterRadiusOptions.forEachIndexed { index, clusterRadius ->
+                    DropdownMenuItem(
+                        text = { Text(clusterRadius.toString()) },
+                        onClick = {
+                            updateClusterRadius(
+                                index
+                            )
+                            expanded = false
+                        })
+                    // show a divider between dropdown menu options
+                    if (index < clusterRadiusOptions.lastIndex) {
+                        Divider()
                     }
                 }
             }
@@ -323,47 +303,44 @@ private fun ClusterMaxScaleControls(
     clusterMaxScale: Int,
     updateClusterMaxScale: (Int) -> Unit
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Text(
             "Cluster max scale",
             modifier = Modifier.padding(8.dp)
         )
         var expanded by rememberSaveable { mutableStateOf(false) }
-        Box(
-            modifier = Modifier
-                .wrapContentHeight()
-                .wrapContentWidth()
-                .wrapContentSize(Alignment.TopStart)
-                .padding(8.dp)
+        ExposedDropdownMenuBox(
+            modifier = Modifier.width(150.dp),
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
         ) {
-            ExposedDropdownMenuBox(
+            TextField(
+                value = clusterMaxScale.toString(),
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor()
+            )
+            ExposedDropdownMenu(
                 expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                onDismissRequest = { expanded = false }
             ) {
-                TextField(
-                    value = clusterMaxScale.toString(),
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    clusterMaxScaleOptions.forEachIndexed { index, clusterRadius ->
-                        DropdownMenuItem(
-                            text = { Text(clusterRadius.toString()) },
-                            onClick = {
-                                updateClusterMaxScale(
-                                    index
-                                )
-                                expanded = false
-                            })
-                        // show a divider between dropdown menu options
-                        if (index < clusterMaxScaleOptions.lastIndex) {
-                            Divider()
-                        }
+                clusterMaxScaleOptions.forEachIndexed { index, clusterRadius ->
+                    DropdownMenuItem(
+                        text = { Text(clusterRadius.toString()) },
+                        onClick = {
+                            updateClusterMaxScale(
+                                index
+                            )
+                            expanded = false
+                        })
+                    // show a divider between dropdown menu options
+                    if (index < clusterMaxScaleOptions.lastIndex) {
+                        Divider()
                     }
                 }
             }
@@ -373,7 +350,6 @@ private fun ClusterMaxScaleControls(
 
 /**
  * Composable function to display the cluster info content from the pop up within a bottom sheet.
-
  */
 @Composable
 private fun ClusterInfoContent(
@@ -383,19 +359,17 @@ private fun ClusterInfoContent(
 ) {
     Column(Modifier.background(MaterialTheme.colorScheme.background)) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 30.dp, vertical = 12.dp)
-                    .weight(6f),
-                text = popUpTitle,
-                style = SampleTypography.displaySmall
+                text = popUpTitle.ifEmpty { "Cluster Info:" },
+                style = SampleTypography.headlineSmall
             )
-
             IconButton(
-                modifier = Modifier.weight(1f),
                 onClick = onDismiss
             ) {
                 Icon(
@@ -404,10 +378,21 @@ private fun ClusterInfoContent(
                 )
             }
         }
-        Text(
-            text = popUpInfo.map { "${it.key}: ${it.value}" }.joinToString("\n"),
-            modifier = Modifier.padding(horizontal = 30.dp, vertical = 16.dp)
-        )
+        popUpInfo.forEach {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 30.dp,
+                        vertical = 8.dp
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "${it.key}:", style = MaterialTheme.typography.labelMedium)
+                Text(text = "${it.value}")
+            }
+        }
         Spacer(modifier = Modifier.size(24.dp))
     }
 }
