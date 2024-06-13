@@ -9,8 +9,9 @@ import com.arcgismaps.realtime.DynamicEntityDataSourceInfo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,9 +36,6 @@ class CustomEntityFeedProvider(
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    // Keep track of the current line number in the file, so we can resume reading from the correct
-    // line if the connection is lost.
-    private var lineNumber = 0
     private val observationsFile = File(fileName)
 
     // Create a shared flow to emit feed events.
@@ -48,6 +46,9 @@ class CustomEntityFeedProvider(
 
     // Expose the feed as a shared flow.
     override val feed = _feed
+
+    // Keep track of the feed job to allow us to properly cancel it when needed.
+    private var feedJob: Job? = null
 
     /**
      * Called when the data source is connected. Checks for presence of the observations file and
@@ -61,12 +62,12 @@ class CustomEntityFeedProvider(
         readObservationsFileAsync()
     }
 
-
     /**
      * Called when the data source is disconnected. Cancels all child coroutines.
      */
     override suspend fun onDisconnect() {
-        scope.coroutineContext.cancelChildren()
+        feedJob?.cancelAndJoin()
+        feedJob = null
     }
 
     /**
@@ -82,18 +83,17 @@ class CustomEntityFeedProvider(
      * Reads the observations file asynchronously and emits feed events for each observation.
      */
     private fun readObservationsFileAsync() {
-        scope.launch(Dispatchers.IO) {
+        feedJob = scope.launch(Dispatchers.IO) {
             try {
                 // While no call to cancel the job has been made.
-                observationsFile.readLines().let { lines ->
+                observationsFile.bufferedReader().use { reader ->
                     // Read the next line from the file.
-                    for (i in lineNumber..lines.size) {
-                        lineNumber++
+                    for (line in reader.lines()) {
                         // Adjusting the value for the delay will change the speed at which the
                         // entities and their observations are displayed.
                         delay(delayDuration)
                         // Emit the next observation.
-                        _feed.tryEmit(processNextObservation(lines[i]))
+                        _feed.tryEmit(processNextObservation(line))
                     }
                 }
             } catch (e: Exception) {

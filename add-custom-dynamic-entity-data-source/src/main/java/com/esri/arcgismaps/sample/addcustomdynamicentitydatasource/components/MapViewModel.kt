@@ -51,7 +51,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         10
     )
 
-
     // Create the dynamic entity layer using the custom data source.
     val dynamicEntityLayer = DynamicEntityLayer(CustomDynamicEntityDataSource(customSource)).apply {
         trackDisplayProperties.apply {
