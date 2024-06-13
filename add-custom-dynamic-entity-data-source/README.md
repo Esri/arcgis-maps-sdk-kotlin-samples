@@ -49,4 +49,4 @@ In this sample, we iterate through features in a GeoJSON file to mimic messages 
 
 ## Tags
 
-data, dynamic, entity, flow, label, labeling, MutableSharedFlow, live, real-time, SharedFlow, stream, track
+data, dynamic, entity, flow, label, labeling, live, real-time, stream, track

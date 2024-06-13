@@ -7,8 +7,6 @@
         "add-custom-dynamic-entity-data-source.png"
     ],
     "keywords": [
-        "MutableSharedFlow",
-        "SharedFlow",
         "data",
         "dynamic",
         "entity",
