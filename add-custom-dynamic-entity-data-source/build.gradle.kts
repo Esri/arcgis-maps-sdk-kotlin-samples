@@ -53,4 +53,5 @@ dependencies {
     implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
 
     implementation(libs.serialization)
+    implementation(libs.androidx.lifecycle.runtime.android)
 }

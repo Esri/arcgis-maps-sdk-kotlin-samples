@@ -38,16 +38,19 @@ import kotlinx.coroutines.launch
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val TAG = javaClass.simpleName
+
     // Create a new custom file source.
     // This takes the path to the simulation file, field name that will be used as the entity id, and the delay between each observation that is processed.
     // In this example we are using a json file as our custom data source.
     // This field value should be a unique identifier for each entity.
     // Adjusting the value for the delay will change the speed at which the entities and their observations are displayed.
-    private val customSource = SimulatedDataSource(viewModelScope,
+    private val customSource = CustomEntityFeedProvider(
         application.getExternalFilesDir(null)?.path + "/AIS_MarineCadastre_SelectedVessels_CustomDataSource.jsonl",
         "MMSI",
         10
     )
+
 
     // Create the dynamic entity layer using the custom data source.
     val dynamicEntityLayer = DynamicEntityLayer(CustomDynamicEntityDataSource(customSource)).apply {
@@ -111,29 +114,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                                 stringBuilder.appendLine("$attribute: $value")
                             }
                         }
-                        // The standard callout takes care of moving when the dynamic entity changes.
-                        val calloutContent = stringBuilder.toString().trimEnd()
+                        val entityAttributes = stringBuilder.toString().trimEnd()
 
-                        Log.d("MapViewModel", "Identified dynamic entity: $calloutContent")
-
-                       /*
-                        if (dynamicEntityLayer.renderer?.getSymbol(dynamicEntity) is Symbol) {
-                            calloutDefinition.setSymbol(
-                                dynamicEntityLayer.renderer?.getSymbol(
-                                    dynamicEntity
-                                ) as Symbol
-                            )
-                        }
-                        // Show the callout for the tapped dynamic entity.
-                        mapViewProxy(
-                            dynamicEntity,
-                            singleTapConfirmedEvent.screenCoordinate,
-                            calloutDef
-                        )*/
+                        Log.i(TAG, "Identified dynamic entity: $entityAttributes")
                     }
                 }
             }.onFailure { error ->
-                Log.e("MapViewModel", "Error identifying dynamic entity: ${error.message}")
+                Log.e(TAG, "Error identifying dynamic entity: ${error.message}")
             }
         }
     }

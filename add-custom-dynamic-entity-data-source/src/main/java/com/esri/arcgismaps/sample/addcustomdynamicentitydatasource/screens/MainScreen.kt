@@ -23,6 +23,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -55,17 +59,28 @@ fun MainScreen(sampleName: String) {
                         mapViewModel.identify(singleTapEvent)
                     }
                 )
+                // Create a button to allow the user to connect/disconnect the data source.
+                var isConnected by remember { mutableStateOf(true) }
                 Button(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 24.dp),
                     onClick = {
                         mapViewModel.viewModelScope.launch {
-                            mapViewModel.dynamicEntityLayer.dataSource.disconnect()
+                            if (isConnected) {
+                                mapViewModel.dynamicEntityLayer.dataSource.disconnect()
+                            } else {
+                                mapViewModel.dynamicEntityLayer.dataSource.connect()
+                            }
                         }
+                        isConnected = !isConnected
                     }) {
                     Text(
-                        text = "Disconnect"
+                        text = if (!isConnected) {
+                            "Connect"
+                        } else {
+                            "Disconnect"
+                        }
                     )
                 }
             }

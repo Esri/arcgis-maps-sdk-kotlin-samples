@@ -29,6 +29,7 @@ materialVersion = "1.11.0"
 androidBrowserVersion = "1.8.0"
 # Plugin versions
 gradleVersion = "8.3.2"
+lifecycleRuntimeAndroidVersion = "2.8.1"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradleVersion" }
@@ -65,3 +66,4 @@ arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgi
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "jsonSerialization" }
 stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlinVersion"}
+androidx-lifecycle-runtime-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-android", version.ref = "lifecycleRuntimeAndroidVersion" }
