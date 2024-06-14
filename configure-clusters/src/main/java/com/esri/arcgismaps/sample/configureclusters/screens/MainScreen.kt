@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -106,7 +107,8 @@ fun MainScreen(sampleName: String) {
                     },
                 )
 
-                val controlsBottomSheetState = rememberModalBottomSheetState()
+                val controlsBottomSheetState =
+                    rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 // show the "Show controls" button only when the bottom sheet is not visible
                 if (!controlsBottomSheetState.isVisible) {
                     FloatingActionButton(
@@ -180,58 +182,56 @@ private fun ClusterControlsBottomSheet(
                 controlsBottomSheetState.hide()
             }
         }) {
-        Row {
-            Column(
-                Modifier
-                    .padding(12.dp)
+        Column(
+            Modifier
+                .padding(12.dp)
+                .navigationBarsPadding()) {
+            Text(
+                "Cluster labels visibility:",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(Modifier.size(8.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "Cluster labels visibility:",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(Modifier.size(8.dp))
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Show labels")
-                    Switch(
-                        checked = showClusterLabels,
-                        onCheckedChange = { showClusterLabels ->
-                            updateClusterLabelState(
-                                showClusterLabels
-                            )
-                        }
-                    )
-                }
-                Spacer(Modifier.size(8.dp))
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Current map scale:")
-                    Text("1:$mapScale")
-                }
-                Divider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
-                Text(
-                    "Clustering properties:",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(Modifier.size(8.dp))
-                ClusterRadiusControls(
-                    clusterRadiusOptions,
-                    clusterRadius,
-                    updateClusterRadiusState
-                )
-                Spacer(Modifier.size(8.dp))
-                ClusterMaxScaleControls(
-                    clusterMaxScaleOptions,
-                    clusterMaxScale,
-                    updateClusterMaxScaleState
+                Text("Show labels")
+                Switch(
+                    checked = showClusterLabels,
+                    onCheckedChange = { showClusterLabels ->
+                        updateClusterLabelState(
+                            showClusterLabels
+                        )
+                    }
                 )
             }
+            Spacer(Modifier.size(8.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Current map scale:")
+                Text("1:$mapScale")
+            }
+            Divider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
+            Text(
+                "Clustering properties:",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(Modifier.size(8.dp))
+            ClusterRadiusControls(
+                clusterRadiusOptions,
+                clusterRadius,
+                updateClusterRadiusState
+            )
+            Spacer(Modifier.size(8.dp))
+            ClusterMaxScaleControls(
+                clusterMaxScaleOptions,
+                clusterMaxScale,
+                updateClusterMaxScaleState
+            )
         }
     }
 }
@@ -277,9 +277,7 @@ private fun ClusterRadiusControls(
                     DropdownMenuItem(
                         text = { Text(clusterRadius.toString()) },
                         onClick = {
-                            updateClusterRadius(
-                                index
-                            )
+                            updateClusterRadius(index)
                             expanded = false
                         })
                     // show a divider between dropdown menu options
@@ -333,9 +331,7 @@ private fun ClusterMaxScaleControls(
                     DropdownMenuItem(
                         text = { Text(clusterRadius.toString()) },
                         onClick = {
-                            updateClusterMaxScale(
-                                index
-                            )
+                            updateClusterMaxScale(index)
                             expanded = false
                         })
                     // show a divider between dropdown menu options
