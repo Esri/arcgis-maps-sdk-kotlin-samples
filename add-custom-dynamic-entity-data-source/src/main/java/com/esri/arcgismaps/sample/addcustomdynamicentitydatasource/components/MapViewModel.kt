@@ -34,11 +34,18 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.realtime.CustomDynamicEntityDataSource
 import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = javaClass.simpleName
+
+    private val provisionPath: String by lazy {
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
+            R.string.app_name)
+    }
 
     // Create a new custom file source.
     // This takes the path to the simulation file, field name that will be used as the entity id, and the delay between each observation that is processed.
@@ -46,7 +53,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // This field value should be a unique identifier for each entity.
     // Adjusting the value for the delay will change the speed at which the entities and their observations are displayed.
     private val customSource = CustomEntityFeedProvider(
-        application.getExternalFilesDir(null)?.path + "/AIS_MarineCadastre_SelectedVessels_CustomDataSource.jsonl",
+        "$provisionPath/AIS_MarineCadastre_SelectedVessels_CustomDataSource.jsonl",
         "MMSI",
         10
     )
