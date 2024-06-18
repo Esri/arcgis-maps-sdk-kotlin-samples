@@ -98,6 +98,7 @@ class CustomEntityFeedProvider(
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) {
+                    // Don't swallow CancellationException to maintain structured concurrency when the coroutine is cancelled.
                     throw e
                 }
                 withContext(NonCancellable) {
