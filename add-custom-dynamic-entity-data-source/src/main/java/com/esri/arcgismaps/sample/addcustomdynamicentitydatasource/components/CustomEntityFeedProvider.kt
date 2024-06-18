@@ -45,7 +45,7 @@ class CustomEntityFeedProvider(
     )
 
     // Expose the feed as a shared flow.
-    override val feed = _feed
+    override val feed = _feed.asSharedFlow()
 
     // Keep track of the feed job to allow us to properly cancel it when needed.
     private var feedJob: Job? = null
