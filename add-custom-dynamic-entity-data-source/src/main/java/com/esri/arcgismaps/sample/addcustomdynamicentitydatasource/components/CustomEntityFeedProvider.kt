@@ -52,7 +52,7 @@ class CustomEntityFeedProvider(
 
     /**
      * Called when the data source is connected. Checks for presence of the observations file and
-     * starts reading the file asynchronously.
+     * starts reading the file asynchronously. It is important to process the custom data source asynchronously and let the `onConnect` function return immediately.
      */
     override suspend fun onConnect() {
         if (!observationsFile.exists()) {
