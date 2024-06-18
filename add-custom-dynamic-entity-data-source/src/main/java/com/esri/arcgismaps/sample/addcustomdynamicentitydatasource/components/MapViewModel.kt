@@ -47,7 +47,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             R.string.app_name)
     }
 
-    // Create a new custom file source.
+    // Create a new custom feed provider that processes observations from a JSON file.
     // This takes the path to the simulation file, field name that will be used as the entity id, and the delay between each observation that is processed.
     // In this example we are using a json file as our custom data source.
     // This field value should be a unique identifier for each entity.
