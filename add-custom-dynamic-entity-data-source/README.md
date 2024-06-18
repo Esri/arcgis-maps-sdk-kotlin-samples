@@ -21,7 +21,7 @@ Configure the custom data source:
 3. Override `onLoad()` to specify the `DynamicEntityDataSourceInfo` for a given unique entity ID field and a list of `Field` objects matching the fields in the data source.
 4. Override `OnConnect()` to begin asynchronously processing observations from the custom data source.
 5. Loop through the observations and deserialize each observation into a `Point` object and a `Map<String, Any?>` containing the attributes.
-6. Emit an observation in the custom data source`feed` with `CustomDynamicEntityDataSource.FeedEvent.NewObservation(point, attributes)`.
+6. Emit an observation in the custom data source `feed` with `CustomDynamicEntityDataSource.FeedEvent.NewObservation(point, attributes)`.
 
 Configure the map view:
 
