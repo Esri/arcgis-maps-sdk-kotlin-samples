@@ -150,9 +150,8 @@ class CustomEntityFeedProvider(
     /**
      * Returns the schema for the custom data source.
      */
-    private fun getSchema(): List<Field> {
-        // Return a list of fields matching the attributes of each observation in the custom data source.
-        return listOf(
+   private val schema: List<Field> by lazy { 
+        listOf(
             Field(FieldType.Text, "MMSI", "", 256),
             Field(FieldType.Float64, "BaseDateTime", "", 8),
             Field(FieldType.Float64, "LAT", "", 8),
