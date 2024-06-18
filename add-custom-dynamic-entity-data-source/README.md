@@ -17,7 +17,7 @@ Run the sample to view the map and the dynamic entity layer displaying the lates
 Configure the custom data source:
 
 1. Create a custom data source using a `CustomDynamicEntityDataSource.EntityFeedProvider`.
-2. Override `feed` with a `MutableSharedFlow<CustomDynamicEntityDataSource.FeedEvent>`.
+2. Override `feed` with a `SharedFlow<CustomDynamicEntityDataSource.FeedEvent>`.
 3. Override `onLoad()` to specify the `DynamicEntityDataSourceInfo` for a given unique entity ID field and a list of `Field` objects matching the fields in the data source.
 4. Override `OnConnect()` to begin processing observations from the custom data source.
 5. Loop through the observations and deserialize each observation into a `Point` object and a `Map<String, Any?>` containing the attributes.
