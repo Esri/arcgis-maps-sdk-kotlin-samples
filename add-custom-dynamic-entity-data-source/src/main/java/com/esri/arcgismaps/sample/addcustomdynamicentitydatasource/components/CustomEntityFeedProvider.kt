@@ -63,7 +63,7 @@ class CustomEntityFeedProvider(
     }
 
     /**
-     * Called when the data source is disconnected. Cancels all child coroutines.
+     * Called when the data source is disconnected. Cancels the coroutine job that processes the custom data source.
      */
     override suspend fun onDisconnect() {
         feedJob?.cancelAndJoin()
