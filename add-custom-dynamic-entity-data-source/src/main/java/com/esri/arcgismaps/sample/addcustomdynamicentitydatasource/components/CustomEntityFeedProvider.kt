@@ -30,7 +30,7 @@ import java.io.IOException
 class CustomEntityFeedProvider(
     fileName: String,
     private val entityIdField: String,
-    private val delayDuration: Long
+    private val delayDuration: Duration
 ) :
     CustomDynamicEntityDataSource.EntityFeedProvider {
 
