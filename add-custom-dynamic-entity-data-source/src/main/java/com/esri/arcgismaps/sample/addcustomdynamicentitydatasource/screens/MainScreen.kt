@@ -55,9 +55,7 @@ fun MainScreen(sampleName: String) {
                         .padding(it),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     arcGISMap = mapViewModel.arcGISMap,
-                    onSingleTapConfirmed = { singleTapEvent ->
-                        mapViewModel.identify(singleTapEvent)
-                    }
+                    onSingleTapConfirmed = mapViewModel::identify
                 )
                 // Create a button to allow the user to connect/disconnect the data source.
                 var isConnected by remember { mutableStateOf(true) }
