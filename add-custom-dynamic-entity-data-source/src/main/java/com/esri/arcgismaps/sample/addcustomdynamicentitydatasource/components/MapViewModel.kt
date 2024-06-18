@@ -53,9 +53,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // This field value should be a unique identifier for each entity.
     // Adjusting the value for the delay will change the speed at which the entities and their observations are displayed.
     private val customSource = CustomEntityFeedProvider(
-        "$provisionPath/AIS_MarineCadastre_SelectedVessels_CustomDataSource.jsonl",
-        "MMSI",
-        10
+        fileName = "$provisionPath/AIS_MarineCadastre_SelectedVessels_CustomDataSource.jsonl",
+        entityIdField = "MMSI",
+        delayDuration = 10
     )
 
     // Create the dynamic entity layer using the custom data source.
