@@ -23,7 +23,7 @@ Configure the custom data source:
 5. Loop through the observations and deserialize each observation into a `Point` object and a `Map<String, Any?>` containing the attributes.
 6. Emit an observation in the custom data source `feed` with `CustomDynamicEntityDataSource.FeedEvent.NewObservation(point, attributes)`.
 
-Configure the map view:
+Configure the MapView:
 
 1. Create a `DynamicEntityLayer` using the custom data source implementation.
 2. Update values in the layer's `trackDisplayProperties` to customize the layer's appearance.
