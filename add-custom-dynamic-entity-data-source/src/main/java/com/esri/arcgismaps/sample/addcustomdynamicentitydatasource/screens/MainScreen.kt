@@ -31,13 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -66,12 +64,10 @@ fun MainScreen(sampleName: String) {
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 24.dp),
                     onClick = {
-                        mapViewModel.viewModelScope.launch {
-                            if (isConnected) {
-                                mapViewModel.feedProviderOnDisconnect()
-                            } else {
-                                mapViewModel.feedProviderOnConnect()
-                            }
+                        if (isConnected) {
+                            mapViewModel.feedProviderOnDisconnect()
+                        } else {
+                            mapViewModel.feedProviderOnConnect()
                         }
                         isConnected = !isConnected
                     }) {
