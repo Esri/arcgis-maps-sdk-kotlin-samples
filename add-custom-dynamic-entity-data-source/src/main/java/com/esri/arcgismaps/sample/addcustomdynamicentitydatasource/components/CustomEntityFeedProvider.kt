@@ -15,6 +15,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -26,13 +27,23 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 import java.io.IOException
+import kotlin.time.Duration
 
+/**
+ * Implements the [EntityFeedProvider] interface on the [CustomDynamicEntityDataSource] to provide
+ * feed events from a JSON file for the custom dynamic entity data source. Uses a buffered reader to
+ * process lines in the file and emit feed events for each observation. Uses the [onConnect] to
+ * start reading the file and [onDisconnect] to cancel the coroutine job as required.
+ *
+ * @param fileName The path to the simulation file.
+ * @param entityIdField The field name that will be used as the entity id.
+ * @param delayDuration The delay between each observation that is processed.
+ */
 class CustomEntityFeedProvider(
     fileName: String,
     private val entityIdField: String,
     private val delayDuration: Duration
-) :
-    CustomDynamicEntityDataSource.EntityFeedProvider {
+) : CustomDynamicEntityDataSource.EntityFeedProvider {
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
@@ -74,7 +85,7 @@ class CustomEntityFeedProvider(
      * Called when the data source is loaded. Defines the Dynamic Entity Data Source info.
      */
     override suspend fun onLoad(): DynamicEntityDataSourceInfo {
-        return DynamicEntityDataSourceInfo(entityIdField, getSchema()).apply {
+        return DynamicEntityDataSourceInfo(entityIdField, schema).apply {
             spatialReference = SpatialReference.wgs84()
         }
     }
@@ -148,7 +159,7 @@ class CustomEntityFeedProvider(
     }
 
     /**
-     * Returns the schema for the custom data source.
+     * Defines the schema for the custom data source.
      */
    private val schema: List<Field> by lazy { 
         listOf(

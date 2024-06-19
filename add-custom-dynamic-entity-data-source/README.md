@@ -10,7 +10,7 @@ Developers can create a custom `DynamicEntityDataSource` to be able to visualize
 
 ## How to use the sample
 
-Run the sample to view the map and the dynamic entity layer displaying the latest observation from the custom data source. Tap on a dynamic entity to view its attributes in a callout.
+Run the sample to view the map and the dynamic entity layer displaying the latest observation from the custom data source. Tap on a dynamic entity to view its attributes in LogCat.
 
 ## How it works
 

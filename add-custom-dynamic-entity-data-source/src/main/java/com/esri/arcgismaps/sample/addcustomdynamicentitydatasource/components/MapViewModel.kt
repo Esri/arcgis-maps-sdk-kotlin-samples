@@ -37,6 +37,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -44,7 +45,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
-            R.string.app_name)
+            R.string.app_name
+        )
     }
 
     // Create a new custom feed provider that processes observations from a JSON file.
@@ -55,11 +57,30 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val feedProvider = CustomEntityFeedProvider(
         fileName = "$provisionPath/AIS_MarineCadastre_SelectedVessels_CustomDataSource.jsonl",
         entityIdField = "MMSI",
-        delayDuration = 10
+        delayDuration = 10.milliseconds
     )
 
+    fun feedProviderOnConnect() =
+        viewModelScope.launch {
+            feedProvider.onConnect()
+        }
+
+    fun feedProviderOnDisconnect() =
+        viewModelScope.launch {
+            feedProvider.onDisconnect()
+        }
+
+    private val dynamicEntityDataSource = CustomDynamicEntityDataSource(feedProvider).also {
+        // Observe the connection status of the custom data source.
+        viewModelScope.launch {
+            it.connectionStatus.collect { connectionStatus ->
+                Log.i(TAG, "Connection status: $connectionStatus")
+            }
+        }
+    }
+
     // Create the dynamic entity layer using the custom data source.
-    val dynamicEntityLayer = DynamicEntityLayer(CustomDynamicEntityDataSource(customSource)).apply {
+    private val dynamicEntityLayer = DynamicEntityLayer(dynamicEntityDataSource).apply {
         trackDisplayProperties.apply {
             // Set up the track display properties, these properties will be used to configure the appearance of the track line and previous observations.
             showPreviousObservations = true
@@ -82,7 +103,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             placement = LabelingPlacement.PointAboveCenter
         })
         labelsEnabled = true
-
     }
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans).apply {

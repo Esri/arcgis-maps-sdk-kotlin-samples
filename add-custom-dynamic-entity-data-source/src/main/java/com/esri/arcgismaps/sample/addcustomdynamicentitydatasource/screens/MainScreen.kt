@@ -29,10 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.launch
@@ -66,18 +68,18 @@ fun MainScreen(sampleName: String) {
                     onClick = {
                         mapViewModel.viewModelScope.launch {
                             if (isConnected) {
-                                mapViewModel.dynamicEntityLayer.dataSource.disconnect()
+                                mapViewModel.feedProviderOnDisconnect()
                             } else {
-                                mapViewModel.dynamicEntityLayer.dataSource.connect()
+                                mapViewModel.feedProviderOnConnect()
                             }
                         }
                         isConnected = !isConnected
                     }) {
                     Text(
                         text = if (!isConnected) {
-                            "Connect"
+                            stringResource(R.string.connect)
                         } else {
-                            "Disconnect"
+                            stringResource(R.string.disconnect)
                         }
                     )
                 }
