@@ -30,6 +30,10 @@ A layer to visualize 3D tiles data that conforms to the OGC 3D Tiles specificati
 
 The 3D Tiles Open Geospatial Consortium (OGC) specification defines a spatial data structure and a set of tile formats designed for streaming and rendering 3D geospatial content. A 3D Tiles data set, known as a tileset, defines one or more tile formats organized into a hierarchical spatial data structure. For more information, see the [OGC 3D Tiles specification](https://www.ogc.org/standard/3DTiles).
 
+## Additional information
+
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
+
 ## Tags
 
-3d tiles, layers, OGC, OGC API, scene, service
+3d tiles, geoviewcompose, layers, OGC, OGC API, scene, service
