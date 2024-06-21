@@ -16,10 +16,10 @@
 
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,7 +44,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String) {
-    // create a ViewModel to handle MapView interactions
+    // Create a ViewModel to handle MapView interactions.
     val mapViewModel: MapViewModel = viewModel()
 
     Scaffold(
@@ -59,11 +59,12 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     onSingleTapConfirmed = mapViewModel::identify
                 )
+                // Show the current connection status.
                 Text(
-                    text = "Connection status" + mapViewModel.connectionStatusString,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .background(color = androidx.compose.ui.graphics.Color.Blue)
+                    text = "Connection status: " + mapViewModel.connectionStatusString,
+                    modifier = Modifier.wrapContentSize()
+                        .align(Alignment.BottomStart)
+                        .padding(bottom = 24.dp)
                 )
                 // Create a button to allow the user to connect/disconnect the data source.
                 var isConnected by remember { mutableStateOf(true) }
@@ -87,7 +88,7 @@ fun MainScreen(sampleName: String) {
                         }
                     )
                 }
-                // display a MessageDialog with identify information
+                // Display a MessageDialog with identify information.
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
                         MessageDialog(

@@ -17,6 +17,9 @@
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,6 +33,7 @@ import com.arcgismaps.mapping.layers.DynamicEntityLayer
 import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.mapping.symbology.TextSymbol
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.realtime.ConnectionStatus
 import com.arcgismaps.realtime.CustomDynamicEntityDataSource
 import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
@@ -41,12 +45,17 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val TAG = javaClass.simpleName
-
-    // create a ViewModel to handle dialog interactions
+    // Create a ViewModel to handle dialog interactions.
     val messageDialogVM = MessageDialogViewModel()
 
-    var connectionStatusString = ""
+    // Keep track of connected status string state.
+    var connectionStatusString by mutableStateOf("")
+        private set
+
+    // Set connection status string in he UI.
+    private fun updateConnectionStatusString(connectionStatus: String) {
+        connectionStatusString = connectionStatus
+    }
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
@@ -55,10 +64,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Create a new custom feed provider that processes observations from a JSON file.
-    // This takes the path to the simulation file, field name that will be used as the entity id, and the delay between each observation that is processed.
+    // This takes the path to the simulation file, field name that will be used as the entity id,
+    // and the delay between each observation that is processed.
     // In this example we are using a json file as our custom data source.
     // This field value should be a unique identifier for each entity.
-    // Adjusting the value for the delay will change the speed at which the entities and their observations are displayed.
+    // Adjusting the value for the delay will change the speed at which the entities and their
+    // observations are displayed.
     private val feedProvider = CustomEntityFeedProvider(
         fileName = "$provisionPath/AIS_MarineCadastre_SelectedVessels_CustomDataSource.jsonl",
         entityIdField = "MMSI",
@@ -75,11 +86,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             feedProvider.onDisconnect()
         }
 
-    private val dynamicEntityDataSource = CustomDynamicEntityDataSource(feedProvider).also {
+    private val dynamicEntityDataSource = CustomDynamicEntityDataSource(feedProvider).apply {
         // Observe the connection status of the custom data source.
         viewModelScope.launch {
-            it.connectionStatus.collect { connectionStatus ->
-                connectionStatusString = connectionStatus.toString()
+            connectionStatus.collect { connectionStatus ->
+                updateConnectionStatusString(
+                    when (connectionStatus) {
+                        is ConnectionStatus.Connected -> "Connected"
+                        is ConnectionStatus.Disconnected -> "Disconnected"
+                        is ConnectionStatus.Connecting -> "Connecting"
+                        is ConnectionStatus.Failed -> "Failed"
+                    }
+                )
             }
         }
     }
