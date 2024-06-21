@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -35,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -57,6 +59,12 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     onSingleTapConfirmed = mapViewModel::identify
                 )
+                Text(
+                    text = "Connection status" + mapViewModel.connectionStatusString,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .background(color = androidx.compose.ui.graphics.Color.Blue)
+                )
                 // Create a button to allow the user to connect/disconnect the data source.
                 var isConnected by remember { mutableStateOf(true) }
                 Button(
@@ -78,6 +86,16 @@ fun MainScreen(sampleName: String) {
                             stringResource(R.string.disconnect)
                         }
                     )
+                }
+                // display a MessageDialog with identify information
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
                 }
             }
         }

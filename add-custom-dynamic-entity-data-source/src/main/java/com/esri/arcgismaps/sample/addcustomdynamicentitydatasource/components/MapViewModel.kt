@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,6 +34,7 @@ import com.arcgismaps.realtime.CustomDynamicEntityDataSource
 import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
@@ -42,6 +42,11 @@ import kotlin.time.Duration.Companion.milliseconds
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = javaClass.simpleName
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM = MessageDialogViewModel()
+
+    var connectionStatusString = ""
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
@@ -74,7 +79,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         // Observe the connection status of the custom data source.
         viewModelScope.launch {
             it.connectionStatus.collect { connectionStatus ->
-                Log.i(TAG, "Connection status: $connectionStatus")
+                connectionStatusString = connectionStatus.toString()
             }
         }
     }
@@ -141,12 +146,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                             }
                         }
                         val entityAttributes = stringBuilder.toString().trimEnd()
-
-                        Log.i(TAG, "Identified dynamic entity: $entityAttributes")
+                        messageDialogVM.showMessageDialog(
+                            title = "Identified dynamic entity",
+                            description = entityAttributes
+                        )
                     }
                 }
             }.onFailure { error ->
-                Log.e(TAG, "Error identifying dynamic entity: ${error.message}")
+                messageDialogVM.showMessageDialog(
+                    title = "Error in evaluating popup expression: ${error.message.toString()}",
+                    description = error.cause.toString()
+                )
             }
         }
     }
