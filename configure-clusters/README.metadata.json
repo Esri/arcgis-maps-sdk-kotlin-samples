@@ -1,0 +1,47 @@
+{
+    "category": "Analysis",
+    "description": "Add client side feature reduction on a point feature layer that is not pre-configured with clustering.",
+    "formal_name": "ConfigureClusters",
+    "ignore": false,
+    "images": [
+        "configure-clusters.png"
+    ],
+    "keywords": [
+        "aggregate",
+        "bin",
+        "cluster",
+        "geoviewcompose",
+        "group",
+        "merge",
+        "normalize",
+        "popup",
+        "reduce",
+        "renderer",
+        "summarize",
+        "toolkit",
+        "AggregateGeoElement",
+        "ClassBreaksRenderer",
+        "FeatureLayer",
+        "FeatureReduction",
+        "GeoElement",
+        "IdentifyLayerResult",
+        "PopupViewer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "AggregateGeoElement",
+        "ClassBreaksRenderer",
+        "FeatureLayer",
+        "FeatureReduction",
+        "GeoElement",
+        "IdentifyLayerResult",
+        "PopupViewer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/configureclusters/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configureclusters/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configureclusters/screens/MainScreen.kt"
+    ],
+    "title": "Configure clusters"
+}
