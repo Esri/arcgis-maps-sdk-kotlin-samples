@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                Add3dTilesLayerApp()
+                Add3DTilesLayerApp()
             }
         }
     }
 
     @Composable
-    private fun Add3dTilesLayerApp() {
+    private fun Add3DTilesLayerApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {

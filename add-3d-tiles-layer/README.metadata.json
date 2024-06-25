@@ -4,7 +4,7 @@
     "formal_name": "Add3DTilesLayer",
     "ignore": false,
     "images": [
-        "add-3d-tiles-layer.png"
+        "add-3D-tiles-layer.png"
     ],
     "keywords": [
         "3d tiles",
@@ -30,5 +30,5 @@
         "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/components/SceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/screens/MainScreen.kt"
     ],
-    "title": "Add 3d tiles layer"
+    "title": "Add 3D tiles layer"
 }
