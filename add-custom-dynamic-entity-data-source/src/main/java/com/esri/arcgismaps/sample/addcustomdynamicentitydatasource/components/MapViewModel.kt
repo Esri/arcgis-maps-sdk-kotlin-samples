@@ -76,14 +76,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         delayDuration = 10.milliseconds
     )
 
-    fun feedProviderOnConnect() =
+    fun dynamicEntityDataSourceConnect() =
         viewModelScope.launch {
-            feedProvider.onConnect()
+            dynamicEntityDataSource.connect()
         }
 
-    fun feedProviderOnDisconnect() =
+    fun dynamicEntityDataSourceDisconnect() =
         viewModelScope.launch {
-            feedProvider.onDisconnect()
+            dynamicEntityDataSource.disconnect()
         }
 
     private val dynamicEntityDataSource = CustomDynamicEntityDataSource(feedProvider).apply {

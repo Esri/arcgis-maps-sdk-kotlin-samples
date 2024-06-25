@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,9 +64,12 @@ fun MainScreen(sampleName: String) {
                 // Show the current connection status.
                 Text(
                     text = "Connection status: " + mapViewModel.connectionStatusString,
+                    color = Color.Black,
                     modifier = Modifier.wrapContentSize()
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 24.dp)
+                        .align(Alignment.TopStart)
+                        .padding(top = 64.dp)
+                        .background(Color.White)
+                        .padding(4.dp)
                 )
                 // Create a button to allow the user to connect/disconnect the data source.
                 var isConnected by remember { mutableStateOf(true) }
@@ -74,9 +79,9 @@ fun MainScreen(sampleName: String) {
                         .padding(bottom = 24.dp),
                     onClick = {
                         if (isConnected) {
-                            mapViewModel.feedProviderOnDisconnect()
+                            mapViewModel.dynamicEntityDataSourceDisconnect()
                         } else {
-                            mapViewModel.feedProviderOnConnect()
+                            mapViewModel.dynamicEntityDataSourceConnect()
                         }
                         isConnected = !isConnected
                     }) {
