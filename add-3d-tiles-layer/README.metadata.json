@@ -8,9 +8,9 @@
     ],
     "keywords": [
         "3d tiles",
-        "geoviewcompose",
         "OGC",
         "OGC API",
+        "geoviewcompose",
         "layers",
         "scene",
         "service",
@@ -26,9 +26,9 @@
         "SceneView"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/MainActivity.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/components/SceneViewModel.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/screens/MainScreen.kt"
     ],
     "title": "Add 3d tiles layer"
 }
