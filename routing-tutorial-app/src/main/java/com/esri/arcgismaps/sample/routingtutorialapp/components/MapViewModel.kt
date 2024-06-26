@@ -21,6 +21,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.Viewpoint
 
+
+
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
     private val viewpointAsia = Viewpoint(39.8, 98.6, 10e7)
