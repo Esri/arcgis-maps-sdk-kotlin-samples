@@ -76,16 +76,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         delayDuration = 10.milliseconds
     )
 
-    fun dynamicEntityDataSourceConnect() =
-        viewModelScope.launch {
-            dynamicEntityDataSource.connect()
-        }
-
-    fun dynamicEntityDataSourceDisconnect() =
-        viewModelScope.launch {
-            dynamicEntityDataSource.disconnect()
-        }
-
     private val dynamicEntityDataSource = CustomDynamicEntityDataSource(feedProvider).apply {
         // Observe the connection status of the custom data source.
         viewModelScope.launch {
@@ -138,6 +128,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // Create a mapViewProxy that will be used to identify features in the MapView.
     // This should also be passed to the composable MapView this mapViewProxy is associated with.
     val mapViewProxy = MapViewProxy()
+
+    fun dynamicEntityDataSourceConnect() =
+        viewModelScope.launch { dynamicEntityDataSource.connect() }
+
+    fun dynamicEntityDataSourceDisconnect() =
+        viewModelScope.launch { dynamicEntityDataSource.disconnect() }
 
     /**
      * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]

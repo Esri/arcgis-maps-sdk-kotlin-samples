@@ -16,12 +16,12 @@
 
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
@@ -48,35 +47,36 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun MainScreen(sampleName: String) {
     // Create a ViewModel to handle MapView interactions.
     val mapViewModel: MapViewModel = viewModel()
+    // Keep track of the state of a connect/disconnect button.
+    var isConnected by remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Box {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Show the current connection status.
+                Row {
+                    Text(text = "Connection status: ")
+                    Text(
+                        text = mapViewModel.connectionStatusString,
+                        color = if (mapViewModel.connectionStatusString.contains("Connected"))
+                            Color.Green else MaterialTheme.colorScheme.onBackground
+                    )
+                }
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it),
+                        .weight(1f),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     arcGISMap = mapViewModel.arcGISMap,
                     onSingleTapConfirmed = mapViewModel::identify
                 )
-                // Show the current connection status.
-                Text(
-                    text = "Connection status: " + mapViewModel.connectionStatusString,
-                    color = Color.Black,
-                    modifier = Modifier.wrapContentSize()
-                        .align(Alignment.TopStart)
-                        .padding(top = 64.dp)
-                        .background(Color.White)
-                        .padding(4.dp)
-                )
-                // Create a button to allow the user to connect/disconnect the data source.
-                var isConnected by remember { mutableStateOf(true) }
                 Button(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 24.dp),
                     onClick = {
                         if (isConnected) {
                             mapViewModel.dynamicEntityDataSourceDisconnect()
@@ -86,11 +86,7 @@ fun MainScreen(sampleName: String) {
                         isConnected = !isConnected
                     }) {
                     Text(
-                        text = if (!isConnected) {
-                            stringResource(R.string.connect)
-                        } else {
-                            stringResource(R.string.disconnect)
-                        }
+                        text = stringResource(if (!isConnected) R.string.connect else R.string.disconnect)
                     )
                 }
                 // Display a MessageDialog with identify information.
