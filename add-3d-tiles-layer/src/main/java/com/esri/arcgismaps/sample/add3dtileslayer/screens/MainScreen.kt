@@ -31,7 +31,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String) {
-    // create a ViewModel to handle MapView interactions
+    // create a ViewModel to handle SceneView interactions
     val sceneViewModel = viewModel<SceneViewModel>()
 
     Scaffold(
