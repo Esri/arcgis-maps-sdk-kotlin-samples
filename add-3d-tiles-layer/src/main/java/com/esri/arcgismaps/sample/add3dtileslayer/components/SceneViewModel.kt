@@ -51,7 +51,8 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
 
         // Set the initial viewpoint of the scene. The viewpoint is set to a location in Stuttgart.
         initialViewpoint = Viewpoint(
-            48.8466, 9.1627, 1000.0, Camera(
+            latitude = 48.8466, longitude = 9.1627, scale = 1000.0,
+            camera = Camera(
                 latitude = 48.84553,
                 longitude = 9.16275,
                 altitude = 450.0,
