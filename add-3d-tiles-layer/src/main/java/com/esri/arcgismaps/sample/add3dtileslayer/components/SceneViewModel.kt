@@ -31,8 +31,7 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
     // Create a SceneViewProxy which is passed to the composable SceneView
     val sceneViewProxy = SceneViewProxy()
 
-    // Create a scene with a dark gray basemap. The scene is added to the composable SceneView in
-    // MainScreen.kt.
+    // Create a scene with a dark gray basemap that gets passed to the composable SceneView.
     val scene = ArcGISScene(BasemapStyle.ArcGISDarkGray).apply {
 
         // Add an elevation source to the scene's base surface.
