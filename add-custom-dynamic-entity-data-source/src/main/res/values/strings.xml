@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Add custom dynamic entity data source</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+</resources>
