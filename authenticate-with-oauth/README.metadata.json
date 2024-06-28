@@ -1,2 +1,40 @@
 {
+    "category": "Cloud and Portal",
+    "description": "Authenticate with ArcGIS Online (or your own portal) using OAuth2 to access secured resources (such as private web maps or layers). Accessing secured items requires logging in to the portal that hosts them (an ArcGIS Online account, for example).",
+    "formal_name": "AuthenticateWithOauth",
+    "ignore": false,
+    "images": [
+        "authenticate-with-oauth.png"
+    ],
+    "keywords": [
+        "OAuth",
+        "authentication",
+        "cloud",
+        "credential",
+        "portal",
+        "security",
+        "toolkit",
+        "ArcGISAuthenticationChallengeHandler",
+        "ArcGISAuthenticationChallengeResponse",
+        "AuthenticationManager",
+        "AuthenticatorState",
+        "DialogAuthenticator",
+        "PortalItem"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISAuthenticationChallengeHandler",
+        "ArcGISAuthenticationChallengeResponse",
+        "AuthenticationManager",
+        "AuthenticatorState",
+        "DialogAuthenticator",
+        "PortalItem"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/screens/MainScreen.kt"
+    ],
+    "title": "Authenticate with OAuth"
 }
