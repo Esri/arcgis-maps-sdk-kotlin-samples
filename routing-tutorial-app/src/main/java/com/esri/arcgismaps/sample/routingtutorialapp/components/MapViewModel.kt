@@ -16,18 +16,22 @@
 
 package com.esri.arcgismaps.sample.routingtutorialapp.components
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.Color
+import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -36,154 +40,238 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.LocationDisplay
 import com.arcgismaps.tasks.geocode.GeocodeParameters
 import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.arcgismaps.tasks.networkanalysis.DirectionManeuver
 import com.arcgismaps.tasks.networkanalysis.RouteParameters
-import com.arcgismaps.tasks.networkanalysis.RouteResult
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.routingtutorialapp.R
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
+class MapViewModel(application: Application, locationDisplay: LocationDisplay) : AndroidViewModel(application) {
 
     val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
         initialViewpoint = Viewpoint(
-            latitude = 34.0539,
-            longitude = -118.2453,
-            scale = 144447.638572
+            latitude =  34.0539,
+            longitude =  -118.2453,
+            scale = 200000.0
         )
     }
-    val directionList by lazy {mutableListOf("Search two addresses to find a route between them.")}
-    val routeStops by lazy {mutableListOf<Stop>()}
-    var currentJob by mutableStateOf<Job?>(null)
-    val graphicsOverlay = GraphicsOverlay()
-    val graphicsOverlays = listOf(graphicsOverlay)
+    val directionsList by lazy { mutableStateListOf("") }
+    val stopsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+    val routeOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
     val mapViewProxy =  MapViewProxy()
-    var startAddress by mutableStateOf("highland, california")
-    var destinationAddress by mutableStateOf("redlands")
+    var startAddress by mutableStateOf("Your location")
+    var destinationAddress by mutableStateOf("irvine, california")
     var travelTime by mutableStateOf("")
     var travelDistance by mutableStateOf("")
-    val currentSpatialReference by mutableStateOf<SpatialReference?>(null)
     var mapLoading by mutableStateOf(false)
     var showBottomSheet by  mutableStateOf(false)
+    var isQuickestChecked by mutableStateOf(false)
+    var isShortestChecked by mutableStateOf(false)
+    private val routeStops by lazy {mutableListOf<Stop>()}
+    private var currentJob by mutableStateOf<Job?>(null)
+    private var routeParameters: RouteParameters? = null
+    private val routeTask = RouteTask(
+        url = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
+    )
 
-
+    // Performing the following during the app's loading process.
     init {
         viewModelScope.launch {
             map.load().onSuccess {
+
+                // Map has loaded
                 mapLoading = true
+
+                // Pan to user's current location
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+
+                // Set route parameters
+                routeParameters = routeTask.createDefaultParameters().getOrThrow()
             }.onFailure {
                 showMessage(application, "map failed to load")
             }
         }
     }
 
-
-    fun clearStops(
-        routeStops: MutableList<Stop>,
-        directionList: MutableList<String>,
-        graphicsOverlay: GraphicsOverlay
+    // This function is used when the "search" floating action button is pressed.
+    fun onSearchAndFindRoute(
+        context: Context,
+        snackbarHostState: SnackbarHostState,
+        locationDisplay: LocationDisplay
     ) {
-        graphicsOverlay.graphics.clear()
+            // Ensure there's no ongoing job before starting a new one
+            currentJob?.cancel()
+            // Launch a new coroutine for the route finding process
+            currentJob = viewModelScope.launch {
+
+                // Clear previous stops and directions
+                if (routeStops.isNotEmpty()) {
+                    clearStops()
+                }
+
+                // Skipping searching for a location if it is current user's location.
+                if (startAddress != "Your location") {
+
+                    // Search for starting address
+                    searchAddress(
+                        context,
+                        startAddress,
+                        true,
+                        snackbarHostState
+                    )
+                } else {
+                        // Add current user's location as a stop
+                        val currentLocation = locationDisplay.mapLocation
+                        if (currentLocation != null) {
+                            val currentLocationStop = Stop(currentLocation)
+                            routeStops.add(currentLocationStop)
+
+                        } else {
+                            showMessage(context, "Failed to obtain current location")
+                        }
+                }
+
+                // Search for destination address
+                searchAddress(
+                    context,
+                    destinationAddress,
+                    false,
+                    snackbarHostState
+                )
+
+                // Find route between starting address and destination locations
+                findRoute(
+                    context,
+                    snackbarHostState,
+                )
+
+                // Enabling the Quickest/Shortest route options
+                isShortestChecked = true
+                isQuickestChecked = true
+            }
+        }
+
+    // This function is used when the "Refresh" Floating action button is pressed.
+    fun clearStops() {
+        // Remove all stop points
+        stopsOverlay.graphics.clear()
+
+        // Remove current route
+        routeOverlay.graphics.clear()
+
+        // Clear the list of stops
         routeStops.clear()
-        directionList.clear()
-        directionList.add("Search two addresses to find a route between them.")
+
+        // Clear list of directions
+        directionsList.clear()
     }
 
-    fun onFindRoute(
+    // This function is used for when the user uses the app for first time, the app request user's permission to use their location
+    fun checkPermissions(context: Context): Boolean {
+        // Check permissions to see if both permissions are granted.
+        // Coarse location permission.
+        val permissionCheckCoarseLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        // Fine location permission.
+        val permissionCheckFineLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        return permissionCheckCoarseLocation && permissionCheckFineLocation
+    }
+
+    // A helper function used when "Quickest" button is clicked.
+    fun findQuickestRoute(
         context: Context,
         snackbarHostState: SnackbarHostState
-    ) {
-        // Ensure there's no ongoing job before starting a new one
-        currentJob?.cancel()
-        // Launch a new coroutine for the route finding process
-        currentJob = viewModelScope.launch {
+    ){
 
-            // Clear previous stops and directions
-            if (routeStops.isNotEmpty()) {
-                clearStops(
-                    routeStops,
-                    directionList,
-                    graphicsOverlay
-                )
-            }
-            searchAddress(
-                context,
-                viewModelScope,
-                startAddress,
-                currentSpatialReference,
-                graphicsOverlay,
-                mapViewProxy,
-                true,
-                routeStops,
-                snackbarHostState
-            )
-            searchAddress(
-                context,
-                viewModelScope,
-                destinationAddress,
-                currentSpatialReference,
-                graphicsOverlay,
-                mapViewProxy,
-                false,
-                routeStops,
-                snackbarHostState
-            )
+        // Set the route parameters to finding quickest route.
+        routeParameters?.travelMode = routeTask.getRouteTaskInfo().travelModes[0]
 
+        // Clear any previous route
+        routeOverlay.graphics.clear()
+
+        // Find the route
+        viewModelScope.launch {
             findRoute(
                 context,
-                routeStops,
-                graphicsOverlay,
-                directionList,
                 snackbarHostState
             )
         }
+
+        // Disable button, will only be enabled if the Refresh button is clicked or restart the app
+        isQuickestChecked = false
     }
 
+    // A helper function used when "Shortest" button is clicked.
+    fun findShortestRoute(
+        context: Context,
+        snackbarHostState: SnackbarHostState
+    ){
+
+        // Set the route parameters to finding shortest route.
+        routeParameters?.travelMode = routeTask.getRouteTaskInfo().travelModes[1]
+
+        // Clear any previous route
+        routeOverlay.graphics.clear()
+
+        // Find the route
+        viewModelScope.launch {
+            findRoute(
+                context,
+                snackbarHostState
+            )
+        }
+        // Disable button, will only be enabled if the Refresh button is clicked or restart the app
+        isShortestChecked = false
+    }
+
+    // A helper function used to pinpoint the given query and pin it on the map.
     private suspend fun searchAddress(
         context: Context,
-        viewModelScope: CoroutineScope,
         query: String,
-        currentSpatialReference: SpatialReference?,
-        graphicsOverlay: GraphicsOverlay,
-        mapViewProxy: MapViewProxy,
         isStartAddress: Boolean,
-        routeStops: MutableList<Stop>,
-        snackbarHostState: SnackbarHostState
+        snackbarHostState: SnackbarHostState,
     ) {
         snackbarHostState.showSnackbar("locating $query...")
-        val geocodeServerUri = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+
+        val geocodeServerUri =
+            "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
         val locatorTask = LocatorTask(geocodeServerUri)
 
         // Create geocode parameters
         val geocodeParameters = GeocodeParameters().apply {
             resultAttributeNames.add("*")
             maxResults = 1
-            outputSpatialReference = currentSpatialReference
         }
 
         // Search for the address
         locatorTask.geocode(searchText = query, parameters = geocodeParameters)
             .onSuccess { geocodeResults: List<GeocodeResult> ->
                 if (geocodeResults.isNotEmpty()) {
+
+                    // Find the location and add it as a stop
                     val geocodeResult = geocodeResults[0]
-                    addStop(isStartAddress, geocodeResult, routeStops, graphicsOverlay, context)
+                    addStop(isStartAddress, geocodeResult, context)
 
                     viewModelScope.launch {
                         val centerPoint = geocodeResult.displayLocation
-                            ?: return@launch showMessage(context, "The locatorTask.geocode() call failed")
-
-//                        // todo: work with this later
-//                        println(centerPoint.spatialReference)
-//                        println(SpatialReference.wgs84().wkid) // helpful for adding a point on the map
-
+                            ?: return@launch showMessage(
+                                context,
+                                "The locatorTask.geocode() call failed"
+                            )
 
                         // Animate the map view to the center point.
                         mapViewProxy.setViewpointCenter(centerPoint)
@@ -199,16 +287,112 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
     }
 
-    private fun createMarkerGraphic(geocodeResult: GeocodeResult, context: Context, isStartAddress: Boolean): Graphic {
+    // A helper function to find a route between starting and destination address
+     private suspend fun findRoute(
+        context: Context,
+        snackbarHostState: SnackbarHostState,
+    ) {
+        snackbarHostState.showSnackbar("Routing...")
 
-        val drawable = if(isStartAddress){
+        // Set router parameters
+        routeParameters?.setStops(routeStops)
+        routeParameters?.returnDirections = true
+
+        val routeResult = routeParameters?.let { routeTask.solveRoute(it) }
+        if (routeResult != null) {
+            routeResult.onFailure {
+                showMessage(context, "No route solution. ${it.message}")
+                routeOverlay.graphics.clear()
+            }.onSuccess {
+                // Get the first solved route result
+                val route = it.routes[0]
+
+                // Create graphic for route
+                val routeGraphic = Graphic(
+                    geometry = route.routeGeometry,
+                    symbol = SimpleLineSymbol(
+                        style = SimpleLineSymbolStyle.Solid,
+                        color = Color.cyan,
+                        width = 2f
+                    )
+                )
+
+                // Add the route layout to the map
+                routeOverlay.graphics.add(routeGraphic)
+
+                // Clear any previous directions and add new directions
+                directionsList.clear()
+                route.directionManeuvers.forEach { directionManeuver: DirectionManeuver ->
+                    directionsList.add(directionManeuver.directionText)
+                }
+
+                // Only show bottom sheet if there are directions
+                if (directionsList.isNotEmpty()) {
+                    showBottomSheet = true
+                }
+
+                // Get time and distance for the route
+                travelTime = route.travelTime.roundToInt().toString()
+                travelDistance = "%.2f".format(
+                    route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
+                )
+
+                // Animate to show the stops and the route
+                viewModelScope.launch {
+                    val routeExtent = route.routeGeometry?.extent
+
+                    // Create a Viewpoint from the route's extent.
+                    val viewpoint = routeExtent?.let { Viewpoint(it) }
+
+                    // Animate the map view to the new viewpoint
+                    if (viewpoint != null) {
+                        mapViewProxy.setViewpointAnimated(viewpoint)
+                            .onFailure { error ->
+                                println("Failed to set Viewpoint: ${error.message}")
+                            }
+                    }
+                }
+            }
+        }
+    }
+
+
+    // A helper function to add both the stop to routeStops and adds the graphic marker for that stop
+    private fun addStop(
+        isStartAddress: Boolean,
+        geocodeResult: GeocodeResult,
+        context: Context
+    ) {
+
+        // Create the graphic for the stop
+        val markerGraphic = createMarkerGraphic(isStartAddress, geocodeResult, context)
+
+        // Add the geocoded point as a stop
+        val stop = geocodeResult.displayLocation?.let { Stop(it) }
+        if (stop != null) {
+            routeStops.add(stop)
+        }
+
+        // Add the stop to the map
+        stopsOverlay.graphics.add(markerGraphic)
+
+    }
+
+    // A helper function to create a graphic dependent on the address type.
+    private fun createMarkerGraphic(
+        isStartAddress: Boolean,
+        geocodeResult: GeocodeResult,
+        context: Context,
+    ): Graphic {
+
+        // Create the graphic depending on the address type
+        val drawable = if(isStartAddress && startAddress != "Your location"){
             ContextCompat.getDrawable(context, R.drawable.ic_start) as BitmapDrawable
         } else {
             ContextCompat.getDrawable(context, R.drawable.ic_destination) as BitmapDrawable
         }
 
         val pinSourceSymbol = PictureMarkerSymbol.createWithImage(drawable).apply {
-            // make the graphic smaller
             width = 30f
             height = 30f
             offsetY = 20f
@@ -222,98 +406,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    private fun addStop(
-        isStartAddress: Boolean,
-        geocodeResult: GeocodeResult,
-        routeStops: MutableList<Stop>,
-        graphicsOverlay: GraphicsOverlay,
-        context: Context
-    ) {
-
-        val markerGraphic = if (isStartAddress) {
-            println("it is a streetaddress")
-            createMarkerGraphic(geocodeResult, context, true) // For start address
-        } else {
-            createMarkerGraphic(geocodeResult, context, false) // For destination address
-        }
-
-        // Add the geocoded point as a stop
-        val stop = geocodeResult.displayLocation?.let { Stop(it) }
-        if (stop != null) {
-            routeStops.add(stop)
-        }
-
-        // Clear previous results and add graphics only if it's a destination address for simplicity
-        if (!isStartAddress) {
-            graphicsOverlay.graphics.add(markerGraphic)
-
-        } else {
-            // For start address, just add the marker without clearing previous graphics
-            graphicsOverlay.graphics.add(markerGraphic)
-        }
-    }
-
-    private suspend fun findRoute(
+    fun showMessage(
         context: Context,
-        routeStops: MutableList<Stop>,
-        graphicsOverlay: GraphicsOverlay,
-        directionsList: MutableList<String>,
-        snackbarHostState: SnackbarHostState,
+        message: String
     ) {
-
-        val routeTask = RouteTask(
-            url = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
-        )
-
-        // Create a job to find the route.
-        try {
-            snackbarHostState.showSnackbar("Routing...")
-            val routeParameters: RouteParameters = routeTask.createDefaultParameters().getOrThrow()
-            routeParameters.setStops(routeStops)
-            routeParameters.returnDirections = true
-
-            // Solve a route using the route parameters created.
-            val routeResult: RouteResult = routeTask.solveRoute(routeParameters).getOrThrow()
-            val routes = routeResult.routes
-
-            // If a route is found.
-            if (routes.isNotEmpty()) {
-                val route = routes[0]
-                val routeGraphic = Graphic(
-                    geometry = route.routeGeometry,
-                    symbol = SimpleLineSymbol(
-                        style = SimpleLineSymbolStyle.Solid,
-                        color = com.arcgismaps.Color.cyan,
-                        width = 2f
-                    )
-                )
-
-
-                // Add the route graphic to the graphics overlay.
-                graphicsOverlay.graphics.add(routeGraphic)
-                // Get the direction text for each maneuver and display it as a list on the UI.
-                directionsList.clear()
-                route.directionManeuvers.forEach { directionManeuver: DirectionManeuver ->
-                    directionsList.add(directionManeuver.directionText)
-                }
-
-                // set distance-time text
-                travelTime = route.travelTime.roundToInt().toString()
-                travelDistance = "%.2f".format(
-                    route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
-                )
-                if (directionList.size > 1) {
-                    showBottomSheet = true
-                }
-            }
-
-        } catch (e: Exception) {
-            showMessage(context, "Failed to find route: ${e.message}")
-        }
-
-    }
-
-    private fun showMessage(context: Context, message: String) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
