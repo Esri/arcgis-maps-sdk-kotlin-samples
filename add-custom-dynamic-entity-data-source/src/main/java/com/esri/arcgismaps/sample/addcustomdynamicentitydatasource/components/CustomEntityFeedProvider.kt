@@ -15,7 +15,6 @@
  */
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components
 
-
 import com.arcgismaps.data.Field
 import com.arcgismaps.data.FieldType
 import com.arcgismaps.geometry.Point
