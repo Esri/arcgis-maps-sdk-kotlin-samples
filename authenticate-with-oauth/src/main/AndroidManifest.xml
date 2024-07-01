@@ -12,7 +12,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OAuthUserSignInActivity"
+            android:name="com.arcgismaps.toolkit.authentication.OAuthUserSignInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:launchMode="singleTop"> <!--keeps only one instance to the top of the stack-->
