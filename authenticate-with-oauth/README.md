@@ -18,13 +18,16 @@ When you run the sample, the app will load a web map which contains premium cont
 2. Load a `PortalItem(...)` with connection type `Portal.Connection.Authenticated` which will issue an authentication challenge.
 3. Create a `DialogAuthenticator` composable passing it the `AuthenticatorState` object. Because the `AuthenticatorState` object has an `OAuthConfiguration` set, the `DialogAuthenticator` will prompt for OAuth credentials.
 4. Set up the manifest.xml to handle the OAuth redirect URI.
-   - Define a second activity in the `manifest.xml` with the a name `OAuthUserSignInActivity` from the toolkit
+   * Define a second activity in the `manifest.xml` with the a name `OAuthUserSignInActivity` from the toolkit
+
    ```xml
-   <activity 
+   <activity
         android:name="com.arcgismaps.toolkit.authentication.OAuthUserSignInActivity"
         android:launchMode="singleTop"> <!--keeps only one instance to the top of the stack-->
    ```
-   - Set the `<intent-filter>` categories tags to be able to launch a custom browser tab.
+   
+   * Set the `<intent-filter>` categories tags to be able to launch a custom browser tab.
+
    ```xml
    <intent-filter>
         <action android:name="android.intent.action.VIEW" />
@@ -32,7 +35,9 @@ When you run the sample, the app will load a web map which contains premium cont
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
    ```
-   - Set the `data` tag to be able to use the redirect URI to navigate back to the app after prompting for OAuth credentials.
+
+   * Set the `data` tag to be able to use the redirect URI to navigate back to the app after prompting for OAuth credentials. 
+
    ```xml
    <data
         android:host="auth"
