@@ -12,7 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components
+ */
+package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components
 
 
 import com.arcgismaps.data.Field
