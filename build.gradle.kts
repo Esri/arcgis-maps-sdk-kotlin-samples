@@ -52,7 +52,7 @@ tasks.register("apiKey") {
     doLast {
         val apiKeyFile = File("${System.getProperty("user.home")}/.gradle/gradle.properties")
         if (!apiKeyFile.exists()) {
-            print("Go to ${URL("https://developers.arcgis.com/dashboard/")} to get an API key.")
+            print("Go to the ${URL("https://links.esri.com/create-an-api-key")} to obtain a new API key access token. Ensure the following privileges are enabled: Basemaps, Geocoding, and Routing.")
             print("Add your API Key to ${System.getProperty("user.home")}\\.gradle\\gradle.properties.")
             val apiKeyFileContents = "API_KEY = "
             apiKeyFile.writeText(apiKeyFileContents)
