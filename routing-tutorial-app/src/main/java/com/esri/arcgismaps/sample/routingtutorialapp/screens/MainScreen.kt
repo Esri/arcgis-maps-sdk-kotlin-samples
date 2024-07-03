@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.routingtutorialapp.screens
 
 import android.Manifest
 import android.app.Application
-import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,22 +35,21 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -60,6 +57,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -68,13 +66,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.location.LocationDisplayAutoPanMode
+import com.arcgismaps.mapping.view.LocationDisplay
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.routingtutorialapp.components.MapViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
-import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -87,249 +84,355 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
 
     // Create and remember a location display with a recenter auto pan mode.
+    val coroutineScope = rememberCoroutineScope()
     val locationDisplay = rememberLocationDisplay()
     val context = LocalContext.current
     val application = context.applicationContext as Application
     val mapViewModel = remember { MapViewModel(application, locationDisplay) }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val scaffoldState = rememberBottomSheetScaffoldState()
-    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { mapViewModel.snackbarHostState }
+    val bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false)
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        snackbarHostState = snackbarHostState, bottomSheetState = bottomSheetState
+    )
 
-
-    // Get user current location after getting permissions
-    if (mapViewModel.checkPermissions(context)) {
+    // Everytime user enters app, check if they already granted permission otherwise request it.
+    if (mapViewModel.checkPermissions()) {
         // Permissions are already granted.
-        LaunchedEffect(Unit) {
-            locationDisplay.dataSource.start()
-        }
+        // Do nothing until the location button is clicked.
     } else {
-        RequestPermissions(
-            context = context,
-            onPermissionsGranted = {
-                coroutineScope.launch {
-                    locationDisplay.dataSource.start()
-                }
-            },
-            mapViewModel
-        )
-
+        val message = "Location permissions were denied"
+        RequestPermissions(onPermissionsGranted = {
+            // Do nothing because we want the user to only grant permission and get location
+            // only on Get Location Button Click click.
+        }, message, { mapViewModel.showMessage(message) })
     }
+
 
     BottomSheetScaffold(
 
-            sheetContent = {
+        sheetContent = {
+            // This row holds the time and distance of a route on the bottom sheet
+            BottomSheetContent(
+                travelTime = mapViewModel.travelTime,
+                travelDistance = mapViewModel.travelDistance,
+                directionsList = mapViewModel.directionsList
+            )
+        },
+        // Show only time, distance, and Directions label during peek height
+        sheetPeekHeight = if (mapViewModel.showBottomSheet) ((LocalConfiguration.current.screenHeightDp) / 8).dp else 0.dp,
+        scaffoldState = bottomSheetScaffoldState.apply {},
+    ) {
 
-                    // This row holds the time and distance of a route on the bottom sheet
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(0.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "${mapViewModel.travelTime} min",
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Normal,
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            text = "(${mapViewModel.travelDistance} mi)",
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Normal,
-                        )
-                    }
-
-                    // The rest of the sheetContent is a Directions label and list of directions
-                    Text(
-                        text = "Directions",
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp)
-                    )
-                    RoutesList(directionList = mapViewModel.directionsList)
-
-            },
-            // Show only time, distance, and Directions label.
-            sheetPeekHeight = if (mapViewModel.showBottomSheet) 75.dp else 0.dp,
-            scaffoldState = scaffoldState
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
         ) {
 
-            Scaffold(topBar = { SampleTopAppBar(title = sampleName) },
-                snackbarHost = { SnackbarHost(hostState = snackbarHostState) })
-            {
+            // This composable holds the top portion of the app, where addresses are entered
+            // alongside having options for getting shortest or quickest route
+            RouteOptions(
+                startAddress = mapViewModel.startAddress,
+                onStartedAddressEntered = { newStartAddress ->
+                    mapViewModel.startAddress = newStartAddress
+                },
+                onDestinationAddressEntered = { newDestinationAddress ->
+                    mapViewModel.destinationAddress = newDestinationAddress
+                },
+                destinationAddress = mapViewModel.destinationAddress,
+                onQuickestRoute = {
+                    mapViewModel.findQuickestRoute()
+                },
+                isQuickestChecked = mapViewModel.isQuickestButtonEnabled,
+                onShortestRoute = {
+                    mapViewModel.findShortestRoute()
+                },
+                isShortestChecked = mapViewModel.isShortestButtonEnabled,
+                onSearchStartingAddress = {
+                    mapViewModel.onSearchStartingAddress()
+                },
+                onSearchDestinationAddress = {
+                    mapViewModel.onSearchDestinationAddress()
+                },
+                isStartAddressTextFieldEnabled = mapViewModel.isStartAddressTextFieldEnabled,
+                isDestinationAddressTextFieldEnabled = mapViewModel.isDestinationAddressTextFieldEnabled
+            )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
+            // This box holds the map and all Floating Action Buttons
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
 
-                    // Start address TextField
-                    TextField(
-                        value = mapViewModel.startAddress,
-                        onValueChange = { mapViewModel.startAddress = it },
-                        label = { Text(text = ("start")) },
-                        placeholder = { Text("Search for a starting address") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.LocationOn,
-                                contentDescription = "LocationPin"
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                keyboardController?.hide()
-                            }
-                        ),
+                if (!mapViewModel.mapLoading) {
+                    LoadingDialog(loadingMessage = "Loading Map...")
+
+                } else {
+                    MapView(
                         modifier = Modifier
-                            .padding(horizontal = 4.dp, vertical = 2.dp)
-                            .fillMaxWidth()
+                            .fillMaxSize()
+                            .padding(
+                                bottom = 20.dp, end = 8.dp, start = 8.dp
+                            ),
+                        arcGISMap = mapViewModel.map,
+                        graphicsOverlays = (listOf(
+                            mapViewModel.routeOverlay, mapViewModel.stopsOverlay
+                        )),
+                        mapViewProxy = mapViewModel.mapViewProxy,
+                        locationDisplay = locationDisplay
                     )
 
-                    // Destination address TextField
-                    TextField(
-                        value = mapViewModel.destinationAddress,
-                        onValueChange = { mapViewModel.destinationAddress = it },
-                        label = { Text(text = ("destination")) },
-                        placeholder = { Text("Search for a destination address") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.LocationOn,
-                                contentDescription = "LocationPin"
-                            )
-                        },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                keyboardController?.hide()
-                            }
-                        ),
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .fillMaxWidth()
-                    )
+                    // This row holds all the Floating Action Buttons
+                    Row(
+                        modifier = Modifier.Companion
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
 
-                    // This row holds the Quickest and Shortest route option buttons
-                    Row(modifier = Modifier
-                        .padding(4.dp)
-                        .align(Alignment.CenterHorizontally)){
-                        Button(onClick = {
-                            mapViewModel.findQuickestRoute(context, snackbarHostState)
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Finding quickest route...")
-                            }
-                        }, modifier = Modifier.padding(horizontal = 4.dp), enabled = mapViewModel.isQuickestChecked){
-                            Text("Quickest")
-                        }
-                        Button(onClick = {
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Finding shortest route...")
-                            }
-                            mapViewModel.findShortestRoute(context, snackbarHostState)
-                        }, modifier = Modifier.padding(horizontal = 4.dp), enabled = mapViewModel.isShortestChecked) {
-                            Text("Shortest")
-                        }
-                    }
-
-                    // This box holds the map and the Refresh and Search Floating Action Buttons (FABs)
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.88f)) {
-
-                        if (!mapViewModel.mapLoading) {
-                            LoadingDialog(loadingMessage = "Loading Map...")
-
-                        } else {
-                                MapView(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(
-                                            bottom = 20.dp,
-                                            end = 8.dp,
-                                            start = 8.dp
-                                        ),
-                                    arcGISMap = mapViewModel.map,
-                                    graphicsOverlays = (listOf(mapViewModel.routeOverlay, mapViewModel.stopsOverlay)),
-                                    mapViewProxy = mapViewModel.mapViewProxy,
-                                    locationDisplay = locationDisplay
-                                )
-
-                            // This row holds the Refresh and Search FABS
-                            Row(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                FloatingActionButton(
-
-                                    onClick = {
-                                        if (mapViewModel.showBottomSheet) {
-                                            mapViewModel.showBottomSheet = false
-                                        }
-                                        mapViewModel.startAddress = "Your location"
-                                        locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
-                                        mapViewModel.destinationAddress = ""
-                                        mapViewModel.clearStops()
-                                        mapViewModel.isQuickestChecked = false
-                                        mapViewModel.isShortestChecked = false
-                                    },
-                                ) {
-                                    Icon(
-                                        Icons.Outlined.Refresh,
-                                        contentDescription = "Clear Results"
-                                    )
-                                }
-
-                                FloatingActionButton(
-                                    onClick = {
-                                        focusManager.clearFocus()
-                                        if (mapViewModel.showBottomSheet) {
-                                            mapViewModel.showBottomSheet = false
-                                        }
-
-                                        mapViewModel.onSearchAndFindRoute(
-                                            context,
-                                            snackbarHostState,
-                                            locationDisplay
-                                        )
-                                    },
-                                    content = {
-                                        Icon(
-                                            Icons.Outlined.Search,
-                                            contentDescription = "Find Route"
-                                        )
-                                    },
-                                ) }
-                        }
-                    }
-
-                    // This box holds the bottom directions
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f)){
-                        Text(modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), textAlign = TextAlign.Center, text = "Search two addresses to find a route between them.")
+                        ShowFloatingActionButtons(locationDisplay = locationDisplay,
+                            snackbarHostState = snackbarHostState,
+                            coroutineScope = coroutineScope,
+                            onRefreshButtonClicked = {
+                                mapViewModel.onRefreshButtonClicked(locationDisplay)
+                            },
+                            onSearchRouteButtonClicked = {
+                                mapViewModel.onSearchRouteButtonClicked(locationDisplay)
+                            },
+                            onGetCurrentLocationButtonClicked = {
+                                mapViewModel.onGetCurrentLocationButtonClicked(locationDisplay)
+                            })
                     }
                 }
             }
 
+            // Do not show the bottom instructions if user sees the bottomsheet
+            if (!mapViewModel.showBottomSheet) {
+                // This text holds the bottom directions
+                Text(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
+                    textAlign = TextAlign.Center,
+                    text = "Search two addresses to find a route between them."
+                )
+            }
+        }
     }
 }
 
+
+@Composable
+private fun ShowFloatingActionButtons(
+    locationDisplay: LocationDisplay,
+    onRefreshButtonClicked: (LocationDisplay) -> Unit,
+    onSearchRouteButtonClicked: (LocationDisplay) -> Unit,
+    onGetCurrentLocationButtonClicked: (LocationDisplay) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope
+
+) {
+    val focusManager = LocalFocusManager.current
+
+    // Get Location FAB
+    FloatingActionButton(
+        onClick = {
+            focusManager.clearFocus()
+            onGetCurrentLocationButtonClicked(locationDisplay)
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("Getting your location...")
+            }
+        },
+    ) {
+        Icon(
+            Icons.Outlined.LocationOn, contentDescription = "Get Current Location"
+        )
+    }
+
+    // Refresh and Start Over FAB
+    FloatingActionButton(
+        onClick = {
+            focusManager.clearFocus()
+            onRefreshButtonClicked(locationDisplay)
+        },
+    ) {
+        Icon(
+            Icons.Outlined.Refresh, contentDescription = "Clear Results"
+        )
+    }
+
+    // Search for a Route FAB
+    FloatingActionButton(
+        onClick = {
+            focusManager.clearFocus()
+            onSearchRouteButtonClicked(locationDisplay)
+        },
+        content = {
+            Icon(
+                Icons.Outlined.Search, contentDescription = "Find Route"
+            )
+        },
+    )
+}
+
+
+@Composable
+private fun RouteOptions(
+    startAddress: String,
+    onStartedAddressEntered: (String) -> Unit,
+    destinationAddress: String,
+    onDestinationAddressEntered: (String) -> Unit,
+    onQuickestRoute: () -> Unit,
+    isQuickestChecked: Boolean,
+    onShortestRoute: () -> Unit,
+    isShortestChecked: Boolean,
+    onSearchStartingAddress: () -> Unit,
+    onSearchDestinationAddress: () -> Unit,
+    isStartAddressTextFieldEnabled: Boolean,
+    isDestinationAddressTextFieldEnabled: Boolean,
+) {
+    // used to clear keyboard after entering addresses
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Column {
+
+        // Start address TextField
+        TextField(
+            value = startAddress,
+            onValueChange = { onStartedAddressEntered(it) },
+            label = { Text(text = ("start")) },
+            placeholder = { Text("Search for a starting address") },
+            leadingIcon = {
+                Icon(
+                    Icons.Filled.LocationOn, contentDescription = "LocationPin"
+                )
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(onSearch = {
+                keyboardController?.hide()
+                onSearchStartingAddress()
+            }),
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+                .fillMaxWidth(),
+            enabled = isStartAddressTextFieldEnabled,
+        )
+
+        // Destination address TextField
+        TextField(value = destinationAddress,
+            onValueChange = { onDestinationAddressEntered(it) },
+            label = { Text(text = ("destination")) },
+            placeholder = { Text("Search for a destination address") },
+            leadingIcon = {
+                Icon(
+                    Icons.Filled.LocationOn, contentDescription = "LocationPin"
+                )
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(onSearch = {
+                keyboardController?.hide()
+                onSearchDestinationAddress()
+
+            }),
+            modifier = Modifier
+                .padding(4.dp)
+                .fillMaxWidth(),
+            enabled = isDestinationAddressTextFieldEnabled
+        )
+
+        // This row holds the Quickest and Shortest route option buttons
+        Row(
+            modifier = Modifier
+                .padding(4.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Button(
+                onClick = onQuickestRoute,
+                modifier = Modifier.padding(horizontal = 4.dp),
+                enabled = isQuickestChecked
+            ) {
+                Text("Quickest")
+            }
+            Button(
+                onClick = onShortestRoute,
+                modifier = Modifier.padding(horizontal = 4.dp),
+                enabled = isShortestChecked
+            ) {
+                Text("Shortest")
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomSheetContent(
+    travelTime: String, travelDistance: String, directionsList: List<String>
+) {
+    Column {
+
+        Row(
+            modifier = Modifier.Companion.align(Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "$travelTime min",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                fontStyle = FontStyle.Normal,
+            )
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(
+                text = "(${travelDistance} mi)",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                fontStyle = FontStyle.Normal,
+            )
+        }
+
+        // The rest of the sheetContent is a Directions label and list of directions
+        Text(
+            text = "Directions",
+            color = Color.Black,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp)
+        )
+        RoutesList(directionList = directionsList)
+    }
+}
+
+
+// Display the list of directions of the route
+@Composable
+fun RoutesList(directionList: List<String>) {
+    LazyColumn(
+        contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp)
+    ) {
+        items(directionList.size) { index ->
+            if (index != directionList.size - 1) {
+                Text(text = directionList[index] + ".", modifier = Modifier.padding(8.dp))
+
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = Color.LightGray
+                )
+            } else {
+                Text(text = directionList[index] + ".", modifier = Modifier.padding(8.dp))
+            }
+
+        }
+    }
+}
+
+
 // Request Permissions for user
 @Composable
-fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit, mapViewModel: MapViewModel) {
+fun RequestPermissions(
+    onPermissionsGranted: () -> Unit, message: String, showMessage: (String) -> Unit
+) {
 
     // Create an activity result launcher using permissions contract and handle the result.
     val activityResultLauncher = rememberLauncherForActivityResult(
@@ -339,7 +442,7 @@ fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit, mapVi
         if (permissions.all { it.value }) {
             onPermissionsGranted()
         } else {
-            mapViewModel.showMessage(context, "Location permissions were denied")
+            showMessage(message)
         }
     }
 
@@ -347,34 +450,9 @@ fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit, mapVi
         activityResultLauncher.launch(
             // Request both fine and coarse location permissions.
             arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
     }
 
-}
-
-
-// Display the list of directions of the route
-@Composable
-fun RoutesList(directionList: MutableList<String>) {
-    LazyColumn(
-        contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp)
-    ) {
-        items(directionList.size) { index ->
-            if(index != directionList.size - 1) {
-                Text(text = directionList[index] + ".", modifier = Modifier.padding(8.dp))
-
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = Color.LightGray
-                )
-            } else {
-                Text(text = directionList[index] + ".", modifier = Modifier.padding(8.dp))
-            }
-
-        }
-    }
 }

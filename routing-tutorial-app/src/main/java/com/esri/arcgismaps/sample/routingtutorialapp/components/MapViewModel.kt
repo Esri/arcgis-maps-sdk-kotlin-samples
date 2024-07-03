@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.routingtutorialapp.components
 
 import android.Manifest
 import android.app.Application
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
@@ -53,29 +52,32 @@ import com.esri.arcgismaps.sample.routingtutorialapp.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
-class MapViewModel(application: Application, locationDisplay: LocationDisplay) : AndroidViewModel(application) {
+class MapViewModel(private var application: Application, locationDisplay: LocationDisplay) :
+    AndroidViewModel(application) {
 
     val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
         initialViewpoint = Viewpoint(
-            latitude =  34.0539,
-            longitude =  -118.2453,
-            scale = 200000.0
+            latitude = 34.0539, longitude = -118.2453, scale = 200000.0
         )
     }
+    val snackbarHostState = SnackbarHostState()
     val directionsList by lazy { mutableStateListOf("") }
     val stopsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
     val routeOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
-    val mapViewProxy =  MapViewProxy()
-    var startAddress by mutableStateOf("Your location")
-    var destinationAddress by mutableStateOf("irvine, california")
+    val mapViewProxy = MapViewProxy()
+    var startAddress by mutableStateOf("")
+    var destinationAddress by mutableStateOf("")
     var travelTime by mutableStateOf("")
     var travelDistance by mutableStateOf("")
     var mapLoading by mutableStateOf(false)
-    var showBottomSheet by  mutableStateOf(false)
-    var isQuickestChecked by mutableStateOf(false)
-    var isShortestChecked by mutableStateOf(false)
-    private val routeStops by lazy {mutableListOf<Stop>()}
+    var showBottomSheet by mutableStateOf(false)
+    var isQuickestButtonEnabled by mutableStateOf(false)
+    var isShortestButtonEnabled by mutableStateOf(false)
+    var isStartAddressTextFieldEnabled by mutableStateOf(true)
+    var isDestinationAddressTextFieldEnabled by mutableStateOf(true)
+    private val routeStops by lazy { mutableListOf<Stop>() }
     private var currentJob by mutableStateOf<Job?>(null)
     private var routeParameters: RouteParameters? = null
     private val routeTask = RouteTask(
@@ -96,106 +98,136 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
                 // Set route parameters
                 routeParameters = routeTask.createDefaultParameters().getOrThrow()
             }.onFailure {
-                showMessage(application, "map failed to load")
+                showMessage("map failed to load")
             }
         }
     }
 
-    // This function is used when the "search" floating action button is pressed.
-    fun onSearchAndFindRoute(
-        context: Context,
-        snackbarHostState: SnackbarHostState,
+    fun onGetCurrentLocationButtonClicked(locationDisplay: LocationDisplay) {
+        viewModelScope.launch {
+
+            // Look for user's current location
+            locationDisplay.dataSource.start()
+
+            // Pan to the user's current location
+            locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+
+            // Start address value is now "Your location" and is read only.
+            startAddress = "Your location"
+            isStartAddressTextFieldEnabled = false
+        }
+    }
+
+    fun onRefreshButtonClicked(locationDisplay: LocationDisplay) {
+
+        // Hide bottom sheet if it was visible
+        if (showBottomSheet) {
+            showBottomSheet = false
+        }
+
+        // Reset address values
+        startAddress = ""
+        destinationAddress = ""
+
+        // Enable the route options
+        isQuickestButtonEnabled = false
+        isShortestButtonEnabled = false
+
+        // Make the addresses editable
+        isStartAddressTextFieldEnabled = true
+        isDestinationAddressTextFieldEnabled = true
+
+        // Remove any previous data about routes and stops
+        clearRouteAndStops()
+
+        // Pan to user's location
+        locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+
+    }
+
+    fun onSearchRouteButtonClicked(
         locationDisplay: LocationDisplay
     ) {
-            // Ensure there's no ongoing job before starting a new one
-            currentJob?.cancel()
-            // Launch a new coroutine for the route finding process
-            currentJob = viewModelScope.launch {
 
-                // Clear previous stops and directions
-                if (routeStops.isNotEmpty()) {
-                    clearStops()
-                }
+        if(startAddress == "" || destinationAddress == ""){
+            showMessage("Please enter the start and/or destination address(es)")
+            return
+        }
+        // Hide bottom sheet with any previous directions
+        if (showBottomSheet) {
+            showBottomSheet = false
+        }
 
-                // Skipping searching for a location if it is current user's location.
-                if (startAddress != "Your location") {
+        // Ensure there's no ongoing job before starting a new one
+        currentJob?.cancel()
 
-                    // Search for starting address
-                    searchAddress(
-                        context,
-                        startAddress,
-                        true,
-                        snackbarHostState
-                    )
+        // Launch a new coroutine for the route finding process
+        currentJob = viewModelScope.launch {
+
+            // Add current user's location as a stop if user used default argument for the start address
+            if (startAddress == "Your location") {
+                // Add current user's location as a stop
+                val currentLocation = locationDisplay.mapLocation
+                if (currentLocation != null) {
+                    val currentLocationStop = Stop(currentLocation)
+                    routeStops.add(currentLocationStop)
+
                 } else {
-                        // Add current user's location as a stop
-                        val currentLocation = locationDisplay.mapLocation
-                        if (currentLocation != null) {
-                            val currentLocationStop = Stop(currentLocation)
-                            routeStops.add(currentLocationStop)
-
-                        } else {
-                            showMessage(context, "Failed to obtain current location")
-                        }
+                    showMessage("Failed to obtain current location")
                 }
+            }
 
-                // Search for destination address
+            // Find route between starting address and destination locations
+            findRoute()
+        }
+    }
+
+    // Once a start address is entered, it's searched, and its textfield becomes read only
+    fun onSearchStartingAddress() {
+
+        viewModelScope.launch {
+
+            // Skipping searching for a location if it is current user's location.
+            if (startAddress != "Your location") {
+                isStartAddressTextFieldEnabled = false
+                // Search for starting address
                 searchAddress(
-                    context,
-                    destinationAddress,
-                    false,
-                    snackbarHostState
+                    startAddress, true
                 )
-
-                // Find route between starting address and destination locations
-                findRoute(
-                    context,
-                    snackbarHostState,
-                )
-
-                // Enabling the Quickest/Shortest route options
-                isShortestChecked = true
-                isQuickestChecked = true
             }
         }
 
-    // This function is used when the "Refresh" Floating action button is pressed.
-    fun clearStops() {
-        // Remove all stop points
-        stopsOverlay.graphics.clear()
 
-        // Remove current route
-        routeOverlay.graphics.clear()
-
-        // Clear the list of stops
-        routeStops.clear()
-
-        // Clear list of directions
-        directionsList.clear()
     }
 
-    // This function is used for when the user uses the app for first time, the app request user's permission to use their location
-    fun checkPermissions(context: Context): Boolean {
+    // Once a destination address is entered, it's searched, and its textfield becomes read only
+    fun onSearchDestinationAddress() {
+        viewModelScope.launch {
+            // Search for destination address
+            isDestinationAddressTextFieldEnabled = false
+            searchAddress(
+                destinationAddress, false
+            )
+        }
+    }
+
+    // Check whether both coarse and fine location permissions are granted
+    fun checkPermissions(): Boolean {
         // Check permissions to see if both permissions are granted.
         // Coarse location permission.
         val permissionCheckCoarseLocation = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            application, Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
         // Fine location permission.
         val permissionCheckFineLocation = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            application, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
         return permissionCheckCoarseLocation && permissionCheckFineLocation
     }
 
-    // A helper function used when "Quickest" button is clicked.
-    fun findQuickestRoute(
-        context: Context,
-        snackbarHostState: SnackbarHostState
-    ){
+    // Used when "Quickest" button is clicked.
+    fun findQuickestRoute() {
 
         // Set the route parameters to finding quickest route.
         routeParameters?.travelMode = routeTask.getRouteTaskInfo().travelModes[0]
@@ -205,21 +237,15 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
 
         // Find the route
         viewModelScope.launch {
-            findRoute(
-                context,
-                snackbarHostState
-            )
+            findRoute()
         }
 
         // Disable button, will only be enabled if the Refresh button is clicked or restart the app
-        isQuickestChecked = false
+        isQuickestButtonEnabled = false
     }
 
-    // A helper function used when "Shortest" button is clicked.
-    fun findShortestRoute(
-        context: Context,
-        snackbarHostState: SnackbarHostState
-    ){
+    // Used when "Shortest" button is clicked.
+    fun findShortestRoute() {
 
         // Set the route parameters to finding shortest route.
         routeParameters?.travelMode = routeTask.getRouteTaskInfo().travelModes[1]
@@ -229,21 +255,15 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
 
         // Find the route
         viewModelScope.launch {
-            findRoute(
-                context,
-                snackbarHostState
-            )
+            findRoute()
         }
         // Disable button, will only be enabled if the Refresh button is clicked or restart the app
-        isShortestChecked = false
+        isShortestButtonEnabled = false
     }
 
-    // A helper function used to pinpoint the given query and pin it on the map.
+    // Pinpoint the given query and pin it on the map.
     private suspend fun searchAddress(
-        context: Context,
-        query: String,
-        isStartAddress: Boolean,
-        snackbarHostState: SnackbarHostState,
+        query: String, isStartAddress: Boolean
     ) {
         snackbarHostState.showSnackbar("locating $query...")
 
@@ -264,34 +284,33 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
 
                     // Find the location and add it as a stop
                     val geocodeResult = geocodeResults[0]
-                    addStop(isStartAddress, geocodeResult, context)
+                    addStop(isStartAddress, geocodeResult)
 
                     viewModelScope.launch {
-                        val centerPoint = geocodeResult.displayLocation
-                            ?: return@launch showMessage(
-                                context,
+                        val centerPoint =
+                            geocodeResult.displayLocation ?: return@launch showMessage(
                                 "The locatorTask.geocode() call failed"
                             )
 
+
                         // Animate the map view to the center point.
-                        mapViewProxy.setViewpointCenter(centerPoint)
-                            .onFailure { error ->
+                        mapViewProxy.setViewpointAnimated(
+                            Viewpoint(centerPoint),
+                            duration = 0.5.seconds
+                        ).onFailure { error ->
                                 println("Failed to set Viewpoint center: ${error.message}")
                             }
                     }
                 } else {
-                    showMessage(context, "No address found for the given query")
+                    showMessage("No address found for the given query")
                 }
             }.onFailure { error ->
-                showMessage(context, "The locatorTask.geocode() call failed: ${error.message}")
+                showMessage("The locatorTask.geocode() call failed: ${error.message}")
             }
     }
 
-    // A helper function to find a route between starting and destination address
-     private suspend fun findRoute(
-        context: Context,
-        snackbarHostState: SnackbarHostState,
-    ) {
+    // Find a route between starting and destination address
+    private suspend fun findRoute() {
         snackbarHostState.showSnackbar("Routing...")
 
         // Set router parameters
@@ -301,19 +320,20 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
         val routeResult = routeParameters?.let { routeTask.solveRoute(it) }
         if (routeResult != null) {
             routeResult.onFailure {
-                showMessage(context, "No route solution. ${it.message}")
+                showMessage("No route solution. ${it.message}")
                 routeOverlay.graphics.clear()
             }.onSuccess {
+
+                // Enabling the Quickest/Shortest route options
+                isShortestButtonEnabled = true
+                isQuickestButtonEnabled = true
                 // Get the first solved route result
                 val route = it.routes[0]
 
                 // Create graphic for route
                 val routeGraphic = Graphic(
-                    geometry = route.routeGeometry,
-                    symbol = SimpleLineSymbol(
-                        style = SimpleLineSymbolStyle.Solid,
-                        color = Color.cyan,
-                        width = 2f
+                    geometry = route.routeGeometry, symbol = SimpleLineSymbol(
+                        style = SimpleLineSymbolStyle.Solid, color = Color.cyan, width = 2f
                     )
                 )
 
@@ -346,7 +366,7 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
 
                     // Animate the map view to the new viewpoint
                     if (viewpoint != null) {
-                        mapViewProxy.setViewpointAnimated(viewpoint)
+                        mapViewProxy.setViewpointAnimated(viewpoint, duration = 0.25.seconds)
                             .onFailure { error ->
                                 println("Failed to set Viewpoint: ${error.message}")
                             }
@@ -356,16 +376,26 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
         }
     }
 
+    // Clear any data and graphic about routes and stops
+    private fun clearRouteAndStops() {
+        // Remove all stop points
+        stopsOverlay.graphics.clear()
 
-    // A helper function to add both the stop to routeStops and adds the graphic marker for that stop
-    private fun addStop(
-        isStartAddress: Boolean,
-        geocodeResult: GeocodeResult,
-        context: Context
-    ) {
+        // Remove current route
+        routeOverlay.graphics.clear()
+
+        // Clear the list of stops
+        routeStops.clear()
+
+        // Clear list of directions
+        directionsList.clear()
+    }
+
+    // Add both the stop to routeStops and adds the graphic marker for that stop
+    private fun addStop(isStartAddress: Boolean, geocodeResult: GeocodeResult) {
 
         // Create the graphic for the stop
-        val markerGraphic = createMarkerGraphic(isStartAddress, geocodeResult, context)
+        val markerGraphic = createMarkerGraphic(isStartAddress, geocodeResult)
 
         // Add the geocoded point as a stop
         val stop = geocodeResult.displayLocation?.let { Stop(it) }
@@ -378,18 +408,17 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
 
     }
 
-    // A helper function to create a graphic dependent on the address type.
+    // Create a graphic dependent on the address type.
     private fun createMarkerGraphic(
         isStartAddress: Boolean,
         geocodeResult: GeocodeResult,
-        context: Context,
     ): Graphic {
 
         // Create the graphic depending on the address type
-        val drawable = if(isStartAddress && startAddress != "Your location"){
-            ContextCompat.getDrawable(context, R.drawable.ic_start) as BitmapDrawable
+        val drawable = if (isStartAddress && startAddress != "Your location") {
+            ContextCompat.getDrawable(application, R.drawable.ic_start) as BitmapDrawable
         } else {
-            ContextCompat.getDrawable(context, R.drawable.ic_destination) as BitmapDrawable
+            ContextCompat.getDrawable(application, R.drawable.ic_destination) as BitmapDrawable
         }
 
         val pinSourceSymbol = PictureMarkerSymbol.createWithImage(drawable).apply {
@@ -406,11 +435,11 @@ class MapViewModel(application: Application, locationDisplay: LocationDisplay) :
 
     }
 
+    // Used on both MapVieewMode.kt and MainScreen.kt to display any errors or messages
     fun showMessage(
-        context: Context,
         message: String
     ) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(application, message, Toast.LENGTH_LONG).show()
     }
 
 }
