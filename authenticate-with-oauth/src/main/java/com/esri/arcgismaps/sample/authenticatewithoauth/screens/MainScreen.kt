@@ -22,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.authentication.DialogAuthenticator
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.authenticatewithoauth.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -46,10 +45,6 @@ fun MainScreen(sampleName: String) {
                 mapViewProxy = mapViewModel.mapViewProxy,
                 arcGISMap = mapViewModel.arcGISMap
             )
-            // Displays appropriate Authentication UI when an authentication challenge is issued.
-            // Because the authenticatorState has an oAuthUserConfiguration set, authentication
-            // challenges will happen via OAuth.
-            DialogAuthenticator(authenticatorState = mapViewModel.authenticatorState)
         }
     )
 }

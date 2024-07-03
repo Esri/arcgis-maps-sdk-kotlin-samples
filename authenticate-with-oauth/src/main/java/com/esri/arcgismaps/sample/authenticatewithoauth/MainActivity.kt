@@ -22,8 +22,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.toolkit.authentication.DialogAuthenticator
+import com.esri.arcgismaps.sample.authenticatewithoauth.components.MapViewModel
 import com.esri.arcgismaps.sample.authenticatewithoauth.screens.MainScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
@@ -44,12 +47,20 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun AuthenticateWithOAuthApp() {
+
+        // create a ViewModel to handle interactions
+        val mapViewModel: MapViewModel = viewModel()
+
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
             MainScreen(
                 sampleName = getString(R.string.app_name)
             )
+            // Displays appropriate Authentication UI when an authentication challenge is issued.
+            // Because the authenticatorState has an oAuthUserConfiguration set, authentication
+            // challenges will happen via OAuth.
+            DialogAuthenticator(authenticatorState = mapViewModel.authenticatorState)
         }
     }
 }
