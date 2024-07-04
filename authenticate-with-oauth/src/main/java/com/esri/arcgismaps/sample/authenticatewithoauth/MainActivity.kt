@@ -60,6 +60,10 @@ class MainActivity : ComponentActivity() {
             // Displays appropriate Authentication UI when an authentication challenge is issued.
             // Because the authenticatorState has an oAuthUserConfiguration set, authentication
             // challenges will happen via OAuth.
+            // Call the DialogAuthenticator composable function at the top level of your view
+            // hierarchy, for example at the same level as MainScreen(). This ensures that
+            // authentication handling is set up before any components of the ArcGIS Maps SDK that
+            // may require authentication are used.
             DialogAuthenticator(authenticatorState = mapViewModel.authenticatorState)
         }
     }

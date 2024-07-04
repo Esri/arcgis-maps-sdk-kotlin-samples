@@ -29,7 +29,8 @@
         "AuthenticationManager",
         "AuthenticatorState",
         "DialogAuthenticator",
-        "PortalItem"
+        "PortalItem",
+        "OAuthUserConfiguration"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/MainActivity.kt",

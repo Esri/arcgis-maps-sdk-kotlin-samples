@@ -44,13 +44,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             "authenticate-with-oauth://auth",
         )
     }
+
     // Create a map from a portal item.
     val arcGISMap = ArcGISMap(
         PortalItem(
             // Setting the portal connection to "Authenticated" will issue an authentication
             // challenge.
-            Portal("https://www.arcgis.com", Portal.Connection.Authenticated),
-            "e5039444ef3c48b8a8fdc9227f9be7c1"
+            portal = Portal(
+                url = "https://www.arcgis.com",
+                connection = Portal.Connection.Authenticated
+            ),
+            itemId = "e5039444ef3c48b8a8fdc9227f9be7c1"
         )
     )
 }

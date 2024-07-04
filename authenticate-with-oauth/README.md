@@ -15,8 +15,8 @@ When you run the sample, the app will load a web map which contains premium cont
 ## How it works
 
 1. Create an `AuthenticatorState` and set the `OAuthConfiguration` with the portal URL, client ID, and redirect URI.
-2. Load a `PortalItem(...)` with connection type `Portal.Connection.Authenticated` which will issue an authentication challenge.
-3. Create a `DialogAuthenticator` composable passing it the `AuthenticatorState` object. Because the `AuthenticatorState` object has an `OAuthConfiguration` set, the `DialogAuthenticator` will prompt for OAuth credentials.
+2. Call the toolkit's `DialogAuthenticator` composable passing it the `AuthenticatorState` object. Because the `AuthenticatorState` object has an `OAuthConfiguration` set, the `DialogAuthenticator` will prompt for OAuth credentials when the associated `Portal` is loaded.
+3. Load a `PortalItem(...)` with connection type `Portal.Connection.Authenticated` which will issue an authentication challenge.
 4. Set up the manifest.xml to handle the OAuth redirect URI.
    * Define a second activity in the `manifest.xml` with the a name `OAuthUserSignInActivity` from the toolkit
 
@@ -54,8 +54,11 @@ To learn more on setting up the data specification to an intent filter, visit th
 * AuthenticatorState
 * DialogAuthenticator
 * PortalItem
+* OAuthUserConfiguration
 
 ## Additional information
+
+This sample uses the toolkit's [authentication](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/v.next/toolkit/authentication#authenticator) module to handle authentication.
 
 The workflow presented in this sample works for all SAML based enterprise (IWA, PKI, Okta, etc.) & social (facebook, google, etc.) identity providers for ArcGIS Online or Portal. For more information, see the topic [Set up enterprise logins](https://doc.arcgis.com/en/arcgis-online/administer/enterprise-logins.htm).
 
