@@ -79,6 +79,10 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         createFacilitiesAndGraphics()
     }
 
+    /**
+     * Retrieve the incident point and initiate the process to finding the route between the incident and closest facility
+     *
+     */
     fun onSingleTapConfirmed(
         currentJob: MutableState<Job?>,
         event: SingleTapConfirmedEvent,
@@ -101,6 +105,10 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         }
     }
 
+    /**
+     * Facility markers are drawn on the map right when the user opens app
+     *
+     */
     private fun createFacilitiesAndGraphics() {
 
         // Add all facility centers on the map
@@ -117,15 +125,22 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
     }
 
+    /**
+     * Clear the incident marker from the map
+     *
+     */
     private fun clearIncident(
         incidentGraphicsOverlay: GraphicsOverlay
     ) {
         incidentGraphicsOverlay.graphics.clear()
     }
 
+    /**
+     * Add the incident marker on map
+     *
+     */
     private fun addIncident(
-        incidentPoint: Incident,
-        incidentGraphicsOverlay: GraphicsOverlay
+        incidentPoint: Incident, incidentGraphicsOverlay: GraphicsOverlay
     ) {
 
         // Create a cross symbol for the incident
@@ -145,12 +160,15 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
     }
 
+    /**
+     * Find the route between the given incident point the closest facility
+     *
+     */
     private suspend fun findRoute(
-        incidentPoint: Incident,
-        incidentGraphicsOverlay: GraphicsOverlay
+        incidentPoint: Incident, incidentGraphicsOverlay: GraphicsOverlay
     ) {
         val closestFacilityTask = ClosestFacilityTask(
-            url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/ClosestFacility"
+            url = application.getString(R.string.san_diego_network_service_url)
         )
 
         // Create a job to find the route
@@ -173,8 +191,7 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
                 val routeSymbol =
                     SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.fromRgba(0, 0, 255), 2.0f)
                 val routeGraphic = Graphic(
-                    geometry = route?.routeGeometry,
-                    symbol = routeSymbol
+                    geometry = route?.routeGeometry, symbol = routeSymbol
                 )
 
                 // Add the route graphic to the incident graphic overlay

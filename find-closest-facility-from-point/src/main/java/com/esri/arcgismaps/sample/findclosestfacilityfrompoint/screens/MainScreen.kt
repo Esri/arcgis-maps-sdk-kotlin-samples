@@ -16,15 +16,12 @@
 
 package com.esri.arcgismaps.sample.findclosestfacilityfrompoint.screens
 
-import android.app.Application
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.arcgismaps.ArcGISEnvironment
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.findclosestfacilityfrompoint.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -35,26 +32,24 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun MainScreen(sampleName: String) {
 
-    val context = LocalContext.current
-    val application = context.applicationContext as Application
-    ArcGISEnvironment.applicationContext = application
-    val mapViewModel = remember { MapViewModel(application) }
+    val mapViewModel: MapViewModel = viewModel()
 
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            MapView(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-                arcGISMap = mapViewModel.map,
-                graphicsOverlays = mapViewModel.graphicsOverlays,
-                onSingleTapConfirmed = { event ->
-                    mapViewModel.onSingleTapConfirmed(mapViewModel.currentJob, event, mapViewModel.incidentGraphicsOverlay)
-                },
-            )
-        }
-    )
+    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
+        MapView(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            arcGISMap = mapViewModel.map,
+            graphicsOverlays = mapViewModel.graphicsOverlays,
+            onSingleTapConfirmed = { event ->
+                mapViewModel.onSingleTapConfirmed(
+                    mapViewModel.currentJob,
+                    event,
+                    mapViewModel.incidentGraphicsOverlay
+                )
+            },
+        )
+    })
 }
 
 
