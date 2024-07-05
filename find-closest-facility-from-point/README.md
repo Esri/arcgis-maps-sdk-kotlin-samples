@@ -1,7 +1,7 @@
 # Find closest facility from point
 
 Find a route to the closest facility from a location.
-![Find closest facility from point](find-closest-facility-to-an-incident-interactive.png)
+![Find closest facility from point](find_closest_facility_to_an_incident_interactive.png)
 
 ## Use case
 
