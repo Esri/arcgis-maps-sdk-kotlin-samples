@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,26 +39,25 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -71,7 +71,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.routingtutorialapp.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
-import kotlinx.coroutines.CoroutineScope
+import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.launch
 
 /**
@@ -84,16 +84,14 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
 
     // Create and remember a location display with a recenter auto pan mode.
-    val coroutineScope = rememberCoroutineScope()
     val locationDisplay = rememberLocationDisplay()
     val context = LocalContext.current
     val application = context.applicationContext as Application
     val mapViewModel = remember { MapViewModel(application, locationDisplay) }
+
+    //val mapViewModel : MapViewModel = viewModel(locationDisplay)
     val snackbarHostState = remember { mapViewModel.snackbarHostState }
-    val bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false)
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        snackbarHostState = snackbarHostState, bottomSheetState = bottomSheetState
-    )
+    val bottomSheetState = rememberModalBottomSheetState()
 
     // Everytime user enters app, check if they already granted permission otherwise request it.
     if (mapViewModel.checkPermissions()) {
@@ -107,20 +105,9 @@ fun MainScreen(sampleName: String) {
         }, message, { mapViewModel.showMessage(message) })
     }
 
-
-    BottomSheetScaffold(
-
-        sheetContent = {
-            // This row holds the time and distance of a route on the bottom sheet
-            BottomSheetContent(
-                travelTime = mapViewModel.travelTime,
-                travelDistance = mapViewModel.travelDistance,
-                directionsList = mapViewModel.directionsList
-            )
-        },
-        // Show only time, distance, and Directions label during peek height
-        sheetPeekHeight = if (mapViewModel.showBottomSheet) ((LocalConfiguration.current.screenHeightDp) / 8).dp else 0.dp,
-        scaffoldState = bottomSheetScaffoldState.apply {},
+    Scaffold(
+        topBar = { SampleTopAppBar(title = sampleName) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) {
 
         Column(
@@ -140,20 +127,12 @@ fun MainScreen(sampleName: String) {
                     mapViewModel.destinationAddress = newDestinationAddress
                 },
                 destinationAddress = mapViewModel.destinationAddress,
-                onQuickestRoute = {
-                    mapViewModel.findQuickestRoute()
-                },
+                onQuickestRoute = mapViewModel::findQuickestRoute,
                 isQuickestChecked = mapViewModel.isQuickestButtonEnabled,
-                onShortestRoute = {
-                    mapViewModel.findShortestRoute()
-                },
+                onShortestRoute = mapViewModel::findShortestRoute,
                 isShortestChecked = mapViewModel.isShortestButtonEnabled,
-                onSearchStartingAddress = {
-                    mapViewModel.onSearchStartingAddress()
-                },
-                onSearchDestinationAddress = {
-                    mapViewModel.onSearchDestinationAddress()
-                },
+                onSearchStartingAddress = mapViewModel::onSearchStartingAddress,
+                onSearchDestinationAddress = mapViewModel::onSearchDestinationAddress,
                 isStartAddressTextFieldEnabled = mapViewModel.isStartAddressTextFieldEnabled,
                 isDestinationAddressTextFieldEnabled = mapViewModel.isDestinationAddressTextFieldEnabled
             )
@@ -170,11 +149,7 @@ fun MainScreen(sampleName: String) {
 
                 } else {
                     MapView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(
-                                bottom = 20.dp, end = 8.dp, start = 8.dp
-                            ),
+                        modifier = Modifier.fillMaxSize(),
                         arcGISMap = mapViewModel.map,
                         graphicsOverlays = (listOf(
                             mapViewModel.routeOverlay, mapViewModel.stopsOverlay
@@ -191,9 +166,7 @@ fun MainScreen(sampleName: String) {
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
-                        ShowFloatingActionButtons(locationDisplay = locationDisplay,
-                            snackbarHostState = snackbarHostState,
-                            coroutineScope = coroutineScope,
+                        ShowFloatingActionButtons(snackbarHostState = snackbarHostState,
                             onRefreshButtonClicked = {
                                 mapViewModel.onRefreshButtonClicked(locationDisplay)
                             },
@@ -216,6 +189,23 @@ fun MainScreen(sampleName: String) {
                     text = "Search two addresses to find a route between them."
                 )
             }
+
+            if (mapViewModel.showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { mapViewModel.showBottomSheet = false },
+                    sheetState = bottomSheetState,
+                    modifier = Modifier.fillMaxHeight(0.7f)
+                    //sheetMaxWidth = if (mapViewModel.showBottomSheet) ((LocalConfiguration.current.screenHeightDp) / 8).dp else 0.dp,
+                    // Show only time, distance, and Directions label during peek height
+                ) {
+                    // This row holds the time and distance of a route on the bottom sheet
+                    BottomSheetContent(
+                        travelTime = mapViewModel.travelTime,
+                        travelDistance = mapViewModel.travelDistance,
+                        directionsList = mapViewModel.directionsList
+                    )
+                }
+            }
         }
     }
 }
@@ -223,21 +213,20 @@ fun MainScreen(sampleName: String) {
 
 @Composable
 private fun ShowFloatingActionButtons(
-    locationDisplay: LocationDisplay,
     onRefreshButtonClicked: (LocationDisplay) -> Unit,
     onSearchRouteButtonClicked: (LocationDisplay) -> Unit,
     onGetCurrentLocationButtonClicked: (LocationDisplay) -> Unit,
     snackbarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope
 
-) {
+    ) {
     val focusManager = LocalFocusManager.current
+    val coroutineScope = rememberCoroutineScope()
 
     // Get Location FAB
     FloatingActionButton(
         onClick = {
             focusManager.clearFocus()
-            onGetCurrentLocationButtonClicked(locationDisplay)
+            onGetCurrentLocationButtonClicked(LocationDisplay())
             coroutineScope.launch {
                 snackbarHostState.showSnackbar("Getting your location...")
             }
@@ -252,7 +241,7 @@ private fun ShowFloatingActionButtons(
     FloatingActionButton(
         onClick = {
             focusManager.clearFocus()
-            onRefreshButtonClicked(locationDisplay)
+            onRefreshButtonClicked(LocationDisplay())
         },
     ) {
         Icon(
@@ -264,7 +253,7 @@ private fun ShowFloatingActionButtons(
     FloatingActionButton(
         onClick = {
             focusManager.clearFocus()
-            onSearchRouteButtonClicked(locationDisplay)
+            onSearchRouteButtonClicked(LocationDisplay())
         },
         content = {
             Icon(
@@ -379,15 +368,15 @@ private fun BottomSheetContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "$travelTime min",
-                color = Color.Black,
+                text = travelTime,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Normal,
             )
             Spacer(modifier = Modifier.width(2.dp))
             Text(
                 text = "(${travelDistance} mi)",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Normal,
             )
@@ -396,7 +385,7 @@ private fun BottomSheetContent(
         // The rest of the sheetContent is a Directions label and list of directions
         Text(
             text = "Directions",
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp)
@@ -417,7 +406,7 @@ fun RoutesList(directionList: List<String>) {
                 Text(text = directionList[index] + ".", modifier = Modifier.padding(8.dp))
 
                 HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = Color.LightGray
+                    modifier = Modifier.fillMaxWidth(), thickness = 1.dp
                 )
             } else {
                 Text(text = directionList[index] + ".", modifier = Modifier.padding(8.dp))

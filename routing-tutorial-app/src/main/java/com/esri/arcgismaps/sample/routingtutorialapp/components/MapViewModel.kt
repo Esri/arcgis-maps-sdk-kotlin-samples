@@ -53,6 +53,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class MapViewModel(private var application: Application, locationDisplay: LocationDisplay) :
     AndroidViewModel(application) {
@@ -84,9 +86,12 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         url = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
     )
 
-    // Performing the following during the app's loading process.
+    /**
+     * Performing the following during the app's loading process.
+     *
+     */
     init {
-        viewModelScope.launch {
+        currentJob = viewModelScope.launch {
             map.load().onSuccess {
 
                 // Map has loaded
@@ -149,9 +154,8 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         locationDisplay: LocationDisplay
     ) {
 
-        if(startAddress == "" || destinationAddress == ""){
-            showMessage("Please enter the start and/or destination address(es)")
-            return
+        if (startAddress == "" || destinationAddress == "") {
+            return showMessage("Please enter the start and/or destination address(es)")
         }
         // Hide bottom sheet with any previous directions
         if (showBottomSheet) {
@@ -182,7 +186,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         }
     }
 
-    // Once a start address is entered, it's searched, and its textfield becomes read only
+    /**
+     * Once a start address is entered, it's searched, and its textField becomes read only
+     *
+     */
     fun onSearchStartingAddress() {
 
         viewModelScope.launch {
@@ -200,7 +207,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
 
     }
 
-    // Once a destination address is entered, it's searched, and its textfield becomes read only
+    /**
+     * Once a destination address is entered, it's searched, and its textField becomes read only
+     *
+     */
     fun onSearchDestinationAddress() {
         viewModelScope.launch {
             // Search for destination address
@@ -211,7 +221,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         }
     }
 
-    // Check whether both coarse and fine location permissions are granted
+    /**
+     * Once a destination address is entered, it's searched, and its textField becomes read only
+     *
+     */
     fun checkPermissions(): Boolean {
         // Check permissions to see if both permissions are granted.
         // Coarse location permission.
@@ -226,7 +239,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         return permissionCheckCoarseLocation && permissionCheckFineLocation
     }
 
-    // Used when "Quickest" button is clicked.
+    /**
+     * Used when "Quickest" button is clicked.
+     *
+     */
     fun findQuickestRoute() {
 
         // Set the route parameters to finding quickest route.
@@ -242,9 +258,13 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
 
         // Disable button, will only be enabled if the Refresh button is clicked or restart the app
         isQuickestButtonEnabled = false
+        isShortestButtonEnabled = false
     }
 
-    // Used when "Shortest" button is clicked.
+    /**
+     * Used when "Shortest" button is clicked.
+     *
+     */
     fun findShortestRoute() {
 
         // Set the route parameters to finding shortest route.
@@ -259,9 +279,13 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         }
         // Disable button, will only be enabled if the Refresh button is clicked or restart the app
         isShortestButtonEnabled = false
+        isQuickestButtonEnabled = false
     }
 
-    // Pinpoint the given query and pin it on the map.
+    /**
+     * Pinpoint the given query and pin it on the map.
+     *
+     */
     private suspend fun searchAddress(
         query: String, isStartAddress: Boolean
     ) {
@@ -295,11 +319,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
 
                         // Animate the map view to the center point.
                         mapViewProxy.setViewpointAnimated(
-                            Viewpoint(centerPoint),
-                            duration = 0.5.seconds
+                            Viewpoint(centerPoint), duration = 0.5.seconds
                         ).onFailure { error ->
-                                println("Failed to set Viewpoint center: ${error.message}")
-                            }
+                            println("Failed to set Viewpoint center: ${error.message}")
+                        }
                     }
                 } else {
                     showMessage("No address found for the given query")
@@ -309,7 +332,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
             }
     }
 
-    // Find a route between starting and destination address
+    /**
+     * Find a route between starting and destination address
+     *
+     */
     private suspend fun findRoute() {
         snackbarHostState.showSnackbar("Routing...")
 
@@ -352,13 +378,14 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
                 }
 
                 // Get time and distance for the route
-                travelTime = route.travelTime.roundToInt().toString()
+                val travelDuration = route.travelTime.roundToInt().toDuration(DurationUnit.MINUTES)
+                travelTime = travelDuration.toString()
                 travelDistance = "%.2f".format(
                     route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
                 )
 
                 // Animate to show the stops and the route
-                viewModelScope.launch {
+                currentJob = viewModelScope.launch {
                     val routeExtent = route.routeGeometry?.extent
 
                     // Create a Viewpoint from the route's extent.
@@ -376,7 +403,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         }
     }
 
-    // Clear any data and graphic about routes and stops
+    /**
+     * Clear any data and graphic about routes and stops
+     *
+     */
     private fun clearRouteAndStops() {
         // Remove all stop points
         stopsOverlay.graphics.clear()
@@ -391,7 +421,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
         directionsList.clear()
     }
 
-    // Add both the stop to routeStops and adds the graphic marker for that stop
+    /**
+     * Add both the stop to routeStops and adds the graphic marker for that stop
+     *
+     */
     private fun addStop(isStartAddress: Boolean, geocodeResult: GeocodeResult) {
 
         // Create the graphic for the stop
@@ -408,7 +441,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
 
     }
 
-    // Create a graphic dependent on the address type.
+    /**
+     * Create a graphic dependent on the address type.
+     *
+     */
     private fun createMarkerGraphic(
         isStartAddress: Boolean,
         geocodeResult: GeocodeResult,
@@ -435,7 +471,10 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
 
     }
 
-    // Used on both MapVieewMode.kt and MainScreen.kt to display any errors or messages
+    /**
+     * Used on both MapViewMode.kt and MainScreen.kt to display any errors or messages
+     *
+     */
     fun showMessage(
         message: String
     ) {
