@@ -50,7 +50,7 @@ fun MainScreen(sampleName: String) {
                 arcGISMap = mapViewModel.map,
                 graphicsOverlays = mapViewModel.graphicsOverlays,
                 onSingleTapConfirmed = { event ->
-                    mapViewModel.onSingleTapConfirmed(mapViewModel.currentJob, event, mapViewModel.incidentStops, mapViewModel.incidentGraphicsOverlay)
+                    mapViewModel.onSingleTapConfirmed(mapViewModel.currentJob, event, mapViewModel.incidentGraphicsOverlay)
                 },
             )
         }
