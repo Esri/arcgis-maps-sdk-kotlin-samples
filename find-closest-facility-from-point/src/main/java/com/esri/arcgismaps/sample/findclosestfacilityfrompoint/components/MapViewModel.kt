@@ -24,6 +24,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -47,27 +48,31 @@ import kotlinx.coroutines.launch
 
 class MapViewModel(private var application: Application) : AndroidViewModel(application) {
 
-    val currentJob =  mutableStateOf<Job?>(null)
+    val currentJob = mutableStateOf<Job?>(null)
     val incidentStops = mutableListOf<Incident>()
     val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
         initialViewpoint = Viewpoint(
             latitude = 32.727, longitude = -117.1750, scale = 100000.0
         )
     }
+
+    // Hardcoded list of facilities
     private var facilities = listOf(
-        Facility(Point(-1.3042129900625112E7, 3860127.9479775648)),
-        Facility(Point(-1.3042193400557665E7, 3862448.873041752)),
-        Facility(Point(-1.3046882875518233E7, 3862704.9896770366)),
-        Facility(Point(-1.3040539754780494E7, 3862924.5938606677)),
-        Facility(Point(-1.3042571225655518E7, 3858981.773018156)),
-        Facility(Point(-1.3039784633928463E7, 3856692.5980474586)),
-        Facility(Point(-1.3049023883956768E7, 3861993.789732541))
+        Facility(Point(-1.3042129900625112E7, 3860127.9479775648, SpatialReference.webMercator())),
+        Facility(Point(-1.3042193400557665E7, 3862448.873041752, SpatialReference.webMercator())),
+        Facility(Point(-1.3046882875518233E7, 3862704.9896770366, SpatialReference.webMercator())),
+        Facility(Point(-1.3040539754780494E7, 3862924.5938606677, SpatialReference.webMercator())),
+        Facility(Point(-1.3042571225655518E7, 3858981.773018156, SpatialReference.webMercator())),
+        Facility(Point(-1.3039784633928463E7, 3856692.5980474586, SpatialReference.webMercator())),
+        Facility(Point(-1.3049023883956768E7, 3861993.789732541, SpatialReference.webMercator()))
     )
 
     // Create graphic overlay of facilities to display them on the map when user opens app
     private val facilityGraphicsOverlay = GraphicsOverlay()
+
     // Create graphic overlay of incident to display the incident once user taps on map
     val incidentGraphicsOverlay = GraphicsOverlay()
+
     val graphicsOverlays = listOf(facilityGraphicsOverlay, incidentGraphicsOverlay)
 
 
@@ -75,26 +80,36 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         createFacilitiesAndGraphics()
     }
 
-    fun onSingleTapConfirmed(currentJob: MutableState<Job?>, event: SingleTapConfirmedEvent, incidentStops: MutableList<Incident>, incidentGraphicsOverlay: GraphicsOverlay) {
+    fun onSingleTapConfirmed(
+        currentJob: MutableState<Job?>,
+        event: SingleTapConfirmedEvent,
+        incidentStops: MutableList<Incident>,
+        incidentGraphicsOverlay: GraphicsOverlay
+    ) {
+
+        // Cancel previous job
         currentJob.value?.cancel()
 
         // Retrieve the tapped map point from the SingleTapConfirmedEvent
-        val point = event.mapPoint ?: return showMessage("No map point retrieved from tap.")
-        val incidentPoint = Incident(point)
+        val mapPoint: Point =
+            event.mapPoint ?: return showMessage("No map point retrieved from tap.")
+        val incidentPoint = Incident(mapPoint)
 
         when (incidentStops.size) {
-            // On first tap, add incident.
+            // On first tap, add incident, and find the route.
             0 -> {
                 addIncident(incidentStops, incidentPoint, incidentGraphicsOverlay)
                 currentJob.value = viewModelScope.launch {
                     findRoute(incidentStops, incidentGraphicsOverlay)
                 }
-                showMessage("Calculating closest facility...")
             }
-            // On a further tap, clear and add a new first incident.
+            // On a further tap, clear, add a new first incident, and find the route
             else -> {
                 clearIncident(incidentStops, incidentGraphicsOverlay)
                 addIncident(incidentStops, incidentPoint, incidentGraphicsOverlay)
+                currentJob.value = viewModelScope.launch {
+                    findRoute(incidentStops, incidentGraphicsOverlay)
+                }
             }
         }
     }
@@ -107,29 +122,33 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         facilitySymbol.width = 30F
 
 
-        for (facility in facilities){
+        for (facility in facilities) {
             val facilityGraphic = Graphic(
-                geometry = facility.geometry,
-                symbol = facilitySymbol
+                geometry = facility.geometry, symbol = facilitySymbol
             )
             facilityGraphicsOverlay.graphics.add(facilityGraphic)
         }
 
     }
 
-    private fun clearIncident(incidentStops: MutableList<Incident>, incidentGraphicsOverlay: GraphicsOverlay) {
+    private fun clearIncident(
+        incidentStops: MutableList<Incident>,
+        incidentGraphicsOverlay: GraphicsOverlay
+    ) {
         incidentGraphicsOverlay.graphics.clear()
         incidentStops.clear()
     }
 
-    private fun addIncident(incidentStops: MutableList<Incident>, incidentPoint: Incident, incidentGraphicsOverlay: GraphicsOverlay) {
+    private fun addIncident(
+        incidentStops: MutableList<Incident>,
+        incidentPoint: Incident,
+        incidentGraphicsOverlay: GraphicsOverlay
+    ) {
         incidentStops.add(incidentPoint)
 
         // Create a cross symbol for the incident
         val incidentMarker = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Cross,
-            color = Color.black,
-            size = 20.0F
+            style = SimpleMarkerSymbolStyle.Cross, color = Color.black, size = 20.0F
         )
 
         // Get the incident's geometry
@@ -138,27 +157,30 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         // Add graphic to incident graphic overlays
         incidentGraphicsOverlay.graphics.add(
             Graphic(
-                geometry = incidentStopGeometry,
-                symbol = incidentMarker
+                geometry = incidentStopGeometry, symbol = incidentMarker
             )
         )
 
     }
 
-    private suspend fun findRoute(incidentStops: MutableList<Incident>, incidentGraphicsOverlay: GraphicsOverlay) {
+    private suspend fun findRoute(
+        incidentStops: MutableList<Incident>,
+        incidentGraphicsOverlay: GraphicsOverlay
+    ) {
         val closestFacilityTask = ClosestFacilityTask(
             url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/ClosestFacility"
         )
 
         // Create a job to find the route
         try {
-            val closestFacilityParameters: ClosestFacilityParameters = closestFacilityTask.createDefaultParameters().getOrThrow()
+            val closestFacilityParameters: ClosestFacilityParameters =
+                closestFacilityTask.createDefaultParameters().getOrThrow()
             closestFacilityParameters.setFacilities(facilities)
             closestFacilityParameters.setIncidents(incidentStops)
-            closestFacilityParameters.returnDirections = true
 
             // Solve a route using the route parameters created
-            val closestFacilityResult: ClosestFacilityResult = closestFacilityTask.solveClosestFacility(closestFacilityParameters).getOrThrow()
+            val closestFacilityResult: ClosestFacilityResult =
+                closestFacilityTask.solveClosestFacility(closestFacilityParameters).getOrThrow()
             val rankedFacilitiesList = closestFacilityResult.getRankedFacilityIndexes(0)
 
             // If we got a list of facilities
@@ -173,8 +195,11 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
                 // Add the route graphic to the incident graphic overlay
                 incidentGraphicsOverlay.graphics.add(routeGraphic)
             }
-        } catch (e: Exception){
-            showMessage("Failed to find closest route: ${e.message}")
+        } catch (e: Exception) {
+
+            showMessage(
+                if (e.message?.contains("Unable to complete operation") == true) "Incident not within the San Diego Area!" else "Error getting closest facility result: " + e.message
+            )
         }
     }
 
