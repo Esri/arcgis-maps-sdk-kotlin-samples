@@ -43,6 +43,11 @@ Tap near any of the hospitals and a route will be displayed from that tapped loc
 * Incident
 * MapView
 
+
+## Additional information
+
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+
 ## Tags
 
-incident, network analysis, route, search
+geoviewcompose, incident, network analysis, route, search, 
