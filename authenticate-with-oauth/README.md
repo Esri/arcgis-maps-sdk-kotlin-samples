@@ -36,7 +36,7 @@ When you run the sample, the app will load a web map which contains premium cont
         <category android:name="android.intent.category.BROWSABLE" />
    ```
 
-   * Set the `data` tag to be able to use the redirect URI to navigate back to the app after prompting for OAuth credentials.
+   * Set the `data` and `host` tags to be able to use the redirect URI to navigate back to the app after prompting for OAuth credentials.
 
    ```xml
    <data
