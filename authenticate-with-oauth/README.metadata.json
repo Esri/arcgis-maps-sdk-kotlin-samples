@@ -19,6 +19,7 @@
         "AuthenticationManager",
         "AuthenticatorState",
         "DialogAuthenticator",
+        "OAuthUserConfiguration",
         "PortalItem"
     ],
     "language": "kotlin",
@@ -29,8 +30,8 @@
         "AuthenticationManager",
         "AuthenticatorState",
         "DialogAuthenticator",
-        "PortalItem",
-        "OAuthUserConfiguration"
+        "OAuthUserConfiguration",
+        "PortalItem"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/MainActivity.kt",

@@ -23,8 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.authentication.DialogAuthenticator
 import com.esri.arcgismaps.sample.authenticatewithoauth.components.MapViewModel
 import com.esri.arcgismaps.sample.authenticatewithoauth.screens.MainScreen
@@ -34,9 +32,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         setContent {
             SampleAppTheme {
