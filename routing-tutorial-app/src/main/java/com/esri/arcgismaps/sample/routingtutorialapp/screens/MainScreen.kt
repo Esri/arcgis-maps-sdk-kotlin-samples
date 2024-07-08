@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.routingtutorialapp.screens
 
 import android.Manifest
-import android.app.Application
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -58,7 +57,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontStyle
@@ -66,6 +64,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
@@ -84,10 +84,11 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
 
     // Create and remember a location display with a recenter auto pan mode.
-    val locationDisplay = rememberLocationDisplay()
-    val context = LocalContext.current
-    val application = context.applicationContext as Application
-    val mapViewModel = remember { MapViewModel(application, locationDisplay) }
+    val locationDisplay = rememberLocationDisplay().apply {
+        setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+    }
+
+    val mapViewModel: MapViewModel = viewModel()
 
     //val mapViewModel : MapViewModel = viewModel(locationDisplay)
     val snackbarHostState = remember { mapViewModel.snackbarHostState }

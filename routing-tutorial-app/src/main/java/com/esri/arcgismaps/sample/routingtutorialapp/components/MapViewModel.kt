@@ -56,8 +56,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class MapViewModel(private var application: Application, locationDisplay: LocationDisplay) :
-    AndroidViewModel(application) {
+class MapViewModel(private var application: Application) : AndroidViewModel(application) {
 
     val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
         initialViewpoint = Viewpoint(
@@ -98,7 +97,7 @@ class MapViewModel(private var application: Application, locationDisplay: Locati
                 mapLoading = true
 
                 // Pan to user's current location
-                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+                //locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
 
                 // Set route parameters
                 routeParameters = routeTask.createDefaultParameters().getOrThrow()
