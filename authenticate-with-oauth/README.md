@@ -53,8 +53,8 @@ To learn more on setting up the data specification to an intent filter, visit th
 * AuthenticationManager
 * AuthenticatorState
 * DialogAuthenticator
-* PortalItem
 * OAuthUserConfiguration
+* PortalItem
 
 ## Additional information
 
