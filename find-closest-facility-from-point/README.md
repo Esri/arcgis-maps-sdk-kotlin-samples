@@ -49,4 +49,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
-geoviewcompose, incident, network analysis, route, search,
+geoviewcompose, incident, network analysis, route, search
