@@ -17,7 +17,7 @@ When you run the sample, the app will load a web map which contains premium cont
 1. Create an `AuthenticatorState` and set the `OAuthConfiguration` with the portal URL, client ID, and redirect URI.
 2. Call the toolkit's `DialogAuthenticator` composable passing it the `AuthenticatorState` object. Because the `AuthenticatorState` object has an `OAuthConfiguration` set, the `DialogAuthenticator` will prompt for OAuth credentials when the associated `Portal` is loaded.
 3. Load a `PortalItem(...)` with connection type `Portal.Connection.Authenticated` which will issue an authentication challenge.
-4. Set up the manifest.xml to handle the OAuth redirect URI.
+4. Configure the manifest.xml to handle the OAuth redirect URI.
    * Define a second activity in the `manifest.xml` with the a name `OAuthUserSignInActivity` from the toolkit
 
    ```xml
