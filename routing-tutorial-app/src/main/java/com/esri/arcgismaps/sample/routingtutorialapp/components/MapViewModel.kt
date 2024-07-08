@@ -75,8 +75,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
     var travelDistance by mutableStateOf("")
     var mapLoading by mutableStateOf(false)
     var showBottomSheet by mutableStateOf(false)
-    var isQuickestButtonEnabled by mutableStateOf(false)
-    var isShortestButtonEnabled by mutableStateOf(false)
     var isStartAddressTextFieldEnabled by mutableStateOf(true)
     var isDestinationAddressTextFieldEnabled by mutableStateOf(true)
     private val routeStops by lazy { mutableListOf<Stop>() }
@@ -98,9 +96,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
                 // Map has loaded
                 mapLoading = true
-
-                // Pan to user's current location
-                //locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
 
                 // Set route parameters
                 routeParameters = routeTask.createDefaultParameters().getOrThrow()
@@ -135,10 +130,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         // Reset address values
         startAddress = ""
         destinationAddress = ""
-
-        // Enable the route options
-        isQuickestButtonEnabled = false
-        isShortestButtonEnabled = false
 
         // Make the addresses editable
         isStartAddressTextFieldEnabled = true
@@ -247,6 +238,12 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
      *
      */
     fun findQuickestRoute() {
+        if (startAddress == "" || destinationAddress == "") {
+            return showMessage("Please enter the start and/or destination address(es)")
+        }
+        if (cachedRouteStops?.isEmpty() == true || cachedRouteResult == null) {
+            return showMessage("Please find a route first")
+        }
 
         // Set the route parameters to finding quickest route.
         routeParameters?.travelMode = routeTask.getRouteTaskInfo().travelModes[0]
@@ -271,9 +268,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
             }
         }
 
-        // Disable button, will only be enabled if the Refresh button is clicked or restart the app
-        isQuickestButtonEnabled = false
-        isShortestButtonEnabled = false
     }
 
     /**
@@ -281,6 +275,13 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
      *
      */
     fun findShortestRoute() {
+
+        if (startAddress == "" || destinationAddress == "") {
+            return showMessage("Please enter the start and/or destination address(es)")
+        }
+        if (cachedRouteStops?.isEmpty() == true || cachedRouteResult == null) {
+            return showMessage("Please find a route first")
+        }
 
         // Set the route parameters to finding shortest route.
         routeParameters?.travelMode = routeTask.getRouteTaskInfo().travelModes[1]
@@ -304,9 +305,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
                 }
             }
         }
-        // Disable button, will only be enabled if the Refresh button is clicked or restart the app
-        isShortestButtonEnabled = false
-        isQuickestButtonEnabled = false
     }
 
     /**
@@ -405,10 +403,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
      * route if user needed the directions again as example.
      */
     private fun handleRouteResult(routeResult: RouteResult) {
-
-        // Enabling the Quickest/Shortest route options
-        isShortestButtonEnabled = true
-        isQuickestButtonEnabled = true
 
         // Get the first solved route result
         val route = routeResult.routes[0]
