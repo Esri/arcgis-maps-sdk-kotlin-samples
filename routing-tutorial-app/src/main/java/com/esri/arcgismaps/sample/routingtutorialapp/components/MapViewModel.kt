@@ -45,6 +45,7 @@ import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.arcgismaps.tasks.networkanalysis.DirectionManeuver
 import com.arcgismaps.tasks.networkanalysis.RouteParameters
+import com.arcgismaps.tasks.networkanalysis.RouteResult
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
@@ -84,6 +85,8 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
     private val routeTask = RouteTask(
         url = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
     )
+    private var cachedRouteResult: RouteResult? = null
+    private var cachedRouteStops: List<Stop>? = null
 
     /**
      * Performing the following during the app's loading process.
@@ -141,6 +144,9 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         isStartAddressTextFieldEnabled = true
         isDestinationAddressTextFieldEnabled = true
 
+        cachedRouteResult = null
+        cachedRouteStops = null
+
         // Remove any previous data about routes and stops
         clearRouteAndStops()
 
@@ -195,7 +201,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
             // Skipping searching for a location if it is current user's location.
             if (startAddress != "Your location") {
-                isStartAddressTextFieldEnabled = false
                 // Search for starting address
                 searchAddress(
                     startAddress, true
@@ -213,7 +218,6 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
     fun onSearchDestinationAddress() {
         viewModelScope.launch {
             // Search for destination address
-            isDestinationAddressTextFieldEnabled = false
             searchAddress(
                 destinationAddress, false
             )
@@ -252,7 +256,19 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
         // Find the route
         viewModelScope.launch {
-            findRoute()
+            val routeResult = routeParameters?.let { routeTask.solveRoute(it) }
+            if (routeResult != null) {
+                routeResult.onFailure {
+                    showMessage("No route solution. ${it.message}")
+                    routeOverlay.graphics.clear()
+                    stopsOverlay.graphics.clear()
+                    isStartAddressTextFieldEnabled = true
+                    isDestinationAddressTextFieldEnabled = true
+                }.onSuccess {
+                    // Cache the route result and stops
+                    handleRouteResult(it)
+                }
+            }
         }
 
         // Disable button, will only be enabled if the Refresh button is clicked or restart the app
@@ -274,7 +290,19 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
         // Find the route
         viewModelScope.launch {
-            findRoute()
+            val routeResult = routeParameters?.let { routeTask.solveRoute(it) }
+            if (routeResult != null) {
+                routeResult.onFailure {
+                    showMessage("No route solution. ${it.message}")
+                    routeOverlay.graphics.clear()
+                    stopsOverlay.graphics.clear()
+                    isStartAddressTextFieldEnabled = true
+                    isDestinationAddressTextFieldEnabled = true
+                }.onSuccess {
+                    // Cache the route result and stops
+                    handleRouteResult(it)
+                }
+            }
         }
         // Disable button, will only be enabled if the Refresh button is clicked or restart the app
         isShortestButtonEnabled = false
@@ -303,6 +331,11 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         // Search for the address
         locatorTask.geocode(searchText = query, parameters = geocodeParameters)
             .onSuccess { geocodeResults: List<GeocodeResult> ->
+                if (isStartAddress) {
+                    isStartAddressTextFieldEnabled = false
+                } else {
+                    isDestinationAddressTextFieldEnabled = false
+                }
                 if (geocodeResults.isNotEmpty()) {
 
                     // Find the location and add it as a stop
@@ -332,75 +365,99 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Find a route between starting and destination address
+     * Find a route between starting and destination address if the route is new.
      *
      */
     private suspend fun findRoute() {
-        snackbarHostState.showSnackbar("Routing...")
 
-        // Set router parameters
-        routeParameters?.setStops(routeStops)
-        routeParameters?.returnDirections = true
+        // Check if the stops are the same as the previous request
+        if (routeStops == cachedRouteStops && cachedRouteResult != null) {
+            // Use the cached route result
+            handleRouteResult(cachedRouteResult!!)
+        } else {
+            snackbarHostState.showSnackbar("Routing...")
 
-        val routeResult = routeParameters?.let { routeTask.solveRoute(it) }
-        if (routeResult != null) {
-            routeResult.onFailure {
-                showMessage("No route solution. ${it.message}")
-                routeOverlay.graphics.clear()
-            }.onSuccess {
+            // Set router parameters
+            routeParameters?.setStops(routeStops)
+            routeParameters?.returnDirections = true
 
-                // Enabling the Quickest/Shortest route options
-                isShortestButtonEnabled = true
-                isQuickestButtonEnabled = true
-                // Get the first solved route result
-                val route = it.routes[0]
-
-                // Create graphic for route
-                val routeGraphic = Graphic(
-                    geometry = route.routeGeometry, symbol = SimpleLineSymbol(
-                        style = SimpleLineSymbolStyle.Solid, color = Color.cyan, width = 2f
-                    )
-                )
-
-                // Add the route layout to the map
-                routeOverlay.graphics.add(routeGraphic)
-
-                // Clear any previous directions and add new directions
-                directionsList.clear()
-                route.directionManeuvers.forEach { directionManeuver: DirectionManeuver ->
-                    directionsList.add(directionManeuver.directionText)
-                }
-
-                // Only show bottom sheet if there are directions
-                if (directionsList.isNotEmpty()) {
-                    showBottomSheet = true
-                }
-
-                // Get time and distance for the route
-                val travelDuration = route.travelTime.roundToInt().toDuration(DurationUnit.MINUTES)
-                travelTime = travelDuration.toString()
-                travelDistance = "%.2f".format(
-                    route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
-                )
-
-                // Animate to show the stops and the route
-                currentJob = viewModelScope.launch {
-                    val routeExtent = route.routeGeometry?.extent
-
-                    // Create a Viewpoint from the route's extent.
-                    val viewpoint = routeExtent?.let { Viewpoint(it) }
-
-                    // Animate the map view to the new viewpoint
-                    if (viewpoint != null) {
-                        mapViewProxy.setViewpointAnimated(viewpoint, duration = 0.25.seconds)
-                            .onFailure { error ->
-                                println("Failed to set Viewpoint: ${error.message}")
-                            }
-                    }
+            val routeResult = routeParameters?.let { routeTask.solveRoute(it) }
+            if (routeResult != null) {
+                routeResult.onFailure {
+                    showMessage("No route solution. ${it.message}")
+                    routeOverlay.graphics.clear()
+                    stopsOverlay.graphics.clear()
+                    isStartAddressTextFieldEnabled = true
+                    isDestinationAddressTextFieldEnabled = true
+                }.onSuccess {
+                    // Cache the route result and stops
+                    cachedRouteResult = it
+                    cachedRouteStops = routeStops
+                    handleRouteResult(it)
                 }
             }
         }
     }
+
+
+    /**
+     * This function uses routeResult as a cached route, that way there is no recalculating
+     * route if user needed the directions again as example.
+     */
+    private fun handleRouteResult(routeResult: RouteResult) {
+
+        // Enabling the Quickest/Shortest route options
+        isShortestButtonEnabled = true
+        isQuickestButtonEnabled = true
+
+        // Get the first solved route result
+        val route = routeResult.routes[0]
+
+        // Create graphic for route
+        val routeGraphic = Graphic(
+            geometry = route.routeGeometry, symbol = SimpleLineSymbol(
+                style = SimpleLineSymbolStyle.Solid, color = Color.cyan, width = 2f
+            )
+        )
+
+        // Add the route layout to the map
+        routeOverlay.graphics.add(routeGraphic)
+
+        // Clear any previous directions and add new directions
+        directionsList.clear()
+        route.directionManeuvers.forEach { directionManeuver: DirectionManeuver ->
+            directionsList.add(directionManeuver.directionText)
+        }
+
+        // Only show bottom sheet if there are directions
+        if (directionsList.isNotEmpty()) {
+            showBottomSheet = true
+        }
+
+        // Get time and distance for the route
+        val travelDuration = route.travelTime.roundToInt().toDuration(DurationUnit.MINUTES)
+        travelTime = travelDuration.toString()
+        travelDistance = "%.2f".format(
+            route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
+        )
+
+        // Animate to show the stops and the route
+        currentJob = viewModelScope.launch {
+            val routeExtent = route.routeGeometry?.extent
+
+            // Create a Viewpoint from the route's extent.
+            val viewpoint = routeExtent?.let { Viewpoint(it) }
+
+            // Animate the map view to the new viewpoint
+            if (viewpoint != null) {
+                mapViewProxy.setViewpointAnimated(viewpoint, duration = 0.25.seconds)
+                    .onFailure { error ->
+                        println("Failed to set Viewpoint: ${error.message}")
+                    }
+            }
+        }
+    }
+
 
     /**
      * Clear any data and graphic about routes and stops
