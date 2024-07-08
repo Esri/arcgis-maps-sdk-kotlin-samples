@@ -1,2 +1,43 @@
 {
+    "category": "Routing and Logistics",
+    "description": "Find a route to the closest facility from a location.",
+    "formal_name": "FindClosestFacilityFromPoint",
+    "ignore": false,
+    "images": [
+        "find_closest_facility_to_an_incident_interactive.png"
+    ],
+    "keywords": [
+        "incident",
+        "network analysis",
+        "route",
+        "search",
+        "ClosestFacilityParameters",
+        "ClosestFacilityResult",
+        "ClosestFacilityRoute",
+        "ClosestFacilityTask",
+        "Facility",
+        "Graphic",
+        "GraphicsOverlay",
+        "Incident",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ClosestFacilityParameters",
+        "ClosestFacilityResult",
+        "ClosestFacilityRoute",
+        "ClosestFacilityTask",
+        "Facility",
+        "Graphic",
+        "GraphicsOverlay",
+        "Incident",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/screens/MainScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/MainActivity.kt"
+    ],
+    "title": "Find closest facility from point"
 }
