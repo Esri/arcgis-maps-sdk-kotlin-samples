@@ -17,8 +17,6 @@
 package com.esri.arcgismaps.sample.findclosestfacilityfrompoint.components
 
 import android.app.Application
-import android.widget.Toast
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,20 +40,13 @@ import com.arcgismaps.tasks.networkanalysis.ClosestFacilityTask
 import com.arcgismaps.tasks.networkanalysis.Facility
 import com.arcgismaps.tasks.networkanalysis.Incident
 import com.esri.arcgismaps.sample.findclosestfacilityfrompoint.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-
 class MapViewModel(private var application: Application) : AndroidViewModel(application) {
 
-    val currentJob = mutableStateOf<Job?>(null)
-    val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-        initialViewpoint = Viewpoint(
-            latitude = 32.727, longitude = -117.1750, scale = 100000.0
-        )
-    }
-
-    // Hardcoded list of facilities
+    // List of hospital facilities in the San Diego area
     private var facilitiesList = listOf(
         Facility(Point(-1.3042129900625112E7, 3860127.9479775648, SpatialReference.webMercator())),
         Facility(Point(-1.3042193400557665E7, 3862448.873041752, SpatialReference.webMercator())),
@@ -66,86 +57,81 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         Facility(Point(-1.3049023883956768E7, 3861993.789732541, SpatialReference.webMercator()))
     )
 
-    // Create graphic overlay of facilities to display them on the map when user opens app
+    // Create graphic overlay of facilities to display on the map
     private val facilityGraphicsOverlay = GraphicsOverlay()
 
-    // Create graphic overlay of incident to display the incident once user taps on map
-    val incidentGraphicsOverlay = GraphicsOverlay()
+    // Create graphic overlay of incident to display on map tapped
+    private val incidentGraphicsOverlay = GraphicsOverlay()
 
+    // Create a ViewModel to handle dialog interactions
+    private val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+
+    // Add the graphics overlays to be used by the composable MapView
     val graphicsOverlays = listOf(facilityGraphicsOverlay, incidentGraphicsOverlay)
 
+    // Create a streets basemap layer and change the position of map to center around San Diego
+    val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
+        initialViewpoint = Viewpoint(
+            latitude = 32.727,
+            longitude = -117.1750,
+            scale = 100000.0
+        )
+    }
 
     init {
-        createFacilitiesAndGraphics()
-    }
-
-    /**
-     * Retrieve the incident point and initiate the process to finding the route between the incident and closest facility
-     *
-     */
-    fun onSingleTapConfirmed(
-        currentJob: MutableState<Job?>,
-        event: SingleTapConfirmedEvent,
-        incidentGraphicsOverlay: GraphicsOverlay
-    ) {
-
-        // Cancel previous job
-        currentJob.value?.cancel()
-
-        // Retrieve the tapped map point from the SingleTapConfirmedEvent
-        val mapPoint: Point =
-            event.mapPoint ?: return showMessage("No map point retrieved from tap.")
-
-        val incidentPoint = Incident(mapPoint)
-
-        clearIncident(incidentGraphicsOverlay)
-        addIncident(incidentPoint, incidentGraphicsOverlay)
-        currentJob.value = viewModelScope.launch {
-            findRoute(Incident(mapPoint), incidentGraphicsOverlay)
-        }
-    }
-
-    /**
-     * Facility markers are drawn on the map right when the user opens app
-     *
-     */
-    private fun createFacilitiesAndGraphics() {
-
-        // Add all facility centers on the map
+        // Create the facility symbol
         val facilityUrl = application.getString(R.string.hospital_symbol_url)
-        val facilitySymbol = PictureMarkerSymbol(facilityUrl)
-        facilitySymbol.height = 30F
-        facilitySymbol.width = 30F
+        val facilitySymbol = PictureMarkerSymbol(facilityUrl).apply {
+            height = 30F
+            width = 30F
+        }
+
+        // Create a graphic for each facility and add them to the graphics overlay
         for (facility in facilitiesList) {
             val facilityGraphic = Graphic(
-                geometry = facility.geometry, symbol = facilitySymbol
+                geometry = facility.geometry,
+                symbol = facilitySymbol
             )
             facilityGraphicsOverlay.graphics.add(facilityGraphic)
         }
-
     }
 
     /**
-     * Clear the incident marker from the map
-     *
+     * Retrieve the tapped point [event], update the incident, and initiate the process
+     * to find the route between the incident and closest facility.
      */
-    private fun clearIncident(
-        incidentGraphicsOverlay: GraphicsOverlay
-    ) {
+    fun onSingleTapConfirmed(event: SingleTapConfirmedEvent) {
+
+        // Retrieve the tapped map point from the SingleTapConfirmedEvent
+        val mapPoint: Point = event.mapPoint ?: return messageDialogVM.showMessageDialog(
+            title = "No map point retrieved from tap.",
+            description = ""
+        )
+
+        // Create an incident on the tapped point
+        val incidentPoint = Incident(mapPoint)
+
+        // Clear and update the incident graphic on the map
+        updateIncidentGraphicPosition(incidentPoint)
+
+        // Find the closest facility to the incident
+        viewModelScope.launch {
+            findRoute(Incident(mapPoint))
+        }
+    }
+
+    /**
+     * Updates the [incidentGraphicsOverlay] to display a graphic on the [incidentPoint]
+     */
+    private fun updateIncidentGraphicPosition(incidentPoint: Incident) {
+
         incidentGraphicsOverlay.graphics.clear()
-    }
-
-    /**
-     * Add the incident marker on map
-     *
-     */
-    private fun addIncident(
-        incidentPoint: Incident, incidentGraphicsOverlay: GraphicsOverlay
-    ) {
 
         // Create a cross symbol for the incident
         val incidentMarker = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Cross, color = Color.black, size = 20.0F
+            style = SimpleMarkerSymbolStyle.Cross,
+            color = Color.black,
+            size = 20.0F
         )
 
         // Get the incident's geometry
@@ -154,61 +140,60 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
         // Add graphic to incident graphic overlays
         incidentGraphicsOverlay.graphics.add(
             Graphic(
-                geometry = incidentStopGeometry, symbol = incidentMarker
+                geometry = incidentStopGeometry,
+                symbol = incidentMarker
             )
         )
 
     }
 
     /**
-     * Find the route between the given incident point the closest facility
+     * Find the route between the given [incidentPoint] and the closest available facility
      *
      */
-    private suspend fun findRoute(
-        incidentPoint: Incident, incidentGraphicsOverlay: GraphicsOverlay
-    ) {
+    private suspend fun findRoute(incidentPoint: Incident) {
         val closestFacilityTask = ClosestFacilityTask(
             url = application.getString(R.string.san_diego_network_service_url)
         )
 
         // Create a job to find the route
-        try {
-            val closestFacilityParameters: ClosestFacilityParameters =
-                closestFacilityTask.createDefaultParameters().getOrThrow()
-            closestFacilityParameters.setFacilities(facilitiesList)
-            closestFacilityParameters.setIncidents(listOf(incidentPoint))
-
-
-            // Solve a route using the route parameters created
-            val closestFacilityResult: ClosestFacilityResult =
-                closestFacilityTask.solveClosestFacility(closestFacilityParameters).getOrThrow()
-            val rankedFacilitiesList = closestFacilityResult.getRankedFacilityIndexes(0)
-
-            // If we got a list of facilities
-            if (rankedFacilitiesList.isNotEmpty()) {
-                val closestFacilityIndex = rankedFacilitiesList[0]
-                val route = closestFacilityResult.getRoute(closestFacilityIndex, 0)
-                val routeSymbol =
-                    SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.fromRgba(0, 0, 255), 2.0f)
-                val routeGraphic = Graphic(
-                    geometry = route?.routeGeometry, symbol = routeSymbol
-                )
-
-                // Add the route graphic to the incident graphic overlay
-                incidentGraphicsOverlay.graphics.add(routeGraphic)
-            }
-        } catch (e: Exception) {
-
-            showMessage(
-                if (e.message?.contains("Unable to complete operation") == true) "Incident not within the San Diego Area!" else "Error getting closest facility result: " + e.message
-            )
+        val closestFacilityParameters: ClosestFacilityParameters =
+            closestFacilityTask.createDefaultParameters().getOrThrow()
+        // Add the facilities and incident points
+        closestFacilityParameters.apply {
+            setFacilities(facilitiesList)
+            setIncidents(listOf(incidentPoint))
         }
-    }
 
-    private fun showMessage(
-        message: String
-    ) {
-        Toast.makeText(application, message, Toast.LENGTH_LONG).show()
-    }
+        // Solve a route using the facility task with the created parameters.
+        val closestFacilityResult =
+            closestFacilityTask.solveClosestFacility(closestFacilityParameters).getOrElse { error ->
+                messageDialogVM.showMessageDialog(
+                    title = "Error solving route: ${error.message.toString()}",
+                    description = error.cause.toString()
+                )
+            } as ClosestFacilityResult
+        val rankedFacilitiesList = closestFacilityResult.getRankedFacilityIndexes(incidentIndex = 0)
+        // If we got a list of facilities
+        if (rankedFacilitiesList.isNotEmpty()) {
+            val closestFacilityIndex = rankedFacilitiesList[0]
+            val route = closestFacilityResult.getRoute(
+                facilityIndex = closestFacilityIndex,
+                incidentIndex = 0
+            )
+            val routeSymbol = SimpleLineSymbol(
+                style = SimpleLineSymbolStyle.Solid,
+                color = Color.fromRgba(0, 0, 255),
+                width = 2.0f
+            )
+            val routeGraphic = Graphic(
+                geometry = route?.routeGeometry,
+                symbol = routeSymbol
+            )
 
+            // Add the route graphic to the incident graphic overlay
+            incidentGraphicsOverlay.graphics.add(routeGraphic)
+        }
+
+    }
 }

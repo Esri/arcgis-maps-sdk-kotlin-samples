@@ -34,22 +34,21 @@ fun MainScreen(sampleName: String) {
 
     val mapViewModel: MapViewModel = viewModel()
 
-    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
-        MapView(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            arcGISMap = mapViewModel.map,
-            graphicsOverlays = mapViewModel.graphicsOverlays,
-            onSingleTapConfirmed = { event ->
-                mapViewModel.onSingleTapConfirmed(
-                    mapViewModel.currentJob,
-                    event,
-                    mapViewModel.incidentGraphicsOverlay
-                )
-            },
-        )
-    })
+    Scaffold(
+        topBar = { SampleTopAppBar(title = sampleName) },
+        content = {
+            MapView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                arcGISMap = mapViewModel.map,
+                graphicsOverlays = mapViewModel.graphicsOverlays,
+                onSingleTapConfirmed = { event ->
+                    mapViewModel.onSingleTapConfirmed(event)
+                },
+            )
+        }
+    )
 }
 
 
