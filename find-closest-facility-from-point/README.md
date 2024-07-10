@@ -14,7 +14,7 @@ Tap near any of the hospitals and a route will be displayed from that tapped loc
 
 ## How it works
 
-1. Create a `ClosestFacilityTask` using a Url from an online network analysis service.
+1. Create a `ClosestFacilityTask` using an URL from an online network analysis service.
 2. Get `ClosestFacilityParameters` from task, `closestFacilityTask.createDefaultParameters()`.
 3. Add the list of facilities to parameters, `closestFacilityParameters.setFacilities(facilitiesList)`.
 4. Add the incident to parameters, `closestFacilityParameters.setIncidents(listOf(incidentPoint))`.
@@ -24,7 +24,7 @@ Tap near any of the hospitals and a route will be displayed from that tapped loc
 8. Find closest facility route, `closestFacilityResult.getRoute(closestFacilityIndex, incidentIndex)`.
 9. Display route to `MapView`:
    * Create `Graphic` from route geometry, `Graphic(geometry = route?.routeGeometry, symbol = routeSymbol)`.
-   * Add graphic to `GraphicsOverlay` to the MapView's graphic overlays collection.
+   * Add graphic to a `GraphicsOverlay` and add it to the MapView's graphic overlays collection.
 
 ## Relevant API
 
