@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.findclosestfacilityfrompoint.components
 
 import android.app.Application
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
@@ -41,7 +40,6 @@ import com.arcgismaps.tasks.networkanalysis.Facility
 import com.arcgismaps.tasks.networkanalysis.Incident
 import com.esri.arcgismaps.sample.findclosestfacilityfrompoint.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class MapViewModel(private var application: Application) : AndroidViewModel(application) {
@@ -104,8 +102,7 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
         // Retrieve the tapped map point from the SingleTapConfirmedEvent
         val mapPoint: Point = event.mapPoint ?: return messageDialogVM.showMessageDialog(
-            title = "No map point retrieved from tap.",
-            description = ""
+            title = "No map point retrieved from tap."
         )
 
         // Create an incident on the tapped point
@@ -116,7 +113,7 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
 
         // Find the closest facility to the incident
         viewModelScope.launch {
-            findRoute(Incident(mapPoint))
+            findRoute(incidentPoint)
         }
     }
 
@@ -174,7 +171,8 @@ class MapViewModel(private var application: Application) : AndroidViewModel(appl
                 )
             } as ClosestFacilityResult
         val rankedFacilitiesList = closestFacilityResult.getRankedFacilityIndexes(incidentIndex = 0)
-        // If we got a list of facilities
+
+        // If the result contains a facility, solve the route from incident to facility. 
         if (rankedFacilitiesList.isNotEmpty()) {
             val closestFacilityIndex = rankedFacilitiesList[0]
             val route = closestFacilityResult.getRoute(
