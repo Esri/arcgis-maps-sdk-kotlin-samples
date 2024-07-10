@@ -82,7 +82,7 @@ class MapViewModel(
         sampleCoroutineScope.launch {
             // set the id for the graphics overlay
             graphicsOverlay.id = "Editor Graphics Overlay"
-            // set the tool for the geometry editor
+            // set the tool for the geometry editor to use a reticle
             geometryEditor.tool = ReticleVertexTool()
             // set the feature layer's tiling mode
             map.loadSettings.featureTilingMode =
@@ -205,7 +205,7 @@ class MapViewModel(
         }
 
         val selectedElement = geometryEditor.selectedElement.value
-        if (selectedElement != null && selectedElement.canDelete) {
+        if (selectedElement?.canDelete == true) {
             geometryEditor.deleteSelectedElement()
         }
     }
