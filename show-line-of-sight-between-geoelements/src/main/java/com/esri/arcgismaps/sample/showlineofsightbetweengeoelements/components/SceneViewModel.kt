@@ -25,6 +25,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.analysis.GeoElementLineOfSight
+import com.arcgismaps.geometry.AngularUnit
+import com.arcgismaps.geometry.GeodeticCurveType
+import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.LinearUnit
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISScene
@@ -49,96 +53,53 @@ import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.R
 import kotlinx.coroutines.launch
 import java.io.File
 
+
 class SceneViewModel(private var application: Application) : AndroidViewModel(application) {
 
 
-    val analysisOverlay = AnalysisOverlay()
-
-    // TODO: graphic
-    val graphicsOverlay = GraphicsOverlay()
-
-    // create a ViewModel to handle dialog interactions
+    private val meters = LinearUnit.meters
+    private val degrees = AngularUnit.degrees
+    var analysisOverlay by mutableStateOf(AnalysisOverlay())
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+    private var waypointsIndex = 0
+    var scene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISTopographic))
 
-
-    // TODO: SURFACE
-    // add base surface for elevation data
-    val elevationSource = ArcGISTiledElevationSource(R.string.elevation_service_url.toString())
-    val surface = Surface().apply {
-        elevationSources.add(elevationSource)
-    }
-
-
-    // TODO; BUILDING
-    val buildingsURL = getString(application, R.string.new_york_buildings_service_url)
-    val buildings: ArcGISSceneLayer = ArcGISSceneLayer(buildingsURL)
-
-
-    // TODO: 3d
-    val renderer3D = SimpleRenderer()
-    val renderProperties = renderer3D.sceneProperties.apply {
-        headingExpression.plus("[HEADING]")
-    }
-
-    // TODO: point
-    val observationPoint = Point(-73.9853, 40.7484, 200.0, SpatialReference.wgs84())
-    val observer = Graphic(
-        geometry = observationPoint,
-        symbol = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Circle,
-            color = Color.fromRgba(255, 255, 0),
-            size = 5F
-        )
-    )
-
-    // TODO; WAYPOINTS
     // create waypoints around a block for the taxi to drive to
-    val wayPoints = listOf(
+    private val wayPoints = listOf(
         Point(-73.984513, 40.748469, SpatialReference.wgs84()),
         Point(-73.985068, 40.747786, SpatialReference.wgs84()),
         Point(-73.983452, 40.747091, SpatialReference.wgs84()),
         Point(-73.982961, 40.747762, SpatialReference.wgs84()),
     )
 
-    // TODO: TAXI SYMBOL, FILEPATH, TAXIGRAPHIC
-
-
-    val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
-            R.string.app_name
+    // Create a point graph near the Empire State Building to be the observer
+    private val observationPoint = Point(-73.9853, 40.7484, 200.0, SpatialReference.wgs84())
+    private val observer = Graphic(
+        geometry = observationPoint,
+        symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Circle,
+            color = Color.red,
+            size = 5F
         )
-    }
+    )
 
-    val filePath = provisionPath + application.getString(R.string.new_york_buildings_service_url)
-
-    val taxiSymbol = ModelSceneSymbol(filePath, 1.0F).apply {
+    // create a graphic of a taxi to be the target
+    private val filePath = application.cacheDir.toString() + File.separator + getString(
+        application,
+        R.string.dolmus_model
+    )
+    private val taxiSymbol = ModelSceneSymbol(filePath, 1.0F).apply {
         SceneSymbolAnchorPosition.Bottom
         viewModelScope.launch {
             load()
         }
     }
+    private val taxiGraphic = Graphic(wayPoints[0], taxiSymbol).apply {
+        attributes["HEADING"] = 0.0
+    }
 
 
-    val taxiGraphic = Graphic(wayPoints[0], taxiSymbol)
-    // .attributes.put("HEADING", 0.0)
-
-    val lineOfSight = GeoElementLineOfSight(
-        observerGeoElement = observer,
-        targetGeoElement = taxiGraphic
-    )
-
-
-    // TODO: CAMERA
-
-    val cameraLocation = Point(
-        x = -118.794,
-        y = 33.909,
-        z = 5330.0,
-        spatialReference = SpatialReference.wgs84()
-    )
-
-
-    val camera = Camera(
+    private val camera = Camera(
         observer.geometry as Point,
         distance = 700.0,
         roll = -30.0,
@@ -146,30 +107,107 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         heading = 0.0,
     )
 
-
-    // create a base scene to be used to load the Taxi Computer-aided Design (CAD)
-    var scene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
-        baseSurface = surface
-        operationalLayers.add(buildings)
-        initialViewpoint = Viewpoint(cameraLocation, camera)
-    })
-
-
     init {
 
+        // Add base surface for elevation data
+        val surface = Surface().apply {
+            elevationSources.add(
+                ArcGISTiledElevationSource(
+                    getString(
+                        application,
+                        R.string.elevation_service_url
+                    )
+                )
+            )
+        }
 
+        // Add buildings from New York City
+        val buildingsURL = (application.getString(R.string.new_york_buildings_service_url))
+
+        // Create a scene and add imagery basemap, elevation surface, and buildings layer to it
+        val buildings = ArcGISSceneLayer(buildingsURL)
+
+        // Set up a heading expression to handle graphic rotation
+        val renderer3D = SimpleRenderer().apply {
+            sceneProperties.headingExpression = ("[HEADING]")
+        }
+
+        // add the buildings scene to the sceneView
+        scene.apply {
+            baseSurface = surface
+            operationalLayers.add(buildings)
+            initialViewpoint = Viewpoint(observationPoint, camera)
+        }
+
+        getGraphicsOverlay().renderer = renderer3D
+        getGraphicsOverlay().graphics.add(observer)
+        getGraphicsOverlay().graphics.add(taxiGraphic)
+
+        val lineOfSight = GeoElementLineOfSight(
+            observerGeoElement = observer,
+            targetGeoElement = taxiGraphic
+        )
+
+        analysisOverlay.analyses.add(lineOfSight)
+        analysisOverlay.isVisible = true
+
+        // select (highlight) the taxi when the line of sight target visibility changes to visible
+//        if(lineOfSight.isVisible){
+//            taxiGraphic.isSelected = lineOfSight.isVisible
+//        }
+//
+//        val timer = Timer()
+//        // create a timer to animate the tank
+//        timer.schedule(object : TimerTask() {
+//            override fun run() {
+//           //     animate()
+//            }
+//        }, 0, 50)
+    }
+
+
+    fun getGraphicsOverlay(): GraphicsOverlay {
+        // Create a graphics overlay for the graphics
+        val graphicsOverlay = GraphicsOverlay()
         graphicsOverlay.sceneProperties.surfacePlacement.apply {
             LayerSceneProperties(SurfacePlacement.Relative)
         }
-        graphicsOverlay.renderer = renderer3D
-        graphicsOverlay.graphics.add(observer)
-        graphicsOverlay.graphics.add(taxiGraphic)
-        analysisOverlay.analyses.add(lineOfSight)
-
-        /*
-    Instantiate an AnalysisOverlay and add it to the SceneView's analysis overlays collection.
-Instantiate a GeoElementLineOfSight, passing in observer and target GeoElements (features or graphics). Add the line of sight to the analysis overlay's analyses collection.
-To get the target visibility when it changes, react to the target visibility changing on the GeoElementLineOfSight instance.
-     */
+        return graphicsOverlay
     }
+
+    /**
+     * Moves the taxi toward the current waypoint a short distance.
+     */
+    private fun animate() {
+        val waypoint = wayPoints[waypointsIndex]
+        // get current location and distance from waypoint
+        var location = taxiGraphic.geometry as Point
+        val distance = GeometryEngine.distanceGeodeticOrNull(
+            location,
+            waypoint,
+            meters,
+            degrees,
+            GeodeticCurveType.Geodesic
+        )
+        // move toward waypoint a short distance
+        if (distance != null) {
+            location = GeometryEngine.tryMoveGeodetic(
+                listOf(location), 1.0, meters, distance.azimuth1, degrees,
+                GeodeticCurveType.Geodesic
+            )[0]
+        }
+        // taxiGraphic.geometry = location
+
+        // rotate to the waypoint
+        // mTaxiGraphic.getAttributes().put("HEADING", distance.azimuth1)
+
+
+        // reached waypoint, move to next waypoint
+        if (distance != null) {
+            if (distance.distance <= 2) {
+                waypointsIndex = (waypointsIndex + 1) % wayPoints.size
+            }
+        }
+    }
+
 }
