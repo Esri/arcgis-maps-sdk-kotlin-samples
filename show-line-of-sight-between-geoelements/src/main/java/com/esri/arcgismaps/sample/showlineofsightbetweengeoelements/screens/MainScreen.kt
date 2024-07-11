@@ -29,20 +29,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.PointBuilder
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.components.SceneViewModel
 
@@ -52,14 +45,9 @@ import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.components.S
 @Composable
 fun MainScreen(sampleName: String) {
     val sceneViewModel: SceneViewModel = viewModel()
-    val sliderMinHeightOffset = 150
+    val currentZValue = sceneViewModel.currentZValue.collectAsState().value
 
-    // Positions slider to 200 on launch
-    var sliderPosition by remember {
-        mutableFloatStateOf(sceneViewModel.observationPoint.z!!.minus(sliderMinHeightOffset).toFloat())
-    }
-
-  //  var sliderPosition by remember { mutableFloatStateOf(0f) }
+    //  var sliderPosition by remember { mutableFloatStateOf(0f) }
 
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -69,21 +57,16 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f)
                 ) {
-
-
-                    if (!sceneViewModel.sceneLoading) {
-                        LoadingDialog(loadingMessage = "Loading Scene...")
-                    } else {
                     // composable function that wraps the SceneView
-                        SceneView(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it),
-                            arcGISScene = sceneViewModel.scene,
-                            analysisOverlays = listOf(sceneViewModel.analysisOverlay),
-                            graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
-                        )
-                }
+                    SceneView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
+                        arcGISScene = sceneViewModel.scene,
+                        analysisOverlays = listOf(sceneViewModel.analysisOverlay),
+                        graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
+                    )
+
                     Row(
                         modifier = Modifier.Companion
                             .align(Alignment.BottomCenter)
@@ -92,44 +75,22 @@ fun MainScreen(sampleName: String) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-
-                        // at lowest value in the range, it will be 150 because height = 0 + 150
-                        // at highest value, it will be 300 because height = (300-150) + 150 = 300
-                         val height = sliderPosition + sliderMinHeightOffset
                         Slider(
-                            value = sliderPosition,
-                            onValueChange = {
-                                sliderPosition = it
-                                    val pointBuilder = PointBuilder(sceneViewModel.observer.geometry as Point).apply {
-                                        z = height.toDouble()
-                                    }
-                                    sceneViewModel.observer.geometry = pointBuilder.toGeometry()
-
+                            value = currentZValue.toFloat(),
+                            onValueChange = { newHeight ->
+                                sceneViewModel.updateHeight(newHeight.toDouble())
                                 //println("THE Z VALUE: ${(sceneViewModel.observer.geometry as Point).z}")
                             },
-
-                               valueRange = 0f..(300f-sliderMinHeightOffset),
+                            valueRange = 150f..300f,
                             modifier = Modifier
                                 .width(300.dp)
                                 .padding(8.dp),
                         )
                         Text(
-                            text = height.toInt().toString(),
+                            text = currentZValue.toInt().toString(),
                             modifier = Modifier.padding(8.dp)
                         )
                     }
-                }
-            }
-
-
-            // display a dialog if the sample encounters an error
-            sceneViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
                 }
             }
         })
