@@ -30,6 +30,7 @@ import com.arcgismaps.geometry.GeodeticCurveType
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.LinearUnit
 import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.PointBuilder
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
@@ -50,6 +51,9 @@ import com.arcgismaps.mapping.view.LayerSceneProperties
 import com.arcgismaps.mapping.view.SurfacePlacement
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.R
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Timer
@@ -58,26 +62,16 @@ import java.util.TimerTask
 
 class SceneViewModel(private var application: Application) : AndroidViewModel(application) {
 
+    val scene = ArcGISScene(BasemapStyle.ArcGISTopographic)
+    val graphicOverlay = GraphicsOverlay()
+    val analysisOverlay = AnalysisOverlay()
 
+    private val _currentZValue = MutableStateFlow(200.0)
+    val currentZValue: StateFlow<Double> = _currentZValue.asStateFlow()
+
+    private var waypointsIndex = 0
     private val meters = LinearUnit.meters
     private val degrees = AngularUnit.degrees
-    var analysisOverlay by mutableStateOf(AnalysisOverlay())
-    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
-    private var waypointsIndex = 0
-    var sceneLoading by mutableStateOf(false)
-    var scene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISTopographic))
-    // Create a graphics overlay for the graphics
-    val graphicsOverlay by mutableStateOf(GraphicsOverlay())
-    // Create a point graph near the Empire State Building to be the observer
-    var observationPoint by mutableStateOf(Point(-73.9853, 40.7484, 200.0, SpatialReference.wgs84()))
-    val observer = Graphic(
-        geometry = observationPoint,
-        symbol = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Circle,
-            color = Color.red,
-            size = 5F
-        )
-    )
 
     // create waypoints around a block for the taxi to drive to
     private val wayPoints = listOf(
@@ -87,111 +81,87 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         Point(-73.982961, 40.747762, SpatialReference.wgs84()),
     )
 
-    private val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
-            R.string.app_name
-        ) + "/"
-    }
-    // create a graphic of a taxi to be the target
-    private val filePath =  provisionPath + application.getString(R.string.dolmus_model)
-
-    private val taxiSymbol = ModelSceneSymbol(filePath, 3.0F).apply {
-        SceneSymbolAnchorPosition.Bottom
-        viewModelScope.launch {
-            load()
-//                .onSuccess {
-//                messageDialogVM.showMessageDialog(
-//                    title = "Loaded!"
-//                )
-//            }.onFailure { error->
-//                messageDialogVM.showMessageDialog(
-//                    title = "Not loaded",
-//                    description = error.cause.toString()
-//                )
-//            }
-        }
-    }
-    private val taxiGraphic = Graphic(wayPoints[0], taxiSymbol).apply {
+    private val taxiGraphic = Graphic(
+        wayPoints[0], SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Circle,
+            color = Color.cyan,
+            size = 5f
+        )
+    ).apply {
         attributes["HEADING"] = 0.0
     }
 
+    private val observerGraphic = Graphic(
+        geometry = Point(
+            x = -73.9853,
+            y = 40.7484,
+            z = _currentZValue.value,
+            spatialReference = SpatialReference.wgs84()
+        ),
+        symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Circle,
+            color = Color.red,
+            size = 5f
+        )
+    )
+
+
     init {
-
-  viewModelScope.launch {
-            scene.load().onSuccess {
-
-                // Map has loaded
-                sceneLoading = true
-
-            }.onFailure {
-                messageDialogVM.showMessageDialog(
-                    title = "scene not loaded"
-                )
-            }
-        }
-
-         val camera = Camera(
-            observer.geometry as Point,
+        val camera = Camera(
+            observerGraphic.geometry as Point,
             distance = 700.0,
             roll = -30.0,
             pitch = 45.0,
             heading = 0.0,
         )
 
-        // Add base surface for elevation data
         val surface = Surface().apply {
             elevationSources.add(
                 ArcGISTiledElevationSource(
-                    getString(
-                        application,
-                        R.string.elevation_service_url
-                    )
+                    uri = application.getString(R.string.elevation_service_url)
                 )
             )
         }
+        val buildings = ArcGISSceneLayer(
+            uri = application.getString(R.string.new_york_buildings_service_url)
+        )
 
-        val buildings = ArcGISSceneLayer(application.getString(R.string.new_york_buildings_service_url))
-
-        // add the buildings scene to the sceneView
         scene.apply {
             baseSurface = surface
             operationalLayers.add(buildings)
-            initialViewpoint = Viewpoint(observationPoint, camera)
+            initialViewpoint = Viewpoint(
+                boundingGeometry = observerGraphic.geometry as Point,
+                camera = camera
+            )
         }
 
-        // create a graphics overlay for the graphics
-        graphicsOverlay.sceneProperties.surfacePlacement.apply {
-            LayerSceneProperties(SurfacePlacement.Relative)
+        graphicOverlay.apply {
+            sceneProperties.surfacePlacement = SurfacePlacement.RelativeToScene
+            graphics.add(observerGraphic)
+            graphics.add(taxiGraphic)
         }
 
-        // Set up a heading expression to handle graphic rotation
-        val renderer3D = SimpleRenderer().apply {
-            sceneProperties.headingExpression = ("[HEADING]")
-        }
-        graphicsOverlay.renderer = renderer3D
-        graphicsOverlay.graphics.add(observer)
-        graphicsOverlay.graphics.add(taxiGraphic)
 
-        val lineOfSight = GeoElementLineOfSight(
-            observerGeoElement = observer,
-            targetGeoElement = taxiGraphic
-        )
+        viewModelScope.launch {
+            scene.load().onSuccess {
+                val lineOfSight = GeoElementLineOfSight(
+                    observerGeoElement = observerGraphic,
+                    targetGeoElement = taxiGraphic
+                )
 
-        analysisOverlay.analyses.add(lineOfSight)
+                analysisOverlay.analyses.add(lineOfSight)
+                analysisOverlay.isVisible = true
 
 
-         //select (highlight) the taxi when the line of sight target visibility changes to visible
-        if(lineOfSight.isVisible){
-            taxiGraphic.isSelected = lineOfSight.isVisible
-        }
-
-        val timer = Timer()
-        // create a timer to animate the tank
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                animate()
+                val timer = Timer()
+                // create a timer to animate the tank
+                timer.schedule(object : TimerTask() {
+                    override fun run() {
+                        animate()
+                    }
+                }, 0, 50)
             }
-        }, 0, 50)
+        }
     }
 
     /**
@@ -229,6 +199,14 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
                 waypointsIndex = (waypointsIndex + 1) % wayPoints.size
             }
         }
+    }
+
+    fun updateHeight(height: Double) {
+        val pointBuilder = PointBuilder(observerGraphic.geometry as Point).apply {
+            z = height
+        }
+        observerGraphic.geometry = pointBuilder.toGeometry()
+        _currentZValue.value = height
     }
 
 }
