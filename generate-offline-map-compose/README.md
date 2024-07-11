@@ -1,0 +1,1 @@
+# generate offline map compose
