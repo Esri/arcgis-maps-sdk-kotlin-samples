@@ -52,6 +52,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.R
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Timer
+import java.util.TimerTask
 
 
 class SceneViewModel(private var application: Application) : AndroidViewModel(application) {
@@ -62,7 +64,20 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
     var analysisOverlay by mutableStateOf(AnalysisOverlay())
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
     private var waypointsIndex = 0
+    var sceneLoading by mutableStateOf(false)
     var scene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISTopographic))
+    // Create a graphics overlay for the graphics
+    val graphicsOverlay by mutableStateOf(GraphicsOverlay())
+    // Create a point graph near the Empire State Building to be the observer
+    var observationPoint by mutableStateOf(Point(-73.9853, 40.7484, 200.0, SpatialReference.wgs84()))
+    val observer = Graphic(
+        geometry = observationPoint,
+        symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Circle,
+            color = Color.red,
+            size = 5F
+        )
+    )
 
     // create waypoints around a block for the taxi to drive to
     private val wayPoints = listOf(
@@ -72,42 +87,56 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         Point(-73.982961, 40.747762, SpatialReference.wgs84()),
     )
 
-    // Create a point graph near the Empire State Building to be the observer
-    private val observationPoint = Point(-73.9853, 40.7484, 200.0, SpatialReference.wgs84())
-    private val observer = Graphic(
-        geometry = observationPoint,
-        symbol = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Circle,
-            color = Color.red,
-            size = 5F
-        )
-    )
-
+    private val provisionPath: String by lazy {
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
+            R.string.app_name
+        ) + "/"
+    }
     // create a graphic of a taxi to be the target
-    private val filePath = application.cacheDir.toString() + File.separator + getString(
-        application,
-        R.string.dolmus_model
-    )
-    private val taxiSymbol = ModelSceneSymbol(filePath, 1.0F).apply {
+    private val filePath =  provisionPath + application.getString(R.string.dolmus_model)
+
+    private val taxiSymbol = ModelSceneSymbol(filePath, 3.0F).apply {
         SceneSymbolAnchorPosition.Bottom
         viewModelScope.launch {
             load()
+//                .onSuccess {
+//                messageDialogVM.showMessageDialog(
+//                    title = "Loaded!"
+//                )
+//            }.onFailure { error->
+//                messageDialogVM.showMessageDialog(
+//                    title = "Not loaded",
+//                    description = error.cause.toString()
+//                )
+//            }
         }
     }
     private val taxiGraphic = Graphic(wayPoints[0], taxiSymbol).apply {
         attributes["HEADING"] = 0.0
     }
 
-
-    private val camera = Camera(
-        observer.geometry as Point,
-        distance = 700.0,
-        roll = -30.0,
-        pitch = 45.0,
-        heading = 0.0,
-    )
-
     init {
+
+  viewModelScope.launch {
+            scene.load().onSuccess {
+
+                // Map has loaded
+                sceneLoading = true
+
+            }.onFailure {
+                messageDialogVM.showMessageDialog(
+                    title = "scene not loaded"
+                )
+            }
+        }
+
+         val camera = Camera(
+            observer.geometry as Point,
+            distance = 700.0,
+            roll = -30.0,
+            pitch = 45.0,
+            heading = 0.0,
+        )
 
         // Add base surface for elevation data
         val surface = Surface().apply {
@@ -121,16 +150,7 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
             )
         }
 
-        // Add buildings from New York City
-        val buildingsURL = (application.getString(R.string.new_york_buildings_service_url))
-
-        // Create a scene and add imagery basemap, elevation surface, and buildings layer to it
-        val buildings = ArcGISSceneLayer(buildingsURL)
-
-        // Set up a heading expression to handle graphic rotation
-        val renderer3D = SimpleRenderer().apply {
-            sceneProperties.headingExpression = ("[HEADING]")
-        }
+        val buildings = ArcGISSceneLayer(application.getString(R.string.new_york_buildings_service_url))
 
         // add the buildings scene to the sceneView
         scene.apply {
@@ -139,9 +159,18 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
             initialViewpoint = Viewpoint(observationPoint, camera)
         }
 
-        getGraphicsOverlay().renderer = renderer3D
-        getGraphicsOverlay().graphics.add(observer)
-        getGraphicsOverlay().graphics.add(taxiGraphic)
+        // create a graphics overlay for the graphics
+        graphicsOverlay.sceneProperties.surfacePlacement.apply {
+            LayerSceneProperties(SurfacePlacement.Relative)
+        }
+
+        // Set up a heading expression to handle graphic rotation
+        val renderer3D = SimpleRenderer().apply {
+            sceneProperties.headingExpression = ("[HEADING]")
+        }
+        graphicsOverlay.renderer = renderer3D
+        graphicsOverlay.graphics.add(observer)
+        graphicsOverlay.graphics.add(taxiGraphic)
 
         val lineOfSight = GeoElementLineOfSight(
             observerGeoElement = observer,
@@ -149,30 +178,20 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         )
 
         analysisOverlay.analyses.add(lineOfSight)
-        analysisOverlay.isVisible = true
-
-        // select (highlight) the taxi when the line of sight target visibility changes to visible
-//        if(lineOfSight.isVisible){
-//            taxiGraphic.isSelected = lineOfSight.isVisible
-//        }
-//
-//        val timer = Timer()
-//        // create a timer to animate the tank
-//        timer.schedule(object : TimerTask() {
-//            override fun run() {
-//           //     animate()
-//            }
-//        }, 0, 50)
-    }
 
 
-    fun getGraphicsOverlay(): GraphicsOverlay {
-        // Create a graphics overlay for the graphics
-        val graphicsOverlay = GraphicsOverlay()
-        graphicsOverlay.sceneProperties.surfacePlacement.apply {
-            LayerSceneProperties(SurfacePlacement.Relative)
+         //select (highlight) the taxi when the line of sight target visibility changes to visible
+        if(lineOfSight.isVisible){
+            taxiGraphic.isSelected = lineOfSight.isVisible
         }
-        return graphicsOverlay
+
+        val timer = Timer()
+        // create a timer to animate the tank
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                animate()
+            }
+        }, 0, 50)
     }
 
     /**
@@ -196,10 +215,12 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
                 GeodeticCurveType.Geodesic
             )[0]
         }
-        // taxiGraphic.geometry = location
+        taxiGraphic.geometry = location
 
         // rotate to the waypoint
-        // mTaxiGraphic.getAttributes().put("HEADING", distance.azimuth1)
+        if (distance != null) {
+            taxiGraphic.attributes["HEADING"] = distance.azimuth1
+        }
 
 
         // reached waypoint, move to next waypoint
