@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,11 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.mapping.GeoElement
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -74,7 +76,21 @@ fun MainScreen(sampleName: String) {
                         .weight(1f),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     arcGISMap = mapViewModel.arcGISMap,
-                    onSingleTapConfirmed = mapViewModel::identify
+                    onSingleTapConfirmed = mapViewModel::identify,
+                    content = {
+                        (mapViewModel.identifiedDynamicEntity as? GeoElement)?.let { dynamicEntityAsGeoElement ->
+                            Callout(
+                                modifier = Modifier.wrapContentSize(),
+                                geoElement = dynamicEntityAsGeoElement
+                            ) {
+                                Column(Modifier.padding(4.dp)) {
+                                    Text(
+                                        text = mapViewModel.identifiedDynamicEntityAttributeString
+                                    )
+                                }
+                            }
+                        }
+                    }
                 )
                 Button(
                     onClick = {
@@ -88,16 +104,6 @@ fun MainScreen(sampleName: String) {
                     Text(
                         text = stringResource(if (!isConnected) R.string.connect else R.string.disconnect)
                     )
-                }
-                // Display a MessageDialog with identify information.
-                mapViewModel.messageDialogVM.apply {
-                    if (dialogStatus) {
-                        MessageDialog(
-                            title = messageTitle,
-                            description = messageDescription,
-                            onDismissRequest = ::dismissDialog
-                        )
-                    }
                 }
             }
         }

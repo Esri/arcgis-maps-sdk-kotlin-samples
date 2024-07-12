@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -35,18 +36,15 @@ import com.arcgismaps.mapping.symbology.TextSymbol
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.realtime.ConnectionStatus
 import com.arcgismaps.realtime.CustomDynamicEntityDataSource
+import com.arcgismaps.realtime.DynamicEntity
 import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-
-    // Create a ViewModel to handle dialog interactions.
-    val messageDialogVM = MessageDialogViewModel()
 
     // Keep track of connected status string state.
     var connectionStatusString by mutableStateOf("")
@@ -124,7 +122,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         operationalLayers.add(dynamicEntityLayer)
     }
 
-
     // Create a mapViewProxy that will be used to identify features in the MapView.
     // This should also be passed to the composable MapView this mapViewProxy is associated with.
     val mapViewProxy = MapViewProxy()
@@ -134,6 +131,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     fun dynamicEntityDataSourceDisconnect() =
         viewModelScope.launch { dynamicEntityDataSource.disconnect() }
+
+    // Keep track of the most recently identified entity.
+    var identifiedDynamicEntity: DynamicEntity? by mutableStateOf(null)
+
+    var identifiedDynamicEntityAttributeString by mutableStateOf("")
 
     /**
      * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
@@ -149,28 +151,20 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             ).onSuccess { result ->
                 (result.geoElements.firstOrNull() as? DynamicEntityObservation)?.let { observation ->
                     // Get the dynamic entity from the observation.
-                    observation.dynamicEntity?.let { dynamicEntity ->
-                        // Build a string for observation attributes.
-                        val stringBuilder = StringBuilder()
-                        for (attribute in arrayOf("VesselName", "CallSign", "COG", "SOG")) {
-                            val value = dynamicEntity.attributes[attribute]?.toString()
-                            // Account for when an attribute has an empty value.
-                            if (!value.isNullOrEmpty()) {
-                                stringBuilder.appendLine("$attribute: $value")
-                            }
+                    observation.dynamicEntity.let { dynamicEntity ->
+                        // Set the identified dynamic entity and show the callout.
+                        identifiedDynamicEntity = dynamicEntity
+                        identifiedDynamicEntity?.dynamicEntityChangedEvent?.collect {
+                            identifiedDynamicEntityAttributeString = it.receivedObservation?.dynamicEntity?.attributes?.filter {
+                                it.value.toString().isNotEmpty()
+                            }.toString().replace(",", "\n")
                         }
-                        val entityAttributes = stringBuilder.toString().trimEnd()
-                        messageDialogVM.showMessageDialog(
-                            title = "Identified dynamic entity",
-                            description = entityAttributes
-                        )
                     }
+                } ?: apply {
+                    identifiedDynamicEntity = null
                 }
             }.onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Error in evaluating popup expression: ${error.message.toString()}",
-                    description = error.cause.toString()
-                )
+                Log.e(javaClass.simpleName, "Error identifying dynamic entity: ${error.message}")
             }
         }
     }
