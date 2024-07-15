@@ -1,2 +1,33 @@
 {
+    "category": "Analysis",
+    "description": "Show a line of sight between two moving objects.",
+    "formal_name": "ShowLineOfSightBetweenGeoelements",
+    "ignore": false,
+    "images": [
+        "show-line-of-sight-between-geoelements.png"
+    ],
+    "keywords": [
+        "3D",
+        "geoviewcompose",
+        "line of sight",
+        "visibility",
+        "visibility analysis",
+        "AnalysisOverlay",
+        "GeoElementLineOfSight",
+        "LineOfSight.TargetVisibility"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "AnalysisOverlay",
+        "GeoElementLineOfSight",
+        "LineOfSight.TargetVisibility"
+    ],
+    "snippets": [
+        "/src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/DownloadActivity.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/MainActivity.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/components/SceneViewModel.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/screens/MainScreen.kt"
+    ],
+    "title": "Show line of sight between geoelements"
 }
