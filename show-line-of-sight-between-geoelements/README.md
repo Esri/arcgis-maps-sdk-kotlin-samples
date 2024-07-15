@@ -1,4 +1,4 @@
-# Show Line of Sight Between Geoelements
+# Show line of sight between geoelements
 
 Show a line of sight between two moving objects.
 
@@ -38,4 +38,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
- 3D, geoviewcompose, line of sight, visibility, visibility analysis
+3D, geoviewcompose, line of sight, visibility, visibility analysis
