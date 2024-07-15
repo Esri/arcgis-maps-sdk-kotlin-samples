@@ -14,15 +14,15 @@ To create a geometry, press the create button to choose the geometry type you wa
 
 To configure snapping, press the snap settings button to enable or disable snapping and choose which snap sources to snap to.
 
-To interactively snap a vertex to a feature or graphic, ensure that snapping is enabled for the relevant snap source and move the mouse pointer or drag a vertex to nearby an existing feature or graphic. When the pointer is close to that existing geoelement, the edit position will be adjusted to coincide with (or snap to), edges and vertices of its geometry. Click or release the touch pointer to place the vertex at the snapped location.
+To interactively snap a vertex to a feature or graphic, ensure that snapping is enabled for the relevant snap source and move the map position of the reticle to nearby an existing feature or graphic. When the reticle is close to that existing geoelement, the edit position will be adjusted to coincide with (or snap to), edges and vertices of its geometry. Tap to place the vertex at the snapped location.
 
-To edit a geometry, tap the geometry to be edited in the map to select it and then edit the geometry by tapping and dragging its vertices and snapping them to nearby features or graphics.
+To edit a geometry, tap the geometry to be edited in the map and then edit the geometry by tapping and moving its vertices and snapping them to nearby features or graphics.
 
-To edit a vertex using the magnifier, tap and hold on the vertex and then drag it along with the magnifier.
+To edit a vertex using the reticle, tap when the reticle is located over the vertex, drag the map to move the position of the reticle, then tap a second time to place the vertex.
 
 To undo changes made to the geometry, press the undo button.
 
-To delete a geometry or a vertex, tap the geometry or vertex to select it and then press the delete button.
+To delete a vertex, tap when the reticle is located over the vertex and then press the delete button.
 
 To save your edits, press the save button.
 
@@ -31,19 +31,21 @@ To save your edits, press the save button.
 1. Create a `Map` from the `URL` and connect it to the `MapView`.
 2. Set the map's `LoadSettings.featureTilingMode` to `enabledWithFullResolutionWhenSupported`.
 3. Create a `GeometryEditor` and connect it to the map view.
-4. Call `syncSourceSettings` after the map's operational layers are loaded and the geometry editor connected to the map view.
-5. Set `SnapSettings.isEnabled` and `SnapSourceSettings.isEnabled` to true for the `SnapSource` of interest.
-6. Start the geometry editor with a `GeometryType`.
+4. Create a `ReticleVertexTool` and set it into the `GeometryEditor.tool`.
+5. Call `syncSourceSettings` after the map's operational layers are loaded and the geometry editor connected to the map view.
+6. Set `SnapSettings.isEnabled` and `SnapSourceSettings.isEnabled` to true for the `SnapSource` of interest.
+7. Start the geometry editor with a `GeometryType`.
 
 ## Relevant API
 
 * FeatureLayer
 * Geometry
 * GeometryEditor
+* GeometryEditorReticle
 * GeometryEditorStyle
 * GraphicsOverlay
 * MapView
-* MapView.interactionOptions.isMagnifierEnabled
+* ReticleVertexTool
 * SnapSettings
 * SnapSource
 * SnapSourceSettings
@@ -60,8 +62,8 @@ Snapping is used to maintain data integrity between different sources of data wh
 
 To snap to polygon and polyline layers, the recommended approach is to set the `FeatureLayer`'s feature tiling mode to `FeatureTilingMode.enabledWithFullResolutionWhenSupported` and use the default `ServiceFeatureTable` feature request mode `FeatureRequestMode.onInteractionCache`. Local data sources, such as geodatabases, always provide full resolution geometries.
 
-Snapping can be used during interactive edits that move existing vertices using the `VertexTool`. Using the magnifier to perform the vertex move allows to clearly see the visual cues for snapping.
+Snapping can be used during interactive edits that move existing vertices using the `VertexTool` or `ReticleVertexTool`. It is also supported for adding new vertices for input devices with a hover event (such as a mouse move without a mouse button press). Using the `ReticleVertexTool` to add and move vertices allows users of touch screen devices to clearly see the visual cues for snapping.
 
 ## Tags
 
-edit, feature, geometryeditor, geoviewcompose, graphics, layers, magnify, map, snapping
+edit, feature, geometryeditor, geoviewcompose, graphics, layers, magnify, map, reticle, snapping
