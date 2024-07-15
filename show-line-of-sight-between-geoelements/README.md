@@ -28,9 +28,9 @@ A line of sight will display between a point on the Empire State Building (obser
 
 ## Offline data
 
-Link | Local Location
----------|-------|
-|[Taxi CAD](https://www.arcgis.com/home/item.html?id=3af5cfec0fd24dac8d88aea679027cb9)|`<userhome>/ArcGIS/Runtime/Data/3D/dolmus\_3ds/dolmus.zip`|
+| Link                                                                                  | Local Location                                             |
+|---------------------------------------------------------------------------------------|------------------------------------------------------------|
+| [Taxi CAD](https://www.arcgis.com/home/item.html?id=3af5cfec0fd24dac8d88aea679027cb9) | `<userhome>/ArcGIS/Runtime/Data/3D/dolmus\_3ds/dolmus.zip` |
 
 ## Additional information
 
