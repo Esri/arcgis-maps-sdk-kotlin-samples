@@ -4,7 +4,7 @@
     "formal_name": "FindClosestFacilityFromPoint",
     "ignore": false,
     "images": [
-        "find-closest-facility-from-point.png"
+        "find_closest_facility_from_point.png"
     ],
     "keywords": [
         "geoviewcompose",
