@@ -44,10 +44,15 @@ import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.components.S
  */
 @Composable
 fun MainScreen(sampleName: String) {
+
+    // Define the viewmodel of this sample
     val sceneViewModel: SceneViewModel = viewModel()
+
+    // Retrieve any changes to the z value from SceneViewModel
     val currentZValue = sceneViewModel.currentZValue.collectAsState().value
 
-    //  var sliderPosition by remember { mutableFloatStateOf(0f) }
+    // Defined in order to keep the z value in the positive range
+    val offset = 100
 
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -57,7 +62,7 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f)
                 ) {
-                    // composable function that wraps the SceneView
+                    // Composable function that wraps the SceneView
                     SceneView(
                         modifier = Modifier
                             .fillMaxSize()
@@ -67,6 +72,7 @@ fun MainScreen(sampleName: String) {
                         graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
                     )
 
+                    // Composable function that holds the slider and the text position value
                     Row(
                         modifier = Modifier.Companion
                             .align(Alignment.BottomCenter)
@@ -75,19 +81,19 @@ fun MainScreen(sampleName: String) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+
                         Slider(
-                            value = currentZValue.toFloat(),
+                            value =( currentZValue.toFloat() + offset),
                             onValueChange = { newHeight ->
-                                sceneViewModel.updateHeight(newHeight.toDouble())
-                                //println("THE Z VALUE: ${(sceneViewModel.observer.geometry as Point).z}")
+                                sceneViewModel.updateHeight(newHeight.toDouble() - offset)
                             },
-                            valueRange = 150f..300f,
+                            valueRange = 0f..300f,
                             modifier = Modifier
                                 .width(300.dp)
                                 .padding(8.dp),
                         )
                         Text(
-                            text = currentZValue.toInt().toString(),
+                            text = (currentZValue.toInt() + offset).toString() ,
                             modifier = Modifier.padding(8.dp)
                         )
                     }
