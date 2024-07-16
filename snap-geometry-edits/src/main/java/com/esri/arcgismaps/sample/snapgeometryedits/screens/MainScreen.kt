@@ -64,7 +64,6 @@ fun MainScreen(sampleName: String) {
                     geometryEditor = mapViewModel.geometryEditor,
                     graphicsOverlays = graphicsOverlayCollection,
                     mapViewProxy = mapViewModel.mapViewProxy,
-                    mapViewInteractionOptions = MapViewInteractionOptions(isMagnifierEnabled = true),
                     onSingleTapConfirmed = mapViewModel::identify,
                     onPan = { mapViewModel.dismissBottomSheet() }
                 )
