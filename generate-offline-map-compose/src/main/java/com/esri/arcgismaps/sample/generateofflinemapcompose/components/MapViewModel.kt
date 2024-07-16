@@ -227,7 +227,6 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         }
     }
 
-
     fun cancelOfflineMapJob() {
         viewModelScope.launch {
             offlineMapJob?.cancel()
@@ -249,7 +248,6 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         // Set up the portal item to take offline
         setUpMapView()
     }
-
 
     /**
      * Use [mapViewSize] to determine dimensions of the [Envelope] to get the download offline area
@@ -275,6 +273,4 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
             downloadArea.geometry = envelope
         }
     }
-
-
 }
