@@ -51,4 +51,5 @@ dependencies {
     // Toolkit dependencies
     implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
     implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
+    implementation(libs.material)
 }
