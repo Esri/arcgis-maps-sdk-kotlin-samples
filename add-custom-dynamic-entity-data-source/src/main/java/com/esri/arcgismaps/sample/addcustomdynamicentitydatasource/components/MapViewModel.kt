@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.arcgisservices.LabelingPlacement
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.GeoElement
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.labeling.LabelDefinition
 import com.arcgismaps.mapping.labeling.SimpleLabelExpression
@@ -36,7 +37,6 @@ import com.arcgismaps.mapping.symbology.TextSymbol
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.realtime.ConnectionStatus
 import com.arcgismaps.realtime.CustomDynamicEntityDataSource
-import com.arcgismaps.realtime.DynamicEntity
 import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
@@ -132,10 +132,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun dynamicEntityDataSourceDisconnect() =
         viewModelScope.launch { dynamicEntityDataSource.disconnect() }
 
-    // Keep track of the most recently identified entity.
-    var identifiedDynamicEntity: DynamicEntity? by mutableStateOf(null)
+    var selectedGeoElement by mutableStateOf<GeoElement?>(null)
+        private set
 
-    var identifiedDynamicEntityAttributeString by mutableStateOf("")
+    var dynamicEntityObservationId by mutableStateOf<Long?>(null)
+        private set
 
     /**
      * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
@@ -150,18 +151,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 maximumResults = 1
             ).onSuccess { result ->
                 (result.geoElements.firstOrNull() as? DynamicEntityObservation)?.let { observation ->
-                    // Get the dynamic entity from the observation.
-                    observation.dynamicEntity.let { dynamicEntity ->
-                        // Set the identified dynamic entity and show the callout.
-                        identifiedDynamicEntity = dynamicEntity
-                        identifiedDynamicEntity?.dynamicEntityChangedEvent?.collect {
-                            identifiedDynamicEntityAttributeString = it.receivedObservation?.dynamicEntity?.attributes?.filter {
-                                it.value.toString().isNotEmpty()
-                            }.toString().replace(",", "\n")
-                        }
+                    // Set the identified dynamic entity and show the callout.
+                    selectedGeoElement = observation.dynamicEntity
+                    observation.dynamicEntity?.dynamicEntityChangedEvent?.collect {
+                        dynamicEntityObservationId = it.receivedObservation?.id
                     }
                 } ?: apply {
-                    identifiedDynamicEntity = null
+                    selectedGeoElement = null
                 }
             }.onFailure { error ->
                 Log.e(javaClass.simpleName, "Error identifying dynamic entity: ${error.message}")

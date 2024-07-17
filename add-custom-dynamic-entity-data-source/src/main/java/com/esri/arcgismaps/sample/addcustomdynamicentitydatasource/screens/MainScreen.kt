@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.mapping.GeoElement
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
@@ -52,9 +52,11 @@ fun MainScreen(sampleName: String) {
     // Keep track of the state of a connect/disconnect button.
     var isConnected by remember { mutableStateOf(true) }
 
+    val selectedGeoElement = mapViewModel.selectedGeoElement
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        content = { it ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -78,15 +80,22 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     onSingleTapConfirmed = mapViewModel::identify,
                     content = {
-                        (mapViewModel.identifiedDynamicEntity as? GeoElement)?.let { dynamicEntityAsGeoElement ->
+                        if (selectedGeoElement != null) {
                             Callout(
                                 modifier = Modifier.wrapContentSize(),
-                                geoElement = dynamicEntityAsGeoElement
+                                geoElement = selectedGeoElement
                             ) {
                                 Column(Modifier.padding(4.dp)) {
-                                    Text(
-                                        text = mapViewModel.identifiedDynamicEntityAttributeString
-                                    )
+                                    // Update the attribute text on each new observation.
+                                    key(mapViewModel.dynamicEntityObservationId) {
+                                        Text(
+                                            // Filter for non-empty attributes and separate each
+                                            // attribute with a new line.
+                                            text = selectedGeoElement.attributes.filter { attribute ->
+                                                attribute.value.toString().isNotEmpty()
+                                            }.toString().replace(",", "\n"),
+                                        )
+                                    }
                                 }
                             }
                         }
