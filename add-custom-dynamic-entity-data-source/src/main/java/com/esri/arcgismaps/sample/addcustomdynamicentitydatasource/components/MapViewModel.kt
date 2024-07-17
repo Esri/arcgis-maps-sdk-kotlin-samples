@@ -156,7 +156,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                     observation.dynamicEntity?.dynamicEntityChangedEvent?.collect {
                         dynamicEntityObservationId = it.receivedObservation?.id
                     }
-                } ?: apply {
+                } ?: run {
                     selectedGeoElement = null
                 }
             }.onFailure { error ->

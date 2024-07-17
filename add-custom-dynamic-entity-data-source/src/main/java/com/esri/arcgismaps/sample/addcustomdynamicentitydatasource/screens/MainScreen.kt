@@ -52,11 +52,12 @@ fun MainScreen(sampleName: String) {
     // Keep track of the state of a connect/disconnect button.
     var isConnected by remember { mutableStateOf(true) }
 
-    val selectedGeoElement = mapViewModel.selectedGeoElement
+    // TODO - Uncomment the line below to see the callout correctly reset between each identify.
+    //val selectedGeoElement = mapViewModel.selectedGeoElement
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = { it ->
+        content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -80,10 +81,12 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     onSingleTapConfirmed = mapViewModel::identify,
                     content = {
-                        if (selectedGeoElement != null) {
+                        // TODO - Comment out the line below to see the callout correctly reset between each identify.
+                        val selectedGeoElement = mapViewModel.selectedGeoElement
+                        selectedGeoElement?.let {
                             Callout(
                                 modifier = Modifier.wrapContentSize(),
-                                geoElement = selectedGeoElement
+                                geoElement = it
                             ) {
                                 Column(Modifier.padding(4.dp)) {
                                     // Update the attribute text on each new observation.
@@ -91,7 +94,7 @@ fun MainScreen(sampleName: String) {
                                         Text(
                                             // Filter for non-empty attributes and separate each
                                             // attribute with a new line.
-                                            text = selectedGeoElement.attributes.filter { attribute ->
+                                            text = it.attributes.filter { attribute ->
                                                 attribute.value.toString().isNotEmpty()
                                             }.toString().replace(",", "\n"),
                                         )
