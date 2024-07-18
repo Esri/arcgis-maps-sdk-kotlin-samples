@@ -20,8 +20,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -53,12 +55,34 @@ fun MainScreen(sampleName: String) {
 
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) },
         content = { paddingValues ->
-            Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                // Show the current target visibility status.
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "Target visibility status: ")
+                    Text(
+                        text = sceneViewModel.targetVisibilityString,
+                        color = if (sceneViewModel.targetVisibilityString.contains("Visible"))
+                            Color.Green else Color.Red
+                    )
+                }
                 // Composable function that wraps the SceneView
                 SceneView(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(paddingValues),
+                        .fillMaxWidth()
+                        .weight(1f),
                     arcGISScene = sceneViewModel.scene,
                     analysisOverlays = listOf(sceneViewModel.analysisOverlay),
                     graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
@@ -68,7 +92,7 @@ fun MainScreen(sampleName: String) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.background)
                         .padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center

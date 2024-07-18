@@ -17,10 +17,15 @@
 package com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.analysis.GeoElementLineOfSight
+import com.arcgismaps.analysis.LineOfSightTargetVisibility
 import com.arcgismaps.geometry.AngularUnit
 import com.arcgismaps.geometry.GeodeticCurveType
 import com.arcgismaps.geometry.GeometryEngine
@@ -48,6 +53,7 @@ import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.concurrent.timer
 
@@ -61,6 +67,14 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
 
     // Create an analysis overlay to hold the line of sight
     val analysisOverlay = AnalysisOverlay()
+
+    // Keep track of target visibility status string state.
+    var targetVisibilityString by mutableStateOf("")
+
+    // Set visibility status string in the UI.
+    private fun updateTargetVisibilityString(targetVisibility: String) {
+        targetVisibilityString = targetVisibility
+    }
 
     // Initialize z to 50 as starting point and emit its state changes
     private val _observerHeight = MutableStateFlow(50.0)
@@ -168,7 +182,20 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         val lineOfSight = GeoElementLineOfSight(
             observerGeoElement = observerGraphic,
             targetGeoElement = taxiGraphic
-        )
+        ).apply {
+            // Observe the visibility status of the moving taxi
+            viewModelScope.launch {
+                targetVisibility.collect { targetVisibility ->
+                    updateTargetVisibilityString(
+                        when (targetVisibility) {
+                            is LineOfSightTargetVisibility.Visible -> "Visible"
+                            is LineOfSightTargetVisibility.Obstructed -> "Obstructed"
+                            is LineOfSightTargetVisibility.Unknown -> "Unknown"
+                        }
+                    )
+                }
+            }
+        }
         analysisOverlay.analyses.add(lineOfSight)
 
         // Select (highlight) the taxi when the line of sight target visibility changes to visible
