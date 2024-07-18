@@ -115,7 +115,7 @@ fun MainScreen(sampleName: String) {
                     JobLoadingDialog(
                         title = "Generating offline map...",
                         progress = mapViewModel.offlineMapJobProgress.intValue,
-                        cancelJobRequest = { mapViewModel.cancelOfflineMapJob() }
+                        cancelJobRequest = { sampleCoroutineScope.launch { mapViewModel.cancelOfflineMapJob() } }
                     )
                 }
 
