@@ -8,6 +8,7 @@
   ],
   "keywords": [
     "download",
+    "geoviewcompose",
     "offline",
     "save",
     "web map",
@@ -29,7 +30,9 @@
     "Portal"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/generateofflinemapcompose/MainActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/generateofflinemapcompose/components/MapViewModel.kt",
+    "src/main/java/com/esri/arcgismaps/sample/generateofflinemapcompose/screens/MainScreen.kt"
   ],
-  "title": "Generate offline map"
+  "title": "Generate offline map compose"
 }

@@ -2,7 +2,7 @@
 
 Take a web map offline.
 
-![Image of generate offline map](generate-offline-map.png)
+![Image of Generate Offline Map](generate-offline-map.png)
 
 ## Use case
 
@@ -34,9 +34,8 @@ The map used in this sample shows the [stormwater network](https://arcgisruntime
 
 ## Additional information
 
-The creation of the offline map can be fine-tuned using [parameter overrides for feature layers](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-overrides), or by using [local basemaps](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-with-local-basemap)
-to achieve more customised results.
+The creation of the offline map can be fine-tuned using [parameter overrides for feature layers](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-overrides), or by using [local basemaps](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-with-local-basemap) to achieve more customised results. Also, this sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-download, offline, save, web map
+download, geoviewcompose, offline, save, web map
