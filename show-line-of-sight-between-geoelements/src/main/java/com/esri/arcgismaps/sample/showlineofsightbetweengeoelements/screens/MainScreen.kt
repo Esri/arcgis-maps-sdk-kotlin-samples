@@ -46,7 +46,7 @@ fun MainScreen(sampleName: String) {
     val sceneViewModel: SceneViewModel = viewModel()
 
     // Retrieve any changes to the z value from SceneViewModel
-    val observerHeight = sceneViewModel.currentZValue.collectAsState().value
+    val observerHeight = sceneViewModel.observerHeight.collectAsState().value
 
     // Defined in order to keep the z value in the positive range
     val offset = 100

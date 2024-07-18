@@ -64,7 +64,7 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
 
     // Initialize z to 50 as starting point and emit its state changes
     private val _observerHeight = MutableStateFlow(50.0)
-    val currentZValue: StateFlow<Double> = _observerHeight.asStateFlow()
+    val observerHeight: StateFlow<Double> = _observerHeight.asStateFlow()
 
     // Keeps track of wayPoints
     private var waypointsIndex = 0
