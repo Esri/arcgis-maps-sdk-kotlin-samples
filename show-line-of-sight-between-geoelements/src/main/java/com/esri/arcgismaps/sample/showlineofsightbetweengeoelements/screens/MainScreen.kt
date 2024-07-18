@@ -18,13 +18,10 @@ package com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -49,54 +46,44 @@ fun MainScreen(sampleName: String) {
     val sceneViewModel: SceneViewModel = viewModel()
 
     // Retrieve any changes to the z value from SceneViewModel
-    val currentZValue = sceneViewModel.currentZValue.collectAsState().value
+    val observerHeight = sceneViewModel.currentZValue.collectAsState().value
 
     // Defined in order to keep the z value in the positive range
     val offset = 100
 
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        content = { paddingValues ->
             Column {
-                Box(
+                // Composable function that wraps the SceneView
+                SceneView(
                     modifier = Modifier
-                        .fillMaxSize()
                         .weight(1f)
+                        .padding(paddingValues),
+                    arcGISScene = sceneViewModel.scene,
+                    analysisOverlays = listOf(sceneViewModel.analysisOverlay),
+                    graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
+                )
+
+                // Composable function that holds the slider and the text position value
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    // Composable function that wraps the SceneView
-                    SceneView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it),
-                        arcGISScene = sceneViewModel.scene,
-                        analysisOverlays = listOf(sceneViewModel.analysisOverlay),
-                        graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
+                    Text(
+                        text = "Observer height: ${(observerHeight.toInt() + offset)}",
+                    )
+                    Slider(
+                        value = (observerHeight.toFloat() + offset),
+                        onValueChange = { newHeight ->
+                            sceneViewModel.updateHeight(newHeight.toDouble() - offset)
+                        },
+                        valueRange = 0f..300f,
                     )
 
-                    // Composable function that holds the slider and the text position value
-                    Row(
-                        modifier = Modifier.Companion
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .background(Color.White),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        Slider(
-                            value =( currentZValue.toFloat() + offset),
-                            onValueChange = { newHeight ->
-                                sceneViewModel.updateHeight(newHeight.toDouble() - offset)
-                            },
-                            valueRange = 0f..300f,
-                            modifier = Modifier
-                                .width(300.dp)
-                                .padding(8.dp),
-                        )
-                        Text(
-                            text = (currentZValue.toInt() + offset).toString() ,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
                 }
             }
         })

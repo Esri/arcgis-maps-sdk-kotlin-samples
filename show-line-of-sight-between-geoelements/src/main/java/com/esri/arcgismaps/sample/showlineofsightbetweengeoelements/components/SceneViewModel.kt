@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.components
 import android.app.Application
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.analysis.GeoElementLineOfSight
 import com.arcgismaps.geometry.AngularUnit
@@ -45,18 +44,14 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SurfacePlacement
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
+import kotlin.concurrent.timer
 
 class SceneViewModel(private var application: Application) : AndroidViewModel(application) {
-
 
     // Create a scene and add a basemap to it
     val scene = ArcGISScene(BasemapStyle.ArcGISTopographic)
@@ -67,14 +62,12 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
     // Create an analysis overlay to hold the line of sight
     val analysisOverlay = AnalysisOverlay()
 
-    // Initialize z to 50 as starting point and observe any changes to its value
-    private val _currentZValue = MutableStateFlow(50.0)
-    val currentZValue: StateFlow<Double> = _currentZValue.asStateFlow()
+    // Initialize z to 50 as starting point and emit its state changes
+    private val _observerHeight = MutableStateFlow(50.0)
+    val currentZValue: StateFlow<Double> = _observerHeight.asStateFlow()
 
-    // The following variables keep track of the taxi's location
+    // Keeps track of wayPoints
     private var waypointsIndex = 0
-    private val meters = LinearUnit.meters
-    private val degrees = AngularUnit.degrees
 
     // Create waypoints around a block for the taxi to drive to
     private val wayPoints = listOf(
@@ -84,19 +77,22 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         Point(-73.982961, 40.747762, SpatialReference.wgs84()),
     )
 
-    // Create a graphic of a taxi to be the target
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
             R.string.app_name
-        ) + "/"
+        ) + File.separator
     }
     private val filePath = provisionPath + application.getString(R.string.dolmus_model)
+
+    // Create a symbol of a taxi using the model file
     private val taxiSymbol = ModelSceneSymbol(
         uri = filePath,
         scale = 3.0F
     ).apply {
-        SceneSymbolAnchorPosition.Bottom
+        anchorPosition = SceneSymbolAnchorPosition.Bottom
     }
+
+    // Create a graphic of a taxi to be the target
     private val taxiGraphic = Graphic(
         geometry = wayPoints[0],
         symbol = taxiSymbol
@@ -118,9 +114,6 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
             size = 5f
         )
     )
-
-    // Create a ViewModel to handle dialog interactions
-    private val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     init {
 
@@ -167,91 +160,77 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         // Add the graphics to the graphic overlay
         graphicsOverlay.apply {
             sceneProperties.surfacePlacement = SurfacePlacement.RelativeToScene
-            graphicsOverlay.graphics.add(observerGraphic)
-            graphicsOverlay.graphics.add(taxiGraphic)
-            graphicsOverlay.renderer = renderer3D
+            graphics.addAll(listOf(observerGraphic, taxiGraphic))
+            renderer = renderer3D
         }
 
-        viewModelScope.launch {
+        // Create a line of sight between the two graphics and add it to the analysis overlay
+        val lineOfSight = GeoElementLineOfSight(
+            observerGeoElement = observerGraphic,
+            targetGeoElement = taxiGraphic
+        )
+        analysisOverlay.analyses.add(lineOfSight)
 
-            scene.load().onSuccess {
+        // Select (highlight) the taxi when the line of sight target visibility changes to visible
+        if (lineOfSight.isVisible) {
+            taxiGraphic.isSelected = lineOfSight.isVisible
+        }
 
-                // Create a line of sight between the two graphics and add it to the analysis overlay
-                val lineOfSight = GeoElementLineOfSight(
-                    observerGeoElement = observerGraphic,
-                    targetGeoElement = taxiGraphic
-                )
-                analysisOverlay.analyses.add(lineOfSight)
-
-                // Select (highlight) the taxi when the line of sight target visibility changes to visible
-                if (lineOfSight.isVisible) {
-                    taxiGraphic.isSelected = lineOfSight.isVisible
-                }
-
-                // Create a timer to animate the tank
-                val timer = Timer()
-                timer.schedule(object : TimerTask() {
-                    override fun run() {
-                        animate()
-                    }
-                }, 0, 50)
-
-            }.onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Scene Failed to Load",
-                    description = error.cause.toString()
-                )
-
+        // Create a timer to animate the tank
+        timer(
+            initialDelay = 0,
+            period = 50,
+            action = {
+                animate()
             }
-
-
-        }
-
+        )
     }
 
     /**
-     * Updates [height] of the Z value
+     * Updates elevation of the observer graphic using the given [height]
      */
     fun updateHeight(height: Double) {
         val pointBuilder = PointBuilder(observerGraphic.geometry as Point).apply {
             z = height
         }
         observerGraphic.geometry = pointBuilder.toGeometry()
-        _currentZValue.value = height
+        _observerHeight.value = height
     }
 
     /**
      * Moves the taxi toward the current waypoint a short distance.
      */
     private fun animate() {
+
+        val meters = LinearUnit.meters
+        val degrees = AngularUnit.degrees
         val waypoint = wayPoints[waypointsIndex]
-        // get current location and distance from waypoint
-        var location = taxiGraphic.geometry as Point
-        val distance = GeometryEngine.distanceGeodeticOrNull(
+        val location = taxiGraphic.geometry as Point
+
+        // Calculate the geodetic distance between current taxi location and next waypoint
+        GeometryEngine.distanceGeodeticOrNull(
             location,
             waypoint,
             meters,
             degrees,
             GeodeticCurveType.Geodesic
-        )
-        // move toward waypoint a short distance
-        if (distance != null) {
-            location = GeometryEngine.tryMoveGeodetic(
-                listOf(location), 1.0, meters, distance.azimuth1, degrees,
-                GeodeticCurveType.Geodesic
-            )[0]
-        }
-        taxiGraphic.geometry = location
+        )?.let { geodeticDistanceResult ->
 
-        // rotate to the waypoint
-        if (distance != null) {
-            taxiGraphic.attributes["HEADING"] = distance.azimuth1
-        }
+            taxiGraphic.apply {
 
-        // reached waypoint, move to next waypoint
-        if (distance != null) {
-            if (distance.distance <= 2) {
-                waypointsIndex = (waypointsIndex + 1) % wayPoints.size
+                // Move toward waypoint a short distance
+                geometry = GeometryEngine.tryMoveGeodetic(
+                    listOf(location), 1.0, meters, geodeticDistanceResult.azimuth1, degrees,
+                    GeodeticCurveType.Geodesic
+                )[0]
+
+                // Rotate to the waypoint
+                attributes["HEADING"] = geodeticDistanceResult.azimuth1
+
+                // Reached waypoint, move to next waypoint
+                if (geodeticDistanceResult.distance <= 2) {
+                    waypointsIndex = (waypointsIndex + 1) % wayPoints.size
+                }
             }
         }
     }
