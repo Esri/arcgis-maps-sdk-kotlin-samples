@@ -97,9 +97,13 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
      * Sets up a portal item and displays map area to take offline
      */
     private fun setUpMapView() {
+
         // Create a portal item with the itemId of the web map
         val portal = Portal(getString(application, R.string.portal_url))
         val portalItem = PortalItem(portal, getString(application, R.string.item_id))
+
+        // Clear graphics overlay
+        graphicsOverlay.graphics.clear()
 
         // Add the download graphic to the graphics overlay
         graphicsOverlay.graphics.add(downloadArea)
@@ -233,9 +237,6 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
      * Clear the preview map and set up mapView again
      */
     fun resetButtonClick() {
-
-        // Clear graphics overlay
-        graphicsOverlay.graphics.clear()
 
         // Enable offline button
         takeMapOfflineButtonEnabled = true
