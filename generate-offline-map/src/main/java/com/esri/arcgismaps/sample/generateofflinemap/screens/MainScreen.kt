@@ -19,17 +19,14 @@ package com.esri.arcgismaps.sample.generateofflinemap.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +38,6 @@ import com.esri.arcgismaps.sample.generateofflinemap.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -49,8 +45,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(sampleName: String) {
 
-    // CoroutineScope that will be cancelled when this call leaves the composition
-    val sampleCoroutineScope = rememberCoroutineScope()
+    val application = LocalContext.current.applicationContext
 
     // Create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
@@ -70,18 +65,15 @@ fun MainScreen(sampleName: String) {
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        // Retrieve the size of the mapView
+                        // Retrieve the size of the Composable MapView
                         .onSizeChanged { size ->
                             mapViewModel.mapViewSize = size
                         },
                     arcGISMap = mapViewModel.map,
-                    graphicsOverlays = mapViewModel.graphicsOverlays,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onViewpointChangedForCenterAndScale = {
-                        mapViewModel.calculateDownloadOfflineArea(
-                            mapViewSize = mapViewModel.mapViewSize,
-                            mapViewProxy = mapViewModel.mapViewProxy
-                        )
+                        mapViewModel.calculateDownloadOfflineArea()
                     }
                 )
 
@@ -90,23 +82,24 @@ fun MainScreen(sampleName: String) {
                         .fillMaxWidth()
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.Center
-                )
-                {
-                    OutlinedButton(
-                        onClick = { mapViewModel.resetButtonClick() },
-                        enabled = mapViewModel.resetMapButtonEnabled,
-                    ) {
-                        Text(text = LocalContext.current.getString(R.string.reset_map))
-                    }
-
-                    Spacer(modifier = Modifier.padding(16.dp))
-
+                ) {
                     Button(
-                        // Create and run an offlineMap task
-                        onClick = { sampleCoroutineScope.launch { mapViewModel.createOfflineMapJob() } },
-                        enabled = mapViewModel.takeMapOfflineButtonEnabled,
+                        onClick = {
+                            when (mapViewModel.takeMapOfflineButtonText) {
+                                application.getString(R.string.take_map_offline) -> mapViewModel.createOfflineMapJob()
+                                else -> mapViewModel.resetButtonClick()
+                            }
+                        },
                     ) {
-                        Text(text = LocalContext.current.getString(R.string.take_map_offline))
+                        when (mapViewModel.takeMapOfflineButtonText) {
+                            application.getString(R.string.take_map_offline) -> Text(
+                                text = application.getString(
+                                    R.string.take_map_offline
+                                )
+                            )
+
+                            else -> Text(text = application.getString(R.string.reset_map))
+                        }
                     }
                 }
 
@@ -115,7 +108,7 @@ fun MainScreen(sampleName: String) {
                     JobLoadingDialog(
                         title = "Generating offline map...",
                         progress = mapViewModel.offlineMapJobProgress.intValue,
-                        cancelJobRequest = { sampleCoroutineScope.launch { mapViewModel.cancelOfflineMapJob() } }
+                        cancelJobRequest = { mapViewModel.cancelOfflineMapJob() }
                     )
                 }
 

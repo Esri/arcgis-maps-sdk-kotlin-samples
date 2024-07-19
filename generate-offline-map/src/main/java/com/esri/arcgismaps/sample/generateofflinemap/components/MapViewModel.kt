@@ -24,7 +24,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.IntSize
-import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Envelope
@@ -48,24 +47,22 @@ import java.io.File
 class MapViewModel(private val application: Application) : AndroidViewModel(application) {
 
     // Create a symbol to show a box around the extent we want to download
-    private val downloadArea: Graphic = Graphic().apply {
-        symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, com.arcgismaps.Color.red, 2F)
-    }
+    private val downloadArea: Graphic = Graphic(
+        symbol = SimpleLineSymbol(
+            style = SimpleLineSymbolStyle.Solid,
+            color = com.arcgismaps.Color.red,
+            width = 2F
+        )
+    )
 
     // Create graphic overlay to add graphics
-    private val graphicsOverlay = GraphicsOverlay()
+    val graphicsOverlay = GraphicsOverlay()
 
     // Create a ViewModel to handle dialog interactions.
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
-    // Add the graphics overlays to be used by the composable MapView
-    val graphicsOverlays = listOf(graphicsOverlay)
-
-    // Enable takeMapOfflineButton on launch
-    var takeMapOfflineButtonEnabled by mutableStateOf(true)
-
-    // Disable resetMapButtonEnabled on launch
-    var resetMapButtonEnabled by mutableStateOf(false)
+    // Define button to take a map offline
+    var takeMapOfflineButtonText by mutableStateOf(application.getString(R.string.take_map_offline))
 
     // Defined to send messages related to offlineMapJob
     val snackbarHostState = SnackbarHostState()
@@ -99,19 +96,15 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     private fun setUpMapView() {
 
         // Create a portal item with the itemId of the web map
-        val portal = Portal(getString(application, R.string.portal_url))
-        val portalItem = PortalItem(portal, getString(application, R.string.item_id))
-
-        // Clear graphics overlay
-        graphicsOverlay.graphics.clear()
-
-        // Add the download graphic to the graphics overlay
-        graphicsOverlay.graphics.add(downloadArea)
+        val portal = Portal(application.getString(R.string.portal_url))
+        val portalItem = PortalItem(portal, application.getString(R.string.item_id))
 
         map = ArcGISMap(portalItem)
         viewModelScope.launch {
             map.load()
                 .onSuccess {
+                    // Add the download graphic to the graphics overlay
+                    graphicsOverlay.graphics.add(downloadArea)
                     // Limit the map scale to the largest layer scale
                     map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
                     map.minScale = map.operationalLayers[6].minScale ?: 0.0
@@ -122,16 +115,16 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                     )
                 }
         }
-
     }
 
     /**
      * Generate an offline map job with the default [GenerateOfflineMapParameters]
      *
      */
-    suspend fun createOfflineMapJob() {
+    fun createOfflineMapJob() {
         // Offline map path
-        val offlineMapPath = application.getExternalFilesDir(null)?.path + File.separator + "offlineMap"
+        val offlineMapPath =
+            application.getExternalFilesDir(null)?.path + File.separator + "offlineMap"
 
         // Delete any offline map already in the cache
         File(offlineMapPath).deleteRecursively()
@@ -163,11 +156,13 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         // Create an offline map task with the map
         val offlineMapTask = OfflineMapTask(onlineMap = map)
 
-        offlineMapTask.load().getOrElse {
-            messageDialogVM.showMessageDialog(
-                title = it.message.toString(),
-                description = it.cause.toString()
-            )
+        viewModelScope.launch {
+            offlineMapTask.load().getOrElse {
+                messageDialogVM.showMessageDialog(
+                    title = it.message.toString(),
+                    description = it.cause.toString()
+                )
+            }
         }
 
         // Create an offline map job with the download directory path and parameters and start the job
@@ -184,7 +179,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
      * Starts the [offlineMapJob], shows the progress dialog and
      * displays the result offline map to the MapView
      */
-    private suspend fun runOfflineMapJob() {
+    private fun runOfflineMapJob() {
 
         offlineMapJob?.let { offlineMapJob ->
 
@@ -200,37 +195,38 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                 }
             }
 
-            // Start the job
-            offlineMapJob.start()
-            offlineMapJob.result().onSuccess {
-                map = it.offlineMap
-                graphicsOverlay.graphics.clear()
+            viewModelScope.launch {
+                // Start the job
+                offlineMapJob.start()
+                offlineMapJob.result().onSuccess {
+                    map = it.offlineMap
+                    graphicsOverlay.graphics.clear()
 
-                // Disable the button to take the map offline once the offline map is showing
-                takeMapOfflineButtonEnabled = false
+                    // Change the button text to Reset Map once job is done successfully
+                    takeMapOfflineButtonText = application.getString(R.string.reset_map)
 
-                // Enable the reset map button once the offline map is showing
-                resetMapButtonEnabled = true
+                    // Dismiss the progress dialog
+                    showJobProgressDialog.value = false
 
-                // Dismiss the progress dialog
-                showJobProgressDialog.value = false
+                    // Show user where map was locally saved
+                    snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
 
-                // Show user where map was locally saved
-                snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
-
-            }.onFailure { throwable ->
-                messageDialogVM.showMessageDialog(
-                    title = throwable.message.toString(),
-                    description = throwable.cause.toString()
-                )
-                showJobProgressDialog.value = false
+                }.onFailure { throwable ->
+                    messageDialogVM.showMessageDialog(
+                        title = throwable.message.toString(),
+                        description = throwable.cause.toString()
+                    )
+                    showJobProgressDialog.value = false
+                }
             }
         }
     }
 
-    suspend fun cancelOfflineMapJob() {
+    fun cancelOfflineMapJob() {
+        viewModelScope.launch {
             offlineMapJob?.cancel()
             snackbarHostState.showSnackbar(message = "User canceled.")
+        }
     }
 
     /**
@@ -238,21 +234,22 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
      */
     fun resetButtonClick() {
 
-        // Enable offline button
-        takeMapOfflineButtonEnabled = true
+        // Add the download graphic to the graphics overlay
+        graphicsOverlay.graphics.clear()
 
-        // Disable the reset button
-        resetMapButtonEnabled = false
+        // Change button text to Take Map Offline on reset
+        takeMapOfflineButtonText = application.getString(R.string.take_map_offline)
 
         // Set up the portal item to take offline
         setUpMapView()
+
     }
 
     /**
      * Use [mapViewSize] to determine dimensions of the map to get the download offline area
      * and use [mapViewProxy] to assist in converting screen points to map points
      */
-    fun calculateDownloadOfflineArea(mapViewSize: IntSize, mapViewProxy: MapViewProxy) {
+    fun calculateDownloadOfflineArea() {
         // Upper left corner of the area to take offline
         val minScreenPoint = ScreenCoordinate(200.0, 200.0)
 
