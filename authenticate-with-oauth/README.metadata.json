@@ -4,8 +4,7 @@
     "formal_name": "AuthenticateWithOauth",
     "ignore": false,
     "images": [
-        "authenticate-with-oauth.png",
-        "oauth-sample-flowchart.png"
+        "authenticate-with-oauth.png"
     ],
     "keywords": [
         "OAuth",
@@ -14,12 +13,13 @@
         "credential",
         "portal",
         "security",
+        "toolkit",
         "ArcGISAuthenticationChallengeHandler",
         "ArcGISAuthenticationChallengeResponse",
         "AuthenticationManager",
+        "AuthenticatorState",
+        "DialogAuthenticator",
         "OAuthUserConfiguration",
-        "OAuthUserCredential",
-        "OAuthUserSignIn",
         "PortalItem"
     ],
     "language": "kotlin",
@@ -28,15 +28,15 @@
         "ArcGISAuthenticationChallengeHandler",
         "ArcGISAuthenticationChallengeResponse",
         "AuthenticationManager",
+        "AuthenticatorState",
+        "DialogAuthenticator",
         "OAuthUserConfiguration",
-        "OAuthUserCredential",
-        "OAuthUserSignIn",
         "PortalItem"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/OAuthUserSignInActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/OAuthUserSignInViewModel.kt"
+        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/screens/MainScreen.kt"
     ],
     "title": "Authenticate with OAuth"
 }

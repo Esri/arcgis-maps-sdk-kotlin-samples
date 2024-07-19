@@ -108,16 +108,16 @@ fun ButtonMenu(
             Icon(vector.vectorResource(R.drawable.undo), contentDescription = "Undo")
         }
         IconButton(
-            enabled = mapViewModel.isSaveButtonEnabled.collectAsState().value,
-            onClick = { mapViewModel.stopEditor() }
-        ) {
-            Icon(vector.vectorResource(R.drawable.save), contentDescription = "Save")
-        }
-        IconButton(
             enabled = mapViewModel.isDeleteButtonEnabled.collectAsState().value,
             onClick = { mapViewModel.deleteSelection() }
         ) {
             Icon(Icons.Filled.Delete, contentDescription = "Delete")
+        }
+        IconButton(
+            enabled = mapViewModel.isSaveButtonEnabled.collectAsState().value,
+            onClick = { mapViewModel.stopEditor() }
+        ) {
+            Icon(vector.vectorResource(R.drawable.save), contentDescription = "Save")
         }
         Row(
             modifier = Modifier.fillMaxWidth(),

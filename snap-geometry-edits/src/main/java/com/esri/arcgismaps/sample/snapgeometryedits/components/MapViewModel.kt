@@ -33,6 +33,7 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
+import com.arcgismaps.mapping.view.geometryeditor.ReticleVertexTool
 import com.arcgismaps.mapping.view.geometryeditor.SnapSourceSettings
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
@@ -81,6 +82,8 @@ class MapViewModel(
         sampleCoroutineScope.launch {
             // set the id for the graphics overlay
             graphicsOverlay.id = "Editor Graphics Overlay"
+            // set the tool for the geometry editor to use a reticle
+            geometryEditor.tool = ReticleVertexTool()
             // set the feature layer's tiling mode
             map.loadSettings.featureTilingMode =
                 FeatureTilingMode.EnabledWithFullResolutionWhenSupported
@@ -201,7 +204,8 @@ class MapViewModel(
             isCreateButtonEnabled.value = true
         }
 
-        if (geometryEditor.selectedElement.value != null) {
+        val selectedElement = geometryEditor.selectedElement.value
+        if (selectedElement?.canDelete == true) {
             geometryEditor.deleteSelectedElement()
         }
     }
