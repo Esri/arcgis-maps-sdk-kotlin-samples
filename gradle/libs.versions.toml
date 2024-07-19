@@ -27,6 +27,7 @@ workVersion = "2.9.0"
 multidexVersion = "2.0.1"
 materialVersion = "1.11.0"
 androidBrowserVersion = "1.8.0"
+androidxWindow = "1.2.0"
 # Plugin versions
 gradleVersion = "8.3.2"
 
@@ -48,6 +49,8 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
+androidx-window-core = { group = "androidx.window", name = "window-core", version.ref = "androidxWindow" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayoutVersion"}
 androidx-coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinateLayoutVersion"}
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktxAndroidCore"}
@@ -62,6 +65,7 @@ arcgis-maps-kotlin = { group = "com.esri", name = "arcgis-maps-kotlin", version.
 arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisMapsKotlinVersion"}
 arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
 arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geoview-compose" }
+arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-featureforms" }
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "jsonSerialization" }
 stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlinVersion"}

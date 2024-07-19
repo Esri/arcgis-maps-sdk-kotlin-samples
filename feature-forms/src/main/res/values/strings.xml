@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Feature Forms</string>
+    <string name="edit_feature">Edit Feature</string>
+    <string name="agol_portal_url">https://www.arcgis.com</string>
+    <string name="login">Login</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_enterprise_url">"Enter an URL for ArcGIS Enterprise"</string>
+    <string name="signing_in">Signing in..</string>
+    <string name="sign_in_with_default_credentials">Sign in using built-in Credentials</string>
+    <string name="sign_in_with_enterprise">Sign in with ArcGIS Enterprise</string>
+    <string name="skin_sign_in">Skip sign in</string>
+    <string name="maximum_character_length_exceeded">Maximum character length exceeded</string>
+    <string name="date_less_than_minimum">Date less than minimum</string>
+    <string name="value_must_be_of_correct_type">Value must be of correct type.</string>
+    <string name="date_exceeds_maximum">Date exceeds maximum</string>
+    <string name="exceeds_maximum_value">Exceeds maximum value</string>
+    <string name="minimum_character_length_not_met">Minimum character length not met</string>
+    <string name="less_than_minimum_value">Less than minimum value</string>
+    <string name="value_must_not_be_empty">Value must not be empty</string>
+    <string name="value_must_be_within_domain">Value must be within domain</string>
+    <string name="required">Required</string>
+    <string name="unknown_error">Unknown Error</string>
+    <string name="the_form_has_errors">The Form has errors</string>
+    <string name="errors_must_be_fixed_to_submit_this_form">Errors must be fixed to submit this form</string>
+    <string name="attributes_failed">%1$s attributes failed.</string>
+    <string name="view">View</string>
+    <string name="discard">Discard</string>
+    <string name="discard_edits">Discard Edits?</string>
+    <string name="all_changes_will_be_lost">All changes made within the form will be lost.</string>
+</resources>
