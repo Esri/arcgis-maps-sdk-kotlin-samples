@@ -30,9 +30,9 @@
         "Portal"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/generateofflinemap/MainActivity.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/generateofflinemap/components/MapViewModel.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/generateofflinemap/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/screens/MainScreen.kt"
     ],
     "title": "Generate offline map"
 }
