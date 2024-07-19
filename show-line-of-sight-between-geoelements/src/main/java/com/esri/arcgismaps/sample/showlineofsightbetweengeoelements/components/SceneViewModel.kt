@@ -236,19 +236,23 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
 
         // Calculate the geodetic distance between current taxi location and next waypoint
         GeometryEngine.distanceGeodeticOrNull(
-            location,
-            waypoint,
-            meters,
-            degrees,
-            GeodeticCurveType.Geodesic
+            point1 = location,
+            point2 = waypoint,
+            distanceUnit = meters,
+            azimuthUnit = degrees,
+            curveType = GeodeticCurveType.Geodesic
         )?.let { geodeticDistanceResult ->
 
             taxiGraphic.apply {
 
                 // Move toward waypoint a short distance
                 geometry = GeometryEngine.tryMoveGeodetic(
-                    listOf(location), 1.0, meters, geodeticDistanceResult.azimuth1, degrees,
-                    GeodeticCurveType.Geodesic
+                    pointCollection = listOf(location),
+                    distance = 1.0,
+                    distanceUnit = meters,
+                    azimuth = geodeticDistanceResult.azimuth1,
+                    azimuthUnit = degrees,
+                    curveType = GeodeticCurveType.Geodesic
                 )[0]
 
                 // Rotate to the waypoint

@@ -66,7 +66,6 @@ fun MainScreen(sampleName: String) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -85,7 +84,7 @@ fun MainScreen(sampleName: String) {
                         .weight(1f),
                     arcGISScene = sceneViewModel.scene,
                     analysisOverlays = listOf(sceneViewModel.analysisOverlay),
-                    graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
+                    graphicsOverlays = listOf(sceneViewModel.graphicsOverlay)
                 )
 
                 // Composable function that holds the slider and the text position value
@@ -93,7 +92,7 @@ fun MainScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.background)
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -101,11 +100,12 @@ fun MainScreen(sampleName: String) {
                         text = "Observer height: ${(observerHeight.toInt() + offset)}",
                     )
                     Slider(
+                        modifier = Modifier.padding(start = 16.dp),
                         value = (observerHeight.toFloat() + offset),
+                        valueRange = 0f..300f,
                         onValueChange = { newHeight ->
                             sceneViewModel.updateHeight(newHeight.toDouble() - offset)
                         },
-                        valueRange = 0f..300f,
                     )
 
                 }
