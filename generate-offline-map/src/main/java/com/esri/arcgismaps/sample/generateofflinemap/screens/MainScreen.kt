@@ -90,15 +90,7 @@ fun MainScreen(sampleName: String) {
                             }
                         },
                     ) {
-                        when (mapViewModel.takeMapOfflineButtonText) {
-                            application.getString(R.string.take_map_offline) -> Text(
-                                text = application.getString(
-                                    R.string.take_map_offline
-                                )
-                            )
-
-                            else -> Text(text = application.getString(R.string.reset_map))
-                        }
+                        Text(text = mapViewModel.takeMapOfflineButtonText)
                     }
                 }
 
