@@ -27,7 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,9 +50,6 @@ fun MainScreen(sampleName: String) {
     val mapViewModel: MapViewModel = viewModel()
     // Keep track of the state of a connect/disconnect button.
     var isConnected by remember { mutableStateOf(true) }
-
-    // TODO - Uncomment the line below to see the callout correctly reset between each identify.
-    //val selectedGeoElement = mapViewModel.selectedGeoElement
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -81,24 +77,17 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     onSingleTapConfirmed = mapViewModel::identify,
                     content = {
-                        // TODO - Comment out the line below to see the callout correctly reset between each identify.
-                        val selectedGeoElement = mapViewModel.selectedGeoElement
-                        selectedGeoElement?.let {
+                        mapViewModel.selectedGeoElement?.let { selectedGeoElement ->
                             Callout(
                                 modifier = Modifier.wrapContentSize(),
-                                geoElement = it
+                                geoElement = selectedGeoElement,
                             ) {
                                 Column(Modifier.padding(4.dp)) {
-                                    // Update the attribute text on each new observation.
-                                    key(mapViewModel.dynamicEntityObservationId) {
-                                        Text(
-                                            // Filter for non-empty attributes and separate each
-                                            // attribute with a new line.
-                                            text = it.attributes.filter { attribute ->
-                                                attribute.value.toString().isNotEmpty()
-                                            }.toString().replace(",", "\n"),
-                                        )
-                                    }
+                                    Text(
+                                        // Filter for non-empty attributes and separate each
+                                        // attribute with a new line.
+                                        text = mapViewModel.observationString
+                                    )
                                 }
                             }
                         }

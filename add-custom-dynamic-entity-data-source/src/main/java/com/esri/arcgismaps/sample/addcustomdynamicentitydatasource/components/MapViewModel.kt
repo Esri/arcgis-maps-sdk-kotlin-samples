@@ -135,7 +135,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var selectedGeoElement by mutableStateOf<GeoElement?>(null)
         private set
 
-    var dynamicEntityObservationId by mutableStateOf<Long?>(null)
+    var observationString by mutableStateOf("")
         private set
 
     /**
@@ -151,11 +151,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 maximumResults = 1
             ).onSuccess { result ->
                 (result.geoElements.firstOrNull() as? DynamicEntityObservation)?.let { observation ->
-                    // Set the identified dynamic entity and show the callout.
+                    // Set the identified dynamic entity, used to display the callout.
                     selectedGeoElement = observation.dynamicEntity
+                    // Collect observation events and update the observation string accordingly.
                     observation.dynamicEntity?.dynamicEntityChangedEvent?.collect {
-                        dynamicEntityObservationId = it.receivedObservation?.id
+                        // Parse the observation attributes and filter out empty values.
+                        observationString =
+                            it.receivedObservation?.attributes?.filter { attribute ->
+                                attribute.value.toString().isNotEmpty()
+                            }.toString().replace(",", "\n")
                     }
+                    // If no observation is found, set the selectedGeoElement to null.
                 } ?: run {
                     selectedGeoElement = null
                 }
