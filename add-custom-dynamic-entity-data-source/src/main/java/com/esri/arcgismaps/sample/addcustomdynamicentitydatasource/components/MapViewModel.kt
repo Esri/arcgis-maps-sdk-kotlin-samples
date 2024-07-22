@@ -135,12 +135,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun dynamicEntityDataSourceDisconnect() =
         viewModelScope.launch { dynamicEntityDataSource.disconnect() }
 
+    // Keep track of the currently selected GeoElement.
     var selectedGeoElement by mutableStateOf<GeoElement?>(null)
         private set
 
+    // Keep track of the most recent observation string.
     var observationString by mutableStateOf("")
         private set
 
+    // Keep track of the Coroutine Scope where observations on being collected on, so that it can
+    // be cancelled on subsequent identifies.
     private var observationsJob: Job? = null
 
     /**
