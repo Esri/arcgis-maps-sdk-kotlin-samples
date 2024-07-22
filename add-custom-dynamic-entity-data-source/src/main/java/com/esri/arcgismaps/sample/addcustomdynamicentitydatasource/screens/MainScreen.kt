@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -81,11 +83,16 @@ fun MainScreen(sampleName: String) {
                             Callout(
                                 modifier = Modifier.wrapContentSize(),
                                 geoElement = selectedGeoElement,
+                                // Optional parameters to customize the callout appearance.
+                                shapes = CalloutDefaults.shapes(
+                                    calloutContentPadding = PaddingValues(
+                                        4.dp
+                                    )
+                                ),
+                                colorScheme = CalloutDefaults.colors(Color.LightGray, Color.Black)
                             ) {
                                 Column(Modifier.padding(4.dp)) {
                                     Text(
-                                        // Filter for non-empty attributes and separate each
-                                        // attribute with a new line.
                                         text = mapViewModel.observationString
                                     )
                                 }

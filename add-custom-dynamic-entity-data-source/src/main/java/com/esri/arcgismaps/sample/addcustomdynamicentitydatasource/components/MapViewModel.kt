@@ -40,6 +40,9 @@ import com.arcgismaps.realtime.CustomDynamicEntityDataSource
 import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
@@ -138,11 +141,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var observationString by mutableStateOf("")
         private set
 
+    private var observationsJob: Job? = null
+
     /**
      * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
+            // If collecting observations on a previous identify, now cancel and stop collecting.
+            observationsJob?.cancelAndJoin()
             // identify the cluster in the feature layer on the tapped coordinate
             mapViewProxy.identify(
                 dynamicEntityLayer as Layer,
@@ -153,20 +160,25 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 (result.geoElements.firstOrNull() as? DynamicEntityObservation)?.let { observation ->
                     // Set the identified dynamic entity, used to display the callout.
                     selectedGeoElement = observation.dynamicEntity
-                    // Collect observation events and update the observation string accordingly.
-                    observation.dynamicEntity?.dynamicEntityChangedEvent?.collect {
-                        // Parse the observation attributes and filter out empty values.
-                        observationString =
-                            it.receivedObservation?.attributes?.filter { attribute ->
-                                attribute.value.toString().isNotEmpty()
-                            }.toString().replace(",", "\n")
+                    // Define a new CoroutineScope to collect observation events on.
+                    observationsJob = launch(Dispatchers.IO) {
+                        // Collect observation events and update the observation string accordingly.
+                        observation.dynamicEntity?.dynamicEntityChangedEvent?.collect {
+                            // Parse the observation attributes, filter out empty values, and remove
+                            // starting and ending {}s.
+                            observationString =
+                                it.receivedObservation?.attributes.toString().replaceFirst("{", " ").removeSuffix("}").replace(",", "\n")
+                        }
                     }
                     // If no observation is found, set the selectedGeoElement to null.
                 } ?: run {
                     selectedGeoElement = null
                 }
             }.onFailure { error ->
-                Log.e(javaClass.simpleName, "Error identifying dynamic entity: ${error.message}")
+                Log.e(
+                    javaClass.simpleName,
+                    "Error identifying dynamic entity: ${error.message}"
+                )
             }
         }
     }
