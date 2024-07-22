@@ -167,11 +167,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                     // Define a new CoroutineScope to collect observation events on.
                     observationsJob = launch(Dispatchers.IO) {
                         // Collect observation events and update the observation string accordingly.
-                        observation.dynamicEntity?.dynamicEntityChangedEvent?.collect {
+                        observation.dynamicEntity?.dynamicEntityChangedEvent?.collect { dynamicEntityChangedInfo ->
                             // Parse the observation attributes, filter out empty values, and remove
                             // starting and ending {}s.
                             observationString =
-                                it.receivedObservation?.attributes.toString().replaceFirst("{", " ").removeSuffix("}").replace(",", "\n")
+                                dynamicEntityChangedInfo.receivedObservation?.attributes?.filter {
+                                    it.value.toString().isNotEmpty()
+                                }.toString().replaceFirst("{", " ").removeSuffix("}")
+                                    .replace(",", "\n")
                         }
                     }
                     // If no observation is found, set the selectedGeoElement to null.

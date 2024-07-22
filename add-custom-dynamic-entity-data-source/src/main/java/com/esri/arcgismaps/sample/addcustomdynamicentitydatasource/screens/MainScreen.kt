@@ -89,7 +89,7 @@ fun MainScreen(sampleName: String) {
                                         4.dp
                                     )
                                 ),
-                                colorScheme = CalloutDefaults.colors(Color.LightGray, Color.Black)
+                                colorScheme = CalloutDefaults.colors(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.primary)
                             ) {
                                 Column(Modifier.padding(4.dp)) {
                                     Text(
