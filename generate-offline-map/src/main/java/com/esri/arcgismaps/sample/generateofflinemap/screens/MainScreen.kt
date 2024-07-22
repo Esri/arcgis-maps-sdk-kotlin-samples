@@ -50,7 +50,6 @@ fun MainScreen(sampleName: String) {
     // Create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
 
-
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = mapViewModel.snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },

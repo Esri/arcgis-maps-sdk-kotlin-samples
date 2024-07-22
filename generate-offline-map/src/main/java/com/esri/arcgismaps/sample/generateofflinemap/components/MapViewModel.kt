@@ -68,7 +68,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     val snackbarHostState = SnackbarHostState()
 
     // Define map that returns an ArcGISMap
-    var map = ArcGISMap()
+    var map by mutableStateOf(ArcGISMap())
 
     // Determinate job progress loading dialog
     val showJobProgressDialog = mutableStateOf(false)
@@ -105,6 +105,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                 .onSuccess {
                     // Add the download graphic to the graphics overlay
                     graphicsOverlay.graphics.add(downloadArea)
+
                     // Limit the map scale to the largest layer scale
                     map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
                     map.minScale = map.operationalLayers[6].minScale ?: 0.0
