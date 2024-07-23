@@ -170,11 +170,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                         observation.dynamicEntity?.dynamicEntityChangedEvent?.collect { dynamicEntityChangedInfo ->
                             // Parse the observation attributes, filter out empty values, and remove
                             // starting and ending {}s.
-                            observationString =
-                                dynamicEntityChangedInfo.receivedObservation?.attributes?.filter {
-                                    it.value.toString().isNotEmpty()
-                                }.toString().replaceFirst("{", " ").removeSuffix("}")
-                                    .replace(",", "\n")
+                            observationString = dynamicEntityChangedInfo
+                                .receivedObservation?.attributes?.filter {
+                                    it.value.toString().isNotEmpty() && !it.key.contains("globalid")
+                                }.toString()
+                                .replaceFirst("{", " ")
+                                .removeSuffix("}")
+                                .replace(",", "\n")
                         }
                     }
                     // If no observation is found, set the selectedGeoElement to null.
