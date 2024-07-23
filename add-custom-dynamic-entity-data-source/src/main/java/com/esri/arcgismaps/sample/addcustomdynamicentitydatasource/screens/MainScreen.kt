@@ -95,7 +95,8 @@ fun MainScreen(sampleName: String) {
                                 // Callout content:
                                 Column(Modifier.padding(4.dp)) {
                                     Text(
-                                        text = mapViewModel.observationString
+                                        text = mapViewModel.observationString,
+                                        style = MaterialTheme.typography.labelSmall
                                     )
                                 }
                             }
