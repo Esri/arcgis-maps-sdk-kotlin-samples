@@ -182,6 +182,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                     // If no observation is found, set the selectedGeoElement to null.
                 } ?: run {
                     selectedGeoElement = null
+                    observationString = "Waiting for a new observation ..."
                 }
             }.onFailure { error ->
                 Log.e(
