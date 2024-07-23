@@ -41,6 +41,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -115,6 +116,16 @@ fun MainScreen(sampleName: String) {
                     Text(
                         text = stringResource(if (!isConnected) R.string.connect else R.string.disconnect)
                     )
+                }
+                // Display a MessageDialog with any error information
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
                 }
             }
         }
