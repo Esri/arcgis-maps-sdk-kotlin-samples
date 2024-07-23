@@ -81,7 +81,7 @@ fun MainScreen(sampleName: String) {
                     content = {
                         mapViewModel.selectedGeoElement?.let { selectedGeoElement ->
                             Callout(
-                                modifier = Modifier.wrapContentSize(),
+                                modifier = Modifier.sizeIn(maxWidth = 250.dp),
                                 geoElement = selectedGeoElement,
                                 // Optional parameters to customize the callout appearance.
                                 shapes = CalloutDefaults.shapes(
