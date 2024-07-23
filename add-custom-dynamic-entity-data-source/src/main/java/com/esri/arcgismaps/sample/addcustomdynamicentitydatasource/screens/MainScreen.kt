@@ -85,11 +85,12 @@ fun MainScreen(sampleName: String) {
                                 geoElement = selectedGeoElement,
                                 // Optional parameters to customize the callout appearance.
                                 shapes = CalloutDefaults.shapes(
-                                    calloutContentPadding = PaddingValues(
-                                        4.dp
-                                    )
+                                    calloutContentPadding = PaddingValues(4.dp)
                                 ),
-                                colorScheme = CalloutDefaults.colors(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.primary)
+                                colorScheme = CalloutDefaults.colors(
+                                    backgroundColor = MaterialTheme.colorScheme.background,
+                                    borderColor = MaterialTheme.colorScheme.outline
+                                )
                             ) {
                                 Column(Modifier.padding(4.dp)) {
                                     Text(
