@@ -92,6 +92,7 @@ fun MainScreen(sampleName: String) {
                                     borderColor = MaterialTheme.colorScheme.outline
                                 )
                             ) {
+                                // Callout content:
                                 Column(Modifier.padding(4.dp)) {
                                     Text(
                                         text = mapViewModel.observationString
