@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -93,7 +93,7 @@ fun MainScreen(sampleName: String) {
                                 )
                             ) {
                                 // Callout content:
-                                Column(Modifier.padding(4.dp)) {
+                                Column {
                                     Text(
                                         text = mapViewModel.observationString,
                                         style = MaterialTheme.typography.labelSmall

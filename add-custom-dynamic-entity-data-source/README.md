@@ -47,6 +47,8 @@ This sample uses a [.json file containing observations of marine vessels in the 
 
 In this sample, we iterate through features in a GeoJSON file to mimic messages coming from a real-time feed. You can create a custom dynamic entity data source to process any data that contains observations which can be translated into map points (`com.arcgismaps.geometry.Point` objects) with associated `Map<String, Any?>` attributes.
 
+This sample uses the GeoViewCompose Toolkit module to implement a Composable MapView, which supports the use of Callouts.
+
 ## Tags
 
-data, dynamic, entity, flow, label, labeling, live, real-time, stream, track
+callout, data, dynamic, entity, flow, label, labeling, live, real-time, stream, track

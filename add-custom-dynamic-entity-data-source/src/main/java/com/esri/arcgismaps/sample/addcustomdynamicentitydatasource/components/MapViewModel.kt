@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -40,6 +39,7 @@ import com.arcgismaps.realtime.CustomDynamicEntityDataSource
 import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -129,6 +129,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // This should also be passed to the composable MapView this mapViewProxy is associated with.
     val mapViewProxy = MapViewProxy()
 
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+
     fun dynamicEntityDataSourceConnect() =
         viewModelScope.launch { dynamicEntityDataSource.connect() }
 
@@ -185,9 +188,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                     observationString = "Waiting for a new observation ..."
                 }
             }.onFailure { error ->
-                Log.e(
-                    javaClass.simpleName,
-                    "Error identifying dynamic entity: ${error.message}"
+                messageDialogVM.showMessageDialog(
+                    title = "Error identifying results: ${error.message.toString()}",
+                    description = error.cause.toString()
                 )
             }
         }
