@@ -40,7 +40,6 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
-import com.arcgismaps.tasks.JobStatus
 import com.arcgismaps.tasks.geodatabase.GenerateGeodatabaseJob
 import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
 import com.arcgismaps.tasks.geodatabase.SyncDirection
@@ -217,9 +216,6 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     private suspend fun loadGeodatabase(geodatabase: Geodatabase, map: ArcGISMap) {
-        map.operationalLayers.clear()
-        // clear all symbols drawn
-        graphicsOverlay.graphics.clear()
         geodatabase.load().onFailure {
             return messageDialogVM.showMessageDialog("Error loading geodatabase")
         }
@@ -245,39 +241,26 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                 syncGeodatabaseParameters,
                 geodatabase
             )
-        }
 
-        syncGeodatabaseJob?.let { syncGeodatabaseJob ->
+            syncGeodatabaseJob?.let { syncGeodatabaseJob ->
 
-            showSyncGeodatabaseJobProgressDialog.value = true
-            // Create a flow-collection for the job's progress
-            viewModelScope.launch {
-                syncGeodatabaseJob.progress.collect { progress ->
-                    // Display the current job's progress value
-                    syncGeodatabaseJobProgress.intValue = progress
-                    // Log.i("Progress", "generateGeodatabaseJobProgress: ${generateGeodatabaseProgress.intValue}")
-                }
-            }
-
-            viewModelScope.launch {
-                syncGeodatabaseJob.start()
-
-                syncGeodatabaseJob.status.collect { status ->
-                    when (status) {
-                        JobStatus.Failed, JobStatus.Succeeded -> {
-                            // if the job failed show an failed message
-                            if (status is JobStatus.Failed) {
-                                messageDialogVM.showMessageDialog("Database did not sync correctly")
-                            } else {
-                                messageDialogVM.showMessageDialog("Sync Complete")
-                            }
-                            // dismiss the dialog
-                            showSyncGeodatabaseJobProgressDialog.value = false
-                        }
-
-                        else -> {}
+                showSyncGeodatabaseJobProgressDialog.value = true
+                // Create a flow-collection for the job's progress
+                viewModelScope.launch {
+                    syncGeodatabaseJob.progress.collect { progress ->
+                        // Display the current job's progress value
+                        syncGeodatabaseJobProgress.intValue = progress
+                        // Log.i("Progress", "generateGeodatabaseJobProgress: ${generateGeodatabaseProgress.intValue}")
                     }
                 }
+
+                syncGeodatabaseJob.start()
+                syncGeodatabaseJob.result().onSuccess {
+                    messageDialogVM.showMessageDialog("Sync Complete")
+                }.onFailure {
+                    messageDialogVM.showMessageDialog("Database did not sync correctly")
+                }
+                showSyncGeodatabaseJobProgressDialog.value = false
             }
 
         }
@@ -319,11 +302,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         viewModelScope.launch {
             selectedFeatures.forEach { feature ->
                 feature.geometry = point
-                feature.featureTable?.updateFeature(feature)?.onSuccess {
-                    //messageDialogVM.showMessageDialog("ADDED T OTABLE")
-                }?.onFailure {
-                    // messageDialogVM.showMessageDialog("not added")
-                }
+                feature.featureTable?.updateFeature(feature)
             }
             selectedFeatures.clear()
             map.operationalLayers.filterIsInstance<FeatureLayer>().forEach { featureLayer ->
