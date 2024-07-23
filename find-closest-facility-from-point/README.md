@@ -2,7 +2,7 @@
 
 Find a route to the closest facility from a location.
 
-![Image of Find Closest Facility from Point](find_closest_facility_from_point.png)
+![Image of Find Closest Facility from Point](find-closest-facility-from-point.png)
 
 ## Use case
 
