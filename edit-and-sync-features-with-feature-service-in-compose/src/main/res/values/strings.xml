@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Edit and Sync Features with Feature Service in Compose</string>
+    <string name="feature_server_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/Sync/WildfireSync/FeatureServer</string>
+    <string name="dialog_title">Fetching result</string>
+    <string name="generate_button_text">Generate Geodatabase</string>
+    <string name="sync_button_text">Sync Geodatabase</string>
+    <string name="geodatabase_file">wildfire_gdb.geodatabase</string>
+    <string name="reset_operation">Reset</string>
+</resources>
