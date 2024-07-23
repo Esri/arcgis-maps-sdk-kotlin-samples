@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.generateofflinemap.components
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -70,7 +69,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     // Define map that returns an ArcGISMap
     var map by mutableStateOf(ArcGISMap())
 
-    // Determinate job progress loading dialog
+    // Determinate job progress loading dialog visibility state
     val showJobProgressDialog = mutableStateOf(false)
 
     // Determinate job progress percentage
@@ -87,13 +86,13 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
 
     init {
         // Set up the portal item to  take offline
-        setUpMapView()
+        setUpMap()
     }
 
     /**
      * Sets up a portal item and displays map area to take offline
      */
-    private fun setUpMapView() {
+    private fun setUpMap() {
 
         // Create a portal item with the itemId of the web map
         val portal = Portal(application.getString(R.string.portal_url))
@@ -187,39 +186,43 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
             // Show the Job Progress Dialog
             showJobProgressDialog.value = true
 
-            // Create a flow-collection for the job's progress
-            viewModelScope.launch {
-                offlineMapJob.progress.collect { progress ->
-                    // Display the current job's progress value
-                    offlineMapJobProgress.intValue = progress
-                    Log.i("Progress", "offlineMapJobProgress: ${offlineMapJobProgress.intValue}")
+            with(viewModelScope) {
+
+                // Create a flow-collection for the job's progress
+                launch {
+                    offlineMapJob.progress.collect { progress ->
+                        // Display the current job's progress value
+                        offlineMapJobProgress.intValue = progress
+                    }
+                }
+
+                launch {
+                    // Start the job and wait for Job result
+                    offlineMapJob.start()
+                    offlineMapJob.result().onSuccess {
+                        // set the offline map result as the displayed map
+                        map = it.offlineMap
+                        graphicsOverlay.graphics.clear()
+
+                        // Change the button text to Reset Map once job is done successfully
+                        takeMapOfflineButtonText = application.getString(R.string.reset_map)
+
+                        // Dismiss the progress dialog
+                        showJobProgressDialog.value = false
+
+                        // Show user where map was locally saved
+                        snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
+
+                    }.onFailure { throwable ->
+                        messageDialogVM.showMessageDialog(
+                            title = throwable.message.toString(),
+                            description = throwable.cause.toString()
+                        )
+                        showJobProgressDialog.value = false
+                    }
                 }
             }
 
-            viewModelScope.launch {
-                // Start the job
-                offlineMapJob.start()
-                offlineMapJob.result().onSuccess {
-                    map = it.offlineMap
-                    graphicsOverlay.graphics.clear()
-
-                    // Change the button text to Reset Map once job is done successfully
-                    takeMapOfflineButtonText = application.getString(R.string.reset_map)
-
-                    // Dismiss the progress dialog
-                    showJobProgressDialog.value = false
-
-                    // Show user where map was locally saved
-                    snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
-
-                }.onFailure { throwable ->
-                    messageDialogVM.showMessageDialog(
-                        title = throwable.message.toString(),
-                        description = throwable.cause.toString()
-                    )
-                    showJobProgressDialog.value = false
-                }
-            }
         }
     }
 
@@ -242,7 +245,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         takeMapOfflineButtonText = application.getString(R.string.take_map_offline)
 
         // Set up the portal item to take offline
-        setUpMapView()
+        setUpMap()
 
     }
 
