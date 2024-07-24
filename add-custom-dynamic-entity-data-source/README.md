@@ -28,7 +28,7 @@ Configure the MapView:
 1. Create a `DynamicEntityLayer` using the custom data source implementation.
 2. Update values in the layer's `trackDisplayProperties` to customize the layer's appearance.
 3. Set up the layer's `labelDefinitions` to display labels for each dynamic entity.
-4. Use `MapView.identify(...)` to display a dynamic entity's attributes in the log.
+4. Use `MapView.identify(...)` to display a dynamic entity's attributes in a `Callout`.
 
 ## Relevant API
 
