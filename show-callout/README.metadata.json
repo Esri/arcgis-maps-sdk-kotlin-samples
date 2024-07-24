@@ -31,7 +31,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showcallout/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showcallout/components/ComposeMapView.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcallout/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcallout/screens/MainScreen.kt"
     ],
