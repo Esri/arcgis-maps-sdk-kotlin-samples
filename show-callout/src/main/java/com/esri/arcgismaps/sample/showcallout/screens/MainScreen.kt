@@ -71,12 +71,10 @@ fun MainScreen(sampleName: String) {
                                 )
                             ) {
                                 // Callout content:
-                                Column {
-                                    Text(
-                                        text = mapViewModel.calloutContent,
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                }
+                                Text(
+                                    text = mapViewModel.calloutContent,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
                             }
                         }
                     }

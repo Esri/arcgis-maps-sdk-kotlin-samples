@@ -16,9 +16,7 @@ Tap anywhere on the map. A callout showing the WGS84 coordinates for the tapped 
 
 1. When the user taps, get the tapped location(map point) from the `SingleTapConfirmedEvent`.
 2. Project the point's geometry to WGS84 using `GeometryEngine.projectOrNull(mapPoint, SpatialReference.wgs84())`.
-3. Create a new Android TextView object and set its text to the coordinate string from the point.
-4. Show the `Callout` on the map view using `mapView.callout.show()` which takes the above created View and WGS84 point as parameters.
-5. Center the map on the tapped location using `mapView.setViewpointCenter`.
+3. Update the `calloutContent` string with the lat/lon values. Changes to `calloutContent` will trigger recomposition of the `Composable` callout.
 
 ## Relevant API
 
