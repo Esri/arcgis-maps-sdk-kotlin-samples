@@ -24,7 +24,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.LicenseKey
 import com.esri.arcgismaps.sample.configurebasemapstyleparameters.screens.MainScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 

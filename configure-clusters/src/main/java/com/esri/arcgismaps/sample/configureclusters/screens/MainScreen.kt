@@ -32,12 +32,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -215,7 +215,7 @@ private fun ClusterControlsBottomSheet(
                 Text("Current map scale:")
                 Text("1:$mapScale")
             }
-            Divider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
+            HorizontalDivider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
             Text(
                 "Clustering properties:",
                 style = MaterialTheme.typography.titleMedium
@@ -282,7 +282,7 @@ private fun ClusterRadiusControls(
                         })
                     // show a divider between dropdown menu options
                     if (index < clusterRadiusOptions.lastIndex) {
-                        Divider()
+                        HorizontalDivider()
                     }
                 }
             }
@@ -336,7 +336,7 @@ private fun ClusterMaxScaleControls(
                         })
                     // show a divider between dropdown menu options
                     if (index < clusterMaxScaleOptions.lastIndex) {
-                        Divider()
+                        HorizontalDivider()
                     }
                 }
             }
