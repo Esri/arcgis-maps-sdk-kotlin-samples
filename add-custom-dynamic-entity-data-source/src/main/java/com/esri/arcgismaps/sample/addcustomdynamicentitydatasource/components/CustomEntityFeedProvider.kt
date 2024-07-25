@@ -128,7 +128,7 @@ class CustomEntityFeedProvider(
                     throw e
                 }
                 withContext(NonCancellable) {
-                    // Signal that an error occured. This will change the CustomDynamicEntityDataSource's connectionStatus to Failed.
+                    // Signal that an error occurred. This will change the CustomDynamicEntityDataSource's connectionStatus to Failed.
                     _feed.tryEmit(
                         CustomDynamicEntityDataSource.FeedEvent.ConnectionFailure(
                             e,
