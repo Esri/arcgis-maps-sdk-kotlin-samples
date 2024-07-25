@@ -243,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                     // dismiss the dialog view
                     jobProgressDialog.dismiss()
                     // unregister since we are not syncing
-                    geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
+                    geodatabaseSyncTask.unregisterGeodatabase(geodatabase).getOrThrow()
                     // show reset button as the task is now complete
                     generateButton.isEnabled = false
                     resetButton.isEnabled = true
