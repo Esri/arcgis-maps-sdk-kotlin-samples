@@ -34,9 +34,9 @@
         "SyncLayerOption"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/editandsyncfeatureswithfeatureserviceincompose/MainActivity.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/editandsyncfeatureswithfeatureserviceincompose/components/MapViewModel.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/editandsyncfeatureswithfeatureserviceincompose/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/editandsyncfeatureswithfeatureserviceincompose/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editandsyncfeatureswithfeatureserviceincompose/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editandsyncfeatureswithfeatureserviceincompose/screens/MainScreen.kt"
     ],
     "title": "Edit and sync features with feature service"
 }
