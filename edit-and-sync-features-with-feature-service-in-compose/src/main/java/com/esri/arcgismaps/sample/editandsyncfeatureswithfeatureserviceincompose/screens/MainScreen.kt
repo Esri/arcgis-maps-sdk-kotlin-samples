@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureserviceincompose.screens
 
-import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,10 +24,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -45,8 +45,12 @@ fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
 
+    // use viewModel SnackbarHostState to set SnackbarHost in Scaffold
+    val snackbarHostState = remember { mapViewModel.snackbarHostState }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         content = {
             // check generate offline map to see layout
             Column(
@@ -59,12 +63,12 @@ fun MainScreen(sampleName: String) {
                         .weight(1f)
                         .fillMaxWidth(),
                     arcGISMap = mapViewModel.map,
+                    mapViewProxy = mapViewModel.mapViewProxy,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     onSingleTapConfirmed = mapViewModel::onSingleTapConfirmed,
-                    onVisibleAreaChanged = { polygon ->
-                        mapViewModel.polygon = polygon
+                    onVisibleAreaChanged = { newPolygon ->
+                        mapViewModel.polygon = newPolygon
                     },
-                    mapViewProxy = mapViewModel.mapViewProxy
                 )
 
                 Row(
@@ -83,7 +87,7 @@ fun MainScreen(sampleName: String) {
                     }
                 }
 
-                // Display progress dialog while generating an offline map
+                // Display progress dialog while generating geodatabase
                 if (mapViewModel.showGenerateGeodatabaseJobProgressDialog.value) {
                     JobLoadingDialog(
                         title = "Generating geodatabase...",
@@ -92,7 +96,7 @@ fun MainScreen(sampleName: String) {
                     )
                 }
 
-                // Display progress dialog while generating an offline map
+                // Display progress dialog while syncing geodatabase
                 if (mapViewModel.showSyncGeodatabaseJobProgressDialog.value) {
                     JobLoadingDialog(
                         title = "Syncing geodatabase...",
@@ -111,7 +115,7 @@ fun MainScreen(sampleName: String) {
                         )
                     }
                 }
+            }
         }
-}
-)
+    )
 }
