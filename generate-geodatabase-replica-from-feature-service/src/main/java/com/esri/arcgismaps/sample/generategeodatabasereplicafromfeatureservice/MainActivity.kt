@@ -44,6 +44,7 @@ import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.d
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -114,6 +115,16 @@ class MainActivity : AppCompatActivity() {
 
         // set the button's onClickListener
         generateButton.setOnClickListener {
+            val geodatabaseFile = File(geodatabaseFilePath)
+            if (geodatabaseFile.exists()){
+                geodatabaseFile.deleteRecursively().apply {
+                    if (!this){
+                        Log.e("TEST","Failed deleted local geodatabase")
+                    }else{
+                        Log.e("TEST","Successfully deleted local geodatabase")
+                    }
+                }
+            }
             // start the geodatabase generation process
             generateGeodatabase(geodatabaseSyncTask, map, downloadArea.geometry?.extent)
         }
@@ -242,6 +253,7 @@ class MainActivity : AppCompatActivity() {
                     loadGeodatabase(geodatabase, map)
                     // dismiss the dialog view
                     jobProgressDialog.dismiss()
+                    Log.e("TEST","GUID: ${geodatabase.syncId}")
                     // unregister since we are not syncing
                     geodatabaseSyncTask.unregisterGeodatabase(geodatabase).getOrThrow()
                     // show reset button as the task is now complete
