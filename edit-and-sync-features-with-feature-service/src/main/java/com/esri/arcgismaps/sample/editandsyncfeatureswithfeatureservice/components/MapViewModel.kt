@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureserviceincompose.components
+package com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.components
 
 import android.app.Application
 import androidx.compose.material3.SnackbarHostState
@@ -48,7 +48,7 @@ import com.arcgismaps.tasks.geodatabase.SyncGeodatabaseJob
 import com.arcgismaps.tasks.geodatabase.SyncGeodatabaseParameters
 import com.arcgismaps.tasks.geodatabase.SyncLayerOption
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
-import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureserviceincompose.R
+import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.io.File

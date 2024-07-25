@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureserviceincompose.screens
+package com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureserviceincompose.components.MapViewModel
+import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
