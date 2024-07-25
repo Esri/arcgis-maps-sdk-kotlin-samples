@@ -74,7 +74,7 @@ fun MainScreen(sampleName: String) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(0.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
