@@ -26,6 +26,7 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.arcgisservices.LabelingPlacement
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.GeoElement
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.labeling.LabelDefinition
 import com.arcgismaps.mapping.labeling.SimpleLabelExpression
@@ -39,14 +40,14 @@ import com.arcgismaps.realtime.DynamicEntityObservation
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-
-    // Create a ViewModel to handle dialog interactions.
-    val messageDialogVM = MessageDialogViewModel()
 
     // Keep track of connected status string state.
     var connectionStatusString by mutableStateOf("")
@@ -124,10 +125,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         operationalLayers.add(dynamicEntityLayer)
     }
 
-
     // Create a mapViewProxy that will be used to identify features in the MapView.
     // This should also be passed to the composable MapView this mapViewProxy is associated with.
     val mapViewProxy = MapViewProxy()
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     fun dynamicEntityDataSourceConnect() =
         viewModelScope.launch { dynamicEntityDataSource.connect() }
@@ -135,11 +138,25 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun dynamicEntityDataSourceDisconnect() =
         viewModelScope.launch { dynamicEntityDataSource.disconnect() }
 
+    // Keep track of the currently selected GeoElement.
+    var selectedGeoElement by mutableStateOf<GeoElement?>(null)
+        private set
+
+    // Keep track of the most recent observation string.
+    var observationString by mutableStateOf("")
+        private set
+
+    // Keep track of the Coroutine Scope where observations on being collected on, so that it can
+    // be cancelled on subsequent identifies.
+    private var observationsJob: Job? = null
+
     /**
      * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent]
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
+            // If collecting observations on a previous identify, now cancel and stop collecting.
+            observationsJob?.cancelAndJoin()
             // identify the cluster in the feature layer on the tapped coordinate
             mapViewProxy.identify(
                 dynamicEntityLayer as Layer,
@@ -148,27 +165,31 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 maximumResults = 1
             ).onSuccess { result ->
                 (result.geoElements.firstOrNull() as? DynamicEntityObservation)?.let { observation ->
-                    // Get the dynamic entity from the observation.
-                    observation.dynamicEntity?.let { dynamicEntity ->
-                        // Build a string for observation attributes.
-                        val stringBuilder = StringBuilder()
-                        for (attribute in arrayOf("VesselName", "CallSign", "COG", "SOG")) {
-                            val value = dynamicEntity.attributes[attribute]?.toString()
-                            // Account for when an attribute has an empty value.
-                            if (!value.isNullOrEmpty()) {
-                                stringBuilder.appendLine("$attribute: $value")
-                            }
+                    // Set the identified dynamic entity, used to display the callout.
+                    selectedGeoElement = observation.dynamicEntity
+                    // Define a new CoroutineScope to collect observation events on.
+                    observationsJob = launch(Dispatchers.IO) {
+                        // Collect observation events and update the observation string accordingly.
+                        observation.dynamicEntity?.dynamicEntityChangedEvent?.collect { dynamicEntityChangedInfo ->
+                            // Parse the observation attributes, filter out empty values, and remove
+                            // starting and ending {}s.
+                            observationString = dynamicEntityChangedInfo
+                                .receivedObservation?.attributes?.filter {
+                                    it.value.toString().isNotEmpty() && !it.key.contains("globalid")
+                                }.toString()
+                                .replaceFirst("{", " ")
+                                .removeSuffix("}")
+                                .replace(",", "\n")
                         }
-                        val entityAttributes = stringBuilder.toString().trimEnd()
-                        messageDialogVM.showMessageDialog(
-                            title = "Identified dynamic entity",
-                            description = entityAttributes
-                        )
                     }
+                    // If no observation is found, set the selectedGeoElement to null.
+                } ?: run {
+                    selectedGeoElement = null
+                    observationString = "Waiting for a new observation ..."
                 }
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    title = "Error in evaluating popup expression: ${error.message.toString()}",
+                    title = "Error identifying results: ${error.message.toString()}",
                     description = error.cause.toString()
                 )
             }
