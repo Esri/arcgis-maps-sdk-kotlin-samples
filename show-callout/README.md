@@ -16,9 +16,8 @@ Tap anywhere on the map. A callout showing the WGS84 coordinates for the tapped 
 
 1. When the user taps, get the tapped location(map point) from the `SingleTapConfirmedEvent`.
 2. Project the point's geometry to WGS84 using `GeometryEngine.projectOrNull(mapPoint, SpatialReference.wgs84())`.
-3. Create a new Android TextView object and set its text to the coordinate string from the point.
-4. Show the `Callout` on the map view using `mapView.callout.show()` which takes the above created View and WGS84 point as parameters.
-5. Center the map on the tapped location using `mapView.setViewpointCenter`.
+3. To the composable `MapView`'s content, add a composable `Callout` passing it the location `Point` and calloutContent string.
+4. Changes to the `latLongPoint` variable will trigger recomposition of the `Callout`.
 
 ## Relevant API
 
@@ -27,6 +26,10 @@ Tap anywhere on the map. A callout showing the WGS84 coordinates for the tapped 
 * MapView
 * Point
 
+## Additional information
+
+This sample uses the GeoViewCompose Toolkit module to implement a Composable MapView, which supports the use of [Callouts](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/v.next/toolkit/geoview-compose#display-a-callout).
+
 ## Tags
 
-balloon, bubble, callout, flyout, flyover, info window, popup, tap
+balloon, bubble, callout, flyout, flyover, info window, popup, tap, toolkit
