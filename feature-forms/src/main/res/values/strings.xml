@@ -6,7 +6,7 @@
     <string name="cancel">Cancel</string>
     <string name="enter_enterprise_url">"Enter an URL for ArcGIS Enterprise"</string>
     <string name="signing_in">Signing in..</string>
-    <string name="sign_in_with_default_credentials">Sign in using built-in Credentials</string>
+    <string name="sign_in_with_agol">Sign in with ArcGIS Online</string>
     <string name="sign_in_with_enterprise">Sign in with ArcGIS Enterprise</string>
     <string name="skin_sign_in">Skip sign in</string>
     <string name="maximum_character_length_exceeded">Maximum character length exceeded</string>
@@ -27,4 +27,10 @@
     <string name="discard">Discard</string>
     <string name="discard_edits">Discard Edits?</string>
     <string name="all_changes_will_be_lost">All changes made within the form will be lost.</string>
+    <string name="browse_demo_maps">Browse Demo Maps</string>
+    <string name="no_featureform_found">No FeatureForm Found!</string>
+    <string name="okay">Okay</string>
+    <string name="exit">Exit</string>
+    <string name="no_featureform_description">FeatureLayers in this map do not contain a FeatureFormDefinition. Feature editing will be disabled.</string>
+    <string name="camera_permission_required">Camera permission is required for Attachments. This will result in limited functionality.</string>
 </resources>

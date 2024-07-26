@@ -19,37 +19,22 @@ package com.esri.arcgismaps.sample.featureforms
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import com.arcgismaps.ApiKey
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.featureforms.compoenents.MapViewModel
 import com.esri.arcgismaps.sample.featureforms.screens.MainScreen
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
-
+        ArcGISEnvironment.applicationContext = this
         setContent {
             SampleAppTheme {
-                SampleApp()
+                val mapViewModel: MapViewModel = viewModel()
+                MainScreen(mapViewModel)
             }
-        }
-    }
-
-    @Composable
-    private fun SampleApp() {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            MainScreen(
-                sampleName = getString(R.string.app_name)
-            )
         }
     }
 }

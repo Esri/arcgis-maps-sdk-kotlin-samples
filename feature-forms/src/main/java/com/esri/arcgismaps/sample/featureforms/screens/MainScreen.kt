@@ -16,13 +16,11 @@
 
 package com.esri.arcgismaps.sample.featureforms.screens
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,11 +32,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -47,11 +45,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,43 +62,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.window.core.layout.WindowSizeClass
-import androidx.window.layout.WindowMetricsCalculator
 import com.arcgismaps.exceptions.FeatureFormValidationException
 import com.arcgismaps.toolkit.featureforms.FeatureForm
 import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.featureforms.R
-import com.esri.arcgismaps.sample.featureforms.components.ErrorInfo
-import com.esri.arcgismaps.sample.featureforms.components.MapViewModel
-import com.esri.arcgismaps.sample.featureforms.components.UIState
-import com.esri.arcgismaps.sample.featureforms.components.bottomsheet.SheetExpansionHeight
-import com.esri.arcgismaps.sample.featureforms.components.bottomsheet.SheetLayout
-import com.esri.arcgismaps.sample.featureforms.components.bottomsheet.SheetValue
-import com.esri.arcgismaps.sample.featureforms.components.bottomsheet.StandardBottomSheet
-import com.esri.arcgismaps.sample.featureforms.components.bottomsheet.rememberStandardBottomSheetState
+import com.esri.arcgismaps.sample.featureforms.compoenents.ErrorInfo
+import com.esri.arcgismaps.sample.featureforms.compoenents.MapViewModel
+import com.esri.arcgismaps.sample.featureforms.compoenents.UIState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-internal val BottomSheetMaxWidth = 640.dp
-
-/**
- * Main screen layout for the sample app
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(sampleName: String) {
-    // create a ViewModel to handle MapView interactions
-    val mapViewModel: MapViewModel = viewModel()
+fun MainScreen(mapViewModel: MapViewModel, onBackPressed: () -> Unit = {}) {
+
     val uiState by mapViewModel.uiState
     val context = LocalContext.current
-    val windowSize = getWindowSize(context)
     val (featureForm, errorVisibility) = remember(uiState) {
         when (uiState) {
             is UIState.Editing -> {
@@ -105,12 +93,17 @@ fun MainScreen(sampleName: String) {
             }
 
             is UIState.Committing -> {
-                Pair((uiState as UIState.Committing).featureForm, ValidationErrorVisibility.Automatic)
+                Pair(
+                    (uiState as UIState.Committing).featureForm,
+                    ValidationErrorVisibility.Automatic
+                )
             }
 
             is UIState.Switching -> {
                 val state = uiState as UIState.Switching
-                Pair(state.oldState.featureForm, state.oldState.validationErrorVisibility)
+                Pair(
+                    state.oldState.featureForm, state.oldState.validationErrorVisibility
+                )
             }
 
             else -> {
@@ -124,28 +117,38 @@ fun MainScreen(sampleName: String) {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             val scope = rememberCoroutineScope()
-            // show the top bar which changes available actions based on if the FeatureForm is
-            // being shown and is in edit mode
-            TopFormBar(
-                title = mapViewModel.portalItem.title,
-                editingMode = uiState !is UIState.NotEditing,
-                onClose = {
-                    showDiscardEditsDialog = true
-                },
-                onSave = {
-                    scope.launch {
-                        mapViewModel.commitEdits().onFailure {
-                            Log.w("Forms", "Applying edits failed : ${it.message}")
-                            Toast.makeText(
-                                context,
-                                "Applying edits failed : ${it.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
+            Box {
+                // show the top bar which changes available actions based on if the FeatureForm is
+                // being shown and is in edit mode
+                TopFormBar(
+                    title = mapViewModel.portalItem.title,
+                    editingMode = uiState is UIState.Editing,
+                    onClose = {
+                        showDiscardEditsDialog = true
+                    },
+                    onSave = {
+                        scope.launch {
+                            mapViewModel.commitEdits().onFailure {
+                                Log.w("Forms", "Applying edits failed : ${it.message}")
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Applying edits failed : ${it.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
                         }
-                    }
-                }) {
-                // TODO:
-                //  onBackPressed()
+                    }) {
+                    onBackPressed()
+                }
+                if (uiState is UIState.Loading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                    )
+                }
             }
         }
     ) { padding ->
@@ -158,52 +161,67 @@ fun MainScreen(sampleName: String) {
                 .fillMaxSize(),
             onSingleTapConfirmed = { mapViewModel.onSingleTapConfirmed(it) }
         )
-        AnimatedVisibility(
-            visible = featureForm != null,
-            enter = slideInVertically { h -> h },
-            exit = slideOutVertically { h -> h },
-            label = "feature form"
-        ) {
-            val isSwitching = uiState is UIState.Switching
-            // remember the form and update it when a new form is opened
-            val rememberedForm = remember(this, isSwitching) {
-                featureForm!!
-            }
-            val bottomSheetState = rememberStandardBottomSheetState(
-                initialValue = SheetValue.PartiallyExpanded,
-                confirmValueChange = { it != SheetValue.Hidden },
-                skipHiddenState = false
-            )
-            SheetLayout(
-                windowSizeClass = windowSize,
-                sheetOffsetY = { bottomSheetState.requireOffset() },
-                modifier = Modifier.padding(padding),
-                maxWidth = BottomSheetMaxWidth,
-            ) { layoutWidth, layoutHeight ->
-                StandardBottomSheet(
-                    state = bottomSheetState,
-                    peekHeight = 40.dp,
-                    expansionHeight = SheetExpansionHeight(0.5f),
-                    sheetSwipeEnabled = true,
-                    shape = RoundedCornerShape(5.dp),
-                    layoutHeight = layoutHeight.toFloat(),
-                    sheetWidth = with(LocalDensity.current) { layoutWidth.toDp() }
-                ) {
-                    // set bottom sheet content to the FeatureForm
-                    FeatureForm(
-                        featureForm = rememberedForm,
-                        modifier = Modifier.fillMaxSize(),
-                        validationErrorVisibility = errorVisibility
-                    )
+
+        val sheetState = rememberModalBottomSheetState()
+        var showBottomSheet by remember { mutableStateOf(false) }
+
+        LaunchedEffect(featureForm) {
+            showBottomSheet = featureForm != null
+        }
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState
+            ) {
+                // Sheet content
+                val isSwitching = uiState is UIState.Switching
+                // remember the form and update it when a new form is opened
+                val rememberedForm = remember(this, isSwitching) {
+                    featureForm!!
                 }
+
+                // set bottom sheet content to the FeatureForm
+                FeatureForm(
+                    featureForm = rememberedForm,
+                    modifier = Modifier.fillMaxSize(),
+                    validationErrorVisibility = errorVisibility
+                )
+
             }
         }
     }
-    if (uiState is UIState.Committing) {
-        SubmitForm(errors = (uiState as UIState.Committing).errors) {
-            mapViewModel.cancelCommit()
+    when (uiState) {
+        is UIState.Committing -> {
+            SubmitForm(errors = (uiState as UIState.Committing).errors) {
+                mapViewModel.cancelCommit()
+            }
         }
+
+        is UIState.Switching -> {
+            DiscardEditsDialog(
+                onConfirm = { mapViewModel.selectNewFeature() },
+                onCancel = { mapViewModel.continueEditing() }
+            )
+        }
+
+        is UIState.NoFeatureFormDefinition -> {
+            NoFormDefinitionDialog(
+                onConfirm = {
+                    mapViewModel.setDefaultState()
+                },
+                onCancel = {
+                    mapViewModel.setDefaultState()
+                    onBackPressed()
+                }
+            )
+        }
+
+        else -> {}
     }
+
     if (showDiscardEditsDialog) {
         DiscardEditsDialog(
             onConfirm = {
@@ -215,12 +233,7 @@ fun MainScreen(sampleName: String) {
             }
         )
     }
-    if (uiState is UIState.Switching) {
-        DiscardEditsDialog(
-            onConfirm = { mapViewModel.selectNewFeature() },
-            onCancel = { mapViewModel.continueEditing() }
-        )
-    }
+
 }
 
 @Composable
@@ -242,6 +255,40 @@ fun DiscardEditsDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
         },
         text = {
             Text(text = stringResource(R.string.all_changes_will_be_lost))
+        }
+    )
+}
+
+@Composable
+fun NoFormDefinitionDialog(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "No FeatureForm found",
+                    modifier = Modifier.weight(1f)
+                )
+                Image(imageVector = Icons.Rounded.Warning, contentDescription = null)
+            }
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(text = stringResource(R.string.okay))
+            }
+        },
+        dismissButton = {
+            Button(onClick = onCancel) {
+                Text(text = stringResource(R.string.exit))
+            }
+        },
+        text = {
+            Text(text = stringResource(R.string.no_featureform_description))
         }
     )
 }
@@ -274,7 +321,10 @@ fun TopFormBar(
                 }
             } else {
                 IconButton(onClick = onBackPressed) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
                 }
             }
         },
@@ -414,12 +464,4 @@ fun FeatureFormValidationException.getString(): String {
 @Composable
 fun TopFormBarPreview() {
     TopFormBar("Map", false)
-}
-
-fun getWindowSize(context: Context): WindowSizeClass {
-    val metrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context)
-    val width = metrics.bounds.width()
-    val height = metrics.bounds.height()
-    val density = context.resources.displayMetrics.density
-    return WindowSizeClass.compute(width / density, height / density)
 }
