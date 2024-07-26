@@ -27,6 +27,7 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.data.Geodatabase
+import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
@@ -72,12 +73,21 @@ class MainActivity : AppCompatActivity() {
         GenerateGeodatabaseDialogLayoutBinding.inflate(layoutInflater)
     }
 
-    // local file path to the geodatabase
-    private val geodatabaseFilePath by lazy {
-        getExternalFilesDir(null)?.path + getString(R.string.portland_trees_geodatabase_file)
+    // Provision path for the geodatabase
+    private val provisionPath by lazy {
+        getExternalFilesDir(null)?.path + File.separator
     }
 
     private val downloadArea: Graphic = Graphic()
+
+    // create a Trees FeatureLayer using the first layer of the ServiceFeatureTable
+    private val featureLayer: FeatureLayer by lazy {
+        FeatureLayer.createWithFeatureTable(
+            featureTable = ServiceFeatureTable(
+                uri = application.getString(R.string.feature_server_url) + "/0"
+            )
+        )
+    }
 
     // creates a graphic overlay
     private val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
@@ -91,7 +101,9 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mapView)
 
         // create and add a map with a Topographic basemap style
-        val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
+        val map = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+            operationalLayers.add(featureLayer)
+        }
         // set the max map extents to that of the feature service
         // representing portland area
         map.maxExtent = Envelope(
@@ -108,25 +120,14 @@ class MainActivity : AppCompatActivity() {
             graphicsOverlays.add(graphicsOverlay)
         }
 
-        // create a geodatabase sync task with the feature service url
-        // This feature service shows a web map of portland street trees,
-        // their attributes, as well as related inspection information
-        val geodatabaseSyncTask = GeodatabaseSyncTask(getString(R.string.feature_server_url))
-
         // set the button's onClickListener
         generateButton.setOnClickListener {
-            val geodatabaseFile = File(geodatabaseFilePath)
-            if (geodatabaseFile.exists()){
-                geodatabaseFile.deleteRecursively().apply {
-                    if (!this){
-                        Log.e("TEST","Failed deleted local geodatabase")
-                    }else{
-                        Log.e("TEST","Successfully deleted local geodatabase")
-                    }
-                }
-            }
+            val geodatabaseFilePath = provisionPath +
+                    "portland_trees_gdb_" +
+                    System.currentTimeMillis() +
+                    ".geodatabase"
             // start the geodatabase generation process
-            generateGeodatabase(geodatabaseSyncTask, map, downloadArea.geometry?.extent)
+            generateGeodatabase(map, downloadArea.geometry?.extent, geodatabaseFilePath)
         }
 
         resetButton.setOnClickListener {
@@ -136,6 +137,8 @@ class MainActivity : AppCompatActivity() {
             graphicsOverlay.graphics.clear()
             // add the download boundary
             graphicsOverlay.graphics.add(downloadArea)
+            // add back the feature layer
+            map.operationalLayers.add(featureLayer)
             // show generate button
             generateButton.isEnabled = true
             resetButton.isEnabled = false
@@ -145,12 +148,6 @@ class MainActivity : AppCompatActivity() {
             // show the error and return if map load failed
             map.load().onFailure {
                 showError("Unable to load map")
-                return@launch
-            }
-
-            geodatabaseSyncTask.load().onFailure {
-                // if the metadata load fails, show the error and return
-                showError("Failed to fetch geodatabase metadata")
                 return@launch
             }
 
@@ -192,19 +189,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Starts a [geodatabaseSyncTask] with the given [map] and [extents],
-     * runs a GenerateGeodatabaseJob and saves the geodatabase file into local storage
+     * Starts a [GeodatabaseSyncTask] with the given [map] and [extents],
+     * runs a [GenerateGeodatabaseJob] and saves the geodatabase file into local storage
      */
     private fun generateGeodatabase(
-        geodatabaseSyncTask: GeodatabaseSyncTask,
         map: ArcGISMap,
-        extents: Envelope?
+        extents: Envelope?,
+        geodatabaseFilePath: String
     ) {
         if (extents == null) {
             return showError("Download area extent is null")
         }
 
+        // create a geodatabase sync task with the feature service url
+        // This feature service shows a web map of portland street trees,
+        // their attributes, as well as related inspection information
+        val geodatabaseSyncTask = GeodatabaseSyncTask(getString(R.string.feature_server_url))
+
         lifecycleScope.launch {
+            geodatabaseSyncTask.load().onFailure {
+                // if the metadata load fails, show the error and return
+                showError("Failed to fetch geodatabase metadata")
+                return@launch
+            }
+
             // create generate geodatabase parameters for the selected extents
             val defaultParameters =
                 geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(extents).getOrElse {
@@ -235,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                         progress.collect { value ->
                             // update the progress bar and progress text
                             progressDialog.progressBar.progress = value
-                            progressDialog.progressTextView.text = "$value%"
+                            progressDialog.progressTextView.text = value.toString()
                         }
                     }
                     // start the generateGeodatabase job
@@ -253,9 +261,8 @@ class MainActivity : AppCompatActivity() {
                     loadGeodatabase(geodatabase, map)
                     // dismiss the dialog view
                     jobProgressDialog.dismiss()
-                    Log.e("TEST","GUID: ${geodatabase.syncId}")
                     // unregister since we are not syncing
-                    geodatabaseSyncTask.unregisterGeodatabase(geodatabase).getOrThrow()
+                    geodatabaseSyncTask.unregisterGeodatabase(geodatabase)
                     // show reset button as the task is now complete
                     generateButton.isEnabled = false
                     resetButton.isEnabled = true
