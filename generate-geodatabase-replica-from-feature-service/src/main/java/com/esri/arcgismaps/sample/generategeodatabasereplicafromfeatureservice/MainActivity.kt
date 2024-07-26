@@ -129,8 +129,6 @@ class MainActivity : AppCompatActivity() {
 
         // set the button's onClickListener
         generateButton.setOnClickListener {
-            // close the current geodatabase, if a replica was already generated
-            geodatabase?.close()
             // start the geodatabase generation process
             generateGeodatabase(geodatabaseSyncTask, map, downloadArea.geometry?.extent)
         }
@@ -144,6 +142,8 @@ class MainActivity : AppCompatActivity() {
             graphicsOverlay.graphics.add(downloadArea)
             // add back the feature layer
             map.operationalLayers.add(featureLayer)
+            // close the current geodatabase, if a replica was already generated
+            geodatabase?.close()
             // show generate button
             generateButton.isEnabled = true
             resetButton.isEnabled = false
