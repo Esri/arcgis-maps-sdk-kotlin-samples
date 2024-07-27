@@ -34,8 +34,6 @@ import com.arcgismaps.mapping.featureforms.FieldFormElement
 import com.arcgismaps.mapping.featureforms.FormElement
 import com.arcgismaps.mapping.featureforms.GroupFormElement
 import com.arcgismaps.mapping.layers.FeatureLayer
-import com.arcgismaps.mapping.layers.GroupLayer
-import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
@@ -56,11 +54,6 @@ sealed class UIState {
      * Loading state that indicates the map is being loaded.
      */
     data object Loading : UIState()
-
-    /**
-     * No feature form definition available.
-     */
-    data object NoFeatureFormDefinition : UIState()
 
     /**
      * Currently selecting a new Feature
@@ -90,7 +83,7 @@ sealed class UIState {
 
 /**
  * Class that provides a validation error [error] for the field with name [fieldName]. To fetch
- * the actual message string use [FeatureFormValidationException.getString] in the composition.
+ * the actual message string use FeatureFormValidationException.getString in the composition.
  */
 data class ErrorInfo(val fieldName: String, val error: FeatureFormValidationException)
 
@@ -101,11 +94,11 @@ data class ErrorInfo(val fieldName: String, val error: FeatureFormValidationExce
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
 
-    val proxy: MapViewProxy = MapViewProxy()
+    val proxy = MapViewProxy()
 
-    var portalItem: PortalItem = PortalItem("https://arcgisruntime.maps.arcgis.com/apps/mapviewer/index.html?webmap=516e4d6aeb4c495c87c41e11274c767f")
+    private var portalItem = PortalItem("https://arcgisruntime.maps.arcgis.com/apps/mapviewer/index.html?webmap=516e4d6aeb4c495c87c41e11274c767f")
 
-    val map: ArcGISMap = ArcGISMap(portalItem)
+    val map = ArcGISMap(portalItem)
 
     private val _uiState: MutableState<UIState> = mutableStateOf(UIState.Loading)
     val uiState: State<UIState>
@@ -113,20 +106,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            // check if this map has a FeatureFormDefinition on any of its layers
-            checkFeatureFormDefinition()
-        }
-    }
-
-    private suspend fun checkFeatureFormDefinition() {
-        map.load()
-        val layer = map.operationalLayers.firstOrNull {
-            it.hasFeatureFormDefinition()
-        }
-        _uiState.value = if (layer == null) {
-            UIState.NoFeatureFormDefinition
-        } else {
-            UIState.NotEditing
+            // load a map that has a FeatureFormDefinition on any of its layers
+            map.load()
+            // set the initial editing state
+            _uiState.value = UIState.NotEditing
         }
     }
 
@@ -289,10 +272,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-    fun setDefaultState() {
-        _uiState.value = UIState.NotEditing
-    }
 }
 
 /**
@@ -319,20 +298,4 @@ fun List<FormElement>.getFormElement(fieldName: String): FieldFormElement? {
             null
         }
     }
-}
-
-/**
- * Returns true if the layer has a feature form definition. If the layer is a [GroupLayer] then
- * this function will return true if any of the layers in the group have a feature form definition.
- */
-private suspend fun Layer.hasFeatureFormDefinition(): Boolean = when(this) {
-    is FeatureLayer -> {
-        load()
-        featureFormDefinition != null
-    }
-    is GroupLayer -> {
-        load()
-        layers.any { it.hasFeatureFormDefinition() }
-    }
-    else -> false
 }
