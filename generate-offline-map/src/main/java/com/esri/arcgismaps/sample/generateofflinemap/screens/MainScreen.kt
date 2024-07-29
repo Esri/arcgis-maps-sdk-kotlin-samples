@@ -46,7 +46,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun MainScreen(sampleName: String) {
 
     val application = LocalContext.current.applicationContext
-
     // Create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
 
@@ -66,7 +65,7 @@ fun MainScreen(sampleName: String) {
                         .fillMaxWidth()
                         // Retrieve the size of the Composable MapView
                         .onSizeChanged { size ->
-                            mapViewModel.mapViewSize = size
+                            mapViewModel.updateMapViewSize(size)
                         },
                     arcGISMap = mapViewModel.map,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
@@ -95,10 +94,10 @@ fun MainScreen(sampleName: String) {
                 }
 
                 // Display progress dialog while generating an offline map
-                if (mapViewModel.showJobProgressDialog.value) {
+                if (mapViewModel.showJobProgressDialog) {
                     JobLoadingDialog(
                         title = "Generating offline map...",
-                        progress = mapViewModel.offlineMapJobProgress.intValue,
+                        progress = mapViewModel.offlineMapJobProgress,
                         cancelJobRequest = { mapViewModel.cancelOfflineMapJob() }
                     )
                 }

@@ -40,6 +40,7 @@ import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.generateofflinemap.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -62,18 +63,22 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
 
     // Define button to take a map offline
     var takeMapOfflineButtonText by mutableStateOf(application.getString(R.string.take_map_offline))
+        private set
 
     // Defined to send messages related to offlineMapJob
     val snackbarHostState = SnackbarHostState()
 
     // Define map that returns an ArcGISMap
     var map by mutableStateOf(ArcGISMap())
+        private set
 
     // Determinate job progress loading dialog visibility state
-    val showJobProgressDialog = mutableStateOf(false)
+    var showJobProgressDialog by mutableStateOf(false)
+        private set
 
     // Determinate job progress percentage
-    val offlineMapJobProgress = mutableIntStateOf(0)
+    var offlineMapJobProgress by mutableIntStateOf(0)
+        private set
 
     // Job used to run the offlineMap task on a service
     private var offlineMapJob: GenerateOfflineMapJob? = null
@@ -82,7 +87,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     val mapViewProxy = MapViewProxy()
 
     // Create an IntSize to retrieve dimensions of the map
-    var mapViewSize by mutableStateOf(IntSize(0, 0))
+    private var mapViewSize by mutableStateOf(IntSize(0, 0))
 
     init {
         // Set up the portal item to  take offline
@@ -99,7 +104,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         val portalItem = PortalItem(portal, application.getString(R.string.item_id))
 
         map = ArcGISMap(portalItem)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             map.load()
                 .onSuccess {
                     // Add the download graphic to the graphics overlay
@@ -138,7 +143,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
             minScale = maxScale + 1
         }
 
-        // Get the geometry of the downloadArea
+        // Get the geometry of the download area
         val geometry = downloadArea.geometry ?: return messageDialogVM.showMessageDialog(
             title = "Could not get geometry of the downloadArea"
         )
@@ -156,7 +161,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         // Create an offline map task with the map
         val offlineMapTask = OfflineMapTask(onlineMap = map)
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             offlineMapTask.load().getOrElse {
                 messageDialogVM.showMessageDialog(
                     title = it.message.toString(),
@@ -176,7 +181,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Starts the [offlineMapJob], shows the progress dialog and
+     * Starts the [GenerateOfflineMapJob], shows the progress dialog and
      * displays the result offline map to the MapView
      */
     private fun runOfflineMapJob() {
@@ -184,23 +189,23 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         offlineMapJob?.let { offlineMapJob ->
 
             // Show the Job Progress Dialog
-            showJobProgressDialog.value = true
+            showJobProgressDialog = true
 
             with(viewModelScope) {
 
                 // Create a flow-collection for the job's progress
-                launch {
+                launch(Dispatchers.Main) {
                     offlineMapJob.progress.collect { progress ->
                         // Display the current job's progress value
-                        offlineMapJobProgress.intValue = progress
+                        offlineMapJobProgress = progress
                     }
                 }
 
-                launch {
+                launch(Dispatchers.IO) {
                     // Start the job and wait for Job result
                     offlineMapJob.start()
                     offlineMapJob.result().onSuccess {
-                        // set the offline map result as the displayed map
+                        // Set the offline map result as the displayed map and clear the red bounding box graphic
                         map = it.offlineMap
                         graphicsOverlay.graphics.clear()
 
@@ -208,7 +213,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                         takeMapOfflineButtonText = application.getString(R.string.reset_map)
 
                         // Dismiss the progress dialog
-                        showJobProgressDialog.value = false
+                        showJobProgressDialog = false
 
                         // Show user where map was locally saved
                         snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
@@ -218,7 +223,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                             title = throwable.message.toString(),
                             description = throwable.cause.toString()
                         )
-                        showJobProgressDialog.value = false
+                        showJobProgressDialog = false
                     }
                 }
             }
@@ -227,10 +232,18 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     fun cancelOfflineMapJob() {
-        viewModelScope.launch {
-            offlineMapJob?.cancel()
-            snackbarHostState.showSnackbar(message = "User canceled.")
+        with(viewModelScope){
+            launch(Dispatchers.IO) {
+                offlineMapJob?.cancel()
+            }
+            launch(Dispatchers.Main) {
+                snackbarHostState.showSnackbar(message = "User canceled.")
+            }
         }
+    }
+
+    fun updateMapViewSize(size: IntSize) {
+        mapViewSize = size
     }
 
     /**
@@ -250,8 +263,8 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Use [mapViewSize] to determine dimensions of the map to get the download offline area
-     * and use [mapViewProxy] to assist in converting screen points to map points
+     * Use map view's size to determine dimensions of the map to get the download offline area
+     * and use [MapViewProxy] to assist in converting screen points to map points
      */
     fun calculateDownloadOfflineArea() {
         // Upper left corner of the area to take offline
