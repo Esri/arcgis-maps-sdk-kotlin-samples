@@ -50,6 +50,7 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SurfacePlacement
 import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,17 +60,9 @@ import kotlin.concurrent.timer
 
 class SceneViewModel(private var application: Application) : AndroidViewModel(application) {
 
-    // Create a scene and add a basemap to it
-    val scene = ArcGISScene(BasemapStyle.ArcGISTopographic)
-
-    // Create graphic overlay to hold graphics
-    val graphicsOverlay = GraphicsOverlay()
-
-    // Create an analysis overlay to hold the line of sight
-    val analysisOverlay = AnalysisOverlay()
-
     // Keep track of target visibility status string state.
     var targetVisibilityString by mutableStateOf("")
+        private set
 
     // Set visibility status string in the UI.
     private fun updateTargetVisibilityString(targetVisibility: String) {
@@ -96,6 +89,7 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
             R.string.app_name
         ) + File.separator
     }
+
     private val filePath = provisionPath + application.getString(R.string.dolmus_model)
 
     // Create a symbol of a taxi using the model file
@@ -129,74 +123,85 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         )
     )
 
-    init {
+    // Zoom to show the observer
+    private val camera = Camera(
+        lookAtPoint = observerGraphic.geometry as Point,
+        distance = 700.0,
+        roll = 0.0,
+        pitch = 45.0,
+        heading = -30.0,
+    )
 
-        // Zoom to show the observer
-        val camera = Camera(
-            observerGraphic.geometry as Point,
-            distance = 700.0,
-            roll = -30.0,
-            pitch = 45.0,
-            heading = 0.0,
-        )
 
-        // Define base surface for elevation data
-        val surface = Surface().apply {
-            elevationSources.add(
-                ArcGISTiledElevationSource(
-                    uri = getString(
-                        application,
-                        R.string.elevation_service_url
-                    )
+    // Define base surface for elevation data
+    private val surface = Surface().apply {
+        elevationSources.add(
+            ArcGISTiledElevationSource(
+                uri = getString(
+                    application,
+                    R.string.elevation_service_url
                 )
             )
-        }
+        )
+    }
 
-        // Define a scene layer for the New York buildings
-        val buildings =
-            ArcGISSceneLayer(uri = application.getString(R.string.new_york_buildings_service_url))
+    // Define a scene layer for the New York buildings
+    private val buildings =
+        ArcGISSceneLayer(uri = application.getString(R.string.new_york_buildings_service_url))
 
-        // Add the surface and buildings to the scene, and define the viewpoint on launch
-        scene.apply {
-            baseSurface = surface
-            operationalLayers.add(buildings)
-            initialViewpoint = Viewpoint(
-                boundingGeometry = observerGraphic.geometry as Point,
-                camera = camera
-            )
-        }
 
-        // Set up a heading expression to handle graphic rotation
-        val renderer3D = SimpleRenderer().apply {
-            sceneProperties.headingExpression = ("[HEADING]")
-        }
+    // Create a scene and add a basemap to it.
+    // Set the surface and buildings in the scene, and define the viewpoint on launch
+    val scene = ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
+        baseSurface = surface
+        operationalLayers.add(buildings)
+        initialViewpoint = Viewpoint(
+            boundingGeometry = observerGraphic.geometry as Point,
+            camera = camera
+        )
+    }
 
-        // Add the graphics to the graphic overlay
-        graphicsOverlay.apply {
-            sceneProperties.surfacePlacement = SurfacePlacement.RelativeToScene
-            graphics.addAll(listOf(observerGraphic, taxiGraphic))
-            renderer = renderer3D
-        }
 
-        // Create a line of sight between the two graphics and add it to the analysis overlay
-        val lineOfSight = GeoElementLineOfSight(
-            observerGeoElement = observerGraphic,
-            targetGeoElement = taxiGraphic
-        ).apply {
-            // Observe the visibility status of the moving taxi
-            viewModelScope.launch {
-                targetVisibility.collect { targetVisibility ->
-                    updateTargetVisibilityString(
-                        when (targetVisibility) {
-                            is LineOfSightTargetVisibility.Visible -> "Visible"
-                            is LineOfSightTargetVisibility.Obstructed -> "Obstructed"
-                            is LineOfSightTargetVisibility.Unknown -> "Unknown"
-                        }
-                    )
-                }
+    // Set up a heading expression to handle graphic rotation
+    private val renderer3D = SimpleRenderer().apply {
+        sceneProperties.headingExpression = ("[HEADING]")
+    }
+
+
+    // Create graphic overlay to hold graphics
+    // Set the surface placement, renderer, and add graphics,
+    val graphicsOverlay = GraphicsOverlay().apply {
+        sceneProperties.surfacePlacement = SurfacePlacement.RelativeToScene
+        renderer = renderer3D
+        graphics.addAll(listOf(observerGraphic, taxiGraphic))
+    }
+
+
+    // Create a line of sight between the two graphics and add it to the analysis overlay
+    private val lineOfSight = GeoElementLineOfSight(
+        observerGeoElement = observerGraphic,
+        targetGeoElement = taxiGraphic
+    ).apply {
+        // Observe the visibility status of the moving taxi
+        viewModelScope.launch(Dispatchers.Main) {
+            targetVisibility.collect { targetVisibility ->
+                updateTargetVisibilityString(
+                    when (targetVisibility) {
+                        is LineOfSightTargetVisibility.Visible -> "Visible"
+                        is LineOfSightTargetVisibility.Obstructed -> "Obstructed"
+                        is LineOfSightTargetVisibility.Unknown -> "Unknown"
+                    }
+                )
             }
         }
-        analysisOverlay.analyses.add(lineOfSight)
+    }
+
+    // Create an analysis overlay to hold the line of sight
+    val analysisOverlay = AnalysisOverlay().apply {
+        analyses.add(lineOfSight)
+    }
+
+    init {
 
         // Select (highlight) the taxi when the line of sight target visibility changes to visible
         if (lineOfSight.isVisible) {

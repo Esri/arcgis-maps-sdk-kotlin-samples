@@ -48,7 +48,7 @@ fun MainScreen(sampleName: String) {
     val sceneViewModel: SceneViewModel = viewModel()
 
     // Retrieve any changes to the z value from SceneViewModel
-    val observerHeight = sceneViewModel.observerHeight.collectAsState().value
+    val observerHeight = sceneViewModel.observerHeight.collectAsState().value.toInt()
 
     // Defined in order to keep the z value in the positive range
     val offset = 100
@@ -97,7 +97,7 @@ fun MainScreen(sampleName: String) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Observer height: ${(observerHeight.toInt() + offset)}",
+                        text = "Observer height: ${(observerHeight + offset)}",
                     )
                     Slider(
                         modifier = Modifier.padding(start = 16.dp),
