@@ -17,6 +17,7 @@
 
 package com.esri.arcgismaps.sample.generateofflinemapusingandroidjetpackworkmanager
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -98,6 +99,7 @@ class WorkerNotification(
      * Creates and posts a new status notification with the [message] and dismisses any ongoing
      * progress notifications
      */
+    @SuppressLint("MissingPermission")
     fun showStatusNotification(message: String) {
         // build using the default notification builder with the status message
         val notification = getDefaultNotificationBuilder(
