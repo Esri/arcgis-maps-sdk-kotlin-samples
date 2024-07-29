@@ -53,7 +53,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import com.esri.arcgismaps.sample.sampleslib.*
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
 
