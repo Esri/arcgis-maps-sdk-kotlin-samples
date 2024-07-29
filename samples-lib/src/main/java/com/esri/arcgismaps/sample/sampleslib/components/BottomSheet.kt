@@ -21,6 +21,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -37,7 +38,7 @@ fun BottomSheet(
     isVisible: Boolean,
     bottomSheetContent: @Composable () -> Unit
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = Modifier.fillMaxSize()
     ) {
         AnimatedVisibility(

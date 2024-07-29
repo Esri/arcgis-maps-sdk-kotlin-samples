@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class AttachmentsBottomSheet(
     context: MainActivity,
@@ -32,8 +33,8 @@ class AttachmentsBottomSheet(
 
         bottomSheetBinding.apply {
             // set the selected feature's information
-            damageStatus.text = String.format("Damage type: %s", damageType)
-            numberOfAttachments.text = String.format("Number of attachments: %d", attachments.size)
+            damageStatus.text = String.format(Locale.getDefault(),"Damage type: %s", damageType)
+            numberOfAttachments.text = String.format(Locale.getDefault(),"Number of attachments: %d", attachments.size)
             // get the adapter to display the list of attachments
             listView.adapter = AttachmentsAdapter(context, attachments)
 
