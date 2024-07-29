@@ -5,6 +5,8 @@ PR to add a new Kotlin sample _"SAMPLE_NAME"_ in `SAMPLE_CATEGORY` category.
 ## Links and Data
 <!--
 Sample Epic: `runtime/kotlin/issues/ISSUE_NUMBER`
+- a [vTest](https://runtime-kotlin.esri.com/view/all/job/vtest/job/sampleviewer/) Job for this PR has been run
+  - [ ] link:
 -->
 ## What To Review
 <!--

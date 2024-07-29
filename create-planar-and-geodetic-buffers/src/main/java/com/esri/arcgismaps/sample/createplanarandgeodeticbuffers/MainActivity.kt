@@ -44,6 +44,7 @@ import com.esri.arcgismaps.sample.createplanarandgeodeticbuffers.databinding.Act
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -163,10 +164,10 @@ class MainActivity : AppCompatActivity() {
             bufferSlider.value = bufferInMiles
 
             // set initial buffer text
-            bufferValue.text = String.format("%d miles", bufferSlider.value.toInt())
+            bufferValue.text = String.format(Locale.getDefault(),"%d miles", bufferSlider.value.toInt())
             bufferSlider.addOnChangeListener { _, value, _ ->
                 // update buffer text value on slider change
-                bufferValue.text = String.format("%d miles", value.toInt())
+                bufferValue.text = String.format(Locale.getDefault(),"%d miles", value.toInt())
                 bufferInMiles = value
             }
 
