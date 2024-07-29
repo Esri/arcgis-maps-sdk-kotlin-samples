@@ -81,26 +81,26 @@ fun MainScreen(sampleName: String) {
                         onClick = {
                             mapViewModel.onClickActionButton()
                         },
-                        enabled = mapViewModel.isActionButtonEnabled.value
+                        enabled = mapViewModel.isActionButtonEnabled
                     ) {
                         Text(text = mapViewModel.actionButtonText)
                     }
                 }
 
                 // Display progress dialog while generating geodatabase
-                if (mapViewModel.showGenerateGeodatabaseJobProgressDialog.value) {
+                if (mapViewModel.showGenerateGeodatabaseJobProgressDialog) {
                     JobLoadingDialog(
                         title = "Generating geodatabase...",
-                        progress = mapViewModel.generateGeodatabaseJobProgress.intValue,
+                        progress = mapViewModel.generateGeodatabaseJobProgress,
                         cancelJobRequest = { mapViewModel.cancelGenerateGeodatabaseJob() }
                     )
                 }
 
                 // Display progress dialog while syncing geodatabase
-                if (mapViewModel.showSyncGeodatabaseJobProgressDialog.value) {
+                if (mapViewModel.showSyncGeodatabaseJobProgressDialog) {
                     JobLoadingDialog(
                         title = "Syncing geodatabase...",
-                        progress = mapViewModel.syncGeodatabaseJobProgress.intValue,
+                        progress = mapViewModel.syncGeodatabaseJobProgress,
                         cancelJobRequest = { mapViewModel.cancelSyncGeodatabaseJob() }
                     )
                 }

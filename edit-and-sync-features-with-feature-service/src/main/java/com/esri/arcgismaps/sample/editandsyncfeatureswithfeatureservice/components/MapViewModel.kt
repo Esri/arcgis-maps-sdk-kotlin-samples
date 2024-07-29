@@ -50,6 +50,7 @@ import com.arcgismaps.tasks.geodatabase.SyncLayerOption
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -76,21 +77,27 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
 
     // Keep track of action button text through a string state
     var actionButtonText by mutableStateOf(application.getString(R.string.generate_button_text))
+        private set
 
     // Create a button to keep track of action button enablement status
-    val isActionButtonEnabled = mutableStateOf(false)
+    var isActionButtonEnabled by mutableStateOf(false)
+        private set
 
     // Determinate GenerateGeodatabase job progress loading dialog visibility state
-    val showGenerateGeodatabaseJobProgressDialog = mutableStateOf(false)
+    var showGenerateGeodatabaseJobProgressDialog by mutableStateOf(false)
+        private set
 
     // Determine GenerateGeodatabase job progress percentage
-    val generateGeodatabaseJobProgress = mutableIntStateOf(0)
+    var generateGeodatabaseJobProgress by mutableIntStateOf(0)
+        private set
 
     // Determinate SyncGeodatabase job progress loading dialog visibility state
-    val showSyncGeodatabaseJobProgressDialog = mutableStateOf(false)
+    var showSyncGeodatabaseJobProgressDialog by mutableStateOf(false)
+        private set
 
     // Determine SyncGeodatabase job progress percentage
-    val syncGeodatabaseJobProgress = mutableIntStateOf(0)
+    var syncGeodatabaseJobProgress by mutableIntStateOf(0)
+        private set
 
     // Create a local file path to the geodatabase
     private val geodatabaseFilePath by lazy {
@@ -133,7 +140,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
             spatialReference = SpatialReference.webMercator()
         )
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             // If map load failed, show the error and return
             map.load().onFailure {
                 return@launch messageDialogVM.showMessageDialog(
@@ -149,7 +156,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                 )
             }
             // Enable the sync button since the task is now loaded
-            isActionButtonEnabled.value = true
+            isActionButtonEnabled = true
         }
     }
 
@@ -199,7 +206,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Starts a [geodatabaseSyncTask] with the given [map] and [extents],
+     * Starts a [GeodatabaseSyncTask] with the given [ArcGISMap] and [Envelope.extent],
      * runs a GenerateGeodatabaseJob and saves the geodatabase file into local storage
      */
     private fun generateGeodatabase(extents: Envelope) {
@@ -213,7 +220,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         graphicsOverlay.graphics.add(boundary)
 
         with(viewModelScope) {
-            launch {
+            launch(Dispatchers.IO) {
                 // Create generateGeodatabase parameters for the selected extents
                 val defaultParameters =
                     geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(extents)
@@ -235,13 +242,13 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                 generateGeodatabaseJob?.let { generateGeodatabaseJob ->
 
                     // Show the dialog of generateGeodatabase Job
-                    showGenerateGeodatabaseJobProgressDialog.value = true
+                    showGenerateGeodatabaseJobProgressDialog = true
 
                     // Create a flow-collection for the job's progress
-                    launch {
+                    launch(Dispatchers.Main) {
                         generateGeodatabaseJob.progress.collect { progress ->
                             // Display the current job's progress value
-                            generateGeodatabaseJobProgress.intValue = progress
+                            generateGeodatabaseJobProgress = progress
                         }
                     }
 
@@ -253,7 +260,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                         // Show an error and return if job failed
                         messageDialogVM.showMessageDialog("Error fetching geodatabase: ${it.message}")
                         // Dismiss the dialog
-                        showGenerateGeodatabaseJobProgressDialog.value = false
+                        showGenerateGeodatabaseJobProgressDialog = false
                         // Clear any drawn boundary
                         graphicsOverlay.graphics.clear()
 
@@ -264,14 +271,14 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                     loadGeodatabase()
 
                     // Dismiss the dialog
-                    showGenerateGeodatabaseJobProgressDialog.value = false
+                    showGenerateGeodatabaseJobProgressDialog = false
                 }
             }
         }
     }
 
     /**
-     * Loads the [geodatabase] and renders the feature layers on to the [map]
+     * Loads the [Geodatabase] and renders the feature layers on to the [ArcGISMap]
      */
     private suspend fun loadGeodatabase() {
         // Load the geodatabase
@@ -296,7 +303,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Syncs changes made on either the local [geodatabase] or web service geodatabase with each other
+     * Syncs changes made on either the local [Geodatabase] or web service geodatabase with each other
      */
     private fun syncGeodatabase() {
         // Create parameters for the geodatabase sync task
@@ -315,7 +322,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
 
             with(viewModelScope) {
                 // Create the SyncGeodatabaseJob using the parameters and the geodatabase
-                launch {
+                launch(Dispatchers.IO) {
                     syncGeodatabaseJob = geodatabaseSyncTask.createSyncGeodatabaseJob(
                         parameters = syncGeodatabaseParameters, geodatabase = geodatabase
                     )
@@ -323,13 +330,13 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                     syncGeodatabaseJob?.let { syncGeodatabaseJob ->
 
                         // Show the dialog
-                        showSyncGeodatabaseJobProgressDialog.value = true
+                        showSyncGeodatabaseJobProgressDialog = true
 
                         // Create a flow-collection for the job's progress
-                        launch {
+                        launch(Dispatchers.Main) {
                             syncGeodatabaseJob.progress.collect { progress ->
                                 // Display the current job's progress value
-                                syncGeodatabaseJobProgress.intValue = progress
+                                syncGeodatabaseJobProgress = progress
                             }
                         }
                         // Start the job and wait for Job result
@@ -341,7 +348,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                     }
 
                     // Dismiss the dialog
-                    showSyncGeodatabaseJobProgressDialog.value = false
+                    showSyncGeodatabaseJobProgressDialog = false
 
                     // Set the edit state to indicate geodatabase is ready for edits
                     geodatabaseEditState = GeodatabaseEditState.READY
@@ -351,14 +358,14 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Queries and selects features on FeatureLayers at the tapped [screenCoordinate] on the [map]
+     * Queries and selects features on FeatureLayers at the tapped [ScreenCoordinate] on the [ArcGISMap]
      */
     private fun selectFeatures(screenCoordinate: ScreenCoordinate) {
         // Set the current edit state to editing
         geodatabaseEditState = GeodatabaseEditState.EDITING
 
         // Create a new coroutine to handle the selection
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             // Flag to indicate if any features were selected
             var featuresSelected = false
 
@@ -403,7 +410,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Moves the selected features to a new [point] on the [map]
+     * Moves the selected features to a new [Point] on the [ArcGISMap]
      */
     private fun moveSelectedFeatures(point: Point) {
         // Create a new coroutine to move the features
@@ -412,7 +419,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
             feature.geometry = point
 
             // Update the feature
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 feature.featureTable?.updateFeature(feature)
             }
         }
@@ -430,19 +437,19 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     fun cancelGenerateGeodatabaseJob() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             generateGeodatabaseJob?.cancel()
         }
     }
 
     fun cancelSyncGeodatabaseJob() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             syncGeodatabaseJob?.cancel()
         }
     }
 
     private fun showSuccessMessage(message: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             snackbarHostState.showSnackbar(message)
         }
     }
@@ -455,6 +462,4 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         EDITING,  // a feature is in the process of being moved
         READY, // the geodatabase is ready for synchronization or further edits
     }
-
-
 }
