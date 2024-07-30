@@ -184,14 +184,23 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
     ).apply {
         // Observe the visibility status of the moving taxi
         viewModelScope.launch(Dispatchers.Main) {
+
+            // Update target visibility status and select (highlight) the taxi when the line of sight target visibility changes to visible
             targetVisibility.collect { targetVisibility ->
-                updateTargetVisibilityString(
-                    when (targetVisibility) {
-                        is LineOfSightTargetVisibility.Visible -> "Visible"
-                        is LineOfSightTargetVisibility.Obstructed -> "Obstructed"
-                        is LineOfSightTargetVisibility.Unknown -> "Unknown"
+                when(targetVisibility) {
+                    is LineOfSightTargetVisibility.Visible -> {
+                        updateTargetVisibilityString("Visible")
+                        taxiGraphic.isSelected = true
                     }
-                )
+                    is LineOfSightTargetVisibility.Obstructed -> {
+                        updateTargetVisibilityString("Obstructed")
+                        taxiGraphic.isSelected = false
+                    }
+                    is LineOfSightTargetVisibility.Unknown -> {
+                        updateTargetVisibilityString("Unknown")
+                        taxiGraphic.isSelected = false
+                    }
+                }
             }
         }
     }
@@ -202,11 +211,6 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
     }
 
     init {
-
-        // Select (highlight) the taxi when the line of sight target visibility changes to visible
-        if (lineOfSight.isVisible) {
-            taxiGraphic.isSelected = lineOfSight.isVisible
-        }
 
         // Create a timer to animate the tank
         timer(
