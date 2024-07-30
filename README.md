@@ -2,7 +2,7 @@
 
 ## Overview
 
-ArcGIS Maps SDK for Kotlin v200.4.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps SDK Android Kotlin](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
+ArcGIS Maps SDK for Kotlin v200.5.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps SDK Android Kotlin](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
 
 ## Prerequisites
 
