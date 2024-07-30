@@ -23,8 +23,8 @@
         "FeatureForm"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/editfeatureforms/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/editfeatureforms/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editfeatureforms/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/editfeatureforms/screens/MainScreen.kt"
     ],
     "title": "Edit Feature Forms"
