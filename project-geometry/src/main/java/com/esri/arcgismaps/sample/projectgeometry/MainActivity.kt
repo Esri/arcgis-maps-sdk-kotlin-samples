@@ -39,6 +39,7 @@ import com.arcgismaps.mapping.view.MapView
 import com.esri.arcgismaps.sample.projectgeometry.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -150,4 +151,4 @@ class MainActivity : AppCompatActivity() {
  * a float-precision formatted string suitable for display
  */
 private fun Point.toDisplayFormat() =
-    "${String.format("%.5f", x)}, ${String.format("%.5f", y)}"
+    "${String.format(Locale.getDefault(),"%.5f", x)}, ${String.format(Locale.getDefault(),"%.5f", y)}"
