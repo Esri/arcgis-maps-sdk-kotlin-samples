@@ -23,8 +23,12 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
+        compose = true
         buildConfig = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExt.get()
     }
 
     namespace = "com.esri.arcgismaps.sample.generateofflinemap"
@@ -32,7 +36,19 @@ android {
 
 dependencies {
     // lib dependencies from rootProject build.gradle.kts
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.android.material)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
+    // Jetpack Compose Bill of Materials
+    implementation(platform(libs.androidx.compose.bom))
+    // Jetpack Compose dependencies
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(project(":samples-lib"))
+    // Toolkit dependencies
+    implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
+    implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
 }
