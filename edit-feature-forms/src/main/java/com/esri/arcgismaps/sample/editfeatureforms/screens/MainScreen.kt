@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.featureforms.screens
+package com.esri.arcgismaps.sample.editfeatureforms.screens
 
 import android.util.Log
 import android.widget.Toast
@@ -26,15 +26,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -58,17 +58,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.exceptions.FeatureFormValidationException
+import androidx.compose.ui.window.Dialog
 import com.arcgismaps.toolkit.featureforms.FeatureForm
 import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.featureforms.R
-import com.esri.arcgismaps.sample.featureforms.compoenents.ErrorInfo
-import com.esri.arcgismaps.sample.featureforms.compoenents.MapViewModel
-import com.esri.arcgismaps.sample.featureforms.compoenents.UIState
+import com.esri.arcgismaps.sample.editfeatureforms.R
+import com.esri.arcgismaps.sample.editfeatureforms.components.ErrorInfo
+import com.esri.arcgismaps.sample.editfeatureforms.components.MapViewModel
+import com.esri.arcgismaps.sample.editfeatureforms.components.UIState
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -98,13 +97,6 @@ fun MainScreen(mapViewModel: MapViewModel) {
                 )
             }
 
-            is UIState.Switching -> {
-                val state = uiState as UIState.Switching
-                Pair(
-                    state.oldState.featureForm, state.oldState.validationErrorVisibility
-                )
-            }
-
             else -> {
                 Pair(null, ValidationErrorVisibility.Automatic)
             }
@@ -114,12 +106,12 @@ fun MainScreen(mapViewModel: MapViewModel) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { SampleTopAppBar(title = "Feature Forms Sample") }
+        topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) }
     ) { padding ->
         // show the composable map using the mapViewModel
         MapView(
             arcGISMap = mapViewModel.map,
-            mapViewProxy = mapViewModel.proxy,
+            mapViewProxy = mapViewModel.mapViewProxy,
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize(),
@@ -138,12 +130,8 @@ fun MainScreen(mapViewModel: MapViewModel) {
                 },
                 sheetState = sheetState
             ) {
-                // Sheet content
-                val isSwitching = uiState is UIState.Switching
                 // remember the form and update it when a new form is opened
-                val rememberedForm = remember(this, isSwitching) {
-                    featureForm!!
-                }
+                val rememberedForm = remember(this) { featureForm!! }
 
                 // show the top bar which changes available actions based on if the FeatureForm is
                 // being shown and is in edit mode
@@ -171,7 +159,8 @@ fun MainScreen(mapViewModel: MapViewModel) {
                     featureForm = rememberedForm,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 20.dp),
+                        .padding(top = 20.dp)
+                        .navigationBarsPadding(),
                     validationErrorVisibility = errorVisibility
                 )
 
@@ -185,13 +174,6 @@ fun MainScreen(mapViewModel: MapViewModel) {
             }
         }
 
-        is UIState.Switching -> {
-            DiscardEditsDialog(
-                onConfirm = { mapViewModel.selectNewFeature() },
-                onCancel = { mapViewModel.continueEditing() }
-            )
-        }
-
         else -> {}
     }
 
@@ -200,13 +182,17 @@ fun MainScreen(mapViewModel: MapViewModel) {
             onConfirm = {
                 mapViewModel.rollbackEdits()
                 showDiscardEditsDialog = false
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
             },
             onCancel = {
                 showDiscardEditsDialog = false
                 scope.launch {
                     showBottomSheet = true
-                    sheetState.show()
-                    mapViewModel.continueEditing()
+                    if (sheetState.currentValue == SheetValue.Hidden)
+                        sheetState.show()
                 }
             }
         )
@@ -274,19 +260,18 @@ fun TopFormBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SubmitForm(errors: List<ErrorInfo>, onDismissRequest: () -> Unit) {
     if (errors.isEmpty()) {
         // show a progress dialog if no errors are present
-        BasicAlertDialog(onDismissRequest = { /* cannot be dismissed */ }) {
+        Dialog(onDismissRequest = { /* cannot be dismissed */ }) {
             Card(modifier = Modifier.wrapContentSize()) {
                 Column(
-                    modifier = Modifier.padding(15.dp),
+                    modifier = Modifier.padding(25.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    CircularProgressIndicator(modifier = Modifier.size(50.dp), strokeWidth = 5.dp)
+                    CircularProgressIndicator()
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(text = "Saving..")
                 }
@@ -310,88 +295,32 @@ private fun SubmitForm(errors: List<ErrorInfo>, onDismissRequest: () -> Unit) {
             title = {
                 Column {
                     Text(
-                        text = stringResource(R.string.the_form_has_errors),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        text = stringResource(R.string.errors_must_be_fixed_to_submit_this_form),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleSmall
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Form Validation Errors",
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
                     )
                 }
             },
             text = {
-                Card(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(15.dp)) {
                         Text(
                             text = stringResource(R.string.attributes_failed, errors.count()),
                             color = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.height(10.dp))
-                        LazyColumn(
-                            modifier = Modifier,
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             items(errors.count()) { index ->
-                                val errorString =
-                                    "${errors[index].fieldName} : ${errors[index].error.getString()}"
-                                Text(text = errorString, color = MaterialTheme.colorScheme.error)
+                                Text(
+                                    text = "${errors[index].fieldName}: ${errors[index].error::class.simpleName.toString()}",
+                                    color = MaterialTheme.colorScheme.error
+                                )
                             }
                         }
                     }
                 }
             }
         )
-    }
-}
-
-@Composable
-fun FeatureFormValidationException.getString(): String {
-    return when (this) {
-        is FeatureFormValidationException.IncorrectValueTypeException -> {
-            stringResource(id = R.string.value_must_be_of_correct_type)
-        }
-
-        is FeatureFormValidationException.LessThanMinimumDateTimeException -> {
-            stringResource(id = R.string.date_less_than_minimum)
-        }
-
-        is FeatureFormValidationException.MaxCharConstraintException -> {
-            stringResource(id = R.string.maximum_character_length_exceeded)
-        }
-
-        is FeatureFormValidationException.MaxDateTimeConstraintException -> {
-            stringResource(id = R.string.date_exceeds_maximum)
-        }
-
-        is FeatureFormValidationException.MaxNumericConstraintException -> {
-            stringResource(id = R.string.exceeds_maximum_value)
-        }
-
-        is FeatureFormValidationException.MinCharConstraintException -> {
-            stringResource(id = R.string.minimum_character_length_not_met)
-        }
-
-        is FeatureFormValidationException.MinNumericConstraintException -> {
-            stringResource(id = R.string.less_than_minimum_value)
-        }
-
-        is FeatureFormValidationException.NullNotAllowedException -> {
-            stringResource(id = R.string.value_must_not_be_empty)
-        }
-
-        is FeatureFormValidationException.OutOfDomainException -> {
-            stringResource(id = R.string.value_must_be_within_domain)
-        }
-
-        is FeatureFormValidationException.RequiredException -> {
-            stringResource(id = R.string.required)
-        }
-
-        is FeatureFormValidationException.UnknownFeatureFormException -> {
-            stringResource(id = R.string.unknown_error)
-        }
     }
 }

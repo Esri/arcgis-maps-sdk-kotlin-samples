@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.featureforms.compoenents
+package com.esri.arcgismaps.sample.editfeatureforms.components
 
 import android.app.Application
 import android.widget.Toast
@@ -51,19 +51,6 @@ sealed class UIState {
     data object NotEditing : UIState()
 
     /**
-     * Loading state that indicates the map is being loaded.
-     */
-    data object Loading : UIState()
-
-    /**
-     * Currently selecting a new Feature
-     */
-    data class Switching(
-        val oldState: Editing,
-        val newFeature: ArcGISFeature
-    ) : UIState()
-
-    /**
      * In editing state with the [featureForm] with the validation error visibility given by
      * [validationErrorVisibility].
      */
@@ -89,18 +76,17 @@ data class ErrorInfo(val fieldName: String, val error: FeatureFormValidationExce
 
 /**
  * A view model for the FeatureForms MapView UI
- * @constructor to be invoked by injection
  */
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
 
-    val proxy = MapViewProxy()
+    val mapViewProxy = MapViewProxy()
 
     private var portalItem = PortalItem("https://arcgisruntime.maps.arcgis.com/apps/mapviewer/index.html?webmap=516e4d6aeb4c495c87c41e11274c767f")
 
     val map = ArcGISMap(portalItem)
 
-    private val _uiState: MutableState<UIState> = mutableStateOf(UIState.Loading)
+    private val _uiState: MutableState<UIState> = mutableStateOf(UIState.NotEditing)
     val uiState: State<UIState>
         get() = _uiState
 
@@ -198,26 +184,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         return Result.success(Unit)
     }
 
-    fun selectNewFeature() =
-        (_uiState.value as? UIState.Switching)?.let { prevState ->
-            prevState.oldState.featureForm.discardEdits()
-            val layer = prevState.oldState.featureForm.feature.featureTable?.layer as FeatureLayer
-            layer.clearSelection()
-            layer.selectFeature(prevState.newFeature)
-            _uiState.value =
-                UIState.Editing(
-                    featureForm = FeatureForm(
-                        prevState.newFeature,
-                        layer.featureFormDefinition!!
-                    )
-                )
-        }
-
-    fun continueEditing() =
-        (_uiState.value as? UIState.Switching)?.let { prevState ->
-            _uiState.value = prevState.oldState
-        }
-
     fun rollbackEdits(): Result<Unit> {
         (_uiState.value as? UIState.Editing)?.let {
             it.featureForm.discardEdits()
@@ -230,7 +196,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onSingleTapConfirmed(singleTapEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
-            proxy.identifyLayers(
+            mapViewProxy.identifyLayers(
                 screenCoordinate = singleTapEvent.screenCoordinate,
                 tolerance = 22.dp,
                 returnPopupsOnly = false
@@ -240,23 +206,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                         result.geoElements.firstOrNull {
                             it is ArcGISFeature && (it.featureTable?.layer as? FeatureLayer)?.featureFormDefinition != null
                         }?.let {
-                            if (_uiState.value is UIState.Editing) {
-                                val currentState = _uiState.value as UIState.Editing
-                                val newFeature = it as ArcGISFeature
-                                _uiState.value = UIState.Switching(
-                                    oldState = currentState,
-                                    newFeature = newFeature
-                                )
-                            } else if (_uiState.value is UIState.NotEditing) {
-                                val feature = it as ArcGISFeature
-                                val layer = feature.featureTable!!.layer as FeatureLayer
-                                val featureForm =
-                                    FeatureForm(feature, layer.featureFormDefinition!!)
-                                // select the feature
-                                layer.selectFeature(feature)
-                                // set the UI to an editing state with the FeatureForm
-                                _uiState.value = UIState.Editing(featureForm)
-                            }
+                            val feature = it as ArcGISFeature
+                            val layer = feature.featureTable!!.layer as FeatureLayer
+                            val featureForm =
+                                FeatureForm(feature, layer.featureFormDefinition!!)
+                            // select the feature
+                            layer.selectFeature(feature)
+                            // set the UI to an editing state with the FeatureForm
+                            _uiState.value = UIState.Editing(featureForm)
                         }
                     }
                 } catch (e: Exception) {

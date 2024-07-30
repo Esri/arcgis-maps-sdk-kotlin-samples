@@ -7,7 +7,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.esri.arcgismaps.sample.featureforms"
+        applicationId = "com.esri.arcgismaps.sample.editfeatureforms"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
@@ -31,7 +31,7 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExt.get()
     }
 
-    namespace = "com.esri.arcgismaps.sample.featureforms"
+    namespace = "com.esri.arcgismaps.sample.editfeatureforms"
 }
 
 dependencies {
@@ -47,9 +47,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    // jetpack window manager
-    implementation(libs.androidx.window)
-    implementation(libs.androidx.window.core)
     implementation(project(":samples-lib"))
     // Toolkit dependencies
     implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
