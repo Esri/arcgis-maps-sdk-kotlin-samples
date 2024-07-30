@@ -70,7 +70,17 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // Create a streets basemap layer
-    val map = ArcGISMap(BasemapStyle.ArcGISStreets)
+    val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
+
+        // Set the max map extents to that of the feature service representing san fransisco area
+        maxExtent = Envelope(
+            xMin = -1.3641320770825155E7,
+            yMin = 4524676.716562641,
+            xMax = -1.3617221998199359E7,
+            yMax = 4567228.901189857,
+            spatialReference = SpatialReference.webMercator()
+        )
+    }
 
     // Create a MapViewProxy to handle MapView operations
     val mapViewProxy = MapViewProxy()
@@ -130,16 +140,6 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     val snackbarHostState = SnackbarHostState()
 
     init {
-
-        // Set the max map extents to that of the feature service representing san fransisco area
-        map.maxExtent = Envelope(
-            xMin = -1.3641320770825155E7,
-            yMin = 4524676.716562641,
-            xMax = -1.3617221998199359E7,
-            yMax = 4567228.901189857,
-            spatialReference = SpatialReference.webMercator()
-        )
-
         viewModelScope.launch(Dispatchers.Main) {
             // If map load failed, show the error and return
             map.load().onFailure {
