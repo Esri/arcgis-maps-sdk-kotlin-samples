@@ -1,0 +1,34 @@
+{
+    "category": "Layers",
+    "description": "Add a layer to visualize 3D tiles data that conforms to the OGC 3D Tiles specification.",
+    "formal_name": "Add3DTilesLayer",
+    "ignore": false,
+    "images": [
+        "add-3d-tiles-layer.png"
+    ],
+    "keywords": [
+        "3d tiles",
+        "OGC",
+        "OGC API",
+        "geoviewcompose",
+        "layers",
+        "scene",
+        "service",
+        "Camera",
+        "Ogc3DTilesLayer",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Camera",
+        "Ogc3DTilesLayer",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/add3dtileslayer/screens/MainScreen.kt"
+    ],
+    "title": "Add 3d tiles layer"
+}

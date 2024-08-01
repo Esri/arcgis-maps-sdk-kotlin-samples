@@ -2,7 +2,7 @@
 
 ## Overview
 
-ArcGIS Maps SDK for Kotlin v200.4.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps SDK Android Kotlin](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
+ArcGIS Maps SDK for Kotlin v200.5.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps SDK Android Kotlin](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
 
 ## Prerequisites
 
@@ -25,7 +25,12 @@ Accessing Esri location services, including basemaps, routing, and geocoding, re
 
 ### API key
 
-A permanent key that gives your application access to Esri location services. Visit your [ArcGIS Developers Dashboard](https://developers.arcgis.com/dashboard) to create a new API key or access an existing API key.
+A long-lived access token that gives your application access to ArcGIS location services. Go to the [Create an API key](https://links.esri.com/create-an-api-key) tutorial to obtain a new API key access token. Ensure that the following privileges are enabled:
+
+  * **Location services** > **Basemaps**
+  * **Location services** > **Geocoding**
+  * **Location services** > **Routing**
+
 The Android samples in this repository have been structured to use an API key, set once, which will run in all samples.
 Set your API key in the `gradle.properties` file located in the `/.gradle` folder within your home directory.
 The API_KEY property should contain quotes around the key itself:
