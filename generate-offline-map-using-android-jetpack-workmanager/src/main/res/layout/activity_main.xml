@@ -44,7 +44,6 @@
                 android:layout_height="wrap_content"
                 android:enabled="false"
                 android:text="@string/reset_map"
-                android:onClick="resetButtonClick"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/takeMapOfflineButton"
                 app:layout_constraintHorizontal_bias="0.5"

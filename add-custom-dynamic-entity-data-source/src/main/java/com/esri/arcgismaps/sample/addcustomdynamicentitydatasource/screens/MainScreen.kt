@@ -17,9 +17,11 @@
 package com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,8 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.R
 import com.esri.arcgismaps.sample.addcustomdynamicentitydatasource.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -74,7 +78,31 @@ fun MainScreen(sampleName: String) {
                         .weight(1f),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     arcGISMap = mapViewModel.arcGISMap,
-                    onSingleTapConfirmed = mapViewModel::identify
+                    onSingleTapConfirmed = mapViewModel::identify,
+                    content = {
+                        mapViewModel.selectedGeoElement?.let { selectedGeoElement ->
+                            Callout(
+                                modifier = Modifier.sizeIn(maxWidth = 250.dp),
+                                geoElement = selectedGeoElement,
+                                // Optional parameters to customize the callout appearance.
+                                shapes = CalloutDefaults.shapes(
+                                    calloutContentPadding = PaddingValues(4.dp)
+                                ),
+                                colorScheme = CalloutDefaults.colors(
+                                    backgroundColor = MaterialTheme.colorScheme.background,
+                                    borderColor = MaterialTheme.colorScheme.outline
+                                )
+                            ) {
+                                // Callout content:
+                                Column {
+                                    Text(
+                                        text = mapViewModel.observationString,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            }
+                        }
+                    }
                 )
                 Button(
                     onClick = {
@@ -89,7 +117,7 @@ fun MainScreen(sampleName: String) {
                         text = stringResource(if (!isConnected) R.string.connect else R.string.disconnect)
                     )
                 }
-                // Display a MessageDialog with identify information.
+                // Display a MessageDialog with any error information
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
                         MessageDialog(

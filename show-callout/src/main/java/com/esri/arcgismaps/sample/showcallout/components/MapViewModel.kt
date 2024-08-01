@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.showcallout.components
 
 import android.app.Application
-import android.widget.TextView
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -28,39 +27,39 @@ import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.showcallout.R
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class MapViewModel(private val application: Application) : AndroidViewModel(application) {
-    // set the MapView mutable stateflow
-    val mapViewState = MutableStateFlow(MapViewState(application))
-    // View to show callout
-    var calloutContent: TextView by mutableStateOf(TextView(application))
-    // initialize lat long point
-    var latLonPoint: Point? by mutableStateOf(null)
 
-    fun onMapTapped(mapPoint: Point?) {
-        // get map point from the Single tap event
-        mapPoint?.let { point ->
-            // convert the point to WGS84 for obtaining lat/lon format
+    // Create a mapViewProxy that will be used to identify features in the MapView.
+    // This should also be passed to the composable MapView this mapViewProxy is associated with.
+    val mapViewProxy = MapViewProxy()
+
+    // Create an ArcGISMap with viewpoint set to Los Angeles, CA.
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
+        initialViewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
+    }
+
+    // Keep track of the state of a lat/lon point.
+    var latLonPoint: Point? by mutableStateOf(null)
+    // Keep track of the state of the callout content String.
+    var calloutContent: String by mutableStateOf("")
+
+    /**
+     * Show a callout at the map point of the single tap event.
+     */
+    fun showCalloutAt(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+        // Get map point from the Single tap event.
+        singleTapConfirmedEvent.mapPoint?.let { point ->
+            // Convert the point to WGS84 to get a latitude and longitude coordinate.
             latLonPoint = GeometryEngine.projectOrNull(
                 point,
                 SpatialReference.wgs84()
             ) as Point
-            // set the callout text to display point coordinates
-            calloutContent.text = application.getString(
-                R.string.callout_text,
-                latLonPoint?.y,
-                latLonPoint?.x
-            )
+            // Set the callout text to display point coordinates.
+            calloutContent = application.getString(R.string.callout_text, latLonPoint?.y, latLonPoint?.x)
         }
     }
-}
-
-/**
- * Data class that represents the MapView state
- */
-data class MapViewState(val application: Application) {
-    var arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-    var viewpoint: Viewpoint = Viewpoint(34.056295, -117.195800, 1000000.0)
 }
