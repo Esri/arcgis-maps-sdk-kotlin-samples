@@ -1,19 +1,19 @@
 [versions]
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.5.0-4304"
+arcgisMapsKotlinVersion = "200.5.0"
 # SDK versions
 compileSdk = "34"
 minSdk = "26"
 targetSdk = "34"
-versionCode = "2004000"
-versionName = "200.4.0"
+versionCode = "2005000"
+versionName = "200.5.0"
 # Kotlin versions
 kotlinVersion = "1.9.23"
 ktxLifecycle = "2.7.0"
 ktxFragmentsExt = "1.6.2"
 ktxActivityExt = "1.9.0"
 ktxAndroidCore = "1.13.0"
-kotlinCompilerExt = "1.5.11"
+kotlinCompilerExt = "1.5.12"
 # Compose versions
 composeActivityVersion = "1.9.0"
 composeBOM = "2024.04.01"
