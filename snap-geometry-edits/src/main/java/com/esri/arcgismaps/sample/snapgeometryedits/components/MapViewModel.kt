@@ -79,14 +79,18 @@ class MapViewModel(
      * Configure the map and enable the UI after the map's layers are loaded.
      */
     init {
+        // set the id for the graphics overlay
+        graphicsOverlay.id = "Editor Graphics Overlay"
+        // set the tool for the geometry editor to use a reticle
+        geometryEditor.tool = ReticleVertexTool()
+        // set the feature layer's tiling mode
+        map.loadSettings.featureTilingMode =
+            FeatureTilingMode.EnabledWithFullResolutionWhenSupported
+
+        isCreateButtonEnabled.value = true
+        isSnapSettingsButtonEnabled.value = true
+
         sampleCoroutineScope.launch {
-            // set the id for the graphics overlay
-            graphicsOverlay.id = "Editor Graphics Overlay"
-            // set the tool for the geometry editor to use a reticle
-            geometryEditor.tool = ReticleVertexTool()
-            // set the feature layer's tiling mode
-            map.loadSettings.featureTilingMode =
-                FeatureTilingMode.EnabledWithFullResolutionWhenSupported
             // load the map
             map.load().onSuccess {
                 // load the map's operational layers
@@ -104,8 +108,6 @@ class MapViewModel(
                     error.cause.toString()
                 )
             }
-            isCreateButtonEnabled.value = true
-            isSnapSettingsButtonEnabled.value = true
         }
     }
 
