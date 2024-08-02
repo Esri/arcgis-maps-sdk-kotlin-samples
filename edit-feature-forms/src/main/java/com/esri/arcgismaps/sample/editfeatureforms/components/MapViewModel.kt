@@ -82,7 +82,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     val mapViewProxy = MapViewProxy()
 
-    private var portalItem = PortalItem("https://arcgisruntime.maps.arcgis.com/apps/mapviewer/index.html?webmap=516e4d6aeb4c495c87c41e11274c767f")
+    private var portalItem = PortalItem("https://www.arcgis.com/home/item.html?id=516e4d6aeb4c495c87c41e11274c767f")
 
     val map = ArcGISMap(portalItem)
 

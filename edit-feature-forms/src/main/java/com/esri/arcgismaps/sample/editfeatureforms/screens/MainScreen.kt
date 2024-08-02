@@ -22,10 +22,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -43,9 +46,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.Typography
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -63,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arcgismaps.toolkit.featureforms.FeatureForm
 import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
+import com.arcgismaps.toolkit.featureforms.theme.FeatureFormDefaults
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.editfeatureforms.R
 import com.esri.arcgismaps.sample.editfeatureforms.components.ErrorInfo
@@ -80,8 +87,8 @@ fun MainScreen(mapViewModel: MapViewModel) {
     val scope = rememberCoroutineScope()
     val uiState by mapViewModel.uiState
     val context = LocalContext.current
-    val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
     val (featureForm, errorVisibility) = remember(uiState) {
         when (uiState) {
@@ -128,7 +135,8 @@ fun MainScreen(mapViewModel: MapViewModel) {
                     showBottomSheet = false
                     showDiscardEditsDialog = true
                 },
-                sheetState = sheetState
+                sheetState = sheetState,
+                windowInsets = WindowInsets.ime
             ) {
                 // remember the form and update it when a new form is opened
                 val rememberedForm = remember(this) { featureForm!! }
@@ -136,9 +144,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                 // show the top bar which changes available actions based on if the FeatureForm is
                 // being shown and is in edit mode
                 TopFormBar(
-                    onClose = {
-                        showDiscardEditsDialog = true
-                    },
+                    onClose = { showDiscardEditsDialog = true },
                     onSave = {
                         scope.launch {
                             mapViewModel.commitEdits().onFailure {
@@ -149,6 +155,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                                         "Applying edits failed : ${it.message}",
                                         Toast.LENGTH_LONG
                                     ).show()
+                                    it.printStackTrace()
                                 }
                             }
                         }
@@ -161,7 +168,22 @@ fun MainScreen(mapViewModel: MapViewModel) {
                         .fillMaxSize()
                         .padding(top = 20.dp)
                         .navigationBarsPadding(),
-                    validationErrorVisibility = errorVisibility
+                    validationErrorVisibility = errorVisibility,
+                    colorScheme = FeatureFormDefaults.colorScheme(
+                        groupElementColors = FeatureFormDefaults.groupElementColors(
+                            outlineColor = MaterialTheme.colorScheme.secondary,
+                            labelColor = MaterialTheme.colorScheme.onSurface,
+                            supportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        )
+                    ),
+                    typography = FeatureFormDefaults.typography(
+                        readOnlyFieldTypography = FeatureFormDefaults.readOnlyFieldTypography(
+                            labelStyle = MaterialTheme.typography.headlineSmall,
+                            textStyle = MaterialTheme.typography.bodyMedium,
+                            supportingTextStyle = MaterialTheme.typography.labelLarge
+                        )
+                    )
                 )
 
             }
@@ -210,7 +232,7 @@ fun DiscardEditsDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
             }
         },
         dismissButton = {
-            Button(onClick = onCancel) {
+            OutlinedButton(onClick = onCancel) {
                 Text(text = stringResource(R.string.cancel))
             }
         },
