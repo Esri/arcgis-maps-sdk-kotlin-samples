@@ -67,7 +67,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     val graphicsOverlay = GraphicsOverlay()
 
     // Create a ViewModel to handle dialog interactions.
-    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+    val messageDialogVM = MessageDialogViewModel()
 
     // Create a streets basemap layer
     val map = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
@@ -148,7 +148,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                     description = it.message.toString()
                 )
             }
-            // If the metadata load fails, show the error and return
+            // If the geodatabase sync from feature service fails to load, show the error and return
             geodatabaseSyncTask.load().onFailure {
                 return@launch messageDialogVM.showMessageDialog(
                     title = "Failed to fetch geodatabase metadata",
@@ -220,6 +220,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         graphicsOverlay.graphics.add(boundary)
 
         with(viewModelScope) {
+
             launch(Dispatchers.IO) {
                 // Create generateGeodatabase parameters for the selected extents
                 val defaultParameters =
@@ -245,7 +246,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                     showGenerateGeodatabaseJobProgressDialog = true
 
                     // Create a flow-collection for the job's progress
-                    launch(Dispatchers.Main) {
+                    launch{
                         generateGeodatabaseJob.progress.collect { progress ->
                             // Display the current job's progress value
                             generateGeodatabaseJobProgress = progress
@@ -289,9 +290,9 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
             }
 
             // Add all of the geodatabase feature tables to the map as feature layers
-            map.operationalLayers += geodatabase.featureTables.map { featureTable ->
+            map.operationalLayers.addAll(geodatabase.featureTables.map { featureTable ->
                 FeatureLayer.createWithFeatureTable(featureTable)
-            }
+            })
         }
 
         // Update the sync button text to show a sync action
@@ -314,44 +315,45 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
 
         geodatabase?.let { geodatabase ->
             // Set synchronization option for each layer in the geodatabase we want to synchronize
-            syncGeodatabaseParameters.layerOptions +=
-                geodatabase.featureTables.map { featureTable ->
-                    // Create a new sync layer option with the layer id of the feature table
-                    SyncLayerOption(featureTable.serviceLayerId)
-                }
+            syncGeodatabaseParameters.layerOptions.addAll(geodatabase.featureTables.map { featureTable ->
+                // Create a new sync layer option with the layer id of the feature table
+                SyncLayerOption(featureTable.serviceLayerId)
+            })
 
-            with(viewModelScope) {
-                // Create the SyncGeodatabaseJob using the parameters and the geodatabase
-                launch(Dispatchers.IO) {
-                    syncGeodatabaseJob = geodatabaseSyncTask.createSyncGeodatabaseJob(
-                        parameters = syncGeodatabaseParameters, geodatabase = geodatabase
-                    )
+            syncGeodatabaseJob = geodatabaseSyncTask.createSyncGeodatabaseJob(
+                parameters = syncGeodatabaseParameters, geodatabase = geodatabase
+            )
 
-                    syncGeodatabaseJob?.let { syncGeodatabaseJob ->
+            syncGeodatabaseJob?.let { syncGeodatabaseJob ->
 
-                        // Show the dialog
-                        showSyncGeodatabaseJobProgressDialog = true
+                // Show the dialog
+                showSyncGeodatabaseJobProgressDialog = true
 
-                        // Create a flow-collection for the job's progress
-                        launch(Dispatchers.Main) {
-                            syncGeodatabaseJob.progress.collect { progress ->
-                                // Display the current job's progress value
-                                syncGeodatabaseJobProgress = progress
-                            }
-                        }
-                        // Start the job and wait for Job result
-                        syncGeodatabaseJob.start()
+                // Start the job and wait for Job result
+                syncGeodatabaseJob.start()
+
+                with(viewModelScope) {
+
+                    // Create the SyncGeodatabaseJob using the parameters and the geodatabase
+                    launch(Dispatchers.IO) {
                         syncGeodatabaseJob.result().onSuccess {
                             showSuccessMessage("Sync Complete")
                         }
                             .onFailure { messageDialogVM.showMessageDialog("Database did not sync correctly") }
+
+                        // Dismiss the dialog
+                        showSyncGeodatabaseJobProgressDialog = false
+
+                        // Set the edit state to indicate geodatabase is ready for edits
+                        geodatabaseEditState = GeodatabaseEditState.READY
                     }
-
-                    // Dismiss the dialog
-                    showSyncGeodatabaseJobProgressDialog = false
-
-                    // Set the edit state to indicate geodatabase is ready for edits
-                    geodatabaseEditState = GeodatabaseEditState.READY
+                    // Create a flow-collection for the job's progress
+                    launch(Dispatchers.Main) {
+                        syncGeodatabaseJob.progress.collect { progress ->
+                            // Display the current job's progress value
+                            syncGeodatabaseJobProgress = progress
+                        }
+                    }
                 }
             }
         }

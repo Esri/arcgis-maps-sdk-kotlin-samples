@@ -74,13 +74,11 @@ fun MainScreen(sampleName: String) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(0.dp),
+                        .padding(12.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = {
-                            mapViewModel.onClickActionButton()
-                        },
+                        onClick = mapViewModel::onClickActionButton,
                         enabled = mapViewModel.isActionButtonEnabled
                     ) {
                         Text(text = mapViewModel.actionButtonText)
