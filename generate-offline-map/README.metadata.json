@@ -8,6 +8,7 @@
   ],
   "keywords": [
     "download",
+    "geoviewcompose",
     "offline",
     "save",
     "web map",
@@ -18,9 +19,7 @@
     "Portal"
   ],
   "language": "kotlin",
-  "redirect_from": [
-    "/android/latest/sample-code/generate-offline-map.htm"
-  ],
+  "redirect_from": "",
   "relevant_apis": [
     "GenerateOfflineMapJob",
     "GenerateOfflineMapParameters",
@@ -29,7 +28,9 @@
     "Portal"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/MainActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/components/MapViewModel.kt",
+    "src/main/java/com/esri/arcgismaps/sample/generateofflinemap/screens/MainScreen.kt"
   ],
   "title": "Generate offline map"
 }

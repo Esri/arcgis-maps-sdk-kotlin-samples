@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.generateofflinemap
+package com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.generateofflinemap.screens.MainScreen
+import com.esri.arcgismaps.sample.editandsyncfeatureswithfeatureservice.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
 
