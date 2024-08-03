@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Edit Feature Forms</string>
+    <string name="cancel">Cancel</string>
+    <string name="attributes_failed">%1$s attributes failed</string>
+    <string name="view">View</string>
+    <string name="discard">Discard</string>
+    <string name="discard_edits">Discard Edits?</string>
+    <string name="all_changes_will_be_lost">All changes made within the form will be lost.</string>
+</resources>
