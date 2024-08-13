@@ -14,15 +14,15 @@
  *
  */
 
-package com.esri.arcgismaps.sample.editfeatureforms
+package com.esri.arcgismaps.sample.editfeaturesusingfeatureforms
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.editfeatureforms.components.MapViewModel
-import com.esri.arcgismaps.sample.editfeatureforms.screens.MainScreen
+import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.MapViewModel
+import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.screens.MainScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {

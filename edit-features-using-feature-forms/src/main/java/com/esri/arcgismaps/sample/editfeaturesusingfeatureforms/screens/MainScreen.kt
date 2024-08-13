@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.editfeatureforms.screens
+package com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.screens
 
 import android.util.Log
 import android.widget.Toast
@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -50,7 +49,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.Typography
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,7 +59,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -71,10 +68,10 @@ import com.arcgismaps.toolkit.featureforms.FeatureForm
 import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
 import com.arcgismaps.toolkit.featureforms.theme.FeatureFormDefaults
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.editfeatureforms.R
-import com.esri.arcgismaps.sample.editfeatureforms.components.ErrorInfo
-import com.esri.arcgismaps.sample.editfeatureforms.components.MapViewModel
-import com.esri.arcgismaps.sample.editfeatureforms.components.UIState
+import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.R
+import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.ErrorInfo
+import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.MapViewModel
+import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.UIState
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -185,7 +182,6 @@ fun MainScreen(mapViewModel: MapViewModel) {
                         )
                     )
                 )
-
             }
         }
     }

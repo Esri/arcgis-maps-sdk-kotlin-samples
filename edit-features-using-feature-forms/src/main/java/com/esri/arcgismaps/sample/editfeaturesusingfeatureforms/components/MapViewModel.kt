@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.editfeatureforms.components
+package com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components
 
 import android.app.Application
 import android.widget.Toast
@@ -141,8 +141,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             var result = Result.success(Unit)
             featureForm.finishEditing().onSuccess {
                 serviceFeatureTable.serviceGeodatabase?.let { database ->
-                    if (database.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
-                        database.applyEdits().onFailure {
+                    if (serviceGeodatabase.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
+                        serviceGeodatabase.applyEdits().onFailure {
                             result = Result.failure(it)
                         }
                     } else {
@@ -208,8 +208,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                         }?.let {
                             val feature = it as ArcGISFeature
                             val layer = feature.featureTable!!.layer as FeatureLayer
-                            val featureForm =
-                                FeatureForm(feature, layer.featureFormDefinition!!)
+                            val featureForm = FeatureForm(feature, layer.featureFormDefinition!!)
                             // select the feature
                             layer.selectFeature(feature)
                             // set the UI to an editing state with the FeatureForm

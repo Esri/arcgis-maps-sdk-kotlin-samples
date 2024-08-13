@@ -7,7 +7,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.esri.arcgismaps.sample.editfeatureforms"
+        applicationId = "com.esri.arcgismaps.sample.editfeaturesusingfeatureforms"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
@@ -31,7 +31,7 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExt.get()
     }
 
-    namespace = "com.esri.arcgismaps.sample.editfeatureforms"
+    namespace = "com.esri.arcgismaps.sample.editfeaturesusingfeatureforms"
 }
 
 dependencies {
