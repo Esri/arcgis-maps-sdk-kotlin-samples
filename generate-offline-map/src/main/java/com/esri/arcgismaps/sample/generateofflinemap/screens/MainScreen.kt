@@ -66,31 +66,25 @@ fun MainScreen(sampleName: String) {
                         .fillMaxWidth()
                         // Retrieve the size of the Composable MapView
                         .onSizeChanged { size ->
-                            println("Size: $size")
                             mapViewModel.updateMapViewSize(size)
                         },
                     arcGISMap = mapViewModel.map,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onLayerViewStateChanged = {
-                        // For Initial Launch
-                        // Ensure the map is fully loaded before calculating the download area
+                        // On launch, ensure the map is loaded before calculating the download area
                         if (mapViewModel.map.loadStatus.value == LoadStatus.Loaded) {
                             mapViewModel.calculateDownloadOfflineArea()
                         }
                     },
                     onViewpointChangedForCenterAndScale = {
-                        // Ensure the map is fully loaded before calculating the download area
+                        // Ensure the map is loaded before calculating the download area
                         if (mapViewModel.map.loadStatus.value == LoadStatus.Loaded) {
                             mapViewModel.calculateDownloadOfflineArea()
                         }
                     },
-                    onSpatialReferenceChanged = { spatialReference ->
-                        mapViewModel.currentSpatialReference = spatialReference
-                    }
 
                 )
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

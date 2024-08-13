@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Envelope
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
@@ -46,8 +45,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 class MapViewModel(private val application: Application) : AndroidViewModel(application) {
-
-    var currentSpatialReference by mutableStateOf<SpatialReference?>(null)
 
     // Create a symbol to show a box around the extent we want to download
     private val downloadArea: Graphic = Graphic(
@@ -122,7 +119,6 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
                     // Limit the map scale to the largest layer scale
                     map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
                     map.minScale = map.operationalLayers[6].minScale ?: 0.0
-
                 }
         }
     }
@@ -286,6 +282,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         val minPoint = mapViewProxy.screenToLocationOrNull(minScreenPoint)
         val maxPoint = mapViewProxy.screenToLocationOrNull(maxScreenPoint)
 
+        // Create an envelope to set the download area's geometry using the defined bounds
         if (minPoint != null && maxPoint != null) {
             val envelope = Envelope(minPoint, maxPoint)
             downloadArea.geometry = envelope
