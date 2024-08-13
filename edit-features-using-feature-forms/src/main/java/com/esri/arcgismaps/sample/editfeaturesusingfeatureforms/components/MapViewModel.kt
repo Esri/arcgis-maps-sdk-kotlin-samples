@@ -141,8 +141,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             var result = Result.success(Unit)
             featureForm.finishEditing().onSuccess {
                 serviceFeatureTable.serviceGeodatabase?.let { database ->
-                    if (serviceGeodatabase.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
-                        serviceGeodatabase.applyEdits().onFailure {
+                    if (database.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
+                        database.applyEdits().onFailure {
                             result = Result.failure(it)
                         }
                     } else {

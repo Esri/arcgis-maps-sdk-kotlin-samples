@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Edit Feature Forms</string>
+    <string name="app_name">Edit features using feature forms</string>
     <string name="cancel">Cancel</string>
     <string name="attributes_failed">%1$s attributes failed</string>
     <string name="view">View</string>
