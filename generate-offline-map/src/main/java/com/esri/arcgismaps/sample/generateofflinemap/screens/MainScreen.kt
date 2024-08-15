@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.LoadStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.generateofflinemap.R
 import com.esri.arcgismaps.sample.generateofflinemap.components.MapViewModel
@@ -70,11 +71,20 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.map,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     mapViewProxy = mapViewModel.mapViewProxy,
+                    onLayerViewStateChanged = {
+                        // On launch, ensure the map is loaded before calculating the download area
+                        if (mapViewModel.map.loadStatus.value == LoadStatus.Loaded) {
+                            mapViewModel.calculateDownloadOfflineArea()
+                        }
+                    },
                     onViewpointChangedForCenterAndScale = {
-                        mapViewModel.calculateDownloadOfflineArea()
-                    }
-                )
+                        // Ensure the map is loaded before calculating the download area
+                        if (mapViewModel.map.loadStatus.value == LoadStatus.Loaded) {
+                            mapViewModel.calculateDownloadOfflineArea()
+                        }
+                    },
 
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
