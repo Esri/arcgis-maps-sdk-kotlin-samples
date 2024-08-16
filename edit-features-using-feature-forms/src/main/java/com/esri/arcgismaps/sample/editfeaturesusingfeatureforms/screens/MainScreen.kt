@@ -16,8 +16,7 @@
 
 package com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.screens
 
-import android.util.Log
-import android.widget.Toast
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,11 +46,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,9 +58,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arcgismaps.toolkit.featureforms.FeatureForm
@@ -71,48 +70,33 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.R
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.ErrorInfo
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.MapViewModel
-import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.UIState
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.Dispatchers
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(mapViewModel: MapViewModel) {
 
     val scope = rememberCoroutineScope()
-    val uiState by mapViewModel.uiState
-    val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
-    val (featureForm, errorVisibility) = remember(uiState) {
-        when (uiState) {
-            is UIState.Editing -> {
-                val state = (uiState as UIState.Editing)
-                Pair(state.featureForm, state.validationErrorVisibility)
-            }
+    // the feature form the currently selected feature
+    val featureForm = mapViewModel.featureForm.collectAsState().value
+    // the validation errors found when the edits are applied
+    val formValidationErrors = mapViewModel.errors.collectAsState().value
 
-            is UIState.Committing -> {
-                Pair(
-                    (uiState as UIState.Committing).featureForm,
-                    ValidationErrorVisibility.Automatic
-                )
-            }
-
-            else -> {
-                Pair(null, ValidationErrorVisibility.Automatic)
-            }
-        }
-    }
+    // boolean trackers for save and discard edits dialogs
+    var showSaveEditsDialog by remember { mutableStateOf(false) }
     var showDiscardEditsDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) }
     ) { padding ->
-        // show the composable map using the mapViewModel
+        // display the composable map using the mapViewModel
         MapView(
             arcGISMap = mapViewModel.map,
             mapViewProxy = mapViewModel.mapViewProxy,
@@ -122,50 +106,41 @@ fun MainScreen(mapViewModel: MapViewModel) {
             onSingleTapConfirmed = { mapViewModel.onSingleTapConfirmed(it) }
         )
 
+        // update bottom sheet visibility when a feature is selected
         LaunchedEffect(featureForm) {
             showBottomSheet = featureForm != null
         }
 
-        if (showBottomSheet) {
+        if (showBottomSheet && featureForm != null) {
+            // display feature form bottom sheet
             ModalBottomSheet(
                 onDismissRequest = {
                     showBottomSheet = false
                     showDiscardEditsDialog = true
                 },
-                sheetState = sheetState,
-                windowInsets = WindowInsets.ime
+                sheetState = sheetState
             ) {
-                // remember the form and update it when a new form is opened
-                val rememberedForm = remember(this) { featureForm!! }
-
-                // show the top bar which changes available actions based on if the FeatureForm is
-                // being shown and is in edit mode
+                // top bar to manage save or discard edits
                 TopFormBar(
                     onClose = { showDiscardEditsDialog = true },
                     onSave = {
-                        scope.launch {
-                            mapViewModel.commitEdits().onFailure {
-                                Log.w("Forms", "Applying edits failed : ${it.message}")
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        context,
-                                        "Applying edits failed : ${it.message}",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    it.printStackTrace()
-                                }
+                        showSaveEditsDialog = true
+                        mapViewModel.applyEdits {
+                            scope.launch {
+                                sheetState.hide()
+                                showBottomSheet = false
+                                showSaveEditsDialog = false
                             }
                         }
                     })
-
-                // set bottom sheet content to the FeatureForm
+                // display the selected feature form using the Toolkit component
                 FeatureForm(
-                    featureForm = rememberedForm,
+                    featureForm = featureForm,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 20.dp)
                         .navigationBarsPadding(),
-                    validationErrorVisibility = errorVisibility,
+                    validationErrorVisibility = ValidationErrorVisibility.Automatic,
                     colorScheme = FeatureFormDefaults.colorScheme(
                         groupElementColors = FeatureFormDefaults.groupElementColors(
                             outlineColor = MaterialTheme.colorScheme.secondary,
@@ -185,37 +160,45 @@ fun MainScreen(mapViewModel: MapViewModel) {
             }
         }
     }
-    when (uiState) {
-        is UIState.Committing -> {
-            SubmitForm(errors = (uiState as UIState.Committing).errors) {
-                mapViewModel.cancelCommit()
-            }
-        }
 
-        else -> {}
+    if (showSaveEditsDialog && formValidationErrors.isNotEmpty() && showBottomSheet) {
+        // validation errors found, cancel the commit and show validation errors
+        ValidationErrorsDialog(errors = formValidationErrors) {
+            showSaveEditsDialog = false
+            mapViewModel.cancelCommit()
+        }
+    } else if (showSaveEditsDialog && showBottomSheet) {
+        // no validation errors found, show dialog when commiting edits
+        SaveFormDialog()
     }
 
     if (showDiscardEditsDialog) {
         DiscardEditsDialog(
             onConfirm = {
                 mapViewModel.rollbackEdits()
-                showDiscardEditsDialog = false
                 scope.launch {
                     sheetState.hide()
+                    showDiscardEditsDialog = false
                     showBottomSheet = false
                 }
             },
             onCancel = {
                 showDiscardEditsDialog = false
-                scope.launch {
-                    showBottomSheet = true
-                    if (sheetState.currentValue == SheetValue.Hidden)
-                        sheetState.show()
-                }
+                showBottomSheet = true
             }
         )
     }
 
+    // Display a MessageDialog with any error information
+    mapViewModel.messageDialogVM.apply {
+        if (dialogStatus) {
+            MessageDialog(
+                title = messageTitle,
+                description = messageDescription,
+                onDismissRequest = ::dismissDialog
+            )
+        }
+    }
 }
 
 @Composable
@@ -273,72 +256,99 @@ fun TopFormBar(
                 )
             }
         }
-
         HorizontalDivider()
     }
 }
 
 @Composable
-private fun SubmitForm(errors: List<ErrorInfo>, onDismissRequest: () -> Unit) {
-    if (errors.isEmpty()) {
-        // show a progress dialog if no errors are present
-        Dialog(onDismissRequest = { /* cannot be dismissed */ }) {
-            Card(modifier = Modifier.wrapContentSize()) {
-                Column(
-                    modifier = Modifier.padding(25.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    CircularProgressIndicator()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = "Saving..")
-                }
+private fun SaveFormDialog() {
+    // show a progress dialog when no errors are present
+    Dialog(onDismissRequest = { /* cannot be dismissed */ }) {
+        Card(modifier = Modifier.wrapContentSize()) {
+            Column(
+                modifier = Modifier.padding(25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = "Saving..")
             }
         }
-    } else {
-        // show all the validation errors in a dialog
-        AlertDialog(
-            onDismissRequest = onDismissRequest,
-            modifier = Modifier.heightIn(max = 600.dp),
-            confirmButton = {
-                Row(
+    }
+}
+
+@Composable
+private fun ValidationErrorsDialog(errors: List<ErrorInfo>, onDismissRequest: () -> Unit) {
+    // show all the validation errors in a dialog
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        modifier = Modifier.heightIn(max = 600.dp),
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(onClick = onDismissRequest) {
+                    Text(text = stringResource(R.string.view))
+                }
+            }
+        },
+        title = {
+            Column {
+                Text(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(onClick = onDismissRequest) {
-                        Text(text = stringResource(R.string.view))
-                    }
-                }
-            },
-            title = {
-                Column {
+                    text = "Form Validation Errors",
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
+        text = {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(15.dp)) {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Form Validation Errors",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center
+                        text = stringResource(R.string.attributes_failed, errors.count()),
+                        color = MaterialTheme.colorScheme.error
                     )
-                }
-            },
-            text = {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(15.dp)) {
-                        Text(
-                            text = stringResource(R.string.attributes_failed, errors.count()),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            items(errors.count()) { index ->
-                                Text(
-                                    text = "${errors[index].fieldName}: ${errors[index].error::class.simpleName.toString()}",
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        items(errors.count()) { index ->
+                            Text(
+                                text = "${errors[index].fieldName}: ${errors[index].error::class.simpleName.toString()}",
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     }
                 }
             }
-        )
-    }
+        }
+    )
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun SavePreview() {
+    SampleAppTheme { SaveFormDialog() }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ValidationErrorsPreview() {
+    SampleAppTheme { ValidationErrorsDialog(listOf()) { } }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DiscardEditsDialogPreview() {
+    SampleAppTheme { DiscardEditsDialog(onConfirm = {}) {} }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopFormBarPreview() {
+    SampleAppTheme { TopFormBar() }
 }

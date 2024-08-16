@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Edit features using feature forms</string>
+    <string name="feature_form_web_map">https://www.arcgis.com/home/item.html?id=516e4d6aeb4c495c87c41e11274c767f</string>
     <string name="cancel">Cancel</string>
     <string name="attributes_failed">%1$s attributes failed</string>
     <string name="view">View</string>
