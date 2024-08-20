@@ -78,29 +78,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * @param onEditsCompleted Invoked when edits are applied successfully
      */
     fun applyEdits(onEditsCompleted: () -> Unit) {
-        // build the list of errors
-        val errors = mutableListOf<ErrorInfo>()
         val featureForm = _featureForm.value
             ?: return messageDialogVM.showMessageDialog("Feature form state is not configured")
 
-        featureForm.validationErrors.value.forEach { entry ->
-            entry.value.forEach { error ->
-                featureForm.elements.getFormElement(entry.key)?.let { formElement ->
-                    if (formElement.isEditable.value || formElement.hasValueExpression) {
-                        errors.add(
-                            ErrorInfo(
-                                fieldName = formElement.label,
-                                error = error as FeatureFormValidationException
-                            )
-                        )
-                    }
-                }
-            }
-        }
         // update the state flow with the list of validation errors found
-        _errors.value = errors
+        _errors.value = validateFormInputEdits(featureForm)
         // if there are no errors then update the feature
-        if (errors.isEmpty()) {
+        if (_errors.value.isEmpty()) {
             val serviceFeatureTable = featureForm.feature.featureTable as? ServiceFeatureTable
                 ?: return messageDialogVM.showMessageDialog("Cannot save feature edit without a ServiceFeatureTable")
 
@@ -140,6 +124,31 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+    }
+
+    /**
+     * Performs validation checks on the given [featureForm] with local edits.
+     * Return a list of [ErrorInfo] if errors are found, if not, empty list is returned.
+     */
+    private fun validateFormInputEdits(featureForm: FeatureForm): List<ErrorInfo> {
+        val errors = mutableListOf<ErrorInfo>()
+        // If an element is editable or derives its value from an arcade expression,
+        // its errors must be corrected before submitting the form
+        featureForm.validationErrors.value.forEach { entry ->
+            entry.value.forEach { error ->
+                featureForm.elements.getFormElement(entry.key)?.let { formElement ->
+                    if (formElement.isEditable.value || formElement.hasValueExpression) {
+                        errors.add(
+                            ErrorInfo(
+                                fieldName = formElement.label,
+                                error = error as FeatureFormValidationException
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return errors
     }
 
     /**

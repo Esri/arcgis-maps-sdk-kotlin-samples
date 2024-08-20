@@ -10,7 +10,7 @@ Feature forms help enhance the accuracy, efficiency, and user experience of attr
 
 ## How to use the sample
 
-Tap a feature on the feature form map to open a bottom sheet displaying the list of form elements. Select through the list of elements to view the contingent value field groups and edit elements to update the field values. Tap the submit icon to commit the changes on the web map.
+Tap a feature on the feature form map to open a bottom sheet displaying the list of form elements. Select through the list of elements to view the coded value field groups and edit elements to update the field values. Tap the submit icon to commit the changes on the web map.
 
 ## How it works
 
@@ -22,7 +22,7 @@ Tap a feature on the feature form map to open a bottom sheet displaying the list
 6. Once edits are added to the form fields, check to verify that there are no validation errors using `featureForm.validationErrors`. The list will be empty if there are no errors.
 7. To commit edits on the service geodatabase:
     1. Call `featureForm.finishEditing()` to save edits to the database.
-    2. Retrieve the backing service feature table's geodatabase using `(featureForm.feature.featureTable as? ServiceFeatureTable).serviceGeodatabase`.
+    2. Retrieve the backing service feature table's geodatabase using `(featureForm.feature.featureTable as? ServiceFeatureTable)?.serviceGeodatabase`.
     3. Verify the service geodatabase can commit changes back to the service using `serviceGeodatabase.serviceInfo?.canUseServiceGeodatabaseApplyEdits`
     4. If apply edits are allowed, call `serviceGeodatabase.applyEdits()` to apply local edits to the online service.
 
