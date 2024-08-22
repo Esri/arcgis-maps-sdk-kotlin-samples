@@ -6,7 +6,7 @@ Display and edit feature attributes using feature forms
 
 ## Use case
 
-Feature forms help enhance the accuracy, efficiency, and user experience of attribute editing in your application.  Forms can be authored as part of the WebMap using Field Maps Designer or using Web Map Viewer. This allows for a simplified user experience to edit feature attribute data on the web-map.  
+Feature forms help enhance the accuracy, efficiency, and user experience of attribute editing in your application.  Forms can be authored as part of the WebMap using [Field Maps Designer](https://www.arcgis.com/apps/fieldmaps/) or using Web Map Viewer. This allows for a simplified user experience to edit feature attribute data on the web-map.  
 
 ## How to use the sample
 
@@ -25,6 +25,7 @@ Tap a feature on the feature form map to open a bottom sheet displaying the list
     2. Retrieve the backing service feature table's geodatabase using `(featureForm.feature.featureTable as? ServiceFeatureTable)?.serviceGeodatabase`.
     3. Verify the service geodatabase can commit changes back to the service using `serviceGeodatabase.serviceInfo?.canUseServiceGeodatabaseApplyEdits`
     4. If apply edits are allowed, call `serviceGeodatabase.applyEdits()` to apply local edits to the online service.
+    5. If edits are not allowed on the `ServiceGeodatabase`, then apply edits to the `ServiceFeatureTable` using `(featureForm.feature.featureTable as? ServiceFeatureTable)?.applyEdits()`
 
 ## Relevant API
 

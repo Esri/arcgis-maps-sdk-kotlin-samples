@@ -84,9 +84,9 @@ fun MainScreen(mapViewModel: MapViewModel) {
     val sheetState = rememberModalBottomSheetState()
 
     // the feature form the currently selected feature
-    val featureForm = mapViewModel.featureForm.collectAsState().value
+    val featureForm by mapViewModel.featureForm.collectAsState()
     // the validation errors found when the edits are applied
-    val formValidationErrors = mapViewModel.errors.collectAsState().value
+    val formValidationErrors by mapViewModel.errors.collectAsState()
 
     // boolean trackers for save and discard edits dialogs
     var showSaveEditsDialog by remember { mutableStateOf(false) }
@@ -135,7 +135,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                     })
                 // display the selected feature form using the Toolkit component
                 FeatureForm(
-                    featureForm = featureForm,
+                    featureForm = featureForm!!,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 20.dp)
