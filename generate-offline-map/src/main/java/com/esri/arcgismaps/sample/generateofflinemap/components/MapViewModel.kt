@@ -103,21 +103,22 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         val portal = Portal(application.getString(R.string.portal_url))
         val portalItem = PortalItem(portal, application.getString(R.string.item_id))
 
+        // Clear, then add the download graphic to the graphics overlay
+        graphicsOverlay.graphics.clear()
+        graphicsOverlay.graphics.add(downloadArea)
+
         map = ArcGISMap(portalItem)
         viewModelScope.launch(Dispatchers.Main) {
             map.load()
-                .onSuccess {
-                    // Add the download graphic to the graphics overlay
-                    graphicsOverlay.graphics.add(downloadArea)
-
-                    // Limit the map scale to the largest layer scale
-                    map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
-                    map.minScale = map.operationalLayers[6].minScale ?: 0.0
-                }
                 .onFailure {
                     messageDialogVM.showMessageDialog(
                         title = it.message.toString()
                     )
+                }
+                .onSuccess {
+                    // Limit the map scale to the largest layer scale
+                    map.maxScale = map.operationalLayers[6].maxScale ?: 0.0
+                    map.minScale = map.operationalLayers[6].minScale ?: 0.0
                 }
         }
     }
@@ -232,7 +233,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
     fun cancelOfflineMapJob() {
-        with(viewModelScope){
+        with(viewModelScope) {
             launch(Dispatchers.IO) {
                 offlineMapJob?.cancel()
             }
@@ -267,6 +268,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
      * and use [MapViewProxy] to assist in converting screen points to map points
      */
     fun calculateDownloadOfflineArea() {
+
         // Upper left corner of the area to take offline
         val minScreenPoint = ScreenCoordinate(200.0, 200.0)
 
@@ -280,7 +282,7 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
         val minPoint = mapViewProxy.screenToLocationOrNull(minScreenPoint)
         val maxPoint = mapViewProxy.screenToLocationOrNull(maxScreenPoint)
 
-        // Use the points to define and return an envelope
+        // Create an envelope to set the download area's geometry using the defined bounds
         if (minPoint != null && maxPoint != null) {
             val envelope = Envelope(minPoint, maxPoint)
             downloadArea.geometry = envelope
