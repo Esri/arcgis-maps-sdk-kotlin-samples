@@ -14,7 +14,7 @@ Once the map loads, zoom to the extent you want to take offline. The red border 
 
 ## How it works
 
-1. Create an `ArcGISMap` with a `Portal` item pointing to the web map.
+1. Create an `ArcGISMap` with a `PortalItem` pointing to the web map.
 2. Create `GenerateOfflineMapParameters` specifying the download area geometry, minimum scale, and maximum scale.
 3. Create an `OfflineMapTask` with the map.
 4. Create the `OfflineMapJob` with `OfflineMapTask.generateOfflineMap(params, downloadDirectoryPath)` and start it with `OfflineMapJob.start()`.
@@ -34,9 +34,8 @@ The map used in this sample shows the [stormwater network](https://arcgisruntime
 
 ## Additional information
 
-The creation of the offline map can be fine-tuned using [parameter overrides for feature layers](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-overrides), or by using [local basemaps](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-with-local-basemap)
-to achieve more customised results.
+The creation of the offline map can be fine-tuned using parameter overrides for feature layers, or by using local basemaps to achieve more customised results. Also, this sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-download, offline, save, web map
+download, geoviewcompose, offline, save, web map

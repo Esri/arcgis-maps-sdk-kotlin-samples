@@ -7,7 +7,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.esri.arcgismaps.sample.generateofflinemap"
+        applicationId = "com.esri.arcgismaps.sample.editfeaturesusingfeatureforms"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
@@ -31,7 +31,7 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExt.get()
     }
 
-    namespace = "com.esri.arcgismaps.sample.generateofflinemap"
+    namespace = "com.esri.arcgismaps.sample.editfeaturesusingfeatureforms"
 }
 
 dependencies {
@@ -51,4 +51,5 @@ dependencies {
     // Toolkit dependencies
     implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
     implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
+    implementation(libs.arcgis.maps.kotlin.toolkit.featureforms)
 }
