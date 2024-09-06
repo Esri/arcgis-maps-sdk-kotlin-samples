@@ -16,20 +16,45 @@
 
 package com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.components
 
+import kotlinx.coroutines.launch
+
 import android.app.Application
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.kml.KmlDataset
+import com.arcgismaps.mapping.layers.KmlLayer
+import com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
-    private val viewpointAsia = Viewpoint(39.8, 98.6, 10e7)
-    var viewpoint =  mutableStateOf(viewpointAmerica)
-    /**
-     * Switch between two basemaps
-     */
-    fun changeBasemap() {
-        viewpoint.value =
-            if (viewpoint.value == viewpointAmerica) viewpointAsia else viewpointAmerica
+
+    val kmlDataset = KmlDataset(application.getString(R.string.kml_dataset_url))
+    val kmlLayer : KmlLayer = KmlLayer(kmlDataset)
+
+    val scene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+        initialViewpoint = Viewpoint(52.0, 7.0, 8_000_000.0)
+    }
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+
+    init {
+        viewModelScope.launch {
+            // wait for the KML layer to load, then add it to the scene view
+            kmlLayer.load().onSuccess {
+                scene.operationalLayers.add(kmlLayer)
+
+                // display a popup with the contents of the network link message
+                messageDialogVM.showMessageDialog("Placeholder", "This should be a network link message. But the API for that isn't exposed yet.")
+            }.onFailure { error ->
+                messageDialogVM.showMessageDialog(
+                    title="Error",
+                    description = error.message.toString())
+            }
+        }
     }
 }

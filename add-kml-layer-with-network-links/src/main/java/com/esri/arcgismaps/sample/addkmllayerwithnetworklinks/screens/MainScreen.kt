@@ -21,16 +21,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.kml.KmlDataset
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -38,25 +34,29 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String) {
+
     val application = LocalContext.current.applicationContext as Application
-    // create a ViewModel to handle MapView interactions
+    // create a ViewModel to handle SceneView interactions
     val mapViewModel = MapViewModel(application)
-    val arcGISMap by remember {
-        mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = mapViewModel.viewpoint.value
-        })
-    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            MapView(
-                modifier = Modifier.fillMaxSize().padding(it),
-                arcGISMap = arcGISMap,
-                onSingleTapConfirmed = {
-                    mapViewModel.changeBasemap()
-                }
+            SceneView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                arcGISScene = mapViewModel.scene,
             )
+            mapViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
+            }
         }
     )
 }
