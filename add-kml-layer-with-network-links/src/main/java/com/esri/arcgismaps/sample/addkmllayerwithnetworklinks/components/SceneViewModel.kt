@@ -32,9 +32,12 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class SceneViewModel(application: Application) : AndroidViewModel(application) {
 
+    // create a KML dataset from a URL, then use it to create a KML layer
     val kmlDataset = KmlDataset(application.getString(R.string.kml_dataset_url))
     val kmlLayer = KmlLayer(kmlDataset)
 
+
+    // create a scene with the imagery basemap, centred over Germany and the Netherlands
     val scene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
         initialViewpoint = Viewpoint(52.0, 7.0, 8_000_000.0)
     }
@@ -45,7 +48,7 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
     init {
         viewModelScope.launch {
 
-            // display any messages from the network link upon connection
+            // show a popup when any network link messages are received
             kmlDataset.kmlNetworkLinkMessageReceived.collect {
                 messageDialogVM.showMessageDialog(
                     title = "KML Network Link Message",
@@ -60,6 +63,7 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
             kmlLayer.load().onSuccess {
                 scene.operationalLayers.add(kmlLayer)
             }.onFailure { error ->
+                // report errors if the KML layer failed to load
                 messageDialogVM.showMessageDialog(
                     title = "Error",
                     description = error.message.toString()
