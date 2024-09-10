@@ -30,10 +30,10 @@ import com.arcgismaps.mapping.layers.KmlLayer
 import com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
+class SceneViewModel(application: Application) : AndroidViewModel(application) {
 
     val kmlDataset = KmlDataset(application.getString(R.string.kml_dataset_url))
-    val kmlLayer : KmlLayer = KmlLayer(kmlDataset)
+    val kmlLayer = KmlLayer(kmlDataset)
 
     val scene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
         initialViewpoint = Viewpoint(52.0, 7.0, 8_000_000.0)
@@ -44,16 +44,26 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
+
+            // display any messages from the network link upon connection
+            kmlDataset.kmlNetworkLinkMessageReceived.collect {
+                messageDialogVM.showMessageDialog(
+                    title = "KML Network Link Message",
+                    description = it.message
+                )
+            }
+        }
+
+        viewModelScope.launch {
+
             // wait for the KML layer to load, then add it to the scene view
             kmlLayer.load().onSuccess {
                 scene.operationalLayers.add(kmlLayer)
-
-                // display a popup with the contents of the network link message
-                messageDialogVM.showMessageDialog("Placeholder", "This should be a network link message. But the API for that isn't exposed yet.")
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    title="Error",
-                    description = error.message.toString())
+                    title = "Error",
+                    description = error.message.toString()
+                )
             }
         }
     }

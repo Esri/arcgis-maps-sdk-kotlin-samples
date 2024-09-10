@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.components.MapViewModel
+import com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.components.SceneViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -37,7 +37,7 @@ fun MainScreen(sampleName: String) {
 
     val application = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle SceneView interactions
-    val mapViewModel = MapViewModel(application)
+    val sceneViewModel = SceneViewModel(application)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -46,9 +46,9 @@ fun MainScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
-                arcGISScene = mapViewModel.scene,
+                arcGISScene = sceneViewModel.scene,
             )
-            mapViewModel.messageDialogVM.apply {
+            sceneViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
