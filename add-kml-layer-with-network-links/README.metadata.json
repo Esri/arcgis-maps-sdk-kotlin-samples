@@ -1,5 +1,5 @@
 {
-    "category": "TODO",
+    "category": "Layers",
     "description": "Display a file with a KML network link, including displaying any network link control messages at launch.",
     "formal_name": "AddKmlLayerWithNetworkLinks",
     "ignore": false,
@@ -17,8 +17,6 @@
         "KmlLayer"
     ],
     "language": "kotlin",
-    "provision_from": "TODO",
-    "provision_to": "TODO",
     "redirect_from": "TODO",
     "relevant_apis": [
         "KmlDataset",
