@@ -17,15 +17,15 @@
         "KmlLayer"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": "",
     "relevant_apis": [
         "KmlDataset",
         "KmlLayer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/components/SceneViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/screens/MainScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/MainActivity.kt"
     ],
     "title": "Add KML layer with network links"
 }

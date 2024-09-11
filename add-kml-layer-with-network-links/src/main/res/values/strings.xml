@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">Add KML Layer With Network Links</string>
-    <string name="kml_dataset_url">https://www.arcgis.com/sharing/rest/content/items/600748d4464442288f6db8a4ba27dc95/data</string>
+    <string name="app_name">Add KML layer with network links</string>
 </resources>

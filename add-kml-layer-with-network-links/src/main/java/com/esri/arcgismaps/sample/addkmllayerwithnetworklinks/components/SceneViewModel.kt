@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.components
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 import android.app.Application
@@ -27,13 +28,12 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.kml.KmlDataset
 import com.arcgismaps.mapping.layers.KmlLayer
-import com.esri.arcgismaps.sample.addkmllayerwithnetworklinks.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class SceneViewModel(application: Application) : AndroidViewModel(application) {
 
     // create a KML dataset from a URL, then use it to create a KML layer
-    val kmlDataset = KmlDataset(application.getString(R.string.kml_dataset_url))
+    val kmlDataset = KmlDataset("https://www.arcgis.com/sharing/rest/content/items/600748d4464442288f6db8a4ba27dc95/data")
     val kmlLayer = KmlLayer(kmlDataset)
 
 
@@ -46,7 +46,7 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
 
             // show a popup when any network link messages are received
             kmlDataset.kmlNetworkLinkMessageReceived.collect {
@@ -57,7 +57,7 @@ class SceneViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             // wait for the KML layer to load, then add it to the scene view
             kmlLayer.load().onSuccess {

@@ -16,7 +16,7 @@ The sample will load the KML file automatically. The data shown should refresh a
 
 1. Create a `KmlDataset` from a KML source which has network links.
 2. Construct a `KmlLayer` with the dataset and add the layer as an operational layer with `Scene.operationalLayers.add(kmlLayer)`.
-3. To listen for network messages, NOT YET IMPLEMENTED.
+3. To listen for network messages, collect them from `KmlDataset.kmlNetworkLinkMessageReceived`.
 
 ## Relevant API
 
