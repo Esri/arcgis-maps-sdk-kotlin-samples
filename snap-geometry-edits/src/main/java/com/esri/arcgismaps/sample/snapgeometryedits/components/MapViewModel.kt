@@ -70,6 +70,8 @@ class MapViewModel(
     val isSnapSettingsButtonEnabled = mutableStateOf(false)
     val isBottomSheetVisible = mutableStateOf(false)
     val snappingCheckedState = mutableStateOf(false)
+    val geometryGuidesCheckedState = mutableStateOf(false)
+    val featureSnappingCheckedState = mutableStateOf(false)
     val snapSourceCheckedState = mutableStateListOf<Boolean>()
     val isUndoButtonEnabled = geometryEditor.canUndo
     val isSaveButtonEnabled = geometryEditor.isStarted
@@ -129,11 +131,30 @@ class MapViewModel(
     }
 
     /**
-     * Toggles snapping using the [checkedValue] from the bottom sheet.
+     * Toggles snapping overall (both geometry guides and feature snapping) using the
+     * [checkedValue] from the bottom sheet.
      */
     fun snappingEnabledStatus(checkedValue: Boolean) {
         snappingCheckedState.value = checkedValue
         geometryEditor.snapSettings.isEnabled = snappingCheckedState.value
+    }
+
+    /**
+     * Toggles geometry guides using the [checkedValue] from the bottom sheet.
+     * Note geometry guides will still be disabled unless snapping is also enabled overall.
+     */
+    fun geometryGuidesEnabledStatus(checkedValue: Boolean) {
+        geometryGuidesCheckedState.value = checkedValue
+        geometryEditor.snapSettings.isGeometryGuidesEnabled = geometryGuidesCheckedState.value
+    }
+
+    /**
+     * Toggles feature snapping using the [checkedValue] from the bottom sheet.
+     * Note feature snapping will still be disabled unless snapping is also enabled overall.
+     */
+    fun featureSnappingCheckedState(checkedValue: Boolean) {
+        featureSnappingCheckedState.value = checkedValue
+        geometryEditor.snapSettings.isFeatureSnappingEnabled = featureSnappingCheckedState.value
     }
 
     /**

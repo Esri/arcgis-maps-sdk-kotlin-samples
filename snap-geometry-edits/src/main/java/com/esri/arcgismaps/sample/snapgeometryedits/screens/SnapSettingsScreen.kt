@@ -49,8 +49,12 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
 fun SnapSettings(
     snapSourceList: State<List<SnapSourceSettings>>,
     onSnappingChanged: (Boolean) -> Unit = { },
+    onGeometryGuidesChanged: (Boolean) -> Unit = { },
+    onFeatureSnappingChanged: (Boolean) -> Unit = { },
     onSnapSourceChanged: (Boolean, Int) -> Unit = { _: Boolean, _: Int -> },
     isSnappingEnabled: Boolean,
+    isGeometryGuidesEnabled: Boolean,
+    isFeatureSnappingEnabled: Boolean,
     isSnapSourceEnabled: List<Boolean>,
     onDismiss: () -> Unit = { }
 ) {
@@ -116,12 +120,46 @@ fun SnapSettings(
                             Text(
                                 modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
                                 style = SampleTypography.bodyLarge,
-                                text = "Enabled",
+                                text = "Snapping enabled",
                             )
                             Switch(
                                 checked = isSnappingEnabled,
                                 onCheckedChange = {
                                     onSnappingChanged(it)
+                                }
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                style = SampleTypography.bodyLarge,
+                                text = "Geometry guides",
+                            )
+                            Switch(
+                                checked = isGeometryGuidesEnabled,
+                                onCheckedChange = {
+                                    OnGeometryGuidesChanged(it)
+                                }
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(20.dp, 0.dp, 0.dp, 0.dp),
+                                style = SampleTypography.bodyLarge,
+                                text = "Feature snapping",
+                            )
+                            Switch(
+                                checked = isFeatureSnappingEnabled,
+                                onCheckedChange = {
+                                    onFeatureSnappingChanged(it)
                                 }
                             )
                         }
