@@ -152,7 +152,7 @@ class MapViewModel(
      * Toggles feature snapping using the [checkedValue] from the bottom sheet.
      * Note feature snapping will still be disabled unless snapping is also enabled overall.
      */
-    fun featureSnappingCheckedState(checkedValue: Boolean) {
+    fun featureSnappingEnabledStatus(checkedValue: Boolean) {
         featureSnappingCheckedState.value = checkedValue
         geometryEditor.snapSettings.isFeatureSnappingEnabled = featureSnappingCheckedState.value
     }

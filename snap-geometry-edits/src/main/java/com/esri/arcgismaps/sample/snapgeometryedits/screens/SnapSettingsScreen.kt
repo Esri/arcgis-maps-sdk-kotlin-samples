@@ -142,7 +142,7 @@ fun SnapSettings(
                             Switch(
                                 checked = isGeometryGuidesEnabled,
                                 onCheckedChange = {
-                                    OnGeometryGuidesChanged(it)
+                                    onGeometryGuidesChanged(it)
                                 }
                             )
                         }
