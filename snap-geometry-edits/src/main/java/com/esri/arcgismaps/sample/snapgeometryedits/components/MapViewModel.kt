@@ -69,9 +69,9 @@ class MapViewModel(
     val isCreateButtonEnabled = mutableStateOf(false)
     val isSnapSettingsButtonEnabled = mutableStateOf(false)
     val isBottomSheetVisible = mutableStateOf(false)
-    val snappingCheckedState = mutableStateOf(false)
-    val geometryGuidesCheckedState = mutableStateOf(false)
-    val featureSnappingCheckedState = mutableStateOf(false)
+    val snappingCheckedState = mutableStateOf(geometryEditor.snapSettings.isEnabled)
+    val geometryGuidesCheckedState = mutableStateOf(geometryEditor.snapSettings.isGeometryGuidesEnabled)
+    val featureSnappingCheckedState = mutableStateOf(geometryEditor.snapSettings.isFeatureSnappingEnabled)
     val snapSourceCheckedState = mutableStateListOf<Boolean>()
     val isUndoButtonEnabled = geometryEditor.canUndo
     val isSaveButtonEnabled = geometryEditor.isStarted
