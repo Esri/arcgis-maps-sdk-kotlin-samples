@@ -16,16 +16,21 @@
 
 package com.esri.arcgismaps.sample.createandsavemap.components
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+
 import com.arcgismaps.httpcore.authentication.OAuthUserConfiguration
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.BasemapStylesService
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.arcgismaps.mapping.layers.Layer
@@ -35,18 +40,22 @@ import com.arcgismaps.toolkit.authentication.AuthenticatorState
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    /*val authenticatorState = AuthenticatorState().apply {
+    val authenticatorState = AuthenticatorState().apply {
         oAuthUserConfiguration = OAuthUserConfiguration(
-            portalUrl = portal.url,
+            portalUrl = "https://www.arcgis.com",
             clientId = "lgAdHkYZYlwwfAhC",
-            redirectUrl = "authenticate-with-oauth://auth")
-    }*/
+            redirectUrl = "authenticate-with-oauth://auth"
+        )
+    }
 
     val portal = Portal("https://www.arcgis.com", Portal.Connection.Authenticated)
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
         initialViewpoint = Viewpoint(40.0, -90.0, 4e7)
     }
+
+    private val _portalFolders = MutableStateFlow<List<PortalFolder>>(listOf())
+    val portalFolders = _portalFolders.asStateFlow()
 
     private val worldElevation =
         ArcGISMapImageLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer")
@@ -55,8 +64,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     val availableLayers: List<Layer> = listOf(worldElevation, usCensus)
 
-    fun updateActiveLayers(layer: Layer){
-        if (arcGISMap.operationalLayers.contains(layer)){
+    fun updateActiveLayers(layer: Layer) {
+        if (arcGISMap.operationalLayers.contains(layer)) {
             arcGISMap.operationalLayers.remove(layer)
         } else {
             arcGISMap.operationalLayers.add(layer)
@@ -69,12 +78,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         Pair("Topographic", BasemapStyle.ArcGISTopographic),
         Pair("Oceans", BasemapStyle.ArcGISOceans)
     )
-    var basemapStylesInfo = BasemapStylesService().info?.stylesInfo
-
     var basemapStyle by mutableStateOf("Streets")
         private set
 
-    fun updateBasemapStyle(style: String){
+    fun updateBasemapStyle(style: String) {
         basemapStyle = style
 
         // non-null as list items populated from stylesMap
@@ -84,14 +91,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var mapName by mutableStateOf("My Map")
         private set
 
-    fun updateName(name: String){
+    fun updateName(name: String) {
         mapName = name
     }
 
     var mapDescription by mutableStateOf("Like a bunch of things and stuff")
         private set
 
-    fun updateDescription(description: String){
+    fun updateDescription(description: String) {
         mapDescription = description
     }
 
@@ -104,18 +111,31 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     var portalFolder by mutableStateOf<PortalFolder?>(null)
 
-    fun updateFolder(folder: PortalFolder){
+    fun updateFolder(folder: PortalFolder?) {
         portalFolder = folder
     }
 
-    suspend fun save(){
-        arcGISMap.saveAs(
+    fun loadPortal() = viewModelScope.launch {
+        portal.load().onSuccess {
+            portal.portalInfo?.apply {
+                this.user?.fetchContent()?.onSuccess {
+                    _portalFolders.value = it.folders
+                }
+            }
+        }
+    }
+
+    suspend fun save(): Result<Unit> {
+        return arcGISMap.saveAs(
             portal,
             description = mapDescription,
             folder = portalFolder,
             tags = mapTags.split(",").map { str -> str.trim() },
             forceSaveToSupportedVersion = false,
             thumbnail = null,
-            title = mapName)
+            title = mapName
+        )
     }
+
+
 }

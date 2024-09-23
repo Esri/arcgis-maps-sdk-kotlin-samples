@@ -22,13 +22,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.createandsavemap.screens.MainScreen
-import com.arcgismaps.toolkit.authentication.Authenticator
-import com.arcgismaps.toolkit.authentication.AuthenticatorState
+import com.arcgismaps.toolkit.authentication.DialogAuthenticator
+import com.esri.arcgismaps.sample.createandsavemap.components.MapViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun SampleApp() {
-        val authenticatorState : AuthenticatorState = remember { AuthenticatorState() }
+        val mapViewModel: MapViewModel = viewModel()
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
@@ -55,6 +56,6 @@ class MainActivity : ComponentActivity() {
                 sampleName = getString(R.string.app_name)
             )
         }
-        Authenticator(authenticatorState)
+        DialogAuthenticator(authenticatorState = mapViewModel.authenticatorState)
     }
 }

@@ -16,6 +16,9 @@
 
 package com.esri.arcgismaps.sample.createandsavemap.screens
 
+import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,10 +44,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,12 +62,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.portal.PortalFolder
+
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.createandsavemap.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 /**
  * Main screen layout for the sample app
@@ -75,10 +79,12 @@ import kotlin.math.roundToInt
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
-
     val composableScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Box(
@@ -87,6 +93,7 @@ fun MainScreen(sampleName: String) {
                     .padding(it),
                 contentAlignment = Alignment.Center
             ) {
+                mapViewModel.loadPortal()
                 var mapScale by remember { mutableIntStateOf(0) }
                 MapView(
                     modifier = Modifier
@@ -131,12 +138,13 @@ fun MainScreen(sampleName: String) {
                         Column(
                             Modifier
                                 .padding(12.dp)
-                                .navigationBarsPadding()) {
+                                .navigationBarsPadding()
+                        ) {
 
-                                BasemapDropdown(mapViewModel)
-                                Spacer(Modifier.size(8.dp))
+                            BasemapDropdown(mapViewModel)
+                            Spacer(Modifier.size(8.dp))
 
-                                LayersDropdown(mapViewModel)
+                            LayersDropdown(mapViewModel)
                             HorizontalDivider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
 
                             Row(
@@ -144,8 +152,9 @@ fun MainScreen(sampleName: String) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text ="Name: ", Modifier.padding(8.dp))
-                                TextField(value = mapViewModel.mapName,
+                                Text(text = "Name: ", Modifier.padding(8.dp))
+                                TextField(
+                                    value = mapViewModel.mapName,
                                     onValueChange = { newName -> mapViewModel.updateName(newName) },
                                     Modifier.width(270.dp)
                                 )
@@ -157,40 +166,52 @@ fun MainScreen(sampleName: String) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text ="Tags: ", Modifier.padding(8.dp))
-                                TextField(value = mapViewModel.mapTags,
-                                    onValueChange = {newTags -> mapViewModel.updateTags(newTags)},
+                                Text(text = "Tags: ", Modifier.padding(8.dp))
+                                TextField(
+                                    value = mapViewModel.mapTags,
+                                    onValueChange = { newTags -> mapViewModel.updateTags(newTags) },
                                     Modifier.width(270.dp)
                                 )
                             }
                             Spacer(Modifier.size(8.dp))
                             FolderDropdown(mapViewModel)
                             Spacer(Modifier.size(8.dp))
-
                             Row(
                                 Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text ="Description: ", Modifier.padding(8.dp))
-                                TextField(value = mapViewModel.mapDescription,
-                                    onValueChange = {newText -> mapViewModel.updateDescription(newText)},
+                                Text(text = "Description: ", Modifier.padding(8.dp))
+                                TextField(
+                                    value = mapViewModel.mapDescription,
+                                    onValueChange = { newText ->
+                                        mapViewModel.updateDescription(
+                                            newText
+                                        )
+                                    },
                                     Modifier.width(270.dp)
                                 )
                             }
                             Spacer(Modifier.size(8.dp))
+                            Button(
+                                modifier = Modifier.align(Alignment.End),
+                                onClick = {
+                                    composableScope.launch {
+                                        mapViewModel.save()
+                                        snackbarHostState.showSnackbar("Map saved to portal")
+//                                    mapViewModel.save().onSuccess {
+//                                        controlsBottomSheetState.hide()
+//                                        snackbarHostState.showSnackbar("Map saved to portal.", withDismissAction = true)
+//                                    }.onFailure { err ->
+//                                        controlsBottomSheetState.hide()
+//                                        snackbarHostState.showSnackbar("Error: ${err.message}", null,withDismissAction = false, SnackbarDuration.Indefinite)
+//                                    }
+                                    }
+                                }) {
+                                Text("Save to account")
+                            }
                         }
                         Spacer(Modifier.size(8.dp))
-                        Button(
-                            onClick = {
-                                composableScope.launch { mapViewModel.save() }
-                                      },
-                            Modifier
-                                .align(Alignment.End)
-                                .padding(vertical = 8.dp, horizontal = 8.dp)
-                        ){
-                            Text("Save to account")
-                        }
                     }
                 }
             }
@@ -201,7 +222,6 @@ fun MainScreen(sampleName: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FolderDropdown(mapViewModel: MapViewModel) {
-    var folders : List<PortalFolder> = listOf()
 
     Row(
         Modifier.fillMaxWidth(),
@@ -218,10 +238,14 @@ fun FolderDropdown(mapViewModel: MapViewModel) {
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
-            var label by remember { mutableStateOf("") }
+            var label by remember {
+                mutableStateOf(
+                    mapViewModel.portalFolder?.title ?: "(No folder)"
+                )
+            }
             TextField(
                 value = label,
-                onValueChange = {label = it},
+                onValueChange = { label = it },
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.menuAnchor()
@@ -231,22 +255,32 @@ fun FolderDropdown(mapViewModel: MapViewModel) {
                 onDismissRequest = { expanded = false },
                 Modifier.padding(vertical = 0.dp)
             ) {
-                folders.forEachIndexed { index, folder ->
-                    DropdownMenuItem(
-                        text = { Text(folder.title) },
-                        onClick = {
-                            mapViewModel.updateFolder(folder)
-                            label = folder.title
-                            expanded = false
-                        })
-                    // show a divider between dropdown menu options
-                    if (index < folders.lastIndex) {
-                        HorizontalDivider()
-                    }
-                }
-
+                val folders by mapViewModel.portalFolders.collectAsState(initial = listOf())
                 if (folders.isEmpty()) {
                     Text("No folders to display", Modifier.padding(8.dp))
+                } else {
+                    DropdownMenuItem(
+                        text = { Text("(No folder)") },
+                        onClick = {
+                            mapViewModel.updateFolder(null)
+                            label = "(No folder)"
+                            expanded = false
+                        }
+                    )
+                    HorizontalDivider()
+                    folders.forEachIndexed { index, folder ->
+                        DropdownMenuItem(
+                            text = { Text(folder.title) },
+                            onClick = {
+                                mapViewModel.updateFolder(folder)
+                                label = folder.title
+                                expanded = false
+                            })
+                        // show a divider between dropdown menu options
+                        if (index < folders.lastIndex) {
+                            HorizontalDivider()
+                        }
+                    }
                 }
             }
         }
@@ -287,8 +321,6 @@ fun BasemapDropdown(
                 Modifier.padding(vertical = 0.dp)
             ) {
 
-                // todo replace keys with something less bad (Like an extension function
-                //  on basemap styles)
                 mapViewModel.stylesMap.keys.toList().forEachIndexed { index, basemapName ->
                     DropdownMenuItem(
                         text = { Text(basemapName) },
@@ -344,14 +376,18 @@ fun LayersDropdown(
                 onDismissRequest = { expanded = false }
             ) {
                 mapViewModel.availableLayers.forEachIndexed { index, layer ->
-                    var checked by mutableStateOf(mapViewModel.arcGISMap.operationalLayers.contains(layer))
+                    var checked by mutableStateOf(
+                        mapViewModel.arcGISMap.operationalLayers.contains(
+                            layer
+                        )
+                    )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(layer.name, Modifier.weight(1f))
                         Checkbox(
-                            checked= checked,
+                            checked = checked,
                             onCheckedChange = {
                                 mapViewModel.updateActiveLayers(layer)
                                 checked = !checked
