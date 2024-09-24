@@ -52,9 +52,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // require use of user credential to load portal
     val portal = Portal("https://www.arcgis.com", Portal.Connection.Authenticated)
 
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-        initialViewpoint = Viewpoint(38.85, -90.2, 1e7)
-    }
+    var arcGISMap by mutableStateOf<ArcGISMap?>(null)
 
     private val _portalFolders = MutableStateFlow<List<PortalFolder>>(listOf())
     val portalFolders = _portalFolders.asStateFlow()
@@ -69,10 +67,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val availableLayers: List<Layer> = listOf(worldElevation, usCensus)
 
     fun updateActiveLayers(layer: Layer) {
-        if (arcGISMap.operationalLayers.contains(layer)) {
-            arcGISMap.operationalLayers.remove(layer)
+        if (arcGISMap?.operationalLayers?.contains(layer) == true) {
+            arcGISMap!!.operationalLayers.remove(layer)
         } else {
-            arcGISMap.operationalLayers.add(layer)
+            arcGISMap?.operationalLayers?.add(layer)
         }
     }
 
@@ -89,8 +87,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun updateBasemapStyle(style: String) {
         basemapStyle = style
 
-        // non-null as list items populated from stylesMap
-        arcGISMap.setBasemap(Basemap(stylesMap[style]!!))
+        // style non-null as list items populated from stylesMap
+        arcGISMap?.setBasemap(Basemap(stylesMap[style]!!))
     }
 
     var mapName by mutableStateOf("My Map")
@@ -120,25 +118,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         portalFolder = folder
     }
 
-    /**
-     * Load portal, then fetch list of folders associated with the user
-     */
-    fun loadPortal() = viewModelScope.launch {
-        portal.load().onSuccess {
-            portal.portalInfo?.apply {
-                this.user?.fetchContent()?.onSuccess {
-                    _portalFolders.value = it.folders
-                }
-            }
-        }
-    }
-
 
     /**
      * Saves the map to a user's account.
      */
     suspend fun save(): Result<Unit> {
-        return arcGISMap.saveAs(
+        return arcGISMap?.saveAs(
             portal,
             description = mapDescription,
             folder = portalFolder,
@@ -146,7 +131,23 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             forceSaveToSupportedVersion = false,
             thumbnail = null,
             title = mapName
-        )
+        ) ?: Result.failure(NullPointerException("Can't save a null map."))
+    }
+
+    init {
+        viewModelScope.launch {
+            portal.load().onSuccess {
+                portal.portalInfo?.apply {
+                    this.user?.fetchContent()?.onSuccess {
+                        _portalFolders.value = it.folders
+                    }
+                }
+
+                arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
+                    initialViewpoint = Viewpoint(38.85, -90.2, 1e7)
+                }
+            }
+        }
     }
 
 

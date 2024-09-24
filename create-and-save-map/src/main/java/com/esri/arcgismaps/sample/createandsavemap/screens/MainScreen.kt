@@ -44,6 +44,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -93,19 +94,22 @@ fun MainScreen(sampleName: String) {
                     .padding(it),
                 contentAlignment = Alignment.Center
             ) {
-                mapViewModel.loadPortal()
                 var mapScale by remember { mutableIntStateOf(0) }
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    // update the map scale in the UI on map scale change
-                    onMapScaleChanged = { currentMapScale ->
-                        if (!currentMapScale.isNaN()) {
-                            mapScale = currentMapScale.roundToInt()
-                        }
-                    },
-                )
+                val map = mapViewModel.arcGISMap
+                if (map != null) {
+                    MapView(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        arcGISMap = map,
+                        // update the map scale in the UI on map scale change
+                        onMapScaleChanged = { currentMapScale ->
+                            if (!currentMapScale.isNaN()) {
+                                mapScale = currentMapScale.roundToInt()
+                            }
+                        },
+                    )
+                }
+
 
                 val controlsBottomSheetState =
                     rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -197,15 +201,21 @@ fun MainScreen(sampleName: String) {
                                 modifier = Modifier.align(Alignment.End),
                                 onClick = {
                                     composableScope.launch {
-                                        mapViewModel.save()
-                                        snackbarHostState.showSnackbar("Map saved to portal")
-//                                    mapViewModel.save().onSuccess {
-//                                        controlsBottomSheetState.hide()
-//                                        snackbarHostState.showSnackbar("Map saved to portal.", withDismissAction = true)
-//                                    }.onFailure { err ->
-//                                        controlsBottomSheetState.hide()
-//                                        snackbarHostState.showSnackbar("Error: ${err.message}", null,withDismissAction = false, SnackbarDuration.Indefinite)
-//                                    }
+                                        mapViewModel.save().onSuccess {
+                                            controlsBottomSheetState.hide()
+                                            snackbarHostState.showSnackbar(
+                                                "Map saved to portal.",
+                                                withDismissAction = true
+                                            )
+                                        }.onFailure { err ->
+                                            controlsBottomSheetState.hide()
+                                            snackbarHostState.showSnackbar(
+                                                "Error: ${err.message}",
+                                                null,
+                                                withDismissAction = true,
+                                                SnackbarDuration.Indefinite
+                                            )
+                                        }
                                     }
                                 }) {
                                 Text("Save to account")
@@ -377,9 +387,9 @@ fun LayersDropdown(
             ) {
                 mapViewModel.availableLayers.forEachIndexed { index, layer ->
                     var checked by mutableStateOf(
-                        mapViewModel.arcGISMap.operationalLayers.contains(
+                        mapViewModel.arcGISMap?.operationalLayers?.contains(
                             layer
-                        )
+                        ) ?: false
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
