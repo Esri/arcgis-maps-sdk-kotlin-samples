@@ -1,0 +1,31 @@
+{
+    "category": "Layers",
+    "description": "Display a file with a KML network link, including displaying any network link control messages at launch.",
+    "formal_name": "AddKmlLayerWithNetworkLinks",
+    "ignore": false,
+    "images": [
+        "add-kml-layer-with-network-links.png"
+    ],
+    "keywords": [
+        "KML",
+        "KMZ",
+        "OGC",
+        "keyhole",
+        "network link",
+        "network link control",
+        "KmlDataset",
+        "KmlLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "KmlDataset",
+        "KmlLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/screens/MainScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayerwithnetworklinks/MainActivity.kt"
+    ],
+    "title": "Add KML layer with network links"
+}
