@@ -40,6 +40,7 @@ import com.arcgismaps.toolkit.authentication.AuthenticatorState
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
+    // set up authenticator state to handle authentication challenges
     val authenticatorState = AuthenticatorState().apply {
         oAuthUserConfiguration = OAuthUserConfiguration(
             portalUrl = "https://www.arcgis.com",
@@ -48,15 +49,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
+    // require use of user credential to load portal
     val portal = Portal("https://www.arcgis.com", Portal.Connection.Authenticated)
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-        initialViewpoint = Viewpoint(40.0, -90.0, 4e7)
+        initialViewpoint = Viewpoint(38.85, -90.2, 1e7)
     }
 
     private val _portalFolders = MutableStateFlow<List<PortalFolder>>(listOf())
     val portalFolders = _portalFolders.asStateFlow()
 
+
+    // load a couple of feature layers
     private val worldElevation =
         ArcGISMapImageLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer")
     private val usCensus =
@@ -72,6 +76,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // associate basemap styles with user-presentable names
     val stylesMap: Map<String, BasemapStyle> = mapOf(
         Pair("Streets", BasemapStyle.ArcGISStreets),
         Pair("Imagery", BasemapStyle.ArcGISImageryStandard),
@@ -95,7 +100,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         mapName = name
     }
 
-    var mapDescription by mutableStateOf("Like a bunch of things and stuff")
+    var mapDescription by mutableStateOf("Enter a description here.")
         private set
 
     fun updateDescription(description: String) {
@@ -115,6 +120,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         portalFolder = folder
     }
 
+    /**
+     * Load portal, then fetch list of folders associated with the user
+     */
     fun loadPortal() = viewModelScope.launch {
         portal.load().onSuccess {
             portal.portalInfo?.apply {
@@ -125,6 +133,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
+    /**
+     * Saves the map to a user's account.
+     */
     suspend fun save(): Result<Unit> {
         return arcGISMap.saveAs(
             portal,
