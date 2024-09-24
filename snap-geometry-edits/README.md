@@ -12,7 +12,7 @@ A field worker can create new features by editing and snapping the vertices of a
 
 To create a geometry, press the create button to choose the geometry type you want to create (i.e. points, multipoints, polyline, or polygon) and interactively tap and drag on the map view to create the geometry.
 
-Snap settings can be configured by enabling and disabling snapping, feature snapping, geometry guides and snap sources.
+Snap settings can be configured by enabling and disabling snapping, feature snapping, geometry guides, and snap sources.
 
 To interactively snap a vertex to a feature or graphic, ensure that snapping is enabled for the relevant snap source and move the map position of the reticle to nearby an existing feature or graphic. When the reticle is close to that existing geoelement, the edit position will be adjusted to coincide with (or snap to), edges and vertices of its geometry. Tap to place the vertex at the snapped location.
 
@@ -34,7 +34,7 @@ To save your edits, press the save button.
 4. Create a `ReticleVertexTool` and set it into the `GeometryEditor.tool`.
 5. Call `syncSourceSettings` after the map's operational layers are loaded and the geometry editor connected to the map view.
 6. Set `SnapSettings.isEnabled` and `SnapSourceSettings.isEnabled` to true for the `SnapSource` of interest.
-7. Toggle geometry guides using `SnapSettings.isGeometryGuidesEnabled` and feature snapping using `SnapSettings.isFeatureSnappingEnabled`.
+7. Enable or disable geometry guides using `SnapSettings.isGeometryGuidesEnabled` and feature snapping using `SnapSettings.isFeatureSnappingEnabled`.
 8. Start the geometry editor with a `GeometryType`.
 
 ## Relevant API
@@ -63,7 +63,7 @@ To snap to polygon and polyline layers, the recommended approach is to set the `
 
 Snapping can be used during interactive edits that move existing vertices using the `VertexTool` or `ReticleVertexTool`. It is also supported for adding new vertices for input devices with a hover event (such as a mouse move without a mouse button press). Using the `ReticleVertexTool` to add and move vertices allows users of touch screen devices to clearly see the visual cues for snapping.
 
-Geometry guides are enabled by default when snapping is enabled. These allow for snapping to a point coinciding with, parallel to, perpendicular to or extending an existing geometry.
+Geometry guides are enabled by default when snapping is enabled. These allow for snapping to a point coinciding with, parallel to, perpendicular to, or extending an existing geometry.
 
 This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
