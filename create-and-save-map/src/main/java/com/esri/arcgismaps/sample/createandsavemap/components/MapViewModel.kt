@@ -44,8 +44,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val authenticatorState = AuthenticatorState().apply {
         oAuthUserConfiguration = OAuthUserConfiguration(
             portalUrl = "https://www.arcgis.com",
-            clientId = "lgAdHkYZYlwwfAhC",
-            redirectUrl = "authenticate-with-oauth://auth"
+            clientId = "InMihrA8yZXBALCv",
+            redirectUrl = "create-save-map://auth"
         )
     }
 
