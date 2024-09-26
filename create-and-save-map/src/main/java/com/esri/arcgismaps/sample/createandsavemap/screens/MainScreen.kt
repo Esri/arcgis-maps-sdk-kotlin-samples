@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
@@ -61,11 +62,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.createandsavemap.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -113,7 +117,7 @@ fun MainScreen(sampleName: String) {
 
                 val controlsBottomSheetState =
                     rememberModalBottomSheetState(skipPartiallyExpanded = true)
-                // show the "Show controls" button only when the bottom sheet is not visible
+                // show the "Edit map" button only when the bottom sheet is not visible
                 if (!controlsBottomSheetState.isVisible) {
                     ExtendedFloatingActionButton(
                         modifier = Modifier
@@ -125,7 +129,7 @@ fun MainScreen(sampleName: String) {
                             }
                         },
                     ) {
-                        Icon(Icons.Filled.Edit, contentDescription = "Do stuff")
+                        Icon(Icons.Filled.Edit, contentDescription = "Edit map button")
                         Spacer(Modifier.padding(8.dp))
                         Text("Edit Map")
                     }
@@ -160,7 +164,8 @@ fun MainScreen(sampleName: String) {
                                 TextField(
                                     value = mapViewModel.mapName,
                                     onValueChange = { newName -> mapViewModel.updateName(newName) },
-                                    Modifier.width(270.dp)
+                                    Modifier.width(270.dp),
+                                    singleLine = true
                                 )
                             }
                             Spacer(Modifier.size(8.dp))
@@ -174,7 +179,8 @@ fun MainScreen(sampleName: String) {
                                 TextField(
                                     value = mapViewModel.mapTags,
                                     onValueChange = { newTags -> mapViewModel.updateTags(newTags) },
-                                    Modifier.width(270.dp)
+                                    Modifier.width(270.dp),
+                                    singleLine = true
                                 )
                             }
                             Spacer(Modifier.size(8.dp))
@@ -193,7 +199,9 @@ fun MainScreen(sampleName: String) {
                                             newText
                                         )
                                     },
-                                    Modifier.width(270.dp)
+                                    Modifier.width(270.dp),
+                                    placeholder = {Text(text = "Enter a description here.")},
+                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                                 )
                             }
                             Spacer(Modifier.size(8.dp))
@@ -201,19 +209,16 @@ fun MainScreen(sampleName: String) {
                                 modifier = Modifier.align(Alignment.End),
                                 onClick = {
                                     composableScope.launch {
+                                        controlsBottomSheetState.hide()
                                         mapViewModel.save().onSuccess {
-                                            controlsBottomSheetState.hide()
                                             snackbarHostState.showSnackbar(
                                                 "Map saved to portal.",
                                                 withDismissAction = true
                                             )
                                         }.onFailure { err ->
-                                            controlsBottomSheetState.hide()
-                                            snackbarHostState.showSnackbar(
-                                                "Error: ${err.message}",
-                                                null,
-                                                withDismissAction = true,
-                                                SnackbarDuration.Indefinite
+                                            mapViewModel.messageDialogVM.showMessageDialog(
+                                                "Error",
+                                                err.message.toString()
                                             )
                                         }
                                     }
@@ -223,6 +228,15 @@ fun MainScreen(sampleName: String) {
                         }
                         Spacer(Modifier.size(8.dp))
                     }
+                }
+            }
+            mapViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
                 }
             }
         })

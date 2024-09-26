@@ -37,6 +37,7 @@ import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.portal.PortalFolder
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -98,7 +99,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         mapName = name
     }
 
-    var mapDescription by mutableStateOf("Enter a description here.")
+    var mapDescription by mutableStateOf("")
         private set
 
     fun updateDescription(description: String) {
@@ -117,6 +118,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun updateFolder(folder: PortalFolder?) {
         portalFolder = folder
     }
+
+    val messageDialogVM = MessageDialogViewModel()
 
 
     /**
@@ -146,6 +149,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
                     initialViewpoint = Viewpoint(38.85, -90.2, 1e7)
                 }
+
+                worldElevation.load()
+                usCensus.load()
             }
         }
     }
