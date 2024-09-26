@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.createandsavemap.screens
 
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.StateFlow
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +46,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -66,15 +66,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.layers.Layer
+import com.arcgismaps.portal.PortalFolder
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.createandsavemap.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-
-/**
- * Main screen layout for the sample app
- */
 
 /**
  * Main screen layout for the sample app
@@ -84,9 +83,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
+
     val composableScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -100,6 +99,8 @@ fun MainScreen(sampleName: String) {
             ) {
                 var mapScale by remember { mutableIntStateOf(0) }
                 val map = mapViewModel.arcGISMap
+
+                // map view not shown until the portal is loaded and a basemap has been set
                 if (map != null) {
                     MapView(
                         modifier = Modifier
@@ -114,7 +115,6 @@ fun MainScreen(sampleName: String) {
                     )
                 }
 
-
                 val controlsBottomSheetState =
                     rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 // show the "Edit map" button only when the bottom sheet is not visible
@@ -127,13 +127,14 @@ fun MainScreen(sampleName: String) {
                             composableScope.launch {
                                 controlsBottomSheetState.show()
                             }
-                        },
-                    ) {
+                        })
+                    {
                         Icon(Icons.Filled.Edit, contentDescription = "Edit map button")
                         Spacer(Modifier.padding(8.dp))
                         Text("Edit Map")
                     }
                 }
+
                 if (controlsBottomSheetState.isVisible) {
                     ModalBottomSheet(
                         modifier = Modifier.wrapContentHeight(),
@@ -142,17 +143,26 @@ fun MainScreen(sampleName: String) {
                             composableScope.launch {
                                 controlsBottomSheetState.hide()
                             }
-                        }) {
+                        }
+                    ) {
                         Column(
                             Modifier
                                 .padding(12.dp)
                                 .navigationBarsPadding()
                         ) {
-
-                            BasemapDropdown(mapViewModel)
+                            BasemapDropdown(
+                                mapViewModel.basemapStyle,
+                                mapViewModel.stylesMap,
+                                mapViewModel::updateBasemapStyle
+                            )
                             Spacer(Modifier.size(8.dp))
 
-                            LayersDropdown(mapViewModel)
+                            LayersDropdown(
+                                mapViewModel.availableLayers,
+                                mapViewModel.arcGISMap,
+                                mapViewModel::updateActiveLayers
+                            )
+
                             HorizontalDivider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
 
                             Row(
@@ -184,8 +194,14 @@ fun MainScreen(sampleName: String) {
                                 )
                             }
                             Spacer(Modifier.size(8.dp))
-                            FolderDropdown(mapViewModel)
+
+                            FolderDropdown(
+                                mapViewModel.portalFolder,
+                                mapViewModel.portalFolders,
+                                mapViewModel::updateFolder
+                            )
                             Spacer(Modifier.size(8.dp))
+
                             Row(
                                 Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -200,16 +216,20 @@ fun MainScreen(sampleName: String) {
                                         )
                                     },
                                     Modifier.width(270.dp),
-                                    placeholder = {Text(text = "Enter a description here.")},
+                                    placeholder = { Text(text = "Enter a description here.") },
                                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                                 )
                             }
                             Spacer(Modifier.size(8.dp))
+
                             Button(
                                 modifier = Modifier.align(Alignment.End),
                                 onClick = {
                                     composableScope.launch {
+                                        // dismiss bottom sheet immediately
                                         controlsBottomSheetState.hide()
+
+                                        // report success in a snack bar, failure in a popup
                                         mapViewModel.save().onSuccess {
                                             snackbarHostState.showSnackbar(
                                                 "Map saved to portal.",
@@ -230,6 +250,8 @@ fun MainScreen(sampleName: String) {
                     }
                 }
             }
+
+            // message dialog can draw over all other content in the main screen
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
@@ -239,13 +261,20 @@ fun MainScreen(sampleName: String) {
                     )
                 }
             }
-        })
-
+        }
+    )
 }
 
+/**
+ * Composable function to display portal folder dropdown in the bottom sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FolderDropdown(mapViewModel: MapViewModel) {
+fun FolderDropdown(
+    currentFolder: PortalFolder?,
+    portalFolders: StateFlow<List<PortalFolder>>,
+    updateFolder: (PortalFolder?) -> Unit
+) {
 
     Row(
         Modifier.fillMaxWidth(),
@@ -264,7 +293,7 @@ fun FolderDropdown(mapViewModel: MapViewModel) {
         ) {
             var label by remember {
                 mutableStateOf(
-                    mapViewModel.portalFolder?.title ?: "(No folder)"
+                    currentFolder?.title ?: "(No folder)"
                 )
             }
             TextField(
@@ -279,14 +308,14 @@ fun FolderDropdown(mapViewModel: MapViewModel) {
                 onDismissRequest = { expanded = false },
                 Modifier.padding(vertical = 0.dp)
             ) {
-                val folders by mapViewModel.portalFolders.collectAsState(initial = listOf())
+                val folders by portalFolders.collectAsState(initial = listOf())
                 if (folders.isEmpty()) {
                     Text("No folders to display", Modifier.padding(8.dp))
                 } else {
                     DropdownMenuItem(
                         text = { Text("(No folder)") },
                         onClick = {
-                            mapViewModel.updateFolder(null)
+                            updateFolder(null)
                             label = "(No folder)"
                             expanded = false
                         }
@@ -296,7 +325,7 @@ fun FolderDropdown(mapViewModel: MapViewModel) {
                         DropdownMenuItem(
                             text = { Text(folder.title) },
                             onClick = {
-                                mapViewModel.updateFolder(folder)
+                                updateFolder(folder)
                                 label = folder.title
                                 expanded = false
                             })
@@ -311,11 +340,15 @@ fun FolderDropdown(mapViewModel: MapViewModel) {
     }
 }
 
-
+/**
+ * Composable function to display basemap dropdown in the bottom sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasemapDropdown(
-    mapViewModel: MapViewModel
+    basemapStyle: String,
+    stylesNameMap: Map<String, BasemapStyle>,
+    updateBasemapStyle: (String) -> Unit
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -333,7 +366,7 @@ fun BasemapDropdown(
             onExpandedChange = { expanded = !expanded }
         ) {
             TextField(
-                value = mapViewModel.basemapStyle,
+                value = basemapStyle,
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -345,15 +378,15 @@ fun BasemapDropdown(
                 Modifier.padding(vertical = 0.dp)
             ) {
 
-                mapViewModel.stylesMap.keys.toList().forEachIndexed { index, basemapName ->
+                stylesNameMap.keys.toList().forEachIndexed { index, basemapName ->
                     DropdownMenuItem(
                         text = { Text(basemapName) },
                         onClick = {
-                            mapViewModel.updateBasemapStyle(basemapName)
+                            updateBasemapStyle(basemapName)
                             expanded = false
                         })
                     // show a divider between dropdown menu options
-                    if (index < mapViewModel.stylesMap.keys.toList().lastIndex) {
+                    if (index < stylesNameMap.keys.toList().lastIndex) {
                         HorizontalDivider()
                     }
                 }
@@ -362,10 +395,16 @@ fun BasemapDropdown(
     }
 }
 
+/**
+ * Composable function to display active layers dropdown in the bottom sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LayersDropdown(
-    mapViewModel: MapViewModel
+    availableLayers: List<Layer>,
+    arcGISMap: ArcGISMap?,
+    updateActiveLayers: (Layer) -> Unit
+
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -382,11 +421,6 @@ fun LayersDropdown(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
-            // Todo can this text be updated in real time?
-            /*val numLayersSelected = when(mapViewModel.arcGISMap.operationalLayers.size){
-                0 -> "Select..."
-                else -> "${mapViewModel.arcGISMap.operationalLayers.size} selected"
-            }*/
 
             TextField(
                 value = "Select...",
@@ -399,11 +433,10 @@ fun LayersDropdown(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                mapViewModel.availableLayers.forEachIndexed { index, layer ->
-                    var checked by mutableStateOf(
-                        mapViewModel.arcGISMap?.operationalLayers?.contains(
-                            layer
-                        ) ?: false
+                availableLayers.forEachIndexed { index, layer ->
+                    var checked by
+                    mutableStateOf(
+                        arcGISMap?.operationalLayers?.contains(layer) ?: false
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -413,13 +446,13 @@ fun LayersDropdown(
                         Checkbox(
                             checked = checked,
                             onCheckedChange = {
-                                mapViewModel.updateActiveLayers(layer)
+                                updateActiveLayers(layer)
                                 checked = !checked
                             }
                         )
                     }
                     // show a divider between dropdown menu options
-                    if (index < mapViewModel.availableLayers.lastIndex) {
+                    if (index < availableLayers.lastIndex) {
                         HorizontalDivider()
                     }
                 }

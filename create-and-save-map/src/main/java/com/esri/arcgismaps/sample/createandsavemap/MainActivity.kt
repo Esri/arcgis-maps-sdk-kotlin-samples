@@ -24,8 +24,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.createandsavemap.screens.MainScreen
 import com.arcgismaps.toolkit.authentication.DialogAuthenticator
@@ -53,6 +51,8 @@ class MainActivity : ComponentActivity() {
                 sampleName = getString(R.string.app_name)
             )
         }
+
+        // authenticator at bottom can draw over the top of the sample
         DialogAuthenticator(authenticatorState = mapViewModel.authenticatorState)
     }
 }

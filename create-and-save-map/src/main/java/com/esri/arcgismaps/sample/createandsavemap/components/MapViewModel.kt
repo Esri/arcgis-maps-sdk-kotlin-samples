@@ -41,6 +41,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
+    // view model to handle popup dialogs
+    val messageDialogVM = MessageDialogViewModel()
+
     // set up authenticator state to handle authentication challenges
     val authenticatorState = AuthenticatorState().apply {
         oAuthUserConfiguration = OAuthUserConfiguration(
@@ -53,8 +56,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // require use of user credential to load portal
     val portal = Portal("https://www.arcgis.com", Portal.Connection.Authenticated)
 
+    // map only set non-null once user is authenticated
     var arcGISMap by mutableStateOf<ArcGISMap?>(null)
 
+    // folders on portal associated with the authenticated user
     private val _portalFolders = MutableStateFlow<List<PortalFolder>>(listOf())
     val portalFolders = _portalFolders.asStateFlow()
 
@@ -64,8 +69,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         ArcGISMapImageLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer")
     private val usCensus =
         ArcGISMapImageLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer")
-
     val availableLayers: List<Layer> = listOf(worldElevation, usCensus)
+
+    // associate basemap styles with friendly names
+    val stylesMap: Map<String, BasemapStyle> = mapOf(
+        Pair("Streets", BasemapStyle.ArcGISStreets),
+        Pair("Imagery", BasemapStyle.ArcGISImageryStandard),
+        Pair("Topographic", BasemapStyle.ArcGISTopographic),
+        Pair("Oceans", BasemapStyle.ArcGISOceans)
+    )
+
+    // properties hoisted from UI bottom sheet
+
+    var basemapStyle by mutableStateOf("Streets")
+        private set
+
+    fun updateBasemapStyle(style: String) {
+        basemapStyle = style
+
+        // style is non-null, as this function is called from dropdown populated from stylesMap
+        arcGISMap?.setBasemap(Basemap(stylesMap[style]!!))
+    }
 
     fun updateActiveLayers(layer: Layer) {
         if (arcGISMap?.operationalLayers?.contains(layer) == true) {
@@ -75,35 +99,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // associate basemap styles with user-presentable names
-    val stylesMap: Map<String, BasemapStyle> = mapOf(
-        Pair("Streets", BasemapStyle.ArcGISStreets),
-        Pair("Imagery", BasemapStyle.ArcGISImageryStandard),
-        Pair("Topographic", BasemapStyle.ArcGISTopographic),
-        Pair("Oceans", BasemapStyle.ArcGISOceans)
-    )
-    var basemapStyle by mutableStateOf("Streets")
-        private set
-
-    fun updateBasemapStyle(style: String) {
-        basemapStyle = style
-
-        // style non-null as list items populated from stylesMap
-        arcGISMap?.setBasemap(Basemap(stylesMap[style]!!))
-    }
-
     var mapName by mutableStateOf("My Map")
         private set
 
     fun updateName(name: String) {
         mapName = name
-    }
-
-    var mapDescription by mutableStateOf("")
-        private set
-
-    fun updateDescription(description: String) {
-        mapDescription = description
     }
 
     var mapTags by mutableStateOf("map, census, layers")
@@ -119,8 +119,36 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         portalFolder = folder
     }
 
-    val messageDialogVM = MessageDialogViewModel()
+    var mapDescription by mutableStateOf("")
+        private set
 
+    fun updateDescription(description: String) {
+        mapDescription = description
+    }
+
+    init {
+        viewModelScope.launch {
+            portal.load().onSuccess {
+                // when the user has successfully authenticated and the portal is loaded...
+
+                // populate the portal folders flow
+                portal.portalInfo?.apply {
+                    this.user?.fetchContent()?.onSuccess {
+                        _portalFolders.value = it.folders
+                    }
+                }
+
+                // load the streets basemap and set an initial viewpoint
+                arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
+                    initialViewpoint = Viewpoint(38.85, -90.2, 1e7)
+                }
+
+                // load operational layers
+                worldElevation.load()
+                usCensus.load()
+            }
+        }
+    }
 
     /**
      * Saves the map to a user's account.
@@ -135,25 +163,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             thumbnail = null,
             title = mapName
         ) ?: Result.failure(NullPointerException("Can't save a null map."))
-    }
-
-    init {
-        viewModelScope.launch {
-            portal.load().onSuccess {
-                portal.portalInfo?.apply {
-                    this.user?.fetchContent()?.onSuccess {
-                        _portalFolders.value = it.folders
-                    }
-                }
-
-                arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-                    initialViewpoint = Viewpoint(38.85, -90.2, 1e7)
-                }
-
-                worldElevation.load()
-                usCensus.load()
-            }
-        }
     }
 
 
