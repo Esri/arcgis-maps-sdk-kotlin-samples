@@ -2,7 +2,7 @@
 
 Create and save a map as a web map item to an ArcGIS portal.
 
-![Image of create and save map](create-save-map.png)
+![Image of create and save map](create-and-save-map.png)
 
 ## Use case
 
@@ -26,6 +26,10 @@ When you run the sample, you will be challenged for an ArcGIS Online login. Ente
 * ArcGISMap
 * Portal
 
+## Additional information
+
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+
 ## Tags
 
-ArcGIS Online, ArcGIS Pro, portal, publish, share, web map
+ArcGIS Online, ArcGIS Pro, geoviewcompose, portal, publish, share, web map

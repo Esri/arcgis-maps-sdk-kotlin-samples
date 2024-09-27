@@ -37,6 +37,7 @@ import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.portal.PortalFolder
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
+import com.esri.arcgismaps.sample.createandsavemap.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
@@ -47,17 +48,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // set up authenticator state to handle authentication challenges
     val authenticatorState = AuthenticatorState().apply {
         oAuthUserConfiguration = OAuthUserConfiguration(
-            portalUrl = "https://www.arcgis.com",
-            clientId = "InMihrA8yZXBALCv",
-            redirectUrl = "create-save-map://auth"
+            portalUrl = application.getString(R.string.portal_url),
+            clientId = application.getString(R.string.client_id),
+            redirectUrl = application.getString(R.string.redirect_url)
         )
     }
 
     // require use of user credential to load portal
-    val portal = Portal("https://www.arcgis.com", Portal.Connection.Authenticated)
+    private val portal = Portal("https://www.arcgis.com", Portal.Connection.Authenticated)
 
-    // map only set non-null once user is authenticated
-    var arcGISMap by mutableStateOf<ArcGISMap?>(null)
+    // update displayed map once user is authenticated
+    var arcGISMap by mutableStateOf(ArcGISMap())
 
     // folders on portal associated with the authenticated user
     private val _portalFolders = MutableStateFlow<List<PortalFolder>>(listOf())
@@ -81,21 +82,23 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // properties hoisted from UI bottom sheet
 
-    var basemapStyle by mutableStateOf("Streets")
+    var selectedBasemapStyle by mutableStateOf("Streets")
         private set
 
     fun updateBasemapStyle(style: String) {
-        basemapStyle = style
+        selectedBasemapStyle = style
 
-        // style is non-null, as this function is called from dropdown populated from stylesMap
-        arcGISMap?.setBasemap(Basemap(stylesMap[style]!!))
+        // update map to display selected basemap style
+        arcGISMap.setBasemap(Basemap(stylesMap.getValue(selectedBasemapStyle)))
     }
 
     fun updateActiveLayers(layer: Layer) {
-        if (arcGISMap?.operationalLayers?.contains(layer) == true) {
-            arcGISMap!!.operationalLayers.remove(layer)
-        } else {
-            arcGISMap?.operationalLayers?.add(layer)
+        arcGISMap.operationalLayers.apply {
+            if (contains(layer)) {
+                remove(layer)
+            } else {
+                add(layer)
+            }
         }
     }
 
@@ -146,6 +149,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 // load operational layers
                 worldElevation.load()
                 usCensus.load()
+            }.onFailure {
+                // login was cancelled or failed to authenticate
+                messageDialogVM.showMessageDialog(
+                    application.getString(R.string.createAndSaveMap_failedToLoadPortal),
+                    it.message.toString()
+                )
             }
         }
     }
@@ -154,7 +163,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * Saves the map to a user's account.
      */
     suspend fun save(): Result<Unit> {
-        return arcGISMap?.saveAs(
+        return arcGISMap.saveAs(
             portal,
             description = mapDescription,
             folder = portalFolder,
@@ -162,7 +171,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             forceSaveToSupportedVersion = false,
             thumbnail = null,
             title = mapName
-        ) ?: Result.failure(NullPointerException("Can't save a null map."))
+        )
     }
 
 
