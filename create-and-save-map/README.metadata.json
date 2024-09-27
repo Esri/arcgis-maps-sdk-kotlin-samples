@@ -9,6 +9,7 @@
   "keywords": [
     "ArcGIS Online",
     "ArcGIS Pro",
+    "geoviewcompose",
     "portal",
     "publish",
     "share",
@@ -29,4 +30,3 @@
   ],
   "title": "Create and save map"
 }
-
