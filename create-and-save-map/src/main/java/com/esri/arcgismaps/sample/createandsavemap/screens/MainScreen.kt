@@ -128,7 +128,7 @@ fun MainScreen(sampleName: String) {
                 BottomSheetScaffold(
                     modifier = Modifier.wrapContentHeight(),
                     scaffoldState = controlsBottomSheetState,
-                    sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp.times(0.3f),
+                    sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp.times(0.33f),
                     sheetContent = {
                         Column(
                             Modifier
