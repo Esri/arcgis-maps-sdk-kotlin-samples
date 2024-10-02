@@ -65,7 +65,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val portalFolders = _portalFolders.asStateFlow()
 
 
-    // load a couple of feature layers
+    // define a couple of feature layers to be loaded
     private val worldElevation =
         ArcGISMapImageLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer")
     private val usCensus =
