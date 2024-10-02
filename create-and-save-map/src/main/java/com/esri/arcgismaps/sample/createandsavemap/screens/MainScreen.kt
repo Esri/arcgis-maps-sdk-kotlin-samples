@@ -194,8 +194,8 @@ fun CreateMapBottomSheet(
 ) {
 
     Column(
-        modifier = Modifier.padding(vertical = 8.dp), // For spacing top and bottom Composables in this Column
-        verticalArrangement = Arrangement.spacedBy(8.dp) // For spacing between Composables in this Column
+        modifier = Modifier.padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = "Choose map settings:",
@@ -330,7 +330,6 @@ fun BasemapDropdown(
     updateBasemapStyle: (String) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-
 
     ExposedDropdownMenuBox(
         modifier = Modifier.fillMaxWidth(),
