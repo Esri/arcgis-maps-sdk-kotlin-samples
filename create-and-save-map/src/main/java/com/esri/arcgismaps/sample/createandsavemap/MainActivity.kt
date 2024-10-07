@@ -23,17 +23,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.ArcGISEnvironment
 
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.createandsavemap.screens.MainScreen
 import com.arcgismaps.toolkit.authentication.DialogAuthenticator
+import com.arcgismaps.toolkit.authentication.signOut
 import com.esri.arcgismaps.sample.createandsavemap.components.MapViewModel
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // This sample uses an ArcGIS Online login to be able to save a map as an ArcGIS portal item
+        // No need for license strings or an API key
+        ArcGISEnvironment.apiKey = null
 
+        // Sign out of any portals which are already authenticated
+        runBlocking {
+            ArcGISEnvironment.authenticationManager.signOut()
+        }
         setContent {
             SampleAppTheme {
                 SampleApp()
