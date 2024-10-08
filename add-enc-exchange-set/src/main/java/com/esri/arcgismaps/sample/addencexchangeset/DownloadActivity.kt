@@ -28,9 +28,9 @@ class DownloadActivity : DownloaderActivity() {
             // get the app name of the sample
             getString(R.string.app_name),
             listOf(
-                // Portal item containing hydrography resources
+                // ArcGIS Portal item containing ENC hydrography resources
                 "https://www.arcgis.com/home/item.html?id=5028bf3513ff4c38b28822d010a4937c",
-                // Portal item containing the ENC dataset
+                // ArcGIS Portal item containing the ENC dataset
                 "https://www.arcgis.com/home/item.html?id=9d2987a825c646468b3ce7512fb76e2d"
             )
 

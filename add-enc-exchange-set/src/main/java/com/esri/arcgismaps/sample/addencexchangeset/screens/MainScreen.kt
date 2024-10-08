@@ -36,7 +36,6 @@ fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel = MapViewModel(application)
 
-
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {

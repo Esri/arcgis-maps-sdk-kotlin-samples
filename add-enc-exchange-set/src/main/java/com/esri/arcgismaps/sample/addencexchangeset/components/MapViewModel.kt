@@ -32,61 +32,67 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.EncLayer
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addencexchangeset.R
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.io.path.Path
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
-    var viewpoint = mutableStateOf(viewpointAmerica)
-    val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISOceans).apply {
-        initialViewpoint = viewpoint.value
-    })
-    lateinit var completeExtent: Envelope
-    val mapViewProxy = MapViewProxy()
-
-
-    val encEnvironmentSettings: EncEnvironmentSettings = EncEnvironmentSettings
-
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(R.string.app_name)
     }
 
-    val encResourcesPath = provisionPath + File.separator + "hydrography"
-    val encDataPath = provisionPath + File.separator + "ExchangeSetwithoutUpdates/ENC_ROOT/CATALOG.031"
-    val encExchangeSet = EncExchangeSet(listOf(encDataPath))
+    // Paths to ENC data and hydrology resources
+    private val encResourcesPath = provisionPath + application.getString(R.string.enc_res_dir)
+    private val encDataPath = provisionPath + application.getString(R.string.enc_data_dir)
 
-    //val encData
+    // Create an ENC exchange set from the local ENC data
+    private val encExchangeSet = EncExchangeSet(listOf(encDataPath))
+    private val encEnvironmentSettings: EncEnvironmentSettings = EncEnvironmentSettings
+
+    // Envelope for setting map view, to be initialised from extent of ENC layers
+    private lateinit var completeExtent: Envelope
+
+    // Create a map with the oceans basemap style
+    val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISOceans))
+    // Create a map view proxy for handling updates to the map view
+    val mapViewProxy = MapViewProxy()
+    // Create a message dialog view model for handling error messages
+    val messageDialogVM = MessageDialogViewModel()
 
     init {
+        // provide ENC environment with location of ENC resources and configure SENC caching location
         encEnvironmentSettings.resourcePath = encResourcesPath
         encEnvironmentSettings.sencDataPath = application.externalCacheDir?.path
-        Path(encResourcesPath).toFile().listFiles()?.forEach { file: File? ->
-            println(file)
-        }
+
         viewModelScope.launch {
             encExchangeSet.load().onSuccess {
                 encExchangeSet.datasets.forEach { encDataset ->
+
+                    // create a layer for each ENC dataset and add it to the map
                     val encCell = EncCell(encDataset)
                     val encLayer = EncLayer(encCell)
                     arcGISMap.operationalLayers.add(encLayer)
+
                     encLayer.load().onSuccess {
                         val extent = encLayer.fullExtent
-
-                        // Do I smell? I smell home cooking.
                         extent?.let {
-                            if (!::completeExtent.isInitialized) {
-                                completeExtent = extent
-                            } else {
-                                // if geometry engine operation successful, update the extent
-                                completeExtent = GeometryEngine.combineExtentsOrNull(completeExtent, extent) ?: completeExtent
+                            // initialise, or update, the extent of all ENC layers
+                            completeExtent = when(::completeExtent.isInitialized){
+                                // use previous value if geometry engine fails to combine extents
+                                true -> GeometryEngine.combineExtentsOrNull(completeExtent, extent) ?: completeExtent
+                                false -> extent
                             }
-                            mapViewProxy.setViewpoint(Viewpoint(completeExtent))
                         }
+                    }.onFailure { err ->
+                        messageDialogVM.showMessageDialog("Error loading ENC layer", err.message.toString())
                     }
                 }
+
+                // set the viewpoint to the extent bounding all ENC layers
+                mapViewProxy.setViewpoint(Viewpoint(completeExtent))
+            }.onFailure { err ->
+                messageDialogVM.showMessageDialog("Error loading ENC exchange set", err.message.toString())
             }
         }
-
     }
 }

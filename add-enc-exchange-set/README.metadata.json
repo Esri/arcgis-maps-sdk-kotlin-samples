@@ -1,2 +1,36 @@
 {
+    "category": "Layers",
+    "description": "Display nautical charts per the ENC specification.",
+    "formal_name": "AddEncExchangeSet",
+    "ignore": false,
+    "images": [
+        "add-enc-exchange-set.png"
+    ],
+    "keywords": [
+        "ENC",
+        "data",
+        "hydrographic",
+        "layers",
+        "maritime",
+        "nautical chart",
+        "EncCell",
+        "EncDataset",
+        "EncExchangeSet",
+        "EncLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "EncCell",
+        "EncDataset",
+        "EncExchangeSet",
+        "EncLayer"
+    ],
+    "snippets": [
+        "/src/main/java/com/esri/arcgismaps/sample/addencexchangeset/MainActivity.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/addencexchangeset/DownloadActivity.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/addencexchangeset/components/MapViewModel.kt",
+        "/src/main/java/com/esri/arcgismaps/sample/addencexchangeset/screens/MainScreen.kt"
+    ],
+    "title": "Add ENC exchange set"
 }
