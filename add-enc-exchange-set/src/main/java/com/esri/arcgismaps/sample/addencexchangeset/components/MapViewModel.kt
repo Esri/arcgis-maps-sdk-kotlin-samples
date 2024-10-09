@@ -30,7 +30,6 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.EncLayer
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.addencexchangeset.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
@@ -49,13 +48,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val encExchangeSet = EncExchangeSet(listOf(encDataPath))
     private val encEnvironmentSettings: EncEnvironmentSettings = EncEnvironmentSettings
 
-    // Envelope for setting map view, to be initialised from extent of ENC layers
-    private lateinit var completeExtent: Envelope
-
     // Create a map with the oceans basemap style
     val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISOceans))
-    // Create a map view proxy for handling updates to the map view
-    val mapViewProxy = MapViewProxy()
+
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
@@ -66,33 +61,49 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             encExchangeSet.load().onSuccess {
-                encExchangeSet.datasets.forEach { encDataset ->
 
+                // set the map's viewpoint to the combined extent of all datasets in the exchange set
+                arcGISMap.initialViewpoint = encExchangeSet.maxExtentOrNull()?.let {
+                    extent -> Viewpoint(extent)
+                }
+
+                encExchangeSet.datasets.forEach { encDataset ->
                     // create a layer for each ENC dataset and add it to the map
                     val encCell = EncCell(encDataset)
                     val encLayer = EncLayer(encCell)
                     arcGISMap.operationalLayers.add(encLayer)
 
-                    encLayer.load().onSuccess {
-                        val extent = encLayer.fullExtent
-                        extent?.let {
-                            // initialise, or update, the extent of all ENC layers
-                            completeExtent = when(::completeExtent.isInitialized){
-                                // use previous value if geometry engine fails to combine extents
-                                true -> GeometryEngine.combineExtentsOrNull(completeExtent, extent) ?: completeExtent
-                                false -> extent
-                            }
-                        }
-                    }.onFailure { err ->
-                        messageDialogVM.showMessageDialog("Error loading ENC layer", err.message.toString())
+                    encLayer.load().onFailure { err ->
+                        messageDialogVM.showMessageDialog(
+                            "Error loading ENC layer",
+                            err.message.toString()
+                        )
                     }
                 }
-
-                // set the viewpoint to the extent bounding all ENC layers
-                mapViewProxy.setViewpoint(Viewpoint(completeExtent))
             }.onFailure { err ->
-                messageDialogVM.showMessageDialog("Error loading ENC exchange set", err.message.toString())
+                messageDialogVM.showMessageDialog(
+                    "Error loading ENC exchange set",
+                    err.message.toString()
+                )
             }
         }
     }
+}
+
+/**
+ * Get the combined extent of every dataset in the exchange set.
+ */
+fun EncExchangeSet.maxExtentOrNull() : Envelope? {
+    var maxExtent : Envelope? = null
+
+    datasets.forEach{dataset ->
+        if (maxExtent == null) {
+            maxExtent = dataset.extent
+        }
+
+        if (maxExtent != null && dataset.extent != null){
+            maxExtent = GeometryEngine.combineExtentsOrNull(maxExtent!!, dataset.extent!!) ?: maxExtent
+        }
+    }
+    return maxExtent
 }
