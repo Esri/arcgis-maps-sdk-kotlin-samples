@@ -17,8 +17,6 @@
 package com.esri.arcgismaps.sample.addencexchangeset.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Envelope
@@ -51,7 +49,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val encEnvironmentSettings: EncEnvironmentSettings = EncEnvironmentSettings
 
     // Create a map with the oceans basemap style
-    val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISOceans))
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
