@@ -37,7 +37,9 @@ import java.io.File
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(R.string.app_name)
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
+            R.string.app_name
+        )
     }
 
     // Paths to ENC data and hydrology resources
@@ -63,8 +65,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             encExchangeSet.load().onSuccess {
 
                 // set the map's viewpoint to the combined extent of all datasets in the exchange set
-                arcGISMap.initialViewpoint = encExchangeSet.maxExtentOrNull()?.let {
-                    extent -> Viewpoint(extent)
+                arcGISMap.initialViewpoint = encExchangeSet.extentOrNull()?.let { extent ->
+                    Viewpoint(extent)
                 }
 
                 encExchangeSet.datasets.forEach { encDataset ->
@@ -93,17 +95,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 /**
  * Get the combined extent of every dataset in the exchange set.
  */
-fun EncExchangeSet.maxExtentOrNull() : Envelope? {
-    var maxExtent : Envelope? = null
+private fun EncExchangeSet.extentOrNull(): Envelope? {
+    var extent: Envelope? = null
 
-    datasets.forEach{dataset ->
-        if (maxExtent == null) {
-            maxExtent = dataset.extent
+    datasets.forEach { dataset ->
+        if (extent == null) {
+            extent = dataset.extent
         }
 
-        if (maxExtent != null && dataset.extent != null){
-            maxExtent = GeometryEngine.combineExtentsOrNull(maxExtent!!, dataset.extent!!) ?: maxExtent
+        if (extent != null && dataset.extent != null){
+            // update the combined extent of the exchange set if geometry engine returns non-null
+            extent = GeometryEngine.combineExtentsOrNull(extent!!, dataset.extent!!) ?: extent
         }
     }
-    return maxExtent
+    return extent
 }
