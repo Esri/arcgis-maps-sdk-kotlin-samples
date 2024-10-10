@@ -24,8 +24,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.toolkit.authentication.signOut
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.showportaluserinfo.screens.MainScreen
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
@@ -34,6 +36,11 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
+
+        // Sign out of any portals which are already authenticated
+        runBlocking {
+            ArcGISEnvironment.authenticationManager.signOut()
+        }
 
         setContent {
             SampleAppTheme {
