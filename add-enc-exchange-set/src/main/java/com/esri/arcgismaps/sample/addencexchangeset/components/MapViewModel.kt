@@ -51,22 +51,24 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val encExchangeSet = EncExchangeSet(listOf(encDataPath))
     private val encEnvironmentSettings: EncEnvironmentSettings = EncEnvironmentSettings
 
-    // Create a map with the oceans basemap style
+    // Create an empty map, to be updated once ENC data is loaded
     var arcGISMap by mutableStateOf(ArcGISMap())
 
     // Create a message dialog view model for handling error messages
-    val messageDialogVM = MessageDialogViewModel()
+    private val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // provide ENC environment with location of ENC resources and configure SENC caching location
+        // Provide ENC environment with location of ENC resources and configure SENC caching location
         encEnvironmentSettings.resourcePath = encResourcesPath
         encEnvironmentSettings.sencDataPath = application.externalCacheDir?.path
 
         viewModelScope.launch {
             encExchangeSet.load().onSuccess {
 
-                // set the map's viewpoint to the combined extent of all datasets in the exchange set
+                // Calculate the combined extent of all datasets in the exchange set
                 val exchangeSetExtent: Envelope? = encExchangeSet.extentOrNull()
+
+                // Set the map to the oceans basemap style, and viewpoint to the exchange set extent
                 arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans).apply {
                     exchangeSetExtent?.let {
                     initialViewpoint = Viewpoint(exchangeSetExtent)
@@ -74,7 +76,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 encExchangeSet.datasets.forEach { encDataset ->
-                    // create a layer for each ENC dataset and add it to the map
+                    // Create a layer for each ENC dataset and add it to the map
                     val encCell = EncCell(encDataset)
                     val encLayer = EncLayer(encCell)
                     arcGISMap.operationalLayers.add(encLayer)
@@ -108,7 +110,7 @@ private fun EncExchangeSet.extentOrNull(): Envelope? {
         }
 
         if (extent != null && dataset.extent != null) {
-            // update the combined extent of the exchange set if geometry engine returns non-null
+            // Update the combined extent of the exchange set if geometry engine returns non-null
             extent = GeometryEngine.combineExtentsOrNull(extent!!, dataset.extent!!) ?: extent
         }
     }
