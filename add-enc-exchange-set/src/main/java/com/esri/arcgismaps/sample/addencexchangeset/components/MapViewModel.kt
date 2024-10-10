@@ -17,6 +17,9 @@
 package com.esri.arcgismaps.sample.addencexchangeset.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Envelope
@@ -49,7 +52,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val encEnvironmentSettings: EncEnvironmentSettings = EncEnvironmentSettings
 
     // Create a map with the oceans basemap style
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans)
+    var arcGISMap by mutableStateOf(ArcGISMap())
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -63,8 +66,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             encExchangeSet.load().onSuccess {
 
                 // set the map's viewpoint to the combined extent of all datasets in the exchange set
-                arcGISMap.initialViewpoint = encExchangeSet.extentOrNull()?.let { extent ->
-                    Viewpoint(extent)
+                val exchangeSetExtent: Envelope? = encExchangeSet.extentOrNull()
+                arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans).apply {
+                    exchangeSetExtent?.let {
+                    initialViewpoint = Viewpoint(exchangeSetExtent)
+                    }
                 }
 
                 encExchangeSet.datasets.forEach { encDataset ->
@@ -101,7 +107,7 @@ private fun EncExchangeSet.extentOrNull(): Envelope? {
             extent = dataset.extent
         }
 
-        if (extent != null && dataset.extent != null){
+        if (extent != null && dataset.extent != null) {
             // update the combined extent of the exchange set if geometry engine returns non-null
             extent = GeometryEngine.combineExtentsOrNull(extent!!, dataset.extent!!) ?: extent
         }
