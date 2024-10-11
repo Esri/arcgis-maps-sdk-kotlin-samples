@@ -1,0 +1,13 @@
+<resources>
+    <string name="geocode_offline_app_name">Geocode offline</string>
+    <string name="tap_map">Search for an address or tap on the map</string>
+    <string name="san_diego_loc">/SanDiego_StreetAddress.loc</string>
+    <string name="address_geocode_offline_search_hint">Enter address</string>
+    <string-array name="suggestion_items">
+        <item>910 N Harbor Dr, San Diego, CA 92101</item>
+        <item>2920 Zoo Dr, San Diego, CA 92101</item>
+        <item>111 W Harbor Dr, San Diego, CA 92101</item>
+        <item>868 4th Ave, San Diego, CA 92101</item>
+        <item>750 A St, San Diego, CA 92101</item>
+    </string-array>
+</resources>

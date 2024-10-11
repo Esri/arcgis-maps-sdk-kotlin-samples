@@ -1,0 +1,5 @@
+<resources>
+    <string name="show_geodesic_path_between_two_points_app_name">Show geodesic path between two points</string>
+    <string name="tap_to_begin">Tap to begin</string>
+    <string name="distance_info_text">Distance: %1d kilometers</string>
+</resources>

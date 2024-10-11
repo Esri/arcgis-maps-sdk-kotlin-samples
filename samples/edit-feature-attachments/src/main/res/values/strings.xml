@@ -1,0 +1,17 @@
+<resources>
+    <string name="edit_feature_attachments_app_name">Edit feature attachments</string>
+
+    <!-- Messages -->
+    <string name="delete_query">Are you sure you want to delete the attachment?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="failure_edit_results">Server did not return edit results</string>
+
+    <!-- Feature Service URL -->
+    <string name="edit_feature_attachments_sample_service_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/DamageAssessment/FeatureServer/0</string>
+    <string name="attachment_click">attachment_click</string>
+    <string name="edit_attachments">Edit attachments</string>
+    <string name="done">Done</string>
+    <string name="add_attachment">Add attachment</string>
+    <string name="provider_authority">com.esri.arcgismaps.sample.editfeatureattachments.provider</string>
+</resources>

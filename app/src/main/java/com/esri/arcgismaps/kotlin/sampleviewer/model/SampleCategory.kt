@@ -1,0 +1,52 @@
+package com.esri.arcgismaps.kotlin.sampleviewer.model
+
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+
+/**
+ * This enum class holds the name of each Sample Category
+ */
+@Serializable
+enum class SampleCategory(val text: String) {
+    ANALYSIS("Analysis"),
+    AUGMENTED_REALITY("Augmented Reality"),
+    CLOUD_AND_PORTAL("Cloud and Portal"),
+    LAYERS("Layers"),
+    EDIT_AND_MANAGE_DATA("Edit and Manage Data"),
+    MAPS("Maps"),
+    SCENES("Scenes"),
+    ROUTING_AND_LOGISTICS("Routing and Logistics"),
+    UTILITY_NETWORKS("Utility Networks"),
+    SEARCH_AND_QUERY("Search and Query"),
+    VISUALIZATION("Visualization"),
+    FAVORITES("Favorites");
+
+    // Return title of each sample in String type
+    override fun toString(): String {
+        return text
+    }
+
+    companion object {
+        fun toEnum(categoryString: String): SampleCategory {
+            return entries.firstOrNull {it.text == categoryString}!!
+        }
+    }
+}
+
+object SampleCategorySerializer : KSerializer<SampleCategory> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SampleCategory", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): SampleCategory {
+        val value = decoder.decodeString()
+        return SampleCategory.toEnum(value)
+    }
+
+    override fun serialize(encoder: Encoder, value: SampleCategory) {
+        encoder.encodeString(value.text)
+    }
+}

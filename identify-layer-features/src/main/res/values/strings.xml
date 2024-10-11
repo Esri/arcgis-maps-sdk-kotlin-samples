@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">Identify layer features</string>
-    <string name="damage_assessment">
-        https://sampleserver6.arcgisonline.com/arcgis/rest/services/DamageAssessment/FeatureServer/0
-    </string>
-    <string name="world_cities">
-        https://sampleserver6.arcgisonline.com/arcgis/rest/services/SampleWorldCities/MapServer
-    </string>
-</resources>
