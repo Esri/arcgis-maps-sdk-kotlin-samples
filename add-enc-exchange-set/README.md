@@ -38,4 +38,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
-geoviewcompose, data, ENC, hydrographic, layers, maritime, nautical chart
+data, ENC, geoviewcompose, hydrographic, layers, maritime, nautical chart
