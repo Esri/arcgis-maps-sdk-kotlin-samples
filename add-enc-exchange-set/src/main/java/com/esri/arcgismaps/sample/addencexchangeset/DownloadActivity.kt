@@ -33,7 +33,6 @@ class DownloadActivity : DownloaderActivity() {
                 // ArcGIS Portal item containing the ENC dataset
                 "https://www.arcgis.com/home/item.html?id=9d2987a825c646468b3ce7512fb76e2d"
             )
-
         )
     }
 }

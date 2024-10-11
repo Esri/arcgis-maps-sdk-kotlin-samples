@@ -55,7 +55,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var arcGISMap by mutableStateOf(ArcGISMap())
 
     // Create a message dialog view model for handling error messages
-    private val messageDialogVM = MessageDialogViewModel()
+    val messageDialogVM = MessageDialogViewModel()
 
     init {
         // Provide ENC environment with location of ENC resources and configure SENC caching location
@@ -71,7 +71,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 // Set the map to the oceans basemap style, and viewpoint to the exchange set extent
                 arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans).apply {
                     exchangeSetExtent?.let {
-                    initialViewpoint = Viewpoint(exchangeSetExtent)
+                        initialViewpoint = Viewpoint(exchangeSetExtent)
                     }
                 }
 

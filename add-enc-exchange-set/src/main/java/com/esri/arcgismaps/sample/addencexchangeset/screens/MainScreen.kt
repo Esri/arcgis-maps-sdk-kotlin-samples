@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addencexchangeset.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -43,6 +44,15 @@ fun MainScreen(sampleName: String) {
                     .padding(it),
                 arcGISMap = mapViewModel.arcGISMap,
             )
+            mapViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
+            }
         }
     )
 }

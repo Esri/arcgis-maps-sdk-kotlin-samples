@@ -32,6 +32,10 @@ Run the sample and view the ENC data. Pan and zoom around the map. Take note of 
 
 This sample downloads the [ENC Exchange Set without updates](https://www.arcgis.com/home/item.html?id=9d2987a825c646468b3ce7512fb76e2d) and [Hydrography dataset resources](https://www.arcgis.com/home/item.html?id=5028bf3513ff4c38b28822d010a4937c) from ArcGIS Online.
 
+## Additional information
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
+
 ## Tags
 
-data, ENC, hydrographic, layers, maritime, nautical chart
+geoviewcompose, data, ENC, hydrographic, layers, maritime, nautical chart
+
