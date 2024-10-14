@@ -5,7 +5,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -17,18 +16,14 @@ interface SampleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(samples: List<SampleEntity>)
 
-    /**
-     * Flow is used here to observe any live changes to the samplesDB
-     */
-    @Query("SELECT rowid, name, codeFile, readMe, relevantAPIs FROM samplesDB")
-    fun fetchItems(): Flow<List<SampleEntity>>
-
+    // In support of ranked search.
     @Query(
         """SELECT name, codeFile, readMe, relevantAPIs, MATCHINFO(samplesDB, 'pcnalx') FROM samplesDB 
         WHERE samplesDB MATCH :query"""
     )
     fun matchInfoSearch(query: String): Cursor
 
+    // In support of search suggestions.
     @Query(
         """SELECT rowid, name, codeFile, readMe, relevantAPIs FROM samplesDB
         WHERE LOWER(name)       LIKE LOWER('%' || :searchQuery || '%' )

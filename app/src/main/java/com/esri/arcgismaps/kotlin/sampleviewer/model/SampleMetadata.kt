@@ -8,16 +8,15 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class SampleMetadata(
-    @SerialName(value = "formal_name") val formalName: String,
-    @SerialName(value = "images") val imagePaths: List<String>,
-    @SerialName(value = "relevant_apis") val relevantApis: List<String>,
     @Serializable(with = SampleCategorySerializer::class)
-    @SerialName(value = "category") val sampleCategory: SampleCategory,
-    @SerialName(value = "redirectFrom") val redirectFrom: List<String>? = emptyList(),
+    @SerialName("category") val sampleCategory: SampleCategory,
     val description: String,
+    @SerialName("formal_name") val formalName: String,
     val ignore: Boolean?,
+    @SerialName("images") val imagePaths: List<String>,
     val keywords: List<String>,
     val language: String?,
-    val snippets: List<String>,
+    @SerialName("relevant_apis") val relevantApis: List<String>,
+    @SerialName("snippets") val codePaths: List<String>,
     val title: String
 )

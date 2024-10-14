@@ -17,7 +17,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.FavoritesViewModel
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 
 /**
- * Shows Search Results based on valid query searches
+ * Shows search results based on valid query searches.
  */
 @Composable
 fun SearchResults(searchQuery: String, navController: NavController) {
@@ -28,7 +28,6 @@ fun SearchResults(searchQuery: String, navController: NavController) {
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
     val searchViewModel: SampleSearchViewModel = viewModel<SampleSearchViewModel>()
     searchViewModel.rankedSearch(searchQuery)
-    // List of samples results ranked with using the searchQuery
     val rankedSearchResults by searchViewModel.rankedSearchResults.collectAsState()
 
     Scaffold(

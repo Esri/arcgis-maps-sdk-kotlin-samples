@@ -23,7 +23,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchResults
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchScreen
 
 /**
- *  A composable function to host the navigation system
+ *  A composable function to host the navigation system.
  */
 @Composable
 fun NavGraph() {

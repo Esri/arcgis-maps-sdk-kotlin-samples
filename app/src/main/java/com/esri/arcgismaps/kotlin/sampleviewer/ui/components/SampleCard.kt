@@ -53,18 +53,18 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
  * A reusable component to hold each sample information and its contents
  */
 @Composable
-fun SampleCardItem(
+fun SampleRow(
     sample: Sample,
     dropdownSampleItems: List<DropdownItemData>
 ) {
     val context = LocalContext.current
     Column(Modifier.clickable { sample.startSample(context) }) {
-        TitleAndIconsRow(sample, dropdownSampleItems)
+        TitleAndIcons(sample, dropdownSampleItems)
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TitleAndIconsRow(
+private fun TitleAndIcons(
     sample: Sample,
     dropdownSampleItems: List<DropdownItemData>
 ) {
@@ -80,7 +80,7 @@ private fun TitleAndIconsRow(
             .padding(horizontal = 8.dp),
     ) {
         Text(
-            text = sample.metadata.title,
+            text = sample.name,
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 16.dp),
@@ -183,10 +183,10 @@ private fun ExpandedDescriptionAnimation(
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun PreviewSampleCardItem() {
+fun PreviewSampleRow() {
     SampleAppTheme {
         val dropdownItemData = listOf<DropdownItemData>()
-        SampleCardItem(
+        SampleRow(
             Sample(
                 name = "Analyze hotspots",
                 codeFiles = listOf(
@@ -198,16 +198,15 @@ fun PreviewSampleCardItem() {
                 readMe = "",
                 screenshotURL = "",
                 metadata = SampleMetadata(
+                    codePaths = listOf(""),
                     description = "",
                     formalName = "Analyze hotspots",
                     ignore = false,
                     imagePaths = listOf(""),
                     keywords = listOf(""),
                     language = "",
-                    redirectFrom = listOf(""),
                     relevantApis = listOf(""),
                     sampleCategory = SampleCategory.ANALYSIS,
-                    snippets = listOf(""),
                     title = "Analyze hotspots"
                 ),
                 isFavorite = false,

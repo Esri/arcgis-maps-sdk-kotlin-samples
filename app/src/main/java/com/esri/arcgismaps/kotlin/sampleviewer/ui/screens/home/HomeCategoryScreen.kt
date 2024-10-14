@@ -55,11 +55,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CardItem
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
 import kotlinx.coroutines.delay
 
 /**
- * Showcase list of categories for all samples
+ * Shows list of categories for all samples.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,19 +78,16 @@ fun HomeCategoryScreen(navController: NavController) {
                 if (available.y < -1) {
                     isVisible.value = false
                 }
-
                 // Show FAB
                 if (available.y > 1) {
                     isVisible.value = true
                 }
-
                 return Offset.Zero
             }
         }
     }
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     navBackStackEntry.value?.destination?.route
-
     Scaffold(
         topBar = {
             HomeCategoryTopAppBar(application, scrollBehavior, navController)
@@ -116,7 +113,6 @@ fun HomeCategoryScreen(navController: NavController) {
         ) {
             var visibleItems by remember { mutableIntStateOf(0) }
             val items = getGridItems()
-
             // Simulate the animation delay
             LaunchedEffect(Unit) {
                 items.forEachIndexed { index, _ ->
@@ -124,7 +120,6 @@ fun HomeCategoryScreen(navController: NavController) {
                     visibleItems = index + 1
                 }
             }
-
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Adaptive(150.dp),
                 horizontalArrangement = Arrangement.spacedBy(spacing),
@@ -155,37 +150,12 @@ fun HomeCategoryScreen(navController: NavController) {
                             animationSpec = tween(durationMillis = 400)
                         )
                     ) {
-                        CardItem(item) {
+                        CategoryCard(item) {
                             navController.navigate("${R.string.sampleList_section}/category=${item.title}")
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun SearchFloatingActionButton(
-    isVisible: MutableState<Boolean>,
-    application: Application,
-    navController: NavController
-) {
-    AnimatedVisibility(
-        visible = isVisible.value,
-        enter = slideInVertically(initialOffsetY = { it * 2 }),
-        exit = slideOutVertically(targetOffsetY = { it * 2 }),
-    ) {
-        FloatingActionButton(
-            onClick = { navController.navigate(R.string.search_section.toString()) },
-            shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.onSecondary
-        ) {
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = application.getString(R.string.search_FAB_text)
-            )
         }
     }
 }
@@ -226,6 +196,31 @@ private fun HomeCategoryTopAppBar(
             }
         }
     )
+}
+
+@Composable
+private fun SearchFloatingActionButton(
+    isVisible: MutableState<Boolean>,
+    application: Application,
+    navController: NavController
+) {
+    AnimatedVisibility(
+        visible = isVisible.value,
+        enter = slideInVertically(initialOffsetY = { it * 2 }),
+        exit = slideOutVertically(targetOffsetY = { it * 2 }),
+    ) {
+        FloatingActionButton(
+            onClick = { navController.navigate(R.string.search_section.toString()) },
+            shape = CircleShape,
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
+        ) {
+            Icon(
+                Icons.Filled.Search,
+                contentDescription = application.getString(R.string.search_FAB_text)
+            )
+        }
+    }
 }
 
 fun getGridItems(): List<Category> {

@@ -12,9 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 
 /**
- * SampleViewer WebViewer to display formatted README.md and .kt code files.
+ * WebViewer to display formatted .kt code files.
  */
-
 @Composable
 fun CodeView(code: String) {
     val isDeviceInDarkMode = isSystemInDarkTheme()
@@ -28,7 +27,7 @@ fun CodeView(code: String) {
                 /* baseUrl = */ "file:///android_asset/www/highlight/",
                 /* data = */ formatWebViewHTMLContent(
                     rawFileContents = code,
-                    sampleWebViewType = SampleWebViewType.CODEVIEW,
+                    webViewType = WebViewType.CODE_VIEW,
                     isDeviceInDarkMode = isDeviceInDarkMode
                 ),
                 /* mimeType = */ "text/html",
@@ -39,8 +38,11 @@ fun CodeView(code: String) {
     )
 }
 
+/**
+ * WebViewer to display README.md files.
+ */
 @Composable
-fun MarkdownTextView(
+fun ReadmeView(
     markdownText: String
 ) {
     val isDeviceInDarkMode = isSystemInDarkTheme()
@@ -54,7 +56,7 @@ fun MarkdownTextView(
                     /* baseUrl = */ "file:///android_asset/www/highlight/",
                     /* data = */ formatWebViewHTMLContent(
                         rawFileContents = markdownText,
-                        sampleWebViewType = SampleWebViewType.README,
+                        webViewType = WebViewType.README_VIEW,
                         isDeviceInDarkMode = isDeviceInDarkMode
                     ),
                     /* mimeType = */ "text/html",
@@ -68,14 +70,14 @@ fun MarkdownTextView(
 
 /**
  * Set up the HTML [String] to be displayed based on the given [rawFileContents]
- * given the [sampleWebViewType]
+ * given the [webViewType].
  */
 fun formatWebViewHTMLContent(
     rawFileContents: String,
-    sampleWebViewType: SampleWebViewType,
+    webViewType: WebViewType,
     isDeviceInDarkMode: Boolean
 ): String {
-    val webViewHTML = if (sampleWebViewType == SampleWebViewType.README) {
+    val webViewHTML = if (webViewType == WebViewType.README_VIEW) {
         readmeHTML.replace("\\(content)", rawFileContents)
     } else {
         if (!isDeviceInDarkMode) {
@@ -90,7 +92,7 @@ fun formatWebViewHTMLContent(
 }
 
 /**
- * Create the [WebView] using the default settings to load the static html
+ * Create the [WebView] using the default settings to load the static html.
  */
 @SuppressLint("SetJavaScriptEnabled")
 fun createWebView(context: Context): WebView {
@@ -104,6 +106,7 @@ fun createWebView(context: Context): WebView {
     }
 }
 
+// TODO -- Can the below be removed?
 // Default JS object interface. This could be used to support line highlighting
 // or display dialog/toast messages.
 object AndroidJSInterface {
@@ -115,9 +118,9 @@ object AndroidJSInterface {
      */
 }
 
-enum class SampleWebViewType {
-    README,
-    CODEVIEW
+enum class WebViewType {
+    README_VIEW,
+    CODE_VIEW
 }
 
 val codeViewHTML: String = """
