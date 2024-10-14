@@ -7,7 +7,7 @@
     <string name="search_section">Search</string>
     <string name="app_version">App Version</string>
     <string name="SDK_version">SDK Version</string>
-    <string name="copyright_text">Copyright © 2015–2022 Esri.\nAll Rights Reserved.</string>
+    <string name="copyright_text">Copyright © 2015–2024 Esri.\nAll Rights Reserved.</string>
     <string name="about_title">ArcGIS Maps SDK Sample Viewer</string>
     <string name="powered_by">Powered By</string>
     <string name="ArcGIS_Maps_SDK_Toolkit">ArcGIS Maps SDK Toolkit for Android</string>

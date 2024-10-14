@@ -36,7 +36,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleCardItem
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleRow
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.FavoritesViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 /**
- * Used to hold and show the list of samples depending on the clicked category card
+ * Shows the list of samples.
  */
 @Composable
 fun SampleListScreen(
@@ -58,7 +58,7 @@ fun SampleListScreen(
     val favoriteSamplesFlow = remember { viewModel.getFavorites() }
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
     val category = SampleCategory.toEnum(categoryNavEntry)
-    val samplesList = DefaultSampleInfoRepository.getSamplesIn(category)
+    val samplesList = DefaultSampleInfoRepository.getSamplesInCategory(category)
 
     Scaffold(
         topBar = {
@@ -155,7 +155,7 @@ fun ListOfSamplesScreen(
                     )
                 )
 
-                SampleCardItem(
+                SampleRow(
                     sample = sample,
                     dropdownSampleItems = dropdownSampleItems
                 )

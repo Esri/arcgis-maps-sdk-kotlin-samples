@@ -23,8 +23,6 @@ fun SampleViewerTopAppBar(
     context: Context
 ) {
 
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     TopAppBar(
         title = {
             Text(
@@ -36,7 +34,7 @@ fun SampleViewerTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
-        scrollBehavior = scrollBehavior,
+        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState()),
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() })
             {

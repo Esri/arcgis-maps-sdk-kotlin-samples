@@ -8,7 +8,9 @@ import androidx.room.TypeConverters
 import com.esri.arcgismaps.kotlin.sampleviewer.model.CodeFile
 
 /**
- * Define the structure of the Database records
+ * Define the structure of the Database records. The first column and the primary key is an integer
+ * rowid, which is a requirement of FTS4 tables. The other columns are the fields of the [Sample]
+ * class.
  */
 @Fts4
 @Entity(tableName = "samplesDB")

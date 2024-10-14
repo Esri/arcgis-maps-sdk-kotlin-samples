@@ -45,12 +45,11 @@ import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CodeView
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.MarkdownTextView
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.ReadmeView
 
 /**
- * This class shows both ReadMe and Code Previews for each sample
+ * Shows both README and Code for each sample.
  */
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodePagerScreen(
@@ -68,7 +67,6 @@ fun CodePagerScreen(
         for (codeFile in sample.codeFiles) {
             codePagerTitles.add(codeFile.name)
         }
-
         Scaffold(
             topBar = {
                 CodePagerTopAppBar(
@@ -89,112 +87,9 @@ fun CodePagerScreen(
                     .clip(shape = MaterialTheme.shapes.extraLarge)
                     .padding(innerPadding)
             ) {
-                CodeFileViewer(codePagerTitles, sample, optionPosition)
+                CodePageView(codePagerTitles, sample, optionPosition)
             }
         }
-    }
-}
-
-@Composable
-private fun CodeFileViewer(
-    codePagerTitles: List<String>,
-    sampleData: Sample,
-    optionPosition: Int
-) {
-    var selectedFileIndex by remember { mutableIntStateOf(optionPosition) }
-    // TODO: Subject to change to use a tabbed view #4568
-    Column {
-        CodePagerBar(selectedFileIndex, codePagerTitles, onFileClicked = {
-            selectedFileIndex = it
-        })
-        if (codePagerTitles[selectedFileIndex].contains(".md")) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                // TODO, should we render this screenshot URL? #4563
-                //val screenshotURL by remember { mutableStateOf("${sampleData?.screenshotURL}") }
-                val markdownText by remember { mutableStateOf(sampleData.readMe) }
-                MarkdownTextView(markdownText = markdownText)
-            }
-        } else {
-            CodeView(
-                code = sampleData.codeFiles
-                    .find {
-                        it.name == codePagerTitles[selectedFileIndex]
-                    }.let {
-                        it?.code ?: ""
-                    }
-            )
-        }
-    }
-}
-
-@Composable
-fun CodePagerBar(selectedFileIndex: Int, fileList: List<String>, onFileClicked: (Int) -> Unit) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    Box(modifier = Modifier
-        .clickable { expanded = true }
-        .fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CodeViewerFile(title = fileList[selectedFileIndex], iconId = getIconId(fileList[selectedFileIndex]))
-            Icon(
-                imageVector = Icons.Outlined.ArrowDropDown,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-        DropdownMenu(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
-            expanded = expanded,
-            onDismissRequest = { expanded = false }) {
-            fileList.forEachIndexed { index, file ->
-                DropdownMenuItem(modifier = Modifier.background(MaterialTheme.colorScheme.surface),
-                    text = {
-                        CodeViewerFile(title = file, iconId = getIconId(file))
-                    }, onClick = {
-                        onFileClicked(index)
-                        expanded = false
-                    })
-            }
-        }
-    }
-}
-
-fun getIconId(selectedFile: String): Int {
-    return when (selectedFile.lowercase().contains(".kt")) {
-        true -> R.drawable.ic_kotlin
-        else -> R.drawable.ic_readme
-    }
-}
-
-@Composable
-fun CodeViewerFile(title: String, iconId: Int) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-    ) {
-        Icon(
-            painter = painterResource(
-                id = iconId
-            ),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
@@ -226,4 +121,105 @@ private fun CodePagerTopAppBar(
             }
         },
     )
+}
+
+@Composable
+fun CodePagerBar(selectedFileIndex: Int, fileList: List<String>, onFileClicked: (Int) -> Unit) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    Box(modifier = Modifier
+        .clickable { expanded = true }
+        .fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CodePageRow(title = fileList[selectedFileIndex], iconId = getIconId(fileList[selectedFileIndex]))
+            Icon(
+                imageVector = Icons.Outlined.ArrowDropDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        DropdownMenu(
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+            expanded = expanded,
+            onDismissRequest = { expanded = false }) {
+            fileList.forEachIndexed { index, file ->
+                DropdownMenuItem(modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+                    text = {
+                        CodePageRow(title = file, iconId = getIconId(file))
+                    }, onClick = {
+                        onFileClicked(index)
+                        expanded = false
+                    })
+            }
+        }
+    }
+}
+
+@Composable
+fun CodePageRow(title: String, iconId: Int) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+    ) {
+        Icon(
+            painter = painterResource(
+                id = iconId
+            ),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun CodePageView(
+    codePagerTitles: List<String>,
+    sampleData: Sample,
+    optionPosition: Int
+) {
+    var selectedFileIndex by remember { mutableIntStateOf(optionPosition) }
+    // TODO: Subject to change to use a tabbed view #4568
+    Column {
+        CodePagerBar(selectedFileIndex, codePagerTitles, onFileClicked = {
+            selectedFileIndex = it
+        })
+        if (codePagerTitles[selectedFileIndex].contains(".md")) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // TODO, should we render this screenshot URL? #4563
+                //val screenshotURL by remember { mutableStateOf("${sampleData?.screenshotURL}") }
+                val markdownText by remember { mutableStateOf(sampleData.readMe) }
+                ReadmeView(markdownText = markdownText)
+            }
+        } else {
+            CodeView(
+                code = sampleData.codeFiles
+                    .find {
+                        it.name == codePagerTitles[selectedFileIndex]
+                    }.let {
+                        it?.code ?: ""
+                    }
+            )
+        }
+    }
+}
+
+fun getIconId(selectedFile: String): Int {
+    return when (selectedFile.lowercase().contains(".kt")) {
+        true -> R.drawable.ic_kotlin
+        else -> R.drawable.ic_readme
+    }
 }
