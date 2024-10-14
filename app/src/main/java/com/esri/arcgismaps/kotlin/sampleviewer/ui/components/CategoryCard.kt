@@ -54,7 +54,7 @@ fun CardItem(
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.spacedBy(12.dp,Alignment.CenterVertically)
             ) {
                 IconWithBackgroundCircle(category)
                 Text(
@@ -62,7 +62,7 @@ fun CardItem(
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.wrapContentSize(Alignment.Center),
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
         }
@@ -74,7 +74,7 @@ private fun IconWithBackgroundCircle(item: Category) {
     Box(
         Modifier
             .background(
-                Color.Black,
+                Color.Black.copy(alpha = 0.8f),
                 shape = CircleShape
             )
             .padding(8.dp)
@@ -100,7 +100,7 @@ private fun BackgroundImageBox(item: Category) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.4f))
+            .background(Color.Black.copy(alpha = 0.6f))
     )
 }
 

@@ -2,7 +2,6 @@ package com.esri.arcgismaps.kotlin.sampleviewer.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -11,11 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
@@ -62,6 +59,7 @@ fun SampleCardItem(
         TitleAndIconsRow(sample, dropdownSampleItems)
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TitleAndIconsRow(
@@ -77,16 +75,20 @@ private fun TitleAndIconsRow(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .padding(horizontal = 8.dp),
+            .padding(start = 16.dp)
     ) {
-        Text(
-            text = sample.metadata.title,
+        Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(vertical = 16.dp),
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+                .padding(vertical = 16.dp)
+        ) {
+            Text(
+                text = sample.metadata.title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            ExpandedDescriptionAnimation(expandedDescription, sample)
+        }
 
         IconButton(onClick = { expandedDescription = !expandedDescription }) {
             Icon(
@@ -97,9 +99,7 @@ private fun TitleAndIconsRow(
         }
 
         Column {
-            IconButton(
-                onClick = { expandedMenu = !expandedMenu },
-            ) {
+            IconButton(onClick = { expandedMenu = !expandedMenu }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "More options",
@@ -111,23 +111,23 @@ private fun TitleAndIconsRow(
                     .height(IntrinsicSize.Max)
                     .background(MaterialTheme.colorScheme.surfaceContainer),
                 expanded = expandedMenu,
-                onDismissRequest = { expandedMenu = false },
+                onDismissRequest = { expandedMenu = false }
             ) {
                 dropdownSampleItems.forEach { option ->
                     DropdownMenuItem(
                         text = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    space = 8.dp,
+                                    alignment = Alignment.CenterHorizontally
+                                )
                             ) {
                                 Icon(
                                     painter = painterResource(id = option.icon),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = option.title,
                                     style = MaterialTheme.typography.bodyMedium,
@@ -136,7 +136,7 @@ private fun TitleAndIconsRow(
                             }
                         },
                         onClick = {
-                            expandedMenu = option.title.lowercase() == "favorite" || option.title.lowercase() == "unfavorite"
+                            expandedMenu = option.title.lowercase().contains("favorite")
                             option.onClick()
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -145,8 +145,6 @@ private fun TitleAndIconsRow(
             }
         }
     }
-
-    ExpandedDescriptionAnimation(expandedDescription, sample)
 }
 
 @Composable
@@ -157,23 +155,17 @@ private fun ExpandedDescriptionAnimation(
     AnimatedVisibility(
         visible = expandedDescription,
         enter = expandVertically(),
-        exit = shrinkVertically(
-            animationSpec = tween(
-                durationMillis = 1000
-            )
-        )
+        exit = shrinkVertically()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, bottom = 8.dp, end = 32.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
             Text(
                 text = sample.metadata.description,
                 textAlign = TextAlign.Start,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
             )
         }
@@ -189,11 +181,7 @@ fun PreviewSampleCardItem() {
         SampleCardItem(
             Sample(
                 name = "Analyze hotspots",
-                codeFiles = listOf(
-                    CodeFile(
-                        "", ""
-                    )
-                ),
+                codeFiles = listOf(CodeFile("", "")),
                 url = "",
                 readMe = "",
                 screenshotURL = "",

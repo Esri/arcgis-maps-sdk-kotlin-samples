@@ -52,9 +52,7 @@ fun SampleListScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-
     val viewModel: FavoritesViewModel = viewModel()
-
     val favoriteSamplesFlow = remember { viewModel.getFavorites() }
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
     val category = SampleCategory.toEnum(categoryNavEntry)
@@ -62,7 +60,10 @@ fun SampleListScreen(
 
     Scaffold(
         topBar = {
-            SampleViewerTopAppBar(navController, category.text, context)
+            SampleViewerTopAppBar(
+                title = category.text,
+                onBackPressed = { navController.popBackStack() }
+            )
         },
         modifier = Modifier
             .fillMaxSize(),
@@ -105,11 +106,7 @@ fun ListOfSamplesScreen(
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainer)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(start = 20.dp)
-                .animateContentSize()
-        ) {
+        LazyColumn(modifier = Modifier.animateContentSize()) {
             itemsIndexed(samples) { index, sample ->
                 val isFavorite = favoriteSamples?.contains(sample) == true
                 val readMePosition = 0
@@ -159,12 +156,10 @@ fun ListOfSamplesScreen(
                     sample = sample,
                     dropdownSampleItems = dropdownSampleItems
                 )
+
+                // Add divider if not the last item
                 if (index < samples.size - 1) {
-                    HorizontalDivider(
-                        Modifier
-                            .padding(end = 20.dp)
-                            .background(MaterialTheme.colorScheme.onPrimary)
-                    ) // Add divider if not the last item
+                    HorizontalDivider()
                 }
             }
         }
@@ -209,7 +204,6 @@ private fun FavoriteItemsListScreen(
     }
 }
 
-// This is not inside the model package because it is not decided yet if it is a final choice to be used
 data class DropdownItemData(
     val title: String,
     val icon: Int,

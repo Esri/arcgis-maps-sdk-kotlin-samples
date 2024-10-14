@@ -1,14 +1,6 @@
 package com.esri.arcgismaps.kotlin.sampleviewer.navigation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,8 +38,9 @@ fun NavGraph() {
             route = "${R.string.sampleList_section}/category={category}",
             arguments = listOf(navArgument("category") { type = NavType.StringType })
         ) { backStackEntry ->
-            val categoryNavEntry = backStackEntry.arguments?.getString("category") ?: ""
-            SampleListScreen(categoryNavEntry, navController)
+            val categoryNavEntry = backStackEntry.arguments?.getString("category")
+            if (!categoryNavEntry.isNullOrEmpty())
+                SampleListScreen(categoryNavEntry, navController)
         }
 
         composable(
@@ -57,48 +50,31 @@ fun NavGraph() {
                 navArgument("sampleName") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val optionPositionNavEntry = backStackEntry.arguments?.getInt("optionPosition") ?: 0
-            val sampleNameNavEntry = backStackEntry.arguments?.getString("sampleName") ?: ""
-            CodePagerScreen(
-                onBackPressed = { navController.popBackStack() },
-                optionPosition = optionPositionNavEntry,
-                sampleName = sampleNameNavEntry
-            )
+            val optionPositionNavEntry = backStackEntry.arguments?.getInt("optionPosition")
+            val sampleNameNavEntry = backStackEntry.arguments?.getString("sampleName")
+
+            if (optionPositionNavEntry != null && !sampleNameNavEntry.isNullOrEmpty())
+                CodePagerScreen(
+                    onBackPressed = { navController.popBackStack() },
+                    optionPosition = optionPositionNavEntry,
+                    sampleName = sampleNameNavEntry
+                )
         }
 
         composable(R.string.search_section.toString()) {
-            EnterAnimation {
-                SearchScreen(
-                    navController = navController)
-            }
+            SearchScreen(navController = navController)
         }
 
         composable(
             route = "${R.string.searchResults_section}/query={query}",
             arguments = listOf(navArgument("query") { type = NavType.StringType })
         ) { backStackEntry ->
-                val queryNavEntry = backStackEntry.arguments?.getString("query") ?: ""
-            SearchResults(
-                searchQuery = queryNavEntry,
-                navController = navController)
+            val queryNavEntry = backStackEntry.arguments?.getString("query")
+            if (!queryNavEntry.isNullOrEmpty())
+                SearchResults(
+                    searchQuery = queryNavEntry,
+                    navController = navController
+                )
         }
-    }
-}
-
-@Composable
-fun EnterAnimation(content: @Composable () -> Unit) {
-    val transitionState = remember { MutableTransitionState(false) }
-    transitionState.targetState = true
-    AnimatedVisibility(
-        visibleState = transitionState,
-        enter = slideInVertically(
-            initialOffsetY = { fullHeight -> fullHeight } // slide in from the bottom
-        ) + fadeIn(initialAlpha = 0.3f), // fade-in effect
-        exit = slideOutVertically(
-            targetOffsetY = { fullHeight -> fullHeight } // slide out to the bottom
-        ) + fadeOut(), // fade-out effect
-        modifier = Modifier
-    ) {
-        content()
     }
 }

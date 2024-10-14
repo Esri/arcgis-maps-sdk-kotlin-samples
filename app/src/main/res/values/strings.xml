@@ -24,7 +24,6 @@
     <string name="upcoming_samples_text">Samples in this category will be added in a future release</string>
     <string name="no_favorites_text">No favorite samples added yet!</string>
     <string name="backButton">Back button</string>
-
     <string name="search_hint_sample_viewer">Search samples</string>
     <string name="card_background">Card background</string>
     <string name="card_icon">Card icon</string>
@@ -35,11 +34,7 @@
     <string name="source_code">Source Code</string>
     <string name="cancel">Cancel</string>
     <string name="about_build">Built from version:</string>
-    <string name="read_permission_required">The sample viewer required read permission in order to read local files from
-        the device
-    </string>
+    <string name="read_permission_required">The sample viewer required read permission in order to read local files from the device</string>
     <string name="sdk_sample_icon_description">SDK sample icon</string>
     <string name="search_indicator_string">- Search</string>
-
-
 </resources>

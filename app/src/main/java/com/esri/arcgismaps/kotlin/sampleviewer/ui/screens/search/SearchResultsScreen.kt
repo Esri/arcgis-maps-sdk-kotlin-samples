@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
@@ -22,7 +21,6 @@ import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 @Composable
 fun SearchResults(searchQuery: String, navController: NavController) {
 
-    val context = LocalContext.current
     val favoriteViewModel: FavoritesViewModel = viewModel()
     val favoriteSamplesFlow = remember { favoriteViewModel.getFavorites() }
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
@@ -34,9 +32,8 @@ fun SearchResults(searchQuery: String, navController: NavController) {
     Scaffold(
         topBar = {
             SampleViewerTopAppBar(
-                navController = navController,
                 title = searchQuery,
-                context = context
+                onBackPressed = { navController.popBackStack() }
             )
         }) { innerPadding ->
         Column(

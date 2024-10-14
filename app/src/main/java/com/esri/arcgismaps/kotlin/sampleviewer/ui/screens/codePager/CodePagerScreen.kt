@@ -12,21 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -37,8 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.kotlin.sampleviewer.R
@@ -46,12 +37,12 @@ import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CodeView
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.MarkdownTextView
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 
 /**
  * This class shows both ReadMe and Code Previews for each sample
  */
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodePagerScreen(
     onBackPressed: () -> Unit,
@@ -60,8 +51,6 @@ fun CodePagerScreen(
 ) {
     val sampleData = DefaultSampleInfoRepository.getSampleByName(sampleName)
     val codePagerTitles = mutableListOf<String>()
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     sampleData.let { sample ->
         codePagerTitles.add("README.md")
@@ -71,16 +60,14 @@ fun CodePagerScreen(
 
         Scaffold(
             topBar = {
-                CodePagerTopAppBar(
-                    scrollBehavior = scrollBehavior,
-                    onBackPressed = onBackPressed,
-                    title = sample.name
+                SampleViewerTopAppBar(
+                    title = sample.name,
+                    onBackPressed = onBackPressed
                 )
             },
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize(),
         ) { innerPadding ->
             Surface(
@@ -196,34 +183,4 @@ fun CodeViewerFile(title: String, iconId: Int) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun CodePagerTopAppBar(
-    scrollBehavior: TopAppBarScrollBehavior,
-    onBackPressed: () -> Unit,
-    title: String
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-        ),
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            IconButton(onClick = onBackPressed) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = LocalContext.current.getString(R.string.backButton),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        },
-    )
 }

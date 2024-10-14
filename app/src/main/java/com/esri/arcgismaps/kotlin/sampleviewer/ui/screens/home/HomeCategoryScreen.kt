@@ -2,13 +2,7 @@ package com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.home
 
 import android.app.Application
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,17 +24,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -51,25 +39,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CardItem
-import kotlinx.coroutines.delay
 
 /**
  * Showcase list of categories for all samples
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeCategoryScreen(navController: NavController) {
     val application = LocalContext.current.applicationContext as Application
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val spacing = 0.03f * screenWidth
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val isVisible = rememberSaveable { mutableStateOf(true) }
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -88,16 +71,10 @@ fun HomeCategoryScreen(navController: NavController) {
             }
         }
     }
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    navBackStackEntry.value?.destination?.route
 
     Scaffold(
-        topBar = {
-            HomeCategoryTopAppBar(application, scrollBehavior, navController)
-        },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
+        topBar = { HomeCategoryTopAppBar(application, navController) },
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
             SearchFloatingActionButton(
@@ -114,16 +91,7 @@ fun HomeCategoryScreen(navController: NavController) {
                 .padding(innerPadding)
                 .nestedScroll(nestedScrollConnection)
         ) {
-            var visibleItems by remember { mutableIntStateOf(0) }
-            val items = getGridItems()
-
-            // Simulate the animation delay
-            LaunchedEffect(Unit) {
-                items.forEachIndexed { index, _ ->
-                    delay(100) // Delay between each item
-                    visibleItems = index + 1
-                }
-            }
+            val categoryList = getGridItems()
 
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Adaptive(150.dp),
@@ -133,31 +101,10 @@ fun HomeCategoryScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(spacing)
             ) {
-                items(items.size) { index ->
-                    val item = items[index]
-                    AnimatedVisibility(
-                        visible = index < visibleItems,
-                        enter = slideInHorizontally(
-                            initialOffsetX = { it }, // Slide in from right
-                            animationSpec = tween(
-                                durationMillis = 400,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + fadeIn(
-                            initialAlpha = 0.5f,
-                            animationSpec = tween(
-                                durationMillis = 400,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut() + slideOutHorizontally(
-                            targetOffsetX = { it },
-                            animationSpec = tween(durationMillis = 400)
-                        )
-                    ) {
-                        CardItem(item) {
-                            navController.navigate("${R.string.sampleList_section}/category=${item.title}")
-                        }
+                items(categoryList.size) { index ->
+                    val category = categoryList[index]
+                    CardItem(category) {
+                        navController.navigate("${R.string.sampleList_section}/category=${category.title}")
                     }
                 }
             }
@@ -179,8 +126,8 @@ private fun SearchFloatingActionButton(
         FloatingActionButton(
             onClick = { navController.navigate(R.string.search_section.toString()) },
             shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.onSecondary
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ) {
             Icon(
                 Icons.Filled.Search,
@@ -194,23 +141,21 @@ private fun SearchFloatingActionButton(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun HomeCategoryTopAppBar(
     application: Application,
-    scrollBehavior: TopAppBarScrollBehavior,
     navController: NavController
 ) {
     TopAppBar(
         title = {
-            Text(
-                text = application.getString(R.string.homeCategory_section),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            Text(text = application.getString(R.string.homeCategory_section))
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
-        scrollBehavior = scrollBehavior,
         actions = {
             IconButton(onClick = {
                 navController.navigate(R.string.about_section.toString()) {
+                    // TODO: Maybe this should be handled in the NavGraph?
                     popUpTo(navController.graph.startDestinationId) {
                         saveState = true
                     }
@@ -220,8 +165,7 @@ private fun HomeCategoryTopAppBar(
             }) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
-                    contentDescription = application.getString(R.string.about_section),
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    contentDescription = application.getString(R.string.about_section)
                 )
             }
         }
@@ -246,14 +190,14 @@ fun getGridItems(): List<Category> {
             R.drawable.cloud_background,
         ),
         Category(
-            SampleCategory.LAYERS,
-            R.drawable.ic_layers,
-            R.drawable.layers_background,
-        ),
-        Category(
             SampleCategory.EDIT_AND_MANAGE_DATA,
             R.drawable.ic_manage_data,
             R.drawable.manage_data_background,
+        ),
+        Category(
+            SampleCategory.LAYERS,
+            R.drawable.ic_layers,
+            R.drawable.layers_background,
         ),
         Category(
             SampleCategory.MAPS,
@@ -261,14 +205,14 @@ fun getGridItems(): List<Category> {
             R.drawable.maps_and_scenes_background,
         ),
         Category(
-            SampleCategory.SCENES,
-            R.drawable.ic_scenes,
-            R.drawable.scenes_background,
-        ),
-        Category(
             SampleCategory.ROUTING_AND_LOGISTICS,
             R.drawable.ic_routing_and_logistics,
             R.drawable.routing_and_logistics_background,
+        ),
+        Category(
+            SampleCategory.SCENES,
+            R.drawable.ic_scenes,
+            R.drawable.scenes_background,
         ),
         Category(
             SampleCategory.SEARCH_AND_QUERY,
