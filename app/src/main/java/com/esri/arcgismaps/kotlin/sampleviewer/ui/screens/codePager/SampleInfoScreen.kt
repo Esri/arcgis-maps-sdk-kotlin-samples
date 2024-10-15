@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
@@ -43,13 +45,13 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.MarkdownTextView
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about.AboutScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.ReadmeView
 
 /**
- * This class shows both ReadMe and Code Previews for each sample
+ * Shows both README and Code for each sample.
  */
-
 @Composable
-fun CodePagerScreen(
+fun SampleInfoScreen(
     onBackPressed: () -> Unit,
     sampleName: String,
     optionPosition: Int
@@ -64,7 +66,6 @@ fun CodePagerScreen(
         for (codeFile in sample.codeFiles) {
             codePagerTitles.add(codeFile.name)
         }
-
         Scaffold(
             topBar = {
                 SampleViewerTopAppBar(
@@ -83,45 +84,40 @@ fun CodePagerScreen(
                     .clip(shape = MaterialTheme.shapes.extraLarge)
                     .padding(innerPadding)
             ) {
-                CodeFileViewer(codePagerTitles, sample, optionPosition)
+                CodePageView(codePagerTitles, sample, optionPosition)
             }
         }
     }
 }
 
 @Composable
-private fun CodeFileViewer(
-    codePagerTitles: List<String>,
-    sampleData: Sample,
-    optionPosition: Int
+@OptIn(ExperimentalMaterial3Api::class)
+private fun CodePagerTopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    onBackPressed: () -> Unit,
+    title: String
 ) {
-    var selectedFileIndex by remember { mutableIntStateOf(optionPosition) }
-    // TODO: Subject to change to use a tabbed view #4568
-    Column {
-        CodePagerBar(selectedFileIndex, codePagerTitles, onFileClicked = {
-            selectedFileIndex = it
-        })
-        if (codePagerTitles[selectedFileIndex].contains(".md")) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                // TODO, should we render this screenshot URL? #4563
-                //val screenshotURL by remember { mutableStateOf("${sampleData?.screenshotURL}") }
-                val markdownText by remember { mutableStateOf(sampleData.readMe) }
-                MarkdownTextView(markdownText = markdownText)
-            }
-        } else {
-            CodeView(
-                code = sampleData.codeFiles
-                    .find {
-                        it.name == codePagerTitles[selectedFileIndex]
-                    }.let {
-                        it?.code ?: ""
-                    }
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.onPrimary
             )
-        }
-    }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            IconButton(onClick = onBackPressed) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = LocalContext.current.getString(R.string.backButton),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        },
+    )
 }
 
 @Composable
@@ -137,7 +133,7 @@ fun CodePagerBar(selectedFileIndex: Int, fileList: List<String>, onFileClicked: 
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CodeViewerFile(
+            CodePageRow(
                 title = fileList[selectedFileIndex],
                 iconId = getIconId(fileList[selectedFileIndex])
             )
@@ -154,7 +150,7 @@ fun CodePagerBar(selectedFileIndex: Int, fileList: List<String>, onFileClicked: 
             fileList.forEachIndexed { index, file ->
                 DropdownMenuItem(modifier = Modifier.background(MaterialTheme.colorScheme.surface),
                     text = {
-                        CodeViewerFile(title = file, iconId = getIconId(file))
+                        CodePageRow(title = file, iconId = getIconId(file))
                     }, onClick = {
                         onFileClicked(index)
                         expanded = false
@@ -164,15 +160,8 @@ fun CodePagerBar(selectedFileIndex: Int, fileList: List<String>, onFileClicked: 
     }
 }
 
-fun getIconId(selectedFile: String): Int {
-    return when (selectedFile.lowercase().contains(".kt")) {
-        true -> R.drawable.ic_kotlin
-        else -> R.drawable.ic_readme
-    }
-}
-
 @Composable
-fun CodeViewerFile(title: String, iconId: Int) {
+fun CodePageRow(title: String, iconId: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
@@ -186,9 +175,7 @@ fun CodeViewerFile(title: String, iconId: Int) {
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface
         )
-
         Spacer(modifier = Modifier.width(8.dp))
-
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
@@ -200,8 +187,53 @@ fun CodeViewerFile(title: String, iconId: Int) {
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
+private fun CodePageView(
+    codePagerTitles: List<String>,
+    sample: Sample,
+    optionPosition: Int
+) {
+    var selectedFileIndex by remember { mutableIntStateOf(optionPosition) }
+    Column {
+        CodePagerBar(selectedFileIndex, codePagerTitles, onFileClicked = {
+            selectedFileIndex = it
+        })
+        if (codePagerTitles[selectedFileIndex].contains(".md")) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                val screenshotURL by remember { mutableStateOf(sample.screenshotURL) }
+                AsyncImage(
+                    model = screenshotURL,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(200.dp)
+                        .width(350.dp)
+                        .padding(8.dp)
+                )
+                val markdownText by remember { mutableStateOf(sample.readMe) }
+                ReadmeView(markdownText = markdownText)
+            }
+        } else {
+            CodeView(
+                code = sample.codeFiles
+                    .find {
+                        it.name == codePagerTitles[selectedFileIndex]
+                    }.let {
+                        it?.code ?: ""
+                    }
+            )
+        }
+    }
 fun PreviewSampleInfoScreen() {
     SampleAppTheme {
         // TODO
+    }
+}
+
+fun getIconId(selectedFile: String): Int {
+    return when (selectedFile.lowercase().contains(".kt")) {
+        true -> R.drawable.ic_kotlin
+        else -> R.drawable.ic_readme
     }
 }

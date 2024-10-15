@@ -8,14 +8,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about.AboutScreen
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.codePager.CodePagerScreen
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.codePager.SampleInfoScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.home.HomeCategoryScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.SampleListScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchResults
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchScreen
 
 /**
- *  A composable function to host the navigation system
+ *  A composable function to host the navigation system.
  */
 @Composable
 fun NavGraph() {
@@ -54,7 +54,7 @@ fun NavGraph() {
             val sampleNameNavEntry = backStackEntry.arguments?.getString("sampleName")
 
             if (optionPositionNavEntry != null && !sampleNameNavEntry.isNullOrEmpty())
-                CodePagerScreen(
+                SampleInfoScreen(
                     onBackPressed = { navController.popBackStack() },
                     optionPosition = optionPositionNavEntry,
                     sampleName = sampleNameNavEntry

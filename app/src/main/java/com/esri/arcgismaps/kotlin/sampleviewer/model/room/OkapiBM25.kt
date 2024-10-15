@@ -28,6 +28,9 @@ import kotlin.math.log
 class OkapiBM25 {
 
     companion object {
+/**
+         * Calculates the OkapiBM25 score for a given column in an FTS4 table.
+         */
         fun score(matchInfo: Array<Int>, column: Int, b: Double = 0.75, k1: Double = 1.2): Double {
 
             val pOffset = 0

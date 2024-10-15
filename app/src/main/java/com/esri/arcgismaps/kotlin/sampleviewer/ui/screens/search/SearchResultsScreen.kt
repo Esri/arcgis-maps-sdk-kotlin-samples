@@ -14,7 +14,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.ListOfSampl
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 
 /**
- * Shows Search Results based on valid query searches
+ * Shows search results based on valid query searches.
  */
 @Composable
 fun SearchResults(searchQuery: String, navController: NavController) {

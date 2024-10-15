@@ -44,22 +44,22 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.DropdownIte
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 
 /**
- * A reusable component to hold each sample information and its contents
+ * Row to display Sample information and its contents
  */
 @Composable
-fun SampleCardItem(
+fun SampleRow(
     sample: Sample,
     dropdownSampleItems: List<DropdownItemData>
 ) {
     val context = LocalContext.current
     Column(Modifier.clickable { sample.startSample(context) }) {
-        TitleAndIconsRow(sample, dropdownSampleItems)
+        TitleAndIcons(sample, dropdownSampleItems)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TitleAndIconsRow(
+private fun TitleAndIcons(
     sample: Sample,
     dropdownSampleItems: List<DropdownItemData>
 ) {
@@ -80,7 +80,7 @@ private fun TitleAndIconsRow(
                 .padding(vertical = 16.dp)
         ) {
             Text(
-                text = sample.metadata.title,
+                text = sample.name,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -174,10 +174,10 @@ private fun ExpandedDescriptionAnimation(
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun PreviewSampleCardItem() {
+fun PreviewSampleRow() {
     SampleAppTheme {
         val dropdownItemData = listOf<DropdownItemData>()
-        SampleCardItem(
+        SampleRow(
             sample = Sample.PREVIEW_INSTANCE,
             dropdownSampleItems = dropdownItemData
         )

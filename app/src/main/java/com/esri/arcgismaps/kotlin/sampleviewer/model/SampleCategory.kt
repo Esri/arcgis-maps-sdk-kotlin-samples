@@ -9,7 +9,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 /**
- * This enum class holds the name of each Sample Category
+ * Holds the enum of each Sample Category.
  */
 @Serializable
 enum class SampleCategory(val text: String) {
@@ -26,11 +26,16 @@ enum class SampleCategory(val text: String) {
     VISUALIZATION("Visualization"),
     FAVORITES("Favorites");
 
-    // Return title of each sample in String type
+    /**
+     * Return string of category enum.
+     */
     override fun toString(): String {
         return text
     }
 
+    /**
+     * Return the enum of the category string.
+     */
     companion object {
         fun toEnum(categoryString: String): SampleCategory {
             return entries.firstOrNull {it.text == categoryString}!!

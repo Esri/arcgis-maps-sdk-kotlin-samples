@@ -3,7 +3,7 @@ package com.esri.arcgismaps.kotlin.sampleviewer.model
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 
 /**
- * This data class is used to hold information in each CardItem in home screen
+ * Represents a sample category.
  */
 data class Category(
     val title: SampleCategory,

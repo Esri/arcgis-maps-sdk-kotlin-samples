@@ -26,17 +26,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 
 /**
- *  A reusable composable class mainly used for the categories home page
+ *  A composable used in the HomeCategoryScreen to display the category cards.
  */
 @Composable
-fun CardItem(
+fun CategoryCard(
     category: Category,
     onClick: () -> Unit
 ) {
@@ -48,13 +47,13 @@ fun CardItem(
         shape = MaterialTheme.shapes.medium
     ) {
         Box {
-            BackgroundImageBox(category)
+            CategoryBackground(category)
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically)
             ) {
-                IconWithBackgroundCircle(category)
+                CategoryIconBackground(category)
                 Text(
                     modifier = Modifier.wrapContentSize(Alignment.Center),
                     text = category.title.text,
@@ -68,7 +67,7 @@ fun CardItem(
 }
 
 @Composable
-private fun IconWithBackgroundCircle(item: Category) {
+private fun CategoryIconBackground(item: Category) {
     Box(
         Modifier
             .background(
@@ -88,7 +87,7 @@ private fun IconWithBackgroundCircle(item: Category) {
 }
 
 @Composable
-private fun BackgroundImageBox(item: Category) {
+private fun CategoryBackground(item: Category) {
     Image(
         modifier = Modifier.fillMaxSize(),
         painter = painterResource(item.backgroundImage),
@@ -105,9 +104,9 @@ private fun BackgroundImageBox(item: Category) {
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun PreviewCategoryCardItem() {
+fun PreviewCategoryCard() {
     SampleAppTheme {
-        CardItem(
+        CategoryCard(
             Category(
                 title = SampleCategory.ANALYSIS,
                 icon = R.drawable.ic_analysis,

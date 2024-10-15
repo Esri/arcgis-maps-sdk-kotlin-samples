@@ -53,8 +53,11 @@ import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
+//TODO -- Scrolling not working on this screen for me
+
+
 /**
- * Showcase information about the application
+ * Showcase information about the application.
  */
 @Composable
 fun AboutScreen(navController: NavController) {
@@ -88,17 +91,17 @@ fun AboutContent(innerPadding: PaddingValues, context: Context) {
         Column(Modifier.padding(20.dp)) {
             val size = (LocalConfiguration.current.screenWidthDp * 0.20).dp
             AboutIcon(context, size)
-            TitleAndCopyrightText(context)
+            TitleAndCopyrightSection(context)
             Spacer(modifier = Modifier.height(20.dp))
-            AboutVersionsText(context)
+            VersionsSection(context)
             Spacer(modifier = Modifier.height(20.dp))
-            PoweredBySectionText(context)
+            PoweredBySection(context)
             Spacer(modifier = Modifier.height(20.dp))
-            EsriCommunitySectionText(context)
+            EsriCommunitySection(context)
             Spacer(modifier = Modifier.height(20.dp))
-            GithubRepositorySectionText(context)
+            GithubSection(context)
             Spacer(modifier = Modifier.height(20.dp))
-            APISectionText(context)
+            ApiDetailsSection(context)
         }
     }
 }
@@ -119,7 +122,7 @@ private fun AboutIcon(context: Context, size: Dp) {
 }
 
 @Composable
-private fun TitleAndCopyrightText(context: Context) {
+private fun TitleAndCopyrightSection(context: Context) {
     Column(
         modifier = Modifier
             .padding(top = 16.dp)
@@ -143,8 +146,7 @@ private fun TitleAndCopyrightText(context: Context) {
 }
 
 @Composable
-private fun AboutVersionsText(context: Context) {
-
+private fun VersionsSection(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -187,7 +189,7 @@ private fun AboutVersionsText(context: Context) {
 }
 
 @Composable
-private fun PoweredBySectionText(context: Context) {
+private fun PoweredBySection(context: Context) {
     var isAcknowledgementsDialogVisible by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -227,8 +229,8 @@ private fun PoweredBySectionText(context: Context) {
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
@@ -236,7 +238,6 @@ private fun PoweredBySectionText(context: Context) {
                     )
                 }
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -257,8 +258,8 @@ private fun PoweredBySectionText(context: Context) {
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
@@ -266,7 +267,6 @@ private fun PoweredBySectionText(context: Context) {
                     )
                 }
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -291,7 +291,6 @@ private fun PoweredBySectionText(context: Context) {
                 }
             }
         }
-
         if (isAcknowledgementsDialogVisible) {
             AcknowledgementsDialog {
                 isAcknowledgementsDialogVisible = false
@@ -301,7 +300,7 @@ private fun PoweredBySectionText(context: Context) {
 }
 
 @Composable
-private fun EsriCommunitySectionText(context: Context) {
+private fun EsriCommunitySection(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -340,8 +339,8 @@ private fun EsriCommunitySectionText(context: Context) {
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
@@ -398,7 +397,7 @@ fun AcknowledgementsDialog(onDismissRequest: () -> Unit) {
 }
 
 @Composable
-private fun GithubRepositorySectionText(context: Context) {
+private fun GithubSection(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -451,7 +450,7 @@ private fun GithubRepositorySectionText(context: Context) {
 }
 
 @Composable
-private fun APISectionText(context: Context) {
+private fun ApiDetailsSection(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -490,8 +489,8 @@ private fun APISectionText(context: Context) {
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
@@ -502,7 +501,6 @@ private fun APISectionText(context: Context) {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
