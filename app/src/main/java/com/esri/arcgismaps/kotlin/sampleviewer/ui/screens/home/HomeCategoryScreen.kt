@@ -41,10 +41,7 @@ import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CardItem
-import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
-import kotlinx.coroutines.delay
 
 /**
  * The main SampleViewer app screen which showcases the list all sample categories,
@@ -156,29 +153,4 @@ private fun HomeCategoryTopAppBar(navController: NavController) {
             }
         }
     )
-}
-
-@Composable
-private fun SearchFloatingActionButton(
-    isVisible: MutableState<Boolean>,
-    application: Application,
-    navController: NavController
-) {
-    AnimatedVisibility(
-        visible = isVisible.value,
-        enter = slideInVertically(initialOffsetY = { it * 2 }),
-        exit = slideOutVertically(targetOffsetY = { it * 2 }),
-    ) {
-        FloatingActionButton(
-            onClick = { navController.navigate(R.string.search_section.toString()) },
-            shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.onSecondary
-        ) {
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = application.getString(R.string.search_FAB_text)
-            )
-        }
-    }
 }

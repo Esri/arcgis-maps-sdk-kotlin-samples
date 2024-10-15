@@ -34,11 +34,9 @@ data class Sample(
                 ignore = false,
                 imagePaths = listOf(""),
                 keywords = listOf(""),
-                language = "",
-                redirectFrom = listOf(""),
                 relevantApis = listOf(""),
+                codePaths = listOf(""),
                 sampleCategory = SampleCategory.ANALYSIS,
-                snippets = listOf(""),
                 title = "Analyze hotspots"
             ),
             isFavorite = false,

@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.navigation.NavGraph
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
