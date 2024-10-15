@@ -204,7 +204,6 @@ fun PreviewSampleRow() {
                     ignore = false,
                     imagePaths = listOf(""),
                     keywords = listOf(""),
-                    language = "",
                     relevantApis = listOf(""),
                     sampleCategory = SampleCategory.ANALYSIS,
                     title = "Analyze hotspots"

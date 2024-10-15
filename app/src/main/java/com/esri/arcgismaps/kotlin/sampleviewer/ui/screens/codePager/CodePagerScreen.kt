@@ -189,7 +189,6 @@ private fun CodePageView(
     optionPosition: Int
 ) {
     var selectedFileIndex by remember { mutableIntStateOf(optionPosition) }
-    // TODO: Subject to change to use a tabbed view #4568
     Column {
         CodePagerBar(selectedFileIndex, codePagerTitles, onFileClicked = {
             selectedFileIndex = it

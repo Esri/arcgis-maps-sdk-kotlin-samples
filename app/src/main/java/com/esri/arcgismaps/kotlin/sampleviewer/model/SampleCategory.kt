@@ -43,7 +43,6 @@ enum class SampleCategory(val text: String) {
     }
 }
 
-// TODO -- I'm not sure I fully understand why we need to serialize the enum
 object SampleCategorySerializer : KSerializer<SampleCategory> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SampleCategory", PrimitiveKind.STRING)
 

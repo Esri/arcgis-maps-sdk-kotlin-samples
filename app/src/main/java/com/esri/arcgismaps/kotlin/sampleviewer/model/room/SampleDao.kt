@@ -23,7 +23,7 @@ interface SampleDao {
     )
     fun matchInfoSearch(query: String): Cursor
 
-    // In support of search suggestions.
+    // Offers samples as search suggestions.
     @Query(
         """SELECT rowid, name, codeFile, readMe, relevantAPIs FROM samplesDB
         WHERE LOWER(name)       LIKE LOWER('%' || :searchQuery || '%' )
@@ -33,6 +33,7 @@ interface SampleDao {
     )
     fun getFilteredSamples(searchQuery: String): List<SampleEntity>
 
+    // Offers relevant APIs as search suggestions.
     @Query(
         """SELECT rowid, name, codeFile, readMe, relevantAPIs FROM samplesDB
         WHERE LOWER(relevantAPIs) LIKE LOWER('%' || :searchQuery || '%' )"""

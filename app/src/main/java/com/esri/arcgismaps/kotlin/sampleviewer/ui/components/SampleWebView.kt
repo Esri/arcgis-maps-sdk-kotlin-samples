@@ -101,21 +101,8 @@ fun createWebView(context: Context): WebView {
             javaScriptEnabled = true
             domStorageEnabled = true
         }
-        addJavascriptInterface(AndroidJSInterface, "Android")
         alpha = 0.99f // TODO: Weirdly, without this the screen crashes on popBackStack (#4632)
     }
-}
-
-// TODO -- Can the below be removed?
-// Default JS object interface. This could be used to support line highlighting
-// or display dialog/toast messages.
-object AndroidJSInterface {
-    /**
-    @JavascriptInterface
-    fun onClicked() {
-    Log.d("InfoIcon", "IconClicked")
-    }
-     */
 }
 
 enum class WebViewType {

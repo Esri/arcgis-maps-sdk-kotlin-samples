@@ -15,7 +15,6 @@ data class SampleMetadata(
     val ignore: Boolean?,
     @SerialName("images") val imagePaths: List<String>,
     val keywords: List<String>,
-    val language: String?,
     @SerialName("relevant_apis") val relevantApis: List<String>,
     @SerialName("snippets") val codePaths: List<String>,
     val title: String
