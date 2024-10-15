@@ -52,7 +52,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.ReadmeView
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CodePagerScreen(
+fun SampleInfoScreen(
     onBackPressed: () -> Unit,
     sampleName: String,
     optionPosition: Int
