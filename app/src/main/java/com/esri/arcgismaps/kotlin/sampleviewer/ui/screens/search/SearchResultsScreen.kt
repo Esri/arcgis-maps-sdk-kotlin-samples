@@ -6,13 +6,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.ListOfSamplesScreen
-import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.FavoritesViewModel
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 
 /**
@@ -20,15 +18,8 @@ import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
  */
 @Composable
 fun SearchResults(searchQuery: String, navController: NavController) {
-
-    val favoriteViewModel: FavoritesViewModel = viewModel()
-    val favoriteSamplesFlow = remember { favoriteViewModel.getFavorites() }
-    val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
-    val searchViewModel: SampleSearchViewModel = viewModel<SampleSearchViewModel>()
+    val searchViewModel: SampleSearchViewModel = viewModel()
     searchViewModel.rankedSearch(searchQuery)
-    // List of samples results ranked with using the searchQuery
-    val rankedSearchResults by searchViewModel.rankedSearchResults.collectAsState()
-
     Scaffold(
         topBar = {
             SampleViewerTopAppBar(
@@ -39,10 +30,10 @@ fun SearchResults(searchQuery: String, navController: NavController) {
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
+            // List of samples results ranked with using the searchQuery
+            val rankedSearchResults by searchViewModel.rankedSearchResults.collectAsState()
             ListOfSamplesScreen(
                 samples = rankedSearchResults,
-                viewModel = favoriteViewModel,
-                favoriteSamples = favoriteSamples,
                 navController = navController
             )
         }

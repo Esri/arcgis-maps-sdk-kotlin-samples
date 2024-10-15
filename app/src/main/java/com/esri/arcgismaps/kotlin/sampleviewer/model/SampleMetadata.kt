@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * A data class to hold detailed information about the sample
+ * A data class to hold detailed information about the [Sample]
  */
 @Serializable
 data class SampleMetadata(

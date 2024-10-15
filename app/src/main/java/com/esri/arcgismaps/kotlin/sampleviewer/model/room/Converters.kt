@@ -34,7 +34,7 @@ class Converters {
         return relevantApiJsonString.let { json.decodeFromString(it) }
     }
 
-    // Converts Sample to SampleEntity in order to select certain relevant fields
+    // Converts Sample to SampleEntity in order to select relevant fields
     fun convertToEntity(sample: Sample): SampleEntity {
         return SampleEntity(
             sampleName = sample.name,

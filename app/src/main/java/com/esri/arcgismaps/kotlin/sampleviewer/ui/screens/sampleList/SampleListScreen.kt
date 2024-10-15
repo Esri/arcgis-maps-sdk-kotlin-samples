@@ -47,10 +47,7 @@ import java.util.Locale
  * Used to hold and show the list of samples depending on the clicked category card
  */
 @Composable
-fun SampleListScreen(
-    categoryNavEntry: String,
-    navController: NavController
-) {
+fun SampleListScreen(categoryNavEntry: String, navController: NavController) {
     val context = LocalContext.current
     val viewModel: FavoritesViewModel = viewModel()
     val favoriteSamplesFlow = remember { viewModel.getFavorites() }
@@ -72,19 +69,9 @@ fun SampleListScreen(
             if (samplesList.isEmpty() && category != SampleCategory.FAVORITES) {
                 EmptySampleListScreen(context.getString(R.string.upcoming_samples_text))
             } else if (category == SampleCategory.FAVORITES) {
-                FavoriteItemsListScreen(
-                    viewModel,
-                    favoriteSamples,
-                    navController,
-                    context
-                )
+                FavoriteItemsListScreen(favoriteSamples, navController, context)
             } else {
-                ListOfSamplesScreen(
-                    samplesList,
-                    viewModel,
-                    favoriteSamples,
-                    navController
-                )
+                ListOfSamplesScreen(samplesList, navController)
             }
         }
     }
@@ -93,10 +80,10 @@ fun SampleListScreen(
 @Composable
 fun ListOfSamplesScreen(
     samples: List<Sample>,
-    viewModel: FavoritesViewModel,
-    favoriteSamples: List<Sample>?,
     navController: NavController,
 ) {
+    val favoritesViewModel: FavoritesViewModel = viewModel()
+    val favoriteSamples by favoritesViewModel.getFavorites().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     Box(
@@ -108,7 +95,7 @@ fun ListOfSamplesScreen(
     ) {
         LazyColumn(modifier = Modifier.animateContentSize()) {
             itemsIndexed(samples) { index, sample ->
-                val isFavorite = favoriteSamples?.contains(sample) == true
+                val isFavorite = favoriteSamples.contains(sample)
                 val readMePosition = 0
                 val codeFilePosition = 1
 
@@ -131,11 +118,10 @@ fun ListOfSamplesScreen(
                         title = "Website",
                         icon = R.drawable.ic_link,
                         onClick = {
-                            val url =
-                                "https://developers.arcgis.com/kotlin/sample-code/" + sample.metadata.title.replace(
-                                    " ",
-                                    "-"
-                                ).lowercase(Locale.getDefault())
+                            val url = "https://developers.arcgis.com/kotlin/sample-code/" +
+                                    sample.metadata.title
+                                        .replace(" ", "-")
+                                        .lowercase(Locale.getDefault())
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                             context.startActivity(intent)
                         }
@@ -145,8 +131,8 @@ fun ListOfSamplesScreen(
                         icon = if (isFavorite) R.drawable.ic_favorite_selected else R.drawable.ic_favorite_unselected,
                         onClick = {
                             scope.launch(Dispatchers.IO) {
-                                if (isFavorite) viewModel.removeFavorite(sample)
-                                else viewModel.addFavorite(sample)
+                                if (isFavorite) favoritesViewModel.removeFavorite(sample)
+                                else favoritesViewModel.addFavorite(sample)
                             }
                         }
                     )
@@ -184,19 +170,15 @@ private fun EmptySampleListScreen(emptyMessage: String) {
 
 @Composable
 private fun FavoriteItemsListScreen(
-    viewModel: FavoritesViewModel,
     favoriteSamples: List<Sample>?,
     navController: NavController,
     context: Context
 ) {
-
     favoriteSamples?.let {
         if (it.isNotEmpty()) {
             ListOfSamplesScreen(
                 samples = it,
-                viewModel = viewModel,
-                favoriteSamples = favoriteSamples,
-                navController = navController,
+                navController = navController
             )
         } else {
             EmptySampleListScreen(context.getString(R.string.no_favorites_text))

@@ -38,30 +38,28 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 @Composable
 fun CardItem(
     category: Category,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .size(width = 175.dp, height = 175.dp)
             .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
         Box {
-            Box {
-                BackgroundImageBox(category)
-            }
+            BackgroundImageBox(category)
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp,Alignment.CenterVertically)
+                verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically)
             ) {
                 IconWithBackgroundCircle(category)
                 Text(
+                    modifier = Modifier.wrapContentSize(Alignment.Center),
                     text = category.title.text,
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.wrapContentSize(Alignment.Center),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -74,16 +72,16 @@ private fun IconWithBackgroundCircle(item: Category) {
     Box(
         Modifier
             .background(
-                Color.Black.copy(alpha = 0.8f),
+                color = Color.Black.copy(alpha = 0.8f),
                 shape = CircleShape
             )
             .padding(8.dp)
     ) {
         Icon(
-            painter = painterResource(item.icon),
-            contentDescription = null,
             modifier = Modifier
                 .size(30.dp),
+            painter = painterResource(item.icon),
+            contentDescription = "Category Icon",
             tint = Color.White
         )
     }
@@ -92,10 +90,10 @@ private fun IconWithBackgroundCircle(item: Category) {
 @Composable
 private fun BackgroundImageBox(item: Category) {
     Image(
+        modifier = Modifier.fillMaxSize(),
         painter = painterResource(item.backgroundImage),
         contentDescription = item.title.text,
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Crop
     )
     Box(
         modifier = Modifier
@@ -109,16 +107,12 @@ private fun BackgroundImageBox(item: Category) {
 @Composable
 fun PreviewCategoryCardItem() {
     SampleAppTheme {
-        val navController = rememberNavController()
-
         CardItem(
             Category(
-                SampleCategory.ANALYSIS,
-                R.drawable.ic_analysis,
-                R.drawable.analysis_background
+                title = SampleCategory.ANALYSIS,
+                icon = R.drawable.ic_analysis,
+                backgroundImage = R.drawable.analysis_background
             ),
-        ) {
-            navController.navigate("${R.string.sampleList_section}/${SampleCategory.ANALYSIS.text}")
-        }
+        ) { }
     }
 }

@@ -28,8 +28,7 @@ import kotlin.math.log
 class OkapiBM25 {
 
     companion object {
-
-        fun score(matchinfo: Array<Int>, column: Int, b: Double = 0.75, k1: Double = 1.2): Double {
+        fun score(matchInfo: Array<Int>, column: Int, b: Double = 0.75, k1: Double = 1.2): Double {
 
             val pOffset = 0
             val cOffset = 1
@@ -37,17 +36,17 @@ class OkapiBM25 {
             val aOffset = 3
 
             // the number of matchable phrases in the query
-            val termCount = matchinfo[pOffset]
+            val termCount = matchInfo[pOffset]
             // the number of user defined columns in the FTS table
-            val colCount = matchinfo[cOffset]
+            val colCount = matchInfo[cOffset]
 
             val lOffset = aOffset + colCount
             val xOffset = lOffset + colCount
 
             // the number of rows in the FTS4 table
-            val totalDocs = matchinfo[nOffset].toDouble()
-            val avgLength = matchinfo[aOffset + column].toDouble()
-            val docLength = matchinfo[lOffset + column].toDouble()
+            val totalDocs = matchInfo[nOffset].toDouble()
+            val avgLength = matchInfo[aOffset + column].toDouble()
+            val docLength = matchInfo[lOffset + column].toDouble()
 
             var score = 0.0
 
@@ -56,9 +55,9 @@ class OkapiBM25 {
                 val currentX = xOffset + (3 * (column + i * colCount))
 
                 // in the current row, the number of times the phrase appears in the column
-                val termFrequency = matchinfo[currentX].toDouble()
+                val termFrequency = matchInfo[currentX].toDouble()
                 // the total number of rows in the FTS table for which the column contains at least one instance of the phrase.
-                val docsWithTerm = matchinfo[currentX + 2].toDouble()
+                val docsWithTerm = matchInfo[currentX + 2].toDouble()
 
                 val p = totalDocs - docsWithTerm + 0.5
                 val q = docsWithTerm + 0.5

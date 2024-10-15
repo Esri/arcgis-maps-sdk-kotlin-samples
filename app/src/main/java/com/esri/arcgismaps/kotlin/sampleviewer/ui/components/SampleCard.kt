@@ -38,10 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.kotlin.sampleviewer.model.CodeFile
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
-import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
-import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleMetadata
 import com.esri.arcgismaps.kotlin.sampleviewer.model.startSample
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.DropdownItemData
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
@@ -70,12 +67,12 @@ private fun TitleAndIconsRow(
     var expandedDescription by rememberSaveable { mutableStateOf(false) }
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .padding(start = 16.dp)
+            .padding(start = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
             modifier = Modifier
@@ -125,7 +122,7 @@ private fun TitleAndIconsRow(
                             ) {
                                 Icon(
                                     painter = painterResource(id = option.icon),
-                                    contentDescription = null,
+                                    contentDescription = "${option.title} Icon",
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
@@ -139,7 +136,7 @@ private fun TitleAndIconsRow(
                             expandedMenu = option.title.lowercase().contains("favorite")
                             option.onClick()
                         },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                     )
                 }
             }
@@ -158,15 +155,17 @@ private fun ExpandedDescriptionAnimation(
         exit = shrinkVertically()
     ) {
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = sample.metadata.description,
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
+                color = Color.Gray
             )
         }
     }
@@ -179,29 +178,8 @@ fun PreviewSampleCardItem() {
     SampleAppTheme {
         val dropdownItemData = listOf<DropdownItemData>()
         SampleCardItem(
-            Sample(
-                name = "Analyze hotspots",
-                codeFiles = listOf(CodeFile("", "")),
-                url = "",
-                readMe = "",
-                screenshotURL = "",
-                metadata = SampleMetadata(
-                    description = "",
-                    formalName = "Analyze hotspots",
-                    ignore = false,
-                    imagePaths = listOf(""),
-                    keywords = listOf(""),
-                    language = "",
-                    redirectFrom = listOf(""),
-                    relevantApis = listOf(""),
-                    sampleCategory = SampleCategory.ANALYSIS,
-                    snippets = listOf(""),
-                    title = "Analyze hotspots"
-                ),
-                isFavorite = false,
-                mainActivity = ""
-            ),
-            dropdownItemData
+            sample = Sample.PREVIEW_INSTANCE,
+            dropdownSampleItems = dropdownItemData
         )
     }
 }

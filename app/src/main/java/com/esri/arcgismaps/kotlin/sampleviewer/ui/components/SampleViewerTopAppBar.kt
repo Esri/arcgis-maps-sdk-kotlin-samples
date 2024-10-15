@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 
+/**
+ * The common [TopAppBar] used to display screen title and the back button for all screens.
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun SampleViewerTopAppBar(

@@ -111,9 +111,9 @@ private fun AboutIcon(context: Context, size: Dp) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(R.drawable.arcgis_maps_sdks_64),
-            contentDescription = context.getString(R.string.sdk_sample_icon_description),
             modifier = Modifier.size(size),
+            painter = painterResource(R.drawable.arcgis_maps_sdks_64),
+            contentDescription = context.getString(R.string.sdk_sample_icon_description)
         )
     }
 }
@@ -127,17 +127,17 @@ private fun TitleAndCopyrightText(context: Context) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             text = context.getString(R.string.about_title),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            style = MaterialTheme.typography.titleMedium
         )
         Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             text = context.getString(R.string.copyright_text),
             textAlign = TextAlign.Center,
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            style = MaterialTheme.typography.labelMedium
         )
     }
 }
@@ -148,41 +148,38 @@ private fun AboutVersionsText(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
+            .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp))
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = context.getString(R.string.app_version),
                 textAlign = TextAlign.Start,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.labelLarge,
             )
-            //FIXME: This version here is hardcoded
             Text(
                 text = BuildConfig.VERSION_CODE.toString(),
                 textAlign = TextAlign.End,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = context.getString(R.string.SDK_version),
                 textAlign = TextAlign.Start,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.labelLarge
             )
             Text(
                 text = BuildConfig.ARCGIS_VERSION,
                 textAlign = TextAlign.End,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -195,25 +192,22 @@ private fun PoweredBySectionText(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
+            .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp))
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = context.getString(R.string.powered_by),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp, top = 8.dp)) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
@@ -222,14 +216,14 @@ private fun PoweredBySectionText(context: Context) {
                             Uri.parse("https://github.com/Esri/arcgis-runtime-toolkit-android")
                         )
                         context.startActivity(intent)
-                    }
-
+                    },
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = context.getString(R.string.ArcGIS_Maps_SDK_Toolkit),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -238,13 +232,12 @@ private fun PoweredBySectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = context.getString(R.string.forward_button)
                     )
                 }
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
@@ -253,13 +246,14 @@ private fun PoweredBySectionText(context: Context) {
                             Uri.parse("https://developers.arcgis.com/kotlin/")
                         )
                         context.startActivity(intent)
-                    }
+                    },
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = context.getString(R.string.ArcGIS_Maps_SDK_Kotlin),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -268,22 +262,22 @@ private fun PoweredBySectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = context.getString(R.string.forward_button)
                     )
                 }
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { isAcknowledgementsDialogVisible = true }
+                    .clickable { isAcknowledgementsDialogVisible = true },
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = "Acknowledgements",
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -292,7 +286,7 @@ private fun PoweredBySectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = context.getString(R.string.forward_button)
                     )
                 }
             }
@@ -310,6 +304,9 @@ private fun PoweredBySectionText(context: Context) {
 private fun EsriCommunitySectionText(context: Context) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
@@ -317,33 +314,29 @@ private fun EsriCommunitySectionText(context: Context) {
                 )
                 context.startActivity(intent)
             }
-            .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = context.getString(R.string.browse_and_discuss),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp)) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = context.getString(R.string.esri_community),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -352,7 +345,7 @@ private fun EsriCommunitySectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = context.getString(R.string.forward_button)
                     )
                 }
             }
@@ -408,6 +401,9 @@ fun AcknowledgementsDialog(onDismissRequest: () -> Unit) {
 private fun GithubRepositorySectionText(context: Context) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
@@ -415,22 +411,17 @@ private fun GithubRepositorySectionText(context: Context) {
                 )
                 context.startActivity(intent)
             }
-            .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer,
-                RoundedCornerShape(8.dp)
-            )
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = context.getString(R.string.github_issue),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp)) {
@@ -439,10 +430,10 @@ private fun GithubRepositorySectionText(context: Context) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = context.getString(R.string.github_repo),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -451,7 +442,7 @@ private fun GithubRepositorySectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = context.getString(R.string.forward_button)
                     )
                 }
             }
@@ -463,6 +454,9 @@ private fun GithubRepositorySectionText(context: Context) {
 private fun APISectionText(context: Context) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
@@ -470,21 +464,17 @@ private fun APISectionText(context: Context) {
                 )
                 context.startActivity(intent)
             }
-            .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = context.getString(R.string.API_details),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp)) {
@@ -493,10 +483,10 @@ private fun APISectionText(context: Context) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = context.getString(R.string.API_ref),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -505,7 +495,7 @@ private fun APISectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = context.getString(R.string.forward_button)
                     )
                 }
             }

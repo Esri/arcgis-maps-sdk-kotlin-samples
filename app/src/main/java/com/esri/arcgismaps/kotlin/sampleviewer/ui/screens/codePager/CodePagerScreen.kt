@@ -1,5 +1,6 @@
 package com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.codePager
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,13 +32,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CodeView
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.MarkdownTextView
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about.AboutScreen
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  * This class shows both ReadMe and Code Previews for each sample
@@ -49,6 +54,8 @@ fun CodePagerScreen(
     sampleName: String,
     optionPosition: Int
 ) {
+    // TODO: Can we pass in this sample as an argument?
+    //  The preview does not render due this call
     val sampleData = DefaultSampleInfoRepository.getSampleByName(sampleName)
     val codePagerTitles = mutableListOf<String>()
 
@@ -124,11 +131,16 @@ fun CodePagerBar(selectedFileIndex: Int, fileList: List<String>, onFileClicked: 
         .clickable { expanded = true }
         .fillMaxWidth()) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CodeViewerFile(title = fileList[selectedFileIndex], iconId = getIconId(fileList[selectedFileIndex]))
+            CodeViewerFile(
+                title = fileList[selectedFileIndex],
+                iconId = getIconId(fileList[selectedFileIndex])
+            )
             Icon(
                 imageVector = Icons.Outlined.ArrowDropDown,
                 contentDescription = null,
@@ -182,5 +194,14 @@ fun CodeViewerFile(title: String, iconId: Int) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun PreviewSampleInfoScreen() {
+    SampleAppTheme {
+        // TODO
     }
 }

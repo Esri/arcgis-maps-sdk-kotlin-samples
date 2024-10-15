@@ -21,7 +21,32 @@ data class Sample(
     val metadata: SampleMetadata,
     val isFavorite: Boolean = false,
     var score: Double = 0.0
-)
+) {
+    companion object {
+        val PREVIEW_INSTANCE = Sample(
+            name = "Analyze hotspots",
+            codeFiles = listOf(CodeFile("", "")),
+            url = "",
+            readMe = "",
+            screenshotURL = "",
+            metadata = SampleMetadata(
+                description = "",
+                formalName = "Analyze hotspots",
+                ignore = false,
+                imagePaths = listOf(""),
+                keywords = listOf(""),
+                language = "",
+                redirectFrom = listOf(""),
+                relevantApis = listOf(""),
+                sampleCategory = SampleCategory.ANALYSIS,
+                snippets = listOf(""),
+                title = "Analyze hotspots"
+            ),
+            isFavorite = false,
+            mainActivity = ""
+        )
+    }
+}
 
 fun Sample.startSample(context: Context) {
     val className = Class.forName(mainActivity) as Class<*>
