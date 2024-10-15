@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -41,6 +42,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
@@ -185,7 +187,7 @@ fun CodePageRow(title: String, iconId: Int) {
 @Composable
 private fun CodePageView(
     codePagerTitles: List<String>,
-    sampleData: Sample,
+    sample: Sample,
     optionPosition: Int
 ) {
     var selectedFileIndex by remember { mutableIntStateOf(optionPosition) }
@@ -198,14 +200,21 @@ private fun CodePageView(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // TODO, should we render this screenshot URL? #4563
-                //val screenshotURL by remember { mutableStateOf("${sampleData?.screenshotURL}") }
-                val markdownText by remember { mutableStateOf(sampleData.readMe) }
+                val screenshotURL by remember { mutableStateOf(sample.screenshotURL) }
+                AsyncImage(
+                    model = screenshotURL,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(200.dp)
+                        .width(350.dp)
+                        .padding(8.dp)
+                )
+                val markdownText by remember { mutableStateOf(sample.readMe) }
                 ReadmeView(markdownText = markdownText)
             }
         } else {
             CodeView(
-                code = sampleData.codeFiles
+                code = sample.codeFiles
                     .find {
                         it.name == codePagerTitles[selectedFileIndex]
                     }.let {

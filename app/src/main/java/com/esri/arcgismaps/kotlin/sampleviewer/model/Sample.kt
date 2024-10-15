@@ -55,7 +55,7 @@ data class Sample(
             // Get this metadata files as a string
             context.assets.open("samples/$sampleName/README.md").use { inputStream ->
                 val readMeString = inputStream.bufferedReader().use { it.readText() }
-                return readMeString
+                return readMeString.lines().filterNot { it.contains("![") }.joinToString("\n")
             }
         }
 
