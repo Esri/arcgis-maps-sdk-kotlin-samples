@@ -50,7 +50,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.DropdownIte
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 
 /**
- * A reusable component to hold each sample information and its contents
+ * Row to display Sample information and its contents
  */
 @Composable
 fun SampleRow(
