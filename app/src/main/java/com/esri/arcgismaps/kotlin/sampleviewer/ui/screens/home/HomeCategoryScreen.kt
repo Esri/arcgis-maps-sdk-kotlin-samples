@@ -1,5 +1,6 @@
 package com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.home
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -36,19 +37,26 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import androidx.navigation.NavController
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
+import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
+import com.esri.arcgismaps.kotlin.sampleviewer.navigation.Routes
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  * The main SampleViewer app screen which showcases the list all sample categories,
  * saved favorites, and an app wide searching interface.
  */
 @Composable
-fun HomeCategoryScreen(navController: NavController) {
+fun HomeCategoryScreen(
+    navigateToAbout: () -> Unit,
+    navigateToSearch: () -> Unit,
+    navigateToCategory: (SampleCategory) -> Unit,
+) {
     val config = LocalConfiguration.current
     val layoutSpacing by remember { mutableStateOf(0.03f * config.screenWidthDp.dp) }
     val isVisible = rememberSaveable { mutableStateOf(true) }
@@ -69,8 +77,8 @@ fun HomeCategoryScreen(navController: NavController) {
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { HomeCategoryTopAppBar(navController) },
-        floatingActionButton = { SearchFloatingActionButton(isVisible, navController) },
+        topBar = { HomeCategoryTopAppBar(navigateToAbout) },
+        floatingActionButton = { SearchFloatingActionButton(isVisible, navigateToSearch) },
         floatingActionButtonPosition = FabPosition.End,
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
@@ -90,9 +98,7 @@ fun HomeCategoryScreen(navController: NavController) {
             ) {
                 items(Category.SAMPLE_CATEGORIES.size) { index ->
                     val category = Category.SAMPLE_CATEGORIES[index]
-                    CategoryCard(category) {
-                        navController.navigate("${R.string.sampleList_section}/category=${category.title}")
-                    }
+                    CategoryCard(category) { navigateToCategory(category.title) }
                 }
             }
         }
@@ -102,7 +108,7 @@ fun HomeCategoryScreen(navController: NavController) {
 @Composable
 private fun SearchFloatingActionButton(
     isVisible: MutableState<Boolean>,
-    navController: NavController
+    navigateToSearch: () -> Unit
 ) {
     AnimatedVisibility(
         visible = isVisible.value,
@@ -110,14 +116,14 @@ private fun SearchFloatingActionButton(
         exit = slideOutVertically(targetOffsetY = { it * 2 }),
     ) {
         FloatingActionButton(
-            onClick = { navController.navigate(R.string.search_section.toString()) },
+            onClick = navigateToSearch,
             shape = CircleShape,
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ) {
             Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = stringResource(R.string.search_FAB_text)
+                contentDescription = stringResource(R.string.search)
             )
         }
     }
@@ -125,10 +131,10 @@ private fun SearchFloatingActionButton(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun HomeCategoryTopAppBar(navController: NavController) {
+private fun HomeCategoryTopAppBar(navigateToAboutScreen: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = stringResource(R.string.homeCategory_section))
+            Text(text = Routes.HOME_SCREEN)
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -136,16 +142,7 @@ private fun HomeCategoryTopAppBar(navController: NavController) {
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         actions = {
-            IconButton(onClick = {
-                navController.navigate(R.string.about_section.toString()) {
-                    // TODO: Maybe this should be handled in the NavGraph?
-                    popUpTo(navController.graph.startDestinationId) {
-                        saveState = true
-                    }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }) {
+            IconButton(onClick = navigateToAboutScreen) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = stringResource(R.string.about_section)
@@ -153,4 +150,17 @@ private fun HomeCategoryTopAppBar(navController: NavController) {
             }
         }
     )
+}
+
+@Composable
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+fun PreviewHomeCategoryScreen() {
+    SampleAppTheme {
+        HomeCategoryScreen(
+            navigateToCategory = {},
+            navigateToSearch = {},
+            navigateToAbout =  {}
+        )
+    }
 }

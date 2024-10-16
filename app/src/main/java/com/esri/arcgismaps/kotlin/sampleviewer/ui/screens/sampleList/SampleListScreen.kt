@@ -1,6 +1,5 @@
 package com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.animateContentSize
@@ -28,10 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
@@ -47,8 +46,7 @@ import java.util.Locale
  * Shows the list of samples.
  */
 @Composable
-fun SampleListScreen(categoryNavEntry: String, navController: NavController) {
-    val context = LocalContext.current
+fun SampleListScreen(categoryNavEntry: String, navigateToInfo: (Int, Sample) -> Unit) {
     val viewModel: FavoritesViewModel = viewModel()
     val favoriteSamplesFlow = remember { viewModel.getFavorites() }
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
@@ -57,21 +55,18 @@ fun SampleListScreen(categoryNavEntry: String, navController: NavController) {
 
     Scaffold(
         topBar = {
-            SampleViewerTopAppBar(
-                title = category.text,
-                onBackPressed = { navController.popBackStack() }
-            )
+            SampleViewerTopAppBar(title = category.text)
         },
         modifier = Modifier
             .fillMaxSize(),
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             if (samplesList.isEmpty() && category != SampleCategory.FAVORITES) {
-                EmptySampleListScreen(context.getString(R.string.upcoming_samples_text))
+                EmptySampleListScreen(stringResource(R.string.upcoming_samples_text))
             } else if (category == SampleCategory.FAVORITES) {
-                FavoriteItemsListScreen(favoriteSamples, navController, context)
+                FavoriteItemsListScreen(favoriteSamples, navigateToInfo)
             } else {
-                ListOfSamplesScreen(samplesList, navController)
+                ListOfSamplesScreen(samplesList, navigateToInfo)
             }
         }
     }
@@ -80,7 +75,7 @@ fun SampleListScreen(categoryNavEntry: String, navController: NavController) {
 @Composable
 fun ListOfSamplesScreen(
     samples: List<Sample>,
-    navController: NavController,
+    navigateToInfo: (Int, Sample) -> Unit,
 ) {
     val favoritesViewModel: FavoritesViewModel = viewModel()
     val favoriteSamples by favoritesViewModel.getFavorites().collectAsState(initial = emptyList())
@@ -103,16 +98,12 @@ fun ListOfSamplesScreen(
                     DropdownItemData(
                         title = "README",
                         icon = R.drawable.ic_readme,
-                        onClick = {
-                            navController.navigate("${R.string.codePager_section}/optionPosition=$readMePosition/sampleName=${sample.name}")
-                        }
+                        onClick = { navigateToInfo(readMePosition, sample) }
                     ),
                     DropdownItemData(
                         title = "Code",
                         icon = R.drawable.ic_kotlin,
-                        onClick = {
-                            navController.navigate("${R.string.codePager_section}/optionPosition=$codeFilePosition/sampleName=${sample.name}")
-                        }
+                        onClick = { navigateToInfo(codeFilePosition, sample) }
                     ),
                     DropdownItemData(
                         title = "Website",
@@ -170,19 +161,16 @@ private fun EmptySampleListScreen(emptyMessage: String) {
 
 @Composable
 private fun FavoriteItemsListScreen(
-    favoriteSamples: List<Sample>?,
-    navController: NavController,
-    context: Context
+    favoriteSamples: List<Sample>,
+    navigateToInfo: (Int, Sample) -> Unit
 ) {
-    favoriteSamples?.let {
-        if (it.isNotEmpty()) {
-            ListOfSamplesScreen(
-                samples = it,
-                navController = navController
-            )
-        } else {
-            EmptySampleListScreen(context.getString(R.string.no_favorites_text))
-        }
+    if (favoriteSamples.isNotEmpty()) {
+        ListOfSamplesScreen(
+            samples = favoriteSamples,
+            navigateToInfo = navigateToInfo
+        )
+    } else {
+        EmptySampleListScreen(stringResource(R.string.no_favorites_text))
     }
 }
 

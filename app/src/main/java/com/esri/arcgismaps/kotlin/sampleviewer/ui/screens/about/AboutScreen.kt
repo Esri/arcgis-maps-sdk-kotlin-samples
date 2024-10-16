@@ -2,7 +2,6 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about
 
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
@@ -12,12 +11,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -41,104 +37,89 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
-//TODO -- Scrolling not working on this screen for me
-
-
 /**
  * Showcase information about the application.
  */
 @Composable
-fun AboutScreen(navController: NavController) {
-    val context = LocalContext.current
+fun AboutScreen() {
     Scaffold(
-        topBar = {
-            SampleViewerTopAppBar(
-                title = "About",
-                onBackPressed = { navController.popBackStack() }
-            )
-        },
         modifier = Modifier
             .fillMaxSize(),
+        topBar = { SampleViewerTopAppBar(title = "About") },
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) { innerPadding ->
-        AboutContent(innerPadding, context)
+        AboutContent(Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun AboutContent(innerPadding: PaddingValues, context: Context) {
+fun AboutContent(modifier: Modifier) {
     Column(
-        Modifier
-            .padding(innerPadding)
+        modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Column(Modifier.padding(20.dp)) {
-            val size = (LocalConfiguration.current.screenWidthDp * 0.20).dp
-            AboutIcon(context, size)
-            TitleAndCopyrightSection(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            VersionsSection(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            PoweredBySection(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            EsriCommunitySection(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            GithubSection(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            ApiDetailsSection(context)
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            TitleAndCopyrightSection()
+            VersionsSection()
+            PoweredBySection()
+            EsriCommunitySection()
+            GithubSection()
+            ApiDetailsSection()
         }
     }
 }
 
 @Composable
-private fun AboutIcon(context: Context, size: Dp) {
+private fun AboutIcon() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val size = (LocalConfiguration.current.screenWidthDp * 0.20).dp
         Image(
             modifier = Modifier.size(size),
             painter = painterResource(R.drawable.arcgis_maps_sdks_64),
-            contentDescription = context.getString(R.string.sdk_sample_icon_description)
+            contentDescription = stringResource(R.string.sdk_sample_icon_description)
         )
     }
 }
 
 @Composable
-private fun TitleAndCopyrightSection(context: Context) {
+private fun TitleAndCopyrightSection() {
     Column(
         modifier = Modifier
-            .padding(top = 16.dp)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        AboutIcon()
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = context.getString(R.string.about_title),
+            text = stringResource(R.string.about_title),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleMedium
         )
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = context.getString(R.string.copyright_text),
+            text = stringResource(R.string.copyright_text),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelMedium
         )
@@ -146,7 +127,7 @@ private fun TitleAndCopyrightSection(context: Context) {
 }
 
 @Composable
-private fun VersionsSection(context: Context) {
+private fun VersionsSection() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -159,7 +140,7 @@ private fun VersionsSection(context: Context) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = context.getString(R.string.app_version),
+                text = stringResource(R.string.app_version),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelLarge,
             )
@@ -174,7 +155,7 @@ private fun VersionsSection(context: Context) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = context.getString(R.string.SDK_version),
+                text = stringResource(R.string.SDK_version),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelLarge
             )
@@ -189,8 +170,9 @@ private fun VersionsSection(context: Context) {
 }
 
 @Composable
-private fun PoweredBySection(context: Context) {
+private fun PoweredBySection() {
     var isAcknowledgementsDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -203,7 +185,7 @@ private fun PoweredBySection(context: Context) {
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.powered_by),
+                text = stringResource(R.string.powered_by),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleSmall
             )
@@ -223,7 +205,7 @@ private fun PoweredBySection(context: Context) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = context.getString(R.string.ArcGIS_Maps_SDK_Toolkit),
+                    text = stringResource(R.string.ArcGIS_Maps_SDK_Toolkit),
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -234,7 +216,7 @@ private fun PoweredBySection(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button)
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -252,7 +234,7 @@ private fun PoweredBySection(context: Context) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = context.getString(R.string.ArcGIS_Maps_SDK_Kotlin),
+                    text = stringResource(R.string.ArcGIS_Maps_SDK_Kotlin),
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -263,7 +245,7 @@ private fun PoweredBySection(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button)
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -286,7 +268,7 @@ private fun PoweredBySection(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button)
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -300,7 +282,8 @@ private fun PoweredBySection(context: Context) {
 }
 
 @Composable
-private fun EsriCommunitySection(context: Context) {
+private fun EsriCommunitySection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -321,7 +304,7 @@ private fun EsriCommunitySection(context: Context) {
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.browse_and_discuss),
+                text = stringResource(R.string.browse_and_discuss),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleSmall
             )
@@ -333,7 +316,7 @@ private fun EsriCommunitySection(context: Context) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = context.getString(R.string.esri_community),
+                    text = stringResource(R.string.esri_community),
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -344,7 +327,7 @@ private fun EsriCommunitySection(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button)
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -397,7 +380,8 @@ fun AcknowledgementsDialog(onDismissRequest: () -> Unit) {
 }
 
 @Composable
-private fun GithubSection(context: Context) {
+private fun GithubSection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -418,7 +402,7 @@ private fun GithubSection(context: Context) {
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.github_issue),
+                text = stringResource(R.string.github_issue),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleSmall
             )
@@ -430,7 +414,7 @@ private fun GithubSection(context: Context) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = context.getString(R.string.github_repo),
+                    text = stringResource(R.string.github_repo),
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -441,7 +425,7 @@ private fun GithubSection(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button)
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -450,7 +434,8 @@ private fun GithubSection(context: Context) {
 }
 
 @Composable
-private fun ApiDetailsSection(context: Context) {
+private fun ApiDetailsSection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -471,7 +456,7 @@ private fun ApiDetailsSection(context: Context) {
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.API_details),
+                text = stringResource(R.string.API_details),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleSmall
             )
@@ -483,7 +468,7 @@ private fun ApiDetailsSection(context: Context) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = context.getString(R.string.API_ref),
+                    text = stringResource(R.string.API_ref),
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -494,7 +479,7 @@ private fun ApiDetailsSection(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button)
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -506,7 +491,5 @@ private fun ApiDetailsSection(context: Context) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewAboutScreen() {
-    SampleAppTheme {
-        AboutScreen(navController = rememberNavController())
-    }
+    SampleAppTheme { AboutScreen() }
 }

@@ -90,7 +90,7 @@ private fun TitleAndIcons(
         IconButton(onClick = { expandedDescription = !expandedDescription }) {
             Icon(
                 imageVector = if (expandedDescription) Icons.Filled.Info else Icons.Outlined.Info,
-                contentDescription = "Sample Description",
+                contentDescription = "Sample Info",
                 tint = MaterialTheme.colorScheme.primary
             )
         }
