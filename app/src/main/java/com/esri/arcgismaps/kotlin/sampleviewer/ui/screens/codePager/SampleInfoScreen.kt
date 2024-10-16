@@ -197,6 +197,8 @@ private fun CodePageView(
         })
         if (codePagerTitles[selectedFileIndex].contains(".md")) {
             Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
