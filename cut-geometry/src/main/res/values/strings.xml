@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">Cut geometry</string>
-    <string name="cut_button_text">Cut geometry</string>
-    <string name="reset_button_text">Reset</string>
-</resources>

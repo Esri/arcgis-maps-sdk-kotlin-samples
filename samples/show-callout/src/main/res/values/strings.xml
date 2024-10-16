@@ -1,0 +1,4 @@
+<resources>
+    <string name="show_callout_app_name">Show callout</string>
+    <string name="callout_text">"Lat: %.4f, Lon: %.4f"</string>
+</resources>

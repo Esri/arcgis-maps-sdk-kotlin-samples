@@ -1,0 +1,14 @@
+<resources>
+    <string name="navigate_route_app_name">Navigate route</string>
+    <string name="routing_service_url">https://sampleserver7.arcgisonline.com/server/rest/services/NetworkAnalysis/SanDiego/NAServer/Route</string>
+    <string name="distance_remaining">Distance remaining: %s %s</string>
+    <string name="time_remaining">Time remaining: %s</string>
+    <string name="next_direction">Next direction: %s</string>
+    <string name="navigate_route">Reset Navigation</string>
+    <string name="recenter">Recenter</string>
+    <string-array name="stop_message">
+        <item>Navigating to the first stop, the USS San Diego Memorial.</item>
+        <item>Navigating to the second stop, the Fleet Science Center.</item>
+        <item>Arrived at the final destination.</item>
+    </string-array>
+</resources>
