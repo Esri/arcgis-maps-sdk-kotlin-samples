@@ -20,8 +20,9 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchResults
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchScreen
 
 // Composition Local for the app wide navigation controller
-val LocalNavController =
-    compositionLocalOf<NavHostController> { error("LocalNavController not found") }
+val LocalNavController = compositionLocalOf<NavHostController> {
+    error("LocalNavController not found")
+}
 
 /**
  *  A composable function to host the navigation system.
@@ -118,16 +119,20 @@ fun NavGraph() {
     }
 }
 
+/**
+ * Navigates to the home screen, clearing the back stack and restoring the state.
+ */
 private fun NavHostController.navigateToHome() {
     navigate(Routes.HOME_SCREEN) {
-        popUpTo(graph.findStartDestination().id) {
-            saveState = false
-        }
+        popUpTo(graph.findStartDestination().id) { saveState = false }
         launchSingleTop = true
         restoreState = false
     }
 }
 
+/**
+ * Navigation Routes for the application.
+ */
 object Routes {
     private const val SAMPLE_LIST = "Sample List"
     private const val SAMPLE_INFO = "Sample Info"
