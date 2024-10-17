@@ -123,7 +123,7 @@ fun SearchSuggestionsList(
     onRelevantAPISelected: (String) -> Unit
 
 ) {
-    val samplesFromRepository by rememberSaveable { mutableStateOf(DefaultSampleInfoRepository.getAllSamples()) }
+    val samplesFromRepository by remember { mutableStateOf(DefaultSampleInfoRepository.getAllSamples()) }
 
     Column(
         modifier = Modifier
