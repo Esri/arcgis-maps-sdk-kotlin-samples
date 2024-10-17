@@ -43,7 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "app_database"
+                    "arcgis_maps_kotlin_samples_database"
                 ).build()
                 INSTANCE = instance
                 instance

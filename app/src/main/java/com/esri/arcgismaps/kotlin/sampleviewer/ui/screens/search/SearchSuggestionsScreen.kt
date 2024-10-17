@@ -66,23 +66,25 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.model.startSample
+import com.esri.arcgismaps.kotlin.sampleviewer.navigation.LocalNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 
 /**
  * Allows functionality to search samples to get two types of categories: Samples and Relevant APIs attached to Sample Readmes
  */
 @Composable
-fun SearchScreen(navController: NavController) {
+fun SearchScreen(navigateToSearchResults: (String) -> Unit) {
     val context = LocalContext.current
+    val navController = LocalNavController.current
     val focusManager = LocalFocusManager.current
     val viewModel: SampleSearchViewModel = viewModel()
     var searchQuery by remember { mutableStateOf("") }
@@ -110,7 +112,7 @@ fun SearchScreen(navController: NavController) {
                     if (searchQuery.trim().isNotEmpty()) {
                         keyboardController?.hide()
                         // Open results screen with list view.
-                        navController.navigate("${R.string.searchResults_section}/query=${searchQuery}")
+                        navigateToSearchResults(searchQuery)
                     }
 
                 }
@@ -121,10 +123,7 @@ fun SearchScreen(navController: NavController) {
                 onSampleSelected = {
                     it.startSample(context)
                 },
-                onRelevantAPISelected = { apiName ->
-                    // Show's search results
-                    navController.navigate("${R.string.searchResults_section}/query=${apiName}")
-                }
+                onRelevantAPISelected = navigateToSearchResults
             )
         }
 
@@ -140,7 +139,7 @@ fun SearchSuggestionsList(
     onRelevantAPISelected: (String) -> Unit
 
 ) {
-    val samplesFromRepository by rememberSaveable { mutableStateOf(DefaultSampleInfoRepository.getAllSamples()) }
+    val samplesFromRepository by remember { mutableStateOf(DefaultSampleInfoRepository.getAllSamples()) }
 
     Column(
         modifier = Modifier
@@ -240,7 +239,7 @@ fun SampleViewerSearchBar(
             IconButton(onClick = { onExit() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
+                    contentDescription = stringResource(id = R.string.backButton),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -249,7 +248,7 @@ fun SampleViewerSearchBar(
             IconButton(onClick = { onClear() }) {
                 Icon(
                     imageVector = Icons.Default.Clear,
-                    contentDescription = null,
+                    contentDescription = stringResource(id = R.string.clearButton),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -270,7 +269,7 @@ private fun RelevantAPIListItem(relevantApi: String) {
         leadingContent = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.search),
                 modifier = Modifier.size(32.dp)
             )
         },
@@ -289,7 +288,7 @@ private fun SampleListItem(sampleName: String) {
         leadingContent = {
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_icon),
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.sdk_sample_icon_description),
                 modifier = Modifier.size(32.dp)
             )
         },
@@ -302,7 +301,7 @@ private fun SampleListItem(sampleName: String) {
         trailingContent = {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.forward_button),
                 tint = MaterialTheme.colorScheme.primary
             )
         }

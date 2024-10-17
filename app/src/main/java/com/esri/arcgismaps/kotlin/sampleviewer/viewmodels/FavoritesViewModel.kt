@@ -40,11 +40,9 @@ class FavoritesViewModel(private val application: Application) : AndroidViewMode
     /**
      * Retrieve list of favorite Samples using Flow to allow UI to update reactively on change
      */
-    fun getFavorites(): Flow<List<Sample>?> = application.applicationContext.dataStore.data
+    fun getFavorites(): Flow<List<Sample>> = application.applicationContext.dataStore.data
         .map { preferences ->
-
             val jsonString = preferences[FAVORITES_KEY] ?: "[]"
-
             // Convert JSON string into list of Sample objects
             json.decodeFromString(jsonString)
         }
@@ -66,12 +64,10 @@ class FavoritesViewModel(private val application: Application) : AndroidViewMode
      */
     suspend fun addFavorite(favorite: Sample) {
         val currentFavorites = getFavorites().first()
-        val updatedFavorites = currentFavorites?.toMutableList()?.apply {
+        val updatedFavorites = currentFavorites.toMutableList().apply {
             add(favorite)
         }
-        updatedFavorites?.let {
-            saveFavorite(updatedFavorites)
-        }
+        saveFavorite(updatedFavorites)
     }
 
     /**
@@ -79,12 +75,10 @@ class FavoritesViewModel(private val application: Application) : AndroidViewMode
      */
     suspend fun removeFavorite(favorite: Sample) {
         val currentFavorites = getFavorites().first()
-        val updatedFavorites = currentFavorites?.toMutableList()?.apply {
+        val updatedFavorites = currentFavorites.toMutableList().apply {
             remove(favorite)
         }
-        updatedFavorites?.let {
-            saveFavorite(updatedFavorites)
-        }
+        saveFavorite(updatedFavorites)
     }
 
     companion object {

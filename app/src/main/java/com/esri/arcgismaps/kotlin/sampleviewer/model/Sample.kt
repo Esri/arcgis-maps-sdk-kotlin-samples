@@ -38,6 +38,27 @@ data class Sample(
     var score: Double = 0.0
 ) {
     companion object {
+        val PREVIEW_INSTANCE = Sample(
+            name = "Analyze hotspots",
+            codeFiles = listOf(CodeFile("", "")),
+            url = "",
+            readMe = "",
+            screenshotURL = "",
+            metadata = SampleMetadata(
+                description = "",
+                formalName = "Analyze hotspots",
+                ignore = false,
+                imagePaths = listOf(""),
+                keywords = listOf(""),
+                relevantApis = listOf(""),
+                codePaths = listOf(""),
+                sampleCategory = SampleCategory.ANALYSIS,
+                title = "Analyze hotspots"
+            ),
+            isFavorite = false,
+            mainActivity = ""
+        )
+
         /**
          * Returns a list of [CodeFile] objects for the given sample name.
          */

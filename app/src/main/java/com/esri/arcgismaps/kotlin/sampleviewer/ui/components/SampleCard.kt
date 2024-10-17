@@ -18,7 +18,6 @@ package com.esri.arcgismaps.kotlin.sampleviewer.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -27,11 +26,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
@@ -57,10 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.kotlin.sampleviewer.model.CodeFile
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
-import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
-import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleMetadata
 import com.esri.arcgismaps.kotlin.sampleviewer.model.startSample
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.DropdownItemData
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
@@ -78,6 +72,7 @@ fun SampleRow(
         TitleAndIcons(sample, dropdownSampleItems)
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TitleAndIcons(
@@ -88,34 +83,36 @@ private fun TitleAndIcons(
     var expandedDescription by rememberSaveable { mutableStateOf(false) }
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .padding(horizontal = 8.dp),
+            .padding(start = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = sample.name,
+        Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(vertical = 16.dp),
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+                .padding(vertical = 16.dp)
+        ) {
+            Text(
+                text = sample.name,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            ExpandedDescriptionAnimation(expandedDescription, sample)
+        }
 
         IconButton(onClick = { expandedDescription = !expandedDescription }) {
             Icon(
                 imageVector = if (expandedDescription) Icons.Filled.Info else Icons.Outlined.Info,
-                contentDescription = "Sample Description",
+                contentDescription = "Sample Info",
                 tint = MaterialTheme.colorScheme.primary
             )
         }
 
         Column {
-            IconButton(
-                onClick = { expandedMenu = !expandedMenu },
-            ) {
+            IconButton(onClick = { expandedMenu = !expandedMenu }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "More options",
@@ -127,23 +124,23 @@ private fun TitleAndIcons(
                     .height(IntrinsicSize.Max)
                     .background(MaterialTheme.colorScheme.surfaceContainer),
                 expanded = expandedMenu,
-                onDismissRequest = { expandedMenu = false },
+                onDismissRequest = { expandedMenu = false }
             ) {
                 dropdownSampleItems.forEach { option ->
                     DropdownMenuItem(
                         text = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    space = 8.dp,
+                                    alignment = Alignment.CenterHorizontally
+                                )
                             ) {
                                 Icon(
                                     painter = painterResource(id = option.icon),
-                                    contentDescription = null,
+                                    contentDescription = "${option.title} Icon",
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = option.title,
                                     style = MaterialTheme.typography.bodyMedium,
@@ -152,17 +149,15 @@ private fun TitleAndIcons(
                             }
                         },
                         onClick = {
-                            expandedMenu = option.title.lowercase() == "favorite" || option.title.lowercase() == "unfavorite"
+                            expandedMenu = option.title.lowercase().contains("favorite")
                             option.onClick()
                         },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                     )
                 }
             }
         }
     }
-
-    ExpandedDescriptionAnimation(expandedDescription, sample)
 }
 
 @Composable
@@ -173,24 +168,20 @@ private fun ExpandedDescriptionAnimation(
     AnimatedVisibility(
         visible = expandedDescription,
         enter = expandVertically(),
-        exit = shrinkVertically(
-            animationSpec = tween(
-                durationMillis = 1000
-            )
-        )
+        exit = shrinkVertically()
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp, bottom = 8.dp, end = 32.dp)
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
                 text = sample.metadata.description,
                 textAlign = TextAlign.Start,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                color = Color.Gray,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
             )
         }
     }
@@ -203,31 +194,8 @@ fun PreviewSampleRow() {
     SampleAppTheme {
         val dropdownItemData = listOf<DropdownItemData>()
         SampleRow(
-            Sample(
-                name = "Analyze hotspots",
-                codeFiles = listOf(
-                    CodeFile(
-                        "", ""
-                    )
-                ),
-                url = "",
-                readMe = "",
-                screenshotURL = "",
-                metadata = SampleMetadata(
-                    codePaths = listOf(""),
-                    description = "",
-                    formalName = "Analyze hotspots",
-                    ignore = false,
-                    imagePaths = listOf(""),
-                    keywords = listOf(""),
-                    relevantApis = listOf(""),
-                    sampleCategory = SampleCategory.ANALYSIS,
-                    title = "Analyze hotspots"
-                ),
-                isFavorite = false,
-                mainActivity = ""
-            ),
-            dropdownItemData
+            sample = Sample.PREVIEW_INSTANCE,
+            dropdownSampleItems = dropdownItemData
         )
     }
 }

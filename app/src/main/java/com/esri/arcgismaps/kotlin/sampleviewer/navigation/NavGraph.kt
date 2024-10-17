@@ -16,21 +16,18 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer.navigation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.esri.arcgismaps.kotlin.sampleviewer.R
+import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
+import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about.AboutScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.codePager.SampleInfoScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.home.HomeCategoryScreen
@@ -38,83 +35,141 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.SampleListS
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchResults
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchScreen
 
+// Composition Local for the app wide navigation controller
+val LocalNavController = compositionLocalOf<NavHostController> {
+    error("LocalNavController not found")
+}
+
 /**
  *  A composable function to host the navigation system.
  */
 @Composable
 fun NavGraph() {
-    val navController = rememberNavController()
+    val navController = if (LocalInspectionMode.current) {
+        rememberNavController()
+    } else {
+        LocalNavController.current
+    }
 
     NavHost(
         navController = navController,
-        startDestination = R.string.homeCategory_section.toString(),
+        startDestination = Routes.HOME_SCREEN,
     ) {
 
-        composable(R.string.homeCategory_section.toString()) {
-            HomeCategoryScreen(navController)
+        composable(Routes.HOME_SCREEN) {
+            HomeCategoryScreen(
+                navigateToSearch = { navController.navigate(Routes.SEARCH_SCREEN) },
+                navigateToAbout = { navController.navigate(Routes.ABOUT_SCREEN) },
+                navigateToCategory = { navController.navigate(Routes.createCategoryRoute(it)) }
+            )
         }
 
-        composable(R.string.about_section.toString()) {
-            AboutScreen(navController)
+        composable(Routes.ABOUT_SCREEN) {
+            AboutScreen()
         }
 
         composable(
-            route = "${R.string.sampleList_section}/category={category}",
+            route = Routes.CATEGORY_SAMPLE_LIST_ROUTE,
             arguments = listOf(navArgument("category") { type = NavType.StringType })
         ) { backStackEntry ->
-            val categoryNavEntry = backStackEntry.arguments?.getString("category") ?: ""
-            SampleListScreen(categoryNavEntry, navController)
+            val categoryNavEntry = backStackEntry.arguments?.getString("category")
+            if (!categoryNavEntry.isNullOrEmpty())
+                SampleListScreen(
+                    categoryNavEntry = categoryNavEntry,
+                    navigateToInfo = { optionPosition, sample ->
+                        navController.navigate(
+                            Routes.createSampleInfoRoute(optionPosition, sample.name)
+                        )
+                    })
+            else {
+                navController.navigateToHome()
+            }
         }
 
         composable(
-            route = "${R.string.codePager_section}/optionPosition={optionPosition}/sampleName={sampleName}",
+            route = Routes.SAMPLE_INFO_ROUTE,
             arguments = listOf(
                 navArgument("optionPosition") { type = NavType.IntType },
                 navArgument("sampleName") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val optionPositionNavEntry = backStackEntry.arguments?.getInt("optionPosition") ?: 0
-            val sampleNameNavEntry = backStackEntry.arguments?.getString("sampleName") ?: ""
-            SampleInfoScreen(
-                onBackPressed = { navController.popBackStack() },
-                optionPosition = optionPositionNavEntry,
-                sampleName = sampleNameNavEntry
-            )
-        }
+            val optionPositionNavEntry = backStackEntry.arguments?.getInt("optionPosition")
+            val sampleNameNavEntry = backStackEntry.arguments?.getString("sampleName")
 
-        composable(R.string.search_section.toString()) {
-            EnterAnimation {
-                SearchScreen(
-                    navController = navController)
+            if (optionPositionNavEntry != null && !sampleNameNavEntry.isNullOrEmpty()) {
+                val sampleNavEntry = DefaultSampleInfoRepository.getSampleByName(sampleNameNavEntry)
+                SampleInfoScreen(
+                    sample = sampleNavEntry,
+                    optionPosition = optionPositionNavEntry
+                )
+            } else {
+                navController.navigateToHome()
             }
         }
 
+        composable(Routes.SEARCH_SCREEN) {
+            SearchScreen(navigateToSearchResults = {
+                navController.navigate(Routes.createSearchResultsRoute(it))
+            })
+        }
+
         composable(
-            route = "${R.string.searchResults_section}/query={query}",
+            route = Routes.SEARCH_RESULTS_ROUTE,
             arguments = listOf(navArgument("query") { type = NavType.StringType })
         ) { backStackEntry ->
-                val queryNavEntry = backStackEntry.arguments?.getString("query") ?: ""
-            SearchResults(
-                searchQuery = queryNavEntry,
-                navController = navController)
+            val queryNavEntry = backStackEntry.arguments?.getString("query")
+            if (!queryNavEntry.isNullOrEmpty()) {
+                SearchResults(
+                    searchQuery = queryNavEntry,
+                    navigateToInfo = { optionPosition, sample ->
+                        navController.navigate(
+                            Routes.createSampleInfoRoute(
+                                optionPosition,
+                                sample.name
+                            )
+                        )
+                    })
+            } else {
+                navController.navigateToHome()
+            }
         }
     }
 }
 
-@Composable
-fun EnterAnimation(content: @Composable () -> Unit) {
-    val transitionState = remember { MutableTransitionState(false) }
-    transitionState.targetState = true
-    AnimatedVisibility(
-        visibleState = transitionState,
-        enter = slideInVertically(
-            initialOffsetY = { fullHeight -> fullHeight } // slide in from the bottom
-        ) + fadeIn(initialAlpha = 0.3f), // fade-in effect
-        exit = slideOutVertically(
-            targetOffsetY = { fullHeight -> fullHeight } // slide out to the bottom
-        ) + fadeOut(), // fade-out effect
-        modifier = Modifier
-    ) {
-        content()
+/**
+ * Navigates to the home screen, clearing the back stack and restoring the state.
+ */
+private fun NavHostController.navigateToHome() {
+    navigate(Routes.HOME_SCREEN) {
+        popUpTo(graph.findStartDestination().id) { saveState = false }
+        launchSingleTop = true
+        restoreState = false
+    }
+}
+
+/**
+ * Navigation Routes for the application.
+ */
+object Routes {
+    private const val SAMPLE_LIST = "Sample List"
+    private const val SAMPLE_INFO = "Sample Info"
+    private const val SEARCH_RESULTS = "Search Results"
+    const val HOME_SCREEN = "Sample Categories"
+    const val ABOUT_SCREEN = "About"
+    const val SEARCH_SCREEN = "Search"
+    const val CATEGORY_SAMPLE_LIST_ROUTE = "$SAMPLE_LIST/{category}"
+    const val SAMPLE_INFO_ROUTE = "$SAMPLE_INFO/{optionPosition}/{sampleName}"
+    const val SEARCH_RESULTS_ROUTE = "$SEARCH_RESULTS/{query}"
+
+    fun createCategoryRoute(category: SampleCategory): String {
+        return "$SAMPLE_LIST/${category}"
+    }
+
+    fun createSearchResultsRoute(query: String): String {
+        return "$SEARCH_RESULTS/$query"
+    }
+
+    fun createSampleInfoRoute(optionPosition: Int, sampleName: String): String {
+        return "$SAMPLE_INFO/$optionPosition/$sampleName"
     }
 }

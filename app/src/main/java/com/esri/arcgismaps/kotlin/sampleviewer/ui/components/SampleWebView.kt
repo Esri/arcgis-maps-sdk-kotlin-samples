@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.viewinterop.AndroidView
 
 /**
@@ -32,6 +33,10 @@ import androidx.compose.ui.viewinterop.AndroidView
  */
 @Composable
 fun CodeView(code: String) {
+    if (LocalInspectionMode.current) {
+        return // if composition is composed inside a preview component
+    }
+
     val isDeviceInDarkMode = isSystemInDarkTheme()
     AndroidView(
         modifier = Modifier
@@ -61,6 +66,10 @@ fun CodeView(code: String) {
 fun ReadmeView(
     markdownText: String
 ) {
+    if (LocalInspectionMode.current) {
+        return // if composition is composed inside a preview component
+    }
+
     val isDeviceInDarkMode = isSystemInDarkTheme()
     AndroidView(
         modifier = Modifier
