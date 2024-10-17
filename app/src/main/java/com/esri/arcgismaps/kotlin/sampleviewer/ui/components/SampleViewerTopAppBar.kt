@@ -25,10 +25,11 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun SampleViewerTopAppBar(title: String) {
-    val navController =
-        if (LocalInspectionMode.current)
-            rememberNavController()
-        else LocalNavController.current
+    val navController = if (LocalInspectionMode.current) {
+        rememberNavController()
+    } else {
+        LocalNavController.current
+    }
 
     TopAppBar(
         title = {

@@ -55,8 +55,8 @@ fun SampleInfoScreen(
 ) {
     val codePagerTitles = mutableListOf<String>()
     codePagerTitles.add("README.md")
-    for (codeFile in sample.codeFiles) {
-        codePagerTitles.add(codeFile.name)
+    sample.codeFiles.forEach {
+        codePagerTitles.add(it.name)
     }
     Scaffold(
         topBar = {

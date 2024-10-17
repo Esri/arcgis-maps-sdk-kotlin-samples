@@ -29,10 +29,11 @@ val LocalNavController = compositionLocalOf<NavHostController> {
  */
 @Composable
 fun NavGraph() {
-    val navController =
-        if (LocalInspectionMode.current)
-            rememberNavController()
-        else LocalNavController.current
+    val navController = if (LocalInspectionMode.current) {
+        rememberNavController()
+    } else {
+        LocalNavController.current
+    }
 
     NavHost(
         navController = navController,
