@@ -117,18 +117,4 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
     override fun getSamplesInCategory(sampleCategory: SampleCategory): List<Sample> {
         return sampleList.filter { it.metadata.sampleCategory == sampleCategory }
     }
-
-    /**
-     * Get a list of samples for the given category string.
-     */
-    override fun getSamplesInCategory(sampleCategoryString: String): List<Sample> {
-        return sampleList.filter { it.metadata.sampleCategory.text == sampleCategoryString }
-    }
-
-    /**
-     * Get a list of all samples in the app.
-     */
-    override fun getAllSamples(): List<Sample> {
-        return sampleList
-    }
 }

@@ -53,7 +53,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -139,8 +138,6 @@ fun SearchSuggestionsList(
     onRelevantAPISelected: (String) -> Unit
 
 ) {
-    val samplesFromRepository by remember { mutableStateOf(DefaultSampleInfoRepository.getAllSamples()) }
-
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -169,8 +166,7 @@ fun SearchSuggestionsList(
                     key = { suggestion -> suggestion }
                 ) { suggestion ->
                     if (suggestion.second) { // Sample Suggestion
-                        val sample = samplesFromRepository.find { it.name == suggestion.first }
-                            ?: return@items
+                        val sample = DefaultSampleInfoRepository.getSampleByName(suggestion.first)
                         Row(
                             modifier = Modifier
                                 .animateItem()
