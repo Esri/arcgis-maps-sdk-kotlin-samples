@@ -1,3 +1,19 @@
+/* Copyright 2024 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.esri.arcgismaps.kotlin.sampleviewer.ui.components
 
 import android.annotation.SuppressLint
@@ -9,14 +25,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.viewinterop.AndroidView
 
 /**
- * SampleViewer WebViewer to display formatted README.md and .kt code files.
+ * WebViewer to display formatted .kt code files.
  */
-
 @Composable
 fun CodeView(code: String) {
+    if (LocalInspectionMode.current) {
+        return // if composition is composed inside a preview component
+    }
+
     val isDeviceInDarkMode = isSystemInDarkTheme()
     AndroidView(
         modifier = Modifier
@@ -28,7 +48,7 @@ fun CodeView(code: String) {
                 /* baseUrl = */ "file:///android_asset/www/highlight/",
                 /* data = */ formatWebViewHTMLContent(
                     rawFileContents = code,
-                    sampleWebViewType = SampleWebViewType.CODEVIEW,
+                    webViewType = WebViewType.CODE_VIEW,
                     isDeviceInDarkMode = isDeviceInDarkMode
                 ),
                 /* mimeType = */ "text/html",
@@ -39,10 +59,17 @@ fun CodeView(code: String) {
     )
 }
 
+/**
+ * WebViewer to display README.md files.
+ */
 @Composable
-fun MarkdownTextView(
+fun ReadmeView(
     markdownText: String
 ) {
+    if (LocalInspectionMode.current) {
+        return // if composition is composed inside a preview component
+    }
+
     val isDeviceInDarkMode = isSystemInDarkTheme()
     AndroidView(
         modifier = Modifier
@@ -54,7 +81,7 @@ fun MarkdownTextView(
                     /* baseUrl = */ "file:///android_asset/www/highlight/",
                     /* data = */ formatWebViewHTMLContent(
                         rawFileContents = markdownText,
-                        sampleWebViewType = SampleWebViewType.README,
+                        webViewType = WebViewType.README_VIEW,
                         isDeviceInDarkMode = isDeviceInDarkMode
                     ),
                     /* mimeType = */ "text/html",
@@ -68,14 +95,14 @@ fun MarkdownTextView(
 
 /**
  * Set up the HTML [String] to be displayed based on the given [rawFileContents]
- * given the [sampleWebViewType]
+ * given the [webViewType].
  */
 fun formatWebViewHTMLContent(
     rawFileContents: String,
-    sampleWebViewType: SampleWebViewType,
+    webViewType: WebViewType,
     isDeviceInDarkMode: Boolean
 ): String {
-    val webViewHTML = if (sampleWebViewType == SampleWebViewType.README) {
+    val webViewHTML = if (webViewType == WebViewType.README_VIEW) {
         readmeHTML.replace("\\(content)", rawFileContents)
     } else {
         if (!isDeviceInDarkMode) {
@@ -90,7 +117,7 @@ fun formatWebViewHTMLContent(
 }
 
 /**
- * Create the [WebView] using the default settings to load the static html
+ * Create the [WebView] using the default settings to load the static html.
  */
 @SuppressLint("SetJavaScriptEnabled")
 fun createWebView(context: Context): WebView {
@@ -99,25 +126,13 @@ fun createWebView(context: Context): WebView {
             javaScriptEnabled = true
             domStorageEnabled = true
         }
-        addJavascriptInterface(AndroidJSInterface, "Android")
         alpha = 0.99f // TODO: Weirdly, without this the screen crashes on popBackStack (#4632)
     }
 }
 
-// Default JS object interface. This could be used to support line highlighting
-// or display dialog/toast messages.
-object AndroidJSInterface {
-    /**
-    @JavascriptInterface
-    fun onClicked() {
-    Log.d("InfoIcon", "IconClicked")
-    }
-     */
-}
-
-enum class SampleWebViewType {
-    README,
-    CODEVIEW
+enum class WebViewType {
+    README_VIEW,
+    CODE_VIEW
 }
 
 val codeViewHTML: String = """

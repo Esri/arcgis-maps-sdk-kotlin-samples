@@ -48,17 +48,11 @@ android {
             }
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            // If signing.properties file not found, gradle will build an unsigned APK.
+            // For release builds, provide the required "signingPropsFilePath" for a signed APK, using:
+            // ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties
             if (signingPropsFile.exists())
                 signingConfig = signingConfigs.getByName("esriSignature")
-            else {
-                Log.e(
-                    tag = "GradleSigningException",
-                    message = "signing.properties file not found: ${signingPropsFile.absolutePath}, this will build an unsigned APK.\n" +
-                            "Please provide the required \"signingPropsFilePath\" for a signed APK, using:\n" +
-                            "./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties"
-                )
-            }
-
         }
     }
 
@@ -83,6 +77,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.http)
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 }
