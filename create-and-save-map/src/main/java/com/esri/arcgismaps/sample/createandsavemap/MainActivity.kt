@@ -22,6 +22,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -29,7 +30,8 @@ import com.esri.arcgismaps.sample.createandsavemap.screens.MainScreen
 import com.arcgismaps.toolkit.authentication.DialogAuthenticator
 import com.arcgismaps.toolkit.authentication.signOut
 import com.esri.arcgismaps.sample.createandsavemap.components.MapViewModel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -40,18 +42,19 @@ class MainActivity : ComponentActivity() {
         ArcGISEnvironment.apiKey = null
 
         // Sign out of any portals which are already authenticated
-        runBlocking {
+        lifecycleScope.launch(Dispatchers.Main) {
             ArcGISEnvironment.authenticationManager.signOut()
-        }
-        setContent {
-            SampleAppTheme {
-                SampleApp()
+
+            setContent {
+                SampleAppTheme {
+                    CreateAndSaveMapApp()
+                }
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun CreateAndSaveMapApp() {
         val mapViewModel: MapViewModel = viewModel()
         Surface(
             color = MaterialTheme.colorScheme.background
@@ -59,9 +62,9 @@ class MainActivity : ComponentActivity() {
             MainScreen(
                 sampleName = getString(R.string.app_name)
             )
-        }
 
-        // authenticator at bottom can draw over the top of the sample
-        DialogAuthenticator(authenticatorState = mapViewModel.authenticatorState)
+            // authenticator at bottom can draw over the top of the sample
+            DialogAuthenticator(authenticatorState = mapViewModel.authenticatorState)
+        }
     }
 }
