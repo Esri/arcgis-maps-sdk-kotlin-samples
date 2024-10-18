@@ -16,7 +16,7 @@ ktxAndroidCore = "1.13.0"
 kotlinCompilerExt = "1.5.12"
 # Compose versions
 composeActivityVersion = "1.9.0"
-composeBOM = "2024.04.01"
+composeBOM = "2024.09.03"
 # Library versions
 appcompatVersion = "1.6.1"
 commonsIoVersion = "2.15.1"

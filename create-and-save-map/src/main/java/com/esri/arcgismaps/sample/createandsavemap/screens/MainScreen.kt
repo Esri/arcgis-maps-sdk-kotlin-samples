@@ -43,8 +43,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -87,9 +89,10 @@ fun MainScreen(sampleName: String) {
     val composableScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val controlsBottomSheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false).apply {
-            composableScope.launch { hide() }
-        }
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            skipHiddenState = false
+        )
     )
 
     Scaffold(
@@ -274,7 +277,7 @@ fun FolderDropdown(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(),
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
             value = label,
             onValueChange = { newDescription -> label = newDescription },
             label = { Text(text = "Folder:") },
@@ -339,7 +342,7 @@ fun BasemapDropdown(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(),
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
             value = basemapStyle,
             onValueChange = {},
             label = { Text(text = "Basemap Style:") },
@@ -390,7 +393,7 @@ fun LayersDropdown(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(),
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
             value = "Select...",
             onValueChange = {},
             label = { Text(text = "Operational Layers:") },

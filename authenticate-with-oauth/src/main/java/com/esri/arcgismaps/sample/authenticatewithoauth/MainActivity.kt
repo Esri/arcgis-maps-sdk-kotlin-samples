@@ -22,6 +22,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.authentication.DialogAuthenticator
@@ -29,15 +30,20 @@ import com.arcgismaps.toolkit.authentication.signOut
 import com.esri.arcgismaps.sample.authenticatewithoauth.components.MapViewModel
 import com.esri.arcgismaps.sample.authenticatewithoauth.screens.MainScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Remove any API key already set
+        // The concurrent use of an API key and user authentication is not supported
+        ArcGISEnvironment.apiKey = null
+
         // Sign out of any portals which are already authenticated
-        runBlocking {
+        lifecycleScope.launch(Dispatchers.Main) {
             ArcGISEnvironment.authenticationManager.signOut()
         }
 
