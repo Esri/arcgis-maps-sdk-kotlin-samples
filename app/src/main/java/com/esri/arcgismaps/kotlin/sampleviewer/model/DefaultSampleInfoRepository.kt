@@ -36,6 +36,8 @@ import kotlinx.serialization.json.Json
  */
 object DefaultSampleInfoRepository : SampleInfoRepository {
 
+    private var isInitialized = false
+
     private val sampleList = mutableListOf<Sample>()
     private val sampleListMutex = Mutex()
 
@@ -48,6 +50,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
      * of [Sample] objects.
      */
     suspend fun load(context: Context) {
+        if (isInitialized) return
         // Iterate through the metadata folder for all metadata files
         val json = Json { ignoreUnknownKeys = true }
         context.assets.list("samples")?.forEach { samplePath ->
@@ -93,6 +96,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
             // Populates the Room SQL database
             populateDatabase(context)
         }
+        isInitialized = true
     }
 
     /**
