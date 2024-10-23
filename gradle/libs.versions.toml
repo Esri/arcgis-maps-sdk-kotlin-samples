@@ -83,6 +83,8 @@ arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgi
 arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-featureforms" }
 
 ### Third party libraries
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version = "3.0.0-rc01" }
+coil-network-http = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version = "3.0.0-rc01" }
 
 ### Testing libs
 junit = { group = "junit", name = "junit", version.ref = "junit" }

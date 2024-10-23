@@ -1,8 +1,23 @@
+/* Copyright 2024 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about
 
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
@@ -12,12 +27,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -30,8 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,153 +50,135 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
- * Showcase information about the application
+ * Showcase information about the application.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(navController: NavController) {
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    val context = LocalContext.current
+fun AboutScreen() {
     Scaffold(
-        topBar = {
-            SampleViewerTopAppBar(navController = navController, title = "About", context = context)
-        },
         modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize(),
+        topBar = { SampleViewerTopAppBar(title = "About") },
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) { innerPadding ->
-        AboutContent(innerPadding, context)
+        AboutContent(Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun AboutContent(innerPadding: PaddingValues, context: Context) {
+fun AboutContent(modifier: Modifier) {
     Column(
-        Modifier
-            .padding(innerPadding)
+        modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Column(Modifier.padding(20.dp)) {
-            val size = (LocalConfiguration.current.screenWidthDp * 0.20).dp
-            AboutIcon(context, size)
-            TitleAndCopyrightText(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            AboutVersionsText(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            PoweredBySectionText(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            EsriCommunitySectionText(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            GithubRepositorySectionText(context)
-            Spacer(modifier = Modifier.height(20.dp))
-            APISectionText(context)
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            TitleAndCopyrightSection()
+            VersionsSection()
+            PoweredBySection()
+            EsriCommunitySection()
+            GithubSection()
+            ApiDetailsSection()
         }
     }
 }
 
 @Composable
-private fun AboutIcon(context: Context, size: Dp) {
+private fun AboutIcon() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val size = (LocalConfiguration.current.screenWidthDp * 0.20).dp
         Image(
-            painter = painterResource(R.drawable.arcgis_maps_sdks_64),
-            contentDescription = context.getString(R.string.sdk_sample_icon_description),
             modifier = Modifier.size(size),
+            painter = painterResource(R.drawable.arcgis_maps_sdks_64),
+            contentDescription = stringResource(R.string.sdk_sample_icon_description)
         )
     }
 }
 
 @Composable
-private fun TitleAndCopyrightText(context: Context) {
+private fun TitleAndCopyrightSection() {
     Column(
         modifier = Modifier
-            .padding(top = 16.dp)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        AboutIcon()
         Text(
-            text = context.getString(R.string.about_title),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = stringResource(R.string.about_title),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            style = MaterialTheme.typography.titleMedium
         )
         Text(
-            text = context.getString(R.string.copyright_text),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = stringResource(R.string.copyright_text),
             textAlign = TextAlign.Center,
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            style = MaterialTheme.typography.labelMedium
         )
     }
 }
 
 @Composable
-private fun AboutVersionsText(context: Context) {
-
+private fun VersionsSection() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
+            .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp))
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = context.getString(R.string.app_version),
+                text = stringResource(R.string.app_version),
                 textAlign = TextAlign.Start,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.labelLarge,
             )
-            //FIXME: This version here is hardcoded
             Text(
                 text = BuildConfig.VERSION_CODE.toString(),
                 textAlign = TextAlign.End,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = context.getString(R.string.SDK_version),
+                text = stringResource(R.string.SDK_version),
                 textAlign = TextAlign.Start,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.labelLarge
             )
             Text(
                 text = BuildConfig.ARCGIS_VERSION,
                 textAlign = TextAlign.End,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -194,30 +186,28 @@ private fun AboutVersionsText(context: Context) {
 }
 
 @Composable
-private fun PoweredBySectionText(context: Context) {
+private fun PoweredBySection() {
     var isAcknowledgementsDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
+            .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp))
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.powered_by),
+                text = stringResource(R.string.powered_by),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp, top = 8.dp)) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
@@ -226,29 +216,27 @@ private fun PoweredBySectionText(context: Context) {
                             Uri.parse("https://github.com/Esri/arcgis-runtime-toolkit-android")
                         )
                         context.startActivity(intent)
-                    }
-
+                    },
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = context.getString(R.string.ArcGIS_Maps_SDK_Toolkit),
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.ArcGIS_Maps_SDK_Toolkit),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
-
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
@@ -257,37 +245,37 @@ private fun PoweredBySectionText(context: Context) {
                             Uri.parse("https://developers.arcgis.com/kotlin/")
                         )
                         context.startActivity(intent)
-                    }
+                    },
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = context.getString(R.string.ArcGIS_Maps_SDK_Kotlin),
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.ArcGIS_Maps_SDK_Kotlin),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
-
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { isAcknowledgementsDialogVisible = true }
+                    .clickable { isAcknowledgementsDialogVisible = true },
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = "Acknowledgements",
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -296,12 +284,11 @@ private fun PoweredBySectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
         }
-
         if (isAcknowledgementsDialogVisible) {
             AcknowledgementsDialog {
                 isAcknowledgementsDialogVisible = false
@@ -311,9 +298,13 @@ private fun PoweredBySectionText(context: Context) {
 }
 
 @Composable
-private fun EsriCommunitySectionText(context: Context) {
+private fun EsriCommunitySection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
@@ -321,42 +312,38 @@ private fun EsriCommunitySectionText(context: Context) {
                 )
                 context.startActivity(intent)
             }
-            .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.browse_and_discuss),
+                text = stringResource(R.string.browse_and_discuss),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp)) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = context.getString(R.string.esri_community),
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.esri_community),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -409,9 +396,13 @@ fun AcknowledgementsDialog(onDismissRequest: () -> Unit) {
 }
 
 @Composable
-private fun GithubRepositorySectionText(context: Context) {
+private fun GithubSection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
@@ -419,22 +410,17 @@ private fun GithubRepositorySectionText(context: Context) {
                 )
                 context.startActivity(intent)
             }
-            .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer,
-                RoundedCornerShape(8.dp)
-            )
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.github_issue),
+                text = stringResource(R.string.github_issue),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp)) {
@@ -443,10 +429,10 @@ private fun GithubRepositorySectionText(context: Context) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = context.getString(R.string.github_repo),
-                    textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                     modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.github_repo),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
@@ -455,7 +441,7 @@ private fun GithubRepositorySectionText(context: Context) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -464,9 +450,13 @@ private fun GithubRepositorySectionText(context: Context) {
 }
 
 @Composable
-private fun APISectionText(context: Context) {
+private fun ApiDetailsSection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
@@ -474,21 +464,17 @@ private fun APISectionText(context: Context) {
                 )
                 context.startActivity(intent)
             }
-            .fillMaxSize()
-            .background(
-                MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp)
-            )
             .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = context.getString(R.string.API_details),
+                text = stringResource(R.string.API_details),
                 fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                style = MaterialTheme.typography.titleSmall
             )
         }
         Column(modifier = Modifier.padding(start = 16.dp)) {
@@ -497,19 +483,19 @@ private fun APISectionText(context: Context) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = context.getString(R.string.API_ref),
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.API_ref),
                     textAlign = TextAlign.Start,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Size of the clickable area
-                        .padding(8.dp) // Padding inside the Box
+                        .size(48.dp)
+                        .padding(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.keyboard_arrow_right),
-                        contentDescription = context.getString(R.string.forward_button),
+                        contentDescription = stringResource(R.string.forward_button)
                     )
                 }
             }
@@ -517,12 +503,9 @@ private fun APISectionText(context: Context) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewAboutScreen() {
-    SampleAppTheme {
-        AboutScreen(navController = rememberNavController())
-    }
+    SampleAppTheme { AboutScreen() }
 }
