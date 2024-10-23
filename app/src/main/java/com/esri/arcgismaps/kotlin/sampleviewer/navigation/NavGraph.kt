@@ -16,9 +16,10 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer.navigation
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -35,22 +36,12 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.SampleListS
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchResults
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchScreen
 
-// Composition Local for the app wide navigation controller
-val LocalNavController = compositionLocalOf<NavHostController> {
-    error("LocalNavController not found")
-}
-
 /**
  *  A composable function to host the navigation system.
  */
 @Composable
 fun NavGraph() {
-    val navController = if (LocalInspectionMode.current) {
-        rememberNavController()
-    } else {
-        LocalNavController.current
-    }
-
+    val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = Routes.HOME_SCREEN,
@@ -65,7 +56,7 @@ fun NavGraph() {
         }
 
         composable(Routes.ABOUT_SCREEN) {
-            AboutScreen()
+            AboutScreen(popBackStack = { navController.popBackStack() })
         }
 
         composable(
@@ -80,8 +71,11 @@ fun NavGraph() {
                         navController.navigate(
                             Routes.createSampleInfoRoute(optionPosition, sample.name)
                         )
-                    })
+                    },
+                    popBackStack = { navController.popBackStack() }
+                )
             else {
+                InvalidArgsException("categoryNavEntry is null/empty")
                 navController.navigateToHome()
             }
         }
@@ -100,17 +94,25 @@ fun NavGraph() {
                 val sampleNavEntry = DefaultSampleInfoRepository.getSampleByName(sampleNameNavEntry)
                 SampleInfoScreen(
                     sample = sampleNavEntry,
-                    optionPosition = optionPositionNavEntry
+                    optionPosition = optionPositionNavEntry,
+                    popBackStack = { navController.popBackStack() }
                 )
+            } else if (optionPositionNavEntry == null) {
+                InvalidArgsException("optionPositionNavEntry is null")
+                navController.navigateToHome()
             } else {
+                InvalidArgsException("sampleNameNavEntry is null/empty")
                 navController.navigateToHome()
             }
         }
 
         composable(Routes.SEARCH_SCREEN) {
-            SearchScreen(navigateToSearchResults = {
-                navController.navigate(Routes.createSearchResultsRoute(it))
-            })
+            SearchScreen(
+                navigateToSearchResults = {
+                    navController.navigate(Routes.createSearchResultsRoute(it))
+                },
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(
@@ -128,12 +130,22 @@ fun NavGraph() {
                                 sample.name
                             )
                         )
-                    })
+                    },
+                    popBackStack = { navController.popBackStack() }
+                )
             } else {
                 navController.navigateToHome()
+                InvalidArgsException("queryNavEntry is null/empty")
             }
         }
     }
+}
+
+@Composable
+fun InvalidArgsException(message: String) {
+    val exceptionTag = "InvalidArgsException"
+    Toast.makeText(LocalContext.current, "$exceptionTag: $message", Toast.LENGTH_SHORT).show()
+    Log.e(exceptionTag, message)
 }
 
 /**
@@ -141,9 +153,8 @@ fun NavGraph() {
  */
 private fun NavHostController.navigateToHome() {
     navigate(Routes.HOME_SCREEN) {
-        popUpTo(graph.findStartDestination().id) { saveState = false }
+        popUpTo(graph.findStartDestination().id)
         launchSingleTop = true
-        restoreState = false
     }
 }
 

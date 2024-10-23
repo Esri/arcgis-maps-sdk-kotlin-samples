@@ -67,11 +67,11 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
  * Showcase information about the application.
  */
 @Composable
-fun AboutScreen() {
+fun AboutScreen(popBackStack: () -> Unit) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        topBar = { SampleViewerTopAppBar(title = "About") },
+        topBar = { SampleViewerTopAppBar(title = "About", popBackStack) },
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) { innerPadding ->
@@ -507,5 +507,5 @@ private fun ApiDetailsSection() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewAboutScreen() {
-    SampleAppTheme { AboutScreen() }
+    SampleAppTheme { AboutScreen {} }
 }

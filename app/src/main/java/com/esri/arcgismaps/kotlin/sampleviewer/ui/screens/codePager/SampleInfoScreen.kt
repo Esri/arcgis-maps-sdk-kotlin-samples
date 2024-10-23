@@ -67,7 +67,8 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 @Composable
 fun SampleInfoScreen(
     sample: Sample,
-    optionPosition: Int
+    optionPosition: Int,
+    popBackStack: () -> Unit
 ) {
     val codePagerTitles = mutableListOf<String>()
     codePagerTitles.add("README.md")
@@ -75,9 +76,7 @@ fun SampleInfoScreen(
         codePagerTitles.add(it.name)
     }
     Scaffold(
-        topBar = {
-            SampleViewerTopAppBar(title = sample.name)
-        },
+        topBar = { SampleViewerTopAppBar(title = sample.name, popBackStack) },
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier
@@ -201,7 +200,8 @@ fun PreviewSampleInfoScreen() {
     SampleAppTheme {
         SampleInfoScreen(
             sample = Sample.PREVIEW_INSTANCE,
-            optionPosition = 0
+            optionPosition = 0,
+            popBackStack = {}
         )
     }
 }

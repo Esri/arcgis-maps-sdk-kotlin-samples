@@ -62,7 +62,11 @@ import java.util.Locale
  * Shows the list of samples.
  */
 @Composable
-fun SampleListScreen(categoryNavEntry: String, navigateToInfo: (Int, Sample) -> Unit) {
+fun SampleListScreen(
+    categoryNavEntry: String,
+    navigateToInfo: (Int, Sample) -> Unit,
+    popBackStack: () -> Unit
+) {
     val viewModel: FavoritesViewModel = viewModel()
     val favoriteSamplesFlow = remember { viewModel.getFavorites() }
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
@@ -70,9 +74,7 @@ fun SampleListScreen(categoryNavEntry: String, navigateToInfo: (Int, Sample) -> 
     val samplesList = DefaultSampleInfoRepository.getSamplesInCategory(category)
 
     Scaffold(
-        topBar = {
-            SampleViewerTopAppBar(title = category.text)
-        },
+        topBar = { SampleViewerTopAppBar(title = category.text, popBackStack) },
         modifier = Modifier
             .fillMaxSize(),
     ) { innerPadding ->

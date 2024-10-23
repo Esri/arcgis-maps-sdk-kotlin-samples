@@ -37,13 +37,15 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
  * Shows search results based on valid query searches.
  */
 @Composable
-fun SearchResults(searchQuery: String, navigateToInfo: (Int, Sample) -> Unit) {
+fun SearchResults(
+    searchQuery: String,
+    navigateToInfo: (Int, Sample) -> Unit,
+    popBackStack: () -> Unit
+) {
     val searchViewModel: SampleSearchViewModel = viewModel()
     searchViewModel.rankedSearch(searchQuery)
     Scaffold(
-        topBar = {
-            SampleViewerTopAppBar(title = searchQuery)
-        }) { innerPadding ->
+        topBar = { SampleViewerTopAppBar(title = searchQuery, popBackStack) }) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {

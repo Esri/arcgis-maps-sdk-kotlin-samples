@@ -74,16 +74,14 @@ import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.model.startSample
-import com.esri.arcgismaps.kotlin.sampleviewer.navigation.LocalNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 
 /**
  * Allows functionality to search samples to get two types of categories: Samples and Relevant APIs attached to Sample Readmes
  */
 @Composable
-fun SearchScreen(navigateToSearchResults: (String) -> Unit) {
+fun SearchScreen(navigateToSearchResults: (String) -> Unit, popBackStack: () -> Unit) {
     val context = LocalContext.current
-    val navController = LocalNavController.current
     val focusManager = LocalFocusManager.current
     val viewModel: SampleSearchViewModel = viewModel()
     var searchQuery by remember { mutableStateOf("") }
@@ -105,7 +103,7 @@ fun SearchScreen(navigateToSearchResults: (String) -> Unit) {
                 },
                 onExit = {
                     keyboardController?.hide()
-                    navController.popBackStack()
+                    popBackStack()
                 },
                 onSearch = {
                     if (searchQuery.trim().isNotEmpty()) {

@@ -27,12 +27,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.R
-import com.esri.arcgismaps.kotlin.sampleviewer.navigation.LocalNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 
 /**
@@ -40,13 +37,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun SampleViewerTopAppBar(title: String) {
-    val navController = if (LocalInspectionMode.current) {
-        rememberNavController()
-    } else {
-        LocalNavController.current
-    }
-
+fun SampleViewerTopAppBar(title: String, popBackStack: () -> Unit) {
     TopAppBar(
         title = {
             Text(
@@ -60,7 +51,7 @@ fun SampleViewerTopAppBar(title: String) {
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = popBackStack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = stringResource(R.string.backButton)
@@ -75,7 +66,7 @@ fun SampleViewerTopAppBar(title: String) {
 @Composable
 fun PreviewSampleViewerTopAppBar() {
     SampleAppTheme {
-        SampleViewerTopAppBar("Sample Viewer title")
+        SampleViewerTopAppBar(title = "Sample Viewer title", popBackStack = {})
     }
 }
 
