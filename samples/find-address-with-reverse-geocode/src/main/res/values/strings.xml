@@ -1,0 +1,4 @@
+<resources>
+    <string name="find_address_with_reverse_geocode_app_name">Find address with reverse geocode</string>
+    <string name="tap_on_map_to_find_address">Tap on map to find address</string>
+</resources>
