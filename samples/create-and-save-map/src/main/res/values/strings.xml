@@ -1,0 +1,7 @@
+<resources>
+    <string name="create_and_save_map_app_name">Create and Save Map</string>
+    <string name="portal_url">https://www.arcgis.com</string>
+    <string name="client_id">InMihrA8yZXBALCv</string>
+    <string name="redirect_url">create-save-map://auth</string>
+    <string name="createAndSaveMap_failedToLoadPortal">Failed to load portal</string>
+</resources>
