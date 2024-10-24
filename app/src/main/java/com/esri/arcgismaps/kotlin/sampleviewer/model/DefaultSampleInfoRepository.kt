@@ -44,7 +44,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
      * of [Sample] objects.
      */
     suspend fun load(context: Context) {
-        if (isInitialized.compareAndSet(false,true)) {
+        if (isInitialized.compareAndSet(false, true)) {
             // Iterate through the metadata folder for all metadata files
             val json = Json { ignoreUnknownKeys = true }
             context.assets.list("samples")?.forEach { samplePath ->

@@ -4,7 +4,7 @@ import android.app.Application
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import kotlinx.coroutines.runBlocking
 
-class SampleViewerApplication: Application() {
+class SampleViewerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
