@@ -81,8 +81,12 @@ fun MainScreen(sampleName: String) {
                 SnapSettings(
                     snapSourceList = mapViewModel.snapSourceList.collectAsState(),
                     onSnappingChanged = mapViewModel::snappingEnabledStatus,
+                    onGeometryGuidesChanged = mapViewModel::geometryGuidesEnabledStatus,
+                    onFeatureSnappingChanged = mapViewModel::featureSnappingEnabledStatus,
                     onSnapSourceChanged = mapViewModel::sourceEnabledStatus,
                     isSnappingEnabled = mapViewModel.snappingCheckedState.value,
+                    isGeometryGuidesEnabled = mapViewModel.geometryGuidesCheckedState.value,
+                    isFeatureSnappingEnabled = mapViewModel.featureSnappingCheckedState.value,
                     isSnapSourceEnabled = mapViewModel.snapSourceCheckedState
                 ) { mapViewModel.dismissBottomSheet() }
             }
