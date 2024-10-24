@@ -64,7 +64,7 @@ import java.util.Locale
 @Composable
 fun SampleListScreen(
     categoryNavEntry: String,
-    oNavigateToInfo: (Int, Sample) -> Unit,
+    onNavigateToInfo: (Int, Sample) -> Unit,
     onBackPressed: () -> Unit
 ) {
     val viewModel: FavoritesViewModel = viewModel()
@@ -82,9 +82,9 @@ fun SampleListScreen(
             if (samplesList.isEmpty() && category != SampleCategory.FAVORITES) {
                 EmptySampleListScreen(stringResource(R.string.upcoming_samples_text))
             } else if (category == SampleCategory.FAVORITES) {
-                FavoriteItemsListScreen(favoriteSamples, oNavigateToInfo)
+                FavoriteItemsListScreen(favoriteSamples, onNavigateToInfo)
             } else {
-                ListOfSamplesScreen(samplesList, oNavigateToInfo)
+                ListOfSamplesScreen(samplesList, onNavigateToInfo)
             }
         }
     }

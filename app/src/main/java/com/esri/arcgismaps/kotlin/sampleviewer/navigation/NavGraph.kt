@@ -69,7 +69,7 @@ internal fun NavGraph() {
             if (!categoryNavEntry.isNullOrEmpty())
                 SampleListScreen(
                     categoryNavEntry = categoryNavEntry,
-                    oNavigateToInfo = { optionPosition, sample ->
+                    onNavigateToInfo = { optionPosition, sample ->
                         navController.navigate(
                             Routes.createSampleInfoRoute(optionPosition, sample.name)
                         )
