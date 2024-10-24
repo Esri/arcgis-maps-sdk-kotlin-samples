@@ -56,7 +56,7 @@ fun NavGraph() {
         }
 
         composable(Routes.ABOUT_SCREEN) {
-            AboutScreen(popBackStack = { navController.popBackStack() })
+            AboutScreen(popBackStack = { navController.pop() })
         }
 
         composable(
@@ -72,7 +72,7 @@ fun NavGraph() {
                             Routes.createSampleInfoRoute(optionPosition, sample.name)
                         )
                     },
-                    popBackStack = { navController.popBackStack() }
+                    popBackStack = { navController.pop() }
                 )
             else {
                 InvalidArgsException("categoryNavEntry is null/empty")
@@ -95,7 +95,7 @@ fun NavGraph() {
                 SampleInfoScreen(
                     sample = sampleNavEntry,
                     optionPosition = optionPositionNavEntry,
-                    popBackStack = { navController.popBackStack() }
+                    popBackStack = { navController.pop() }
                 )
             } else if (optionPositionNavEntry == null) {
                 InvalidArgsException("optionPositionNavEntry is null")
@@ -111,7 +111,7 @@ fun NavGraph() {
                 navigateToSearchResults = {
                     navController.navigate(Routes.createSearchResultsRoute(it))
                 },
-                popBackStack = { navController.popBackStack() }
+                popBackStack = { navController.pop() }
             )
         }
 
@@ -131,7 +131,7 @@ fun NavGraph() {
                             )
                         )
                     },
-                    popBackStack = { navController.popBackStack() }
+                    popBackStack = { navController.pop() }
                 )
             } else {
                 navController.navigateToHome()
@@ -146,6 +146,16 @@ fun InvalidArgsException(message: String) {
     val exceptionTag = "InvalidArgsException"
     Toast.makeText(LocalContext.current, "$exceptionTag: $message", Toast.LENGTH_SHORT).show()
     Log.e(exceptionTag, message)
+}
+
+/**
+ * Attempts to pop the controller's back stack. Checks if screen was navigated to
+ * another destination, or navigate to home if no items in stack.
+ */
+private fun NavHostController.pop() {
+    if (!popBackStack()){
+        navigateToHome()
+    }
 }
 
 /**
