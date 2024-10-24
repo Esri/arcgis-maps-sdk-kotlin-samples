@@ -37,7 +37,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun SampleViewerTopAppBar(title: String, popBackStack: () -> Unit) {
+fun SampleViewerTopAppBar(title: String, onBackPressed: () -> Unit) {
     TopAppBar(
         title = {
             Text(
@@ -51,7 +51,7 @@ fun SampleViewerTopAppBar(title: String, popBackStack: () -> Unit) {
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         navigationIcon = {
-            IconButton(onClick = popBackStack) {
+            IconButton(onClick = onBackPressed) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = stringResource(R.string.backButton)
@@ -66,7 +66,7 @@ fun SampleViewerTopAppBar(title: String, popBackStack: () -> Unit) {
 @Composable
 fun PreviewSampleViewerTopAppBar() {
     SampleAppTheme {
-        SampleViewerTopAppBar(title = "Sample Viewer title", popBackStack = {})
+        SampleViewerTopAppBar(title = "Sample Viewer title", onBackPressed = {})
     }
 }
 

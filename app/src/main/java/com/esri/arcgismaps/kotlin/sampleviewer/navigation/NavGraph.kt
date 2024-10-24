@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer.navigation
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
@@ -40,7 +41,8 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchScreen
  *  A composable function to host the navigation system.
  */
 @Composable
-fun NavGraph() {
+internal fun NavGraph() {
+    val context = LocalContext.current
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -49,14 +51,14 @@ fun NavGraph() {
 
         composable(Routes.HOME_SCREEN) {
             HomeCategoryScreen(
-                navigateToSearch = { navController.navigate(Routes.SEARCH_SCREEN) },
-                navigateToAbout = { navController.navigate(Routes.ABOUT_SCREEN) },
-                navigateToCategory = { navController.navigate(Routes.createCategoryRoute(it)) }
+                onNavigateToSearch = { navController.navigate(Routes.SEARCH_SCREEN) },
+                onNavigateToAbout = { navController.navigate(Routes.ABOUT_SCREEN) },
+                onNavigateToCategory = { navController.navigate(Routes.createCategoryRoute(it)) }
             )
         }
 
         composable(Routes.ABOUT_SCREEN) {
-            AboutScreen(popBackStack = { navController.pop() })
+            AboutScreen(onBackPressed = { navController.pop() })
         }
 
         composable(
@@ -67,16 +69,15 @@ fun NavGraph() {
             if (!categoryNavEntry.isNullOrEmpty())
                 SampleListScreen(
                     categoryNavEntry = categoryNavEntry,
-                    navigateToInfo = { optionPosition, sample ->
+                    oNavigateToInfo = { optionPosition, sample ->
                         navController.navigate(
                             Routes.createSampleInfoRoute(optionPosition, sample.name)
                         )
                     },
-                    popBackStack = { navController.pop() }
+                    onBackPressed = { navController.pop() }
                 )
             else {
-                InvalidArgsException("categoryNavEntry is null/empty")
-                navController.navigateToHome()
+                navController.displayError("categoryNavEntry is null/empty", context)
             }
         }
 
@@ -95,23 +96,21 @@ fun NavGraph() {
                 SampleInfoScreen(
                     sample = sampleNavEntry,
                     optionPosition = optionPositionNavEntry,
-                    popBackStack = { navController.pop() }
+                    onBackPressed = { navController.pop() }
                 )
             } else if (optionPositionNavEntry == null) {
-                InvalidArgsException("optionPositionNavEntry is null")
-                navController.navigateToHome()
+                navController.displayError("optionPositionNavEntry is null", context)
             } else {
-                InvalidArgsException("sampleNameNavEntry is null/empty")
-                navController.navigateToHome()
+                navController.displayError("sampleNameNavEntry is null/empty", context)
             }
         }
 
         composable(Routes.SEARCH_SCREEN) {
             SearchScreen(
-                navigateToSearchResults = {
+                onNavigateToSearchResults = {
                     navController.navigate(Routes.createSearchResultsRoute(it))
                 },
-                popBackStack = { navController.pop() }
+                onBackPressed = { navController.pop() }
             )
         }
 
@@ -131,21 +130,25 @@ fun NavGraph() {
                             )
                         )
                     },
-                    popBackStack = { navController.pop() }
+                    onBackPressed = { navController.pop() }
                 )
             } else {
-                navController.navigateToHome()
-                InvalidArgsException("queryNavEntry is null/empty")
+                navController.displayError("queryNavEntry is null/empty", context)
             }
         }
     }
 }
 
-@Composable
-fun InvalidArgsException(message: String) {
-    val exceptionTag = "InvalidArgsException"
-    Toast.makeText(LocalContext.current, "$exceptionTag: $message", Toast.LENGTH_SHORT).show()
+
+/**
+ * Displays a Toast and a Log for the given [message] on route errors,
+ * then reset navigation to home screen.
+ */
+private fun NavHostController.displayError(message: String, context: Context) {
+    val exceptionTag = "InvalidRouteError"
+    Toast.makeText(context, "$exceptionTag: $message", Toast.LENGTH_SHORT).show()
     Log.e(exceptionTag, message)
+    navigateToHome()
 }
 
 /**
@@ -153,7 +156,7 @@ fun InvalidArgsException(message: String) {
  * another destination, or navigate to home if no items in stack.
  */
 private fun NavHostController.pop() {
-    if (!popBackStack()){
+    if (!popBackStack()) {
         navigateToHome()
     }
 }
@@ -171,7 +174,7 @@ private fun NavHostController.navigateToHome() {
 /**
  * Navigation Routes for the application.
  */
-object Routes {
+private object Routes {
     private const val SAMPLE_LIST = "Sample List"
     private const val SAMPLE_INFO = "Sample Info"
     private const val SEARCH_RESULTS = "Search Results"

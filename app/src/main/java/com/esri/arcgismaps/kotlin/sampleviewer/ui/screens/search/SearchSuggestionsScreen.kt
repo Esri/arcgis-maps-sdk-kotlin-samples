@@ -80,7 +80,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
  * Allows functionality to search samples to get two types of categories: Samples and Relevant APIs attached to Sample Readmes
  */
 @Composable
-fun SearchScreen(navigateToSearchResults: (String) -> Unit, popBackStack: () -> Unit) {
+fun SearchScreen(onNavigateToSearchResults: (String) -> Unit, onBackPressed: () -> Unit) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val viewModel: SampleSearchViewModel = viewModel()
@@ -103,13 +103,13 @@ fun SearchScreen(navigateToSearchResults: (String) -> Unit, popBackStack: () -> 
                 },
                 onExit = {
                     keyboardController?.hide()
-                    popBackStack()
+                    onBackPressed()
                 },
                 onSearch = {
                     if (searchQuery.trim().isNotEmpty()) {
                         keyboardController?.hide()
                         // Open results screen with list view.
-                        navigateToSearchResults(searchQuery)
+                        onNavigateToSearchResults(searchQuery)
                     }
 
                 }
@@ -120,7 +120,7 @@ fun SearchScreen(navigateToSearchResults: (String) -> Unit, popBackStack: () -> 
                 onSampleSelected = {
                     it.startSample(context)
                 },
-                onRelevantAPISelected = navigateToSearchResults
+                onRelevantAPISelected = onNavigateToSearchResults
             )
         }
 
