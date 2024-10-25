@@ -59,7 +59,6 @@ import androidx.compose.ui.unit.times
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
-import com.esri.arcgismaps.kotlin.sampleviewer.navigation.Routes
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
@@ -69,9 +68,9 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
  */
 @Composable
 fun HomeCategoryScreen(
-    navigateToAbout: () -> Unit,
-    navigateToSearch: () -> Unit,
-    navigateToCategory: (SampleCategory) -> Unit,
+    onNavigateToAbout: () -> Unit,
+    onNavigateToSearch: () -> Unit,
+    onNavigateToCategory: (SampleCategory) -> Unit,
 ) {
     val config = LocalConfiguration.current
     val layoutSpacing by remember { mutableStateOf(0.03f * config.screenWidthDp.dp) }
@@ -93,8 +92,8 @@ fun HomeCategoryScreen(
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { HomeCategoryTopAppBar(navigateToAbout) },
-        floatingActionButton = { SearchFloatingActionButton(isVisible, navigateToSearch) },
+        topBar = { HomeCategoryTopAppBar(onNavigateToAbout) },
+        floatingActionButton = { SearchFloatingActionButton(isVisible, onNavigateToSearch) },
         floatingActionButtonPosition = FabPosition.End,
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
@@ -114,7 +113,7 @@ fun HomeCategoryScreen(
             ) {
                 items(Category.SAMPLE_CATEGORIES.size) { index ->
                     val category = Category.SAMPLE_CATEGORIES[index]
-                    CategoryCard(category) { navigateToCategory(category.title) }
+                    CategoryCard(category) { onNavigateToCategory(category.title) }
                 }
             }
         }
@@ -150,7 +149,7 @@ private fun SearchFloatingActionButton(
 private fun HomeCategoryTopAppBar(navigateToAboutScreen: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = Routes.HOME_SCREEN)
+            Text(text = stringResource(R.string.home_screen_title))
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -174,9 +173,9 @@ private fun HomeCategoryTopAppBar(navigateToAboutScreen: () -> Unit) {
 fun PreviewHomeCategoryScreen() {
     SampleAppTheme {
         HomeCategoryScreen(
-            navigateToCategory = {},
-            navigateToSearch = {},
-            navigateToAbout =  {}
+            onNavigateToCategory = {},
+            onNavigateToSearch = {},
+            onNavigateToAbout =  {}
         )
     }
 }

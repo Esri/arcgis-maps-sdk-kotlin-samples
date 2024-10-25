@@ -62,7 +62,11 @@ import java.util.Locale
  * Shows the list of samples.
  */
 @Composable
-fun SampleListScreen(categoryNavEntry: String, navigateToInfo: (Int, Sample) -> Unit) {
+fun SampleListScreen(
+    categoryNavEntry: String,
+    onNavigateToInfo: (Int, Sample) -> Unit,
+    onBackPressed: () -> Unit
+) {
     val viewModel: FavoritesViewModel = viewModel()
     val favoriteSamplesFlow = remember { viewModel.getFavorites() }
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
@@ -70,9 +74,7 @@ fun SampleListScreen(categoryNavEntry: String, navigateToInfo: (Int, Sample) -> 
     val samplesList = DefaultSampleInfoRepository.getSamplesInCategory(category)
 
     Scaffold(
-        topBar = {
-            SampleViewerTopAppBar(title = category.text)
-        },
+        topBar = { SampleViewerTopAppBar(title = category.text, onBackPressed) },
         modifier = Modifier
             .fillMaxSize(),
     ) { innerPadding ->
@@ -80,9 +82,9 @@ fun SampleListScreen(categoryNavEntry: String, navigateToInfo: (Int, Sample) -> 
             if (samplesList.isEmpty() && category != SampleCategory.FAVORITES) {
                 EmptySampleListScreen(stringResource(R.string.upcoming_samples_text))
             } else if (category == SampleCategory.FAVORITES) {
-                FavoriteItemsListScreen(favoriteSamples, navigateToInfo)
+                FavoriteItemsListScreen(favoriteSamples, onNavigateToInfo)
             } else {
-                ListOfSamplesScreen(samplesList, navigateToInfo)
+                ListOfSamplesScreen(samplesList, onNavigateToInfo)
             }
         }
     }

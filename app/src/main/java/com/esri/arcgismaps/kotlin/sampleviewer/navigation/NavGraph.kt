@@ -16,9 +16,11 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer.navigation
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -35,22 +37,13 @@ import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.SampleListS
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchResults
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.search.SearchScreen
 
-// Composition Local for the app wide navigation controller
-val LocalNavController = compositionLocalOf<NavHostController> {
-    error("LocalNavController not found")
-}
-
 /**
  *  A composable function to host the navigation system.
  */
 @Composable
-fun NavGraph() {
-    val navController = if (LocalInspectionMode.current) {
-        rememberNavController()
-    } else {
-        LocalNavController.current
-    }
-
+internal fun NavGraph() {
+    val context = LocalContext.current
+    val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = Routes.HOME_SCREEN,
@@ -58,14 +51,14 @@ fun NavGraph() {
 
         composable(Routes.HOME_SCREEN) {
             HomeCategoryScreen(
-                navigateToSearch = { navController.navigate(Routes.SEARCH_SCREEN) },
-                navigateToAbout = { navController.navigate(Routes.ABOUT_SCREEN) },
-                navigateToCategory = { navController.navigate(Routes.createCategoryRoute(it)) }
+                onNavigateToSearch = { navController.navigate(Routes.SEARCH_SCREEN) },
+                onNavigateToAbout = { navController.navigate(Routes.ABOUT_SCREEN) },
+                onNavigateToCategory = { navController.navigate(Routes.createCategoryRoute(it)) }
             )
         }
 
         composable(Routes.ABOUT_SCREEN) {
-            AboutScreen()
+            AboutScreen(onBackPressed = { navController.pop() })
         }
 
         composable(
@@ -76,13 +69,15 @@ fun NavGraph() {
             if (!categoryNavEntry.isNullOrEmpty())
                 SampleListScreen(
                     categoryNavEntry = categoryNavEntry,
-                    navigateToInfo = { optionPosition, sample ->
+                    onNavigateToInfo = { optionPosition, sample ->
                         navController.navigate(
                             Routes.createSampleInfoRoute(optionPosition, sample.name)
                         )
-                    })
+                    },
+                    onBackPressed = { navController.pop() }
+                )
             else {
-                navController.navigateToHome()
+                navController.displayError("categoryNavEntry is null/empty", context)
             }
         }
 
@@ -100,17 +95,23 @@ fun NavGraph() {
                 val sampleNavEntry = DefaultSampleInfoRepository.getSampleByName(sampleNameNavEntry)
                 SampleInfoScreen(
                     sample = sampleNavEntry,
-                    optionPosition = optionPositionNavEntry
+                    optionPosition = optionPositionNavEntry,
+                    onBackPressed = { navController.pop() }
                 )
+            } else if (optionPositionNavEntry == null) {
+                navController.displayError("optionPositionNavEntry is null", context)
             } else {
-                navController.navigateToHome()
+                navController.displayError("sampleNameNavEntry is null/empty", context)
             }
         }
 
         composable(Routes.SEARCH_SCREEN) {
-            SearchScreen(navigateToSearchResults = {
-                navController.navigate(Routes.createSearchResultsRoute(it))
-            })
+            SearchScreen(
+                onNavigateToSearchResults = {
+                    navController.navigate(Routes.createSearchResultsRoute(it))
+                },
+                onBackPressed = { navController.pop() }
+            )
         }
 
         composable(
@@ -128,11 +129,35 @@ fun NavGraph() {
                                 sample.name
                             )
                         )
-                    })
+                    },
+                    onBackPressed = { navController.pop() }
+                )
             } else {
-                navController.navigateToHome()
+                navController.displayError("queryNavEntry is null/empty", context)
             }
         }
+    }
+}
+
+
+/**
+ * Displays a Toast and a Log for the given [message] on route errors,
+ * then reset navigation to home screen.
+ */
+private fun NavHostController.displayError(message: String, context: Context) {
+    val exceptionTag = "InvalidRouteError"
+    Toast.makeText(context, "$exceptionTag: $message", Toast.LENGTH_SHORT).show()
+    Log.e(exceptionTag, message)
+    navigateToHome()
+}
+
+/**
+ * Attempts to pop the controller's back stack. Checks if screen was navigated to
+ * another destination, or navigate to home if no items in stack.
+ */
+private fun NavHostController.pop() {
+    if (!popBackStack()) {
+        navigateToHome()
     }
 }
 
@@ -141,16 +166,15 @@ fun NavGraph() {
  */
 private fun NavHostController.navigateToHome() {
     navigate(Routes.HOME_SCREEN) {
-        popUpTo(graph.findStartDestination().id) { saveState = false }
+        popUpTo(graph.findStartDestination().id)
         launchSingleTop = true
-        restoreState = false
     }
 }
 
 /**
  * Navigation Routes for the application.
  */
-object Routes {
+private object Routes {
     private const val SAMPLE_LIST = "Sample List"
     private const val SAMPLE_INFO = "Sample Info"
     private const val SEARCH_RESULTS = "Search Results"
