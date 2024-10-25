@@ -37,6 +37,8 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
 
     private val isInitialized = AtomicBoolean(false)
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     private val sampleList = mutableListOf<Sample>()
 
     /**
@@ -46,7 +48,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
     suspend fun load(context: Context) {
         if (isInitialized.compareAndSet(false, true)) {
             // Iterate through the metadata folder for all metadata files
-            val json = Json { ignoreUnknownKeys = true }
+
             context.assets.list("samples")?.forEach { samplePath ->
                 // Get this metadata files as a string
                 context.assets.open("samples/$samplePath/README.metadata.json").use { inputStream ->
