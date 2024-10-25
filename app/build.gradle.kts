@@ -1,4 +1,3 @@
-import com.android.tools.build.jetifier.core.utils.Log
 import java.util.Properties
 
 plugins {

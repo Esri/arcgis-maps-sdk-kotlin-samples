@@ -22,9 +22,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.navigation.compose.rememberNavController
-import com.esri.arcgismaps.kotlin.sampleviewer.navigation.LocalNavController
 import com.esri.arcgismaps.kotlin.sampleviewer.navigation.NavGraph
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 
@@ -37,9 +34,7 @@ class MainActivity : ComponentActivity() {
 
                 SampleAppTheme {
                     Surface(color = MaterialTheme.colorScheme.background) {
-                        CompositionLocalProvider(value = LocalNavController provides rememberNavController()) {
-                            NavGraph()
-                        }
+                        NavGraph()
                     }
                 }
             }
