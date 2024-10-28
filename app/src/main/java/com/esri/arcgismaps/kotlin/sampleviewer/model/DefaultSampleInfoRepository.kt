@@ -24,10 +24,9 @@ import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample.Companion.loadScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.model.room.AppDatabase
 import com.esri.arcgismaps.kotlin.sampleviewer.model.room.Converters
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * The single source of truth for app wide data. It reads the sample metadata to create as list of
@@ -36,62 +35,63 @@ import kotlinx.serialization.json.Json
  */
 object DefaultSampleInfoRepository : SampleInfoRepository {
 
-    private val sampleList = mutableListOf<Sample>()
-    private val sampleListMutex = Mutex()
+    private val isInitialized = AtomicBoolean(false)
 
-    private suspend fun updateSampleList(block: MutableList<Sample>.() -> Unit) {
-        sampleListMutex.withLock { sampleList.block() }
-    }
+    private val json = Json { ignoreUnknownKeys = true }
+
+    private val sampleList = mutableListOf<Sample>()
 
     /**
      * Load the sample metadata from the metadata folder in the assets directory and updates sampleList
      * of [Sample] objects.
      */
     suspend fun load(context: Context) {
-        // Iterate through the metadata folder for all metadata files
-        val json = Json { ignoreUnknownKeys = true }
-        context.assets.list("samples")?.forEach { samplePath ->
-            // Get this metadata files as a string
-            context.assets.open("samples/$samplePath/README.metadata.json").use { inputStream ->
-                val metadataJsonString = inputStream.bufferedReader().use { it.readText() }
-                try {
-                    val metadata = json.decodeFromString<SampleMetadata>(metadataJsonString)
+        if (isInitialized.compareAndSet(false, true)) {
+            // Iterate through the metadata folder for all metadata files
 
-                    // Create and add a new sample metadata data class object to the list
-                    val sample = Sample(
-                        name = metadata.title,
-                        codeFiles = Sample.loadCodeFiles(
-                            context = context,
-                            sampleName = metadata.title
-                        ),
-                        url = "https://developers.arcgis.com/kotlin/sample-code/" +
-                                metadata.title.replace(" ", "-").lowercase(),
-                        readMe = loadReadMe(
-                            context = context,
-                            sampleName = samplePath
-                        ),
-                        screenshotURL = loadScreenshot(
-                            sampleName = metadata.title,
-                            imageArray = metadata.imagePaths
-                        ),
-                        mainActivity = loadActivityPath(
-                            codePaths = metadata.codePaths
-                        ),
-                        metadata = metadata,
-                    )
-                    // Add the new sample to the list
-                    updateSampleList { add(sample) }
-                } catch (e: Exception) {
-                    Log.e(
-                        DefaultSampleInfoRepository::class.simpleName,
-                        "Exception at $samplePath: " + e.printStackTrace()
-                    )
+            context.assets.list("samples")?.forEach { samplePath ->
+                // Get this metadata files as a string
+                context.assets.open("samples/$samplePath/README.metadata.json").use { inputStream ->
+                    val metadataJsonString = inputStream.bufferedReader().use { it.readText() }
+                    try {
+                        val metadata = json.decodeFromString<SampleMetadata>(metadataJsonString)
+
+                        // Create and add a new sample metadata data class object to the list
+                        val sample = Sample(
+                            name = metadata.title,
+                            codeFiles = Sample.loadCodeFiles(
+                                context = context,
+                                sampleName = metadata.title
+                            ),
+                            url = "https://developers.arcgis.com/kotlin/sample-code/" +
+                                    metadata.title.replace(" ", "-").lowercase(),
+                            readMe = loadReadMe(
+                                context = context,
+                                sampleName = samplePath
+                            ),
+                            screenshotURL = loadScreenshot(
+                                sampleName = metadata.title,
+                                imageArray = metadata.imagePaths
+                            ),
+                            mainActivity = loadActivityPath(
+                                codePaths = metadata.codePaths
+                            ),
+                            metadata = metadata,
+                        )
+                        // Add the new sample to the list
+                        sampleList.add(sample)
+                    } catch (e: Exception) {
+                        Log.e(
+                            DefaultSampleInfoRepository::class.simpleName,
+                            "Exception at $samplePath: " + e.printStackTrace()
+                        )
+                    }
                 }
             }
-        }
-        withContext(Dispatchers.IO) {
-            // Populates the Room SQL database
-            populateDatabase(context)
+            withContext(Dispatchers.IO) {
+                // Populates the Room SQL database
+                populateDatabase(context)
+            }
         }
     }
 
