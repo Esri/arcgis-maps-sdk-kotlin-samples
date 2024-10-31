@@ -168,7 +168,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
             mapViewModel.cancelCommit()
         }
     } else if (showSaveEditsDialog && showBottomSheet) {
-        // no validation errors found, show dialog when commiting edits
+        // no validation errors found, show dialog when committing edits
         SaveFormDialog()
     }
 
