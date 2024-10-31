@@ -14,30 +14,42 @@
  *
  */
 
-package com.esri.arcgismaps.kotlin.sampleviewer
+package com.esri.arcgismaps.sample.addencexchangeset
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.esri.arcgismaps.kotlin.sampleviewer.navigation.NavGraph
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
+import androidx.compose.runtime.Composable
+import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.addencexchangeset.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            setContent {
+        // authentication with an API key or named user is
+        // required to access basemaps and other location services
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
-                SampleAppTheme {
-                    Surface(color = MaterialTheme.colorScheme.background) {
-                        NavGraph()
-                    }
-                }
+        setContent {
+            SampleAppTheme {
+                SampleApp()
             }
+        }
+    }
+
+    @Composable
+    private fun SampleApp() {
+        Surface(
+            color = MaterialTheme.colorScheme.background
+        ) {
+            MainScreen(
+                sampleName = getString(R.string.add_enc_exchange_set_app_name)
+            )
         }
     }
 }
