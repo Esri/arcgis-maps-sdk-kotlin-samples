@@ -19,17 +19,63 @@ package com.esri.arcgismaps.sample.geoviewnperepro.components
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import com.arcgismaps.Color
+import com.arcgismaps.geometry.Multipoint
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.Polygon
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
-    private val viewpointAsia = Viewpoint(39.8, 98.6, 10e7)
     var viewpoint =  mutableStateOf(viewpointAmerica)
-    /**
-     * Switch between two basemaps
-     */
-    fun changeBasemap() {
-        viewpoint.value =
-            if (viewpoint.value == viewpointAmerica) viewpointAsia else viewpointAmerica
-    }
+    val mapViewProxy = MapViewProxy()
+    val geometryEditor = GeometryEditor()
+
+    val point = Graphic(
+        geometry = Point(-90.0, 45.0, SpatialReference.wgs84()),
+        symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 8.0f)
+    )
+
+    val multipoint = Graphic(
+        geometry = Multipoint(
+            points = listOf(
+                Point(-90.0, 40.0, SpatialReference.wgs84()),
+                Point(-95.0, 40.0, SpatialReference.wgs84()),
+                Point(-100.0, 40.0, SpatialReference.wgs84()),
+                Point(-105.0, 40.0, SpatialReference.wgs84()),
+                Point(-110.0, 40.0, SpatialReference.wgs84()),
+                Point(-115.0, 40.0, SpatialReference.wgs84()),
+                ),
+            spatialReference = SpatialReference.wgs84()
+        ),
+        symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.cyan, 9.0f)
+    )
+
+    val polygon = Graphic(
+        geometry = Polygon(
+            points = listOf(
+                Point(-90.0, 35.0, SpatialReference.wgs84()),
+                Point(-80.0, 35.0, SpatialReference.wgs84()),
+                Point(-80.0, 30.0, SpatialReference.wgs84()),
+                Point(-90.0, 30.0, SpatialReference.wgs84()),
+                ),
+            spatialReference = SpatialReference.wgs84()
+        ),
+        symbol = SimpleLineSymbol(
+            style = SimpleLineSymbolStyle.Solid,
+            color = Color.green,
+            width = 5.0f)
+    )
+
+    val staticGraphicsOverlay = GraphicsOverlay(listOf(point, multipoint, polygon))
+    val geometryEditorGraphicsOverlay = GraphicsOverlay()
 }

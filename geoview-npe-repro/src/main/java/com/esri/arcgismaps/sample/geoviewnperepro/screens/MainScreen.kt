@@ -30,15 +30,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.view.DrawStatus
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.ViewpointPersistence
 import com.esri.arcgismaps.sample.geoviewnperepro.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -64,8 +69,8 @@ fun MainScreen(sampleName: String) {
                     .padding(it)
             ) {
                 LazyColumn(Modifier.fillMaxWidth()) {
-                    for ((_, map) in maps) {
-                        item { TripItemCard(arcGISMap = map) }
+                    for ((mvm, map) in maps) {
+                        item { TripItemCard(mvm, map) }
                     }
                 }
             }
@@ -74,7 +79,8 @@ fun MainScreen(sampleName: String) {
 }
 
 @Composable
-fun TripItemCard(arcGISMap: ArcGISMap) {
+fun TripItemCard(mvm: MapViewModel, arcGISMap: ArcGISMap) {
+    val coroutineScope = rememberCoroutineScope()
     Card(
         Modifier
             .height(250.dp)
@@ -85,6 +91,8 @@ fun TripItemCard(arcGISMap: ArcGISMap) {
             MapView(
                 modifier = Modifier.width(250.dp),
                 arcGISMap = arcGISMap,
+                mapViewProxy = mvm.mapViewProxy,
+                graphicsOverlays = listOf(mvm.staticGraphicsOverlay, mvm.geometryEditorGraphicsOverlay),
                 mapViewInteractionOptions = MapViewInteractionOptions(
                     isEnabled = false,
                     isMagnifierEnabled = false,
@@ -94,7 +102,17 @@ fun TripItemCard(arcGISMap: ArcGISMap) {
                     allowMagnifierToPan = false,
                     isPanEnabled = false
                 ),
-                onSingleTapConfirmed = {}
+                isAttributionBarVisible = false,
+                viewpointPersistence = ViewpointPersistence.None,
+                onSingleTapConfirmed = {},
+                onDrawStatusChanged = {
+                    if (it == DrawStatus.Completed){
+                        coroutineScope.launch {
+                            mvm.mapViewProxy.exportImage().onSuccess {image ->
+                            }
+                        }
+                    }
+                }
             )
             Text(text = "lorem ipsum dolor sit amet")
         }
