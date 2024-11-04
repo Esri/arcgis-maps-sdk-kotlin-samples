@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.geoviewnperepro.screens
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -40,9 +41,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
 import com.arcgismaps.mapping.view.DrawStatus
 import com.arcgismaps.mapping.view.Graphic
@@ -53,7 +54,6 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.arcgismaps.toolkit.geoviewcompose.ViewpointPersistence
 import com.esri.arcgismaps.sample.geoviewnperepro.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -63,13 +63,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
     val application = LocalContext.current.applicationContext as Application
 
-    // create a list with a few maps in it
-    val maps = List(10) {
-        Pair(MapViewModel(application), remember { ArcGISMap(BasemapStyle.ArcGISStreets) })
-    }
-    for ((mvm, map) in maps) {
-        map.apply { initialViewpoint = mvm.viewpoint.value }
-    }
+    // create a viewmodel to back each mapview in the list
+    val mvms = List(10){MapViewModel(application)}
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -80,10 +75,9 @@ fun MainScreen(sampleName: String) {
                     .padding(it)
             ) {
                 LazyColumn(Modifier.fillMaxWidth()) {
-                    var i = 0L
-                    for ((mvm, map) in maps) {
-                        item { TripItemCard(mvm, map, i) }
-                        i+=1
+                    // put item cards, each with their own MapView and model, into the column
+                    for (i in mvms.indices){
+                        item { TripItemCard(mvms[i], i.toLong()) }
                     }
                 }
             }
@@ -92,8 +86,7 @@ fun MainScreen(sampleName: String) {
 }
 
 @Composable
-fun TripItemCard(mvm: MapViewModel, arcGISMap: ArcGISMap, tripId: Long) {
-    val coroutineScope = rememberCoroutineScope()
+fun TripItemCard(mvm: MapViewModel, tripId: Long) {
     Card(
         Modifier
             .height(250.dp)
@@ -101,46 +94,18 @@ fun TripItemCard(mvm: MapViewModel, arcGISMap: ArcGISMap, tripId: Long) {
             .fillMaxSize()
     ) {
         Row(Modifier.fillMaxWidth()) {
-//            MapView(
-//                modifier = Modifier.width(250.dp),
-//                arcGISMap = arcGISMap,
-//                mapViewProxy = mvm.mapViewProxy,
-//                graphicsOverlays = listOf(mvm.staticGraphicsOverlay, mvm.geometryEditorGraphicsOverlay),
-//                mapViewInteractionOptions = MapViewInteractionOptions(
-//                    isEnabled = false,
-//                    isMagnifierEnabled = false,
-//                    isZoomEnabled = false,
-//                    isRotateEnabled = false,
-//                    isFlingEnabled = false,
-//                    allowMagnifierToPan = false,
-//                    isPanEnabled = false
-//                ),
-//                isAttributionBarVisible = false,
-//                viewpointPersistence = ViewpointPersistence.None,
-//                onSingleTapConfirmed = {},
-//                onDrawStatusChanged = {
-//                    if (it == DrawStatus.Completed){
-//                        coroutineScope.launch {
-//                            mvm.mapViewProxy.exportImage().onSuccess {image ->
-//                            }
-//                        }
-//                    }
-//                }
-//            )
             MapItemCached(
-                Modifier.width(250.dp),
-                arcGISMap,
-                mvm,
-                startPoint = Point(-90.0,50.0, SpatialReference.wgs84()),
-                endPoint = Point(-95.0,50.0, SpatialReference.wgs84()),
+                modifier = Modifier.width(250.dp),
+                startPoint = mvm.startPoint,
+                endPoint = mvm.endPoint,
                 startPictureMarkerSymbol = mvm.pms,
                 endPictureMarkerSymbol = mvm.pms,
                 tripId = tripId,
-                cachedMapImage = mvm.mapImages[tripId.toInt()]
-            ) {
-
-            }
-            Text(text = "lorem ipsum dolor sit amet")
+                cachedMapImage = mvm.mapImage,
+                onTap = {},
+                onSaveEvent = {image: BitmapDrawable -> mvm.mapImage = image.bitmap}
+            )
+            Text(text = "Trip #$tripId")
         }
     }
 }
@@ -148,8 +113,6 @@ fun TripItemCard(mvm: MapViewModel, arcGISMap: ArcGISMap, tripId: Long) {
 @Composable
 fun MapItemCached(
     modifier: Modifier = Modifier,
-    map: ArcGISMap,
-    mvm: MapViewModel,
     startPoint: Point,
     endPoint: Point,
     startPictureMarkerSymbol: PictureMarkerSymbol,
@@ -157,30 +120,34 @@ fun MapItemCached(
     tripId: Long = 0,
     cachedMapImage: Bitmap? = null,
     onTap: () -> Unit,
+    onSaveEvent: (BitmapDrawable) -> Unit,
 ) {
+    val map by remember {
+        mutableStateOf(ArcGISMap(BasemapStyle.ArcGISImagery))
+    }.apply { this.value.initialViewpoint = Viewpoint(39.8, -98.6, 10e7) }
 
-    //val graphicsOverlay = remember { GraphicsOverlay() }
+    val graphicsOverlay = remember { GraphicsOverlay() }
 
     val graphicStart = Graphic(startPoint, startPictureMarkerSymbol)
     val graphicEnd = Graphic(endPoint, endPictureMarkerSymbol)
 
-    mvm.staticGraphicsOverlay.graphics.add(graphicStart)
-    mvm.staticGraphicsOverlay.graphics.add(graphicEnd)
+    graphicsOverlay.graphics.add(graphicStart)
+    graphicsOverlay.graphics.add(graphicEnd)
 
     // Create a list of graphics overlays used by the MapView
-    //val graphicsOverlays = remember { listOf(graphicsOverlay) }
+    val graphicsOverlays = remember { listOf(graphicsOverlay) }
     val coroutineScope = rememberCoroutineScope()
-//    val mapViewProxy = remember {
-//        MapViewProxy()
-//    }
+    val mapViewProxy = remember {
+        MapViewProxy()
+    }
 
     // display map image instead of map if it is available
     if (cachedMapImage == null) {
         MapView(
             modifier = modifier.fillMaxSize(),
             arcGISMap = map,
-            mapViewProxy = mvm.mapViewProxy,
-            graphicsOverlays = listOf(mvm.staticGraphicsOverlay),
+            mapViewProxy = mapViewProxy,
+            graphicsOverlays = graphicsOverlays,
             mapViewInteractionOptions = MapViewInteractionOptions(
                 isEnabled = false,
                 isMagnifierEnabled = false,
@@ -196,10 +163,9 @@ fun MapItemCached(
             onDrawStatusChanged = {
                 if (it == DrawStatus.Completed) {
                     coroutineScope.launch {
-                        mvm.mapViewProxy.exportImage().onSuccess { image ->
+                        mapViewProxy.exportImage().onSuccess { image ->
                             // save this image in viewModel and retrieve back as cachedMapImage.
-                            mvm.mapImages[tripId.toInt()] = image.bitmap
-                            //event(Event.CacheMapImage(tripId, image.bitmap))
+                            onSaveEvent(image)
                         }
                     }
                 }
@@ -209,6 +175,6 @@ fun MapItemCached(
         Image(
             bitmap = cachedMapImage.asImageBitmap(),
             contentDescription = "Map Image"
-        ).also { println("Rendering image!") }
+        )
     }
 }

@@ -17,73 +17,31 @@
 package com.esri.arcgismaps.sample.geoviewnperepro.components
 
 import android.app.Application
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.Color
-import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.SpatialReference
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
-import com.arcgismaps.mapping.symbology.SimpleLineSymbol
-import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
-import com.arcgismaps.mapping.view.Graphic
-import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.geoviewnperepro.R
+import kotlin.random.Random
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
-    var viewpoint =  mutableStateOf(viewpointAmerica)
-    val resources = application.resources
-    val mapViewProxy = MapViewProxy()
+    private val resources = application.resources
     val pms = PictureMarkerSymbol.createWithImage(BitmapFactory.decodeResource(resources,R.drawable.pin).toDrawable(resources))
-    val mapImages = mutableMapOf<Int, Bitmap>()
 
-    val point = Graphic(
-        geometry = Point(-90.0, 45.0, SpatialReference.wgs84()),
-        symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 8.0f)
+    val startPoint = Point(
+        x = Random.nextDouble(-125.0, -75.0),
+        y = Random.nextDouble(20.0, 55.0),
+        spatialReference = SpatialReference.wgs84()
+    )
+    val endPoint = Point(
+        x = Random.nextDouble(-125.0, -75.0),
+        y = Random.nextDouble(20.0, 55.0),
+        spatialReference = SpatialReference.wgs84()
     )
 
-    val multipoint = Graphic(
-        geometry = Multipoint(
-            points = listOf(
-                Point(-90.0, 40.0, SpatialReference.wgs84()),
-                Point(-95.0, 40.0, SpatialReference.wgs84()),
-                Point(-100.0, 40.0, SpatialReference.wgs84()),
-                Point(-105.0, 40.0, SpatialReference.wgs84()),
-                Point(-110.0, 40.0, SpatialReference.wgs84()),
-                Point(-115.0, 40.0, SpatialReference.wgs84()),
-                ),
-            spatialReference = SpatialReference.wgs84()
-        ),
-        symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.cyan, 9.0f)
-    )
-
-    val polygon = Graphic(
-        geometry = Polygon(
-            points = listOf(
-                Point(-90.0, 35.0, SpatialReference.wgs84()),
-                Point(-80.0, 35.0, SpatialReference.wgs84()),
-                Point(-80.0, 30.0, SpatialReference.wgs84()),
-                Point(-90.0, 30.0, SpatialReference.wgs84()),
-                ),
-            spatialReference = SpatialReference.wgs84()
-        ),
-        symbol = SimpleLineSymbol(
-            style = SimpleLineSymbolStyle.Solid,
-            color = Color.green,
-            width = 5.0f)
-    )
-
-    val staticGraphicsOverlay = GraphicsOverlay(listOf(point, multipoint, polygon))
-    val geometryEditorGraphicsOverlay = GraphicsOverlay()
+    // cached bitmap to replace MapViews in column
+    var mapImage : Bitmap? = null
 }
