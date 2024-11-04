@@ -17,7 +17,12 @@
 package com.esri.arcgismaps.sample.geoviewnperepro.components
 
 import android.app.Application
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Multipoint
@@ -25,20 +30,23 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.geoviewnperepro.R
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val viewpointAmerica = Viewpoint(39.8, -98.6, 10e7)
     var viewpoint =  mutableStateOf(viewpointAmerica)
+    val resources = application.resources
     val mapViewProxy = MapViewProxy()
-    val geometryEditor = GeometryEditor()
+    val pms = PictureMarkerSymbol.createWithImage(BitmapFactory.decodeResource(resources,R.drawable.pin).toDrawable(resources))
+    val mapImages = mutableMapOf<Int, Bitmap>()
 
     val point = Graphic(
         geometry = Point(-90.0, 45.0, SpatialReference.wgs84()),
