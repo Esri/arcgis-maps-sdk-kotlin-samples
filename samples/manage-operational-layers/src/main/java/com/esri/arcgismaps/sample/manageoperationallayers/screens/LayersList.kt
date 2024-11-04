@@ -60,7 +60,7 @@ fun LayersList(
         LazyColumn(modifier = Modifier.padding(12.dp)) {
             items(activateLayerNames.size, key = { activateLayerNames[it] }) { index ->
                 LayerRow(
-                    modifier = Modifier.fillMaxWidth().animateItemPlacement(),
+                    modifier = Modifier.fillMaxWidth().animateItem(),
                     layerName = activateLayerNames[index],
                     onMoveLayerUp = onMoveLayerUp,
                     onMoveLayerDown = onMoveLayerDown,
@@ -75,7 +75,7 @@ fun LayersList(
         LazyColumn(modifier = Modifier.padding(12.dp)) {
             items(inactiveLayers.size, key = { inactiveLayers[it].name }) { index ->
                 InactiveLayerRow(
-                    modifier = Modifier.fillMaxWidth().animateItemPlacement(),
+                    modifier = Modifier.fillMaxWidth().animateItem(),
                     layerName = inactiveLayers[index].name,
                     onAddLayer = onAddLayer
                 )
