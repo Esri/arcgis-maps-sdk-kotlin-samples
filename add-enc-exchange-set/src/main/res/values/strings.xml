@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">Add ENC Exchange Set</string>
-    <string name="enc_res_dir">/hydrography</string>
-    <string name="enc_data_dir">/ExchangeSetwithoutUpdates/ENC_ROOT/CATALOG.031</string>
-</resources>
