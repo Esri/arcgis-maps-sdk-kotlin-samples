@@ -74,7 +74,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
-import com.esri.arcgismaps.kotlin.sampleviewer.model.startSample
+import com.esri.arcgismaps.kotlin.sampleviewer.model.start
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 import kotlinx.coroutines.launch
 
@@ -122,7 +122,7 @@ fun SearchScreen(onNavigateToSearchResults: (String) -> Unit, onBackPressed: () 
                 searchSuggestions = searchSuggestions,
                 onSampleSelected = {
                     scope.launch {
-                        it.startSample(context)
+                        it.start(context)
                     }
                 },
                 onRelevantAPISelected = onNavigateToSearchResults

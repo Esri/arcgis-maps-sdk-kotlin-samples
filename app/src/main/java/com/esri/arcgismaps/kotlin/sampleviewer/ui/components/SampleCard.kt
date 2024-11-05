@@ -56,7 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
-import com.esri.arcgismaps.kotlin.sampleviewer.model.startSample
+import com.esri.arcgismaps.kotlin.sampleviewer.model.start
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.DropdownItemData
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
 import kotlinx.coroutines.launch
@@ -71,7 +71,7 @@ fun SampleRow(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    Column(Modifier.clickable { scope.launch { sample.startSample(context) } }) {
+    Column(Modifier.clickable { scope.launch { sample.start(context) } }) {
         TitleAndIcons(sample, dropdownSampleItems)
     }
 }
