@@ -53,6 +53,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -73,8 +74,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
-import com.esri.arcgismaps.kotlin.sampleviewer.model.startSample
+import com.esri.arcgismaps.kotlin.sampleviewer.model.start
 import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Allows functionality to search samples to get two types of categories: Samples and Relevant APIs attached to Sample Readmes
@@ -83,6 +85,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.viewmodels.SampleSearchViewModel
 fun SearchScreen(onNavigateToSearchResults: (String) -> Unit, onBackPressed: () -> Unit) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
     val viewModel: SampleSearchViewModel = viewModel()
     var searchQuery by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -118,13 +121,13 @@ fun SearchScreen(onNavigateToSearchResults: (String) -> Unit, onBackPressed: () 
                 searchQuery = searchQuery,
                 searchSuggestions = searchSuggestions,
                 onSampleSelected = {
-                    it.startSample(context)
+                    scope.launch {
+                        it.start(context)
+                    }
                 },
                 onRelevantAPISelected = onNavigateToSearchResults
             )
         }
-
-
     }
 }
 
