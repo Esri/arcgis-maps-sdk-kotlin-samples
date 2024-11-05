@@ -1,0 +1,5 @@
+<resources>
+    <string name="create_convex_hull_around_points_app_name">Create convex hull around points</string>
+    <string name="create_convex_hull">Create Convex Hull</string>
+    <string name="reset">Reset</string>
+</resources>

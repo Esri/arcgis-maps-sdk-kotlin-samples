@@ -1,0 +1,4 @@
+<resources>
+    <string name="set_viewpoint_rotation_app_name">Set viewpoint rotation</string>
+    <string name="initial_rotation_text">0</string>
+</resources>
