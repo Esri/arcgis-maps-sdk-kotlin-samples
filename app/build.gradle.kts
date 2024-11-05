@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.arcgismaps.android.application)
     alias(libs.plugins.arcgismaps.android.application.compose)
+    alias(libs.plugins.arcgismaps.kotlin.sample)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.sample.files.copy)
     alias(libs.plugins.screenshots.copy)
@@ -69,6 +70,7 @@ dependencies {
         }
     }
     implementation(project(":samples-lib"))
+    implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.appcompat)
     implementation(libs.accompanist.systemuicontroller)
