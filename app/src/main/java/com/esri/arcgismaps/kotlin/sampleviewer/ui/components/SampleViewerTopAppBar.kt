@@ -30,7 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.esri.arcgismaps.kotlin.sampleviewer.R
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  * The common [TopAppBar] used to display screen title and the back button for all screens.

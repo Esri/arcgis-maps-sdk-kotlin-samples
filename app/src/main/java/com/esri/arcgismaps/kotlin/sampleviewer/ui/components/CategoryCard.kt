@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  *  A composable used in the HomeCategoryScreen to display the category cards.

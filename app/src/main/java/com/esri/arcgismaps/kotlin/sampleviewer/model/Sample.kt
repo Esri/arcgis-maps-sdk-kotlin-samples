@@ -109,7 +109,7 @@ data class Sample(
             // Otherwise, function should be modified to return list of URLs for each image
             val modifiedJsonSampleName = sampleName.replace(" ", "-").lowercase()
             val imageFileName = imageArray.first().toString().replace("\"", "")
-            return "https://raw.githubusercontent.com/Esri/arcgis-maps-sdk-kotlin-samples/v.next/$modifiedJsonSampleName/$imageFileName"
+            return "https://raw.githubusercontent.com/Esri/arcgis-maps-sdk-kotlin-samples/v.next/samples/$modifiedJsonSampleName/$imageFileName"
         }
 
         /**

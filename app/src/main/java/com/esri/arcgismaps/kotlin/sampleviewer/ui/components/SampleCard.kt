@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.model.start
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.DropdownItemData
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import kotlinx.coroutines.launch
 
 /**
