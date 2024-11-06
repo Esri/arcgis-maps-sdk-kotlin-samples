@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             setContent {
-                
+
                 SampleAppTheme {
                     Surface(color = MaterialTheme.colorScheme.background) {
                         NavGraph()
