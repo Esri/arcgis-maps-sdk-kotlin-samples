@@ -137,6 +137,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         featureForm.validationErrors.value.forEach { entry ->
             entry.value.forEach { error ->
                 featureForm.elements.getFormElement(entry.key)?.let { formElement ->
+                    // Ignore validation on non-editable and non-visible elements
                     if (formElement.isEditable.value || formElement.hasValueExpression) {
                         errors.add(
                             ErrorInfo(
@@ -189,7 +190,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                         }?.let {
                             val feature = it as ArcGISFeature
                             val layer = feature.featureTable!!.layer as FeatureLayer
-                            val featureForm = FeatureForm(feature, layer.featureFormDefinition!!)
+                            val featureForm = FeatureForm(feature)
                             // select the feature
                             layer.selectFeature(feature)
                             // set the UI to an editing state with the FeatureForm
