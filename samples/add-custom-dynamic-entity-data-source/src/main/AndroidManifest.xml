@@ -5,12 +5,14 @@
 
     <application><activity
             android:name=".DownloadActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/add_custom_dynamic_entity_data_source_app_name">
             
         </activity>
         <activity
             android:exported="true"
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:label="@string/add_custom_dynamic_entity_data_source_app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
