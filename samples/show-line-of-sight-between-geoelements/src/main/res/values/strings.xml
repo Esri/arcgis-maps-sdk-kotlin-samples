@@ -1,5 +1,5 @@
 <resources>
-    <string name="show_line_of_sight_between_geoelements_app_name">Show Line of Sight Between Geoelements</string>
+    <string name="show_line_of_sight_between_geoelements_app_name">Show line of sight between geoelements</string>
     <string name="elevation_service_url">https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer</string>
     <string name="new_york_buildings_service_url">https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/New_York_LoD2_3D_Buildings/SceneServer/layers/0</string>
     <string name="dolmus_model">dolmus.3ds</string>
