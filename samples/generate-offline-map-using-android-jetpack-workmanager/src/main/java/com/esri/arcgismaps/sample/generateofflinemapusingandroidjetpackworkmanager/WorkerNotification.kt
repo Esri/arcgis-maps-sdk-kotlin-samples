@@ -151,7 +151,7 @@ class WorkerNotification(
             .setContentTitle(applicationContext.getString(R.string.notification_title))
             // sets the content that is displayed on expanding the notification
             .setContentText(contentText)
-            //.setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(com.esri.arcgismaps.sample.sampleslib.R.drawable.arcgis_maps_sdks_64)
             // sets it to only show the notification alert once, in case of progress
             .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)

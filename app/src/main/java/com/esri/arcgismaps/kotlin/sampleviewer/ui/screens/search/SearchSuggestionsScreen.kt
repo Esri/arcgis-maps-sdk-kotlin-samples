@@ -284,7 +284,7 @@ private fun SampleListItem(sampleName: String) {
     ListItem(
         leadingContent = {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_icon),
+                painter = painterResource(id = com.esri.arcgismaps.sample.sampleslib.R.drawable.arcgis_maps_sdks_64),
                 contentDescription = stringResource(id = R.string.sdk_sample_icon_description),
                 modifier = Modifier.size(32.dp)
             )
