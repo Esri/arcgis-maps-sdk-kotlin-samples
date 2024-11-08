@@ -23,7 +23,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.esri.arcgismaps.kotlin.sampleviewer.navigation.NavGraph
-import com.esri.arcgismaps.kotlin.sampleviewer.ui.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
