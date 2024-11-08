@@ -19,8 +19,6 @@ android {
 
 dependencies {
     // Only module specific dependencies needed here
-    implementation(libs.arcgis.maps.kotlin.toolkit.utilitynetworks)
-
-    //implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
+    //implementation(libs.arcgis.maps.kotlin.toolkit.utilitynetworks)
     //implementation(libs.arcgis.maps.kotlin.toolkit.popup)
 }
