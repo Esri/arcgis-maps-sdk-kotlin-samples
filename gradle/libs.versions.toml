@@ -1,7 +1,7 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.6.0-4409"
+arcgisMapsKotlinVersion = "200.6.0-4413"
 
 ### Android versions
 androidGradlePlugin = "8.7.1"
@@ -81,6 +81,8 @@ arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotli
 arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
 arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geoview-compose" }
 arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-featureforms" }
+arcgis-maps-kotlin-toolkit-popup = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-popup" }
+arcgis-maps-kotlin-toolkit-utilitynetworks = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-utilitynetworks" }
 
 ### Third party libraries
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version = "3.0.0-rc01" }
