@@ -94,7 +94,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) }
+        topBar = { SampleTopAppBar(title = stringResource(R.string.edit_features_using_feature_forms_app_name)) }
     ) { padding ->
         // display the composable map using the mapViewModel
         MapView(

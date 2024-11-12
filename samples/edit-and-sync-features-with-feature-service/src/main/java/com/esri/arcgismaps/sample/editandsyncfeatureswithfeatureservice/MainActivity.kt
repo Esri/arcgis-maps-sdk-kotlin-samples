@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
             color = MaterialTheme.colorScheme.background
         ) {
             MainScreen(
-                sampleName = getString(R.string.app_name)
+                sampleName = getString(R.string.edit_and_sync_features_with_feature_service_app_name)
             )
         }
     }

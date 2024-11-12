@@ -5,12 +5,14 @@
 
     <application><activity
             android:name=".DownloadActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/display_scene_from_mobile_scene_package_app_name">
             
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/display_scene_from_mobile_scene_package_app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

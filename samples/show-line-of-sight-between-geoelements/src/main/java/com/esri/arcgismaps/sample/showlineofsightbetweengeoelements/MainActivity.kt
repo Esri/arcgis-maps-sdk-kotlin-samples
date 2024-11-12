@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
             color = MaterialTheme.colorScheme.background
         ) {
             MainScreen(
-                sampleName = getString(R.string.app_name)
+                sampleName = getString(R.string.show_line_of_sight_between_geoelements_app_name)
             )
         }
     }
