@@ -25,23 +25,36 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
 import com.esri.arcgismaps.sample.geoviewnperepro.R
-import kotlin.random.Random
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val resources = application.resources
-    val pms = PictureMarkerSymbol.createWithImage(BitmapFactory.decodeResource(resources,R.drawable.pin).toDrawable(resources))
+    val pms = PictureMarkerSymbol.createWithImage(
+        BitmapFactory.decodeResource(resources, R.drawable.pin).toDrawable(resources)
+    )
 
     val startPoint = Point(
-        x = Random.nextDouble(-125.0, -75.0),
-        y = Random.nextDouble(20.0, 55.0),
+        x = -0.284606,
+        y = 36.082152,
         spatialReference = SpatialReference.wgs84()
     )
     val endPoint = Point(
-        x = Random.nextDouble(-125.0, -75.0),
-        y = Random.nextDouble(20.0, 55.0),
+        x = -0.350597,
+        y = 36.181794,
         spatialReference = SpatialReference.wgs84()
     )
 
     // cached bitmap to replace MapViews in column
-    var mapImage : Bitmap? = null
+    private val _cacheMapImageStateFlow = MutableStateFlow<Map<Long, Bitmap?>>(emptyMap())
+    val cacheMapImageStateFlow = _cacheMapImageStateFlow.asStateFlow()
+
+    fun cacheMapImage(tripId: Long, image: Bitmap) {
+        _cacheMapImageStateFlow.update {
+            it.toMutableMap().apply {
+                put(tripId, image)
+            }
+        }
+    }
 }
