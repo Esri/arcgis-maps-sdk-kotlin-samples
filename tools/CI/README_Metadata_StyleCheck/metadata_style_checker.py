@@ -146,22 +146,25 @@ class MetadataCreator:
         :return: A list of kotlin and java source code filenames.
         """
         results = []
-
-        paths = Path(self.folder_path).glob('**/*.java')
-        for path in paths:
-            results.append(os.path.relpath(path, self.folder_path))
-
-        paths = Path(self.folder_path).glob('**/*.kt')
-        for path in paths:
-            results.append(os.path.relpath(path, self.folder_path))
-
+        for dp, dn, filenames in os.walk(self.folder_path):
+            if ("/build/" not in dp):
+                for file in filenames:
+                    extension = os.path.splitext(file)[1]
+                    if extension in ['.java'] or extension in ['.kt']:
+                        # get the programming language of the sample
+                        self.language = 'java' if extension in ['.java'] else 'kotlin'
+                        # get the snippet path
+                        snippet = os.path.join(dp, file)
+                        if snippet.startswith(self.folder_path):
+                            # add 1 to remove the leading slash
+                            snippet = snippet[len(self.folder_path)+1:]
+                        if "ViewModel" in snippet:
+                            results.insert(0, snippet)
+                        else:
+                            results.append(snippet)
         if not results:
-            raise Exception('Unable to get kotlin or java source code paths.')
-
-        results = list(filter(lambda x: 'build/' not in x, results)) # exclude \build folder
-        results = list(map(lambda x: x.replace(os.sep, '/'), results)) # eliminate double backslashes in the paths
-
-        return sorted(results)
+            raise Exception('Unable to get java/kotlin source code paths.')
+        return results
 
     def get_images_paths(self):
         """

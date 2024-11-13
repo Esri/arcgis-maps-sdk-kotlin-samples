@@ -35,7 +35,15 @@
         "UtilityTraversability"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "provision_from": [
+        "TODO"
+    ],
+    "provision_to": [
+        "TODO"
+    ],
+    "redirect_from": [
+        "TODO"
+    ],
     "relevant_apis": [
         "FractionAlong",
         "ServiceGeodatabase",
@@ -55,8 +63,9 @@
         "UtilityTraversability"
     ],
     "snippets": [
-        "/src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/MainActivity.kt",
-        "/src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/screens/MainScreen.kt"
     ],
     "title": "Trace utility network"
 }
