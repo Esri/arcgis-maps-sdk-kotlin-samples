@@ -102,7 +102,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
      * at the [destinationPath]. The downloadManager clears the directory if user chooses
      * to re-download the provisioned data.
      */
-    private suspend fun sampleDownloadManager(
+    private fun sampleDownloadManager(
         provisionURLs: List<String>,
         destinationPath: String,
     ): Flow<LoadStatus> = flow {
