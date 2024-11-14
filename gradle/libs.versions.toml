@@ -30,6 +30,7 @@ androidBrowserVersion = "1.8.0"
 androidxWindow = "1.2.0"
 # Plugin versions
 gradleVersion = "8.3.2"
+navigationComposeVersion = "2.8.3"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradleVersion" }
@@ -69,3 +70,4 @@ arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-m
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "jsonSerialization" }
 stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlinVersion"}
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion" }

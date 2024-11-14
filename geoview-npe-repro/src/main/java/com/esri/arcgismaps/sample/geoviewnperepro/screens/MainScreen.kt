@@ -16,9 +16,7 @@
 
 package com.esri.arcgismaps.sample.geoviewnperepro.screens
 
-import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
@@ -38,8 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.arcgismaps.exceptions.ArcGISException
+import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -60,11 +59,9 @@ import kotlinx.coroutines.launch
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String) {
-    val application = LocalContext.current.applicationContext as Application
+fun MainScreen(mapViewModel: MapViewModel, sampleName: String, onTap: (String) -> Unit) {
 
-    // create a viewmodel to back each mapview in the list
-    val mvms = List(10){MapViewModel(application)}
+    val cachedMapImageState by mapViewModel.cacheMapImageStateFlow.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -76,8 +73,15 @@ fun MainScreen(sampleName: String) {
             ) {
                 LazyColumn(Modifier.fillMaxWidth()) {
                     // put item cards, each with their own MapView and model, into the column
-                    for (i in mvms.indices){
-                        item { TripItemCard(mvms[i], i.toLong()) }
+                    for (i in 0..10) {
+                        item {
+                            TripItemCard(
+                                mvm = mapViewModel,
+                                mapImage = cachedMapImageState.getOrDefault(i.toLong(), null),
+                                tripId = i.toLong(),
+                                onTap = onTap
+                            )
+                        }
                     }
                 }
             }
@@ -86,7 +90,7 @@ fun MainScreen(sampleName: String) {
 }
 
 @Composable
-fun TripItemCard(mvm: MapViewModel, tripId: Long) {
+fun TripItemCard(mvm: MapViewModel, mapImage: Bitmap?, tripId: Long, onTap: (String) -> Unit) {
     Card(
         Modifier
             .height(250.dp)
@@ -95,15 +99,17 @@ fun TripItemCard(mvm: MapViewModel, tripId: Long) {
     ) {
         Row(Modifier.fillMaxWidth()) {
             MapItemCached(
-                modifier = Modifier.width(250.dp),
+                modifier = Modifier.fillMaxWidth(0.4f),
                 startPoint = mvm.startPoint,
                 endPoint = mvm.endPoint,
                 startPictureMarkerSymbol = mvm.pms,
                 endPictureMarkerSymbol = mvm.pms,
                 tripId = tripId,
-                cachedMapImage = mvm.mapImage,
-                onTap = {},
-                onSaveEvent = {image: BitmapDrawable -> mvm.mapImage = image.bitmap}
+                cachedMapImage = mapImage,
+                onTap = {
+                    onTap("Trip : $tripId")
+                },
+                onSaveEvent = { tripId, image -> mvm.cacheMapImage(tripId, image) }
             )
             Text(text = "Trip #$tripId")
         }
@@ -120,8 +126,8 @@ fun MapItemCached(
     tripId: Long = 0,
     cachedMapImage: Bitmap? = null,
     onTap: () -> Unit,
-    onSaveEvent: (BitmapDrawable) -> Unit,
-) {
+    onSaveEvent: (Long, Bitmap) -> Unit,
+    ) {
     val map by remember {
         mutableStateOf(ArcGISMap(BasemapStyle.ArcGISImagery))
     }.apply { this.value.initialViewpoint = Viewpoint(39.8, -98.6, 10e7) }
@@ -136,6 +142,8 @@ fun MapItemCached(
 
     // Create a list of graphics overlays used by the MapView
     val graphicsOverlays = remember { listOf(graphicsOverlay) }
+    val envelope = Envelope(startPoint, endPoint)
+    setupBaseMap(map = map, envelope = envelope)
     val coroutineScope = rememberCoroutineScope()
     val mapViewProxy = remember {
         MapViewProxy()
@@ -165,7 +173,7 @@ fun MapItemCached(
                     coroutineScope.launch {
                         mapViewProxy.exportImage().onSuccess { image ->
                             // save this image in viewModel and retrieve back as cachedMapImage.
-                            onSaveEvent(image)
+                            onSaveEvent(tripId, image.bitmap)
                         }
                     }
                 }
@@ -176,5 +184,18 @@ fun MapItemCached(
             bitmap = cachedMapImage.asImageBitmap(),
             contentDescription = "Map Image"
         )
+    }
+}
+
+private fun setupBaseMap(
+    map: ArcGISMap,
+    envelope: Envelope,
+) {
+    try {
+        map.initialViewpoint = Viewpoint(envelope)
+        map.maxScale = 1500.00
+        map.minScale = 3.7E7
+    } catch (e: ArcGISException) {
+        e.printStackTrace()
     }
 }
