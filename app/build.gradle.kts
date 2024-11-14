@@ -22,7 +22,7 @@ android {
     }
 
     // Optional input to apply the external signing configuration for the sample viewer
-    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=200.6.0-4385
+    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=200.6.0
     val signingPropsFilePath = project.findProperty("signingPropsFilePath").toString()
     val signingPropsFile = rootProject.file(signingPropsFilePath)
 
