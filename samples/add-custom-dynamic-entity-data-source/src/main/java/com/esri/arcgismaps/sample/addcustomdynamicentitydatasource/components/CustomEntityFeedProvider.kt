@@ -45,7 +45,7 @@ import java.io.IOException
 import kotlin.time.Duration
 
 /**
- * Implements the [EntityFeedProvider] interface on the [CustomDynamicEntityDataSource] to provide
+ * Implements the [CustomDynamicEntityDataSource.EntityFeedProvider] interface on the [CustomDynamicEntityDataSource] to provide
  * feed events from a JSON file for the custom dynamic entity data source. Uses a buffered reader to
  * process lines in the file and emit feed events for each observation. Uses the [onConnect] to
  * start reading the file and [onDisconnect] to cancel the coroutine job as required.
