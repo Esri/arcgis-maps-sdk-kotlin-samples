@@ -1,4 +1,4 @@
-/* Copyright 2023 Esri
+/* Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.traceutilitynetwork.screens.MainScreen
+import com.esri.arcgismaps.sample.traceutilitynetwork.screens.TraceUtilityNetworkScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -34,20 +34,19 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+        ArcGISEnvironment.applicationContext = application.applicationContext
 
         setContent {
             SampleAppTheme {
-                FeatureReductionApp()
+                TraceUtilityNetworkApp()
             }
         }
     }
 
     @Composable
-    private fun FeatureReductionApp() {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            MainScreen(
+    private fun TraceUtilityNetworkApp() {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            TraceUtilityNetworkScreen(
                 sampleName = getString(R.string.trace_utility_network_app_name)
             )
         }
