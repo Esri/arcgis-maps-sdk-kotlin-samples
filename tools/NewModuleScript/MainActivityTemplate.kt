@@ -44,9 +44,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun SampleApp() {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface(color = MaterialTheme.colorScheme.background) {
             MainScreen(
                 sampleName = getString(R.string.app_name)
             )

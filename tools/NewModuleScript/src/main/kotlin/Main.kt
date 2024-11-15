@@ -10,18 +10,15 @@ import java.util.*
 import kotlin.system.exitProcess
 
 /**
- * This java file creates a new sample and configures it as a new module in Android Studio.
+ * This Kotlin file creates a new sample and configures it as a new library module in Android Studio.
  * The IntelliJ project creates an .jar artifact which is used to create new samples.
  */
-class ScriptMain {
+fun main() {
+    val scriptMain = ScriptMain()
+    scriptMain.run()
+}
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val mainClassObj = ScriptMain()
-            mainClassObj.run()
-        }
-    }
+class ScriptMain {
 
     private var sampleName: String = ""
     private var sampleWithHyphen: String = ""
@@ -31,17 +28,17 @@ class ScriptMain {
     private var sampleNameCamelCase: String = ""
     private var sampleCategory: String = "Maps"
 
-    private fun run() {
+    fun run() {
         val scanner = Scanner(System.`in`)
 
         // Get the name of the sample
-        println("Enter Name of the sample with spaces (Eg. \"Display New Map\"): ")
+        println("Enter Name of the sample with spaces (Eg. \"Display new map\"): ")
         sampleName = scanner.nextLine().trim()
 
         sampleWithHyphen = sampleName.replace(" ", "-").lowercase(Locale.getDefault())
         sampleWithoutSpaces = sampleName.replace(" ", "").lowercase(Locale.getDefault())
         sampleNameUnderscore = sampleName.replace(" ", "_").lowercase(Locale.getDefault())
-        sampleNameCamelCase = sampleName.replace(" ", "").trim()
+        sampleNameCamelCase = sampleName.trim().toUpperCamelCase()
 
         // Get the sample category
         println("Choose the sample category: \n1:  Analysis \n2:  Augmented Reality \n3:  Cloud and Portal \n4:  Layers \n5:  Edit and Manage Data \n6:  Maps \n7:  Scenes \n8:  Routing and Logistics \n9:  Utility Networks \n10: Search and Query \n11: Visualization")
@@ -177,7 +174,7 @@ class ScriptMain {
 
     /**
      * Updates the content in the copied files to reflect the name of the sample
-     * Eg. README.md, build.gradle.kts, MainActivity.kt, etc.
+     * E.g. README.md, build.gradle.kts, MainActivity.kt, etc.
      */
     private fun updateSampleContent() {
         //Update README.md
@@ -307,25 +304,9 @@ class ScriptMain {
             e.printStackTrace()
         }
     }
-}
 
-
-val camelRegex = "(?<=[a-zA-Z])[A-Z]".toRegex()
-val snakeRegex = "_[a-zA-Z]".toRegex()
-
-// String extensions
-fun String.camelToSnakeCase(): String {
-    return camelRegex.replace(this) {
-        "_${it.value}"
-    }.lowercase()
-}
-
-fun String.snakeToLowerCamelCase(): String {
-    return snakeRegex.replace(this) {
-        it.value.replace("_","").uppercase()
+    private fun String.toUpperCamelCase(): String {
+        return this.split(" ")
+            .joinToString("") { it.replaceFirstChar { char -> char.uppercase() } }
     }
-}
-
-fun String.snakeToUpperCamelCase(): String {
-    return this.snakeToLowerCamelCase().replaceFirstChar { it.uppercase() }
 }
