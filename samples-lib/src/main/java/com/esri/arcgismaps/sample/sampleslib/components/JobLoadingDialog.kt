@@ -84,7 +84,8 @@ fun JobLoadingDialog(
                 )
                 // row of progress indicator and percentage text.
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // set ease animation when progress state changes
                     val progressAnimation by animateFloatAsState(
@@ -96,13 +97,13 @@ fun JobLoadingDialog(
                     )
                     // create the linear progress indicator
                     LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
                         progress = { progressAnimation },
                     )
                     // progress percentage text
                     Text(
                         text = "$progress%",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        textAlign = TextAlign.Center
                     )
                 }
 

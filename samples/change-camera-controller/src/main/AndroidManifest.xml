@@ -6,7 +6,6 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:theme="@style/AppTheme"
             android:label="@string/change_camera_controller_app_name">
             
         </activity>

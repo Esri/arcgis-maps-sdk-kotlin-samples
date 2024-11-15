@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                Scaffold(topBar = { SampleTopAppBar(getString(R.string.display_composable_mapview_app_name)) }) {
+                Scaffold(topBar = { SampleTopAppBar(getString(R.string.display_composable_map_view_app_name)) }) {
                     // create a map with a navigation night basemap style
                     val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
                     MapView(

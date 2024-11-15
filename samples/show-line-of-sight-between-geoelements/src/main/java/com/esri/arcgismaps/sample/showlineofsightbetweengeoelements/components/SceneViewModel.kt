@@ -86,7 +86,7 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
-            R.string.app_name
+            R.string.show_line_of_sight_between_geoelements_app_name
         ) + File.separator
     }
 

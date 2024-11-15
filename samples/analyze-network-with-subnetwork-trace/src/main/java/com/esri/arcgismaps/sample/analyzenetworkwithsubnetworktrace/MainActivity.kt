@@ -455,12 +455,15 @@ class MainActivity : AppCompatActivity() {
         dataType: UtilityNetworkAttributeDataType,
     ): Any {
         return try {
-            when (dataType::class.objectInstance) {
-                UtilityNetworkAttributeDataType.Boolean -> otherValue.toString().toBoolean()
-                UtilityNetworkAttributeDataType.Double -> otherValue.toString().toDouble()
-                UtilityNetworkAttributeDataType.Float -> otherValue.toString().toFloat()
-                UtilityNetworkAttributeDataType.Integer -> otherValue.toString().toInt()
-                else -> {}
+            if (dataType::class.isInstance(UtilityNetworkAttributeDataType.Boolean)) {
+                otherValue.toString().toBoolean()
+            } else if (dataType::class.isInstance(UtilityNetworkAttributeDataType.Double)) {
+                otherValue.toString().toDouble()
+            } else if (dataType::class.isInstance(UtilityNetworkAttributeDataType.Float)) {
+                otherValue.toString().toFloat()
+            } else if (dataType::class.isInstance(UtilityNetworkAttributeDataType.Integer)) {
+                otherValue.toString().toInt()
+            } else {
             }
         } catch (e: Exception) {
             return ("Error converting value to a datatype")

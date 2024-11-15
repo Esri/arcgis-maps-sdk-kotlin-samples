@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.manageoperationallayers.screens
 
 import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,7 +41,6 @@ import com.esri.arcgismaps.sample.manageoperationallayers.R
 /**
  * Layout to display a list of operational layers on the map using [activateLayerNames].
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LayersList(
     activateLayerNames: List<String>,

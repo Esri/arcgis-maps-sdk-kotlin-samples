@@ -112,7 +112,7 @@ private fun AboutIcon() {
         val size = (LocalConfiguration.current.screenWidthDp * 0.20).dp
         Image(
             modifier = Modifier.size(size),
-            painter = painterResource(R.drawable.arcgis_maps_sdks_64),
+            painter = painterResource(com.esri.arcgismaps.sample.sampleslib.R.drawable.arcgis_maps_sdks_64),
             contentDescription = stringResource(R.string.sdk_sample_icon_description)
         )
     }

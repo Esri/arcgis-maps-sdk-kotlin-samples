@@ -41,10 +41,10 @@ A long-lived access token that gives your application access to ArcGIS location 
   * **Location services** > **Routing**
 
 The Kotlin samples in this repository have been structured to use an access token, set once, which will run in all samples.
-Set your access token in the `local.properties` in the same folder as the `secrets.defauls.properties`.
+Set your access token in the `local.properties` in the same folder as the `secrets.defaults.properties`.
 The ACCESS_TOKEN property should contain quotes around the key itself:
 ```gradle
-ACCESS_TOKEN="YOUR_ACCESS_TOKEN" // local.properties
+ACCESS_TOKEN=YOUR_ACCESS_TOKEN
 ```
 
 ### ArcGIS identity

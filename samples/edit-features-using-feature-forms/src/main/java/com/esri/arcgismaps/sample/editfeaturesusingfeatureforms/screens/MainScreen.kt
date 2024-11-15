@@ -21,12 +21,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -94,7 +92,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) }
+        topBar = { SampleTopAppBar(title = stringResource(R.string.edit_features_using_feature_forms_app_name)) }
     ) { padding ->
         // display the composable map using the mapViewModel
         MapView(
