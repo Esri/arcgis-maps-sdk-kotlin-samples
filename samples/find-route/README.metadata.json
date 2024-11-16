@@ -24,9 +24,6 @@
         "Stop"
     ],
     "language": "kotlin",
-    "redirect_from": [
-        "/android/latest/sample-code/find-route.htm"
-    ],
     "relevant_apis": [
         "DirectionManeuver",
         "Route",
@@ -36,6 +33,8 @@
         "Stop"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/findroute/FindRouteViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/findroute/FindRouteScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/findroute/MainActivity.kt"
     ],
     "title": "Find route"
