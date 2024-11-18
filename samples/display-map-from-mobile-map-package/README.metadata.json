@@ -12,7 +12,6 @@
         "mobile map package",
         "offline",
         "tookit",
-        "",
         "MapView",
         "MobileMapPackage"
     ],
@@ -21,7 +20,6 @@
         "/android/latest/sample-code/open-mobile-map-package.htm"
     ],
     "relevant_apis": [
-        "",
         "MapView",
         "MobileMapPackage"
     ],
