@@ -149,7 +149,10 @@ suspend fun Sample.start(context: Context) {
     // Obtain and launch the sample activity
     val className = Class.forName(mainActivity) as Class<*>
     val sampleLauncherActivity = context.getActivityOrNull() ?: return
-    sampleLauncherActivity.startActivity(Intent(sampleLauncherActivity, className))
+    val intent = Intent(sampleLauncherActivity, className).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    sampleLauncherActivity.startActivity(intent)
 }
 
 /**
