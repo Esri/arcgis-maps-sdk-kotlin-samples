@@ -124,6 +124,14 @@ fun HomeCategoryScreen(
     }
 }
 
+/**
+ * Display a dialog if the project does not have an access token set.
+ * This is required for samples to access Esri location services, including basemaps, routing,
+ * and geocoding, requires authentication using either an API Key or an ArcGIS identity.
+ *
+ * @see <a href="https://github.com/Esri/arcgis-maps-sdk-kotlin-samples?tab=readme-ov-file#accessing-esri-location-services">Accessing Esri location services</a>
+ *
+ */
 @Composable
 fun CheckAccessToken() {
     var isDialogDisplayed by remember {
@@ -131,7 +139,7 @@ fun CheckAccessToken() {
     }
     if (isDialogDisplayed) {
         MessageDialog(
-            title = "Using default access token",
+            title = "Access token",
             description = "Add an ACCESS_TOKEN to the project's local.properties",
             onDismissRequest = { isDialogDisplayed = false }
         )
