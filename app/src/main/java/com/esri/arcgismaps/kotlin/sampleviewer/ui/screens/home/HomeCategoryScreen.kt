@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -60,7 +61,9 @@ import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.stylegraphicswithsymbols.BuildConfig
 
 /**
  * The main SampleViewer app screen which showcases the list all sample categories,
@@ -116,7 +119,22 @@ fun HomeCategoryScreen(
                     CategoryCard(category) { onNavigateToCategory(category.title) }
                 }
             }
+            CheckAccessToken()
         }
+    }
+}
+
+@Composable
+fun CheckAccessToken() {
+    var isDialogDisplayed by remember {
+        mutableStateOf(BuildConfig.ACCESS_TOKEN == "DEFAULT_ACCESS_TOKEN")
+    }
+    if (isDialogDisplayed) {
+        MessageDialog(
+            title = "Using default access token",
+            description = "Add an ACCESS_TOKEN to the project's local.properties",
+            onDismissRequest = { isDialogDisplayed = false }
+        )
     }
 }
 
@@ -175,7 +193,7 @@ fun PreviewHomeCategoryScreen() {
         HomeCategoryScreen(
             onNavigateToCategory = {},
             onNavigateToSearch = {},
-            onNavigateToAbout =  {}
+            onNavigateToAbout = {}
         )
     }
 }
