@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.arcgismaps.android.application.compose)
     alias(libs.plugins.arcgismaps.kotlin.sample)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.gradle.secrets)
     alias(libs.plugins.sample.files.copy)
     alias(libs.plugins.screenshots.copy)
     alias(libs.plugins.ksp)
@@ -12,6 +13,11 @@ plugins {
 
 tasks.named("preBuild").configure { dependsOn("copyCodeFiles") }
 tasks.named("preBuild").configure { dependsOn("copyScreenshots") }
+
+secrets {
+    // this file doesn't contain secrets, it just provides defaults which can be committed into git.
+    defaultPropertiesFileName = "secrets.defaults.properties"
+}
 
 android {
     namespace = "com.esri.arcgismaps.kotlin.sampleviewer"
