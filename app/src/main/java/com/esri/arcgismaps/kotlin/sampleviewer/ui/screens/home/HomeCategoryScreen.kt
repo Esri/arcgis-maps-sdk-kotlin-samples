@@ -125,7 +125,7 @@ fun HomeCategoryScreen(
 }
 
 /**
- * Display a dialog if the project does not have an access token set.
+ * Display a dialog if the default access token placeholder is still set.
  * This is required for samples to access Esri location services, including basemaps, routing,
  * and geocoding, requires authentication using either an API Key or an ArcGIS identity.
  *
