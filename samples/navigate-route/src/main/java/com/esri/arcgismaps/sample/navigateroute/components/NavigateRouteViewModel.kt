@@ -64,9 +64,8 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
 
     val map = ArcGISMap(BasemapStyle.ArcGISStreets)
 
+    // graphics overlay to display the route ahead and traveled graphics
     val graphicsOverlay = GraphicsOverlay()
-
-    val mapViewProxy = MapViewProxy()
 
     // generate a route with directions and stops for navigation
     private val routeTask = RouteTask(getString(application, R.string.routing_service_url))
@@ -81,8 +80,13 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
         Stop(Point(-117.147230, 32.730467, SpatialReference.wgs84()))
     )
 
+    // Passed to the composable MapView to set the mapViewProxy
+    val mapViewProxy = MapViewProxy()
+
+    // keep track of the the location display job when navigation is enabled
     private var locationDisplayJob: Job? = null
 
+    // default location display object, which is updated by rememberLocationDisplay
     private var locationDisplay: LocationDisplay = LocationDisplay()
 
     private var routeResult: RouteResult? = null
@@ -221,17 +225,18 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
                     )
                 }
 
+                // set the auto pan to navigation mode
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+
                 // data source has started, display stop message
                 nextStopText = getStringArray(R.array.stop_message)[0]
 
                 // plays the direction voice guidance
                 updateVoiceGuidance(routeTracker)
 
-                // set the auto pan to navigation mode
-                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
-
                 launch(Dispatchers.IO) {
                     // zoom in the scale to focus on the navigation route
+                    // TODO This seems to get absorbed by LocationDisplayAutoPanMode
                     mapViewProxy.setViewpointScale(10000.0)
                 }
             }
