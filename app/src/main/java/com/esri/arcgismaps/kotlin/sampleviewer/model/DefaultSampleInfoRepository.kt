@@ -44,8 +44,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
     private val json = Json { ignoreUnknownKeys = true }
 
     private val _sampleData = MutableStateFlow<List<Sample>>(emptyList())
-
-    val sampleData = _sampleData.asStateFlow() // Read-only flow for observing data
+    private val sampleData = _sampleData.asStateFlow()
 
     /**
      * Load the sample metadata from the metadata folder in the assets directory and updates sampleList
@@ -107,7 +106,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
      * Populates the Room SQL database with all samples and sample info
      */
     private suspend fun populateDatabase(context: Context) {
-        val sampleEntities = _sampleData.value.map { Converters().convertToEntity(sample = it) }
+        val sampleEntities = sampleData.value.map { Converters().convertToEntity(sample = it) }
         AppDatabase.getDatabase(context).clearAllTables()
         AppDatabase.getDatabase(context).sampleDao().insertAll(samples = sampleEntities)
     }
@@ -116,13 +115,13 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
      * Get a sample by its name. Either the formal name or title.
      */
     override fun getSampleByName(sampleName: String): Flow<Sample> {
-        return _sampleData.map { it.first { sample -> sample.metadata.formalName == sampleName || sample.metadata.title == sampleName } }
+        return sampleData.map { it.first { sample -> sample.metadata.formalName == sampleName || sample.metadata.title == sampleName } }
     }
 
     /**
      * Get a list of samples for the given [SampleCategory].
      */
     override fun getSamplesInCategory(sampleCategory: SampleCategory): Flow<List<Sample>> {
-        return _sampleData.map { it.filter { sample -> sample.metadata.sampleCategory == sampleCategory } }
+        return sampleData.map { it.filter { sample -> sample.metadata.sampleCategory == sampleCategory } }
     }
 }
