@@ -24,8 +24,6 @@
         "VoiceGuidance"
     ],
     "language": "kotlin",
-    "provision_from": [],
-    "provision_to": [],
     "redirect_from": "",
     "relevant_apis": [
         "DestinationStatus",
@@ -39,6 +37,8 @@
         "VoiceGuidance"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/navigateroute/NavigateRouteViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigateroute/NavigateRouteScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroute/MainActivity.kt"
     ],
     "title": "Navigate route"
