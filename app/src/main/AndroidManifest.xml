@@ -17,9 +17,7 @@
         tools:targetApi="31">
         <activity
             android:name=".SampleViewerLauncherActivity"
-            android:exported="true"
-            android:label="@string/title_activity_launcher"
-            android:theme="@style/AppTheme">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +26,6 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:clearTaskOnLaunch="true"
             android:exported="true">
         </activity>
     </application>

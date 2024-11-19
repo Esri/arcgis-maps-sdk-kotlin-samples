@@ -46,6 +46,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Responsible for managing incoming exceptions and displaying it as a dialog in the UI.
+     */
     @Composable
     fun HandleExceptions() {
         var sampleViewerException by remember { mutableStateOf(arrayOf<String>()) }

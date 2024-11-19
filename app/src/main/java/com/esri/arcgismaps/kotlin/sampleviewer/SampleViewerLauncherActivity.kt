@@ -1,3 +1,19 @@
+/* Copyright 2024 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.esri.arcgismaps.kotlin.sampleviewer
 
 import android.content.Intent
@@ -14,6 +30,10 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
         startMainActivity(null)
     }
 
+    /**
+     *  Prepares extras for the intent with error information if a [throwable] is provided.
+     *  It then starts the [MainActivity] by creating an intent with necessary flag and extras.
+     */
     private fun startMainActivity(throwable: Throwable?) {
         val extras = Bundle()
         if (throwable != null) {
@@ -30,11 +50,18 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
         })
     }
 
+    /**
+     * Overrides [ExceptionListener] to capture the [throwable]
+     * and starts the [MainActivity] with the exception details.
+     */
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         Log.e("SampleViewerException", throwable.message.toString(), throwable)
         startMainActivity(throwable)
     }
 
+    /**
+     * Posts a task to the main [Looper] to handle uncaught exceptions.
+     */
     private fun setupExceptionHandler() {
         Handler(Looper.getMainLooper()).post {
             while (true) {
@@ -51,7 +78,9 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
     }
 }
 
-
+/**
+ * This interface defines a method [uncaughtException] to handle uncaught exceptions.
+ */
 interface ExceptionListener {
     fun uncaughtException(thread: Thread, throwable: Throwable)
 }

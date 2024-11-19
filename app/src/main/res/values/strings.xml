@@ -23,5 +23,4 @@
     <string name="cancel">Cancel</string>
     <string name="sdk_sample_icon_description">SDK sample icon</string>
     <string name="home_screen_title">Sample Categories</string>
-    <string name="title_activity_launcher">LauncherActivity</string>
 </resources>
