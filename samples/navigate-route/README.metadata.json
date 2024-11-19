@@ -12,6 +12,7 @@
         "maneuver",
         "navigation",
         "route",
+        "toolkit",
         "turn-by-turn",
         "voice",
         "DestinationStatus",
@@ -22,7 +23,6 @@
         "RouteTask",
         "RouteTracker",
         "Stop",
-        "toolkit",
         "VoiceGuidance"
     ],
     "language": "kotlin",
