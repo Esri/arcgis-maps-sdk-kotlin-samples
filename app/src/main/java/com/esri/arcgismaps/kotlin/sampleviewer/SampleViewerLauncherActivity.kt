@@ -11,20 +11,28 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupExceptionHandler()
-        startMainActivity()
+        startMainActivity(null)
     }
 
-    private fun startMainActivity(){
+    private fun startMainActivity(throwable: Throwable?) {
+        val extras = Bundle()
+        if (throwable != null) {
+            extras.putStringArray(
+                /* key = */     "SampleViewerException",
+                /* value = */   arrayOf(throwable.message.toString(), throwable.cause.toString())
+            )
+        }
+
         startActivity(Intent(this, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtras(extras)
         })
     }
 
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
-        Log.e("ERROR MESSAGE", throwable.message.toString())
-        throwable.printStackTrace()
-        startMainActivity()
+        Log.e("SampleViewerException", throwable.message.toString(), throwable)
+        startMainActivity(throwable)
     }
 
     private fun setupExceptionHandler() {
