@@ -33,8 +33,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 class SceneViewModel(application: Application) : AndroidViewModel(application) {
 
     // create a KML dataset from a URL, then use it to create a KML layer
-    val kmlDataset = KmlDataset("https://www.arcgis.com/sharing/rest/content/items/600748d4464442288f6db8a4ba27dc95/data")
-    val kmlLayer = KmlLayer(kmlDataset)
+    private val kmlDataset = KmlDataset("https://www.arcgis.com/sharing/rest/content/items/600748d4464442288f6db8a4ba27dc95/data")
+    private val kmlLayer = KmlLayer(kmlDataset)
 
 
     // create a scene with the imagery basemap, centred over Germany and the Netherlands

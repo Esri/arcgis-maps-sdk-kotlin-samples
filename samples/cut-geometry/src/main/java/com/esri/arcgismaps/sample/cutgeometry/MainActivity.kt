@@ -195,9 +195,4 @@ class MainActivity : AppCompatActivity() {
         get() {
             return fromRgba(0, 0, 255, 255)
         }
-
-    private val Color.Companion.yellow: Color
-        get() {
-            return fromRgba(255, 255, 0, 255)
-        }
 }
