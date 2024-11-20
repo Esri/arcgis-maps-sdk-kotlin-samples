@@ -16,13 +16,22 @@
 
 package com.esri.arcgismaps.sample.clipgeometry.screens
 
+import android.app.Application
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.clipgeometry.components.ClipGeometryViewModel
@@ -34,7 +43,13 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun ClipGeometryScreen(sampleName: String) {
-    val mapViewModel: ClipGeometryViewModel = viewModel()
+    // get the application property that will be used to construct MapViewModel
+    val sampleApplication = LocalContext.current.applicationContext as Application
+    // create a ViewModel to handle MapView interactions
+    val mapViewModel = remember { ClipGeometryViewModel(sampleApplication) }
+    // the collection of graphics overlays used by the MapView
+    val graphicsOverlayCollection = listOf(mapViewModel.graphicsOverlay)
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -47,9 +62,35 @@ fun ClipGeometryScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    graphicsOverlays = graphicsOverlayCollection
                 )
-                // TODO: Add UI components in this Column ...
+                Row(
+                    modifier = Modifier.
+                    padding(12.dp).
+                    fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        modifier = Modifier.padding(12.dp),
+                        enabled = mapViewModel.isResetButtonEnabled.value,
+                        onClick = {
+                            mapViewModel.resetGeometry()
+                        }
+                    ) {
+                        Text("Reset")
+                    }
+                    Button(
+                        modifier = Modifier.padding(12.dp),
+                        enabled = mapViewModel.isClipButtonEnabled.value,
+                        onClick = {
+                            mapViewModel.clipGeometry()
+                        }
+                    ) {
+                        Text("Clip geometry")
+                    }
+                }
             }
 
             mapViewModel.messageDialogVM.apply {
