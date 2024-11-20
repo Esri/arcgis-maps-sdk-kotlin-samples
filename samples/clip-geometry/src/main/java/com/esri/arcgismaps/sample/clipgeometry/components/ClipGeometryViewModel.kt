@@ -89,7 +89,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     }
 
 
-
+    // clear the current graphics, then re-add the graphics for Colorado and the clip boxes
     fun resetGeometry() {
 
         graphicsOverlay.graphics.clear()
@@ -101,14 +101,17 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
             graphicsOverlay.graphics.add(graphic)
         }
 
+        // update the reset button and clip button
         isResetButtonEnabled.value = false
         isClipButtonEnabled.value = true
     }
 
+    // clip the Colorado geometry using the clip boxes and then add the result to the graphics overlay
     fun clipGeometry() {
 
         coloradoGraphic.isVisible = false
 
+        // go through each envelope and clip the colorado geometry using it
         envelopesGraphics.forEach { graphic ->
             val geometry =
                 coloradoGraphic.geometry?.let { coloradoGeometry ->
@@ -118,6 +121,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
             graphicsOverlay.graphics.add(clippedGraphic)
         }
 
+        // update the reset button and clip button
         isResetButtonEnabled.value = true
         isClipButtonEnabled.value = false
     }
