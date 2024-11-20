@@ -1,5 +1,3 @@
 <resources>
     <string name="clip_geometry_app_name">Clip geometry</string>
-    <string name="clip_geometry">Clip geometry</string>
-    <string name="reset">Reset</string>
 </resources>
