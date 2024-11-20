@@ -19,6 +19,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://esri.jfrog.io/artifactory/arcgis") }
+        maven { url = uri("https://olympus.esri.com/artifactory/arcgisruntime-repo/") }
         maven(url = "https://jitpack.io")
     }
 }

@@ -42,7 +42,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // Get the file path of the (.mmpk) file
     private val filePath = provisionPath + application.getString(R.string.yellowstone_mmpk)
 
-    // Create a SceneViewProxy which is passed to the composable SceneView
+    // Create a MapViewProxy which is passed to the composable MapView
     val mapViewProxy = MapViewProxy()
 
     // View model to handle popup dialogs
@@ -62,7 +62,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 map = mapPackage.maps.first()
             }.onFailure {
                 messageDialogVM.showMessageDialog(
-                    "Error loading mobile map package", it.message ?: "Unknown error"
+                    "Error loading mobile map package", it.message.toString()
                 )
             }
         }
