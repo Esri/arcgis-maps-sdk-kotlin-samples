@@ -79,6 +79,9 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
                 // set the viewpoint of the map
                 mapViewProxy.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
 
+                coloradoGraphic = createColoradoGraphic()
+                envelopesGraphics = createEnvelopeGraphics()
+
                 resetGeometry()
 
             }
@@ -91,11 +94,8 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
 
         graphicsOverlay.graphics.clear()
 
-        coloradoGraphic = createColoradoGraphic()
-
         graphicsOverlay.graphics.add(coloradoGraphic!!)
-
-        envelopesGraphics = createEnvelopeGraphics()
+        coloradoGraphic?.isVisible = true
 
         envelopesGraphics.forEach { graphic ->
             graphicsOverlay.graphics.add(graphic)
