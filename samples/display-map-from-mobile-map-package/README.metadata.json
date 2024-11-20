@@ -25,8 +25,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/components/MapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/screens/MainScreen.kt"
     ],
     "title": "Display map from mobile map package"

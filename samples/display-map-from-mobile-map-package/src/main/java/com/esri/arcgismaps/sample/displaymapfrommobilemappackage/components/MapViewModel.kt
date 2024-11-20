@@ -25,7 +25,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.MobileMapPackage
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.displaymapfrommobilemappackage.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
@@ -41,9 +40,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // Get the file path of the (.mmpk) file
     private val filePath = provisionPath + application.getString(R.string.yellowstone_mmpk)
-
-    // Create a MapViewProxy which is passed to the composable MapView
-    val mapViewProxy = MapViewProxy()
 
     // View model to handle popup dialogs
     val messageDialogVM = MessageDialogViewModel()

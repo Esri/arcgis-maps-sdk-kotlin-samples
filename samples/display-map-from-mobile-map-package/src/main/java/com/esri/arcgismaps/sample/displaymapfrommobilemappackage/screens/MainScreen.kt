@@ -42,7 +42,6 @@ fun MainScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
-                mapViewProxy = mapViewModel.mapViewProxy,
                 arcGISMap = mapViewModel.map
             )
             mapViewModel.messageDialogVM.apply {
