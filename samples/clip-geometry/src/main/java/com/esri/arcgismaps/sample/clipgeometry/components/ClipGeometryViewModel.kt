@@ -52,7 +52,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     // graphics overlay to display graphics
     val graphicsOverlay = GraphicsOverlay()
 
-    private var coloradoGraphic: Graphic? = null
+    private var coloradoGraphic  = createColoradoGraphic()
     private var coloradoFillSymbol = SimpleFillSymbol(
         SimpleFillSymbolStyle.Solid,
         Color(R.color.transparentDarkBlue),
@@ -94,8 +94,8 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
 
         graphicsOverlay.graphics.clear()
 
-        graphicsOverlay.graphics.add(coloradoGraphic!!)
-        coloradoGraphic?.isVisible = true
+        graphicsOverlay.graphics.add(coloradoGraphic)
+        coloradoGraphic.isVisible = true
 
         envelopesGraphics.forEach { graphic ->
             graphicsOverlay.graphics.add(graphic)
@@ -107,11 +107,11 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
 
     fun clipGeometry() {
 
-        coloradoGraphic?.isVisible = false
+        coloradoGraphic.isVisible = false
 
         envelopesGraphics.forEach { graphic ->
             val geometry =
-                coloradoGraphic?.geometry?.let { coloradoGeometry ->
+                coloradoGraphic.geometry?.let { coloradoGeometry ->
                     GeometryEngine.clipOrNull(coloradoGeometry, graphic.geometry as Envelope)
                 }
             val clippedGraphic = Graphic(geometry, coloradoFillSymbol)
