@@ -201,7 +201,7 @@ fun PreviewHomeCategoryScreen() {
         HomeCategoryScreen(
             onNavigateToCategory = {},
             onNavigateToSearch = {},
-            onNavigateToAbout =  {}
+            onNavigateToAbout = {}
         )
     }
 }
