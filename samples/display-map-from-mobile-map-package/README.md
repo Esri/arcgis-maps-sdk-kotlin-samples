@@ -24,13 +24,13 @@ When the sample opens, it will automatically display the map in the mobile map p
 * MapView
 * MobileMapPackage
 
-## Additional information
-
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
-
 ## About the data
 
 This mobile map package shows points of interest within Yellowstone National Park. It is available for download [here on ArcGIS Online](https://arcgisruntime.maps.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061).
+
+## Additional information
+
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
