@@ -77,7 +77,6 @@ fun NavigateRouteScreen(sampleName: String) {
                         onResetClicked = ::resetNavigation
                     )
 
-
                     AnimatedVisibility(!isNavigateButtonEnabled) {
                         NavigationRouteInfo(
                             nextStopText,
@@ -117,7 +116,6 @@ fun NavigationRouteInfo(
             .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
         Text(
             text = nextStopText,
             style = MaterialTheme.typography.bodyMedium
@@ -176,4 +174,3 @@ fun NavigateRouteOptions(
         }
     }
 }
-

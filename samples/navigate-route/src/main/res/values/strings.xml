@@ -4,8 +4,6 @@
     <string name="distance_remaining">Distance remaining: </string>
     <string name="time_remaining">Time remaining: </string>
     <string name="next_direction">Next direction: </string>
-    <string name="navigate_route">Reset Navigation</string>
-    <string name="recenter">Recenter</string>
     <string-array name="stop_message">
         <item>Navigating to the first stop, the USS San Diego Memorial.</item>
         <item>Navigating to the second stop, the Fleet Science Center.</item>

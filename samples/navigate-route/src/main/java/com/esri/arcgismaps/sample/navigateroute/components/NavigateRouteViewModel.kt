@@ -22,6 +22,7 @@ import android.text.format.DateUtils
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -70,7 +71,7 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
     // generate a route with directions and stops for navigation
     private val routeTask = RouteTask(getString(application, R.string.routing_service_url))
 
-    // Destination list of stops for the RouteParameters
+    // destination list of stops for the RouteParameters
     private val routeStops = listOf(
         // San Diego Convention Center
         Stop(Point(-117.160386, 32.706608, SpatialReference.wgs84())),
@@ -80,7 +81,7 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
         Stop(Point(-117.147230, 32.730467, SpatialReference.wgs84()))
     )
 
-    // Passed to the composable MapView to set the mapViewProxy
+    // passed to the composable MapView to set the mapViewProxy
     val mapViewProxy = MapViewProxy()
 
     // keep track of the the location display job when navigation is enabled
@@ -124,7 +125,6 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
-
     init {
         // create text-to-speech to replay navigation voice guidance
         textToSpeech = TextToSpeech(application) { status ->
@@ -135,7 +135,7 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
             }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             // load and set the route parameters
             val routeParameters = routeTask.createDefaultParameters().getOrElse {
                 return@launch messageDialogVM.showMessageDialog(
@@ -199,7 +199,6 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
             }
         }
 
-
         // create a route tracker location data source to snap the location display to the route
         val routeTrackerLocationDataSource = RouteTrackerLocationDataSource(
             routeTracker = routeTracker,
@@ -207,13 +206,13 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
         )
 
         locationDisplayJob = with(viewModelScope) {
-            launch(Dispatchers.IO) {
+            launch {
                 // automatically enable recenter button when navigation pan is disabled
                 locationDisplay.autoPanMode.filter { it == LocationDisplayAutoPanMode.Off }
                     .collect { isRecenterButtonEnabled = true }
             }
 
-            launch(Dispatchers.IO) {
+            launch {
                 // set the simulated location data source as the location data source for this app
                 locationDisplay.dataSource = routeTrackerLocationDataSource
 
@@ -234,14 +233,13 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
                 // plays the direction voice guidance
                 updateVoiceGuidance(routeTracker)
 
-                launch(Dispatchers.IO) {
+                launch {
                     // zoom in the scale to focus on the navigation route
-                    // TODO This seems to get absorbed by LocationDisplayAutoPanMode
                     mapViewProxy.setViewpointScale(10000.0)
                 }
             }
 
-            launch(Dispatchers.IO) {
+            launch {
                 // listen for changes in location
                 locationDisplay.location.collect {
                     // get the route's tracking status
@@ -359,9 +357,13 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
         )
     }
 
+    /**
+     * Resets the navigation back to the initial state by stopping the
+     * [locationDisplay]'s datasource and cancels related coroutine tasks.
+     */
     fun resetNavigation() {
         // reset the navigation if button is clicked
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (locationDisplayJob?.isActive == true) {
                 // stop location data sources
                 locationDisplay.dataSource.stop()
@@ -406,9 +408,8 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
         return getApplication<Application>().resources.getStringArray(id)
     }
 
-    @Suppress("DEPRECATION")
     private fun getColorArgb(id: Int): Int {
-        return getApplication<Application>().resources.getColor(id)
+        return ContextCompat.getColor(getApplication(), id)
     }
 
     fun setLocationDisplay(locationDisplay: LocationDisplay) {
