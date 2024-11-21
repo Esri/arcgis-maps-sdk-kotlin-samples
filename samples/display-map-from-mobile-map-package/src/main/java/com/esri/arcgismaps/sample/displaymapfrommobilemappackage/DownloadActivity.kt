@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ class DownloadActivity : DownloaderActivity() {
                 // ArcGIS Portal item containing the .mmpk mobile map package
                 "https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"
             )
-
         )
     }
 }
