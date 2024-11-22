@@ -375,6 +375,7 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
                 mapViewProxy.setViewpoint(Viewpoint(it.extent))
             }
             mapViewProxy.setViewpointRotation(0.0)
+            locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
             createRouteGraphics()
 
             isNavigateButtonEnabled = true
