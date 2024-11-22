@@ -367,6 +367,8 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
             if (locationDisplayJob?.isActive == true) {
                 // stop location data sources
                 locationDisplay.dataSource.stop()
+                // reset location display auto-pan-mode
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
                 // cancel the coroutine job
                 locationDisplayJob?.cancelAndJoin()
             }
@@ -375,7 +377,6 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
                 mapViewProxy.setViewpoint(Viewpoint(it.extent))
             }
             mapViewProxy.setViewpointRotation(0.0)
-            locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
             createRouteGraphics()
 
             isNavigateButtonEnabled = true
