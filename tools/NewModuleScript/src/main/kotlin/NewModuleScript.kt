@@ -29,7 +29,7 @@ import kotlin.system.exitProcess
  * This Kotlin file creates a new sample and configures it as a new library module in Android Studio.
  * The IntelliJ project creates an .jar artifact which is used to create new samples.
  */
-fun main(){
+fun main() {
     run()
 }
 
@@ -102,13 +102,8 @@ private fun deleteUnwantedFiles() {
     val displayComposableMapKotlinFolder = File(
         "$samplesRepoPath/samples/$sampleWithHyphen/src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview"
     )
-    try {
-        FileUtils.deleteDirectory(buildFolder)
-        FileUtils.deleteDirectory(displayComposableMapKotlinFolder)
-    } catch (e: IOException) {
-        exitProgram(e)
-        e.printStackTrace()
-    }
+    FileUtils.deleteDirectory(buildFolder)
+    FileUtils.deleteDirectory(displayComposableMapKotlinFolder)
 }
 
 /**
@@ -125,12 +120,7 @@ private fun createFilesAndFolders() {
     val image = File("$samplesRepoPath/samples/$sampleWithHyphen/display-composable-mapview.png")
 
     // Perform copy of the Android res folders from display-composable-mapview sample.
-    try {
-        FileUtils.copyDirectory(sourceResDirectory, destinationResDirectory)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    FileUtils.copyDirectory(sourceResDirectory, destinationResDirectory)
 
     // Create the sample package directory in the source folder
     val packageDirectory =
@@ -147,32 +137,27 @@ private fun createFilesAndFolders() {
     val mainScreenTemplate = File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
 
     // Perform copy
-    try {
-        FileUtils.copyFileToDirectory(mainActivityTemplate, packageDirectory)
-        var source = Paths.get("$packageDirectory/MainActivityTemplate.kt")
-        Files.move(source, source.resolveSibling("MainActivity.kt"))
+    FileUtils.copyFileToDirectory(mainActivityTemplate, packageDirectory)
+    var source = Paths.get("$packageDirectory/MainActivityTemplate.kt")
+    Files.move(source, source.resolveSibling("MainActivity.kt"))
 
-        var componentsDir = File("$packageDirectory/components")
-        componentsDir.mkdirs()
+    var componentsDir = File("$packageDirectory/components")
+    componentsDir.mkdirs()
 
-        // copy and rename view-model
-        FileUtils.copyFileToDirectory(mapViewModelTemplate, componentsDir)
-        source = Paths.get("$componentsDir/MapViewModelTemplate.kt")
-        Files.move(source, source.resolveSibling("${sampleNameCamelCase}ViewModel.kt"))
+    // copy and rename view-model
+    FileUtils.copyFileToDirectory(mapViewModelTemplate, componentsDir)
+    source = Paths.get("$componentsDir/MapViewModelTemplate.kt")
+    Files.move(source, source.resolveSibling("${sampleNameCamelCase}ViewModel.kt"))
 
-        // rename screenshot
-        Files.move(image.toPath(), image.toPath().resolveSibling("${sampleWithHyphen}.png"))
+    // rename screenshot
+    Files.move(image.toPath(), image.toPath().resolveSibling("${sampleWithHyphen}.png"))
 
-        // copy and rename screens
-        componentsDir = File("$packageDirectory/screens")
-        componentsDir.mkdirs()
-        FileUtils.copyFileToDirectory(mainScreenTemplate, componentsDir)
-        source = Paths.get("$componentsDir/MainScreenTemplate.kt")
-        Files.move(source, source.resolveSibling("${sampleNameCamelCase}Screen.kt"))
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    // copy and rename screens
+    componentsDir = File("$packageDirectory/screens")
+    componentsDir.mkdirs()
+    FileUtils.copyFileToDirectory(mainScreenTemplate, componentsDir)
+    source = Paths.get("$componentsDir/MainScreenTemplate.kt")
+    Files.move(source, source.resolveSibling("${sampleNameCamelCase}Screen.kt"))
 }
 
 /**
@@ -180,8 +165,7 @@ private fun createFilesAndFolders() {
  * @param e Error message to display
  */
 private fun exitProgram(e: Exception) {
-    println("Error creating the sample: " + e.message)
-    println("StackTrace:")
+    println("Error creating the sample: ")
     e.printStackTrace()
     exitProcess(-1)
 }
@@ -194,19 +178,13 @@ private fun updateSampleContent() {
     //Update README.md
 
     var file = File("$samplesRepoPath/samples/$sampleWithHyphen/README.md")
-    try {
-        FileUtils.write(file, "# $sampleName\n", StandardCharsets.UTF_8)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    FileUtils.write(file, "# $sampleName\n", StandardCharsets.UTF_8)
 
     //Update README.metadata.json
     file = File("$samplesRepoPath/samples/$sampleWithHyphen/README.metadata.json")
-    try {
-        FileUtils.write(
-            file,
-            """
+    FileUtils.write(
+        file,
+        """
                 {
                     "category": "$sampleCategory",
                     "description": "TODO",
@@ -228,84 +206,54 @@ private fun updateSampleContent() {
                 }
                 
                 """.trimIndent(), StandardCharsets.UTF_8
-        )
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    )
 
     //Update build.gradle.kts
     file = File("$samplesRepoPath/samples/$sampleWithHyphen/build.gradle.kts")
-    try {
-        var fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
-        fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
-        FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    var fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
+    fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
+    FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
 
     //Update strings.xml
     file = File("$samplesRepoPath/samples/$sampleWithHyphen/src/main/res/values/strings.xml")
-    try {
-        var fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
-        fileContent = fileContent.replace(
-            "<string name=\"display_composable_map_view_app_name\">Display composable map view</string>",
-            "<string name=\"${sampleNameUnderscore}_app_name\">$sampleName</string>"
-        )
-        FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
+    fileContent = fileContent.replace(
+        "<string name=\"display_composable_map_view_app_name\">Display composable map view</string>",
+        "<string name=\"${sampleNameUnderscore}_app_name\">$sampleName</string>"
+    )
+    FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
 
     //Update MainActivity.kt
     file =
         File("$samplesRepoPath/samples/$sampleWithHyphen/src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/MainActivity.kt")
-    try {
-        var fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
-        fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance()[Calendar.YEAR])
-        fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
-        fileContent = fileContent.replace("SampleApp()", "${sampleNameCamelCase}App()")
-        fileContent = fileContent.replace("MainScreen(", "${sampleNameCamelCase}Screen(")
-        fileContent = fileContent.replace("app_name", "${sampleNameUnderscore}_app_name")
-        fileContent = fileContent.replace("screens.MainScreen", "screens.${sampleNameCamelCase}Screen")
-        FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
+    fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance()[Calendar.YEAR])
+    fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
+    fileContent = fileContent.replace("SampleApp()", "${sampleNameCamelCase}App()")
+    fileContent = fileContent.replace("MainScreen(", "${sampleNameCamelCase}Screen(")
+    fileContent = fileContent.replace("app_name", "${sampleNameUnderscore}_app_name")
+    fileContent = fileContent.replace("screens.MainScreen", "screens.${sampleNameCamelCase}Screen")
+    FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
 
     //Update MapViewModel.kt
     file =
         File("$samplesRepoPath/samples/$sampleWithHyphen/src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/components/${sampleNameCamelCase}ViewModel.kt")
-    try {
-        var fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
-        fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance()[Calendar.YEAR])
-        fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
-        fileContent = fileContent.replace("MapViewModel", "${sampleNameCamelCase}ViewModel")
-        FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
+    fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance()[Calendar.YEAR])
+    fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
+    fileContent = fileContent.replace("MapViewModel", "${sampleNameCamelCase}ViewModel")
+    FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
 
     //Update MainScreen.kt
     file =
         File("$samplesRepoPath/samples/$sampleWithHyphen/src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/screens/${sampleNameCamelCase}Screen.kt")
-    try {
-        var fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
-        fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance()[Calendar.YEAR])
-        fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
-        fileContent = fileContent.replace("MapViewModel", "${sampleNameCamelCase}ViewModel")
-        fileContent = fileContent.replace("MainScreen(", "${sampleNameCamelCase}Screen(")
-        fileContent =
-            fileContent.replace("display_composable_map_view_app_name", "${sampleNameUnderscore}_app_name")
-        FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        exitProgram(e)
-    }
+    fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
+    fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance()[Calendar.YEAR])
+    fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
+    fileContent = fileContent.replace("MapViewModel", "${sampleNameCamelCase}ViewModel")
+    fileContent = fileContent.replace("MainScreen(", "${sampleNameCamelCase}Screen(")
+    fileContent =
+        fileContent.replace("display_composable_map_view_app_name", "${sampleNameUnderscore}_app_name")
 }
 
 /**
