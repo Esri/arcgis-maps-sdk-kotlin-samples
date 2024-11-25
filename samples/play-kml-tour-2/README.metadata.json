@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "PlayKMLTour2",
+    "ignore": false,
+    "images": [
+        "play-kml-tour-2.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour2/PlayKMLTour2ViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour2/PlayKMLTour2Screen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour2/MainActivity.kt"
+    ],
+    "title": "Play KML tour 2"
+}
