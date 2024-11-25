@@ -1,0 +1,13 @@
+<resources>
+    <string name="add_feature_layers_app_name">Add feature layers</string>
+    <string name="hint">Select a feature layer source</string>
+    <string name="add_feature_layers_sample_service_url">https://sampleserver6.arcgisonline.com/arcgis/rest/services/NapervilleShelters/FeatureServer/0</string>
+    <string name="geodatabase_la_trails">/LA_Trails.geodatabase</string>
+    <string-array name="feature_layer_sources">
+        <item>Service Feature Table</item>
+        <item>Portal Item</item>
+        <item>Geodatabase</item>
+        <item>Geopackage</item>
+        <item>Shapefile</item>
+    </string-array>
+</resources>

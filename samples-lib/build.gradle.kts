@@ -1,36 +1,25 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.arcgismaps.android.library)
+    alias(libs.plugins.arcgismaps.android.library.compose)
+    alias(libs.plugins.gradle.secrets)
+}
+
+secrets {
+    // this file doesn't contain secrets, it just provides defaults which can be committed into git.
+    defaultPropertiesFileName = "secrets.defaults.properties"
 }
 
 android {
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-
-    buildFeatures {
-        dataBinding = true
-        buildConfig = true
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExt.get()
-    }
-
     namespace = "com.esri.arcgismaps.sample.sampleslib"
+    buildFeatures {
+        buildConfig = true
+        dataBinding = true
+    }
 }
 
 dependencies {
+    // Only module specific dependencies needed here
+
     // lib dependencies from rootProject build.gradle
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.constraintlayout)
@@ -46,5 +35,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.arcgis.maps.kotlin)
 }
+
 

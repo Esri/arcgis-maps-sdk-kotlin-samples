@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">ArcGIS Maps Kotlin Samples</string>
+    <string name="search">Search</string>
+    <string name="about_section">About</string>
+    <string name="app_version">App Version</string>
+    <string name="SDK_version">SDK Version</string>
+    <string name="copyright_text">Copyright © 2015–2024 Esri.\nAll Rights Reserved.</string>
+    <string name="about_title">ArcGIS Maps SDK Sample Viewer</string>
+    <string name="powered_by">Powered By</string>
+    <string name="ArcGIS_Maps_SDK_Toolkit">ArcGIS Maps SDK Toolkit for Kotlin</string>
+    <string name="ArcGIS_Maps_SDK_Kotlin">ArcGIS Maps SDK for Kotlin</string>
+    <string name="forward_button">Forward button</string>
+    <string name="browse_and_discuss">Browse and discuss in the Esri Community</string>
+    <string name="esri_community">Esri Community</string>
+    <string name="github_issue">Log an issue in the Github repository</string>
+    <string name="github_repo">Github Repository</string>
+    <string name="API_details">View details about the API</string>
+    <string name="API_ref">API Reference</string>
+    <string name="upcoming_samples_text">Samples in this category will be added in a future release</string>
+    <string name="no_favorites_text">No favorite samples added yet!</string>
+    <string name="backButton">Back button</string>
+    <string name="clearButton">Clear button</string>
+    <string name="cancel">Cancel</string>
+    <string name="sdk_sample_icon_description">SDK sample icon</string>
+    <string name="home_screen_title">Sample Categories</string>
+</resources>
