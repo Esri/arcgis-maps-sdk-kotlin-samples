@@ -254,6 +254,7 @@ private fun updateSampleContent() {
     fileContent = fileContent.replace("MainScreen(", "${sampleNameCamelCase}Screen(")
     fileContent =
         fileContent.replace("display_composable_map_view_app_name", "${sampleNameUnderscore}_app_name")
+    FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
 }
 
 /**
