@@ -31,18 +31,23 @@ import com.arcgismaps.mapping.kml.KmlDataset
 import com.arcgismaps.mapping.kml.KmlNode
 import com.arcgismaps.mapping.kml.KmlTour
 import com.arcgismaps.mapping.kml.KmlTourController
+import com.arcgismaps.mapping.kml.KmlTourStatus
 import com.arcgismaps.mapping.layers.KmlLayer
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.collections.forEach
 
 class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(application) {
-    val surface = Surface().apply {
+    private val surface = Surface().apply {
         elevationSources.add(ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"))
     }
 
-    val kmlDataSet = KmlDataset(application.getExternalFilesDir(null)?.path + "/Play KML tour/Esri_tour.kmz")
-    val kmlLayer = KmlLayer(kmlDataSet)
+    private val kmlDataSet = KmlDataset(application.getExternalFilesDir(null)?.path + "/Play KML tour/Esri_tour.kmz")
+    private val kmlLayer = KmlLayer(kmlDataSet)
 
     val arcGISScene by mutableStateOf(
         ArcGISScene(BasemapStyle.ArcGISNavigationNight).apply {
@@ -54,6 +59,15 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
 
     var kmlTour: KmlTour? = null
     val kmlTourController = KmlTourController()
+
+//    var tourStatus: MutableState<KmlTourStatus> = mutableStateOf(KmlTourStatus.NotInitialized)
+//    var tourProgress = mutableFloatStateOf(0f)
+
+    private val _state: MutableStateFlow<KmlTourStatus> = MutableStateFlow(KmlTourStatus.NotInitialized)
+    val state = _state.asStateFlow()
+
+    private val _progress: MutableStateFlow<Float> = MutableStateFlow(0.0f)
+    val progress = _progress.asStateFlow()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -67,13 +81,43 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
                 )
             }
             kmlLayer.load().onSuccess {
-                println("Hello!!!!!!!!!!!!")
                 kmlTour = findFirstKMLTour(kmlDataSet.rootNodes)
                 kmlTourController.tour = kmlTour
+
+                if (kmlTour != null) {
+                    collectKmlTourStatus(kmlTour!!)
+                }
             }.onFailure { error ->
-                println("Error!!!!!!!!!!!!")
+                messageDialogVM.showMessageDialog(
+                    "Failed to load KML tour",
+                    error.message.toString()
+                )
             }
         }
+    }
+
+    fun playOrPause() {
+        kmlTourController.play()
+        collectProgress(kmlTourController)
+//        viewModelScope.launch {
+//            kmlTourController.currentPosition.combine(kmlTourController.totalDuration) { currentPosition, totalDuration ->
+//                (currentPosition / totalDuration).toFloat()
+//            }.collect { progress -> _progress.emit(progress) }
+//            delay(1000)
+//        }
+    }
+
+    private fun collectProgress(kmlTourController: KmlTourController) = viewModelScope.launch {
+        kmlTourController.currentPosition.combine(kmlTourController.totalDuration) { currentPosition, totalDuration ->
+            (currentPosition / totalDuration).toFloat()
+        }.collect { progress -> _progress.emit(progress) }
+        delay(1000)
+    }
+
+    private fun collectKmlTourStatus(kmlTour: KmlTour) = viewModelScope.launch {
+        //kmlTour.status.collect { status -> tourStatus.value = status }
+        //_state.emit(kmlTour.status.value)
+        kmlTour.status.collect { state -> _state.emit(state) }
     }
 
     /**

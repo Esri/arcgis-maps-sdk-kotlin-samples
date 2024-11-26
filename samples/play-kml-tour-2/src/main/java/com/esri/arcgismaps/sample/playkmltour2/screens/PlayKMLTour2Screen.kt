@@ -26,15 +26,19 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.mapping.kml.KmlTourStatus
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.playkmltour2.R
 import com.esri.arcgismaps.sample.playkmltour2.components.PlayKMLTour2ViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import androidx.compose.runtime.getValue
 
 /**
  * Main screen layout for the sample app
@@ -42,6 +46,13 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun PlayKMLTour2Screen(sampleName: String) {
     val viewModel: PlayKMLTour2ViewModel = viewModel()
+
+    val state = remember { viewModel.state }
+    val stateFlow by state.collectAsStateWithLifecycle(KmlTourStatus.NotInitialized)
+
+    val progress = remember { viewModel.progress }
+    val progressFlow by progress.collectAsStateWithLifecycle(0.0f)
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -56,17 +67,19 @@ fun PlayKMLTour2Screen(sampleName: String) {
                         .weight(1f),
                     arcGISScene = viewModel.arcGISScene
                 )
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { 100.0f })
-                Text(stringResource(R.string.tour_status))
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { progressFlow })
+
+                Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}")
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    Button(modifier = Modifier.fillMaxWidth(0.5f), onClick = {
                         // reset tour
                     }) {
                         Text(stringResource(R.string.reset))
                     }
-                    Button(modifier = Modifier.fillMaxWidth(0.5f), onClick = {
+                    Button(modifier = Modifier.fillMaxWidth(), onClick = {
                         // play tour
-                        viewModel.kmlTourController.play()
+                        //viewModel.kmlTourController.play()
+                        viewModel.playOrPause()
                     }) {
                         Text(stringResource(R.string.play))
                     }
@@ -86,6 +99,17 @@ fun PlayKMLTour2Screen(sampleName: String) {
     )
 }
 
+private fun tourStateToString(tourStatus: KmlTourStatus) : String {
+    return when (tourStatus) {
+        KmlTourStatus.Paused -> "Paused"
+        KmlTourStatus.Playing -> "Playing"
+        KmlTourStatus.Completed -> "Completed"
+        KmlTourStatus.Initializing -> "Initializing"
+        KmlTourStatus.Initialized -> "Initialized"
+        KmlTourStatus.NotInitialized -> "Not Initialized"
+    }
+}
+
 @Preview
 @Composable
 fun Preview() {
@@ -97,7 +121,7 @@ fun Preview() {
                     .fillMaxSize()
                     .padding(it),
             ) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { 100.0f })
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { 0.5f })
                 Text("Tour status:")
                 Row(modifier = Modifier.fillMaxWidth()) {
                     // TODO: Add UI components in this Column ...
