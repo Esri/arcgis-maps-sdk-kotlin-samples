@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,6 +41,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 /**
@@ -80,6 +82,10 @@ fun PlayKMLTour2Screen(sampleName: String) {
                     Button(modifier = Modifier.fillMaxWidth(0.5f).padding(all = padding), onClick = {
                         viewModel.reset()
                     }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_baseline_reset_24),
+                            contentDescription = null
+                        )
                         Text(stringResource(R.string.reset))
                     }
                     Button(modifier = Modifier.fillMaxWidth().padding(all = padding), onClick = {
@@ -87,8 +93,16 @@ fun PlayKMLTour2Screen(sampleName: String) {
                         viewModel.playOrPause()
                     }) {
                         if (/*playingStatus.value*/stateFlow == KmlTourStatus.Playing) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_round_pause_24),
+                                contentDescription = null
+                            )
                             Text(stringResource(R.string.pause))
                         } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_round_play_arrow_24),
+                                contentDescription = null
+                            )
                             Text(stringResource(R.string.play))
                         }
                     }

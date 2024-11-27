@@ -34,13 +34,11 @@ import com.arcgismaps.mapping.kml.KmlTourController
 import com.arcgismaps.mapping.kml.KmlTourStatus
 import com.arcgismaps.mapping.layers.KmlLayer
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.collections.forEach
-import androidx.compose.runtime.setValue
 import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 
 class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(application) {
@@ -70,8 +68,6 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
     private val _progressFlow: MutableStateFlow<Float> = MutableStateFlow(0.0f)
     val progressFlow = _progressFlow.asStateFlow()
 
-    //val playingStatus = mutableStateOf(false)
-
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
@@ -100,24 +96,17 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    //var job: Job? = null
-
     fun playOrPause() {
         if (kmlTour!!.status.value == KmlTourStatus.Playing) {
             kmlTourController.pause()
-            //job?.cancel()
-            //playingStatus.value = false
         } else {
             kmlTourController.play()
-            //job = collectProgress(kmlTourController)
-            //playingStatus.value = true
         }
     }
 
     fun reset() {
         kmlTourController.reset()
         arcGISScene.initialViewpoint?.let { sceneViewProxy.setViewpoint(it) }
-        //playingStatus.value = false
     }
 
     private fun collectProgress(kmlTourController: KmlTourController) = viewModelScope.launch {
