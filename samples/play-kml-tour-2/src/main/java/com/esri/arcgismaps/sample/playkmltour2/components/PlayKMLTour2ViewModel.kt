@@ -34,12 +34,14 @@ import com.arcgismaps.mapping.kml.KmlTourController
 import com.arcgismaps.mapping.kml.KmlTourStatus
 import com.arcgismaps.mapping.layers.KmlLayer
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.collections.forEach
+import androidx.compose.runtime.setValue
+import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 
 class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(application) {
     private val surface = Surface().apply {
@@ -57,17 +59,18 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
         }
     )
 
-    var kmlTour: KmlTour? = null
-    val kmlTourController = KmlTourController()
+    val sceneViewProxy = SceneViewProxy()
 
-//    var tourStatus: MutableState<KmlTourStatus> = mutableStateOf(KmlTourStatus.NotInitialized)
-//    var tourProgress = mutableFloatStateOf(0f)
+    private var kmlTour: KmlTour? = null
+    private val kmlTourController = KmlTourController()
 
-    private val _state: MutableStateFlow<KmlTourStatus> = MutableStateFlow(KmlTourStatus.NotInitialized)
-    val state = _state.asStateFlow()
+    private val _statusFlow: MutableStateFlow<KmlTourStatus> = MutableStateFlow(KmlTourStatus.NotInitialized)
+    val statusFlow = _statusFlow.asStateFlow()
 
-    private val _progress: MutableStateFlow<Float> = MutableStateFlow(0.0f)
-    val progress = _progress.asStateFlow()
+    private val _progressFlow: MutableStateFlow<Float> = MutableStateFlow(0.0f)
+    val progressFlow = _progressFlow.asStateFlow()
+
+    val playingStatus = mutableStateOf(false)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -86,6 +89,7 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
 
                 if (kmlTour != null) {
                     collectKmlTourStatus(kmlTour!!)
+                    collectProgress(kmlTourController)
                 }
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
@@ -96,28 +100,34 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    //var job: Job? = null
+
     fun playOrPause() {
-        kmlTourController.play()
-        collectProgress(kmlTourController)
-//        viewModelScope.launch {
-//            kmlTourController.currentPosition.combine(kmlTourController.totalDuration) { currentPosition, totalDuration ->
-//                (currentPosition / totalDuration).toFloat()
-//            }.collect { progress -> _progress.emit(progress) }
-//            delay(1000)
-//        }
+        if (kmlTour!!.status.value == KmlTourStatus.Playing) {
+            kmlTourController.pause()
+            //job?.cancel()
+            playingStatus.value = false
+        } else {
+            kmlTourController.play()
+            //job = collectProgress(kmlTourController)
+            playingStatus.value = true
+        }
+    }
+
+    fun reset() {
+        kmlTourController.reset()
+        arcGISScene.initialViewpoint?.let { sceneViewProxy.setViewpoint(it) }
+        playingStatus.value = false
     }
 
     private fun collectProgress(kmlTourController: KmlTourController) = viewModelScope.launch {
         kmlTourController.currentPosition.combine(kmlTourController.totalDuration) { currentPosition, totalDuration ->
             (currentPosition / totalDuration).toFloat()
-        }.collect { progress -> _progress.emit(progress) }
-        delay(1000)
+        }.collect { progress -> _progressFlow.emit(progress) }
     }
 
     private fun collectKmlTourStatus(kmlTour: KmlTour) = viewModelScope.launch {
-        //kmlTour.status.collect { status -> tourStatus.value = status }
-        //_state.emit(kmlTour.status.value)
-        kmlTour.status.collect { state -> _state.emit(state) }
+        kmlTour.status.collect { state -> _statusFlow.emit(state) }
     }
 
     /**

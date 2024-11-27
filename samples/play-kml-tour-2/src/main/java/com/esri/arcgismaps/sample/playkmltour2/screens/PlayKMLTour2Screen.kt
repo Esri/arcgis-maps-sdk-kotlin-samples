@@ -47,11 +47,13 @@ import androidx.compose.runtime.getValue
 fun PlayKMLTour2Screen(sampleName: String) {
     val viewModel: PlayKMLTour2ViewModel = viewModel()
 
-    val state = remember { viewModel.state }
+    val state = remember { viewModel.statusFlow }
     val stateFlow by state.collectAsStateWithLifecycle(KmlTourStatus.NotInitialized)
 
-    val progress = remember { viewModel.progress }
+    val progress = remember { viewModel.progressFlow }
     val progressFlow by progress.collectAsStateWithLifecycle(0.0f)
+
+    val playingStatus = remember { viewModel.playingStatus }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -65,23 +67,26 @@ fun PlayKMLTour2Screen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISScene = viewModel.arcGISScene
+                    arcGISScene = viewModel.arcGISScene,
+                    sceneViewProxy = viewModel.sceneViewProxy
                 )
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { progressFlow })
-
                 Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}")
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Button(modifier = Modifier.fillMaxWidth(0.5f), onClick = {
-                        // reset tour
+                        viewModel.reset()
                     }) {
                         Text(stringResource(R.string.reset))
                     }
                     Button(modifier = Modifier.fillMaxWidth(), onClick = {
                         // play tour
-                        //viewModel.kmlTourController.play()
                         viewModel.playOrPause()
                     }) {
-                        Text(stringResource(R.string.play))
+                        if (playingStatus.value) {
+                            Text(stringResource(R.string.pause))
+                        } else {
+                            Text(stringResource(R.string.play))
+                        }
                     }
                 }
             }
