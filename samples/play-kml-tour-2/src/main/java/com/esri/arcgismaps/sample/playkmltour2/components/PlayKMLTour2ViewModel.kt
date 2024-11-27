@@ -70,7 +70,7 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
     private val _progressFlow: MutableStateFlow<Float> = MutableStateFlow(0.0f)
     val progressFlow = _progressFlow.asStateFlow()
 
-    val playingStatus = mutableStateOf(false)
+    //val playingStatus = mutableStateOf(false)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -106,18 +106,18 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
         if (kmlTour!!.status.value == KmlTourStatus.Playing) {
             kmlTourController.pause()
             //job?.cancel()
-            playingStatus.value = false
+            //playingStatus.value = false
         } else {
             kmlTourController.play()
             //job = collectProgress(kmlTourController)
-            playingStatus.value = true
+            //playingStatus.value = true
         }
     }
 
     fun reset() {
         kmlTourController.reset()
         arcGISScene.initialViewpoint?.let { sceneViewProxy.setViewpoint(it) }
-        playingStatus.value = false
+        //playingStatus.value = false
     }
 
     private fun collectProgress(kmlTourController: KmlTourController) = viewModelScope.launch {

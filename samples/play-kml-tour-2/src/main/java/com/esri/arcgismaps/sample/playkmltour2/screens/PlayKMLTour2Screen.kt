@@ -39,6 +39,8 @@ import com.esri.arcgismaps.sample.playkmltour2.components.PlayKMLTour2ViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 
 /**
  * Main screen layout for the sample app
@@ -53,7 +55,7 @@ fun PlayKMLTour2Screen(sampleName: String) {
     val progress = remember { viewModel.progressFlow }
     val progressFlow by progress.collectAsStateWithLifecycle(0.0f)
 
-    val playingStatus = remember { viewModel.playingStatus }
+    //val playingStatus = remember { viewModel.playingStatus }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -70,19 +72,21 @@ fun PlayKMLTour2Screen(sampleName: String) {
                     arcGISScene = viewModel.arcGISScene,
                     sceneViewProxy = viewModel.sceneViewProxy
                 )
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { progressFlow })
-                Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}")
+                val padding = 8.dp
+
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(all = padding), progress = { progressFlow })
+                Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}", modifier = Modifier.padding(all = padding).align(Alignment.CenterHorizontally))
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Button(modifier = Modifier.fillMaxWidth(0.5f), onClick = {
+                    Button(modifier = Modifier.fillMaxWidth(0.5f).padding(all = padding), onClick = {
                         viewModel.reset()
                     }) {
                         Text(stringResource(R.string.reset))
                     }
-                    Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    Button(modifier = Modifier.fillMaxWidth().padding(all = padding), onClick = {
                         // play tour
                         viewModel.playOrPause()
                     }) {
-                        if (playingStatus.value) {
+                        if (/*playingStatus.value*/stateFlow == KmlTourStatus.Playing) {
                             Text(stringResource(R.string.pause))
                         } else {
                             Text(stringResource(R.string.play))
