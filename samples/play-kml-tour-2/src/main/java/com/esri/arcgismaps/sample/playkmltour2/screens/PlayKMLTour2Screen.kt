@@ -72,12 +72,16 @@ fun PlayKMLTour2Screen(sampleName: String) {
                     arcGISScene = viewModel.arcGISScene,
                     sceneViewProxy = viewModel.sceneViewProxy
                 )
+
                 val padding = 8.dp
 
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(all = padding), progress = { progressFlow })
-                Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}", modifier = Modifier.padding(all = padding).align(Alignment.CenterHorizontally))
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(all = padding),
+                    progress = progressFlow)
+                Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}",
+                    modifier = Modifier.padding(all = padding).align(Alignment.CenterHorizontally))
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Button(enabled = stateFlow == KmlTourStatus.Playing, modifier = Modifier.fillMaxWidth(0.5f).padding(all = padding), onClick = {
+                    Button(enabled = (stateFlow == KmlTourStatus.Paused || stateFlow == KmlTourStatus.Playing),
+                        modifier = Modifier.fillMaxWidth(0.5f).padding(all = padding), onClick = {
                         viewModel.reset()
                     }) {
                         Icon(

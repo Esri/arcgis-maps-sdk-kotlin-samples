@@ -112,11 +112,11 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
     private fun collectProgress(kmlTourController: KmlTourController) = viewModelScope.launch {
         kmlTourController.currentPosition.combine(kmlTourController.totalDuration) { currentPosition, totalDuration ->
             (currentPosition / totalDuration).toFloat()
-        }.collect { progress -> _progressFlow.emit(progress) }
+        }.collect { progress -> _progressFlow.value = progress }
     }
 
     private fun collectKmlTourStatus(kmlTour: KmlTour) = viewModelScope.launch {
-        kmlTour.status.collect { state -> _statusFlow.emit(state) }
+        kmlTour.status.collect { state -> _statusFlow.value = state }
     }
 
     /**
