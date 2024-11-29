@@ -41,11 +41,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class ClipGeometryViewModel(application: Application) : AndroidViewModel(application) {
-    val arcGISMap by mutableStateOf(
-        // create  a map with a topographic basemap style
-        ArcGISMap(BasemapStyle.ArcGISTopographic)
-    )
-
+    // create  a map with a topographic basemap style
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
