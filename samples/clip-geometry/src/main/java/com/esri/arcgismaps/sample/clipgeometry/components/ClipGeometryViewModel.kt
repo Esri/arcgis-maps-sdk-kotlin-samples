@@ -82,7 +82,9 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // clear the current graphics, then re-add the graphics for Colorado and the clip boxes
+    /**
+     * Clear the current graphics, then re-add the graphics for Colorado and the clip boxes.
+     */
     fun resetGeometry() {
 
         graphicsOverlay.graphics.clear()
@@ -99,7 +101,9 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         isClipButtonEnabled.value = true
     }
 
-    // clip the Colorado geometry using the clip boxes and then add the result to the graphics overlay
+    /**
+    * Clip the Colorado geometry using the clip boxes and then add the result to the graphics overlay.
+    */
     fun clipGeometry() {
 
         coloradoGraphic.isVisible = false
