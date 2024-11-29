@@ -85,7 +85,6 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-
     // clear the current graphics, then re-add the graphics for Colorado and the clip boxes
     fun resetGeometry() {
 
