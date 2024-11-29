@@ -70,7 +70,6 @@ fun ClipGeometryScreen(sampleName: String) {
                 )
                 Row(
                     modifier = Modifier.
-                    padding(12.dp).
                     fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
