@@ -74,8 +74,6 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
                     error.message.toString()
                 )
             }.onSuccess {
-
-
                 // set the viewpoint of the map
                 mapViewProxy.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
 
@@ -83,7 +81,6 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
                 envelopesGraphics = createEnvelopeGraphics()
 
                 resetGeometry()
-
             }
         }
     }
