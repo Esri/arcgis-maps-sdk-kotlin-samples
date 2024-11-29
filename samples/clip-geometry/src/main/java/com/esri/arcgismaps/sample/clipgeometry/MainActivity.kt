@@ -22,6 +22,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
     private fun ClipGeometryApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
             ClipGeometryScreen(
-                sampleName = getString(R.string.clip_geometry_app_name)
+                sampleName = stringResource(R.string.clip_geometry_app_name)
             )
         }
     }

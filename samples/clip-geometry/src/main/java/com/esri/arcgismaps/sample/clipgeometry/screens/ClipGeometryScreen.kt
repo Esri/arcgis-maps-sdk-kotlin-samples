@@ -31,12 +31,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.clipgeometry.components.ClipGeometryViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.clipgeometry.R;
 
 /**
  * Main screen layout for the sample app
@@ -79,7 +81,9 @@ fun ClipGeometryScreen(sampleName: String) {
                             mapViewModel.resetGeometry()
                         }
                     ) {
-                        Text("Reset")
+                        Text(
+                            text = stringResource(R.string.rest_button_text)
+                        )
                     }
                     Button(
                         modifier = Modifier.padding(12.dp),
@@ -88,7 +92,9 @@ fun ClipGeometryScreen(sampleName: String) {
                             mapViewModel.clipGeometry()
                         }
                     ) {
-                        Text("Clip geometry")
+                        Text(
+                            text = stringResource(R.string.clip_geometry_button_text)
+                        )
                     }
                 }
             }
