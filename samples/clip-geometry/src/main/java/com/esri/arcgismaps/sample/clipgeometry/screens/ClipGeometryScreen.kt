@@ -45,10 +45,8 @@ import com.esri.arcgismaps.sample.clipgeometry.R;
  */
 @Composable
 fun ClipGeometryScreen(sampleName: String) {
-    // get the application property that will be used to construct MapViewModel
-    val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { ClipGeometryViewModel(sampleApplication) }
+    val mapViewModel: ClipGeometryViewModel = viewModel()
     // the collection of graphics overlays used by the MapView
     val graphicsOverlayCollection = listOf(mapViewModel.graphicsOverlay)
 
