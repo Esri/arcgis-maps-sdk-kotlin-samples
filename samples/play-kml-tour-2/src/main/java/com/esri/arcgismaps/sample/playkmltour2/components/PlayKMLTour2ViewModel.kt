@@ -33,20 +33,27 @@ import com.arcgismaps.mapping.kml.KmlTour
 import com.arcgismaps.mapping.kml.KmlTourController
 import com.arcgismaps.mapping.kml.KmlTourStatus
 import com.arcgismaps.mapping.layers.KmlLayer
+import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
+import com.esri.arcgismaps.sample.playkmltour2.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.collections.forEach
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 
 class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(application) {
     private val surface = Surface().apply {
         elevationSources.add(ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"))
     }
 
-    private val kmlDataSet = KmlDataset(application.getExternalFilesDir(null)?.path + "/Play KML tour/Esri_tour.kmz")
+    private val provisionPath: String by lazy { application.getExternalFilesDir(null)?.path.toString() +
+                File.separator +
+                application.getString(R.string.play_kml_tour_2_app_name)
+    }
+
+    private val kmlDataSet = KmlDataset(provisionPath + File.separator + "Esri_tour.kmz")
     private val kmlLayer = KmlLayer(kmlDataSet)
 
     val arcGISScene by mutableStateOf(
