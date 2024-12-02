@@ -1,4 +1,5 @@
-/* Copyright 2023 Esri
+/*
+ * Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,42 +14,40 @@
  * limitations under the License.
  *
  */
-
 package com.esri.arcgismaps.sample.addwebtiledlayer
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.layers.WebTiledLayer
-import com.esri.arcgismaps.sample.addwebtiledlayer.databinding.AddWebTiledLayerActivityMainBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.addwebtiledlayer.screens.AddWebTiledLayerScreen
 
-class MainActivity : AppCompatActivity() {
-
-    // set up data binding for the activity
-    private val activityMainBinding: AddWebTiledLayerActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.add_web_tiled_layer_activity_main)
-    }
-
-    private val mapView by lazy {
-        activityMainBinding.mapView
-    }
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(mapView)
+        // authentication with an API key or named user is
+        // required to access basemaps and other location services
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
-        // build the web tiled layer from ArcGIS Living Atlas of the World tile service url
-        val webTiledLayer = WebTiledLayer.create(
-            urlTemplate = getString(R.string.template_uri_living_atlas)
-        ).apply {
-            // set the attribution on the layer
-            attribution = getString(R.string.living_atlas_attribution)
+        setContent {
+            SampleAppTheme {
+                AddWebTiledLayerApp()
+            }
         }
+    }
 
-        // use web tiled layer as Basemap
-        val map = ArcGISMap(Basemap(webTiledLayer))
-        mapView.map = map
+    @Composable
+    private fun AddWebTiledLayerApp() {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            AddWebTiledLayerScreen(
+                sampleName = getString(R.string.add_web_tiled_layer_app_name)
+            )
+        }
     }
 }
