@@ -13,7 +13,8 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/playkmltour2/PlayKMLTour2ViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/playkmltour2/PlayKMLTour2Screen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/playkmltour2/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour2/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour2/DownloadActivity.kt"
     ],
     "title": "Play KML tour 2"
 }
