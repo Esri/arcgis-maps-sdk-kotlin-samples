@@ -7,13 +7,13 @@
         "add-web-tiled-layer.png"
     ],
     "keywords": [
-        "ArcGIS Living Atlas",
-        "OGC",
+        "arcgis living atlas",
+        "ogc",
         "layer",
         "tiled",
         "tiles",
-        "Basemap",
-        "WebTiledLayer"
+        "basemap",
+        "webtiledlayer"
     ],
     "language": "kotlin",
     "redirect_from": "TODO",
