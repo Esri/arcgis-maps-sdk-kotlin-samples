@@ -43,7 +43,7 @@ class AddWebTiledLayerViewModel(application: Application) : AndroidViewModel(app
         ArcGISMap(Basemap(webTiledLayer))
     )
 
-    // Create a message dialog view model for handling error messages
+    // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
