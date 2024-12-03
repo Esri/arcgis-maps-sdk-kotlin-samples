@@ -1,34 +1,33 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.6.0-4409"
+arcgisMapsKotlinVersion = "200.7.0-+"
 
 ### Android versions
-androidGradlePlugin = "8.7.1"
-lifecycle = "2.8.4"
-androidTools = "31.5.2"
+androidGradlePlugin = "8.7.3"
+lifecycle = "2.8.7"
+androidTools = "31.7.3"
 appcompat = "1.7.0"
-constraintLayoutVersion = "2.1.4"
+constraintLayoutVersion = "2.2.0"
 kotlinxSerializationJson = "1.6.0"
 accompanistSystemuicontroller = "0.32.0"
-workVersion = "2.9.1"
+workVersion = "2.10.0"
 datastorePreferences = "1.1.1"
 roomVersion = "2.6.1"
 
 ### Kotlin versions
-kotlinVersion = "2.0.0"
-coreKtx = "1.13.1"
-# TODO is this needed: ktx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "ktxActivity" }
+kotlinVersion = "2.0.20"
+coreKtx = "1.15.0"
 ktxActivity = "1.9.1"
-ksp = "2.0.0-1.0.21"
+ksp = "2.0.20-1.0.24"
 kotlinCompilerExt = "1.5.12"
 commonsIoVersion = "2.15.1"
 
 ### Compose verions
-composeBom = "2024.10.00"
+composeBom = "2024.11.00"
 activityCompose = "1.9.3"
 material = "1.12.0"
-navigationCompose = "2.8.3"
+navigationCompose = "2.8.4"
 
 ### Testing versions
 junit = "4.13.2"
@@ -36,8 +35,8 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 
 ### Application Verions
-versionCode = "2006000"
-versionName = "200.6.0"
+versionCode = "2007000"
+versionName = "200.7.0"
 minSdk = "26"
 targetSdk = "35"
 
