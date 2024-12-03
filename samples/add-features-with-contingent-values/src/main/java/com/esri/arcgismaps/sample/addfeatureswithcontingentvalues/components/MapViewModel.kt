@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -88,10 +87,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // instance of the feature table retrieved from the geodatabase, updates when new feature is added
     var featureTable: ArcGISFeatureTable? = null
 
+    // state flow of UI state
     private val _uiState = MutableStateFlow<UIState>(UIState(null, null, 0))
     val uiState = _uiState.asStateFlow()
 
-    // state flows for possible values
+    // state flows of possible values for an in-construction feature
     private val _statusAttributes = MutableStateFlow<List<CodedValue>>(listOf())
     private val _protectionAttributes = MutableStateFlow<List<CodedValue>>(listOf())
     private val _sliderControlParameters = MutableStateFlow(SliderControlParameters(false, 0, 0))
@@ -103,24 +103,39 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         // create a temporary directory for use with the geodatabase file
         createGeodatabaseCacheDir()
 
-        viewModelScope.launch{
+        viewModelScope.launch {
             // retrieve and load the offline mobile geodatabase file from the cache directory
             geodatabase.load().getOrElse {
-                messageDialogVM.showMessageDialog("Error loading GeoDatabase", it.message.toString())
+                messageDialogVM.showMessageDialog(
+                    "Error loading GeoDatabase",
+                    it.message.toString()
+                )
             }
 
             // get the first geodatabase feature table
-            val featureTable = geodatabase.featureTables.firstOrNull() ?:
-            return@launch messageDialogVM.showMessageDialog("Error", "Error retrieving extent of the feature layer")
+            val featureTable = geodatabase.featureTables.firstOrNull()
+                ?: return@launch messageDialogVM.showMessageDialog(
+                    "Error",
+                    "No feature table found in geodatabase"
+                )
 
             // load the geodatabase feature table
-            featureTable.load().getOrElse { return@launch messageDialogVM.showMessageDialog("Error", it.message.toString()) }
+            featureTable.load().getOrElse {
+                return@launch messageDialogVM.showMessageDialog(
+                    "Error loading feature table",
+                    it.message.toString()
+                )
+            }
 
             // create and load the feature layer from the feature table
             val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
 
             // get the full extent of the feature layer
             val extent = featureLayer.fullExtent
+                ?: return@launch messageDialogVM.showMessageDialog(
+                    "Error",
+                    "Error retrieving extent of the feature layer"
+                )
 
             // set the basemap to the offline vector tiled layer, and viewpoint to the feature layer extent
             arcGISMap = ArcGISMap(Basemap(fillmoreVectorTileLayer)).apply {
@@ -145,7 +160,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * which will need to be cleared before looking up the [geodatabase] again.
      * A copy of the original geodatabase file is created in the cache folder.
      */
-    fun createGeodatabaseCacheDir(){
+    private fun createGeodatabaseCacheDir() {
         // clear cache directory
         File(cacheDir.path).deleteRecursively()
         // copy over the original Geodatabase file to be used in the temp cache directory
@@ -158,7 +173,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * Create buffer graphics for features, and adds the graphics to
      * the [graphicsOverlay]
      */
-    private suspend fun queryExistingFeatures(){
+    private suspend fun queryExistingFeatures() {
         // clear the existing graphics
         graphicsOverlay.graphics.clear()
 
@@ -171,26 +186,33 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         val featureQueryResult = featureTable?.queryFeatures(queryParameters)?.getOrThrow()
         val featureResultList = featureQueryResult?.toList()
 
-        if (!featureResultList.isNullOrEmpty()){
+        if (!featureResultList.isNullOrEmpty()) {
             // create list of graphics for each query result
             val graphics = featureResultList.map { createGraphic(it) }
             // add the graphics to the graphics overlay
             graphicsOverlay.graphics.addAll(graphics)
+        } else {
+            messageDialogVM.showMessageDialog(
+                "Error",
+                "No features found with BufferSize > 0"
+            )
         }
     }
 
     /**
      * Creates and returns a graphic using the attributes of the given [feature]
      */
-    fun createGraphic(feature: Feature): Graphic{
+    private fun createGraphic(feature: Feature): Graphic {
         // create the outline for the buffer symbol
         val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 2f)
         // create the buffer symbol
-        val bufferSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.ForwardDiagonal, Color.red, lineSymbol)
+        val bufferSymbol =
+            SimpleFillSymbol(SimpleFillSymbolStyle.ForwardDiagonal, Color.red, lineSymbol)
         // get the feature's buffer size
         val bufferSize = feature.attributes["BufferSize"] as Int
         // get a polygon using the feature's buffer size and geometry
-        val polygon = feature.geometry?.let { GeometryEngine.bufferOrNull(it, bufferSize.toDouble()) }
+        val polygon =
+            feature.geometry?.let { GeometryEngine.bufferOrNull(it, bufferSize.toDouble()) }
 
         // create a graphic using the geometry and fill symbol
         return Graphic(polygon, bufferSymbol)
@@ -200,7 +222,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * Retrieve the status fields, add the fields to a ContingentValueDomain.
      * Used to display options in the UI.
      */
-    fun statusAttributes(): List<CodedValue>{
+    private fun statusAttributes(): List<CodedValue> {
         val statusField = featureTable?.fields?.find { field -> field.name == "Status" }
         val codedValueDomain = statusField?.domain as CodedValueDomain
         return codedValueDomain.codedValues
@@ -208,10 +230,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onStatusAttributeSelect(codedValue: CodedValue) {
         val contingentValuesDefinition = featureTable?.contingentValuesDefinition
-        if (contingentValuesDefinition != null){
-            viewModelScope.launch{
+        if (contingentValuesDefinition != null) {
+            viewModelScope.launch {
                 contingentValuesDefinition.load().getOrElse {
-                    messageDialogVM.showMessageDialog("Error loading the contingent values definition", it.message.toString())
+                    messageDialogVM.showMessageDialog(
+                        "Error",
+                        "Error loading the contingent values definition"
+                    )
                 }
 
                 feature = featureTable?.createFeature() as ArcGISFeature
@@ -222,11 +247,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 _protectionAttributes.value = protectionAttributes()
             }
         } else {
-            messageDialogVM.showMessageDialog("Error", "Error retrieving ContingentValuesDefinition from the feature table")
+            messageDialogVM.showMessageDialog(
+                "Error",
+                "Error retrieving ContingentValuesDefinition from the feature table"
+            )
         }
     }
 
-    fun protectionAttributes(): List<CodedValue> {
+    private fun protectionAttributes(): List<CodedValue> {
         // get the contingent value results with the feature for the protection field
         val contingentValuesResult = feature?.let {
             featureTable?.getContingentValuesOrNull(it, "Protection")
@@ -236,28 +264,35 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         val contingentValues = contingentValuesResult?.byFieldGroup?.get("ProtectionFieldGroup")
 
         // convert the list of ContingentValues to a list of CodedValue
-        val protectionCodedValues : List<CodedValue> = contingentValues?.map { (it as ContingentCodedValue).codedValue } ?:
-        listOf<CodedValue>().also { messageDialogVM.showMessageDialog("Error", "Error getting coded values by field group") }
+        val protectionCodedValues: List<CodedValue> =
+            contingentValues?.map { (it as ContingentCodedValue).codedValue }
+                ?: listOf<CodedValue>().also {
+                    messageDialogVM.showMessageDialog(
+                        "Error",
+                        "Error getting coded values by field group"
+                    )
+                }
 
         return protectionCodedValues
     }
 
-    fun onProtectionAttributeSelect(codedValue: CodedValue){
+    fun onProtectionAttributeSelect(codedValue: CodedValue) {
         feature?.attributes?.set("Protection", codedValue.code)
         _uiState.value = _uiState.value.copy(protection = codedValue)
         _sliderControlParameters.value = bufferAttributes()
     }
 
-    fun bufferAttributes(): SliderControlParameters{
+    private fun bufferAttributes(): SliderControlParameters {
         val contingentValueResult = feature?.let {
             featureTable?.getContingentValuesOrNull(it, "BufferSize")
         }
 
-        val bufferSizeRangeValue = contingentValueResult?.byFieldGroup?.get("BufferSizeFieldGroup")?.get(0) as ContingentRangeValue
+        val bufferSizeRangeValue = contingentValueResult?.byFieldGroup?.get("BufferSizeFieldGroup")
+            ?.get(0) as ContingentRangeValue
         val minValue = bufferSizeRangeValue.minValue as Int
         val maxValue = bufferSizeRangeValue.maxValue as Int
 
-        val sliderControlParameters = if (maxValue > 0){
+        val sliderControlParameters = if (maxValue > 0) {
             SliderControlParameters(true, minValue, maxValue)
         } else {
             SliderControlParameters(false, 0, 0)
@@ -266,9 +301,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         return sliderControlParameters
     }
 
-    fun onBufferSizeSelect(bufferSize: Int){
+    fun onBufferSizeSelect(bufferSize: Int) {
         feature?.attributes?.set("BufferSize", bufferSize)
-        _uiState.value = _uiState.value.copy(buffer=bufferSize)
+        _uiState.value = _uiState.value.copy(buffer = bufferSize)
     }
 
     /**
@@ -311,10 +346,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         } else {
-            messageDialogVM.showMessageDialog("Error", "Invalid contingent values: " + (contingencyViolations.size) + " violations found.")
-            contingencyViolations.forEach {
-                Log.e("ContingencyViolation", it.fieldGroup.name)
-            }
+            val violations = contingencyViolations.map { violation -> violation.fieldGroup.name }
+                .joinToString(separator = "\n")
+            messageDialogVM.showMessageDialog(
+                "Invalid contingent values",
+                "${contingencyViolations.size} violations found:\n" + violations
+            )
         }
 
     }
@@ -325,7 +362,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun clearFeature() {
         feature = null
-        _uiState.value = UIState(null,null,0)
+        _uiState.value = UIState(null, null, 0)
         _sliderControlParameters.value = SliderControlParameters(false, 0, 0)
     }
 

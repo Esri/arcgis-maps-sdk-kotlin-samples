@@ -37,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -72,11 +73,13 @@ fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
 
+    // flows from view model for displaying state in UI
     val uiState by mapViewModel.uiState.collectAsStateWithLifecycle()
     val statusAttributes by mapViewModel.statusAttributes.collectAsStateWithLifecycle()
     val protectionAttributes by mapViewModel.protectionAttributes.collectAsStateWithLifecycle()
     val sliderControlParameters by mapViewModel.sliderControlParameters.collectAsStateWithLifecycle()
 
+    // point on map tapped by user
     var mapPoint by remember { mutableStateOf<Point?>(null) }
 
     Scaffold(
@@ -93,7 +96,7 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     onSingleTapConfirmed = {
-                        it.mapPoint.let {point ->
+                        it.mapPoint.let { point ->
                             mapPoint = point
                             showBottomSheet = true
                         }
@@ -115,7 +118,7 @@ fun MainScreen(sampleName: String) {
                                 mapViewModel.clearFeature()
                             }
                         }
-                        CVBSContents(
+                        BottomSheetContents(
                             mapPoint,
                             bottomSheetState,
                             onBottomSheetStateChanged,
@@ -132,6 +135,7 @@ fun MainScreen(sampleName: String) {
                 }
             }
 
+            // message dialog view model for displaying error messages
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
@@ -147,7 +151,7 @@ fun MainScreen(sampleName: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CVBSContents(
+fun BottomSheetContents(
     mapPoint: Point?,
     bottomSheetState: SheetState,
     onBottomSheetStateChange: (SheetState) -> Unit,
@@ -173,23 +177,25 @@ fun CVBSContents(
         Spacer(Modifier.size(8.dp))
         Text("Attributes:")
 
-        CVDropdown("Status", uiState.status, statusAttributes, onStatusAttributeSelect)
-        CVDropdown("Protection", uiState.protection, protectionAttributes, onProtectionAttributeSelect)
+        // dropdown boxes for selecting feature status/protection
+        AttributeDropdown("Status", uiState.status, statusAttributes, onStatusAttributeSelect)
+        AttributeDropdown("Protection", uiState.protection, protectionAttributes, onProtectionAttributeSelect)
         Spacer(Modifier.size(8.dp))
 
         // buffer size displayed and updated in slider
         var localBufferSize by remember { mutableIntStateOf(uiState.buffer) }
 
-        var previousBufferSize by remember{ mutableIntStateOf(0)}
-        if (uiState.buffer != previousBufferSize){
+        // update buffer size if it changes in the view model
+        var previousBufferSize by remember { mutableIntStateOf(0) }
+        if (uiState.buffer != previousBufferSize) {
             previousBufferSize = uiState.buffer
             localBufferSize = uiState.buffer
         }
 
         // recenter the slider if contingent values change
         var bufferRange = sliderControlParameters.minRange..sliderControlParameters.maxRange
-        if (!bufferRange.contains(localBufferSize)){
-            localBufferSize = (bufferRange.start + bufferRange.endInclusive)/2
+        if (!bufferRange.contains(localBufferSize)) {
+            localBufferSize = (bufferRange.start + bufferRange.endInclusive) / 2
         }
 
         Row {
@@ -202,42 +208,56 @@ fun CVBSContents(
             value = localBufferSize.toFloat(),
             valueRange = sliderControlParameters.minRange.toFloat()..sliderControlParameters.maxRange.toFloat(),
             steps = (bufferRange.endInclusive - bufferRange.start).toInt(),
-            onValueChange = {localBufferSize = it.roundToInt()},
-            onValueChangeFinished = { onBufferSizeSelect(localBufferSize) }
+            onValueChange = { localBufferSize = it.roundToInt() },
+            onValueChangeFinished = { onBufferSizeSelect(localBufferSize) },
+            track = { sliderState ->
+                SliderDefaults.Track(
+                    enabled = sliderControlParameters.isEnabled,
+                    sliderState = sliderState,
+                    drawStopIndicator = null,
+                    drawTick = { _, _ -> }
+                )
+            }
         )
         HorizontalDivider()
         Text("The options will vary depending on which values are selected.")
         Button(
-            modifier = Modifier.
-            align(Alignment.CenterHorizontally),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
-                // user may have left the slider as is - need to assign a value in that case
+                // user may not have interacted with the slider - need to assign a value
                 onBufferSizeSelect(localBufferSize)
                 mapPoint?.let {
                     onApplyButtonClicked(it)
                 }
-                coroutineScope.launch{
+                coroutineScope.launch {
                     bottomSheetState.hide()
                 }.invokeOnCompletion {
                     onBottomSheetStateChange(bottomSheetState)
                 }
-            }) { Text("Apply") }
+            }
+        ) {
+            Text("Apply")
+        }
 
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CVDropdown(
+fun AttributeDropdown(
     attributeName: String,
     codedValue: CodedValue?,
     attributeOptions: List<CodedValue>,
     onNewValueSelect: (CodedValue) -> Unit
-){
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         modifier = Modifier.fillMaxWidth(),
-        onExpandedChange = { if (!attributeOptions.isEmpty()) {expanded = !expanded} },
+        onExpandedChange = {
+            if (!attributeOptions.isEmpty()) {
+                expanded = !expanded
+            }
+        },
         expanded = expanded
     ) {
 
@@ -250,9 +270,9 @@ fun CVDropdown(
                 .menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
             value = textValue ?: "",
             onValueChange = {},
-            label =  {Text("Select $attributeName Attribute")} ,
+            label = { Text("Select $attributeName Attribute") },
             readOnly = true
-            )
+        )
 
         ExposedDropdownMenu(
             expanded = expanded,
