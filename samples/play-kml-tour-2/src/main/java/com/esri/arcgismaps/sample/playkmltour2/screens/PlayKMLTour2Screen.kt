@@ -45,7 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample
  */
 @Composable
 fun PlayKMLTour2Screen(sampleName: String) {
@@ -69,14 +69,15 @@ fun PlayKMLTour2Screen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
+                    isAttributionBarVisible = false,
                     arcGISScene = viewModel.arcGISScene,
                     sceneViewProxy = viewModel.sceneViewProxy
                 )
 
                 val padding = 8.dp
 
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(all = padding),
-                    progress = progressFlow)
+                LinearProgressIndicator(progress = { progressFlow },
+                    modifier = Modifier.fillMaxWidth().padding(all = padding))
                 Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}",
                     modifier = Modifier.padding(all = padding).align(Alignment.CenterHorizontally))
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -133,39 +134,4 @@ private fun tourStateToString(tourStatus: KmlTourStatus) : String {
         KmlTourStatus.Initialized -> "Initialized"
         KmlTourStatus.NotInitialized -> "Not Initialized"
     }
-}
-
-@Preview
-@Composable
-fun Preview() {
-    Scaffold(
-        topBar = { SampleTopAppBar(title = "Play KML tour") },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { 0.5f })
-                Text("Tour status:")
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Button(modifier = Modifier.fillMaxWidth(0.5f
-                    ), onClick = {}) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_round_pause_24),
-                            contentDescription = null
-                        )
-                        Text("Reset tour")
-                    }
-                    Button(modifier = Modifier.fillMaxWidth(), onClick = {}) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_round_play_arrow_24),
-                            contentDescription = null
-                        )
-                        Text("Play tour")
-                    }
-                }
-            }
-        }
-    )
 }

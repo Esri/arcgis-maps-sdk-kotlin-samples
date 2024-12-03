@@ -44,20 +44,24 @@ import java.io.File
 import kotlin.collections.forEach
 
 class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val provisionPath: String by lazy { application.getExternalFilesDir(null)?.path.toString() +
+            File.separator +
+            application.getString(R.string.play_kml_tour_2_app_name)
+    }
+
+    // add elevation data
     private val surface = Surface().apply {
         elevationSources.add(ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"))
     }
 
-    private val provisionPath: String by lazy { application.getExternalFilesDir(null)?.path.toString() +
-                File.separator +
-                application.getString(R.string.play_kml_tour_2_app_name)
-    }
-
+    // create a KML layer from a KML dataset with a KML tour
     private val kmlDataSet = KmlDataset(provisionPath + File.separator + "Esri_tour.kmz")
     private val kmlLayer = KmlLayer(kmlDataSet)
 
+    // create a scene with the surface and KML layer
     val arcGISScene by mutableStateOf(
-        ArcGISScene(BasemapStyle.ArcGISNavigationNight).apply {
+        ArcGISScene(BasemapStyle.ArcGISImagery).apply {
             baseSurface = surface
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
             operationalLayers.add(kmlLayer)
@@ -103,6 +107,9 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    /**
+     * Plays or pauses the KML tour
+     */
     fun playOrPause() {
         if (kmlTour!!.status.value == KmlTourStatus.Playing) {
             kmlTourController.pause()
@@ -111,17 +118,26 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    /**
+     * Resets the tour
+     */
     fun reset() {
         kmlTourController.reset()
         arcGISScene.initialViewpoint?.let { sceneViewProxy.setViewpoint(it) }
     }
 
+    /**
+     * Collects the progress of the KML tour and puts it into a state flow
+     */
     private fun collectProgress(kmlTourController: KmlTourController) = viewModelScope.launch {
         kmlTourController.currentPosition.combine(kmlTourController.totalDuration) { currentPosition, totalDuration ->
             (currentPosition / totalDuration).toFloat()
         }.collect { progress -> _progressFlow.value = progress }
     }
 
+    /**
+     * Collects the status of the KML tour and puts it into a state flow
+     */
     private fun collectKmlTourStatus(kmlTour: KmlTour) = viewModelScope.launch {
         kmlTour.status.collect { state -> _statusFlow.value = state }
     }
@@ -137,6 +153,7 @@ class PlayKMLTour2ViewModel(application: Application) : AndroidViewModel(applica
             else if (node is KmlContainer)
                 return findFirstKMLTour(node.childNodes)
         }
+
         return null
     }
 }
