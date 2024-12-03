@@ -41,4 +41,4 @@ For more information about web tiled layers, see the following resources:
 
 ## Tags
 
-ArcGIS Living Atlas, layer, OGC, tiled, tiles
+ArcGIS Living Atlas, layer, OGC, tiled, tiles, Basemap, WebTiledLayer
