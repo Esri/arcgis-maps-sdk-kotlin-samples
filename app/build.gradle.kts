@@ -71,7 +71,9 @@ android {
 
 dependencies {
     for (sampleFile in file("../samples").listFiles()!!) {
-        if (sampleFile.isDirectory) {
+        if (sampleFile.isDirectory &&
+            sampleFile.listFiles()?.find { it.name.equals("build.gradle.kts") } != null
+        ) {
             implementation(project(":samples:" + sampleFile.name))
         }
     }
