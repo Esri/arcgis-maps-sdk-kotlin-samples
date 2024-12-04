@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.addwebtiledlayer.components.AddWebTiledLayerViewModel
+import com.esri.arcgismaps.sample.addwebtiledlayer.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -33,7 +33,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun AddWebTiledLayerScreen(sampleName: String) {
-    val mapViewModel: AddWebTiledLayerViewModel = viewModel()
+    val mapViewModel: MapViewModel = viewModel()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {

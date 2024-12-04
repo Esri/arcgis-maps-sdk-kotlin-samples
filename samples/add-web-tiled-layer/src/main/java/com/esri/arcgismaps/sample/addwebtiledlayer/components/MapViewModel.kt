@@ -29,7 +29,7 @@ import com.esri.arcgismaps.sample.addwebtiledlayer.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
-class AddWebTiledLayerViewModel(application: Application) : AndroidViewModel(application) {
+class MapViewModel(application: Application) : AndroidViewModel(application) {
     // build the web tiled layer from ArcGIS Living Atlas of the World tile service url
     val webTiledLayer = WebTiledLayer.create(
         urlTemplate = "https://server.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{level}/{row}/{col}.jpg"
