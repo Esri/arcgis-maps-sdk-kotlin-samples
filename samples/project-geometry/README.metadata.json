@@ -6,28 +6,13 @@
     "images": [
         "project-geometry.png"
     ],
-    "keywords": [
-        "WGS 84",
-        "Web Mercator",
-        "coordinate system",
-        "coordinates",
-        "latitude",
-        "longitude",
-        "projected",
-        "projection",
-        "spatial reference",
-        "GeometryEngine",
-        "Point",
-        "SpatialReference"
-    ],
+    "keywords": [ ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [
-        "GeometryEngine",
-        "Point",
-        "SpatialReference"
-    ],
+    "relevant_apis": [ ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/ProjectGeometryViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/ProjectGeometryScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/projectgeometry/MainActivity.kt"
     ],
     "title": "Project geometry"
