@@ -9,11 +9,13 @@
     "keywords": [
         "KML",
         "animation",
+        "geoviewcompose",
         "interactive",
         "narration",
         "pause",
         "play",
         "story",
+        "toolkit",
         "tour",
         "KmlTour",
         "KmlTourController",
@@ -22,7 +24,7 @@
         "KmlTourController.reset()"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": "TODO",
     "relevant_apis": [
         "KmlTour",
         "KmlTourController",
@@ -31,10 +33,10 @@
         "KmlTourController.reset()"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/playkmltour/components/PlayKMLTour2ViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour/components/PlayKMLTourViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/playkmltour/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/playkmltour/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/playkmltour/screens/PlayKMLTour2Screen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour/screens/PlayKMLTourScreen.kt"
     ],
     "title": "Play KML tour"
 }
