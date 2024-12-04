@@ -124,7 +124,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     }
 
     /**
-     * Create colorado graphic.
+     * Create a blue rectangular graphic of the state of Colorado.
      */
     private fun createColoradoGraphic() : Graphic {
         // create a blue graphic of Colorado
