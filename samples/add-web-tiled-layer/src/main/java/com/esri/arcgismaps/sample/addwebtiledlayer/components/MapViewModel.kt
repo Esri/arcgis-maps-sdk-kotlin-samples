@@ -17,8 +17,6 @@
 package com.esri.arcgismaps.sample.addwebtiledlayer.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,10 +36,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         attribution = getString(application, R.string.living_atlas_attribution)
     }
 
-    val arcGISMap by mutableStateOf(
-        // use web tiled layer as Basemap
-        ArcGISMap(Basemap(webTiledLayer))
-    )
+    // use web tiled layer as Basemap
+    val arcGISMap = ArcGISMap(Basemap(webTiledLayer))
 
     // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
