@@ -31,8 +31,10 @@
         "KmlTourController.reset()"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour/components/PlayKMLTour2ViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/playkmltour/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/playkmltour/DownloadActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/playkmltour/screens/PlayKMLTour2Screen.kt"
     ],
     "title": "Play KML tour"
 }
