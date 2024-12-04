@@ -143,7 +143,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     }
 
     /**
-     * Create three envelopes, outside, inside and intersecting colorado graphic.
+     * Create three envelopes, outside, inside and intersecting Colorado graphic.
      */
     private fun createEnvelopeGraphics() : List<Graphic> {
         // create a dotted red outline symbol
