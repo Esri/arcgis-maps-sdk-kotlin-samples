@@ -43,4 +43,4 @@ For more information about web tiled layers, see the following resources:
 
 ## Tags
 
-arcgis living atlas, basemap, layer, geoviewcompose, ogc, tiled, tiles, toolkit, webtiledlayer
+arcgis living atlas, geoviewcompose, layer, ogc, tiled, tiles, toolkit

@@ -8,12 +8,14 @@
     ],
     "keywords": [
         "arcgis living atlas",
-        "ogc",
+        "geoviewcompose",
         "layer",
+        "ogc",
         "tiled",
         "tiles",
-        "basemap",
-        "webtiledlayer"
+        "toolkit",
+        "Basemap",
+        "WebTiledLayer"
     ],
     "language": "kotlin",
     "redirect_from": "TODO",
@@ -22,9 +24,9 @@
         "WebTiledLayer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/components/AddWebTiledLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/screens/AddWebTiledLayerScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/screens/MainScreen.kt"
     ],
     "title": "Add web tiled layer"
 }
