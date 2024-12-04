@@ -47,8 +47,6 @@ import com.esri.arcgismaps.sample.clipgeometry.R;
 fun ClipGeometryScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: ClipGeometryViewModel = viewModel()
-    // the collection of graphics overlays used by the MapView
-    val graphicsOverlayCollection = listOf(mapViewModel.graphicsOverlay)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -64,7 +62,7 @@ fun ClipGeometryScreen(sampleName: String) {
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
-                    graphicsOverlays = graphicsOverlayCollection
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay)
                 )
                 Row(
                     modifier = Modifier.
