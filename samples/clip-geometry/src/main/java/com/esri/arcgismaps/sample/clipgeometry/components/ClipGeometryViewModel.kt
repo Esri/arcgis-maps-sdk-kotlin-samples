@@ -126,8 +126,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Create colorado graphic.
      */
-    private fun createColoradoGraphic(
-    ) : Graphic {
+    private fun createColoradoGraphic() : Graphic {
         // create a blue graphic of Colorado
         val colorado = Envelope(
             Point(-11362327.128340, 5012861.290274),
