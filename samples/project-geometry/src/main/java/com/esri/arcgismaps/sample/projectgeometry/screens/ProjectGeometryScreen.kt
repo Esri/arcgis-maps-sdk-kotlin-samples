@@ -47,7 +47,8 @@ fun ProjectGeometryScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    mapViewProxy = mapViewModel.mapViewProxy,
                 )
                 // TODO: Add UI components in this Column ...
             }

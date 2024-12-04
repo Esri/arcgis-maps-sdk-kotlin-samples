@@ -24,15 +24,15 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class ProjectGeometryViewModel(application: Application) : AndroidViewModel(application) {
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
+    // create a map with a navigation night basemap style
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight)
+    // create a MapViewProxy to interact with the MapView
+    val mapViewProxy = MapViewProxy()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -44,6 +44,9 @@ class ProjectGeometryViewModel(application: Application) : AndroidViewModel(appl
                     "Failed to load map",
                     error.message.toString()
                 )
+            }.onSuccess {
+                // set the default viewpoint to Redlands,CA
+                mapViewProxy.setViewpoint(Viewpoint(34.058, -117.195, 5e4))
             }
         }
     }
