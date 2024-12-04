@@ -46,8 +46,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
-    // graphics overlay to display graphics
-    val graphicsOverlay = GraphicsOverlay()
+
 
     private var coloradoGraphic  = createColoradoGraphic()
     private var coloradoFillSymbol = SimpleFillSymbol(
@@ -55,7 +54,14 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         Color(R.color.transparentDarkBlue),
         SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
     )
-    private var envelopesGraphics = emptyList<Graphic>()
+    private var envelopesGraphics = createEnvelopeGraphics()
+
+
+    // graphics overlay to display graphics
+    val graphicsOverlay = GraphicsOverlay().apply {
+        graphics.add(coloradoGraphic)
+        graphics.addAll(envelopesGraphics)
+    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -73,11 +79,6 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
             }.onSuccess {
                 // set the viewpoint of the map
                 mapViewProxy.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
-
-                coloradoGraphic = createColoradoGraphic()
-                envelopesGraphics = createEnvelopeGraphics()
-
-                resetGeometry()
             }
         }
     }
