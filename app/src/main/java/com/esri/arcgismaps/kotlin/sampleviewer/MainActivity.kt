@@ -51,11 +51,12 @@ class MainActivity : ComponentActivity() {
      */
     @Composable
     fun HandleExceptions() {
-        var sampleViewerException by remember { mutableStateOf(arrayOf<String>()) }
-        LaunchedEffect(Unit) {
-            intent.extras?.let {
-                sampleViewerException = it.getStringArray("SampleViewerException") ?: arrayOf()
-            }
+        var sampleViewerException by remember { 
+            mutableStateOf(
+                intent.extras?.let {
+                    it.getStringArray("SampleViewerException") ?: arrayOf()
+                } ?: arrayOf<String>()
+            ) 
         }
         if (sampleViewerException.isNotEmpty()) {
             MessageDialog(
