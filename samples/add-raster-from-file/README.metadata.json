@@ -1,0 +1,20 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "AddRasterFromFile",
+    "ignore": false,
+    "images": [
+        "add-raster-from-file.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/AddRasterFromFileViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/AddRasterFromFileScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/MainActivity.kt"
+    ],
+    "title": "Add raster from file"
+}
