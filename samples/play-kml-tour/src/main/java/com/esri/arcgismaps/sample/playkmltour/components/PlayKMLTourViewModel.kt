@@ -60,13 +60,12 @@ class PlayKMLTourViewModel(application: Application) : AndroidViewModel(applicat
     private val kmlLayer = KmlLayer(kmlDataSet)
 
     // create a scene with the surface and KML layer
-    val arcGISScene by mutableStateOf(
+    val arcGISScene =
         ArcGISScene(BasemapStyle.ArcGISImagery).apply {
             baseSurface = surface
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
             operationalLayers.add(kmlLayer)
         }
-    )
 
     val sceneViewProxy = SceneViewProxy()
 
