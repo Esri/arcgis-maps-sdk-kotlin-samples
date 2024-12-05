@@ -167,13 +167,14 @@ fun SearchSuggestionsList(
                     key = { suggestion -> suggestion }
                 ) { suggestion ->
                     if (suggestion.second) { // Sample Suggestion
-                        val sample = DefaultSampleInfoRepository.getSampleByName(suggestion.first)
+                        val sample by DefaultSampleInfoRepository.getSampleByName(suggestion.first)
+                            .collectAsState(initial = null)
                         Row(
                             modifier = Modifier
                                 .animateItem()
-                                .clickable { onSampleSelected(sample) }
+                                .clickable { sample?.let { onSampleSelected(it) } }
                         ) {
-                            SampleListItem(sample.name)
+                            sample?.let { SampleListItem(it.name) }
                         }
                     } else { // RelevantAPI Suggestion
                         val relevantApi = suggestion.first

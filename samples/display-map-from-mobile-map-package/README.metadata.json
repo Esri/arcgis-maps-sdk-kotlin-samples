@@ -1,29 +1,33 @@
 {
-  "category": "Edit and Manage Data",
-  "description": "Display a map from a mobile map package.",
-  "formal_name": "DisplayMapFromMobileMapPackage",
-  "ignore": false,
-  "images": [
-    "display-map-from-mobile-map-package.png"
-  ],
-  "keywords": [
-    "mmpk",
-    "mobile map package",
-    "offline",
-    "MapView",
-    "MobileMapPackage"
-  ],
-  "language": "kotlin",
-  "redirect_from": [
-    "/android/latest/sample-code/open-mobile-map-package.htm"
-  ],
-  "relevant_apis": [
-    "MapView",
-    "MobileMapPackage"
-  ],
-  "snippets": [
-    "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/MainActivity.kt",
-    "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/DownloadActivity.kt"
-  ],
-  "title": "Display map from mobile map package"
+    "category": "Edit and Manage Data",
+    "description": "Display a map from a mobile map package.",
+    "formal_name": "DisplayMapFromMobileMapPackage",
+    "ignore": false,
+    "images": [
+        "display-map-from-mobile-map-package.png"
+    ],
+    "keywords": [
+        "geocompose",
+        "mmpk",
+        "mobile map package",
+        "offline",
+        "tookit",
+        "MapView",
+        "MobileMapPackage"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "/android/latest/sample-code/open-mobile-map-package.htm"
+    ],
+    "relevant_apis": [
+        "MapView",
+        "MobileMapPackage"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfrommobilemappackage/screens/MainScreen.kt"
+    ],
+    "title": "Display map from mobile map package"
 }

@@ -1,4 +1,4 @@
-/* Copyright 2023 Esri
+/* Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaycomposablemapview.screens
+package com.esri.arcgismaps.sample.displaymapfrommobilemappackage.screens
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
+import com.esri.arcgismaps.sample.displaymapfrommobilemappackage.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -34,24 +32,18 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String) {
-    val mapViewModel: MapViewModel = viewModel()
+    // Create a ViewModel to handle MapView interactions
+    val mapViewModel = viewModel<MapViewModel>()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
+            MapView(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
-                )
-                // TODO: Add UI components in this Column ...
-            }
-
+                arcGISMap = mapViewModel.map
+            )
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
