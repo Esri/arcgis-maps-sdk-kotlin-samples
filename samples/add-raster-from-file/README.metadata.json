@@ -1,20 +1,32 @@
 {
     "category": "Layers",
-    "description": "TODO",
+    "description": "Create and use a raster layer made from a local raster file.",
     "formal_name": "AddRasterFromFile",
     "ignore": false,
     "images": [
         "add-raster-from-file.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "data",
+        "image",
+        "import",
+        "layer",
+        "raster",
+        "visualization",
+        "Raster",
+        "RasterLayer"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "Raster",
+        "RasterLayer"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/AddRasterFromFileViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/AddRasterFromFileScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/components/AddRasterFromFileViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/screens/AddRasterFromFileScreen.kt"
     ],
     "title": "Add raster from file"
 }
