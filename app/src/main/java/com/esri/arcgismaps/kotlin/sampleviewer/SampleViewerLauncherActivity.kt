@@ -54,7 +54,7 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
      * Overrides [ExceptionListener] to capture the [throwable]
      * and starts the [MainActivity] with the exception details.
      */
-    override fun uncaughtException(thread: Thread, throwable: Throwable) {
+    override fun uncaughtException(throwable: Throwable) {
         Log.e("SampleViewerException", throwable.message.toString(), throwable)
         startMainActivity(throwable)
     }
@@ -68,12 +68,12 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
                 try {
                     Looper.loop()
                 } catch (e: Throwable) {
-                    uncaughtException(Looper.getMainLooper().thread, e)
+                    uncaughtException(e)
                 }
             }
         }
-        Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            uncaughtException(t, e)
+        Thread.setDefaultUncaughtExceptionHandler { _, e ->
+            uncaughtException(e)
         }
     }
 }
@@ -82,5 +82,5 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
  * This interface defines a method [uncaughtException] to handle uncaught exceptions.
  */
 interface ExceptionListener {
-    fun uncaughtException(thread: Thread, throwable: Throwable)
+    fun uncaughtException(throwable: Throwable)
 }
