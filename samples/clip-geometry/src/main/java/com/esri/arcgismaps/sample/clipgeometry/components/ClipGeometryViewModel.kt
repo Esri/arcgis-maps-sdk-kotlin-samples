@@ -61,7 +61,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    val isClipButtonEnabled = mutableStateOf(true)
+    val isClipButtonEnabled = mutableStateOf(false)
     val isResetButtonEnabled = mutableStateOf(false)
 
     init {
@@ -74,6 +74,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
             }.onSuccess {
                 // set the viewpoint of the map
                 mapViewProxy.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
+                isClipButtonEnabled.value = true
             }
         }
     }
