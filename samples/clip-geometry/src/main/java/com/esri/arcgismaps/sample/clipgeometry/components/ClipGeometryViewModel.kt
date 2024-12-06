@@ -37,6 +37,8 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.clipgeometry.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class ClipGeometryViewModel(application: Application) : AndroidViewModel(application) {
     // create  a map with a topographic basemap style
@@ -61,8 +63,8 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    val isClipButtonEnabled = mutableStateOf(false)
-    val isResetButtonEnabled = mutableStateOf(false)
+    var isClipButtonEnabled by mutableStateOf(false)
+    var isResetButtonEnabled by mutableStateOf(false)
 
     init {
         viewModelScope.launch {
@@ -74,7 +76,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
             }.onSuccess {
                 // set the viewpoint of the map
                 mapViewProxy.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
-                isClipButtonEnabled.value = true
+                isClipButtonEnabled = true
             }
         }
     }
@@ -94,8 +96,8 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         }
 
         // update the reset button and clip button
-        isResetButtonEnabled.value = false
-        isClipButtonEnabled.value = true
+        isResetButtonEnabled = false
+        isClipButtonEnabled = true
     }
 
     /**
@@ -116,8 +118,8 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         }
 
         // update the reset button and clip button
-        isResetButtonEnabled.value = true
-        isClipButtonEnabled.value = false
+        isResetButtonEnabled = true
+        isClipButtonEnabled = false
     }
 
     /**

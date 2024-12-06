@@ -67,7 +67,7 @@ fun ClipGeometryScreen(sampleName: String) {
                 ) {
                     Button(
                         modifier = Modifier.padding(12.dp),
-                        enabled = mapViewModel.isResetButtonEnabled.value,
+                        enabled = mapViewModel.isResetButtonEnabled,
                         onClick = {
                             mapViewModel.resetGeometry()
                         }
@@ -78,7 +78,7 @@ fun ClipGeometryScreen(sampleName: String) {
                     }
                     Button(
                         modifier = Modifier.padding(12.dp),
-                        enabled = mapViewModel.isClipButtonEnabled.value,
+                        enabled = mapViewModel.isClipButtonEnabled,
                         onClick = {
                             mapViewModel.clipGeometry()
                         }
