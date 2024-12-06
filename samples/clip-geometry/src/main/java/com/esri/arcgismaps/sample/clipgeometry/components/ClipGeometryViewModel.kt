@@ -161,13 +161,13 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         val intersecting = Graphic(intersectingEnvelope, redOutline)
 
         // create a envelope inside Colorado
-        val containedEnvelope = Envelope(
+        val insideEnvelope = Envelope(
             Point(-11655182.595204, 4741618.772994),
             Point(-11431488.567009, 4593570.068343)
         )
-        val contained = Graphic(containedEnvelope, redOutline)
+        val inside = Graphic(insideEnvelope, redOutline)
 
-        return listOf(outside, intersecting, contained)
+        return listOf(outside, intersecting, inside)
     }
 
 }
