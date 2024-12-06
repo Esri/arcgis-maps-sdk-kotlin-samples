@@ -19,6 +19,8 @@ package com.esri.arcgismaps.sample.projectgeometry.components
 import android.app.Application
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.content.Context
+import android.provider.Settings.System.getString
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -37,6 +39,8 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.projectgeometry.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -45,6 +49,8 @@ class ProjectGeometryViewModel(application: Application) : AndroidViewModel(appl
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight)
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
+
+    val a = application // TODO: fix
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -75,6 +81,9 @@ class ProjectGeometryViewModel(application: Application) : AndroidViewModel(appl
         graphics.add(markerGraphic)
     }
 
+    private val _infoText = MutableStateFlow("")
+    val infoText: StateFlow<String> = _infoText
+
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
@@ -96,9 +105,12 @@ class ProjectGeometryViewModel(application: Application) : AndroidViewModel(appl
         // set mapview to recenter to the tapped location
         mapViewProxy.setViewpoint(Viewpoint(point as Geometry))
         // project the web mercator location into a WGS84
-        val projectedPoint = GeometryEngine.projectOrNull(point as Geometry, SpatialReference.wgs84())
-        // build and display the projection result as a string
-        //infoTextView.text =
+        val projectedPoint = GeometryEngine.projectOrNull(point as Geometry, SpatialReference.wgs84()) as Point
+        _infoText.value = a.resources.getString(
+            R.string.projection_info_text,
+            point.toDisplayFormat(),
+            projectedPoint.toDisplayFormat()
+        )
     }
 }
 

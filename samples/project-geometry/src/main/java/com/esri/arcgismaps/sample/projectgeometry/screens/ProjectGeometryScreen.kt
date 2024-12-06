@@ -17,15 +17,20 @@
 package com.esri.arcgismaps.sample.projectgeometry.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.projectgeometry.components.ProjectGeometryViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -52,8 +57,19 @@ fun ProjectGeometryScreen(sampleName: String) {
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     onSingleTapConfirmed = mapViewModel::onMapViewTapped
                 )
-                // TODO: Add UI components in this Column ...
+
+
+                Row(
+                    modifier = Modifier.
+                    padding(12.dp).fillMaxWidth()
+                ) {
+                    Text(
+                        text = mapViewModel.infoText.collectAsState().value
+                    )
+                }
+
             }
+
 
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
