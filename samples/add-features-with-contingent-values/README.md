@@ -48,8 +48,9 @@ The mobile geodatabase contains birds nests in the Fillmore area, defined with c
 
 ## Additional information
 
+This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
 Learn more about contingent values and how to utilize them on the [ArcGIS Pro documentation](https://pro.arcgis.com/en/pro-app/latest/help/data/geodatabases/overview/contingent-values.htm).
 
 ## Tags
 
-coded values, contingent values, feature table, geodatabase
+coded values, contingent values, feature table, geodatabase, geoviewcompose, toolkit
