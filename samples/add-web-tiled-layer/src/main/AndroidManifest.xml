@@ -3,11 +3,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application><activity
-            android:exported="true"
+    <application>
+        <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:label="@string/add_web_tiled_layer_app_name">
-            
         </activity>
     </application>
 

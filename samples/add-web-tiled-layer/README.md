@@ -34,6 +34,8 @@ Web tiled services use a uniform addressing scheme with pre-rendered tiles. Imag
 * Subdomain is optional and allows ArcGIS Maps SDK to balance requests among multiple servers for enhanced performance.
 * Level, row, and column select the tiles to load based on the visible extent of the map.
 
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+
 For more information about web tiled layers, see the following resources:
 
 * [Wikipedia: tiled web maps](https://en.wikipedia.org/wiki/Tiled_web_map)
@@ -41,4 +43,4 @@ For more information about web tiled layers, see the following resources:
 
 ## Tags
 
-ArcGIS Living Atlas, layer, OGC, tiled, tiles
+arcgis living atlas, geoviewcompose, layer, ogc, tiled, tiles, toolkit
