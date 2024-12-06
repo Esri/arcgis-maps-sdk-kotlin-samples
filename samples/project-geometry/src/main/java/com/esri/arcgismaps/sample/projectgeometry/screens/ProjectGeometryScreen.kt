@@ -49,6 +49,8 @@ fun ProjectGeometryScreen(sampleName: String) {
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                    onSingleTapConfirmed = mapViewModel::onMapViewTapped
                 )
                 // TODO: Add UI components in this Column ...
             }
