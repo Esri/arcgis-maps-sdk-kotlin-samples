@@ -17,13 +17,11 @@
 package com.esri.arcgismaps.sample.clipgeometry.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Envelope
-import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
@@ -53,7 +51,7 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
     )
     private var envelopesGraphics = createEnvelopeGraphics()
-    
+
     // graphics overlay to display graphics
     val graphicsOverlay = GraphicsOverlay().apply {
         graphics.add(coloradoGraphic)
