@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
     // build the web tiled layer from ArcGIS Living Atlas of the World tile service url
-    val webTiledLayer = WebTiledLayer.create(
+    private val webTiledLayer = WebTiledLayer.create(
         urlTemplate = "https://server.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{level}/{row}/{col}.jpg"
     ).apply {
         // set the attribution on the layer
