@@ -28,6 +28,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
+    // TODO - The ArcGISMap only needs to be wrapped in a MutableState object if it will change in this sample
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
