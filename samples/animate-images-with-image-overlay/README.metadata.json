@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "AnimateImagesWithImageOverlay",
+    "ignore": false,
+    "images": [
+        "animate-images-with-image-overlay.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/AnimateImagesWithImageOverlayViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/AnimateImagesWithImageOverlayScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/MainActivity.kt"
+    ],
+    "title": "Animate images with image overlay"
+}

@@ -1,4 +1,4 @@
-/* Copyright 2023 Esri
+/* Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaycomposablemapview.components
+package com.esri.arcgismaps.sample.animateimageswithimageoverlay.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -27,8 +27,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
-    // TODO - The ArcGISMap only needs to be wrapped in a MutableState object if it will change in this sample
+class AnimateImagesWithImageOverlayViewModel(application: Application) : AndroidViewModel(application) {
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)

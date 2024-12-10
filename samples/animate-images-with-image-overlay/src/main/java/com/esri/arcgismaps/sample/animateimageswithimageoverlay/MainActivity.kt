@@ -1,4 +1,4 @@
-/* Copyright 2023 Esri
+/* Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,18 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaycomposablemapview
+package com.esri.arcgismaps.sample.animateimageswithimageoverlay
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.animateimageswithimageoverlay.screens.AnimateImagesWithImageOverlayScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -38,19 +34,20 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+
         setContent {
             SampleAppTheme {
-                Scaffold(topBar = { SampleTopAppBar(getString(R.string.display_composable_map_view_app_name)) }) {
-                    // create a map with a navigation night basemap style
-                    val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
-                    MapView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it),
-                        arcGISMap = map
-                    )
-                }
+                AnimateImagesWithImageOverlayApp()
             }
+        }
+    }
+
+    @Composable
+    private fun AnimateImagesWithImageOverlayApp() {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            AnimateImagesWithImageOverlayScreen(
+                sampleName = getString(R.string.animate_images_with_image_overlay_app_name)
+            )
         }
     }
 }
