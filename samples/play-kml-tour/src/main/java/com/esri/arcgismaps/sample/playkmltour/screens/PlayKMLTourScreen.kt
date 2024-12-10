@@ -50,10 +50,10 @@ import androidx.compose.ui.unit.dp
 fun PlayKMLTourScreen(sampleName: String) {
     val viewModel: PlayKMLTourViewModel = viewModel()
 
-    val state = remember { viewModel.statusFlow }
+    val state = remember { viewModel.kmlTourStatusFlow }
     val stateFlow by state.collectAsStateWithLifecycle(KmlTourStatus.NotInitialized)
 
-    val progress = remember { viewModel.progressFlow }
+    val progress = remember { viewModel.kmlTourProgressFlow }
     val progressFlow by progress.collectAsStateWithLifecycle(0.0f)
 
     Scaffold(
@@ -76,24 +76,34 @@ fun PlayKMLTourScreen(sampleName: String) {
                 val padding = 8.dp
 
                 LinearProgressIndicator(progress = { progressFlow },
-                    modifier = Modifier.fillMaxWidth().padding(all = padding))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = padding))
                 Text("${stringResource(R.string.tour_status)} ${tourStateToString(stateFlow)}",
-                    modifier = Modifier.padding(all = padding).align(Alignment.CenterHorizontally))
+                    modifier = Modifier
+                        .padding(all = padding)
+                        .align(Alignment.CenterHorizontally))
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Button(enabled = (stateFlow == KmlTourStatus.Paused || stateFlow == KmlTourStatus.Playing),
-                        modifier = Modifier.fillMaxWidth(0.5f).padding(all = padding), onClick = {
-                        viewModel.reset()
-                    }) {
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .padding(all = padding),
+                        onClick = {
+                            viewModel.reset()
+                        }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_baseline_reset_24),
                             contentDescription = null
                         )
                         Text(stringResource(R.string.reset))
                     }
-                    Button(modifier = Modifier.fillMaxWidth().padding(all = padding), onClick = {
-                        // play tour
-                        viewModel.playOrPause()
-                    }) {
+                    Button(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = padding),
+                        onClick = {
+                            // play tour
+                            viewModel.playOrPause()
+                        }) {
                         if (stateFlow == KmlTourStatus.Playing) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_round_pause_24),

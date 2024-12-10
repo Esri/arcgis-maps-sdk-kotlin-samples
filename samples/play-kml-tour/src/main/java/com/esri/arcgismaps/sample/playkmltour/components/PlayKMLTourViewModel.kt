@@ -17,8 +17,6 @@
 package com.esri.arcgismaps.sample.playkmltour.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISScene
@@ -60,8 +58,7 @@ class PlayKMLTourViewModel(application: Application) : AndroidViewModel(applicat
     private val kmlLayer = KmlLayer(kmlDataSet)
 
     // create a scene with the surface and KML layer
-    val arcGISScene =
-        ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+    val arcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
             baseSurface = surface
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
             operationalLayers.add(kmlLayer)
@@ -72,11 +69,11 @@ class PlayKMLTourViewModel(application: Application) : AndroidViewModel(applicat
     private var kmlTour: KmlTour? = null
     private val kmlTourController = KmlTourController()
 
-    private val _statusFlow: MutableStateFlow<KmlTourStatus> = MutableStateFlow(KmlTourStatus.NotInitialized)
-    val statusFlow = _statusFlow.asStateFlow()
+    private val _kmlTourStatusFlow: MutableStateFlow<KmlTourStatus> = MutableStateFlow(KmlTourStatus.NotInitialized)
+    val kmlTourStatusFlow = _kmlTourStatusFlow.asStateFlow()
 
-    private val _progressFlow: MutableStateFlow<Float> = MutableStateFlow(0.0f)
-    val progressFlow = _progressFlow.asStateFlow()
+    private val _kmlTourProgressFlow: MutableStateFlow<Float> = MutableStateFlow(0.0f)
+    val kmlTourProgressFlow = _kmlTourProgressFlow.asStateFlow()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -131,14 +128,14 @@ class PlayKMLTourViewModel(application: Application) : AndroidViewModel(applicat
     private fun collectProgress(kmlTourController: KmlTourController) = viewModelScope.launch {
         kmlTourController.currentPosition.combine(kmlTourController.totalDuration) { currentPosition, totalDuration ->
             (currentPosition / totalDuration).toFloat()
-        }.collect { progress -> _progressFlow.value = progress }
+        }.collect { progress -> _kmlTourProgressFlow.value = progress }
     }
 
     /**
      * Collects the status of the KML tour and puts it into a state flow
      */
     private fun collectKmlTourStatus(kmlTour: KmlTour) = viewModelScope.launch {
-        kmlTour.status.collect { state -> _statusFlow.value = state }
+        kmlTour.status.collect { state -> _kmlTourStatusFlow.value = state }
     }
 
     /**
