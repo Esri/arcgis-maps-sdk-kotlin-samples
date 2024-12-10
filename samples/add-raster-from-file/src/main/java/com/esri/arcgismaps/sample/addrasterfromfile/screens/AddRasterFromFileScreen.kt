@@ -49,7 +49,6 @@ fun AddRasterFromFileScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy
                 )
-                // TODO: Add UI components in this Column ...
             }
 
             mapViewModel.messageDialogVM.apply {
