@@ -1,7 +1,7 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.6.0-4409"
+arcgisMapsKotlinVersion = "200.7.0-4432"
 
 ### Android versions
 androidGradlePlugin = "8.7.1"
@@ -18,13 +18,12 @@ roomVersion = "2.6.1"
 ### Kotlin versions
 kotlinVersion = "2.0.0"
 coreKtx = "1.13.1"
-# TODO is this needed: ktx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "ktxActivity" }
 ktxActivity = "1.9.1"
 ksp = "2.0.0-1.0.21"
 kotlinCompilerExt = "1.5.12"
 commonsIoVersion = "2.15.1"
 
-### Compose verions
+### Compose versions
 composeBom = "2024.10.00"
 activityCompose = "1.9.3"
 material = "1.12.0"
@@ -36,8 +35,8 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 
 ### Application Verions
-versionCode = "2006000"
-versionName = "200.6.0"
+versionCode = "2007000"
+versionName = "200.7.0"
 minSdk = "26"
 targetSdk = "35"
 
