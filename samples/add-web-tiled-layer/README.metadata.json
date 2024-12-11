@@ -24,9 +24,9 @@
         "WebTiledLayer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/components/AddWebTiledLayerViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/screens/AddWebTiledLayerScreen.kt"
     ],
     "title": "Add web tiled layer"
 }
