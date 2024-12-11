@@ -38,8 +38,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/components/MapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/screens/MainScreen.kt"
     ],
     "title": "Add features with contingent values"
