@@ -16,8 +16,9 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a Tex
 
 1. Create a `PortalItem` using the URL and ID.
 2. Create an `ArcGISMap` using the portal item.
-3. Set up a listener for taps on the map.
-4. Identify the visible layer where it is tapped using `mapView.identifyLayer()` and get the feature.
+3. Create a `MapViewProxy` to handle user interaction with the map view.
+3. Provide behaviour for the `MapView`'s `onSingleTapConfirmed` parameter to react to taps on the map.
+4. Identify the visible layer where it is tapped using `mapViewProxy.identify()` and get the feature from the result.
 5. Create the following `ArcadeExpression`:
 
    ```kotlin
@@ -34,7 +35,7 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a Tex
 
 8. Call `ArcadeEvaluator.evaluate()` on the Arcade evaluator object and pass the profile variables map.
 9. Get the `ArcadeEvaluationResult.result`.
-10. Convert the result to a numerical value (integer) and populate the UI with the crime count.
+10. Convert the result to a numerical value (`Double`) and pass it to the UI.
 
 ## Relevant API
 
@@ -51,8 +52,10 @@ This sample uses the [Crimes in Police Beats Sample](https://www.arcgis.com/home
 
 ## Additional information
 
+This sample uses the `geoview-compose` module of the [ArcGIS Maps SDK for Kotlin Toolkit](https://developers.arcgis.com/kotlin/toolkit/) to implement a Composable MapView.
+
 Visit [Getting Started](https://developers.arcgis.com/arcade/) on the *ArcGIS Developer* website to learn more about Arcade expressions.
 
 ## Tags
 
-Arcade evaluator, Arcade expression, identify layers, portal, portal item, query
+Arcade evaluator, Arcade expression, compose, identify layers, portal, portal item, query, toolkit
