@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.collections.forEach
 
-class PlayKMLTourViewModel(application: Application) : AndroidViewModel(application) {
+class PlayKmlTourViewModel(application: Application) : AndroidViewModel(application) {
 
     private val provisionPath: String by lazy { application.getExternalFilesDir(null)?.path.toString() +
             File.separator +

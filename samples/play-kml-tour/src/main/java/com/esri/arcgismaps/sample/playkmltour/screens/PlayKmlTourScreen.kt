@@ -35,7 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.kml.KmlTourStatus
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.playkmltour.R
-import com.esri.arcgismaps.sample.playkmltour.components.PlayKMLTourViewModel
+import com.esri.arcgismaps.sample.playkmltour.components.PlayKmlTourViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import androidx.compose.runtime.getValue
@@ -47,8 +47,8 @@ import androidx.compose.ui.unit.dp
  * Main screen layout for the sample
  */
 @Composable
-fun PlayKMLTourScreen(sampleName: String) {
-    val viewModel: PlayKMLTourViewModel = viewModel()
+fun PlayKmlTourScreen(sampleName: String) {
+    val viewModel: PlayKmlTourViewModel = viewModel()
 
     val state = remember { viewModel.kmlTourStatusFlow }
     val stateFlow by state.collectAsStateWithLifecycle(KmlTourStatus.NotInitialized)

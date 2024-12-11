@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.playkmltour.screens.PlayKMLTourScreen
+import com.esri.arcgismaps.sample.playkmltour.screens.PlayKmlTourScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun PlayKMLTourApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            PlayKMLTourScreen(
+            PlayKmlTourScreen(
                 sampleName = getString(R.string.play_kml_tour_app_name)
             )
         }
