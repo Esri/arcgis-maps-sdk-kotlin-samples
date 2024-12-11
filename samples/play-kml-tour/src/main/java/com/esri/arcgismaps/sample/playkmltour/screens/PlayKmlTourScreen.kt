@@ -50,11 +50,8 @@ import androidx.compose.ui.unit.dp
 fun PlayKmlTourScreen(sampleName: String) {
     val viewModel: PlayKmlTourViewModel = viewModel()
 
-    val kmlTourStatusFlow = remember { viewModel.kmlTourStatusFlow }
-    val kmlTourStatus by kmlTourStatusFlow.collectAsStateWithLifecycle(KmlTourStatus.NotInitialized)
-
-    val kmlTourProgressFlow = remember { viewModel.kmlTourProgressFlow }
-    val kmlTourProgress by kmlTourProgressFlow.collectAsStateWithLifecycle(0.0f)
+    val kmlTourStatus by viewModel.kmlTourStatusFlow.collectAsStateWithLifecycle()
+    val kmlTourProgress by viewModel.kmlTourProgressFlow.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
