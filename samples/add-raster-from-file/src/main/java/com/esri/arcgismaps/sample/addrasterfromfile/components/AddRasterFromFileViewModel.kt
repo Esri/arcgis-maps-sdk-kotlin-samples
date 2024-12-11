@@ -46,7 +46,8 @@ class AddRasterFromFileViewModel(application: Application) : AndroidViewModel(ap
     val rasterLayer = RasterLayer(raster)
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-        operationalLayers.add(rasterLayer) }
+        operationalLayers.add(rasterLayer)
+    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()

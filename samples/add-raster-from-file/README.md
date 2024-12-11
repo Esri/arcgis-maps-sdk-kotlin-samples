@@ -31,4 +31,4 @@ This sample uses the GeoViewCompose Toolkit module to be able to implement a Com
 
 ## Tags
 
-data, image, import, layer, raster, visualization
+data, geoviewcompose, image, import, layer, raster, toolkit, visualization

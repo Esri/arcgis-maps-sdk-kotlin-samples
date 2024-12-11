@@ -8,12 +8,14 @@
     ],
     "keywords": [
         "data",
+        "geoviewcompose",
         "image",
         "import",
         "layer",
         "raster",
         "visualization",
         "Raster",
+        "toolkit",
         "RasterLayer"
     ],
     "language": "kotlin",
