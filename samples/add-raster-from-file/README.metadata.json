@@ -13,9 +13,9 @@
         "import",
         "layer",
         "raster",
+        "toolkit",
         "visualization",
         "Raster",
-        "toolkit",
         "RasterLayer"
     ],
     "language": "kotlin",
