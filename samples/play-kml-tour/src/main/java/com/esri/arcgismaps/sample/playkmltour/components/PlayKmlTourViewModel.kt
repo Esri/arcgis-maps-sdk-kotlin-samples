@@ -87,11 +87,10 @@ class PlayKmlTourViewModel(application: Application) : AndroidViewModel(applicat
                 )
             }
             kmlLayer.load().onSuccess {
-                kmlTour = findFirstKMLTour(kmlDataSet.rootNodes)
-                kmlTourController.tour = kmlTour
-
-                if (kmlTour != null) {
-                    collectKmlTourStatus(kmlTour!!)
+                findFirstKMLTour(kmlDataSet.rootNodes)?.let {
+                    kmlTour = it
+                    collectKmlTourStatus(it)
+                    kmlTourController.tour = it
                     collectProgress(kmlTourController)
                 }
             }.onFailure { error ->
@@ -107,10 +106,12 @@ class PlayKmlTourViewModel(application: Application) : AndroidViewModel(applicat
      * Plays or pauses the KML tour
      */
     fun playOrPause() {
-        if (kmlTour!!.status.value == KmlTourStatus.Playing) {
-            kmlTourController.pause()
-        } else {
-            kmlTourController.play()
+        kmlTour?.let {
+            when (it.status.value) {
+                KmlTourStatus.Playing -> kmlTourController.pause()
+                KmlTourStatus.Paused, KmlTourStatus.Initialized, KmlTourStatus.Completed -> kmlTourController.play()
+                else -> throw IllegalStateException("KML tour is not initialized")
+            }
         }
     }
 
