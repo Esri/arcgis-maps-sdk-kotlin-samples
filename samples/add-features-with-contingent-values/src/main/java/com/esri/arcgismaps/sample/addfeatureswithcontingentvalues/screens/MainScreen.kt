@@ -51,16 +51,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.R
 import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.SliderControlParameters
-import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.UIState
+import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.FeatureEditState
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 
@@ -74,10 +75,7 @@ fun MainScreen(sampleName: String) {
     val mapViewModel: MapViewModel = viewModel()
 
     // flows from view model for displaying state in UI
-    val uiState by mapViewModel.uiState.collectAsStateWithLifecycle()
-    val statusAttributes by mapViewModel.statusAttributes.collectAsStateWithLifecycle()
-    val protectionAttributes by mapViewModel.protectionAttributes.collectAsStateWithLifecycle()
-    val sliderControlParameters by mapViewModel.sliderControlParameters.collectAsStateWithLifecycle()
+    val featureEditState by mapViewModel.featureEditState.collectAsStateWithLifecycle()
 
     // point on map tapped by user
     var mapPoint by remember { mutableStateOf<Point?>(null) }
@@ -113,7 +111,7 @@ fun MainScreen(sampleName: String) {
                         }
                     ) {
                         val onBottomSheetStateChanged = { state: SheetState ->
-                            if (!bottomSheetState.isVisible) {
+                            if (!state.isVisible) {
                                 showBottomSheet = false
                                 mapViewModel.clearFeature()
                             }
@@ -122,12 +120,9 @@ fun MainScreen(sampleName: String) {
                             mapPoint,
                             bottomSheetState,
                             onBottomSheetStateChanged,
-                            uiState,
-                            statusAttributes,
+                            featureEditState,
                             mapViewModel::onStatusAttributeSelect,
-                            protectionAttributes,
                             mapViewModel::onProtectionAttributeSelect,
-                            sliderControlParameters,
                             mapViewModel::onBufferSizeSelect,
                             mapViewModel::validateContingency
                         )
@@ -155,12 +150,9 @@ fun BottomSheetContents(
     mapPoint: Point?,
     bottomSheetState: SheetState,
     onBottomSheetStateChange: (SheetState) -> Unit,
-    uiState: UIState,
-    statusAttributes: List<CodedValue>,
+    featureEditState: FeatureEditState,
     onStatusAttributeSelect: (CodedValue) -> Unit,
-    protectionAttributes: List<CodedValue>,
     onProtectionAttributeSelect: (CodedValue) -> Unit,
-    sliderControlParameters: SliderControlParameters,
     onBufferSizeSelect: (Int) -> Unit,
     onApplyButtonClicked: (Point) -> Unit,
 ) {
@@ -169,50 +161,46 @@ fun BottomSheetContents(
         modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
     ) {
         Text(
-            text = "Add Feature",
+            text = stringResource(R.string.add_feature),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
         Spacer(Modifier.size(8.dp))
-        Text("Attributes:")
+        Text(stringResource(R.string.attributes))
 
         // dropdown boxes for selecting feature status/protection
-        AttributeDropdown("Status", uiState.status, statusAttributes, onStatusAttributeSelect)
-        AttributeDropdown("Protection", uiState.protection, protectionAttributes, onProtectionAttributeSelect)
+        AttributeDropdown(stringResource(R.string.status), featureEditState.status, featureEditState.statusAttributes, onStatusAttributeSelect)
+        AttributeDropdown(stringResource(R.string.protection), featureEditState.protection, featureEditState.protectionAttributes, onProtectionAttributeSelect)
         Spacer(Modifier.size(8.dp))
 
         // buffer size displayed and updated in slider
-        var localBufferSize by remember { mutableIntStateOf(uiState.buffer) }
-
-        // update buffer size if it changes in the view model
-        var previousBufferSize by remember { mutableIntStateOf(0) }
-        if (uiState.buffer != previousBufferSize) {
-            previousBufferSize = uiState.buffer
-            localBufferSize = uiState.buffer
-        }
+        var bufferSize by remember(key1= featureEditState) { mutableIntStateOf(featureEditState.buffer) }
 
         // recenter the slider if contingent values change
-        var bufferRange = sliderControlParameters.minRange..sliderControlParameters.maxRange
-        if (!bufferRange.contains(localBufferSize)) {
-            localBufferSize = (bufferRange.start + bufferRange.endInclusive) / 2
+        val minRange = featureEditState.sliderControlParameters.minRange
+        val maxRange = featureEditState.sliderControlParameters.maxRange
+        val bufferRange = minRange..maxRange
+        if (!bufferRange.contains(bufferSize)) {
+            bufferSize = (bufferRange.start + bufferRange.endInclusive) / 2
         }
 
         Row {
-            Text("Exclusion area buffer size:")
+            Text(stringResource(R.string.exclusion_area_buffer_size))
             Spacer(Modifier.weight(1f))
-            Text(text = if (localBufferSize > 0) localBufferSize.toString() else "")
+            Text(text = if (bufferSize > 0) bufferSize.toString() else "")
         }
+
         Slider(
-            enabled = sliderControlParameters.isEnabled,
-            value = localBufferSize.toFloat(),
-            valueRange = sliderControlParameters.minRange.toFloat()..sliderControlParameters.maxRange.toFloat(),
+            enabled = featureEditState.sliderControlParameters.isEnabled,
+            value = bufferSize.toFloat(),
+            valueRange = minRange.toFloat()..maxRange.toFloat(),
             steps = (bufferRange.endInclusive - bufferRange.start).toInt(),
-            onValueChange = { localBufferSize = it.roundToInt() },
-            onValueChangeFinished = { onBufferSizeSelect(localBufferSize) },
+            onValueChange = { bufferSize = it.roundToInt() },
+            onValueChangeFinished = { onBufferSizeSelect(bufferSize) },
             track = { sliderState ->
                 SliderDefaults.Track(
-                    enabled = sliderControlParameters.isEnabled,
+                    enabled = featureEditState.sliderControlParameters.isEnabled,
                     sliderState = sliderState,
                     drawStopIndicator = null,
                     drawTick = { _, _ -> }
@@ -220,12 +208,12 @@ fun BottomSheetContents(
             }
         )
         HorizontalDivider()
-        Text("The options will vary depending on which values are selected.")
+        Text(stringResource(R.string.contingent_note))
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
                 // user may not have interacted with the slider - need to assign a value
-                onBufferSizeSelect(localBufferSize)
+                onBufferSizeSelect(bufferSize)
                 mapPoint?.let {
                     onApplyButtonClicked(it)
                 }
@@ -236,7 +224,7 @@ fun BottomSheetContents(
                 }
             }
         ) {
-            Text("Apply")
+            Text(stringResource(R.string.apply))
         }
 
     }

@@ -56,7 +56,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    val cacheDir = application.cacheDir
+    private val cacheDir: File = application.cacheDir
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() +
@@ -71,7 +71,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val messageDialogVM = MessageDialogViewModel()
 
     // offline vector tiled layer to be used as a basemap
-    val fillmoreVectorTileLayer = ArcGISVectorTiledLayer("$provisionPath/FillmoreTopographicMap.vtpk")
+    private val fillmoreVectorTileLayer = ArcGISVectorTiledLayer("$provisionPath/FillmoreTopographicMap.vtpk")
 
     // mobile database containing offline feature data
     val geodatabase: Geodatabase by lazy {
@@ -85,19 +85,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var feature: ArcGISFeature? = null
 
     // instance of the feature table retrieved from the geodatabase, updates when new feature is added
-    var featureTable: ArcGISFeatureTable? = null
+    private var featureTable: ArcGISFeatureTable? = null
 
     // state flow of UI state
-    private val _uiState = MutableStateFlow<UIState>(UIState(null, null, 0))
-    val uiState = _uiState.asStateFlow()
-
-    // state flows of possible values for an in-construction feature
-    private val _statusAttributes = MutableStateFlow<List<CodedValue>>(listOf())
-    private val _protectionAttributes = MutableStateFlow<List<CodedValue>>(listOf())
-    private val _sliderControlParameters = MutableStateFlow(SliderControlParameters(false, 0, 0))
-    val statusAttributes = _statusAttributes.asStateFlow()
-    val protectionAttributes = _protectionAttributes.asStateFlow()
-    val sliderControlParameters = _sliderControlParameters.asStateFlow()
+    private val _featureEditState = MutableStateFlow<FeatureEditState>(FeatureEditState())
+    val featureEditState = _featureEditState.asStateFlow()
 
     init {
         // create a temporary directory for use with the geodatabase file
@@ -150,7 +142,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             queryExistingFeatures()
 
             // get status attributes for new features
-            _statusAttributes.value = statusAttributes()
+            _featureEditState.value = _featureEditState.value.copy(statusAttributes = statusAttributes())
         }
 
     }
@@ -170,7 +162,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Create buffer graphics for features, and adds the graphics to
+     * Creates buffer graphics for features, and adds the graphics to
      * the [graphicsOverlay]
      */
     private suspend fun queryExistingFeatures() {
@@ -183,7 +175,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         // query the features using the queryParameters on the featureTable
-        val featureQueryResult = featureTable?.queryFeatures(queryParameters)?.getOrThrow()
+        val featureQueryResult = featureTable?.queryFeatures(queryParameters)?.getOrNull()
         val featureResultList = featureQueryResult?.toList()
 
         if (!featureResultList.isNullOrEmpty()) {
@@ -242,9 +234,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 feature = featureTable?.createFeature() as ArcGISFeature
                 feature?.attributes?.set("Status", codedValue.code)
 
-                _uiState.value = UIState(codedValue, null, 0)
-
-                _protectionAttributes.value = protectionAttributes()
+                _featureEditState.value = FeatureEditState(
+                    status=codedValue,
+                    statusAttributes = statusAttributes(),
+                    protectionAttributes = protectionAttributes()
+                )
             }
         } else {
             messageDialogVM.showMessageDialog(
@@ -278,8 +272,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onProtectionAttributeSelect(codedValue: CodedValue) {
         feature?.attributes?.set("Protection", codedValue.code)
-        _uiState.value = _uiState.value.copy(protection = codedValue)
-        _sliderControlParameters.value = bufferAttributes()
+        _featureEditState.value = _featureEditState.value.copy(
+            protection = codedValue,
+            sliderControlParameters = bufferAttributes()
+        )
     }
 
     private fun bufferAttributes(): SliderControlParameters {
@@ -295,7 +291,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         val sliderControlParameters = if (maxValue > 0) {
             SliderControlParameters(true, minValue, maxValue)
         } else {
-            SliderControlParameters(false, 0, 0)
+            SliderControlParameters()
         }
 
         return sliderControlParameters
@@ -303,7 +299,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onBufferSizeSelect(bufferSize: Int) {
         feature?.attributes?.set("BufferSize", bufferSize)
-        _uiState.value = _uiState.value.copy(buffer = bufferSize)
+        _featureEditState.value = _featureEditState.value.copy(buffer = bufferSize)
     }
 
     /**
@@ -346,8 +342,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         } else {
-            val violations = contingencyViolations.map { violation -> violation.fieldGroup.name }
-                .joinToString(separator = "\n")
+            val violations = contingencyViolations.joinToString(separator = "\n") {
+                violation -> violation.fieldGroup.name
+            }
             messageDialogVM.showMessageDialog(
                 "Invalid contingent values",
                 "${contingencyViolations.size} violations found:\n" + violations
@@ -362,8 +359,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun clearFeature() {
         feature = null
-        _uiState.value = UIState(null, null, 0)
-        _sliderControlParameters.value = SliderControlParameters(false, 0, 0)
+        _featureEditState.value = FeatureEditState(statusAttributes = statusAttributes())
     }
 
 }
@@ -371,10 +367,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 /**
  *  Enable status, maximum, and minimum values for the buffer size slider
  */
-data class SliderControlParameters(val isEnabled: Boolean, val minRange: Int, val maxRange: Int)
+data class SliderControlParameters(val isEnabled: Boolean = false, val minRange: Int = 0, val maxRange: Int = 0)
 
 /**
  * Currently selected status, protection, and buffer attributes for the feature under construction,
  * used to update the UI.
  */
-data class UIState(val status: CodedValue?, val protection: CodedValue?, val buffer: Int)
+data class FeatureEditState(
+    val status: CodedValue? = null,
+    val protection: CodedValue? = null,
+    val buffer: Int = 0,
+    val statusAttributes: List<CodedValue> = listOf(),
+    val protectionAttributes: List<CodedValue> = listOf(),
+    val sliderControlParameters: SliderControlParameters = SliderControlParameters()
+)
