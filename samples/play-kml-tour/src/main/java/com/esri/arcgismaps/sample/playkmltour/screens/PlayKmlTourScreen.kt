@@ -97,7 +97,8 @@ fun PlayKmlTourScreen(sampleName: String) {
                         )
                         Text(stringResource(R.string.reset))
                     }
-                    Button(modifier = Modifier
+                    Button(enabled = (stateFlow != KmlTourStatus.NotInitialized),
+                        modifier = Modifier
                         .fillMaxWidth()
                         .padding(all = padding),
                         onClick = {
