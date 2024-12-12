@@ -3,7 +3,7 @@
     <string name="world_terrain_service">https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer</string>
     <string name="kml_tour_path">/Esri_tour.kmz</string>
     <string name="tour_status">Tour status:</string>
-    <string name="reset_tour">Reset tour</string>
+    <string name="reset">Reset tour</string>
     <string name="play">Play tour</string>
     <string name="pause">Pause tour</string>
 </resources>
