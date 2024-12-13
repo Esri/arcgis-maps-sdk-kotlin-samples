@@ -79,7 +79,7 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
         graphics.add(markerGraphic)
     }
 
-    private val _infoText = MutableStateFlow("")
+    private val _infoText = MutableStateFlow(app.resources.getString(R.string.tap_to_begin))
     val infoText: StateFlow<String> = _infoText
 
     init {

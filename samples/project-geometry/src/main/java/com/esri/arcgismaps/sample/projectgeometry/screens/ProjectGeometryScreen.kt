@@ -16,6 +16,8 @@
 
 package com.esri.arcgismaps.sample.projectgeometry.screens
 
+import android.app.Application
+import android.provider.Settings.System.getString
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +28,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -33,6 +38,7 @@ import com.esri.arcgismaps.sample.projectgeometry.components.ProjectGeometryView
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.projectgeometry.R
 
 /**
  * Main screen layout for the sample app
@@ -58,13 +64,15 @@ fun ProjectGeometryScreen(sampleName: String) {
                     onSingleTapConfirmed = mapViewModel::onMapViewTapped
                 )
 
-
                 Row(
-                    modifier = Modifier.
-                    padding(12.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth()
                 ) {
                     Text(
-                        text = mapViewModel.infoText.collectAsState().value
+                        text =
+                            stringResource(R.string.title_text) + "\n" +
+                            mapViewModel.infoText.collectAsState().value
                     )
                 }
 
