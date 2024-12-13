@@ -97,18 +97,20 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     fun onMapViewTapped(event: SingleTapConfirmedEvent) {
-        val point = event.mapPoint // TODO: leads to bad cast, fix
-        // update the marker location to where the user tapped on the map
-        markerGraphic.geometry = point
-        // set mapview to recenter to the tapped location
-        mapViewProxy.setViewpoint(Viewpoint(point as Geometry))
-        // project the web mercator location into a WGS84
-        val projectedPoint = GeometryEngine.projectOrNull(point as Geometry, SpatialReference.wgs84()) as Point
-        _infoText.value = app.resources.getString(
-            R.string.projection_info_text,
-            point.toDisplayFormat(),
-            projectedPoint.toDisplayFormat()
-        )
+        event.mapPoint.let { point ->
+            // update the marker location to where the user tapped on the map
+            markerGraphic.geometry = point
+            // set mapview to recenter to the tapped location
+            mapViewProxy.setViewpoint(Viewpoint(point as Geometry))
+            // project the web mercator location into a WGS84
+            val projectedPoint =
+                GeometryEngine.projectOrNull(point, SpatialReference.wgs84())
+            _infoText.value = app.resources.getString(
+                R.string.projection_info_text,
+                point.toDisplayFormat(),
+                projectedPoint?.toDisplayFormat()
+            )
+        }
     }
 }
 
