@@ -12,7 +12,7 @@ For example, a field crew working in a sensitive habitat area may be required to
 
 ## How to use the sample
 
-Tap on the map to add a feature symbolizing a bird's nest. Then choose values describing the nest's status, protection, and buffer size. Notice how different values are available depending on the values of preceding fields. Once the contingent values are validated, tap "Done" to add the feature to the map.
+Tap on the map to add a feature symbolizing a bird's nest. Then choose values describing the nest's status, protection, and buffer size. Notice how different values are available depending on the values of preceding fields. Once the contingent values are validated, tap "Apply" to add the feature to the map.
 
 ## How it works
 
@@ -53,4 +53,4 @@ Learn more about contingent values and how to utilize them on the [ArcGIS Pro do
 
 ## Tags
 
-coded values, contingent values, feature table, geodatabase, geoviewcompose, toolkit
+coded values, compose, contingent values, feature table, geodatabase, geoview, mapview, toolkit

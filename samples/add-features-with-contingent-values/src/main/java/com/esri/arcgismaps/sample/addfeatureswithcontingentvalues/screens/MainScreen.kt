@@ -121,9 +121,9 @@ fun MainScreen(sampleName: String) {
                             bottomSheetState,
                             onBottomSheetStateChanged,
                             featureEditState,
-                            mapViewModel::onStatusAttributeSelect,
-                            mapViewModel::onProtectionAttributeSelect,
-                            mapViewModel::onBufferSizeSelect,
+                            mapViewModel::onStatusAttributeSelected,
+                            mapViewModel::onProtectionAttributeSelected,
+                            mapViewModel::onBufferSizeSelected,
                             mapViewModel::validateContingency
                         )
                     }
@@ -170,19 +170,31 @@ fun BottomSheetContents(
         Text(stringResource(R.string.attributes))
 
         // dropdown boxes for selecting feature status/protection
-        AttributeDropdown(stringResource(R.string.status), featureEditState.status, featureEditState.statusAttributes, onStatusAttributeSelect)
-        AttributeDropdown(stringResource(R.string.protection), featureEditState.protection, featureEditState.protectionAttributes, onProtectionAttributeSelect)
+        AttributeDropdown(
+            attributeName = stringResource(R.string.status),
+            codedValue = featureEditState.status,
+            availableValues = featureEditState.statusAttributes,
+            onNewValueSelect = onStatusAttributeSelect
+        )
+        AttributeDropdown(
+            attributeName = stringResource(R.string.protection),
+            codedValue = featureEditState.protection,
+            availableValues = featureEditState.protectionAttributes,
+            onNewValueSelect = onProtectionAttributeSelect)
         Spacer(Modifier.size(8.dp))
 
         // buffer size displayed and updated in slider
-        var bufferSize by remember(key1= featureEditState) { mutableIntStateOf(featureEditState.buffer) }
+        var bufferSize by remember(key1 = featureEditState) { mutableIntStateOf(featureEditState.buffer) }
+
+        val bufferRange = if (featureEditState.bufferRange != null) {
+            val min = featureEditState.bufferRange.minValue as Int
+            val max = featureEditState.bufferRange.maxValue as Int
+            min..max
+        } else {0..0}
 
         // recenter the slider if contingent values change
-        val minRange = featureEditState.sliderControlParameters.minRange
-        val maxRange = featureEditState.sliderControlParameters.maxRange
-        val bufferRange = minRange..maxRange
-        if (!bufferRange.contains(bufferSize)) {
-            bufferSize = (bufferRange.start + bufferRange.endInclusive) / 2
+        if (!bufferRange.contains(bufferSize)){
+            bufferSize = (bufferRange.first + bufferRange.last) /2
         }
 
         Row {
@@ -192,21 +204,22 @@ fun BottomSheetContents(
         }
 
         Slider(
-            enabled = featureEditState.sliderControlParameters.isEnabled,
+            enabled = bufferRange.first != bufferRange.last,
             value = bufferSize.toFloat(),
-            valueRange = minRange.toFloat()..maxRange.toFloat(),
-            steps = (bufferRange.endInclusive - bufferRange.start).toInt(),
+            valueRange = bufferRange.first.toFloat()..bufferRange.last.toFloat(),
+            steps = (bufferRange.last - bufferRange.first),
             onValueChange = { bufferSize = it.roundToInt() },
             onValueChangeFinished = { onBufferSizeSelect(bufferSize) },
             track = { sliderState ->
                 SliderDefaults.Track(
-                    enabled = featureEditState.sliderControlParameters.isEnabled,
+                    enabled = bufferRange.first != bufferRange.last,
                     sliderState = sliderState,
                     drawStopIndicator = null,
                     drawTick = { _, _ -> }
                 )
             }
         )
+
         HorizontalDivider()
         Text(stringResource(R.string.contingent_note))
         Button(
@@ -235,14 +248,14 @@ fun BottomSheetContents(
 fun AttributeDropdown(
     attributeName: String,
     codedValue: CodedValue?,
-    attributeOptions: List<CodedValue>,
+    availableValues: List<CodedValue>,
     onNewValueSelect: (CodedValue) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         modifier = Modifier.fillMaxWidth(),
         onExpandedChange = {
-            if (!attributeOptions.isEmpty()) {
+            if (availableValues.isNotEmpty()) {
                 expanded = !expanded
             }
         },
@@ -252,7 +265,7 @@ fun AttributeDropdown(
         val textValue = codedValue?.name
 
         OutlinedTextField(
-            enabled = !attributeOptions.isEmpty(),
+            enabled = availableValues.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
                 .menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
@@ -266,7 +279,7 @@ fun AttributeDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            attributeOptions.forEach { value ->
+            availableValues.forEach { value ->
                 DropdownMenuItem(
                     text = { Text(value.name) },
                     onClick = {

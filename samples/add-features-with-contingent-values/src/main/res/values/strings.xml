@@ -7,4 +7,6 @@
     <string name="status">Status</string>
     <string name="protection">Protection</string>
     <string name="exclusion_area_buffer_size">Exclusion area buffer size:</string>
+    <string name="no_feature_created">No feature created yet</string>
+    <string name="input_all_values">Input all values to add a feature to the map</string>
 </resources>

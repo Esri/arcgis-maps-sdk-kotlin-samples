@@ -8,10 +8,12 @@
     ],
     "keywords": [
         "coded values",
+        "compose",
         "contingent values",
         "feature table",
         "geodatabase",
-        "geoviewcompose",
+        "geoview",
+        "mapview",
         "toolkit",
         "ArcGISFeatureTable",
         "CodedValue",
