@@ -46,7 +46,10 @@ import java.util.Locale
 
 class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     // create a map with a navigation night basemap style
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight)
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight).apply {
+        // set the default viewpoint to Redlands,CA
+        initialViewpoint = Viewpoint(34.058, -117.195, 5e4)
+    }
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
@@ -89,19 +92,16 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
                     "Failed to load map",
                     error.message.toString()
                 )
-            }.onSuccess {
-                // set the default viewpoint to Redlands,CA
-                mapViewProxy.setViewpoint(Viewpoint(34.058, -117.195, 5e4))
             }
         }
     }
 
     fun onMapViewTapped(event: SingleTapConfirmedEvent) {
-        event.mapPoint.let { point ->
+        event.mapPoint?.let { point ->
             // update the marker location to where the user tapped on the map
             markerGraphic.geometry = point
             // set mapview to recenter to the tapped location
-            mapViewProxy.setViewpoint(Viewpoint(point as Geometry))
+            mapViewProxy.setViewpoint(Viewpoint(point))
             // project the web mercator location into a WGS84
             val projectedPoint =
                 GeometryEngine.projectOrNull(point, SpatialReference.wgs84())

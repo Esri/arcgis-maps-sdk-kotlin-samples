@@ -77,8 +77,7 @@ fun ProjectGeometryScreen(sampleName: String) {
                 }
 
             }
-
-
+            
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
