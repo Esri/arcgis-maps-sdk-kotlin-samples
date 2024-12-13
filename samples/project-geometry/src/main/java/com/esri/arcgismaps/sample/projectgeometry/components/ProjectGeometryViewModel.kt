@@ -44,13 +44,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class ProjectGeometryViewModel(application: Application) : AndroidViewModel(application) {
+class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     // create a map with a navigation night basemap style
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight)
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
-
-    val a = application // TODO: fix
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -58,8 +56,8 @@ class ProjectGeometryViewModel(application: Application) : AndroidViewModel(appl
     // setup the red pin marker image as bitmap drawable
     private val markerDrawable: BitmapDrawable by lazy {
         // load the bitmap from resources and create a drawable
-        val bitmap = BitmapFactory.decodeResource(application.resources, R.drawable.pin_symbol)
-        BitmapDrawable(application.resources, bitmap)
+        val bitmap = BitmapFactory.decodeResource(app.resources, R.drawable.pin_symbol)
+        BitmapDrawable(app.resources, bitmap)
     }
 
     // setup the red pin marker as a Graphic
@@ -106,7 +104,7 @@ class ProjectGeometryViewModel(application: Application) : AndroidViewModel(appl
         mapViewProxy.setViewpoint(Viewpoint(point as Geometry))
         // project the web mercator location into a WGS84
         val projectedPoint = GeometryEngine.projectOrNull(point as Geometry, SpatialReference.wgs84()) as Point
-        _infoText.value = a.resources.getString(
+        _infoText.value = app.resources.getString(
             R.string.projection_info_text,
             point.toDisplayFormat(),
             projectedPoint.toDisplayFormat()
