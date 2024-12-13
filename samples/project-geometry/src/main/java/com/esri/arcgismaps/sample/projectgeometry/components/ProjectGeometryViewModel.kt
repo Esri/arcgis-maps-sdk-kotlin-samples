@@ -19,13 +19,8 @@ package com.esri.arcgismaps.sample.projectgeometry.components
 import android.app.Application
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.content.Context
-import android.provider.Settings.System.getString
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
