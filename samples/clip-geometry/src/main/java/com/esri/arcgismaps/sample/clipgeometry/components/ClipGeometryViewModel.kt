@@ -42,9 +42,9 @@ import androidx.compose.runtime.setValue
 
 class ClipGeometryViewModel(application: Application) : AndroidViewModel(application) {
     // create  a map with a topographic basemap style
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
-    // create a MapViewProxy to interact with the MapView
-    val mapViewProxy = MapViewProxy()
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        initialViewpoint = Viewpoint(40.0, -106.0, 10000000.0)
+    }
 
     private var coloradoGraphic  = createColoradoGraphic()
     private var coloradoFillSymbol = SimpleFillSymbol(
@@ -75,7 +75,6 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
                 )
             }.onSuccess {
                 // set the viewpoint of the map
-                mapViewProxy.setViewpoint(Viewpoint(40.0, -106.0, 10000000.0))
                 isClipButtonEnabled = true
             }
         }

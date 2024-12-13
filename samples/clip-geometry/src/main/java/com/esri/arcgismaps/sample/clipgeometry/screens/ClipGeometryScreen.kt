@@ -57,7 +57,6 @@ fun ClipGeometryScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
-                    mapViewProxy = mapViewModel.mapViewProxy,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay)
                 )
                 Row(
