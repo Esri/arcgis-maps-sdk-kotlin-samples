@@ -16,79 +16,95 @@
 
 package com.esri.arcgismaps.sample.animateimageswithimageoverlay.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.mapping.view.ImageOverlay
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.animateimageswithimageoverlay.components.AnimateImagesWithImageOverlayViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.launch
 
 
 /**
  * Main screen layout for the sample app
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimateImagesWithImageOverlayScreen(sampleName: String) {
-    val mapViewModel: AnimateImagesWithImageOverlayViewModel = viewModel()
+    val sceneViewModel: AnimateImagesWithImageOverlayViewModel = viewModel()
+    val composableScope = rememberCoroutineScope()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            var showControls by remember { mutableStateOf(false) }
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
+                contentAlignment = Alignment.Center
             ) {
-                MapView(
+                SceneView(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                        .fillMaxSize(),
+                    arcGISScene = sceneViewModel.arcGISScene,
+                    sceneViewProxy = sceneViewModel.sceneViewProxy,
+                    imageOverlays = listOf(sceneViewModel.imageOverlay)
                 )
-
-
-
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
+                val controlsBottomSheetState =
+                    rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                // show the "Show controls" button only when the bottom sheet is not visible
+                if (!controlsBottomSheetState.isVisible) {
                     FloatingActionButton(
-                        onClick = { showControls = !showControls },
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 36.dp, end = 24.dp),
+                        onClick = {
+                            composableScope.launch {
+                                controlsBottomSheetState.show()
+                            }
+                        },
                     ) {
-                        Icon(Icons.Default.Settings, contentDescription = "Menu")
+                        Icon(Icons.Filled.Settings, contentDescription = "Show controls")
                     }
+                } else {
+                    ImageOverlayMenu(controlsBottomSheetState)
                 }
             }
-            if (showControls) {
-                ImageOverlayMenu()
-            }
 
-            mapViewModel.messageDialogVM.apply {
+            sceneViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
@@ -97,54 +113,95 @@ fun AnimateImagesWithImageOverlayScreen(sampleName: String) {
                     )
                 }
             }
-        }
-    )
+
+        })
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun imageOverlayMenu() {
-    var expanded by remember { mutableStateOf(false) }
-    var opacity by remember { mutableFloatStateOf(100f) }
-    var isRunning by remember { mutableStateOf(false) }
-    var selectedFps by remember { mutableStateOf("60 fps") }
-    Column {
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
+private fun ImageOverlayMenu(controlsBottomSheetState: SheetState) {
+
+    val composableScope = rememberCoroutineScope()
+
+    val mapViewModel: AnimateImagesWithImageOverlayViewModel = viewModel()
+
+    var selectedFps by remember { mutableStateOf(60) }
+
+    ModalBottomSheet(
+        modifier = Modifier.wrapContentHeight(),
+        sheetState = controlsBottomSheetState,
+        onDismissRequest = {
+            composableScope.launch {
+                controlsBottomSheetState.hide()
+            }
+        }) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+        ) {
+            Text("Opacity:")
+            Text(String.format("%.2f", mapViewModel.opacity))
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
             // Opacity Slider
-            Text("Opacity")
             Slider(
-                value = opacity,
-                onValueChange = { opacity = it },
-                valueRange = 1f..100f
+                value = mapViewModel.opacity,
+                onValueChange = { mapViewModel.updateOpacity(it) },
+                valueRange = 0f..1.0f
             )
-            Text((opacity / 100).toString())
-
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+        ) {
             // Start/Stop Button
             Button(onClick = {
-                isRunning = !isRunning
+                mapViewModel.updateIsStarted(!mapViewModel.isStarted)
             }) {
-                Text(if (isRunning) "Stop" else "Start")
+                Text(if (mapViewModel.isStarted) "Stop" else "Start")
             }
-
             // FPS Dropdown Menu
-            DropdownMenu(
+            var expanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                modifier = Modifier.width(150.dp),
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = !expanded }
             ) {
-                listOf("60 fps", "30 fps", "15 fps").forEach { fps ->
-                    DropdownMenuItem(
-                        text = { Text(fps) },
-                        onClick = { selectedFps = fps })
+                TextField(
+                    value = "${mapViewModel.fps} fps",
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    mapViewModel.fpsOptions.forEachIndexed { index, fps ->
+                        DropdownMenuItem(
+                            text = { Text("$fps fps") },
+                            onClick = {
+                                mapViewModel.updateFpsOptions(index)
+                                selectedFps = fps
+                                expanded = false
+                            })
+                        // show a divider between dropdown menu options
+                        if (index < mapViewModel.fpsOptions.lastIndex) {
+                            HorizontalDivider()
+                        }
+                    }
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewFloatingActionButtonMenu() {
-    AnimateImagesWithImageOverlayScreen("Animate Images With Image Overlay")
 }
