@@ -17,25 +17,25 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a Tex
 1. Create a `PortalItem` using the URL and ID.
 2. Create an `ArcGISMap` using the portal item.
 3. Create a `MapViewProxy` to handle user interaction with the map view.
-3. Provide behaviour for the `MapView`'s `onSingleTapConfirmed` parameter to react to taps on the map.
-4. Identify the visible layer where it is tapped using `mapViewProxy.identify()` and get the feature from the result.
-5. Create the following `ArcadeExpression`:
+4. Provide behaviour for the `MapView`'s `onSingleTapConfirmed` parameter to react to taps on the map.
+5. Identify the visible layer where it is tapped using `mapViewProxy.identify()` and get the feature from the result.
+6. Create the following `ArcadeExpression`:
 
    ```kotlin
    expressionValue = "var crimes = FeatureSetByName(\$map, 'Crime in the last 60 days');\n" +
     "return Count(Intersects(\$feature, crimes));"
    ```
 
-6. Create an `ArcadeEvaluator` using the Arcade expression and `ArcadeProfile.FormCalculation`.
-7. Create a map of profile variables with the following key-value pairs:
+7. Create an `ArcadeEvaluator` using the Arcade expression and `ArcadeProfile.FormCalculation`.
+8. Create a map of profile variables with the following key-value pairs:
 
    ```kotlin
     mapOf<String, Any>("\$feature" to feature, "\$map" to mapView.map)
    ```
 
-8. Call `ArcadeEvaluator.evaluate()` on the Arcade evaluator object and pass the profile variables map.
-9. Get the `ArcadeEvaluationResult.result`.
-10. Convert the result to a numerical value (`Double`) and pass it to the UI.
+9. Call `ArcadeEvaluator.evaluate()` on the Arcade evaluator object and pass the profile variables map.
+10. Get the `ArcadeEvaluationResult.result`.
+11. Convert the result to a numerical value (`Double`) and pass it to the UI.
 
 ## Relevant API
 
