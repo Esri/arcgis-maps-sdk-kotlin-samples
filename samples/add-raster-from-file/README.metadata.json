@@ -1,0 +1,34 @@
+{
+    "category": "Layers",
+    "description": "Create and use a raster layer made from a local raster file.",
+    "formal_name": "AddRasterFromFile",
+    "ignore": false,
+    "images": [
+        "add-raster-from-file.png"
+    ],
+    "keywords": [
+        "data",
+        "geoviewcompose",
+        "image",
+        "import",
+        "layer",
+        "raster",
+        "toolkit",
+        "visualization",
+        "Raster",
+        "RasterLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Raster",
+        "RasterLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/components/AddRasterFromFileViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/screens/AddRasterFromFileScreen.kt"
+    ],
+    "title": "Add raster from file"
+}
