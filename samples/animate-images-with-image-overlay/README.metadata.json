@@ -30,8 +30,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/components/AnimateImagesWithImageOverlayViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/screens/AnimateImagesWithImageOverlayScreen.kt"
     ],
     "title": "Animate images with image overlay"
