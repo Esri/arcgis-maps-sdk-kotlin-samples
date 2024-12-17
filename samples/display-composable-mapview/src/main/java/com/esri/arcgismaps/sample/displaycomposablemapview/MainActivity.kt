@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+
         setContent {
             SampleAppTheme {
                 Scaffold(topBar = { SampleTopAppBar(getString(R.string.display_composable_map_view_app_name)) }) {
