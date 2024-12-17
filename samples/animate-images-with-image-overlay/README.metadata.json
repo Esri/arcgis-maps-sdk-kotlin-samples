@@ -1,0 +1,38 @@
+{
+    "category": "Visualization",
+    "description": "Animate a series of images with an image overlay.",
+    "formal_name": "AnimateImagesWithImageOverlay",
+    "ignore": false,
+    "images": [
+        "animate-images-with-image-overlay.png"
+    ],
+    "keywords": [
+        "3d",
+        "animation",
+        "drone",
+        "dynamic",
+        "image frame",
+        "image overlay",
+        "real time",
+        "rendering",
+        "ImageFrame",
+        "ImageOverlay",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "ImageFrame",
+        "ImageOverlay",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/components/AnimateImagesWithImageOverlayViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/animateimageswithimageoverlay/screens/AnimateImagesWithImageOverlayScreen.kt"
+    ],
+    "title": "Animate images with image overlay"
+}
