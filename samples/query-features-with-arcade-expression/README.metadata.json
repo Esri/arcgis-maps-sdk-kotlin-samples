@@ -9,10 +9,12 @@
     "keywords": [
         "Arcade evaluator",
         "Arcade expression",
+        "compose",
         "identify layers",
         "portal",
         "portal item",
         "query",
+        "toolkit",
         "ArcadeEvaluationResult",
         "ArcadeEvaluator",
         "ArcadeExpression",
@@ -31,7 +33,9 @@
         "PortalItem"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/queryfeatureswitharcadeexpression/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/queryfeatureswitharcadeexpression/components/QueryFeaturesWithArcadeExpressionViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/queryfeatureswitharcadeexpression/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/queryfeatureswitharcadeexpression/screens/QueryFeaturesWithArcadeExpressionScreen.kt"
     ],
     "title": "Query features with arcade expression"
 }
