@@ -14,11 +14,13 @@
  *
  */
 
-package com.esri.arcgismaps.sample.playkmltour
+package com.esri.arcgismaps.sample.addrasterfromfile
 
 import android.content.Intent
 import android.os.Bundle
 import com.esri.arcgismaps.sample.sampleslib.DownloaderActivity
+import kotlin.collections.listOf
+import kotlin.jvm.java
 
 class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,11 +28,9 @@ class DownloadActivity : DownloaderActivity() {
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the app name of the sample
-            getString(R.string.play_kml_tour_app_name),
+            getString(R.string.add_raster_from_file_app_name),
             listOf(
-                // ArcGIS Portal item containing the .kmz markup tour file
-                // of Esri HQ and some of the global offices
-                "https://arcgisruntime.maps.arcgis.com/home/item.html?id=f10b1d37fdd645c9bc9b189fb546307c"
+                "https://arcgisruntime.maps.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"
             )
         )
     }
