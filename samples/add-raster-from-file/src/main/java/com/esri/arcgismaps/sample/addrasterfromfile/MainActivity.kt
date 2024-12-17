@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.clipgeometry
+package com.esri.arcgismaps.sample.addrasterfromfile
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,11 +22,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.clipgeometry.screens.ClipGeometryScreen
+import com.esri.arcgismaps.sample.addrasterfromfile.screens.AddRasterFromFileScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -38,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                ClipGeometryApp()
+                AddRasterFromFileApp()
             }
         }
     }
 
     @Composable
-    private fun ClipGeometryApp() {
+    private fun AddRasterFromFileApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            ClipGeometryScreen(
-                sampleName = stringResource(R.string.clip_geometry_app_name)
+            AddRasterFromFileScreen(
+                sampleName = getString(R.string.add_raster_from_file_app_name)
             )
         }
     }

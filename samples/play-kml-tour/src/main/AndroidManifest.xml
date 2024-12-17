@@ -4,15 +4,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application><activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/play_kml_tour_app_name">
+        android:name=".DownloadActivity"
+        android:exported="true"
+        android:label="@string/play_kml_tour_app_name">
 
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+    </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

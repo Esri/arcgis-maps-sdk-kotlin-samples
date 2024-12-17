@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.clipgeometry"
+    namespace = "com.esri.arcgismaps.sample.addrasterfromfile"
     buildFeatures {
         buildConfig = true
     }
