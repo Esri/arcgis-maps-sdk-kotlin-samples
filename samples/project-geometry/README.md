@@ -26,7 +26,7 @@ Click anywhere on the map. A Textview will display the clicked location's coordi
 
 In cases where the the output spatial reference uses a different geographic coordinate system than that of the input spatial reference, see the GeometryEngine.project method that additionally takes in a DatumTransformation parameter.
 
-This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView. 
+This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 

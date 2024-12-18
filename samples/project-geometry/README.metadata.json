@@ -11,20 +11,19 @@
         "Web Mercator",
         "coordinate system",
         "coordinates",
+        "geoviewcompose",
         "latitude",
         "longitude",
         "projected",
         "projection",
         "spatial reference",
+        "toolkit",
         "GeometryEngine",
         "Point",
-        "SpatialReference",
-        "geoviewcompose",
-        "toolkit"
+        "SpatialReference"
     ],
     "language": "kotlin",
-    "redirect_from": [
-    ],
+    "redirect_from": [],
     "relevant_apis": [
         "GeometryEngine",
         "Point",
