@@ -18,7 +18,9 @@
         "spatial reference",
         "GeometryEngine",
         "Point",
-        "SpatialReference"
+        "SpatialReference",
+        "geoviewcompose",
+        "toolkit"
     ],
     "language": "kotlin",
     "redirect_from": [
