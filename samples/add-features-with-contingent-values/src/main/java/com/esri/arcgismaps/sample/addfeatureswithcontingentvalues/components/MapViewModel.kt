@@ -113,14 +113,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             // get the contingent values definition from the feature table and load it
-            val contingentValuesDefinition = featureTable.contingentValuesDefinition
-            viewModelScope.launch {
-                contingentValuesDefinition.load().getOrElse {
-                    messageDialogVM.showMessageDialog(
-                        "Error",
-                        "Error loading the contingent values definition"
-                    )
-                }
+            featureTable.contingentValuesDefinition.load().getOrElse {
+                messageDialogVM.showMessageDialog(
+                    "Error",
+                    "Error loading the contingent values definition"
+                )
             }
 
             // create and load the feature layer from the feature table
@@ -167,7 +164,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * Creates buffer graphics for features in the [featureTable], and adds the graphics to
-     * the [graphicsOverlay]
+     * the [graphicsOverlay].
      */
     private suspend fun showBufferGraphics() {
         // clear the existing graphics
@@ -178,25 +175,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             whereClause = "BufferSize > 0"
         }
 
-        // query the features using the queryParameters on the featureTable
-        val featureQueryResult = featureTable!!.queryFeatures(queryParameters).getOrNull()
-        val featureResultList = featureQueryResult?.toList()
+        featureTable?.let {
+            // query the features using the queryParameters on the featureTable
+            val featureQueryResult = it.queryFeatures(queryParameters).getOrNull()
+            val featureResultList = featureQueryResult?.toList()
 
-        if (!featureResultList.isNullOrEmpty()) {
-            // create list of graphics for each query result
-            val graphics = featureResultList.map { createBufferGraphic(it) }
-            // add the graphics to the graphics overlay
-            graphicsOverlay.graphics.addAll(graphics)
-        } else {
-            messageDialogVM.showMessageDialog(
-                "Error",
-                "No features found with BufferSize > 0"
-            )
+            if (!featureResultList.isNullOrEmpty()) {
+                // create list of graphics for each query result
+                val graphics = featureResultList.map { createBufferGraphic(it) }
+                // add the graphics to the graphics overlay
+                graphicsOverlay.graphics.addAll(graphics)
+            } else {
+                messageDialogVM.showMessageDialog(
+                    "Error",
+                    "No features found with BufferSize > 0"
+                )
+            }
         }
     }
 
     /**
-     * Creates and returns a graphic using the attributes of the given [feature]
+     * Creates and returns a graphic using the attributes of the given [feature].
      */
     private fun createBufferGraphic(feature: Feature): Graphic {
         // create the outline for the buffer symbol
@@ -224,17 +223,19 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         return codedValueDomain.codedValues
     }
 
-    fun onStatusAttributeSelected(codedValue: CodedValue) {
+    fun onStatusAttributeSelected(codedValue: CodedValue) = featureTable?.let { featureTable ->
         viewModelScope.launch {
 
-            feature = featureTable!!.createFeature() as ArcGISFeature
+            feature = featureTable.createFeature() as ArcGISFeature
             feature?.attributes?.set("Status", codedValue.code)
 
-            _featureEditState.value = FeatureEditState(
-                status=codedValue,
-                statusAttributes = featureTable!!.statusFieldCodedValues(),
-                protectionAttributes = featureTable!!.protectionFieldCodedValues()
-            )
+            featureTable.let {
+                _featureEditState.value = FeatureEditState(
+                    status = codedValue,
+                    statusAttributes = it.statusFieldCodedValues(),
+                    protectionAttributes = it.protectionFieldCodedValues()
+                )
+            }
         }
     }
 
@@ -264,7 +265,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         feature?.attributes?.set("Protection", codedValue.code)
         _featureEditState.value = _featureEditState.value.copy(
             protection = codedValue,
-            bufferRange = featureTable!!.bufferRange(),
+            bufferRange = featureTable?.bufferRange()
         )
     }
 
@@ -295,7 +296,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
         // validate the feature's contingencies
         val contingencyViolations = feature?.let {
-            featureTable!!.validateContingencyConstraints(it)
+            featureTable?.validateContingencyConstraints(it)
         } ?: return messageDialogVM.showMessageDialog(resources.getString(R.string.no_feature_created))
 
         // if there are no contingency violations the feature is valid and ready to add to the feature table
@@ -304,18 +305,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             // set the geometry of the feature to the map point
             feature?.geometry = mapPoint
 
-            // create the graphic for the feature
-            val graphic = feature?.let { createBufferGraphic(it) }
+            // create the buffer graphic for the feature
+            val bufferGraphic = feature?.let { createBufferGraphic(it) }
 
             // add the graphic to the graphics overlay
-            graphic?.let { graphicsOverlay.graphics.add(it) }
+            bufferGraphic?.let { graphicsOverlay.graphics.add(it) }
 
             // add the feature to the feature table
             viewModelScope.launch {
-                feature?.let { featureTable!!.addFeature(it) }
-                feature?.load()?.getOrElse {
-                    return@launch messageDialogVM.showMessageDialog("Error", it.message.toString())
-                }
+                feature?.let { featureTable?.addFeature(it) }
             }
         } else {
             val violations = contingencyViolations.joinToString(separator = "\n") {
@@ -335,7 +333,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun clearFeature() {
         feature = null
-        _featureEditState.value = FeatureEditState(statusAttributes = featureTable!!.statusFieldCodedValues())
+        _featureEditState.value = featureTable?.let {FeatureEditState(statusAttributes = it.statusFieldCodedValues())}
+            ?: return messageDialogVM.showMessageDialog("Feature Table not loaded")
     }
 
 }

@@ -110,16 +110,15 @@ fun MainScreen(sampleName: String) {
                             mapViewModel.clearFeature()
                         }
                     ) {
-                        val onBottomSheetStateChanged = { state: SheetState ->
-                            if (!state.isVisible) {
-                                showBottomSheet = false
-                                mapViewModel.clearFeature()
-                            }
-                        }
                         BottomSheetContents(
                             mapPoint,
                             bottomSheetState,
-                            onBottomSheetStateChanged,
+                            onBottomSheetStateChange = { state: SheetState ->
+                                if (!state.isVisible) {
+                                    showBottomSheet = false
+                                    mapViewModel.clearFeature()
+                                }
+                            },
                             featureEditState,
                             mapViewModel::onStatusAttributeSelected,
                             mapViewModel::onProtectionAttributeSelected,
@@ -151,9 +150,9 @@ fun BottomSheetContents(
     bottomSheetState: SheetState,
     onBottomSheetStateChange: (SheetState) -> Unit,
     featureEditState: FeatureEditState,
-    onStatusAttributeSelect: (CodedValue) -> Unit,
-    onProtectionAttributeSelect: (CodedValue) -> Unit,
-    onBufferSizeSelect: (Int) -> Unit,
+    onStatusAttributeSelected: (CodedValue) -> Unit,
+    onProtectionAttributeSelected: (CodedValue) -> Unit,
+    onBufferSizeSelected: (Int) -> Unit,
     onApplyButtonClicked: (Point) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -174,13 +173,13 @@ fun BottomSheetContents(
             attributeName = stringResource(R.string.status),
             codedValue = featureEditState.status,
             availableValues = featureEditState.statusAttributes,
-            onNewValueSelect = onStatusAttributeSelect
+            onNewValueSelected = onStatusAttributeSelected
         )
         AttributeDropdown(
             attributeName = stringResource(R.string.protection),
             codedValue = featureEditState.protection,
             availableValues = featureEditState.protectionAttributes,
-            onNewValueSelect = onProtectionAttributeSelect)
+            onNewValueSelected = onProtectionAttributeSelected)
         Spacer(Modifier.size(8.dp))
 
         // buffer size displayed and updated in slider
@@ -209,7 +208,7 @@ fun BottomSheetContents(
             valueRange = bufferRange.first.toFloat()..bufferRange.last.toFloat(),
             steps = (bufferRange.last - bufferRange.first),
             onValueChange = { bufferSize = it.roundToInt() },
-            onValueChangeFinished = { onBufferSizeSelect(bufferSize) },
+            onValueChangeFinished = { onBufferSizeSelected(bufferSize) },
             track = { sliderState ->
                 SliderDefaults.Track(
                     enabled = bufferRange.first != bufferRange.last,
@@ -226,7 +225,7 @@ fun BottomSheetContents(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
                 // user may not have interacted with the slider - need to assign a value
-                onBufferSizeSelect(bufferSize)
+                onBufferSizeSelected(bufferSize)
                 mapPoint?.let {
                     onApplyButtonClicked(it)
                 }
@@ -249,7 +248,7 @@ fun AttributeDropdown(
     attributeName: String,
     codedValue: CodedValue?,
     availableValues: List<CodedValue>,
-    onNewValueSelect: (CodedValue) -> Unit
+    onNewValueSelected: (CodedValue) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
@@ -284,7 +283,7 @@ fun AttributeDropdown(
                     text = { Text(value.name) },
                     onClick = {
                         expanded = false
-                        onNewValueSelect(value)
+                        onNewValueSelected(value)
                     }
                 )
             }
