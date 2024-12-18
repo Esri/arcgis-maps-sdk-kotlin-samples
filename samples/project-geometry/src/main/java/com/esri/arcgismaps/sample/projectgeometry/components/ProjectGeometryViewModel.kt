@@ -65,8 +65,7 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
             // resize the symbol into a smaller size
             width = 30f
             height = 30f
-            // offset in +y axis so the marker spawned
-            // is right on the touch point
+            // offset in +y axis so the marker spawned sis right on the touch point
             offsetY = 25f
         }
         // create the graphic from the symbol
