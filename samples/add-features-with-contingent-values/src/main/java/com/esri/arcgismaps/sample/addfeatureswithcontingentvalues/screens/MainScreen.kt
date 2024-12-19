@@ -16,6 +16,8 @@
 
 package com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.screens
 
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +27,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,23 +39,24 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcgismaps.data.CodedValue
@@ -62,8 +67,8 @@ import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.Map
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.FeatureEditState
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import kotlin.math.roundToInt
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -71,6 +76,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(sampleName: String) {
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
 
@@ -78,13 +86,20 @@ fun MainScreen(sampleName: String) {
     val featureEditState by mapViewModel.featureEditState.collectAsStateWithLifecycle()
 
     // point on map tapped by user
-    var mapPoint by remember { mutableStateOf<Point?>(null) }
+    var selectedPoint by remember { mutableStateOf<Point?>(null) }
+
+    LaunchedEffect(showBottomSheet) {
+        if (showBottomSheet) {
+            bottomSheetState.show()
+        } else {
+            bottomSheetState.hide()
+            mapViewModel.clearFeature()
+        }
+    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            var showBottomSheet by remember { mutableStateOf(false) }
-            val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
             Box {
                 MapView(
@@ -93,11 +108,9 @@ fun MainScreen(sampleName: String) {
                         .padding(it),
                     arcGISMap = mapViewModel.arcGISMap,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
-                    onSingleTapConfirmed = {
-                        it.mapPoint.let { point ->
-                            mapPoint = point
-                            showBottomSheet = true
-                        }
+                    onSingleTapConfirmed = { tapEvent ->
+                        selectedPoint = tapEvent.mapPoint
+                        showBottomSheet = true
                     }
                 )
 
@@ -105,25 +118,19 @@ fun MainScreen(sampleName: String) {
                     ModalBottomSheet(
                         modifier = Modifier.wrapContentHeight(),
                         sheetState = bottomSheetState,
-                        onDismissRequest = {
-                            showBottomSheet = false
-                            mapViewModel.clearFeature()
-                        }
+                        onDismissRequest = { showBottomSheet = false }
                     ) {
                         BottomSheetContents(
-                            mapPoint,
-                            bottomSheetState,
-                            onBottomSheetStateChange = { state: SheetState ->
-                                if (!state.isVisible) {
+                            featureEditState = featureEditState,
+                            onStatusAttributeSelected = mapViewModel::onStatusAttributeSelected,
+                            onProtectionAttributeSelected = mapViewModel::onProtectionAttributeSelected,
+                            onBufferSizeSelected = mapViewModel::onBufferSizeSelected,
+                            onApplyButtonClicked = {
+                                selectedPoint?.let { point ->
+                                    mapViewModel.validateContingency(point)
                                     showBottomSheet = false
-                                    mapViewModel.clearFeature()
                                 }
-                            },
-                            featureEditState,
-                            mapViewModel::onStatusAttributeSelected,
-                            mapViewModel::onProtectionAttributeSelected,
-                            mapViewModel::onBufferSizeSelected,
-                            mapViewModel::validateContingency
+                            }
                         )
                     }
                 }
@@ -146,63 +153,66 @@ fun MainScreen(sampleName: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetContents(
-    mapPoint: Point?,
-    bottomSheetState: SheetState,
-    onBottomSheetStateChange: (SheetState) -> Unit,
     featureEditState: FeatureEditState,
     onStatusAttributeSelected: (CodedValue) -> Unit,
     onProtectionAttributeSelected: (CodedValue) -> Unit,
     onBufferSizeSelected: (Int) -> Unit,
-    onApplyButtonClicked: (Point) -> Unit,
+    onApplyButtonClicked: () -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     Column(
-        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+        modifier = Modifier
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             text = stringResource(R.string.add_feature),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
         Spacer(Modifier.size(8.dp))
-        Text(stringResource(R.string.attributes))
+        Text(
+            text = stringResource(R.string.attributes),
+            style = MaterialTheme.typography.labelLarge
+        )
 
         // dropdown boxes for selecting feature status/protection
         AttributeDropdown(
             attributeName = stringResource(R.string.status),
-            codedValue = featureEditState.status,
+            codedValue = featureEditState.selectedStatusAttribute,
             availableValues = featureEditState.statusAttributes,
             onNewValueSelected = onStatusAttributeSelected
         )
         AttributeDropdown(
             attributeName = stringResource(R.string.protection),
-            codedValue = featureEditState.protection,
+            codedValue = featureEditState.selectedProtectionAttribute,
             availableValues = featureEditState.protectionAttributes,
             onNewValueSelected = onProtectionAttributeSelected)
         Spacer(Modifier.size(8.dp))
 
         // buffer size displayed and updated in slider
-        var bufferSize by remember(key1 = featureEditState) { mutableIntStateOf(featureEditState.buffer) }
+        var bufferSize by remember(key1 = featureEditState) { mutableIntStateOf(featureEditState.selectedBufferSize) }
+        val bufferRange by remember (key1 = featureEditState ) { mutableStateOf(featureEditState.bufferRange) }
 
-        val bufferRange = if (featureEditState.bufferRange != null) {
-            val min = featureEditState.bufferRange.minValue as Int
-            val max = featureEditState.bufferRange.maxValue as Int
-            min..max
-        } else {0..0}
-
-        // recenter the slider if contingent values change
-        if (!bufferRange.contains(bufferSize)){
-            bufferSize = (bufferRange.first + bufferRange.last) /2
+        // update the slider if contingent values change
+        if (!bufferRange.contains(featureEditState.selectedBufferSize)) {
+            onBufferSizeSelected((bufferRange.first + bufferRange.last) / 2)
+        } else if (bufferRange.first == bufferRange.last) {
+            onBufferSizeSelected(bufferRange.first)
         }
 
         Row {
-            Text(stringResource(R.string.exclusion_area_buffer_size))
+            Text(
+                text = stringResource(R.string.exclusion_area_buffer_size),
+                style = MaterialTheme.typography.labelLarge
+            )
             Spacer(Modifier.weight(1f))
             Text(text = if (bufferSize > 0) bufferSize.toString() else "")
         }
 
         Slider(
+            modifier = Modifier.padding(horizontal = 12.dp),
             enabled = bufferRange.first != bufferRange.last,
             value = bufferSize.toFloat(),
             valueRange = bufferRange.first.toFloat()..bufferRange.last.toFloat(),
@@ -220,21 +230,13 @@ fun BottomSheetContents(
         )
 
         HorizontalDivider()
-        Text(stringResource(R.string.contingent_note))
+        Text(
+            text = stringResource(R.string.contingent_note),
+            style = MaterialTheme.typography.labelLarge
+        )
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = {
-                // user may not have interacted with the slider - need to assign a value
-                onBufferSizeSelected(bufferSize)
-                mapPoint?.let {
-                    onApplyButtonClicked(it)
-                }
-                coroutineScope.launch {
-                    bottomSheetState.hide()
-                }.invokeOnCompletion {
-                    onBottomSheetStateChange(bottomSheetState)
-                }
-            }
+            onClick = onApplyButtonClicked
         ) {
             Text(stringResource(R.string.apply))
         }
@@ -270,13 +272,13 @@ fun AttributeDropdown(
                 .menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
             value = textValue ?: "",
             onValueChange = {},
-            label = { Text("Select $attributeName Attribute") },
+            label = { Text(attributeName) },
             readOnly = true
         )
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
+            onDismissRequest = { expanded = false }
         ) {
             availableValues.forEach { value ->
                 DropdownMenuItem(
@@ -287,6 +289,23 @@ fun AttributeDropdown(
                     }
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun SheetPreview() {
+    SampleAppTheme {
+        Surface {
+            BottomSheetContents(
+                featureEditState = FeatureEditState(),
+                onStatusAttributeSelected = { },
+                onProtectionAttributeSelected = { },
+                onBufferSizeSelected = { },
+                onApplyButtonClicked = { },
+            )
         }
     }
 }
