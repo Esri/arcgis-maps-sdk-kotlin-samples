@@ -1,11 +1,12 @@
 <resources>
     <string name="add_features_with_contingent_values_app_name">Add features with contingent values</string>
-    <string name="contingent_note">The options will vary depending on which values are selected</string>
-    <string name="add_feature">Add Feature</string>
+    <string name="contingent_note">The options will vary depending on which values are selected.</string>
+    <string name="add_feature">Add Bird Nest</string>
     <string name="apply">Apply</string>
-    <string name="cancel">Cancel</string>
-    <string name="set_the_attributes">Set the attributes:</string>
-    <string name="select_status_attribute">Select status attribute</string>
-    <string name="select_protection_attribute">Select protection attribute</string>
-    <string name="exclusion_area_buffer_size">Exclusion area buffer size</string>
+    <string name="attributes">Set the attributes:</string>
+    <string name="status">Status</string>
+    <string name="protection">Protection</string>
+    <string name="exclusion_area_buffer_size">Exclusion area buffer size:</string>
+    <string name="no_feature_created">No feature created yet</string>
+    <string name="input_all_values">Input all values to add a feature to the map</string>
 </resources>
