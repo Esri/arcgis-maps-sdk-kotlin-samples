@@ -43,7 +43,11 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     // create a map with a navigation night basemap style
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight).apply {
         // set the default viewpoint to Redlands,CA
-        initialViewpoint = Viewpoint(34.058, -117.195, 5e4)
+        initialViewpoint = Viewpoint(
+            latitude = 34.058,
+            longitude = -117.195,
+            scale = 5e4
+        )
     }
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
@@ -83,8 +87,8 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
+                    title = "Failed to load map",
+                    description = error.message.toString()
                 )
             }
         }
@@ -101,7 +105,10 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
             }
             // project the web mercator location into a WGS84
             val projectedPoint =
-                GeometryEngine.projectOrNull(point, SpatialReference.wgs84())
+                GeometryEngine.projectOrNull(
+                    geometry = point,
+                    spatialReference = SpatialReference.wgs84()
+                )
             _infoText.value = app.resources.getString(
                 R.string.projection_info_text,
                 point.toDisplayFormat(),
