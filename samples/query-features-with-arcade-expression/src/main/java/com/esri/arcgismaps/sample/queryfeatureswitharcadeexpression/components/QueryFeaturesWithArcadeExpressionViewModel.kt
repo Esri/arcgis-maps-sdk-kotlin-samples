@@ -66,14 +66,14 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
     private var policeBeatsLayer: Layer? = null
 
     // state flow to expose query results and status to UI
-    private val _queryStateFlow = MutableStateFlow(QueryState())
+    private val _queryStateFlow = MutableStateFlow(QueryState(loadState = LoadState.LOADING))
     val queryStateFlow = _queryStateFlow.asStateFlow()
 
     val graphicsOverlay = GraphicsOverlay()
 
     // create a portal item with the itemId of the web map
     val portal = Portal("https://www.arcgis.com/")
-    val portalItem = PortalItem(portal, "539d93de54c7422f88f69bfac2aebf7d")
+    val portalItem = PortalItem(portal = portal, itemId = "539d93de54c7422f88f69bfac2aebf7d")
 
     // create and add a map with with portal item
     val arcGISMap = ArcGISMap(portalItem)
@@ -92,15 +92,18 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
                     error.message.toString()
                 )
             }
+
+            // get the RPD Beats layer from the map's operational layers
+            policeBeatsLayer = arcGISMap.operationalLayers.firstOrNull { layer ->
+                layer.id == "RPD_Reorg_9254"
+            }
+
+            // update query state, map is ready for user interaction
+            _queryStateFlow.value = QueryState()
         }
 
         // add the marker graphic to the graphics overlay
         graphicsOverlay.graphics.add(markerGraphic)
-
-        // get the RPD Beats layer from the map's operational layers
-        policeBeatsLayer = arcGISMap.operationalLayers.firstOrNull { layer ->
-            layer.id == "RPD_Reorg_9254"
-        }
     }
 
     /**
@@ -120,14 +123,14 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
 
     /**
      * Evaluates an Arcade expression that returns crime in the last 60 days at the tapped
-     * [screenCoordinate] on the [arcGISMap] with the [policeBeatsLayer] and displays the result
-     * in a textview
+     * [screenCoordinate] on the [arcGISMap] with the [policeBeatsLayer] and outputs the result
+     * to the [queryStateFlow] property.
      */
     private suspend fun evaluateArcadeExpression(screenCoordinate: ScreenCoordinate) {
-        // show the loading spinner as the Arcade evaluation can take time to complete
-        _queryStateFlow.value = QueryState(loadState = LoadState.LOADING)
-
         policeBeatsLayer?.let { layer ->
+            // show the loading spinner as the Arcade evaluation can take time to complete
+            _queryStateFlow.value = QueryState(loadState = LoadState.LOADING)
+
             // identify the layer and its elements based on the position tapped on the mapView and
             // get the result
             val result = mapViewProxy.identify(

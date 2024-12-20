@@ -74,7 +74,10 @@ fun QueryFeaturesWithArcadeExpressionScreen(sampleName: String) {
                         mapViewProxy = mapViewModel.mapViewProxy,
                         onSingleTapConfirmed = { tapEvent ->
                             tapEvent.mapPoint?.let {point ->
-                                mapViewModel.handleTap(point, tapEvent.screenCoordinate)
+                                mapViewModel.handleTap(
+                                    point = point,
+                                    screenCoordinate = tapEvent.screenCoordinate
+                                )
                             }
                         }
                     )
