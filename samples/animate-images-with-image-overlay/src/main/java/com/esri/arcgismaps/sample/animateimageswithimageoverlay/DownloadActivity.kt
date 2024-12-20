@@ -28,8 +28,8 @@ class DownloadActivity : DownloaderActivity() {
             // get the app name of the sample
             getString(R.string.animate_images_with_image_overlay_app_name),
             listOf(
-                // ArcGIS Portal item containing the zip of images
-                "https://runtime.maps.arcgis.com/home/item.html?id=9465e8c02b294c69bdb42de056a23ab1"
+                // ArcGIS Portal item containing the zip of Reflectivity radar images.
+                "https://www.arcgis.com/home/item.html?id=9465e8c02b294c69bdb42de056a23ab1"
             )
         )
     }
