@@ -112,6 +112,8 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
                 val imageFrame = ImageFrame(file.path, pacificSouthwestEnvelope)
                 imageFrames.add(imageFrame)
             }
+            // set the initial image frame to image overlay
+            imageOverlay.imageFrame = imageFrames[imageFrameIndex]
         }
 
 
