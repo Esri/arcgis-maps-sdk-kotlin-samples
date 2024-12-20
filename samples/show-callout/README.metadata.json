@@ -12,6 +12,7 @@
         "callout",
         "flyout",
         "flyover",
+        "geoview-compose",
         "info window",
         "popup",
         "tap",

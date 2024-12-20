@@ -12,6 +12,7 @@
         "dynamic",
         "entity",
         "flow",
+        "geoview-compose",
         "label",
         "labeling",
         "live",

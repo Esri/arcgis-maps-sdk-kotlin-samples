@@ -4,8 +4,8 @@
     "formal_name": "DisplayClusters",
     "ignore": false,
     "images": [
-        "display-clusters.png",
-        "display-clusters-popup.png"
+        "display-clusters-popup.png",
+        "display-clusters.png"
     ],
     "keywords": [
         "aggregate",

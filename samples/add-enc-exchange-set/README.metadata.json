@@ -34,8 +34,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addencexchangeset/components/MapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addencexchangeset/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addencexchangeset/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addencexchangeset/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addencexchangeset/screens/MainScreen.kt"
     ],
     "title": "Add ENC exchange set"
