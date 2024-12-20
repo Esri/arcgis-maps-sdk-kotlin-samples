@@ -69,7 +69,8 @@ fun ProjectGeometryScreen(sampleName: String) {
                     Text(
                         text =
                             stringResource(R.string.title_text) + "\n" +
-                            infoText
+                            infoText,
+                        minLines = 3
                     )
                 }
 
