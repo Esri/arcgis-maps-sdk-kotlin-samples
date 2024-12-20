@@ -141,7 +141,7 @@ private fun ImageOverlayMenu(controlsBottomSheetState: SheetState) {
             horizontalArrangement = Arrangement.Absolute.SpaceBetween
         ) {
             Text("Opacity:")
-            Text(String.format("%.2f", mapViewModel.opacity))
+            Text(text = (opacity * 100).roundToInt().toString() + "%")
         }
         Row(
             modifier = Modifier
