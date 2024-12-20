@@ -27,8 +27,8 @@ When the sample starts, a raster will be loaded from a file and displayed in the
 
 See the topic [What is raster data?](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/what-is-raster-data.htm) in the *ArcMap* documentation for more information about raster images.
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-data, geoviewcompose, image, import, layer, raster, toolkit, visualization
+data, geoview-compose, image, import, layer, raster, toolkit, visualization

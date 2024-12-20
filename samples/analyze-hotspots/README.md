@@ -30,8 +30,8 @@ Tap on Analyze, and select a date from the "FROM" DatePicker and "TO" DatePicker
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-analysis, density, geoprocessing, geoviewcompose, hot spots, hotspots, toolkit
+analysis, density, geoprocessing, geoview-compose, hot spots, hotspots, toolkit

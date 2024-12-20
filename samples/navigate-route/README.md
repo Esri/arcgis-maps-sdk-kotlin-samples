@@ -52,4 +52,4 @@ This sample uses the GeoCompose Toolkit module to be able to implement a Composa
 
 ## Tags
 
-directions, geocompose, maneuver, navigation, route, toolkit, turn-by-turn, voice
+directions, geoview-compose, maneuver, navigation, route, toolkit, turn-by-turn, voice

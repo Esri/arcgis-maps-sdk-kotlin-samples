@@ -10,7 +10,7 @@
         "aggregate",
         "bin",
         "cluster",
-        "geoviewcompose",
+        "geoview-compose",
         "group",
         "merge",
         "normalize",

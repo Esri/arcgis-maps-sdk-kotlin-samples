@@ -39,8 +39,8 @@ The main data for this sample is the `BasemapStyle` which includes basemaps that
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-basemap style, geoviewcompose, language, language strategy, map, point, toolkit, viewpoint
+basemap style, geoview-compose, language, language strategy, map, point, toolkit, viewpoint
