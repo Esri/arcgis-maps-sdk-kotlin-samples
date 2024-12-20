@@ -140,7 +140,7 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
     }
 
     /**
-     * Create a new timer for the given period which repeatedly calls animateImagesWithImageOverlay.
+     * Create a new timer for the given period which repeatedly calls [addNextImageFrameToImageOverlay]..
      */
     private fun createNewTimer() {
         val period = when (fps) {
