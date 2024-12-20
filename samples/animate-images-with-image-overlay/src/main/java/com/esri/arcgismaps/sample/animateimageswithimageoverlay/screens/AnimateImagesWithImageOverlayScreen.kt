@@ -160,7 +160,7 @@ private fun ImageOverlayMenu(controlsBottomSheetState: SheetState) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // Start/Stop Button
             Button(onClick = {
