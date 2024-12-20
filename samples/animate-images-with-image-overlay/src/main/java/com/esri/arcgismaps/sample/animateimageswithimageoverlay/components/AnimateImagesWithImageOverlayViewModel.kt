@@ -78,7 +78,6 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
         toggleAnimationTimer()
     }
 
-    val sceneViewProxy = SceneViewProxy()
 
     // create an envelope of the pacific southwest sector for displaying the image frame
     private val pointForImageFrame = Point(-120.0724273439448, 35.131016955536694, SpatialReference.wgs84())
