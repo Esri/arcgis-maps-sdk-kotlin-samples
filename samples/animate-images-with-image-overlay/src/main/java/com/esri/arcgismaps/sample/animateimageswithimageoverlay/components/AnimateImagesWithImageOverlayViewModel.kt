@@ -116,7 +116,6 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
             imageOverlay.imageFrame = imageFrames[imageFrameIndex]
         }
 
-
         viewModelScope.launch {
             arcGISScene.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
