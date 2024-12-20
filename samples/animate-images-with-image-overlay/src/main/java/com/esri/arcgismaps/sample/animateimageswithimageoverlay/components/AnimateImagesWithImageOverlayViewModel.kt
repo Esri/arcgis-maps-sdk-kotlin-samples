@@ -50,7 +50,7 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
         )
     }
 
-    // Get the file path of the (.mmpk) file
+    // Get the folder path containing all the image overlays
     private val filePath = "$provisionPath/PacificSouthWest"
 
     var opacity by mutableFloatStateOf(1.0f)
