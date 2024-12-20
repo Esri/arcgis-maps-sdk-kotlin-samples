@@ -30,8 +30,8 @@
         "CoordinateFormatter.UtmConversionMode"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/screens/CoordinatesLayout.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcoordinatesinmultipleformats/screens/MainScreen.kt"
     ],

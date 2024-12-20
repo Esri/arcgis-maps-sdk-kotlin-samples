@@ -36,9 +36,9 @@
         "MapView"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/screens/MainScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/components/MapViewModel.kt"
+        "src/main/java/com/esri/arcgismaps/sample/findclosestfacilityfrompoint/screens/MainScreen.kt"
     ],
     "title": "Find closest facility from point"
 }

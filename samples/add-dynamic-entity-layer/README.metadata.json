@@ -36,9 +36,9 @@
         "TrackDisplayProperties"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/components/BottomSheetContent.kt",
-        "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/adddynamicentitylayer/screens/MainScreen.kt"
     ],
     "title": "Add dynamic entity layer"

@@ -34,8 +34,8 @@
         "PortalItem"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/authenticatewithoauth/screens/MainScreen.kt"
     ],
     "title": "Authenticate with OAuth"

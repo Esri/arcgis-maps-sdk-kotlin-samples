@@ -39,8 +39,8 @@
         "PopupViewer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/configureclusters/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/configureclusters/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configureclusters/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/configureclusters/screens/MainScreen.kt"
     ],
     "title": "Configure clusters"
