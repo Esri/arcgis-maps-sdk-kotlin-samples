@@ -20,7 +20,8 @@
     "FeatureLayer",
     "FieldFormElement",
     "GroupFormElement",
-    "ServiceFeatureTable"
+    "ServiceFeatureTable",
+    "ServiceGeodatabase"
   ],
   "language": "kotlin",
   "redirect_from": "",
@@ -30,7 +31,8 @@
     "FeatureLayer",
     "FieldFormElement",
     "GroupFormElement",
-    "ServiceFeatureTable"
+    "ServiceFeatureTable",
+    "ServiceGeodatabase"
   ],
   "snippets": [
     "src/main/java/com/esri/arcgismaps/sample/editfeaturesusingfeatureforms/components/MapViewModel.kt",

@@ -32,4 +32,4 @@ This sample uses the GeoView-Compose Toolkit module to implement a Composable Ma
 
 ## Tags
 
-balloon, bubble, callout, flyout, flyover, **geoview-compose,** info window, popup, tap, toolkit
+balloon, bubble, callout, flyout, flyover, geoview-compose, info window, popup, tap, toolkit

@@ -48,8 +48,8 @@
     "src/main/java/com/esri/arcgismaps/sample/snapgeometryedits/components/MapViewModel.kt",
     "src/main/java/com/esri/arcgismaps/sample/snapgeometryedits/MainActivity.kt",
     "src/main/java/com/esri/arcgismaps/sample/snapgeometryedits/screens/MainScreen.kt",
-    "src/main/java/com/esri/arcgismaps/sample/snapgeometryedits/screens/ButtonMenu.kt",
-    "src/main/java/com/esri/arcgismaps/sample/snapgeometryedits/screens/SnapSettingsScreen.kt"
+    "src/main/java/com/esri/arcgismaps/sample/snapgeometryedits/screens/SnapSettingsScreen.kt",
+    "src/main/java/com/esri/arcgismaps/sample/snapgeometryedits/screens/ButtonMenu.kt"
   ],
   "title": "Snap geometry edits"
 }
