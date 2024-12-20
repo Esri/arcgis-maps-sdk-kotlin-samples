@@ -74,7 +74,6 @@ fun AnimateImagesWithImageOverlayScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
-                contentAlignment = Alignment.Center
             ) {
                 SceneView(
                     modifier = Modifier
