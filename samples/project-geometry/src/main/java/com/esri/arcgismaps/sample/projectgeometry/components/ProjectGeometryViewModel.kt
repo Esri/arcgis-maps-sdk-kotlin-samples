@@ -95,7 +95,10 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
             // update the marker location to where the user tapped on the map
             markerGraphic.geometry = point
             // set mapview to recenter to the tapped location
-            mapViewProxy.setViewpoint(Viewpoint(point))
+            viewModelScope.launch {
+                // set mapview to recenter to the tapped location
+                mapViewProxy.setViewpointCenter(point)
+            }
             // project the web mercator location into a WGS84
             val projectedPoint =
                 GeometryEngine.projectOrNull(point, SpatialReference.wgs84())
