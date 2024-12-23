@@ -33,7 +33,6 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.ImageFrame
 import com.arcgismaps.mapping.view.ImageOverlay
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.animateimageswithimageoverlay.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
@@ -142,13 +141,13 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
      * Create a new image frame from the image at the current index and add it to the image overlay.
      */
     private fun addNextImageFrameToImageOverlay() {
+        // set image frame to image overlay
+        imageOverlay.imageFrame = imageFrames[imageFrameIndex]
         // increment the index to keep track of which image to load next
         imageFrameIndex++
         // reset index once all files have been loaded
         if (imageFrameIndex == imageFrames.size)
             imageFrameIndex = 0
-        // set the next image frame to image overlay
-        imageOverlay.imageFrame = imageFrames[imageFrameIndex]
     }
 
     /**

@@ -17,7 +17,7 @@
 package com.esri.arcgismaps.sample.animateimageswithimageoverlay.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,18 +37,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,7 +55,8 @@ import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.animateimageswithimageoverlay.components.AnimateImagesWithImageOverlayViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
+import kotlin.reflect.KFunction1
 
 
 /**
@@ -66,138 +66,141 @@ import kotlinx.coroutines.launch
 @Composable
 fun AnimateImagesWithImageOverlayScreen(sampleName: String) {
     val sceneViewModel: AnimateImagesWithImageOverlayViewModel = viewModel()
-    val composableScope = rememberCoroutineScope()
+    // Set up the bottom sheet controls
+    val controlsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(isBottomSheetVisible) {
+        when {
+            isBottomSheetVisible -> controlsBottomSheetState.show()
+            else -> controlsBottomSheetState.hide()
+        }
+    }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
+        floatingActionButton = {
+            if (!isBottomSheetVisible) {
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
+                    onClick = { isBottomSheetVisible = true }
+                ) { Icon(Icons.Filled.Settings, contentDescription = "Show ImageOverlayMenu") }
+            }
+        },
         content = {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(it)
             ) {
                 SceneView(
                     modifier = Modifier
                         .fillMaxSize(),
                     arcGISScene = sceneViewModel.arcGISScene,
-                    sceneViewProxy = sceneViewModel.sceneViewProxy,
                     imageOverlays = listOf(sceneViewModel.imageOverlay)
                 )
-                val controlsBottomSheetState =
-                    rememberModalBottomSheetState(skipPartiallyExpanded = true)
-                // show the "Show controls" button only when the bottom sheet is not visible
-                if (!controlsBottomSheetState.isVisible) {
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(bottom = 36.dp, end = 24.dp),
-                        onClick = {
-                            composableScope.launch {
-                                controlsBottomSheetState.show()
-                            }
-                        },
+                if (isBottomSheetVisible) {
+                    ModalBottomSheet(
+                        modifier = Modifier.wrapContentHeight(),
+                        sheetState = controlsBottomSheetState,
+                        onDismissRequest = { isBottomSheetVisible = false }
                     ) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Show controls")
+                        ImageOverlayMenu(
+                            isStarted = sceneViewModel.isStarted,
+                            fps = sceneViewModel.fps,
+                            opacity = sceneViewModel.opacity,
+                            fpsOptions = sceneViewModel.fpsOptions,
+                            updateFpsOption = sceneViewModel::updateFpsOption,
+                            updateOpacity = sceneViewModel::updateOpacity,
+                            updateIsStarted = sceneViewModel::updateIsStarted
+                        )
                     }
-                } else {
-                    ImageOverlayMenu(controlsBottomSheetState)
+                }
+                sceneViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
                 }
             }
-
-            sceneViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
-            }
-
         })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ImageOverlayMenu(controlsBottomSheetState: SheetState) {
+private fun ImageOverlayMenu(
+    isStarted: Boolean,
+    fps: Int,
+    opacity: Float,
+    fpsOptions: List<Int>,
+    updateFpsOption: KFunction1<Int, Unit>,
+    updateOpacity: KFunction1<Float, Unit>,
+    updateIsStarted: KFunction1<Boolean, Unit>
+) {
 
-    val composableScope = rememberCoroutineScope()
+    var selectedFps by remember { mutableIntStateOf(60) }
 
-    val mapViewModel: AnimateImagesWithImageOverlayViewModel = viewModel()
-
-    var selectedFps by remember { mutableStateOf(60) }
-
-    ModalBottomSheet(
-        modifier = Modifier.wrapContentHeight(),
-        sheetState = controlsBottomSheetState,
-        onDismissRequest = {
-            composableScope.launch {
-                controlsBottomSheetState.hide()
-            }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+        horizontalArrangement = Arrangement.Absolute.SpaceBetween
+    ) {
+        Text("Opacity:")
+        Text(text = (opacity * 100).roundToInt().toString() + "%")
+    }
+    // Opacity Slider
+    Slider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 24.dp, end = 24.dp, bottom = 12.dp),
+        value = opacity,
+        onValueChange = { updateOpacity(it) },
+        valueRange = 0f..1.0f
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // Start/Stop Button
+        Button(onClick = {
+            updateIsStarted(!isStarted)
         }) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween
-        ) {
-            Text("Opacity:")
-            Text(text = (opacity * 100).roundToInt().toString() + "%")
+            Text(if (isStarted) "Stop" else "Start")
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.Center
+        // FPS Dropdown Menu
+        var expanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            modifier = Modifier.width(150.dp),
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
         ) {
-            // Opacity Slider
-            Slider(
-                value = mapViewModel.opacity,
-                onValueChange = { mapViewModel.updateOpacity(it) },
-                valueRange = 0f..1.0f
+            TextField(
+                value = "${fps} fps",
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
             )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Start/Stop Button
-            Button(onClick = {
-                mapViewModel.updateIsStarted(!mapViewModel.isStarted)
-            }) {
-                Text(if (mapViewModel.isStarted) "Stop" else "Start")
-            }
-            // FPS Dropdown Menu
-            var expanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                modifier = Modifier.width(150.dp),
+            ExposedDropdownMenu(
                 expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                onDismissRequest = { expanded = false }
             ) {
-                TextField(
-                    value = "${mapViewModel.fps} fps",
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    mapViewModel.fpsOptions.forEachIndexed { index, fps ->
-                        DropdownMenuItem(
-                            text = { Text("$fps fps") },
-                            onClick = {
-                                mapViewModel.updateFpsOptions(index)
-                                selectedFps = fps
-                                expanded = false
-                            })
-                        // show a divider between dropdown menu options
-                        if (index < mapViewModel.fpsOptions.lastIndex) {
-                            HorizontalDivider()
-                        }
+                fpsOptions.forEachIndexed { index, fps ->
+                    DropdownMenuItem(
+                        text = { Text("$fps fps") },
+                        onClick = {
+                            updateFpsOption(index)
+                            selectedFps = fps
+                            expanded = false
+                        })
+                    // show a divider between dropdown menu options
+                    if (index < fpsOptions.lastIndex) {
+                        HorizontalDivider()
                     }
                 }
             }
