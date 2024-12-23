@@ -65,9 +65,8 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
     var fps by mutableIntStateOf(fpsOptions[0])
         private set
 
-    fun updateFpsOptions(fpsFromDropDown: Int) {
+    fun updateFpsOption(fpsFromDropDown: Int) {
         fps = fpsOptions[fpsFromDropDown]
-        createNewTimer()
     }
 
     var isStarted by mutableStateOf(false)
