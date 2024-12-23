@@ -77,7 +77,7 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
     }
 
 
-    // create an envelope of the pacific southwest sector for displaying the image frame
+    // Create an envelope of the pacific southwest sector for displaying the image frame
     private val pointForImageFrame = Point(
         x = -120.0724,
         y = 35.1310,
@@ -89,9 +89,9 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
         height = -14.3770
     )
 
-    // create a scene with the dark gray basemap and elevation source
+    // Create a scene with the dark gray basemap and elevation source
     val arcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISDarkGray).apply {
-        // create a camera, looking at the pacific southwest sector
+        // Create a camera, looking at the pacific southwest sector
         val observationPoint = Point(-116.621, 24.7773, 856977.0)
         val camera = Camera(observationPoint, 353.994, 48.5495, 0.0)
         initialViewpoint = Viewpoint(pacificSouthwestEnvelope, camera)
@@ -100,13 +100,13 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // keep track of the list of image frames added in cache
+    // Keep track of the list of image frames added in cache
     private var imageFrames = mutableListOf<ImageFrame>()
 
-    // keep track of the image frame currently in view
+    // Keep track of the image frame currently in view
     private var imageFrameIndex = 0
 
-    // timer task to customize frame rates
+    // Timer task to customize frame rates
     private var timer: Timer? = null
 
     var imageOverlay = ImageOverlay()
@@ -114,16 +114,16 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
 
     init {
 
-        // get the image files from local storage as an unordered list
+        // Get the image files from local storage as an unordered list
         (File(filePath).listFiles())?.let { imageFiles ->
-            // sort the list of image files
+            // Sort the list of image files
             Arrays.sort(imageFiles)
             imageFiles.forEach { file ->
-                // create an image with the given path and use it to create an image frame
+                // Create an image with the given path and use it to create an image frame
                 val imageFrame = ImageFrame(file.path, pacificSouthwestEnvelope)
                 imageFrames.add(imageFrame)
             }
-            // set the initial image frame to image overlay
+            // Set the initial image frame to image overlay
             imageOverlay.imageFrame = imageFrames[imageFrameIndex]
         }
 
@@ -141,11 +141,11 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
      * Create a new image frame from the image at the current index and add it to the image overlay.
      */
     private fun addNextImageFrameToImageOverlay() {
-        // set image frame to image overlay
+        // Set image frame to image overlay
         imageOverlay.imageFrame = imageFrames[imageFrameIndex]
-        // increment the index to keep track of which image to load next
+        // Increment the index to keep track of which image to load next
         imageFrameIndex++
-        // reset index once all files have been loaded
+        // Reset index once all files have been loaded
         if (imageFrameIndex == imageFrames.size)
             imageFrameIndex = 0
     }
@@ -171,14 +171,14 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
      */
     private fun toggleAnimationTimer() {
         timer?.let {
-            // cancel any running timer
+            // Cancel any running timer
             timer?.cancel()
             timer = null
-            // change the start/stop button to "start"
+            // Change the start/stop button to "start"
             isStarted = false
         } ?: run {
             createNewTimer()
-            // change the start/stop button to "stop"
+            // Change the start/stop button to "stop"
             isStarted = true
         }
     }

@@ -180,7 +180,7 @@ private fun ImageOverlayMenu(
             onExpandedChange = { expanded = !expanded }
         ) {
             TextField(
-                value = "${fps} fps",
+                value = "$fps fps",
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
