@@ -32,7 +32,7 @@ This sample uses U.S. State polygon features from the [USA 2016 Daytime Populati
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

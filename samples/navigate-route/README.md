@@ -48,7 +48,7 @@ The route taken in this sample goes from the San Diego Convention Center, site o
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

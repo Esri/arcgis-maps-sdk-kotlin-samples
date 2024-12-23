@@ -26,7 +26,7 @@ Tap on the map to see a marker with the tapped location's coordinate formatted i
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

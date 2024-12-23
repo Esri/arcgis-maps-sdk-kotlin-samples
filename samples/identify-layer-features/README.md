@@ -26,7 +26,7 @@ Tap to identify features. A bottom text banner will show all layers with feature
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 The GeoView supports two methods of identify: `identifyLayer`, which identifies features within a specific layer and `identifyLayers`, which identifies features for all layers in the current view.
 
 ## Tags

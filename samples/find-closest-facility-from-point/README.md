@@ -40,7 +40,7 @@ Tap near any of the hospitals and a route will be displayed from that tapped loc
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

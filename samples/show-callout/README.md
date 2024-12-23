@@ -28,7 +28,7 @@ Tap anywhere on the map. A callout showing the WGS84 coordinates for the tapped 
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to implement a Composable MapView, which supports the use of [Callouts](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/v.next/toolkit/geoview-compose#display-a-callout).
+This sample uses the GeoView-Compose Toolkit module to implement a composable MapView, which supports the use of [Callouts](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/v.next/toolkit/geoview-compose#display-a-callout).
 
 ## Tags
 

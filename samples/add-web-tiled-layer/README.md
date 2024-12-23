@@ -34,7 +34,7 @@ Web tiled services use a uniform addressing scheme with pre-rendered tiles. Imag
 * Subdomain is optional and allows ArcGIS Maps SDK to balance requests among multiple servers for enhanced performance.
 * Level, row, and column select the tiles to load based on the visible extent of the map.
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 For more information about web tiled layers, see the following resources:
 

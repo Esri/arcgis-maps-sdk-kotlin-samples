@@ -29,7 +29,7 @@ Run the sample to view the map. Pan and zoom to navigate the map.
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

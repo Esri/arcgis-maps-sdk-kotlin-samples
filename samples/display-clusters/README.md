@@ -42,7 +42,7 @@ This sample uses a [web map](https://www.arcgis.com/home/item.html?id=8916d50c44
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

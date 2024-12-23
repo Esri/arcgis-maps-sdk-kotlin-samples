@@ -34,7 +34,7 @@ The map used in this sample shows the [stormwater network](https://arcgisruntime
 
 ## Additional information
 
-The creation of the offline map can be fine-tuned using parameter overrides for feature layers, or by using local basemaps to achieve more customised results. Also, this sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+The creation of the offline map can be fine-tuned using parameter overrides for feature layers, or by using local basemaps to achieve more customised results. Also, this sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

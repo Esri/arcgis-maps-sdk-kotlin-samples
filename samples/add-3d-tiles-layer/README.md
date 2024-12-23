@@ -32,7 +32,7 @@ The 3D Tiles Open Geospatial Consortium (OGC) specification defines a spatial da
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable SceneView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
 
 ## Tags
 

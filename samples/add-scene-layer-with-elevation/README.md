@@ -31,7 +31,7 @@ The scene launches with a northward view of the city of Brest, France ([SceneSer
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable SceneView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
 
 ## Tags
 

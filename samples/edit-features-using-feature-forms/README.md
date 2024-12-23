@@ -44,7 +44,7 @@ This sample uses a feature forms enabled [Feature Form Places web map](https://w
 
 ## Additional information
 
-Follow the [tutorial](https://doc.arcgis.com/en/arcgis-online/create-maps/create-form-mv.htm) to create your own form using the Map Viewer. This sample uses the FeatureForm and GeoView-Compose Toolkit modules to be able to implement a Composable MapView which displays a Composable FeatureForm UI.
+Follow the [tutorial](https://doc.arcgis.com/en/arcgis-online/create-maps/create-form-mv.htm) to create your own form using the Map Viewer. This sample uses the FeatureForm and GeoView-Compose Toolkit modules to be able to implement a composable MapView which displays a composable FeatureForm UI.
 
 This sample uses the feature forms [toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/featureforms) component. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit repository](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit).
 

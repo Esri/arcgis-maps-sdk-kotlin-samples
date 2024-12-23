@@ -30,7 +30,7 @@ Tap on Analyze, and select a date from the "FROM" DatePicker and "TO" DatePicker
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

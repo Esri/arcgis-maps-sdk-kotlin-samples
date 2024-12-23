@@ -28,7 +28,7 @@ When you run the sample, you will be challenged for an ArcGIS Online login. Ente
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

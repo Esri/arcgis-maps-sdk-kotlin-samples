@@ -34,7 +34,7 @@ This sample downloads the [ENC Exchange Set without updates](https://www.arcgis.
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a Composable SceneView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
 
 ## Tags
 
