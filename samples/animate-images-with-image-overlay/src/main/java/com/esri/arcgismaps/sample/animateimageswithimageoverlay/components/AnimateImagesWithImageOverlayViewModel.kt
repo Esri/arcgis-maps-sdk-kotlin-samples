@@ -79,8 +79,16 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
 
 
     // create an envelope of the pacific southwest sector for displaying the image frame
-    private val pointForImageFrame = Point(-120.0724273439448, 35.131016955536694, SpatialReference.wgs84())
-    private val pacificSouthwestEnvelope = Envelope(pointForImageFrame, 15.09589635986124, -14.3770441522488)
+    private val pointForImageFrame = Point(
+        x = -120.0724,
+        y = 35.1310,
+        spatialReference = SpatialReference.wgs84()
+    )
+    private val pacificSouthwestEnvelope = Envelope(
+        center = pointForImageFrame,
+        width = 15.0958,
+        height = -14.3770
+    )
 
     // create a scene with the dark gray basemap and elevation source
     val arcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISDarkGray).apply {
