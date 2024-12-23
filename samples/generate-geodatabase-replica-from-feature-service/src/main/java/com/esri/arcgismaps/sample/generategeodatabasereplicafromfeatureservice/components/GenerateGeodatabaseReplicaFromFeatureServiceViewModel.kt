@@ -261,10 +261,6 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             // dismiss the progress dialog and display the data
             showJobProgressDialog = false
             loadGeodatabaseAndAddToMap(it)
-
-            // Show user where map was locally saved TODO: not required?
-//                        snackbarHostState.showSnackbar(message = "Map saved at: " + job.downloadDirectoryPath)
-
         }.onFailure { throwable ->
             messageDialogVM.showMessageDialog(
                 title = "Error generating geodatabase",
@@ -307,10 +303,6 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         with(viewModelScope) {
             launch(Dispatchers.IO) {
                 generateGeodatabaseJob?.cancel()
-            }
-            launch(Dispatchers.Main) {
-                //TODO: show snackbar?
-//                snackbarHostState.showSnackbar(message = "User canceled.")
             }
             generateButtonEnabled = true
         }
