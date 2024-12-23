@@ -198,7 +198,7 @@ private fun ImageOverlayMenu(
                             selectedFps = fps
                             expanded = false
                         })
-                    // show a divider between dropdown menu options
+                    // Show a divider between dropdown menu options
                     if (index < fpsOptions.lastIndex) {
                         HorizontalDivider()
                     }
