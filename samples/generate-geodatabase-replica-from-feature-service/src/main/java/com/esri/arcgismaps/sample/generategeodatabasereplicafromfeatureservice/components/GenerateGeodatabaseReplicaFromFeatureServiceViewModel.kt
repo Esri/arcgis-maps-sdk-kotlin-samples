@@ -149,9 +149,9 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
     }
 
     /**
-     * Use map view's size to determine dimensions of the area to download
+     * Use map view's size to determine dimensions of the area to download.
      */
-    fun calculateDownloadOfflineArea() {
+    fun calculateDownloadArea() {
         // upper left corner of the area to take offline
         val minScreenPoint = ScreenCoordinate(200.0, 200.0)
 

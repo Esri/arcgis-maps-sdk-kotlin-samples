@@ -69,13 +69,13 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                     onLayerViewStateChanged = {
                         // on launch, calculate the download area
                         if (mapViewModel.arcGISMap.loadStatus.value == LoadStatus.Loaded) {
-                            mapViewModel.calculateDownloadOfflineArea()
+                            mapViewModel.calculateDownloadArea()
                         }
                     },
                     onViewpointChangedForCenterAndScale = {
                         // recalculate the download area when viewpoint changes
                         if (mapViewModel.arcGISMap.loadStatus.value == LoadStatus.Loaded) {
-                            mapViewModel.calculateDownloadOfflineArea()
+                            mapViewModel.calculateDownloadArea()
                         }
                     },
                 )
