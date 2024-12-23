@@ -126,16 +126,15 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             // load the map
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
+                    title = "Failed to load map",
+                    description = error.message.toString()
                 )
             }
             // load the GeodatabaseSyncTask
             geodatabaseSyncTask.load().getOrElse {
-                //TODO: make error dialogs more consistent (vs above)
                 messageDialogVM.showMessageDialog(
-                    title = it.message.toString(),
-                    description = it.cause.toString()
+                    title = "Failed to load GeodatabaseSyncTask",
+                    description = it.message.toString()
                 )
             }
             generateButtonEnabled = true
@@ -213,7 +212,10 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             // create GenerateGeodatabaseParameters for the selected extent
             val parameters =
                 geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(geometry).getOrElse {
-                    messageDialogVM.showMessageDialog("Error creating geodatabase parameters")
+                    messageDialogVM.showMessageDialog(
+                        title = "Error creating geodatabase parameters",
+                        description = it.message.toString()
+                    )
                     return@launch
                 }.apply {
                     // modify the parameters to only include the Trees (0) layer
@@ -264,12 +266,12 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
 //                        snackbarHostState.showSnackbar(message = "Map saved at: " + job.downloadDirectoryPath)
 
         }.onFailure { throwable ->
-            // TODO: need more context for this msg? eg Error fetching geodatabase
             messageDialogVM.showMessageDialog(
-                title = throwable.message.toString(),
-                description = throwable.cause.toString()
+                title = "Error generating geodatabase",
+                description = throwable.message.toString()
             )
             showJobProgressDialog = false
+            generateButtonEnabled = true
         }
     }
 
@@ -277,29 +279,25 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
      * Loads the [replicaGeodatabase] and renders the feature layers on to the map
      */
     private suspend fun loadGeodatabaseAndAddToMap(replicaGeodatabase: Geodatabase) {
-        // clear any layers  and symbols already on the map
+        // clear any layers and symbols already on the map
         arcGISMap.operationalLayers.clear()
         graphicsOverlay.graphics.clear()
 
         // load the geodatabase
-        replicaGeodatabase.load().onFailure { error ->
-            // if the load failed, show the error and return
+        replicaGeodatabase.load().onSuccess {
+            // add all the geodatabase feature tables to the map as feature layers
+            arcGISMap.operationalLayers += replicaGeodatabase.featureTables.map { featureTable ->
+                FeatureLayer.createWithFeatureTable(featureTable)
+            }
+            // keep track of the geodatabase to close it before generating a new replica
+            geodatabase = replicaGeodatabase
+        }.onFailure { error ->
             messageDialogVM.showMessageDialog(
-                "Error loading geodatabase",
-                error.message.toString()
+                title = "Error loading geodatabase",
+                description = error.message.toString()
             )
-            //TODO: confirm error is thrown here
         }
-
-        // add all of the geodatabase feature tables to the map as feature layers
-        arcGISMap.operationalLayers += replicaGeodatabase.featureTables.map { featureTable ->
-            FeatureLayer.createWithFeatureTable(featureTable)
-        }
-
         resetButtonEnabled = true
-
-        // keep track of the geodatabase to close it before generating a new replica
-        geodatabase = replicaGeodatabase
     }
 
     /**
