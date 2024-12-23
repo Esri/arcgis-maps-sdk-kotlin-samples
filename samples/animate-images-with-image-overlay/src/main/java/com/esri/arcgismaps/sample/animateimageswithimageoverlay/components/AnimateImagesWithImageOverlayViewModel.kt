@@ -101,8 +101,13 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
+    // keep track of the list of image frames added in cache
     private var imageFrames = mutableListOf<ImageFrame>()
-    private var imageIndex = 0
+
+    // keep track of the image frame currently in view
+    private var imageFrameIndex = 0
+
+    // timer task to customize frame rates
     private var timer: Timer? = null
 
     var imageOverlay = ImageOverlay()
