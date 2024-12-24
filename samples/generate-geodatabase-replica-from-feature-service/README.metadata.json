@@ -8,17 +8,21 @@
     ],
     "keywords": [
         "disconnected",
+        "geoview-compose",
         "local geodatabase",
         "offline",
         "replica",
         "sync",
+        "toolkit",
         "GenerateGeodatabaseJob",
         "GenerateGeodatabaseParameters",
         "Geodatabase",
         "GeodatabaseSyncTask"
     ],
     "language": "kotlin",
-    "redirect_from": "/android/latest/sample-code/generate-geodatabase.htm",
+    "redirect_from": [
+        "/android/latest/sample-code/generate-geodatabase.htm"
+    ],
     "relevant_apis": [
         "GenerateGeodatabaseJob",
         "GenerateGeodatabaseParameters",
@@ -26,7 +30,9 @@
         "GeodatabaseSyncTask"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/generategeodatabasereplicafromfeatureservice/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/generategeodatabasereplicafromfeatureservice/components/GenerateGeodatabaseReplicaFromFeatureServiceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generategeodatabasereplicafromfeatureservice/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generategeodatabasereplicafromfeatureservice/screens/GenerateGeodatabaseReplicaFromFeatureServiceScreen.kt"
     ],
     "title": "Generate geodatabase replica from feature service"
 }
