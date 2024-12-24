@@ -257,14 +257,22 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
 
         // start the job and wait for Job result
         job.start()
-        job.result().onSuccess {
+        job.result().onSuccess { geodatabase ->
             // dismiss the progress dialog and display the data
             showJobProgressDialog = false
-            loadGeodatabaseAndAddToMap(it)
-        }.onFailure { throwable ->
+            loadGeodatabaseAndAddToMap(geodatabase)
+
+            // unregister the geodatabase since we will not sync changes to the service
+            geodatabaseSyncTask.unregisterGeodatabase(geodatabase).getOrElse {
+                messageDialogVM.showMessageDialog(
+                    title = "Failed to unregister the geodatabase",
+                    description = it.message.toString()
+                )
+            }
+        }.onFailure { error ->
             messageDialogVM.showMessageDialog(
                 title = "Error generating geodatabase",
-                description = throwable.message.toString()
+                description = error.message.toString()
             )
             showJobProgressDialog = false
             generateButtonEnabled = true
@@ -272,7 +280,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
     }
 
     /**
-     * Loads the [replicaGeodatabase] and renders the feature layers on to the map
+     * Loads the [replicaGeodatabase] and renders the feature layers on to the map.
      */
     private suspend fun loadGeodatabaseAndAddToMap(replicaGeodatabase: Geodatabase) {
         // clear any layers and symbols already on the map
