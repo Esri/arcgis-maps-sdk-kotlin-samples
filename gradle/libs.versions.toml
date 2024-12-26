@@ -113,4 +113,3 @@ arcgismaps-android-library-compose = { id = "arcgismaps.android.library.compose"
 arcgismaps-android-library = { id = "arcgismaps.android.library", version = "unspecified" }
 arcgismaps-kotlin-sample = { id = "arcgismaps.kotlin.sample", version = "unspecified" }
 sample-files-copy = { id = "com.arcgismaps.sampleFiles.copy", version = "unspecified" }
-screenshots-copy = { id = "com.arcgismaps.screenshots.copy", version = "unspecified" }
