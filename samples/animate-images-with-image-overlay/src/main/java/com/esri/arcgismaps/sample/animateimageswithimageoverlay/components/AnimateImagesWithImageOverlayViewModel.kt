@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.animateimageswithimageoverlay.components
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
@@ -35,6 +34,8 @@ import com.arcgismaps.mapping.view.ImageFrame
 import com.arcgismaps.mapping.view.ImageOverlay
 import com.esri.arcgismaps.sample.animateimageswithimageoverlay.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Arrays
@@ -61,14 +62,14 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
     }
 
     val fpsOptions = listOf(60, 30, 15)
-    var fps by mutableIntStateOf(fpsOptions[0])
-        private set
+    private val _fps = MutableStateFlow(fpsOptions[1])
+    val fps = _fps.asStateFlow()
 
-    fun updateFpsOption(fpsFromDropDown: Int) {
-        fps = fpsOptions[fpsFromDropDown]
+    fun updateFpsOption(fpsIndex: Int) {
+        _fps.value = fpsOptions[fpsIndex]
     }
 
-    var isStarted by mutableStateOf(false)
+    var isStarted by mutableStateOf(true)
         private set
 
     fun updateIsStarted(isStartedFromButton: Boolean) {
@@ -134,7 +135,17 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
                     error.message.toString()
                 )
             }
+
+            // On changes to the fps, create a new timer
+            _fps.collect {
+                if (isStarted) {
+                    createNewTimer()
+                }
+            }
         }
+
+        // Start the animation timer
+        createNewTimer()
     }
 
     /**
@@ -154,13 +165,17 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
      * Create a new timer for the given period which repeatedly calls [addNextImageFrameToImageOverlay]..
      */
     private fun createNewTimer() {
-        val period = when (fps) {
+        // Get the current period from the fps state flow
+        val period = when (_fps.value) {
             60 -> 17 // 1000ms/17 = 60 fps
             30 -> 33 // 1000ms/33 = 30 fps
             15 -> 67 // 1000ms/67 = 15 fps
             else -> 0
         }
+        // Cancel any timers that might be running
         timer?.cancel()
+        timer = null
+        // Create a new timer with the given period
         timer = fixedRateTimer("Image overlay timer", period = period.toLong()) {
             addNextImageFrameToImageOverlay()
         }
