@@ -35,9 +35,10 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.projectgeometry.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.Locale
+
+data class PointProjection (val original: Point, val projection: Point)
 
 class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     // create a map with a navigation night basemap style
@@ -54,6 +55,10 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
+
+    // state flow of a point and its projection for presentation in UI
+    private val _pointProjectionFlow = MutableStateFlow<PointProjection?>(null)
+    val pointFlow = _pointProjectionFlow.asStateFlow()
 
     // setup the red pin marker image as bitmap drawable
     private val markerDrawable: BitmapDrawable by lazy {
@@ -79,9 +84,6 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     val graphicsOverlay = GraphicsOverlay().apply {
         graphics.add(markerGraphic)
     }
-
-    private val _infoText = MutableStateFlow(app.resources.getString(R.string.tap_to_begin))
-    val infoText: StateFlow<String> = _infoText
 
     init {
         viewModelScope.launch {
@@ -109,18 +111,9 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
                     geometry = point,
                     spatialReference = SpatialReference.wgs84()
                 )
-            _infoText.value = app.resources.getString(
-                R.string.projection_info_text,
-                point.toDisplayFormat(),
-                projectedPoint?.toDisplayFormat()
-            )
+            projectedPoint?.let { projection ->
+                _pointProjectionFlow.value = PointProjection(point, projection)
+            }
         }
     }
 }
-
-/**
- * Extension function for the Point type that returns
- * a float-precision formatted string suitable for display
- */
-private fun Point.toDisplayFormat() =
-    "${String.format(Locale.getDefault(),"%.5f", x)}, ${String.format(Locale.getDefault(),"%.5f", y)}"

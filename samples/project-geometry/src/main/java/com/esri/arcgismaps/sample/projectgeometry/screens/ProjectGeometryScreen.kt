@@ -30,11 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.geometry.Point
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.projectgeometry.R
 import com.esri.arcgismaps.sample.projectgeometry.components.ProjectGeometryViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import java.util.Locale
 
 /**
  * Main screen layout for the sample app
@@ -42,7 +44,20 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun ProjectGeometryScreen(sampleName: String) {
     val mapViewModel: ProjectGeometryViewModel = viewModel()
-    val infoText by mapViewModel.infoText.collectAsState()
+    val projectionInfo by mapViewModel.pointFlow.collectAsState()
+
+    val infoText =
+        if (projectionInfo == null) {
+            "Tap to begin"
+        }
+        else {
+            stringResource(
+                R.string.projection_info_text,
+                projectionInfo?.original?.toDisplayFormat()!!,
+                projectionInfo?.projection?.toDisplayFormat()!!
+            )
+        }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -88,3 +103,10 @@ fun ProjectGeometryScreen(sampleName: String) {
         }
     )
 }
+
+/**
+ * Extension function for the Point type that returns
+ * a float-precision formatted string suitable for display
+ */
+private fun Point.toDisplayFormat() =
+    "${String.format(Locale.getDefault(),"%.5f", x)}, ${String.format(Locale.getDefault(),"%.5f", y)}"
