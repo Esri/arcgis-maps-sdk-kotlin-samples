@@ -242,7 +242,7 @@ fun ClusterInfoContentPreview() {
                 fpsOptions = listOf(60, 30, 15),
                 onFpsOptionSelected = { },
                 onOpacityChanged = { },
-                onIsStartedChanged = {}
+                onIsStartedChanged = { }
             )
         }
     }
