@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.Arrays
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 
@@ -115,18 +114,14 @@ class AnimateImagesWithImageOverlayViewModel(application: Application) : Android
 
     init {
 
-        // Get the image files from local storage as an unordered list
-        (File(filePath).listFiles())?.let { imageFiles ->
-            // Sort the list of image files
-            Arrays.sort(imageFiles)
-            imageFiles.forEach { file ->
-                // Create an image with the given path and use it to create an image frame
-                val imageFrame = ImageFrame(file.path, pacificSouthwestEnvelope)
-                imageFrames.add(imageFrame)
-            }
-            // Set the initial image frame to image overlay
-            imageOverlay.imageFrame = imageFrames[imageFrameIndex]
+        // Get the image files from local storage
+        (File(filePath).listFiles())?.sorted()?.forEach { imageFile ->
+            // Create an image with the given path and use it to create an image frame
+            val imageFrame = ImageFrame(imageFile.path, pacificSouthwestEnvelope)
+            imageFrames.add(imageFrame)
         }
+        // Set the initial image frame to image overlay
+        imageOverlay.imageFrame = imageFrames[imageFrameIndex]
 
         viewModelScope.launch {
             arcGISScene.load().onFailure { error ->
