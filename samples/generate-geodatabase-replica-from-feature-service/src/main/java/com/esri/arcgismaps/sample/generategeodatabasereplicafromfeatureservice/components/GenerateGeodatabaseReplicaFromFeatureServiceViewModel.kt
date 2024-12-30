@@ -129,15 +129,17 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
                     title = "Failed to load map",
                     description = error.message.toString()
                 )
+            }.onSuccess {
+                // load the GeodatabaseSyncTask
+                geodatabaseSyncTask.load().onFailure { error ->
+                    messageDialogVM.showMessageDialog(
+                        title = "Failed to load GeodatabaseSyncTask",
+                        description = error.message.toString()
+                    )
+                }.onSuccess {
+                    generateButtonEnabled = true
+                }
             }
-            // load the GeodatabaseSyncTask
-            geodatabaseSyncTask.load().getOrElse {
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load GeodatabaseSyncTask",
-                    description = it.message.toString()
-                )
-            }
-            generateButtonEnabled = true
         }
     }
 
@@ -236,13 +238,6 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             // stash the job so the cancel function can use it
             generateGeodatabaseJob = job
 
-            // create a flow-collection for the job's progress
-            launch(Dispatchers.Main) {
-                job.progress.collect { progress ->
-                    jobProgress = progress
-                }
-            }
-
             // run the job
             runGenerateGeodatabaseJob(job)
         }
@@ -252,6 +247,13 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
      * Run the [job], showing the progress dialog and displaying the resultant data on the map.
      */
     private suspend fun runGenerateGeodatabaseJob(job: GenerateGeodatabaseJob) {
+        // create a flow-collection for the job's progress
+        viewModelScope.launch(Dispatchers.Main) {
+            job.progress.collect { progress ->
+                jobProgress = progress
+            }
+        }
+
         // show the Job Progress Dialog
         showJobProgressDialog = true
 
@@ -308,11 +310,9 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
      * Cancel the current [generateGeodatabaseJob].
      */
     fun cancelOfflineGeodatabaseJob() {
-        with(viewModelScope) {
-            launch(Dispatchers.IO) {
-                generateGeodatabaseJob?.cancel()
-            }
-            generateButtonEnabled = true
+        viewModelScope.launch(Dispatchers.IO) {
+            generateGeodatabaseJob?.cancel()
         }
+        generateButtonEnabled = true
     }
 }
