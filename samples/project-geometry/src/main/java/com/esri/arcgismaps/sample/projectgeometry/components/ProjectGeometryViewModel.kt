@@ -38,8 +38,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class PointProjection (val original: Point, val projection: Point)
-
 class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     // create a map with a navigation night basemap style
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight).apply {
@@ -117,3 +115,5 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 }
+
+data class PointProjection (val original: Point, val projection: Point)
