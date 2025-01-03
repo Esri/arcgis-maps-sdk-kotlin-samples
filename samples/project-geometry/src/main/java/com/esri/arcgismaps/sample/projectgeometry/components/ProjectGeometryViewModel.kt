@@ -56,7 +56,7 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
 
     // state flow of a point and its projection for presentation in UI
     private val _pointProjectionFlow = MutableStateFlow<PointProjection?>(null)
-    val pointFlow = _pointProjectionFlow.asStateFlow()
+    val pointProjectionFlow = _pointProjectionFlow.asStateFlow()
 
     // setup the red pin marker image as bitmap drawable
     private val markerDrawable: BitmapDrawable by lazy {

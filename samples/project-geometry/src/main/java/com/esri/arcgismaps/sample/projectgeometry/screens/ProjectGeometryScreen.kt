@@ -44,7 +44,7 @@ import java.util.Locale
 @Composable
 fun ProjectGeometryScreen(sampleName: String) {
     val mapViewModel: ProjectGeometryViewModel = viewModel()
-    val projectionInfo by mapViewModel.pointFlow.collectAsState()
+    val projectionInfo by mapViewModel.pointProjectionFlow.collectAsState()
 
     val infoText =
         if (projectionInfo == null) {
