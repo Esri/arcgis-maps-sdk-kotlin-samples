@@ -111,7 +111,10 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
                 )
             projectedPoint?.let { projection ->
                 _pointProjectionFlow.value = PointProjection(point, projection)
-            }
+            } ?: messageDialogVM.showMessageDialog(
+                title = "Error",
+                description = "Couldn't project point."
+            )
         }
     }
 }
