@@ -75,9 +75,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // offline vector tiled layer to be used as a basemap
     private val fillmoreVectorTileLayer = ArcGISVectorTiledLayer("$provisionPath/FillmoreTopographicMap.vtpk")
 
-    // mobile database containing offline feature data
-    private val geodatabase = Geodatabase("${cacheDir.path}/ContingentValuesBirdNests.geodatabase")
-
     // instance of the contingent feature to be added to the map
     private var feature: ArcGISFeature? = null
 
@@ -101,6 +98,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     init {
         // create a temporary directory for use with the geodatabase file
         createGeodatabaseCacheDir()
+
+        // create mobile database containing offline feature data
+        val geodatabase = Geodatabase("${cacheDir.path}/ContingentValuesBirdNests.geodatabase")
 
         viewModelScope.launch {
             // retrieve and load the offline mobile geodatabase file from the cache directory
@@ -163,8 +163,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Geodatabase creates and uses various temporary files while processing a database,
-     * which will need to be cleared before looking up the [geodatabase] again.
+     * [Geodatabase] creates and uses various temporary files while processing a database,
+     * which will need to be cleared before looking up the geodatabase again.
      * A copy of the original geodatabase file is created in the cache folder.
      */
     private fun createGeodatabaseCacheDir() {
