@@ -99,7 +99,7 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
             }
 
             // update query state, map is ready for user interaction
-            _queryStateFlow.value = QueryState()
+            _queryStateFlow.value = QueryState(loadState = LoadState.READY_TO_START)
         }
 
         // add the marker graphic to the graphics overlay
