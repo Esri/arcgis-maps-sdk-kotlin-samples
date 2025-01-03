@@ -46,17 +46,13 @@ fun ProjectGeometryScreen(sampleName: String) {
     val mapViewModel: ProjectGeometryViewModel = viewModel()
     val pointProjectionInfo by mapViewModel.pointProjectionFlow.collectAsState()
 
-    val infoText =
-        if (pointProjectionInfo == null) {
-            "Tap to begin"
-        }
-        else {
-            stringResource(
-                R.string.projection_info_text,
-                pointProjectionInfo?.original?.toDisplayFormat()!!,
-                pointProjectionInfo?.projection?.toDisplayFormat()!!
-            )
-        }
+    val infoText = pointProjectionInfo?.let { (original, projection) ->
+        stringResource(
+            R.string.projection_info_text,
+            original.toDisplayFormat(),
+            projection.toDisplayFormat()
+        )
+    } ?: stringResource(R.string.tap_to_begin)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
