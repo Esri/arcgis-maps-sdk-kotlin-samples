@@ -103,7 +103,7 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
                 // set mapview to recenter to the tapped location
                 mapViewProxy.setViewpointCenter(point)
             }
-            // project the web mercator location into a WGS84
+            // project the point from web mercator to WGS84
             val projectedPoint =
                 GeometryEngine.projectOrNull(
                     geometry = point,
