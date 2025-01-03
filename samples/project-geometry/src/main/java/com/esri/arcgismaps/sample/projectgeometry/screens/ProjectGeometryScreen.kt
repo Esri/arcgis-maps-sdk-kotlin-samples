@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.geometry.Point
@@ -52,7 +53,7 @@ fun ProjectGeometryScreen(sampleName: String) {
             original.toDisplayFormat(),
             projection.toDisplayFormat()
         )
-    } ?: stringResource(R.string.tap_to_begin)
+    } ?: ""
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -77,12 +78,17 @@ fun ProjectGeometryScreen(sampleName: String) {
                         .padding(12.dp)
                         .fillMaxWidth()
                 ) {
-                    Text(
-                        text =
-                            stringResource(R.string.title_text) + "\n" +
-                            infoText,
-                        minLines = 3
-                    )
+                    Column {
+                        Text(
+                            text = pointProjectionInfo?.let { stringResource(R.string.title_text) }
+                                ?: stringResource(R.string.tap_to_begin),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = infoText,
+                            minLines = 2
+                        )
+                    }
                 }
 
             }
