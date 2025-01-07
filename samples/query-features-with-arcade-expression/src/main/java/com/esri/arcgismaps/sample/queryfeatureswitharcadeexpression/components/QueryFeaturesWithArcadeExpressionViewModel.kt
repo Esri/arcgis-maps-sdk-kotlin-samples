@@ -72,10 +72,10 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
     val graphicsOverlay = GraphicsOverlay()
 
     // create a portal item with the itemId of the web map
-    val portal = Portal("https://www.arcgis.com/")
-    val portalItem = PortalItem(portal = portal, itemId = "539d93de54c7422f88f69bfac2aebf7d")
+    private val portal = Portal("https://www.arcgis.com/")
+    private val portalItem = PortalItem(portal = portal, itemId = "539d93de54c7422f88f69bfac2aebf7d")
 
-    // create and add a map with with portal item
+    // create a map from the portal item
     val arcGISMap = ArcGISMap(portalItem)
 
     // create a map view proxy for handling interactions with the map view
@@ -131,8 +131,8 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
             // show the loading spinner as the Arcade evaluation can take time to complete
             _queryStateFlow.value = QueryState(loadState = LoadState.LOADING)
 
-            // identify the layer and its elements based on the position tapped on the mapView and
-            // get the result
+            // do an identify operation on the policeBeatsLayer, using the position tapped on the
+            // mapView, and get the result
             val result = mapViewProxy.identify(
                 layer = layer,
                 screenCoordinate = screenCoordinate,
@@ -142,9 +142,9 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
 
             // get the result as an IdentifyLayerResult
             val identifyLayerResult = result.getOrElse { error ->
-                // if the identifyLayer operation failed show an error and return
+                // if the identify operation failed show an error and return
                 messageDialogVM.showMessageDialog(
-                    "Error identifying layer:",
+                    "Error performing identify operation:",
                     error.message.toString()
                 )
                 // reset the query results and loading indicator
@@ -167,8 +167,9 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
             val arcadeExpression = ArcadeExpression(expressionValue)
             val arcadeEvaluator = ArcadeEvaluator(arcadeExpression, ArcadeProfile.FormCalculation)
 
-            // map profile variables with the feature
+            // create a map of profile variables with the feature and arcGISMap as key-value pairs
             val profileVariables = mapOf<String, Any>("\$feature" to identifiedFeature, "\$map" to arcGISMap)
+            // evaluate the arcade expression using these profile variables, and get the result
             val evaluationResult = arcadeEvaluator.evaluate(profileVariables)
             val arcadeEvaluationResult = evaluationResult.getOrElse { error ->
                 messageDialogVM.showMessageDialog("Error", error.message.toString())

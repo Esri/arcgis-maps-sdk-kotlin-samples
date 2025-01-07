@@ -52,10 +52,10 @@ This sample uses the [Crimes in Police Beats Sample](https://www.arcgis.com/home
 
 ## Additional information
 
-This sample uses the `geoview-compose` module of the [ArcGIS Maps SDK for Kotlin Toolkit](https://developers.arcgis.com/kotlin/toolkit/) to implement a Composable MapView.
+This sample uses the `GeoView-Compose` module of the [ArcGIS Maps SDK for Kotlin Toolkit](https://developers.arcgis.com/kotlin/toolkit/) to implement a Composable MapView.
 
 Visit [Getting Started](https://developers.arcgis.com/arcade/) on the *ArcGIS Developer* website to learn more about Arcade expressions.
 
 ## Tags
 
-Arcade evaluator, Arcade expression, compose, identify layers, portal, portal item, query, toolkit
+Arcade evaluator, Arcade expression, geoview-compose, identify layers, portal, portal item, query, toolkit
