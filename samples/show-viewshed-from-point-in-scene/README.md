@@ -31,8 +31,8 @@ The scene shows a [buildings layer in Brest, France](https://tiles.arcgis.com/ti
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
 
 ## Tags
 
-3D, frustum, geoviewcompose, scene, viewshed, visibility analysis
+3D, frustum, geoview-compose, scene, viewshed, visibility analysis

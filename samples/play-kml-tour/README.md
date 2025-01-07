@@ -34,8 +34,8 @@ This sample uses a custom tour from [ArcGIS Online](https://arcgisruntime.maps.a
 
 See [Touring in KML](https://developers.google.com/kml/documentation/touring) in *Keyhole Markup Language* for more information.
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
 
 ## Tags
 
-animation, geoviewcompose, interactive, KML, narration, pause, play, story, toolkit, tour
+animation, geoview-compose, interactive, KML, narration, pause, play, story, toolkit, tour

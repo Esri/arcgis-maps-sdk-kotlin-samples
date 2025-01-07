@@ -4,14 +4,14 @@
     "formal_name": "DisplayClusters",
     "ignore": false,
     "images": [
-        "display-clusters.png",
-        "display-clusters-popup.png"
+        "display-clusters-popup.png",
+        "display-clusters.png"
     ],
     "keywords": [
         "aggregate",
         "bin",
         "cluster",
-        "geoviewcompose",
+        "geoview-compose",
         "group",
         "merge",
         "normalize",
@@ -40,9 +40,9 @@
         "PortalItem"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displayclusters/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayclusters/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayclusters/components/ClusterInfoContent.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displayclusters/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayclusters/screens/MainScreen.kt"
     ],
     "title": "Display clusters"

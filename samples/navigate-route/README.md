@@ -48,8 +48,8 @@ The route taken in this sample goes from the San Diego Convention Center, site o
 
 ## Additional information
 
-This sample uses the GeoCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 
-directions, geocompose, maneuver, navigation, route, toolkit, turn-by-turn, voice
+directions, geoview-compose, maneuver, navigation, route, toolkit, turn-by-turn, voice

@@ -30,8 +30,8 @@ This mobile map package shows points of interest within Yellowstone National Par
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 
-geocompose, mmpk, mobile map package, offline, tookit
+geoview-compose, mmpk, mobile map package, offline, tookit
