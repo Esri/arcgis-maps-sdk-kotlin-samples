@@ -124,21 +124,21 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
 
         viewModelScope.launch {
             // load the map
-            arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load map",
-                    description = error.message.toString()
-                )
-            }.onSuccess {
+            arcGISMap.load().onSuccess {
                 // load the GeodatabaseSyncTask
-                geodatabaseSyncTask.load().onFailure { error ->
+                geodatabaseSyncTask.load().onSuccess {
+                    generateButtonEnabled = true
+                }.onFailure { error ->
                     messageDialogVM.showMessageDialog(
                         title = "Failed to load GeodatabaseSyncTask",
                         description = error.message.toString()
                     )
-                }.onSuccess {
-                    generateButtonEnabled = true
                 }
+            }.onFailure { error ->
+                messageDialogVM.showMessageDialog(
+                    title = "Failed to load map",
+                    description = error.message.toString()
+                )
             }
         }
     }
