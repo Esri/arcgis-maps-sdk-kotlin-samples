@@ -31,6 +31,7 @@ import com.arcgismaps.data.ContingentCodedValue
 import com.arcgismaps.data.ContingentRangeValue
 import com.arcgismaps.data.Feature
 import com.arcgismaps.data.Geodatabase
+import com.arcgismaps.data.GeodatabaseFeatureTable
 import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
@@ -80,6 +81,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // instance of the feature table retrieved from the geodatabase, updates when new feature is added
     private var featureTable: ArcGISFeatureTable? = null
+
+    // feature layer to be added to the map, based on the feature table retrieved from the geodatabase
+    private var featureLayer: FeatureLayer? = null
 
     // create outline for the buffer symbol
     private val lineSymbol = SimpleLineSymbol(
@@ -135,19 +139,19 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             // create and load the feature layer from the feature table
-            val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
+            featureLayer = FeatureLayer.createWithFeatureTable(featureTable).also {
+                // get the full extent of the feature layer
+                val extent = it.fullExtent
+                    ?: return@launch messageDialogVM.showMessageDialog(
+                        title = "Error",
+                        description = "Error retrieving extent of the feature layer"
+                    )
 
-            // get the full extent of the feature layer
-            val extent = featureLayer.fullExtent
-                ?: return@launch messageDialogVM.showMessageDialog(
-                    title = "Error",
-                    description = "Error retrieving extent of the feature layer"
-                )
-
-            // set the basemap to the offline vector tiled layer, and viewpoint to the feature layer extent
-            arcGISMap = ArcGISMap(Basemap(fillmoreVectorTileLayer)).apply {
-                initialViewpoint = Viewpoint(boundingGeometry = extent as Geometry)
-                operationalLayers.add(featureLayer)
+                // set the basemap to the offline vector tiled layer, and viewpoint to the feature layer extent
+                arcGISMap = ArcGISMap(Basemap(fillmoreVectorTileLayer)).apply {
+                    initialViewpoint = Viewpoint(boundingGeometry = extent as Geometry)
+                    operationalLayers.add(it)
+                }
             }
 
             // keep the instance of the feature table
@@ -160,6 +164,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             _featureEditState.value = _featureEditState.value.copy(statusAttributes = featureTable.statusFieldCodedValues())
         }
 
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        // remove the feature layer from the map in order to safely close the underlying geodatabase
+        featureLayer?.let {
+            arcGISMap.operationalLayers.remove(it)
+            (it.featureTable as GeodatabaseFeatureTable).geodatabase?.close()
+        }
     }
 
     /**
