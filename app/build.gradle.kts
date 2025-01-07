@@ -7,12 +7,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gradle.secrets)
     alias(libs.plugins.sample.files.copy)
-    alias(libs.plugins.screenshots.copy)
     alias(libs.plugins.ksp)
 }
 
 tasks.named("preBuild").configure { dependsOn("copyCodeFiles") }
-tasks.named("preBuild").configure { dependsOn("copyScreenshots") }
 
 secrets {
     // this file doesn't contain secrets, it just provides defaults which can be committed into git.
