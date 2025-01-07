@@ -86,7 +86,6 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // the Reset Map button
                     Button(
                         onClick = {
                             mapViewModel.resetMap()
@@ -96,7 +95,6 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                         Text(text = getString(application, R.string.reset_map))
                     }
 
-                    // the Generate button
                     Button(
                         onClick = {
                             mapViewModel.generateGeodatabaseReplica()
@@ -110,7 +108,7 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                 // display progress dialog while generating a geodatabase replica
                 if (mapViewModel.showJobProgressDialog) {
                     JobLoadingDialog(
-                        title = "Generating geodatabase replica...",
+                        title = getString(application, R.string.dialog_title),
                         progress = mapViewModel.jobProgress,
                         cancelJobRequest = { mapViewModel.cancelOfflineGeodatabaseJob() }
                     )

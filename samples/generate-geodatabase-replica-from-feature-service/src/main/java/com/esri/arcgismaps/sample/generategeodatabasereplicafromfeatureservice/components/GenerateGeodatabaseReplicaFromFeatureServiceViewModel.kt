@@ -178,7 +178,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
      * Reset the map to its original state.
      */
     fun resetMap() {
-        // clear any layers  and symbols already on the map
+        // clear any layers and symbols already on the map
         arcGISMap.operationalLayers.clear()
         graphicsOverlay.graphics.clear()
         // add the download area boundary
