@@ -5,7 +5,8 @@
 
     <application><activity
             android:exported="true"
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:label="@string/display_composable_map_view_app_name">
             
         </activity>
     </application>
