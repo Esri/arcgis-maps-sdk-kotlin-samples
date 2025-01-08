@@ -1,4 +1,4 @@
-# Display composable MapView
+# Display Composable MapView
 
 Display a map using Jetpack Compose.
 
@@ -29,8 +29,8 @@ Run the sample to view the map. Pan and zoom to navigate the map.
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-basemap, compose, geoview-compose, jetpack, map, toolkit
+basemap, compose, geoviewcompose, jetpack, map, toolkit

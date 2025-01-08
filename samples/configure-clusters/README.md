@@ -40,8 +40,8 @@ This sample uses a [web map](https://www.arcgis.com/home/item.html?id=aa44e79a48
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-aggregate, bin, cluster, geoview-compose, group, merge, normalize, popup, reduce, renderer, summarize, toolkit
+aggregate, bin, cluster, geoviewcompose, group, merge, normalize, popup, reduce, renderer, summarize, toolkit

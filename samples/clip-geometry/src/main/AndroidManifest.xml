@@ -5,7 +5,8 @@
 
     <application><activity
             android:exported="true"
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:label="@string/clip_geometry_app_name">
             
         </activity>
     </application>

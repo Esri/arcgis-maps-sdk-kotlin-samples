@@ -84,8 +84,7 @@ def main():
     for f in files:
         if not os.path.exists(f):
             # The changed file is deleted, no need to style check.
-            print("-----")
-            print("Note: This file has since been deleted. No style check will be performed on: " + f)
+            print("file doesn't exist: " + f)
             continue
         
         # Get filename and folder name of the changed sample.

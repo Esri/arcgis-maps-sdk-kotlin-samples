@@ -8,7 +8,7 @@
     ],
     "keywords": [
         "basemap style",
-        "geoview-compose",
+        "geoviewcompose",
         "language",
         "language strategy",
         "map",
@@ -31,8 +31,8 @@
         "MapView"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/configurebasemapstyleparameters/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/configurebasemapstyleparameters/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configurebasemapstyleparameters/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/configurebasemapstyleparameters/screens/MainScreen.kt"
     ],
     "title": "Configure basemap style parameters"

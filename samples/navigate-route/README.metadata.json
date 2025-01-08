@@ -8,11 +8,9 @@
     ],
     "keywords": [
         "directions",
-        "geoview-compose",
         "maneuver",
         "navigation",
         "route",
-        "toolkit",
         "turn-by-turn",
         "voice",
         "DestinationStatus",
@@ -41,9 +39,7 @@
         "VoiceGuidance"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/navigateroute/components/NavigateRouteViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/navigateroute/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/navigateroute/screens/NavigateRouteScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/navigateroute/MainActivity.kt"
     ],
     "title": "Navigate route"
 }

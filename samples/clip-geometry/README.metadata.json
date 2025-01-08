@@ -16,8 +16,10 @@
         "Graphic",
         "GraphicsOverlay"
     ],
-    "language": "kotlin",
-    "redirect_from": "",
+    "language": "java",
+    "redirect_from": [
+        "/android/latest/sample-code/clip-geometry.htm"
+    ],
     "relevant_apis": [
         "Envelope",
         "Geometry",
@@ -26,9 +28,7 @@
         "GraphicsOverlay"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/clipgeometry/components/ClipGeometryViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/clipgeometry/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/clipgeometry/screens/ClipGeometryScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/clipgeometry/MainActivity.kt"
     ],
     "title": "Clip geometry"
 }

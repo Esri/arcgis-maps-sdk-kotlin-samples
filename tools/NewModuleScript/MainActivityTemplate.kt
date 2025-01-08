@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // authentication with an API key or named user is
         // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
         setContent {
             SampleAppTheme {
@@ -44,7 +44,9 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun SampleApp() {
-        Surface(color = MaterialTheme.colorScheme.background) {
+        Surface(
+            color = MaterialTheme.colorScheme.background
+        ) {
             MainScreen(
                 sampleName = getString(R.string.app_name)
             )

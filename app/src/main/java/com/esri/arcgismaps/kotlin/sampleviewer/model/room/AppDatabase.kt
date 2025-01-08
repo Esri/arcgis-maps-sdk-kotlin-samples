@@ -44,7 +44,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "arcgis_maps_kotlin_samples_database"
-                ).fallbackToDestructiveMigration().build()
+                ).build()
                 INSTANCE = instance
                 instance
             }

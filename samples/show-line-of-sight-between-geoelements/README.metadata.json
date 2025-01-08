@@ -8,7 +8,7 @@
     ],
     "keywords": [
         "3D",
-        "geoview-compose",
+        "geoviewcompose",
         "line of sight",
         "visibility",
         "visibility analysis",
@@ -25,9 +25,9 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/screens/MainScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/MainActivity.kt"
     ],
     "title": "Show line of sight between geoelements"
 }

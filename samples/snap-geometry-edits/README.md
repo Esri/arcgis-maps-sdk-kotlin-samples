@@ -67,8 +67,8 @@ Geometry guides are enabled by default when snapping is enabled. These allow for
 
 On supported platforms haptic feedback on `SnapState.snappedToFeature` and `SnapState.snappedToGeometryGuide` is enabled by default when snapping is enabled. Custom haptic feedback can be configured by setting `SnapSettings.isHapticFeedbackEnabled` to false and listening to `GeometryEditor.snapChanged` events to provide specific feedback depending on the `SnapState`.
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
 
 ## Tags
 
-edit, feature, geometryeditor, geoview-compose, graphics, layers, magnify, map, reticle, snapping
+edit, feature, geometryeditor, geoviewcompose, graphics, layers, magnify, map, reticle, snapping

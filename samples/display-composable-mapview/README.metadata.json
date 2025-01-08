@@ -9,7 +9,7 @@
     "keywords": [
         "basemap",
         "compose",
-        "geoview-compose",
+        "geoviewcompose",
         "jetpack",
         "map",
         "toolkit",
@@ -27,5 +27,5 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaycomposablemapview/MainActivity.kt"
     ],
-    "title": "Display composable MapView"
+    "title": "Display Composable MapView"
 }

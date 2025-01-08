@@ -9,7 +9,7 @@
     "keywords": [
         "add",
         "delete",
-        "geoview-compose",
+        "geoviewcompose",
         "layer",
         "map",
         "remove",
@@ -26,10 +26,10 @@
         "LayerList"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/MainScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/LayersList.kt"
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/LayersList.kt",
+        "src/main/java/com/esri/arcgismaps/sample/manageoperationallayers/screens/MainScreen.kt"
     ],
     "title": "Manage operational layers"
 }

@@ -29,8 +29,8 @@ This sample takes a mobile scene package that was created in ArcGIS Pro, and dis
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
 
 ## Tags
 
-3d, geoview-compose, mobile scene package, mspk, offline, scene
+3d, geoviewcompose, mobile scene package, mspk, offline, scene

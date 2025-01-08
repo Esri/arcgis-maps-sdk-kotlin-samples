@@ -71,8 +71,7 @@ fun SampleListScreen(
     val favoriteSamplesFlow = remember { viewModel.getFavorites() }
     val favoriteSamples by favoriteSamplesFlow.collectAsState(initial = emptyList())
     val category = SampleCategory.toEnum(categoryNavEntry)
-    val samplesList by DefaultSampleInfoRepository.getSamplesInCategory(category)
-        .collectAsState(initial = emptyList())
+    val samplesList = DefaultSampleInfoRepository.getSamplesInCategory(category)
 
     Scaffold(
         topBar = { SampleViewerTopAppBar(title = category.text, onBackPressed) },

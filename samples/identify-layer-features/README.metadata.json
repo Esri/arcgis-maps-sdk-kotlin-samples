@@ -7,7 +7,7 @@
         "identify-layer-features.png"
     ],
     "keywords": [
-        "geoview-compose",
+        "geoviewcompose",
         "identify",
         "recursion",
         "recursive",
@@ -25,8 +25,8 @@
         "LayerContent"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/identifylayerfeatures/screens/MainScreen.kt"
     ],
     "title": "Identify layer features"

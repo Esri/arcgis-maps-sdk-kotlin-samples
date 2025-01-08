@@ -40,9 +40,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.apache.commons.io.FileUtils
+import java.io.BufferedInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.zip.ZipFile
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -266,24 +269,31 @@ abstract class DownloaderActivity : AppCompatActivity() {
             }.onSuccess {
                 // unzip the file if it is a .zip
                 if (portalItem.name.contains(".zip")) {
-                    if (!provisionLocation.exists()) {
-                        provisionLocation.mkdirs()
-                    }
-                    ZipFile(destinationFile).use { zip ->
-                        zip.entries().asSequence().forEach { entry ->
-                            val outputFile = File(provisionLocation, entry.name)
-                            if (entry.isDirectory) {
-                                outputFile.mkdirs()
-                            } else {
-                                outputFile.parentFile?.mkdirs()
-                                zip.getInputStream(entry).use { input ->
-                                    FileOutputStream(outputFile).use { output ->
-                                        input.copyTo(output)
+                    // set up the input streams
+                    FileInputStream(destinationFile).use { fileInputStream ->
+                        ZipInputStream(BufferedInputStream(fileInputStream)).use { zipInputStream ->
+                            var zipEntry: ZipEntry? = zipInputStream.nextEntry
+                            val buffer = ByteArray(1024)
+                            while (zipEntry != null) {
+                                if (zipEntry.isDirectory) {
+                                    File(provisionLocation.path, zipEntry.name).mkdirs()
+                                } else {
+                                    val file = File(provisionLocation.path, zipEntry.name)
+                                    FileOutputStream(file).use { fileOutputStream ->
+                                        var count = zipInputStream.read(buffer)
+                                        while (count != -1) {
+                                            fileOutputStream.write(buffer, 0, count)
+                                            count = zipInputStream.read(buffer)
+                                        }
                                     }
                                 }
+                                // close this entry, and move to the next zipped file
+                                zipInputStream.closeEntry()
+                                zipEntry = zipInputStream.nextEntry
                             }
+                            // delete the .zip file, since unzipping is complete
+                            FileUtils.delete(destinationFile)
                         }
-                        FileUtils.delete(destinationFile)
                     }
                 }
 

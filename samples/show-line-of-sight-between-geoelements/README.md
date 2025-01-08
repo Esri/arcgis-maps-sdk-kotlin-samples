@@ -28,8 +28,8 @@ A line of sight will display between a point on the Empire State Building (obser
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
 
 ## Tags
 
-3D, geoview-compose, line of sight, visibility, visibility analysis
+3D, geoviewcompose, line of sight, visibility, visibility analysis

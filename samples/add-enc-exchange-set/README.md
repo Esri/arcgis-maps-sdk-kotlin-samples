@@ -34,8 +34,8 @@ This sample downloads the [ENC Exchange Set without updates](https://www.arcgis.
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
+This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable SceneView.
 
 ## Tags
 
-data, ENC, geoview-compose, hydrographic, layers, maritime, nautical chart
+data, ENC, geoviewcompose, hydrographic, layers, maritime, nautical chart

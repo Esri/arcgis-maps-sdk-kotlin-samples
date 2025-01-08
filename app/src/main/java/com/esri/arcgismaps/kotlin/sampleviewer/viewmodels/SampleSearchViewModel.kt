@@ -27,7 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -97,7 +96,7 @@ class SampleSearchViewModel(private val application: Application) : AndroidViewM
                     // Add the score to the sample.
                     val sample = DefaultSampleInfoRepository.getSampleByName(
                         sampleName = cursor.getString(0)
-                    ).first().apply {
+                    ).apply {
                         score = totalScore
                     }
                     results.add(sample)

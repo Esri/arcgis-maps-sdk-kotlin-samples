@@ -16,14 +16,12 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer.model
 
-import kotlinx.coroutines.flow.Flow
-
 /**
  * A repository interface to fetch sample information.
  */
 interface SampleInfoRepository {
 
-    fun getSamplesInCategory(sampleCategory: SampleCategory): Flow<List<Sample>>
+    fun getSamplesInCategory(sampleCategory: SampleCategory): List<Sample>
 
-    fun getSampleByName(sampleName: String): Flow<Sample>
+    fun getSampleByName(sampleName: String): Sample
 }

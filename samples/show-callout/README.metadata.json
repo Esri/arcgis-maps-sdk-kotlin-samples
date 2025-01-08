@@ -12,7 +12,6 @@
         "callout",
         "flyout",
         "flyover",
-        "geoview-compose",
         "info window",
         "popup",
         "tap",
@@ -31,8 +30,8 @@
         "Point"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/showcallout/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcallout/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcallout/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcallout/screens/MainScreen.kt"
     ],
     "title": "Show callout"

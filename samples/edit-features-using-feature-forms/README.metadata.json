@@ -12,7 +12,7 @@
     "feature",
     "featureforms",
     "form",
-    "geoview-compose",
+    "geoviewcompose",
     "jetpack",
     "toolkit",
     "ArcGISFeature",
@@ -20,8 +20,7 @@
     "FeatureLayer",
     "FieldFormElement",
     "GroupFormElement",
-    "ServiceFeatureTable",
-    "ServiceGeodatabase"
+    "ServiceFeatureTable"
   ],
   "language": "kotlin",
   "redirect_from": "",
@@ -31,12 +30,11 @@
     "FeatureLayer",
     "FieldFormElement",
     "GroupFormElement",
-    "ServiceFeatureTable",
-    "ServiceGeodatabase"
+    "ServiceFeatureTable"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgismaps/sample/editfeaturesusingfeatureforms/components/MapViewModel.kt",
     "src/main/java/com/esri/arcgismaps/sample/editfeaturesusingfeatureforms/MainActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/editfeaturesusingfeatureforms/components/MapViewModel.kt",
     "src/main/java/com/esri/arcgismaps/sample/editfeaturesusingfeatureforms/screens/MainScreen.kt"
   ],
   "title": "Edit features using feature forms"

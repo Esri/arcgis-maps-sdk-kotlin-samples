@@ -25,8 +25,8 @@ The sample will load the KML file automatically. The data shown should refresh a
 
 ## About the data
 
-This map shows the current air traffic in parts of Europe with heading, altitude, and ground speed. Additionally, noise levels from ground monitoring stations are shown. This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
+This map shows the current air traffic in parts of Europe with heading, altitude, and ground speed. Additionally, noise levels from ground monitoring stations are shown.
 
 ## Tags
 
-geoview-compose, keyhole, KML, KMZ, network link, network link control, OGC
+keyhole, KML, KMZ, network link, network link control, OGC

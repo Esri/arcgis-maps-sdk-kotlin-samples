@@ -7,13 +7,11 @@
         "add-web-tiled-layer.png"
     ],
     "keywords": [
-        "arcgis living atlas",
-        "geoview-compose",
+        "ArcGIS Living Atlas",
+        "OGC",
         "layer",
-        "ogc",
         "tiled",
         "tiles",
-        "toolkit",
         "Basemap",
         "WebTiledLayer"
     ],
@@ -24,9 +22,7 @@
         "WebTiledLayer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/components/AddWebTiledLayerViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/screens/AddWebTiledLayerScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addwebtiledlayer/MainActivity.kt"
     ],
     "title": "Add web tiled layer"
 }

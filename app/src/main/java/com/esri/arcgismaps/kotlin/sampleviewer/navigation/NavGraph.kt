@@ -20,8 +20,6 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -94,15 +92,12 @@ internal fun NavGraph() {
             val sampleNameNavEntry = backStackEntry.arguments?.getString("sampleName")
 
             if (optionPositionNavEntry != null && !sampleNameNavEntry.isNullOrEmpty()) {
-                val sampleNavEntry by DefaultSampleInfoRepository.getSampleByName(sampleNameNavEntry)
-                    .collectAsState(null)
-                sampleNavEntry?.let {
-                    SampleInfoScreen(
-                        sample = it,
-                        optionPosition = optionPositionNavEntry,
-                        onBackPressed = { navController.pop() }
-                    )
-                }
+                val sampleNavEntry = DefaultSampleInfoRepository.getSampleByName(sampleNameNavEntry)
+                SampleInfoScreen(
+                    sample = sampleNavEntry,
+                    optionPosition = optionPositionNavEntry,
+                    onBackPressed = { navController.pop() }
+                )
             } else if (optionPositionNavEntry == null) {
                 navController.displayError("optionPositionNavEntry is null", context)
             } else {

@@ -46,10 +46,6 @@ None
 
 The route taken in this sample goes from the San Diego Convention Center, site of the annual Esri User Conference, to the Fleet Science Center, San Diego.
 
-## Additional information
-
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
-
 ## Tags
 
-directions, geoview-compose, maneuver, navigation, route, toolkit, turn-by-turn, voice
+directions, maneuver, navigation, route, turn-by-turn, voice

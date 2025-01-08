@@ -16,17 +16,20 @@
 
 package com.esri.arcgismaps.sample.displaycomposablemapview.screens
 
-import androidx.compose.foundation.layout.Column
+import android.app.Application
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalContext
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -34,33 +37,25 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun MainScreen(sampleName: String) {
-    val mapViewModel: MapViewModel = viewModel()
+    val application = LocalContext.current.applicationContext as Application
+    // create a ViewModel to handle MapView interactions
+    val mapViewModel = MapViewModel(application)
+    val arcGISMap by remember {
+        mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
+            initialViewpoint = mapViewModel.viewpoint.value
+        })
+    }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
-                )
-                // TODO: Add UI components in this Column ...
-            }
-
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
+            MapView(
+                modifier = Modifier.fillMaxSize().padding(it),
+                arcGISMap = arcGISMap,
+                onSingleTapConfirmed = {
+                    mapViewModel.changeBasemap()
                 }
-            }
+            )
         }
     )
 }

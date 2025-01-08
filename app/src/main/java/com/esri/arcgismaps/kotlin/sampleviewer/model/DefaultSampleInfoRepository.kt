@@ -24,10 +24,6 @@ import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample.Companion.loadScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.model.room.AppDatabase
 import com.esri.arcgismaps.kotlin.sampleviewer.model.room.Converters
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.util.concurrent.atomic.AtomicBoolean
@@ -43,8 +39,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    private val _sampleData = MutableStateFlow<List<Sample>>(emptyList())
-    private val sampleData = _sampleData.asStateFlow()
+    private val sampleList = mutableListOf<Sample>()
 
     /**
      * Load the sample metadata from the metadata folder in the assets directory and updates sampleList
@@ -52,9 +47,8 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
      */
     suspend fun load(context: Context) {
         if (isInitialized.compareAndSet(false, true)) {
-            // List that will be populated with samples
-            val sampleList = mutableListOf<Sample>()
             // Iterate through the metadata folder for all metadata files
+
             context.assets.list("samples")?.forEach { samplePath ->
                 // Get this metadata files as a string
                 context.assets.open("samples/$samplePath/README.metadata.json").use { inputStream ->
@@ -94,7 +88,6 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
                     }
                 }
             }
-            _sampleData.value = sampleList
             withContext(Dispatchers.IO) {
                 // Populates the Room SQL database
                 populateDatabase(context)
@@ -106,7 +99,7 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
      * Populates the Room SQL database with all samples and sample info
      */
     private suspend fun populateDatabase(context: Context) {
-        val sampleEntities = sampleData.value.map { Converters().convertToEntity(sample = it) }
+        val sampleEntities = sampleList.map { Converters().convertToEntity(sample = it) }
         AppDatabase.getDatabase(context).clearAllTables()
         AppDatabase.getDatabase(context).sampleDao().insertAll(samples = sampleEntities)
     }
@@ -114,14 +107,14 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
     /**
      * Get a sample by its name. Either the formal name or title.
      */
-    override fun getSampleByName(sampleName: String): Flow<Sample> {
-        return sampleData.map { it.first { sample -> sample.metadata.formalName == sampleName || sample.metadata.title == sampleName } }
+    override fun getSampleByName(sampleName: String): Sample {
+        return sampleList.first { it.metadata.formalName == sampleName || it.metadata.title == sampleName }
     }
 
     /**
      * Get a list of samples for the given [SampleCategory].
      */
-    override fun getSamplesInCategory(sampleCategory: SampleCategory): Flow<List<Sample>> {
-        return sampleData.map { it.filter { sample -> sample.metadata.sampleCategory == sampleCategory } }
+    override fun getSamplesInCategory(sampleCategory: SampleCategory): List<Sample> {
+        return sampleList.filter { it.metadata.sampleCategory == sampleCategory }
     }
 }
