@@ -29,6 +29,7 @@ Tap on the map to add a feature symbolizing a bird's nest. Then choose values de
    ii. Get an array of valid `ContingentValues` from `ContingentValuesResult.contingentValuesByFieldGroup` dictionary with the name of the relevant field group.  
    iii. Iterate through the array of valid contingent values to create an array of `ContingentCodedValue` names or the minimum and maximum values of a `ContingentRangeValue` depending on the type of `ContingentValue` returned.
 10. Validate the feature's contingent values by using `validateContingencyConstraints(feature)` with the current feature. If the resulting array is empty, the selected values are valid.
+11. Close the geodatabase once operations are complete to ensure temporary files are cleaned up.
 
 ## Relevant API
 
