@@ -169,11 +169,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
 
-        // remove the feature layer from the map in order to safely close the underlying geodatabase
-        featureLayer?.let {
-            arcGISMap.operationalLayers.remove(it)
-            (it.featureTable as GeodatabaseFeatureTable).geodatabase?.close()
-        }
+        // close the geodatabase to ensure cleanup of temporary files
+        (featureLayer?.featureTable as GeodatabaseFeatureTable).geodatabase?.close()
     }
 
     /**
