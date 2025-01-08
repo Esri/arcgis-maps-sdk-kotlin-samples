@@ -17,310 +17,414 @@
 package com.esri.arcgismaps.sample.traceutilitynetwork.components
 
 import android.app.Application
-import android.graphics.Point
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.data.ArcGISFeature
-import com.arcgismaps.data.ArcGISFeatureTable
+import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
-import com.arcgismaps.geometry.GeometryType
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.httpcore.authentication.TokenCredential
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.Basemap
+import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.UniqueValue
 import com.arcgismaps.mapping.symbology.UniqueValueRenderer
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.IdentifyLayerResult
+import com.arcgismaps.mapping.view.ScreenCoordinate
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.arcgismaps.utilitynetworks.UtilityDomainNetwork
 import com.arcgismaps.utilitynetworks.UtilityElement
+import com.arcgismaps.utilitynetworks.UtilityElementTraceResult
 import com.arcgismaps.utilitynetworks.UtilityNetwork
 import com.arcgismaps.utilitynetworks.UtilityNetworkSourceType
 import com.arcgismaps.utilitynetworks.UtilityTier
 import com.arcgismaps.utilitynetworks.UtilityTraceParameters
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import com.arcgismaps.utilitynetworks.UtilityTraceResult
+import com.arcgismaps.utilitynetworks.UtilityTraceType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.net.URL
 
 class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Create a message dialog view model for handling error messages.
-    val messageDialogVM = MessageDialogViewModel()
+    // The textual hint shown to the user
+    private val _hint = MutableStateFlow<String?>(null)
+    val hint: Flow<String?> = _hint.asStateFlow()
 
-    // MapView proxy used by the trace tool.
+    // The last element that was added (start/barrier)
+    private val _lastAddedElement = MutableStateFlow<UtilityElement?>(null)
+    val lastAddedElement: Flow<UtilityElement?> = _lastAddedElement.asStateFlow()
+
+    // The last tap in screen coords + map coords
+    private val _lastSingleTap = MutableStateFlow<Pair<ScreenCoordinate, Point>?>(null)
+    val lastSingleTap: Flow<Pair<ScreenCoordinate, Point>?> = _lastSingleTap.asStateFlow()
+
+    // The pending trace parameters
+    private val _pendingTraceParameters = MutableStateFlow<UtilityTraceParameters?>(null)
+    val pendingTraceParameters: Flow<UtilityTraceParameters?> =
+        _pendingTraceParameters.asStateFlow()
+
+    // Whether the terminal selector is open
+    private val _terminalSelectorIsOpen = MutableStateFlow(false)
+    val terminalSelectorIsOpen: Flow<Boolean> = _terminalSelectorIsOpen.asStateFlow()
+
+    // Current trace “activity” state
+    private val _tracingActivity = MutableStateFlow<TracingActivity>(TracingActivity.None)
+    val tracingActivity: Flow<TracingActivity> = _tracingActivity
+
+    // An ArcGISMap holding the UtilityNetwork and operational layers
+    val arcGISMap = ArcGISMap(
+        item = PortalItem(
+            portal = Portal.arcGISOnline(connection = Portal.Connection.Authenticated),
+            itemId = NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID
+        )
+    ).apply {
+        setBasemap(Basemap(BasemapStyle.ArcGISStreetsNight))
+    }
+
+
+    // Used to handle map view animations
     val mapViewProxy = MapViewProxy()
 
-    // Graphics overlay used by the trace tool.
-    val graphicsOverlay = GraphicsOverlay()
+    // The UtilityNetwork object, assumed to be in map.utilityNetworks[0]
+    private val network: UtilityNetwork
+        get() = arcGISMap.utilityNetworks[0]
 
-    private var mediumVoltageTier: UtilityTier? = null
+    // Domain network
+    private val electricDistribution: UtilityDomainNetwork?
+        get() = network.definition?.getDomainNetwork("ElectricDistribution")
 
+    // Tier
+    private val mediumVoltageRadial: UtilityTier?
+        get() = electricDistribution?.getTier("Medium Voltage Radial")
 
-    private val sampleServer7: URL
-        get() = URL("https://sampleserver7.arcgisonline.com")
+    // Barrier / Start points overlay
+    val pointsOverlay: GraphicsOverlay by lazy {
+        GraphicsOverlay().apply {
+            val barrierUniqueValue = UniqueValue(
+                "Barrier",
+                "", // description
+                SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.red, 20f),
+                listOf(PointType.Barrier.name)
+            )
 
-    private val featureService: URL
-        get() = URL("${sampleServer7}/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer")
-
-    private val samplePortal: URL
-        get() = URL("${sampleServer7}/portal/sharing/rest")
-
-    // The domain network for this sample.
-    private val electricDistribution: UtilityDomainNetwork? =
-        utilityNetwork.definition?.domainNetworks?.find { it.name == "ElectricDistribution" }
-
-    // The URLs of the relevant feature layers for this sample.
-    // The feature layers allow us to modify the visual rendering style of different elements in
-    // the network.
-    // - Note: The electric distribution line feature layer (ID 3) is placed on the map first,
-    // followed by the electric distribution device feature layer (ID 0) so that the junction
-    // based features in the latter feature layer are easier to select.
-    private val featureLayerURLs: List<URL>
-        get() = listOf(
-            URL("$featureService/3"),
-            URL("$featureService/0")
-        )
-
-    // The textual hint shown to the user.
-    var hint: String = ""
-
-    // The last element that was added to either the list of starting points or barriers.
-    // When an element contains more than one terminal, the user should be presented with the
-    // option to select a terminal. Keeping a reference to the last added element provides ease
-    // of access to save the user's choice.
-    var lastAddedElement: UtilityElement? = null
-
-    // The last locations in the screen and map where a tap occurred.
-    // Monitoring these values allows for an asynchronous identification task when they change.
-    var lastSingleTap: Point? = null
-
-    // Web-map contains the utility network and operational layers
-    // on which trace results will be selected.
-    val arcGISMap = ArcGISMap(
-        PortalItem(
-            portal = Portal.arcGISOnline(connection = Portal.Connection.Authenticated),
-            itemId = "471eb0bf37074b1fbb972b1da70fb310"
-        )
-    )
-
-    /// The utility tier for this sample.
-    private var mediumVoltageRadial: UtilityTier? =
-        electricDistribution?.tiers?.find { utilityTier: UtilityTier ->
-            utilityTier.name == "Medium Voltage Radial"
-        }
-
-    // The utility network for this sample.
-    private val utilityNetwork: UtilityNetwork = arcGISMap.utilityNetworks.first()
-
-    // The parameters for the pending trace.
-    // Important trace information like the trace type, starting points, and barriers is
-    // contained within this value.
-    var pendingTraceParameters: UtilityTraceParameters? = null
-
-    // A Boolean value indicating whether the terminal selection menu is open.
-    // When a utility element has more than one terminal, the user is presented with a menu of the
-    // available terminal names.
-    var terminalSelectorIsOpen = false
-
-    // The current tracing related activity.
-    var tracingActivity: TracingActivity? = null
-
-    // The graphics overlay on which starting point and barrier symbols will be drawn.
-    var points: GraphicsOverlay = GraphicsOverlay().apply {
-        renderer = UniqueValueRenderer(
-            fieldNames = PointType.entries.map { it.name },
-            uniqueValues = listOf(
-                UniqueValue(
-                    symbol = barrierPointSymbol,
-                    values = listOf(PointType.BARRIER)
-                )
-            ),
-            defaultSymbol = startingPointSymbol
-        )
-    }
-
-    // create symbols for the starting point and barriers
-    private val startingPointSymbol: SimpleMarkerSymbol by lazy {
-        SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Cross, Color.green, 25f)
-    }
-    private val barrierPointSymbol: SimpleMarkerSymbol by lazy {
-        SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.red, 25f)
-    }
-
-    init {
-        // Define user credentials for authenticating with the service
-        viewModelScope.launch {
-            // A licensed user is required to perform utility network operations
-            TokenCredential.create(
-                url = "https://sampleserver7.arcgisonline.com/portal/sharing/rest",
-                username = "viewer01",
-                password = "I68VGU^nMurF"
-            ).onSuccess { tokenCredential ->
-                ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
-                initializeUtilityNetwork()
-            }.onFailure {
-                messageDialogVM.showMessageDialog(
-                    title = it.message.toString(),
-                    description = it.cause.toString()
-                )
+            // UniqueValueRenderer to differentiate barrier vs. start
+            renderer = UniqueValueRenderer().apply {
+                fieldNames.add("PointType")
+                uniqueValues.add(barrierUniqueValue)
+                defaultSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Cross, Color.green, 20f)
             }
         }
     }
 
-    private suspend fun initializeUtilityNetwork() {
-        arcGISMap.load()
+    companion object {
+        const val USERNAME = "viewer01"
+        const val PASSWORD = "I68VGU^nMurF"
+        private const val SAMPLE_SERVER_7 = "https://sampleserver7.arcgisonline.com"
+        private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
+        private const val FEATURE_SERVICE_URL = SAMPLE_SERVER_7 +
+                "/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
+        // The portal item ID for Naperville’s electrical network
+        private const val NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID = "471eb0bf37074b1fbb972b1da70fb310"
+        // Feature layer IDs relevant to this sample
+        private val FEATURE_LAYER_IDS = listOf("3", "0")
 
     }
 
+    /**
+     * Sets up the map and utility network:
+     * - Adds credentials
+     * - Loads the map & network
+     * - Adds relevant operational layers
+     */
+    init {
+        viewModelScope.launch {
+            // A licensed user is required to perform utility network operations
+            TokenCredential.create(
+                url = SAMPLE_PORTAL_URL,
+                username = USERNAME,
+                password = PASSWORD
+            ).onSuccess { tokenCredential ->
+                ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
+                arcGISMap.load().onSuccess {
+                    // Load the network
+                    network.load().onSuccess {
+
+                        // Once loaded, remove all operational layers
+                        arcGISMap.operationalLayers.clear()
+
+                        // Add relevant layers
+                        FEATURE_LAYER_IDS.forEach { layerId ->
+                            val table = ServiceFeatureTable("$FEATURE_SERVICE_URL/$layerId")
+                            val layer = FeatureLayer.createWithFeatureTable(table)
+                            if (layerId == "3") {
+                                // Customize rendering for layer with ID 3
+                                layer.renderer = UniqueValueRenderer().apply {
+                                    fieldNames.add("ASSETGROUP")
+                                    uniqueValues.add(
+                                        UniqueValue(
+                                            description = "Low voltage",
+                                            label = "",
+                                            symbol = SimpleLineSymbol(
+                                                style = SimpleLineSymbolStyle.Dash,
+                                                color = Color.cyan,
+                                                width = 3f
+                                            ),
+                                            values = listOf(3)
+                                        )
+                                    )
+                                    uniqueValues.add(
+                                        UniqueValue(
+                                            description = "Medium voltage",
+                                            label = "",
+                                            symbol = SimpleLineSymbol(
+                                                style = SimpleLineSymbolStyle.Solid,
+                                                color = Color.cyan,
+                                                width = 3f
+                                            ),
+                                            values = listOf(5)
+                                        )
+                                    )
+                                }
+                            }
+                            arcGISMap.operationalLayers.add(layer)
+                        }
+                    }.onFailure {
+                        updateUserHint("An error occurred while loading the network: ${it.message}")
+                    }
+                }.onFailure {
+                    updateUserHint("An error occurred while loading the network: ${it.message}")
+                }
+            }.onFailure {
+                updateUserHint("An error occurred while loading the network: ${it.message}")
+            }
+        }
+    }
 
     /**
-     * Adds the provided utility [element] to the parameters of the pending trace and a corresponding
-     * starting [point] or barrier graphic to the map.
-     *
-     * Adding custom attributes to the graphic allows us to apply different rendering styles
-     * for starting point and barrier graphics.
+     * Initialize the trace parameters and switch to “settingPoints” mode for .start points.
      */
-    private fun add(element: UtilityElement, point: Geometry) {
-        if (pendingTraceParameters == null || tracingActivity !is TracingActivity.SettingPoints)
+    fun setTraceParameters(traceType: UtilityTraceType) {
+        val params = UtilityTraceParameters(traceType, emptyList()).apply {
+            // Attempt to set default config from the tier
+            traceConfiguration = mediumVoltageRadial?.getDefaultTraceConfiguration()
+        }
+        _pendingTraceParameters.value = params
+        _tracingActivity.value = TracingActivity.SettingPoints(PointType.Start)
+        updateUserHint()  // triggers default “Tap on the map to add a start location.”
+    }
+
+    /**
+     * Add a feature to the trace (barrier or start) based on the current tracing activity.
+     */
+    private fun addFeature(
+        feature: ArcGISFeature,
+        mapPoint: Point
+    ) {
+        val currentParams = _pendingTraceParameters.value
+        val activity = _tracingActivity.value
+        if (currentParams == null || activity !is TracingActivity.SettingPoints) return
+
+        // Convert to a UtilityElement. This is typically done via:
+        //   network.createElement(feature)
+        // (ArcGIS Android differs slightly from iOS)
+        val element = try {
+            network.createElementOrNull(feature)
+        } catch (e: Exception) {
+            updateUserHint("Error adding element to the trace: ${e.message}")
             return
-
-        val pointType = (tracingActivity as TracingActivity.SettingPoints).pointType
-
-        val graphic = Graphic(
-            geometry = point,
-            attributes = mapOf(PointType::class.java.simpleName to pointType)
-        )
-
-        when (pointType) {
-            PointType.BARRIER -> pendingTraceParameters?.barriers?.add(element)
-            PointType.START -> pendingTraceParameters?.startingLocations?.add(element)
         }
 
-        points.graphics.add(graphic)
-        lastAddedElement = element
-    }
-
-    /**
-     * Adds a provided feature to the pending trace.
-     * For junction features with more than one terminal,
-     * the user should be prompted to pick a terminal.
-     * For edge features,the fractional point along the feature's edge should be computed.
-     */
-    fun add(feature: ArcGISFeature, mapPoint: Point) {
-        val element = utilityNetwork.createElementOrNull(arcGISFeature = feature)
-        val geometry = feature.geometry
-        val table = feature.featureTable as? ArcGISFeatureTable
-
-        val networkSource = utilityNetwork.definition?.getNetworkSource(
-            networkSourceName = table?.tableName.toString()
-        )
-
-        when (networkSource?.sourceType) {
+        // For a junction, add using its geometry
+        // For an edge, compute fractionAlongEdge
+        when (element?.networkSource?.sourceType) {
             UtilityNetworkSourceType.Junction -> {
-                add(element, at = geometry)
-                if (element.assetType.terminalConfiguration?.terminals?.size ?: 0 > 1) {
-                    terminalSelectorIsOpen = !terminalSelectorIsOpen
+                addElementToPendingTrace(element, feature.geometry)
+                val terminalCount = element.assetType.terminalConfiguration?.terminals?.size ?: 0
+                if (terminalCount > 1) {
+                    // Show terminal selector
+                    _terminalSelectorIsOpen.value = true
                 }
 
             }
 
             UtilityNetworkSourceType.Edge -> {
-                val line = GeometryEngine.makeGeometry(geometry, z = null) as? GeometryType.Polyline
-                if (line != null) {
-                    element.fractionAlongEdge = GeometryEngine.polyline(
-                        line,
-                        fractionalLengthClosestTo = mapPoint,
-                        tolerance = -1
-                    )
-                    updateUserHint(
-                        withMessage = String.format(
-                            "fractionAlongEdge: %.3f",
-                            element.fractionAlongEdge
-                        )
-                    )
-                    add(element, at = mapPoint)
+                val line = feature.geometry as Polyline
+                val fraction = GeometryEngine.fractionAlong(line, mapPoint, 1.0)
+                element.fractionAlongEdge = fraction
+                updateUserHint("fractionAlongEdge: %.3f".format(fraction))
+                addElementToPendingTrace(element, mapPoint)
 
-                }
             }
 
             null -> {
-                // Handle unknown case if necessary
+
             }
-        }
-
-        if (element != null && geometry != null && table != null && networkSource != null) {
-
-        } else {
-            updateUserHint("An error occurred while adding element to the trace.")
         }
     }
 
-    fun updateUserHint(message: String? = null) {
-        if (message != null) {
-            hint = message
-        } else {
-            when (tracingActivity) {
-                TracingActivity.TraceCompleted -> {
-                    hint = "Trace completed."
+    /**
+     * Actually add the UtilityElement to our UtilityTraceParameters (start or barrier)
+     * and place a graphic on the map.
+     */
+    private fun addElementToPendingTrace(element: UtilityElement, pointGeom: Geometry?) {
+        val currentParams = _pendingTraceParameters.value
+        val activity = _tracingActivity.value
+        if (currentParams == null || activity !is TracingActivity.SettingPoints) return
+
+        val graphic = Graphic(pointGeom).apply {
+            attributes["PointType"] = activity.pointType.name
+        }
+
+        when (activity.pointType) {
+            PointType.Barrier -> currentParams.barriers.add(element)
+            PointType.Start -> currentParams.startingLocations.add(element)
+        }
+
+        pointsOverlay.graphics.add(graphic)
+        _lastAddedElement.value = element
+    }
+
+    /**
+     * Switch from adding .start points to adding .barrier, or vice versa.
+     */
+    fun setPointType(pointType: PointType) {
+        val currentActivity = _tracingActivity.value
+        if (currentActivity is TracingActivity.SettingPoints) {
+            _tracingActivity.value = currentActivity.copy(pointType = pointType)
+        }
+        updateUserHint()
+    }
+
+    /**
+     * Run the trace, select results in the map’s feature layers.
+     */
+    fun trace() {
+        val params = _pendingTraceParameters.value ?: return
+        viewModelScope.launch {
+            try {
+                _tracingActivity.value = TracingActivity.TraceRunning
+                updateUserHint()
+
+                // Perform the trace
+                val traceResults: List<UtilityTraceResult> = network.trace(params).getOrElse {
+                    return@launch updateUserHint("An error occurred: ${it.message}")
                 }
 
-                is TracingActivity.SettingPoints -> {
-                    when (tracingActivity.pointType) {
-                        PointType.START -> {
-                            hint = "Tap on the map to add a start location."
-                        }
+                // Filter out element results
+                val elementResults = traceResults.filterIsInstance<UtilityElementTraceResult>()
 
-                        PointType.BARRIER -> {
-                            hint = "Tap on the map to add a barrier."
+                // For each result, group by network source name
+                elementResults.forEach { eResult ->
+                    val groupedBySource = eResult.elements.groupBy { it.networkSource.name }
+
+                    // For each group, find the corresponding FeatureLayer and select the features
+                    groupedBySource.forEach { (sourceName, elements) ->
+                        val layer = arcGISMap.operationalLayers
+                            .filterIsInstance<FeatureLayer>()
+                            .firstOrNull { fl -> fl.featureTable?.tableName == sourceName }
+                            ?: return@forEach
+
+                        // Convert the UtilityElements to actual Features
+                        val features = network.getFeaturesForElements(elements).getOrElse {
+                            return@launch updateUserHint(it.message)
                         }
+                        // Select them
+                        layer.selectFeatures(features)
                     }
                 }
 
-                is TracingActivity.TraceFailed -> {
-                    hint = "Trace failed.\n${tracingActivity.description}"
-                }
+                // Mark trace as completed
+                _tracingActivity.value = TracingActivity.TraceCompleted
+                updateUserHint()
 
-                TracingActivity.TraceRunning -> {
-                    hint = ""
-                }
-
-                null -> {
-                    hint = ""
-                }
+            } catch (e: Exception) {
+                _tracingActivity.value = TracingActivity.TraceFailed(e.message ?: "Unknown error")
+                updateUserHint()
             }
         }
     }
 
-    // The types of points used during a utility network trace.
-    enum class PointType(val label: String) {
-        // A point which marks a location for a trace to stop.
-        BARRIER("Barrier"),
-
-        // A point which marks a location for a trace to begin.
-        START("Start")
+    /**
+     * Resets the trace, removing graphics and clearing selections.
+     */
+    fun reset() {
+        arcGISMap.operationalLayers
+            .filterIsInstance<FeatureLayer>()
+            .forEach { it.clearSelection() }
+        pointsOverlay.graphics.clear()
+        _pendingTraceParameters.value = null
+        _tracingActivity.value = TracingActivity.None
+        updateUserHint(null)
     }
 
-    // The different states of a utility network trace.
-    sealed class TracingActivity {
-        // Starting points and barriers are being added.
-        data class SettingPoints(val pointType: PointType) : TracingActivity()
+    /**
+     * Update the user hint text based on the current tracingActivity, or override with message.
+     */
+    private fun updateUserHint(message: String? = null) {
+        _hint.value = message
+            ?: when (val activity = _tracingActivity.value) {
+                TracingActivity.None -> null
+                is TracingActivity.SettingPoints -> {
+                    when (activity.pointType) {
+                        PointType.Start -> "Tap on the map to add a start location."
+                        PointType.Barrier -> "Tap on the map to add a barrier."
+                    }
+                }
 
-        // The trace is running.
-        data object TraceRunning : TracingActivity()
-
-        // The trace completed successfully.
-        data object TraceCompleted : TracingActivity()
-
-        // The trace failed.
-        data class TraceFailed(val description: String) : TracingActivity()
-
-
+                TracingActivity.TraceCompleted -> "Trace completed."
+                is TracingActivity.TraceFailed -> "Trace failed.\n${activity.description}"
+                TracingActivity.TraceRunning -> null
+            }
     }
 
+    fun identifyFeature(tapEvent: SingleTapConfirmedEvent) {
+        if (_tracingActivity.value is TracingActivity.SettingPoints) {
+            viewModelScope.launch {
+                val identifyResults: List<IdentifyLayerResult> =
+                    mapViewProxy.identifyLayers(
+                        screenCoordinate = tapEvent.screenCoordinate,
+                        tolerance = 4.dp,
+                        returnPopupsOnly = false,
+                        maximumResults = 1
+                    ).getOrThrow()
+                val firstFeature =
+                    identifyResults.firstOrNull()?.geoElements?.firstOrNull()
+                if (firstFeature != null) {
+                    (firstFeature as? ArcGISFeature)?.let { arcGISFeature ->
+                        addFeature(arcGISFeature, tapEvent.mapPoint!!)
+                    }
+                }
+            }
+        }
+    }
+}
+
+enum class PointType {
+    Start,
+    Barrier
+}
+
+sealed class TracingActivity {
+    data object None : TracingActivity()
+    data class SettingPoints(val pointType: PointType) : TracingActivity()
+    data object TraceCompleted : TracingActivity()
+    data class TraceFailed(val description: String) : TracingActivity()
+    data object TraceRunning : TracingActivity()
 }
