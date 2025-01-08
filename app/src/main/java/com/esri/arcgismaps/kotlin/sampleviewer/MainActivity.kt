@@ -22,7 +22,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.esri.arcgismaps.kotlin.sampleviewer.navigation.NavGraph
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,14 +37,33 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            setContent {
-
-                SampleAppTheme {
-                    Surface(color = MaterialTheme.colorScheme.background) {
-                        NavGraph()
-                    }
+            SampleAppTheme {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    NavGraph()
+                    HandleExceptions()
                 }
             }
+        }
+    }
+
+    /**
+     * Responsible for managing incoming exceptions and displaying it as a dialog in the UI.
+     */
+    @Composable
+    fun HandleExceptions() {
+        var sampleViewerException by remember { 
+            mutableStateOf(
+                intent.extras?.let {
+                    it.getStringArray("SampleViewerException") ?: arrayOf()
+                } ?: arrayOf<String>()
+            ) 
+        }
+        if (sampleViewerException.isNotEmpty()) {
+            MessageDialog(
+                onDismissRequest = { sampleViewerException = arrayOf() },
+                title = sampleViewerException[0],
+                description = sampleViewerException[1]
+            )
         }
     }
 }
