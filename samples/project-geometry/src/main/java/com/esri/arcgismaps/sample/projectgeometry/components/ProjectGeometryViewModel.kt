@@ -119,4 +119,7 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     }
 }
 
+/**
+ * Data class representing a point and its projection into another spatial reference.
+ */
 data class PointProjection (val original: Point, val projection: Point)
