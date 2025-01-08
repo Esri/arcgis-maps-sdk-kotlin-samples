@@ -315,4 +315,10 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         }
         generateButtonEnabled = true
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        // close the current geodatabase, if any, to release internal resources and file locks
+        geodatabase?.close()
+    }
 }
