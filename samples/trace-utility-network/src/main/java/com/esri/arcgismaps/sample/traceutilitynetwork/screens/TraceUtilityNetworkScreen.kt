@@ -90,13 +90,6 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     val canPerformTrace by mapViewModel.canTrace
         .collectAsStateWithLifecycle(false)
 
-    // remove credentials on screen dispose
-    DisposableEffect(Unit) {
-        onDispose {
-            ArcGISEnvironment.authenticationManager.arcGISCredentialStore.removeAll()
-        }
-    }
-
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { padding ->
@@ -127,7 +120,9 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                 )
             }
 
-            if (terminalSelectorIsOpen) { TerminalConfigurationDialog() }
+            if (terminalSelectorIsOpen) {
+                TerminalConfigurationDialog()
+            }
 
             if (traceState is TraceState.TraceRunning && pendingTraceParameters?.traceType != null) {
                 RunningTraceDialog(
@@ -381,4 +376,20 @@ fun PreviewTraceUtilityNetworkScreen() {
             )
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun PreviewTerminalConfigurationDialog() {
+    SampleAppTheme { Surface { TerminalConfigurationDialog() } }
+}
+
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun PreviewRunningTraceDialog() {
+    SampleAppTheme { Surface { RunningTraceDialog("Downstream") } }
 }

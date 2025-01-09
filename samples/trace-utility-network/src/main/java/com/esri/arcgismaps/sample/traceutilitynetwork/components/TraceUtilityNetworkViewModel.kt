@@ -135,17 +135,16 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     companion object {
         const val USERNAME = "viewer01"
         const val PASSWORD = "I68VGU^nMurF"
-        private const val SAMPLE_SERVER_7 = "https://sampleserver7.arcgisonline.com"
-        private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
-        private const val FEATURE_SERVICE_URL = SAMPLE_SERVER_7 +
-                "/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
 
         // The portal item ID for Naperville’s electrical network
         private const val NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID = "471eb0bf37074b1fbb972b1da70fb310"
 
         // Feature layer IDs relevant to this sample
         private val FEATURE_LAYER_IDS = listOf("3", "0")
-
+        private const val SAMPLE_SERVER_7 = "https://sampleserver7.arcgisonline.com"
+        private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
+        private const val FEATURE_SERVICE_URL =
+            "$SAMPLE_SERVER_7/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
     }
 
     /**

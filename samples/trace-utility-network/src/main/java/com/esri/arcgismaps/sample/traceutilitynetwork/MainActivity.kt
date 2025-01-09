@@ -22,6 +22,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -49,6 +50,13 @@ class MainActivity : ComponentActivity() {
             TraceUtilityNetworkScreen(
                 sampleName = getString(R.string.trace_utility_network_app_name)
             )
+
+            // remove credentials on screen dispose
+            DisposableEffect(Unit) {
+                onDispose {
+                    ArcGISEnvironment.authenticationManager.arcGISCredentialStore.removeAll()
+                }
+            }
         }
     }
 }
