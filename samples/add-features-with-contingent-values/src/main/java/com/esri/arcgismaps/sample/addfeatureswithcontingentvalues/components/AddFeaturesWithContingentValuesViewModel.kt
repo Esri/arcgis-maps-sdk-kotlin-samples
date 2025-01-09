@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
+class AddFeaturesWithContingentValuesViewModel(application: Application) : AndroidViewModel(application) {
     private val provisionPath: String = application.getExternalFilesDir(null)?.path.toString() +
             File.separator + application.getString(R.string.add_features_with_contingent_values_app_name)
 
@@ -155,7 +155,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             // keep the instance of the feature table
-            this@MapViewModel.featureTable = featureTable
+            this@AddFeaturesWithContingentValuesViewModel.featureTable = featureTable
 
             // add buffer graphics for the feature layer
             showBufferGraphics()

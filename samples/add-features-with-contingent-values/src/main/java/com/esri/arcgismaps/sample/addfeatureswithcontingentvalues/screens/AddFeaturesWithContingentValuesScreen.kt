@@ -63,7 +63,7 @@ import com.arcgismaps.data.CodedValue
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.R
-import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.MapViewModel
+import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.AddFeaturesWithContingentValuesViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.components.FeatureEditState
@@ -75,12 +75,12 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(sampleName: String) {
+fun AddFeaturesWithContingentValuesScreen(sampleName: String) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // create a ViewModel to handle MapView interactions
-    val mapViewModel: MapViewModel = viewModel()
+    val mapViewModel: AddFeaturesWithContingentValuesViewModel = viewModel()
 
     // flows from view model for displaying state in UI
     val featureEditState by mapViewModel.featureEditState.collectAsStateWithLifecycle()

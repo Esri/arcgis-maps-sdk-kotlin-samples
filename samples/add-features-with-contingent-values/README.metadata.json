@@ -37,10 +37,10 @@
         "ContingentValuesResult"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/components/AddFeaturesWithContingentValuesViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/screens/AddFeaturesWithContingentValuesScreen.kt"
     ],
     "title": "Add features with contingent values"
 }

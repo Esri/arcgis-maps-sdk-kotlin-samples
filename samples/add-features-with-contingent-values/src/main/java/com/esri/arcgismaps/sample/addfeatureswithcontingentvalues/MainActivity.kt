@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.screens.MainScreen
+import com.esri.arcgismaps.sample.addfeatureswithcontingentvalues.screens.AddFeaturesWithContingentValuesScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,17 +37,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                SampleApp()
+                AddFeaturesWithContingentValuesApp()
             }
         }
     }
 
     @Composable
-    private fun SampleApp() {
+    private fun AddFeaturesWithContingentValuesApp() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
-            MainScreen(
+            AddFeaturesWithContingentValuesScreen(
                 sampleName = getString(R.string.add_features_with_contingent_values_app_name)
             )
         }
