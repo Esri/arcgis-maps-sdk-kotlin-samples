@@ -25,9 +25,7 @@
         "ContingentValuesResult"
     ],
     "language": "kotlin",
-    "redirect_from": [
-        "/android/latest/sample-code/add-features-with-contingent-values.htm"
-    ],
+    "redirect_from": [],
     "relevant_apis": [
         "ArcGISFeatureTable",
         "CodedValue",
