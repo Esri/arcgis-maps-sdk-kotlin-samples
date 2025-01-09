@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.arcgismaps.android.library)
+    alias(libs.plugins.arcgismaps.android.library.compose)
     alias(libs.plugins.arcgismaps.kotlin.sample)
     alias(libs.plugins.gradle.secrets)
 }
