@@ -43,7 +43,6 @@ import com.arcgismaps.mapping.symbology.UniqueValueRenderer
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.IdentifyLayerResult
-import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
@@ -56,37 +55,35 @@ import com.arcgismaps.utilitynetworks.UtilityTier
 import com.arcgismaps.utilitynetworks.UtilityTraceParameters
 import com.arcgismaps.utilitynetworks.UtilityTraceResult
 import com.arcgismaps.utilitynetworks.UtilityTraceType
-import kotlinx.coroutines.flow.Flow
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(application) {
 
+    // Create a message dialog view model for handling error messages
+    val messageDialogVM = MessageDialogViewModel()
+
     // The textual hint shown to the user
     private val _hint = MutableStateFlow<String?>(null)
-    val hint: Flow<String?> = _hint.asStateFlow()
-
-    // The last element that was added (start/barrier)
-    private val _lastAddedElement = MutableStateFlow<UtilityElement?>(null)
-    val lastAddedElement: Flow<UtilityElement?> = _lastAddedElement.asStateFlow()
-
-    // The last tap in screen coords + map coords
-    private val _lastSingleTap = MutableStateFlow<Pair<ScreenCoordinate, Point>?>(null)
-    val lastSingleTap: Flow<Pair<ScreenCoordinate, Point>?> = _lastSingleTap.asStateFlow()
+    val hint = _hint.asStateFlow()
 
     // The pending trace parameters
     private val _pendingTraceParameters = MutableStateFlow<UtilityTraceParameters?>(null)
-    val pendingTraceParameters: Flow<UtilityTraceParameters?> =
-        _pendingTraceParameters.asStateFlow()
+    val pendingTraceParameters = _pendingTraceParameters.asStateFlow()
 
     // Whether the terminal selector is open
     private val _terminalSelectorIsOpen = MutableStateFlow(false)
-    val terminalSelectorIsOpen: Flow<Boolean> = _terminalSelectorIsOpen.asStateFlow()
+    val terminalSelectorIsOpen = _terminalSelectorIsOpen.asStateFlow()
 
-    // Current trace “activity” state
-    private val _tracingActivity = MutableStateFlow<TracingActivity>(TracingActivity.None)
-    val tracingActivity: Flow<TracingActivity> = _tracingActivity
+    // Current trace state
+    private val _traceState = MutableStateFlow<TraceState>(TraceState.None)
+    val traceState = _traceState
+
+    // Is trace utility network enabled
+    private val _canTrace = MutableStateFlow(false)
+    val canTrace = _canTrace.asStateFlow()
 
     // An ArcGISMap holding the UtilityNetwork and operational layers
     val arcGISMap = ArcGISMap(
@@ -115,22 +112,24 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         get() = electricDistribution?.getTier("Medium Voltage Radial")
 
     // Barrier / Start points overlay
-    val pointsOverlay: GraphicsOverlay by lazy {
-        GraphicsOverlay().apply {
-            val barrierUniqueValue = UniqueValue(
-                "Barrier",
-                "", // description
-                SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.red, 20f),
-                listOf(PointType.Barrier.name)
-            )
+    val pointsOverlay = GraphicsOverlay().apply {
+        val barrierUniqueValue = UniqueValue(
+            description = "Barrier",
+            label = "",
+            symbol = SimpleMarkerSymbol(
+                style = SimpleMarkerSymbolStyle.X,
+                color = Color.red,
+                size = 20f
+            ),
+            values = listOf(PointType.Barrier.name)
+        )
 
-            // UniqueValueRenderer to differentiate barrier vs. start
-            renderer = UniqueValueRenderer().apply {
-                fieldNames.add("PointType")
-                uniqueValues.add(barrierUniqueValue)
-                defaultSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Cross, Color.green, 20f)
-            }
-        }
+        // UniqueValueRenderer to differentiate barrier vs. start
+        renderer = UniqueValueRenderer(
+            fieldNames = listOf("PointType"),
+            uniqueValues = listOf(barrierUniqueValue),
+            defaultSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Cross, Color.green, 20f)
+        )
     }
 
     companion object {
@@ -140,8 +139,10 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
         private const val FEATURE_SERVICE_URL = SAMPLE_SERVER_7 +
                 "/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
+
         // The portal item ID for Naperville’s electrical network
         private const val NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID = "471eb0bf37074b1fbb972b1da70fb310"
+
         // Feature layer IDs relevant to this sample
         private val FEATURE_LAYER_IDS = listOf("3", "0")
 
@@ -162,57 +163,65 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 password = PASSWORD
             ).onSuccess { tokenCredential ->
                 ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
-                arcGISMap.load().onSuccess {
-                    // Load the network
-                    network.load().onSuccess {
+                // load the NapervilleElectric web-map
+                arcGISMap.load().getOrElse {
+                    messageDialogVM.showMessageDialog(
+                        title = "Error loading the web-map: ${it.message}",
+                        description = it.cause.toString()
+                    )
+                }
+                // load the utility network associated with the web-map
+                network.load().getOrElse {
+                    messageDialogVM.showMessageDialog(
+                        title = "Error loading the utility network: ${it.message}",
+                        description = it.cause.toString()
+                    )
+                }
 
-                        // Once loaded, remove all operational layers
-                        arcGISMap.operationalLayers.clear()
+                // Once loaded, remove all operational layers
+                arcGISMap.operationalLayers.clear()
 
-                        // Add relevant layers
-                        FEATURE_LAYER_IDS.forEach { layerId ->
-                            val table = ServiceFeatureTable("$FEATURE_SERVICE_URL/$layerId")
-                            val layer = FeatureLayer.createWithFeatureTable(table)
-                            if (layerId == "3") {
-                                // Customize rendering for layer with ID 3
-                                layer.renderer = UniqueValueRenderer().apply {
-                                    fieldNames.add("ASSETGROUP")
-                                    uniqueValues.add(
-                                        UniqueValue(
-                                            description = "Low voltage",
-                                            label = "",
-                                            symbol = SimpleLineSymbol(
-                                                style = SimpleLineSymbolStyle.Dash,
-                                                color = Color.cyan,
-                                                width = 3f
-                                            ),
-                                            values = listOf(3)
-                                        )
-                                    )
-                                    uniqueValues.add(
-                                        UniqueValue(
-                                            description = "Medium voltage",
-                                            label = "",
-                                            symbol = SimpleLineSymbol(
-                                                style = SimpleLineSymbolStyle.Solid,
-                                                color = Color.cyan,
-                                                width = 3f
-                                            ),
-                                            values = listOf(5)
-                                        )
-                                    )
-                                }
-                            }
-                            arcGISMap.operationalLayers.add(layer)
-                        }
-                    }.onFailure {
-                        updateUserHint("An error occurred while loading the network: ${it.message}")
+                // Add relevant layers
+                FEATURE_LAYER_IDS.forEach { layerId ->
+                    val table = ServiceFeatureTable("$FEATURE_SERVICE_URL/$layerId")
+                    val layer = FeatureLayer.createWithFeatureTable(table)
+                    if (layerId == "3") {
+                        // Customize rendering for layer with ID 3
+                        layer.renderer = UniqueValueRenderer(
+                            fieldNames = listOf("ASSETGROUP"),
+                            uniqueValues = listOf(
+                                UniqueValue(
+                                    description = "Low voltage",
+                                    label = "",
+                                    symbol = SimpleLineSymbol(
+                                        style = SimpleLineSymbolStyle.Dash,
+                                        color = Color.cyan,
+                                        width = 3f
+                                    ),
+                                    values = listOf(3)
+                                ),
+                                UniqueValue(
+                                    description = "Medium voltage",
+                                    label = "",
+                                    symbol = SimpleLineSymbol(
+                                        style = SimpleLineSymbolStyle.Solid,
+                                        color = Color.cyan,
+                                        width = 3f
+                                    ),
+                                    values = listOf(5)
+                                )
+
+                            )
+                        )
                     }
-                }.onFailure {
-                    updateUserHint("An error occurred while loading the network: ${it.message}")
+                    // Add the two feature layers to the map's operational layers.
+                    arcGISMap.operationalLayers.add(layer)
                 }
             }.onFailure {
-                updateUserHint("An error occurred while loading the network: ${it.message}")
+                messageDialogVM.showMessageDialog(
+                    title = "Error using TokenCredential: ${it.message}",
+                    description = it.cause.toString()
+                )
             }
         }
     }
@@ -221,61 +230,72 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      * Initialize the trace parameters and switch to “settingPoints” mode for .start points.
      */
     fun setTraceParameters(traceType: UtilityTraceType) {
-        val params = UtilityTraceParameters(traceType, emptyList()).apply {
+        val params = UtilityTraceParameters(
+            traceType = traceType,
+            startingLocations = emptyList()
+        ).apply {
             // Attempt to set default config from the tier
             traceConfiguration = mediumVoltageRadial?.getDefaultTraceConfiguration()
         }
         _pendingTraceParameters.value = params
-        _tracingActivity.value = TracingActivity.SettingPoints(PointType.Start)
+        _traceState.value = TraceState.SettingPoints(PointType.Start)
         updateUserHint()  // triggers default “Tap on the map to add a start location.”
     }
 
     /**
-     * Add a feature to the trace (barrier or start) based on the current tracing activity.
+     * Add a feature to the trace (barrier or start) based on the current tracing state.
      */
     private fun addFeature(
         feature: ArcGISFeature,
         mapPoint: Point
     ) {
         val currentParams = _pendingTraceParameters.value
-        val activity = _tracingActivity.value
-        if (currentParams == null || activity !is TracingActivity.SettingPoints) return
+        val state = _traceState.value
+        if (currentParams == null || state !is TraceState.SettingPoints) return
 
-        // Convert to a UtilityElement. This is typically done via:
-        //   network.createElement(feature)
-        // (ArcGIS Android differs slightly from iOS)
+        // Create a UtilityElement of the selected feature
         val element = try {
             network.createElementOrNull(feature)
         } catch (e: Exception) {
-            updateUserHint("Error adding element to the trace: ${e.message}")
-            return
+            return messageDialogVM.showMessageDialog(
+                title = "Error creating UtilityElement: ${e.message}",
+                description = e.cause.toString()
+            )
         }
 
         // For a junction, add using its geometry
         // For an edge, compute fractionAlongEdge
         when (element?.networkSource?.sourceType) {
             UtilityNetworkSourceType.Junction -> {
-                addElementToPendingTrace(element, feature.geometry)
                 val terminalCount = element.assetType.terminalConfiguration?.terminals?.size ?: 0
                 if (terminalCount > 1) {
                     // Show terminal selector
                     _terminalSelectorIsOpen.value = true
                 }
-
+                addElementToPendingTrace(
+                    element = element,
+                    pointGeometry = feature.geometry,
+                    pointType = state.pointType
+                )
             }
 
             UtilityNetworkSourceType.Edge -> {
                 val line = feature.geometry as Polyline
-                val fraction = GeometryEngine.fractionAlong(line, mapPoint, 1.0)
+                val fraction = GeometryEngine.fractionAlong(
+                    line = line,
+                    point = mapPoint,
+                    tolerance = 1.0
+                )
                 element.fractionAlongEdge = fraction
                 updateUserHint("fractionAlongEdge: %.3f".format(fraction))
-                addElementToPendingTrace(element, mapPoint)
-
+                addElementToPendingTrace(
+                    element = element,
+                    pointGeometry = mapPoint,
+                    pointType = state.pointType
+                )
             }
 
-            null -> {
-
-            }
+            null -> {}
         }
     }
 
@@ -283,31 +303,31 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      * Actually add the UtilityElement to our UtilityTraceParameters (start or barrier)
      * and place a graphic on the map.
      */
-    private fun addElementToPendingTrace(element: UtilityElement, pointGeom: Geometry?) {
-        val currentParams = _pendingTraceParameters.value
-        val activity = _tracingActivity.value
-        if (currentParams == null || activity !is TracingActivity.SettingPoints) return
-
-        val graphic = Graphic(pointGeom).apply {
-            attributes["PointType"] = activity.pointType.name
+    private fun addElementToPendingTrace(
+        element: UtilityElement,
+        pointGeometry: Geometry?,
+        pointType: PointType
+    ) {
+        val graphic = Graphic(pointGeometry).apply {
+            attributes["PointType"] = pointType.name
         }
-
-        when (activity.pointType) {
-            PointType.Barrier -> currentParams.barriers.add(element)
-            PointType.Start -> currentParams.startingLocations.add(element)
-        }
-
         pointsOverlay.graphics.add(graphic)
-        _lastAddedElement.value = element
+        when (pointType) {
+            PointType.Barrier -> _pendingTraceParameters.value?.barriers?.add(element)
+            PointType.Start -> {
+                _pendingTraceParameters.value?.startingLocations?.add(element)
+                _canTrace.value = true
+            }
+        }
     }
 
     /**
      * Switch from adding .start points to adding .barrier, or vice versa.
      */
     fun setPointType(pointType: PointType) {
-        val currentActivity = _tracingActivity.value
-        if (currentActivity is TracingActivity.SettingPoints) {
-            _tracingActivity.value = currentActivity.copy(pointType = pointType)
+        val currentTraceState = _traceState.value
+        if (currentTraceState is TraceState.SettingPoints) {
+            _traceState.value = currentTraceState.copy(pointType = pointType)
         }
         updateUserHint()
     }
@@ -319,12 +339,15 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         val params = _pendingTraceParameters.value ?: return
         viewModelScope.launch {
             try {
-                _tracingActivity.value = TracingActivity.TraceRunning
+                _traceState.value = TraceState.TraceRunning
                 updateUserHint()
 
                 // Perform the trace
                 val traceResults: List<UtilityTraceResult> = network.trace(params).getOrElse {
-                    return@launch updateUserHint("An error occurred: ${it.message}")
+                    return@launch messageDialogVM.showMessageDialog(
+                        title = "Error performing trace: ${it.message}",
+                        description = it.cause.toString()
+                    )
                 }
 
                 // Filter out element results
@@ -351,12 +374,15 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 }
 
                 // Mark trace as completed
-                _tracingActivity.value = TracingActivity.TraceCompleted
+                _traceState.value = TraceState.TraceCompleted
                 updateUserHint()
 
             } catch (e: Exception) {
-                _tracingActivity.value = TracingActivity.TraceFailed(e.message ?: "Unknown error")
-                updateUserHint()
+                _traceState.value = TraceState.TraceFailed(e.message ?: "Unknown error")
+                messageDialogVM.showMessageDialog(
+                    title = "Error performing trace: ${e.message}",
+                    description = e.cause.toString()
+                )
             }
         }
     }
@@ -370,32 +396,33 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             .forEach { it.clearSelection() }
         pointsOverlay.graphics.clear()
         _pendingTraceParameters.value = null
-        _tracingActivity.value = TracingActivity.None
+        _traceState.value = TraceState.None
+        _canTrace.value = false
         updateUserHint(null)
     }
 
     /**
-     * Update the user hint text based on the current tracingActivity, or override with message.
+     * Update the user hint text based on the current TraceState, or override with message.
      */
     private fun updateUserHint(message: String? = null) {
         _hint.value = message
-            ?: when (val activity = _tracingActivity.value) {
-                TracingActivity.None -> null
-                is TracingActivity.SettingPoints -> {
-                    when (activity.pointType) {
+            ?: when (val state = _traceState.value) {
+                TraceState.None -> null
+                is TraceState.SettingPoints -> {
+                    when (state.pointType) {
                         PointType.Start -> "Tap on the map to add a start location."
                         PointType.Barrier -> "Tap on the map to add a barrier."
                     }
                 }
 
-                TracingActivity.TraceCompleted -> "Trace completed."
-                is TracingActivity.TraceFailed -> "Trace failed.\n${activity.description}"
-                TracingActivity.TraceRunning -> null
+                TraceState.TraceCompleted -> "Trace completed."
+                is TraceState.TraceFailed -> "Trace failed.\n${state.description}"
+                TraceState.TraceRunning -> null
             }
     }
 
     fun identifyFeature(tapEvent: SingleTapConfirmedEvent) {
-        if (_tracingActivity.value is TracingActivity.SettingPoints) {
+        if (_traceState.value is TraceState.SettingPoints) {
             viewModelScope.launch {
                 val identifyResults: List<IdentifyLayerResult> =
                     mapViewProxy.identifyLayers(
@@ -408,7 +435,10 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     identifyResults.firstOrNull()?.geoElements?.firstOrNull()
                 if (firstFeature != null) {
                     (firstFeature as? ArcGISFeature)?.let { arcGISFeature ->
-                        addFeature(arcGISFeature, tapEvent.mapPoint!!)
+                        addFeature(
+                            feature = arcGISFeature,
+                            mapPoint = tapEvent.mapPoint!!
+                        )
                     }
                 }
             }
@@ -421,10 +451,10 @@ enum class PointType {
     Barrier
 }
 
-sealed class TracingActivity {
-    data object None : TracingActivity()
-    data class SettingPoints(val pointType: PointType) : TracingActivity()
-    data object TraceCompleted : TracingActivity()
-    data class TraceFailed(val description: String) : TracingActivity()
-    data object TraceRunning : TracingActivity()
+sealed class TraceState {
+    data object None : TraceState()
+    data object TraceRunning : TraceState()
+    data object TraceCompleted : TraceState()
+    data class SettingPoints(val pointType: PointType) : TraceState()
+    data class TraceFailed(val description: String) : TraceState()
 }

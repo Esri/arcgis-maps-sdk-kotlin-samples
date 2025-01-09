@@ -27,15 +27,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -48,7 +47,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +54,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -64,13 +64,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.arcgismaps.utilitynetworks.UtilityTraceParameters
 import com.arcgismaps.utilitynetworks.UtilityTraceType
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.traceutilitynetwork.components.PointType
 import com.esri.arcgismaps.sample.traceutilitynetwork.components.TraceUtilityNetworkViewModel
-import com.esri.arcgismaps.sample.traceutilitynetwork.components.TracingActivity
+import com.esri.arcgismaps.sample.traceutilitynetwork.components.TraceState
 
 @Composable
 fun TraceUtilityNetworkScreen(sampleName: String) {
@@ -80,26 +81,14 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     // Observe relevant states
     val hintText by mapViewModel.hint
         .collectAsStateWithLifecycle(null)
-    val tracingActivity by mapViewModel.tracingActivity
-        .collectAsStateWithLifecycle(TracingActivity.None)
+    val traceState by mapViewModel.traceState
+        .collectAsStateWithLifecycle(TraceState.None)
     val pendingTraceParameters by mapViewModel.pendingTraceParameters
         .collectAsStateWithLifecycle(null)
     val terminalSelectorIsOpen by mapViewModel.terminalSelectorIsOpen
         .collectAsStateWithLifecycle(false)
-    val pendingTraceParams by mapViewModel.pendingTraceParameters
-        .collectAsState(null)
-
-    // React to changes in tracingActivity – e.g., if we just switched to TraceRunning, call trace()
-    LaunchedEffect(tracingActivity) {
-        if (tracingActivity is TracingActivity.TraceRunning) {
-            try {
-                mapViewModel.trace() // runs the trace
-                // If successful, the VM sets TracingActivity to TraceCompleted
-            } catch (e: Exception) {
-                // If thrown, the VM presumably sets TracingActivity.TraceFailed
-            }
-        }
-    }
+    val canPerformTrace by mapViewModel.canTrace
+        .collectAsStateWithLifecycle(false)
 
     // remove credentials on screen dispose
     DisposableEffect(Unit) {
@@ -111,11 +100,7 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { padding ->
-            Column(
-                modifier = Modifier.padding(padding),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            Column(modifier = Modifier.padding(padding)) {
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
@@ -129,76 +114,61 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                 )
 
                 // Bottom toolbar with trace options
-                Column(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .animateContentSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (hintText != null) {
-                        Text(text = hintText ?: "")
-                    }
-
-                    TraceOptions(
-                        pendingTraceParams = pendingTraceParams,
-                        tracingActivity = tracingActivity,
-                        onPointTypeChanged = mapViewModel::setPointType,
-                        onTraceTypeSelected = mapViewModel::setTraceParameters,
-                        onResetSelected = mapViewModel::reset,
-                        onTraceSelected = mapViewModel::trace
-                    )
-                }
+                TraceOptions(
+                    traceState = traceState,
+                    hintText = hintText ?: "Trace Options",
+                    isTraceButtonEnabled = canPerformTrace,
+                    selectedTraceType = pendingTraceParameters?.traceType,
+                    currentPointType = (traceState as? TraceState.SettingPoints)?.pointType,
+                    onPointTypeChanged = mapViewModel::setPointType,
+                    onTraceTypeSelected = mapViewModel::setTraceParameters,
+                    onResetSelected = mapViewModel::reset,
+                    onTraceSelected = mapViewModel::trace
+                )
             }
 
-            if (terminalSelectorIsOpen) {
-                BasicAlertDialog(
-                    onDismissRequest = {},
-                    properties = DialogProperties()
-                ) {
-                    Surface {
-                        Column {
-                            Text(
-                                modifier = Modifier.padding(24.dp),
-                                text = "Select Terminal"
-                            )
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                OutlinedButton(onClick = {}) { Text("High") }
-                                OutlinedButton(onClick = {}) { Text("Low") }
-                            }
-                        }
-                    }
-                }
-            }
+            if (terminalSelectorIsOpen) { TerminalConfigurationDialog() }
 
-            if (tracingActivity is TracingActivity.TraceRunning &&
-                pendingTraceParameters?.traceType != null
-            ) {
+            if (traceState is TraceState.TraceRunning && pendingTraceParameters?.traceType != null) {
                 RunningTraceDialog(
                     traceName = pendingTraceParameters?.traceType?.javaClass?.simpleName.toString()
                 )
+            }
+
+            mapViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
             }
         }
     )
 }
 
 @Composable
-fun RunningTraceDialog(traceName: String) {
-    BasicAlertDialog(onDismissRequest = {}, content = {
+fun TerminalConfigurationDialog() {
+    BasicAlertDialog(
+        onDismissRequest = {},
+        properties = DialogProperties()
+    ) {
         Surface {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "Running $traceName trace...")
-                CircularProgressIndicator()
+            Column {
+                Text(
+                    modifier = Modifier.padding(24.dp),
+                    text = "Select Terminal"
+                )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(onClick = {}) { Text("High") }
+                    OutlinedButton(onClick = {}) { Text("Low") }
+                }
             }
         }
-    })
+    }
 }
+
 
 /**
  * - A trace-type picker
@@ -207,54 +177,42 @@ fun RunningTraceDialog(traceName: String) {
  */
 @Composable
 fun TraceOptions(
-    pendingTraceParams: UtilityTraceParameters?,
-    tracingActivity: TracingActivity,
+    isTraceButtonEnabled: Boolean,
+    traceState: TraceState,
+    hintText: String,
+    selectedTraceType: UtilityTraceType?,
+    currentPointType: PointType?,
     onTraceTypeSelected: (UtilityTraceType) -> Unit,
     onPointTypeChanged: (PointType) -> Unit,
     onResetSelected: () -> Unit,
     onTraceSelected: () -> Unit
 
 ) {
-    // Observe state
-    val canTrace = (pendingTraceParams?.startingLocations?.isNotEmpty() == true)
-    // Example list of supported trace types
-    val traceOptions = listOf(
-        UtilityTraceType.Downstream,
-        UtilityTraceType.Upstream,
-        UtilityTraceType.Subnetwork,
-        UtilityTraceType.Connected
-    )
-
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(12.dp)
+            .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Show a menu to pick a new trace type
+
+        Text(text = hintText, style = MaterialTheme.typography.labelLarge)
+
+        // Show a dropdown menu to pick a new trace type
         ExposedDropdownMenuBoxWithTraceTypes(
-            traceOptions = traceOptions,
+            selectedTraceType = selectedTraceType,
             onTraceTypeSelected = onTraceTypeSelected
         )
 
-        // Show segmented button for Start vs Barrier
-        var selectedIndex by remember { mutableIntStateOf(0) }
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            val options = listOf("Add starting location(s)", "Add barrier(s)")
-            options.forEachIndexed { index, label ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index, count = options.size
-                    ),
-                    onClick = {
-                        selectedIndex = index
-                        // Switch between Start/Barrier
-                        onPointTypeChanged(if (index == 0) PointType.Start else PointType.Barrier)
-                    },
-                    selected = (index == selectedIndex)
-                ) { Text(label) }
-            }
-        }
+        // Display segmented button for starting point type or barrier point type
+        SegmentedButtonTracePointTypes(
+            currentPointType = currentPointType,
+            onPointTypeChanged = onPointTypeChanged,
+            isPointTypesEnabled = selectedTraceType != null
+        )
 
+        // Display a row with reset and trace controls
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -263,13 +221,13 @@ fun TraceOptions(
         ) {
             OutlinedButton(
                 onClick = { onResetSelected() },
-                enabled = (tracingActivity !is TracingActivity.TraceRunning)
+                enabled = (traceState !is TraceState.TraceRunning)
             ) {
                 Text("Reset")
             }
             Button(
                 onClick = { onTraceSelected() },
-                enabled = canTrace
+                enabled = isTraceButtonEnabled
             ) {
                 Text("Trace")
             }
@@ -283,27 +241,43 @@ fun TraceOptions(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposedDropdownMenuBoxWithTraceTypes(
-    traceOptions: List<UtilityTraceType>,
+    selectedTraceType: UtilityTraceType?,
     onTraceTypeSelected: (UtilityTraceType) -> Unit
 ) {
+    val traceOptions = listOf(
+        UtilityTraceType.Downstream,
+        UtilityTraceType.Upstream,
+        UtilityTraceType.Subnetwork,
+        UtilityTraceType.Connected
+    )
+
+    var selectedTraceName by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
-    var selectedTraceName by remember { mutableStateOf("Select a trace type") }
+
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(selectedTraceType) {
+        if (selectedTraceType == null) {
+            focusManager.clearFocus()
+            selectedTraceName = "Select a trace type"
+        } else selectedTraceName = traceTypeDisplayName(selectedTraceType)
+    }
 
     ExposedDropdownMenuBox(
+        modifier = Modifier.focusRequester(focusRequester),
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         TextField(
-            value = selectedTraceName,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("Trace Type") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
             modifier = Modifier
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            label = { Text("Trace Type") },
+            value = selectedTraceName,
+            readOnly = true,
+            onValueChange = { },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -314,7 +288,6 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
                 DropdownMenuItem(
                     text = { Text(displayName) },
                     onClick = {
-                        selectedTraceName = displayName
                         expanded = false
                         onTraceTypeSelected(traceType)
                     }
@@ -325,6 +298,56 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
             }
         }
     }
+}
+
+@Composable
+fun SegmentedButtonTracePointTypes(
+    currentPointType: PointType?,
+    onPointTypeChanged: (PointType) -> Unit,
+    isPointTypesEnabled: Boolean
+) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    // Show segmented button for Start vs Barrier
+    var selectedIndex by remember { mutableIntStateOf(-1) }
+
+    LaunchedEffect(currentPointType) {
+        if (currentPointType == null) {
+            focusManager.clearFocus()
+            selectedIndex = -1
+        } else {
+            selectedIndex = if (currentPointType == PointType.Start) 0 else 1
+        }
+    }
+
+    SingleChoiceSegmentedButtonRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester)
+    ) {
+        val options = listOf("Add starting location(s)", "Add barrier(s)")
+        options.forEachIndexed { index, label ->
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = index, count = options.size
+                ),
+                onClick = {
+                    selectedIndex = index
+                    // Switch between Start/Barrier
+                    onPointTypeChanged(if (index == 0) PointType.Start else PointType.Barrier)
+                },
+                enabled = isPointTypesEnabled,
+                selected = (index == selectedIndex)
+            ) { Text(label) }
+        }
+    }
+}
+
+
+@Composable
+fun RunningTraceDialog(traceName: String) {
+    LoadingDialog(loadingMessage = "Running $traceName trace...")
 }
 
 fun traceTypeDisplayName(type: UtilityTraceType): String =
@@ -344,5 +367,18 @@ fun traceTypeDisplayName(type: UtilityTraceType): String =
 @Composable
 fun PreviewTraceUtilityNetworkScreen() {
     SampleAppTheme {
+        Surface {
+            TraceOptions(
+                isTraceButtonEnabled = true,
+                traceState = TraceState.None,
+                selectedTraceType = null,
+                currentPointType = null,
+                hintText = "Trace options",
+                onTraceTypeSelected = { },
+                onPointTypeChanged = { },
+                onResetSelected = { },
+                onTraceSelected = { },
+            )
+        }
     }
 }
