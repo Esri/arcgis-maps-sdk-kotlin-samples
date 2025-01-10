@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 
 class CutGeometryViewModel(application: Application) : AndroidViewModel(application) {
 
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
+    // create a map with the topographic basemap style
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
             initialViewpoint = Viewpoint(
@@ -60,6 +60,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
+    // create a polygon corresponding to Lake Superior
     private val lakeSuperiorPolygon by lazy {
         PolygonBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-10254374.668616, 5908345.076380))
@@ -95,6 +96,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }.toGeometry()
     }
 
+    // create a polyline that divides Lake Superior into a Canada side and US side
     private val borderPolyline by lazy {
         PolylineBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-9981328.687124, 6111053.281447))
@@ -154,6 +156,9 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    /**
+     * Clear the current graphics, then re-add the graphics for Lake Superior and the cut polyline
+     * */
     fun resetGeometry() {
         graphicsOverlay.graphics.clear()
         graphicsOverlay.graphics.add(polylineGraphic)
@@ -168,6 +173,10 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         _isCutButtonEnabled.value = true
     }
 
+    /**
+     * Cut the Lake Superior graphic into a US side and Canada side using the cut polyline
+     * and then add the resulting graphics to the graphics overlay
+     */
     fun cutGeometry() {
         polygonGraphic.geometry?.let { graphicGeometry ->
             val parts = GeometryEngine.tryCut(
@@ -197,6 +206,9 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    /**
+     * Companion for a nicer color
+     */
     private val Color.Companion.blue: Color
         get() {
             return fromRgba(0, 0, 255, 255)
