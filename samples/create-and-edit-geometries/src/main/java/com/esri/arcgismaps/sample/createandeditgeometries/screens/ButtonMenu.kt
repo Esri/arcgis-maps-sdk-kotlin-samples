@@ -58,7 +58,7 @@ fun ButtonMenu(
         .fillMaxWidth()
         .horizontalScroll(rememberScrollState()) // TODO: check if this is still necessary
 
-    val isCreateButtonEnabled by mapViewModel.isCreateButtonEnabled.collectAsStateWithLifecycle()
+    val isGeometryEditorStarted by mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle()
 
     Row(
         modifier = rowModifier
@@ -69,7 +69,7 @@ fun ButtonMenu(
             modifier = Modifier
         ) {
             IconButton(
-                enabled = isCreateButtonEnabled,
+                enabled = !isGeometryEditorStarted,
                 onClick = { expanded = !expanded }
             ) {
                 Icon(imageVector = Icons.Default.Create, contentDescription = "Start")
@@ -107,6 +107,12 @@ fun ButtonMenu(
                     }
                 )
             }
+        }
+        IconButton(
+            enabled = isGeometryEditorStarted,
+            onClick = { mapViewModel.stopEditor() }
+        ) {
+            Icon(vector.vectorResource(R.drawable.check_32), contentDescription = "Save Edits")
         }
     }
 }

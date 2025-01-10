@@ -49,9 +49,19 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
-                    geometryEditor = mapViewModel.geometryEditor
+                    geometryEditor = mapViewModel.geometryEditor,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay)
                 )
                 ButtonMenu(mapViewModel)
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
 
             mapViewModel.messageDialogVM.apply {

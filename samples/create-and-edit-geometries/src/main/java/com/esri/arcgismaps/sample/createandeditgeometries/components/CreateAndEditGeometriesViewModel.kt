@@ -22,10 +22,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.GeometryType
+import com.arcgismaps.geometry.Multipoint
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.Polygon
+import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,11 +53,11 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     // create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
     val mapViewProxy = MapViewProxy()
 
+    // create a graphic, graphic overlay, and geometry editorenc
+    private var identifiedGraphic = Graphic()
+    val graphicsOverlay = GraphicsOverlay()
     // create a geometry editor
     val geometryEditor = GeometryEditor()
-
-    private val _isCreateButtonEnabled = MutableStateFlow(false)
-    val isCreateButtonEnabled = _isCreateButtonEnabled.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -59,8 +66,6 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
                     "Failed to load map",
                     error.message.toString()
                 )
-            }.onSuccess {
-                _isCreateButtonEnabled.value = true
             }
         }
     }
@@ -71,8 +76,40 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     fun startEditor(selectedGeometry: GeometryType) {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(selectedGeometry)
-            _isCreateButtonEnabled.value = false
         }
+    }
+
+    /**
+     * Stops the GeometryEditor and updates the identified graphic or calls [createGraphic].
+     */
+    fun stopEditor() {
+        if (identifiedGraphic.geometry != null) {
+            identifiedGraphic.geometry = geometryEditor.stop()
+            identifiedGraphic.isSelected = false
+        } else if (geometryEditor.isStarted.value) {
+            createGraphic()
+        }
+    }
+
+    /**
+     * Creates a graphic from the geometry and add it to the GraphicsOverlay.
+     */
+    private fun createGraphic() {
+        val geometry = geometryEditor.stop()
+            ?: return messageDialogVM.showMessageDialog(
+                "Error!",
+                "Error stopping editing session"
+            )
+        val graphic = Graphic(geometry)
+
+        when (geometry) {
+            is Point, is Multipoint -> graphic.symbol = GeometryEditorStyle().vertexSymbol
+            is Polyline -> graphic.symbol = GeometryEditorStyle().lineSymbol
+            is Polygon -> graphic.symbol = GeometryEditorStyle().fillSymbol
+            else -> {}
+        }
+        graphicsOverlay.graphics.add(graphic)
+        graphic.isSelected = false
     }
 
 }
