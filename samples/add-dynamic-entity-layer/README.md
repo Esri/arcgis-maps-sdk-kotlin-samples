@@ -38,9 +38,9 @@ This sample uses a [stream service](https://realtimegis2016.esri.com:6443/arcgis
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 More information about dynamic entities can be found in the [guide documentation](https://developers.arcgis.com/kotlin/real-time/work-with-dynamic-entities/).
 
 ## Tags
 
-data, dynamic, entity, geoviewcompose, live, purge, real-time, service, stream, toolkit, track
+data, dynamic, entity, geoview-compose, live, purge, real-time, service, stream, toolkit, track

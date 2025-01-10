@@ -12,6 +12,7 @@
         "dynamic",
         "entity",
         "flow",
+        "geoview-compose",
         "label",
         "labeling",
         "live",
@@ -36,10 +37,10 @@
         "TrackDisplayProperties"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/components/CustomEntityFeedProvider.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/screens/MainScreen.kt"
     ],
     "title": "Add custom dynamic entity data source"

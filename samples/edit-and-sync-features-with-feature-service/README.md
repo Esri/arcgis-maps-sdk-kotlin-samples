@@ -36,8 +36,8 @@ Pan and zoom into the desired area, making sure the area you want to take offlin
 
 ## Additional information
 
-This sample uses the GeoViewCompose Toolkit module to be able to implement a Composable MapView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 
-feature service, geodatabase, geoviewcompose, offline, synchronize
+feature service, geodatabase, geoview-compose, offline, synchronize

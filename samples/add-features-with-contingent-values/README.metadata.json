@@ -1,42 +1,46 @@
 {
-  "category": "Edit and Manage Data",
-  "description": "Create and add features whose attribute values satisfy a predefined set of contingencies.",
-  "formal_name": "AddFeaturesWithContingentValues",
-  "ignore": false,
-  "images": [
-    "add-features-with-contingent-values.png"
-  ],
-  "keywords": [
-    "coded values",
-    "contingent values",
-    "feature table",
-    "geodatabase",
-    "ArcGISFeatureTable",
-    "CodedValue",
-    "CodedValueDomain",
-    "ContingencyConstraintViolation",
-    "ContingentCodedValue",
-    "ContingentRangeValue",
-    "ContingentValuesDefinition",
-    "ContingentValuesResult"
-  ],
-  "language": "kotlin",
-  "redirect_from": [
-    "/android/latest/sample-code/add-features-with-contingent-values.htm"
-  ],
-  "relevant_apis": [
-    "ArcGISFeatureTable",
-    "CodedValue",
-    "CodedValueDomain",
-    "ContingencyConstraintViolation",
-    "ContingentCodedValue",
-    "ContingentRangeValue",
-    "ContingentValuesDefinition",
-    "ContingentValuesResult"
-  ],
-  "snippets": [
-    "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/MainActivity.kt",
-    "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/DownloadActivity.kt"
-  ],
-  "title": "Add features with contingent values"
+    "category": "Edit and Manage Data",
+    "description": "Create and add features whose attribute values satisfy a predefined set of contingencies.",
+    "formal_name": "AddFeaturesWithContingentValues",
+    "ignore": false,
+    "images": [
+        "add-features-with-contingent-values.png"
+    ],
+    "keywords": [
+        "coded values",
+        "compose",
+        "contingent values",
+        "feature table",
+        "geodatabase",
+        "geoview",
+        "mapview",
+        "toolkit",
+        "ArcGISFeatureTable",
+        "CodedValue",
+        "CodedValueDomain",
+        "ContingencyConstraintViolation",
+        "ContingentCodedValue",
+        "ContingentRangeValue",
+        "ContingentValuesDefinition",
+        "ContingentValuesResult"
+    ],
+    "language": "kotlin",
+    "redirect_from": [],
+    "relevant_apis": [
+        "ArcGISFeatureTable",
+        "CodedValue",
+        "CodedValueDomain",
+        "ContingencyConstraintViolation",
+        "ContingentCodedValue",
+        "ContingentRangeValue",
+        "ContingentValuesDefinition",
+        "ContingentValuesResult"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/components/AddFeaturesWithContingentValuesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/screens/AddFeaturesWithContingentValuesScreen.kt"
+    ],
+    "title": "Add features with contingent values"
 }

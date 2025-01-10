@@ -8,7 +8,7 @@
     ],
     "keywords": [
         "3D",
-        "geoviewcompose",
+        "geoview-compose",
         "layer",
         "scene",
         "ArcGISScene",
@@ -23,8 +23,8 @@
         "SceneView"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addscenelayerwithelevation/screens/MainScreen.kt"
     ],
     "title": "Add scene layer with elevation"
