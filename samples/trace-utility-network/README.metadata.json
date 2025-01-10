@@ -9,6 +9,7 @@
     "keywords": [
         "condition barriers",
         "downstream trace",
+        "geoview-compose",
         "network analysis",
         "subnetwork trace",
         "toolkit",
@@ -18,7 +19,6 @@
         "utility network",
         "validate consistency",
         "FractionAlong",
-        "ServiceGeodatabase",
         "UtilityAssetType",
         "UtilityDomainNetwork",
         "UtilityElement",
@@ -38,7 +38,6 @@
     "redirect_from": "",
     "relevant_apis": [
         "FractionAlong",
-        "ServiceGeodatabase",
         "UtilityAssetType",
         "UtilityDomainNetwork",
         "UtilityElement",
