@@ -9,12 +9,14 @@
     "keywords": [
         "directions",
         "driving",
+        "geoview-compose",
         "navigation",
         "network",
         "network analysis",
         "route",
         "routing",
         "shortest path",
+        "toolkit",
         "turn-by-turn",
         "DirectionManeuver",
         "Route",
@@ -35,8 +37,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/findroute/FindRouteViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/findroute/FindRouteScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/findroute/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/findroute/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/findroute/FindRouteScreen.kt"
     ],
     "title": "Find route"
 }
