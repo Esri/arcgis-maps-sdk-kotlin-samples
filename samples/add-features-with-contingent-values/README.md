@@ -12,7 +12,7 @@ For example, a field crew working in a sensitive habitat area may be required to
 
 ## How to use the sample
 
-Tap on the map to add a feature symbolizing a bird's nest. Then choose values describing the nest's status, protection, and buffer size. Notice how different values are available depending on the values of preceding fields. Once the contingent values are validated, tap "Done" to add the feature to the map.
+Tap on the map to add a feature symbolizing a bird's nest. Then choose values describing the nest's status, protection, and buffer size. Notice how different values are available depending on the values of preceding fields. Once the contingent values are validated, tap "Apply" to add the feature to the map.
 
 ## How it works
 
@@ -29,6 +29,7 @@ Tap on the map to add a feature symbolizing a bird's nest. Then choose values de
    ii. Get an array of valid `ContingentValues` from `ContingentValuesResult.contingentValuesByFieldGroup` dictionary with the name of the relevant field group.  
    iii. Iterate through the array of valid contingent values to create an array of `ContingentCodedValue` names or the minimum and maximum values of a `ContingentRangeValue` depending on the type of `ContingentValue` returned.
 10. Validate the feature's contingent values by using `validateContingencyConstraints(feature)` with the current feature. If the resulting array is empty, the selected values are valid.
+11. Close the geodatabase once operations are complete to ensure temporary files are cleaned up.
 
 ## Relevant API
 
@@ -48,8 +49,9 @@ The mobile geodatabase contains birds nests in the Fillmore area, defined with c
 
 ## Additional information
 
+This sample uses the `geoview-compose` module of the ArcGIS Maps SDK for Kotlin Toolkit to implement a Composable MapView.
 Learn more about contingent values and how to utilize them on the [ArcGIS Pro documentation](https://pro.arcgis.com/en/pro-app/latest/help/data/geodatabases/overview/contingent-values.htm).
 
 ## Tags
 
-coded values, contingent values, feature table, geodatabase
+coded values, compose, contingent values, feature table, geodatabase, geoview, mapview, toolkit

@@ -1,5 +1,5 @@
 <resources>
     <string name="clip_geometry_app_name">Clip geometry</string>
     <string name="clip_geometry_button_text">Clip geometry</string>
-    <string name="rest_button_text">Reset</string>
+    <string name="reset_button_text">Reset</string>
 </resources>
