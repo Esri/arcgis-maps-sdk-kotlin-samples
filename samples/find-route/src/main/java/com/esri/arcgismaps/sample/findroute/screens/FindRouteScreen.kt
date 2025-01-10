@@ -1,4 +1,4 @@
-/* Copyright 2024 Esri
+/* Copyright 2025 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 
 package com.esri.arcgismaps.sample.findroute.screens
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,20 +33,19 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,9 +59,10 @@ import com.arcgismaps.tasks.networkanalysis.DirectionManeuver
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.findroute.R
 import com.esri.arcgismaps.sample.findroute.components.FindRouteViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -71,39 +70,18 @@ import kotlinx.coroutines.launch
 @Composable
 fun FindRouteScreen(sampleName: String) {
     val mapViewModel: FindRouteViewModel = viewModel()
-    val scope = rememberCoroutineScope()
-    val sheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            skipHiddenState = false
-        )
-    )
 
-    val isRouteSolved = mapViewModel.directions.isNotEmpty()
+    var isRouteTaskRunning by remember { mutableStateOf(false) }
+    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    val isDirectionsAvailable = mapViewModel.directions.isNotEmpty()
 
-    BottomSheetScaffold(
+    Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        scaffoldState = sheetState,
-        sheetPeekHeight = 0.dp,
-        sheetContent = {
-            DirectionManeuversSheet(
-                directions = mapViewModel.directions,
-                routeDirectionsInfo = mapViewModel.routeDirectionsInfo,
-                onDirectionManeuverSelected = {
-                    mapViewModel.selectDirectionManeuver(it)
-                },
-                onDismissSelected = {
-                    scope.launch { sheetState.bottomSheetState.hide() }
-                }
-            )
-        },
         content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
-                    .animateContentSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 MapView(
                     modifier = Modifier
@@ -121,30 +99,47 @@ fun FindRouteScreen(sampleName: String) {
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedButton(
-                        onClick = { scope.launch { mapViewModel.solveRoute() } }
-                    ) {
-                        Text("Solve route directions")
-                    }
-
-                    FilledTonalIconButton(
-                        enabled = isRouteSolved,
-                        onClick = {
-                            scope.launch {
-                                if (isRouteSolved) sheetState.bottomSheetState.expand()
+                    // solve route button
+                    OutlinedButton(onClick = {
+                        // show loading dialog
+                        isRouteTaskRunning = true
+                        // run the route task to solve route
+                        mapViewModel.solveRoute(
+                            onSolveRouteCompleted = {
+                                isRouteTaskRunning = false
+                                isBottomSheetVisible = true
                             }
-                        }
-                    ) {
+                        )
+                    }) { Text("Solve route directions") }
+                    // directions icon button
+                    FilledTonalIconButton(
+                        enabled = isDirectionsAvailable,
+                        onClick = { if (isDirectionsAvailable) isBottomSheetVisible = true })
+                    {
                         Icon(
-                            modifier = Modifier.size(30.dp).padding(4.dp),
+                            modifier = Modifier.size(30.dp),
                             painter = painterResource(R.drawable.ic_navigate),
                             contentDescription = "Directions icon",
-                            tint = if (!isRouteSolved) Color.Gray else MaterialTheme.colorScheme.primary
+                            tint = if (!isDirectionsAvailable) Color.Gray else MaterialTheme.colorScheme.primary
                         )
                     }
                 }
             }
 
+            // Bottom sheet to display list of direction maneuvers
+            BottomSheet(isBottomSheetVisible) {
+                DirectionManeuversSheet(
+                    directions = mapViewModel.directions,
+                    routeDirectionsInfo = mapViewModel.routeDirectionsInfo,
+                    onDirectionManeuverSelected = {
+                        isBottomSheetVisible = false
+                        mapViewModel.selectDirectionManeuver(it)
+                    },
+                    onDismissSelected = {
+                        isBottomSheetVisible = false
+                    }
+                )
+            }
 
             // display a MessageDialog if the sample encounters an error
             mapViewModel.messageDialogVM.apply {
@@ -155,6 +150,10 @@ fun FindRouteScreen(sampleName: String) {
                         onDismissRequest = ::dismissDialog
                     )
                 }
+            }
+
+            if (isRouteTaskRunning) {
+                LoadingDialog("Solving route ...")
             }
         }
     )
@@ -167,34 +166,38 @@ fun DirectionManeuversSheet(
     onDirectionManeuverSelected: (DirectionManeuver) -> Unit,
     onDismissSelected: () -> Unit
 ) {
-    val height = LocalConfiguration.current.screenHeightDp / 2
-    Column(Modifier.height(height.dp)) {
+    // Use 1/2 screen height to display sheet
+    Column(
+        modifier = Modifier
+            .height((LocalConfiguration.current.screenHeightDp * 0.5).dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 text = "Directions: $routeDirectionsInfo",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
 
-            IconButton(onClick = { onDismissSelected() }) {
+            FilledTonalIconButton(onClick = { onDismissSelected() }) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Dismiss sheet",
-                    tint = MaterialTheme.colorScheme.primary
+                    contentDescription = "Dismiss sheet"
                 )
             }
         }
 
         LazyColumn(
             modifier = Modifier
-                .padding(12.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         ) {
@@ -205,7 +208,7 @@ fun DirectionManeuversSheet(
                             .fillMaxWidth()
                             .padding(12.dp),
                         text = directionManeuver.directionText,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyMedium
                     )
 
                     if (index < directions.size - 1)
