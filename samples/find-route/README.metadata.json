@@ -24,6 +24,7 @@
         "Stop"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "DirectionManeuver",
         "Route",
