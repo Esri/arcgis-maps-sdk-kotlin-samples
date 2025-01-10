@@ -55,9 +55,9 @@
         "UtilityTraversability"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/components/TraceUtilityNetworkViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/screens/TraceUtilityNetworkScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/components/TraceUtilityNetworkViewModel.kt"
+        "src/main/java/com/esri/arcgismaps/sample/traceutilitynetwork/screens/TraceUtilityNetworkScreen.kt"
     ],
     "title": "Trace utility network"
 }

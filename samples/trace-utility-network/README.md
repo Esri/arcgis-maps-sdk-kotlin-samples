@@ -14,26 +14,24 @@ Tap on one or more features while 'Add starting locations' or 'Add barriers' is 
 
 ## How it works
 
-1. Create a `MapView` and subscribe to its `GeoViewTapped` event.
-2. Create and load a `ServiceGeodatabase` with a feature service URL and get tables by their layer IDs.
-3. Create a `Map` that contains `FeatureLayer`(s) created from the `ServiceGeodatabase`'s tables.
-4. Create and load a `UtilityNetwork` with the same feature service URL and this `Map`.
-5. Add a `GraphicsOverlay` with symbology that distinguishes starting locations from barriers.
-6. Identify features on the map and add a `Graphic` that represents its purpose (starting location or barrier) at the tapped location.
+1. Create a `MapView` and identify the feature `onSingleTap` event.
+2. Create an `ArcGISMap` that contains `FeatureLayer`(s) created from the `ServiceFeatureTable`'s.
+3. Create and load a `UtilityNetwork` with the same feature service URL on the `ArcGISMap`.
+4. Add a `GraphicsOverlay` with symbology that distinguishes starting locations from barriers.
+5. Identify features on the map and add a `Graphic` that represents its purpose (starting location or barrier) at the tapped location.
 7. Create a `UtilityElement` for the identified feature.
-8. Determine the type of this element using its `UtilityNetworkSource.SourceType` property.
+8. Determine the type of this element using its `UtilityNetworkSourceType` property.
 9. If the element is a junction with more than one terminal, display a terminal picker. Then set the junction's `UtilityTerminal` property with the selected terminal.
 10. If an edge, set its `FractionAlongEdge` property using `GeometryEngine.FractionAlong`.
 11. Add this `UtilityElement` to a collection of starting locations or barriers.
 12. Create `UtilityTraceParameters` with the selected trace type along with the collected starting locations and barriers (if applicable).
-13. Set the `UtilityTraceParameters.TraceConfiguration` with the tier's `UtilityTier.GetDefaultTraceConfiguration()` result.
-14. Run a `UtilityNetwork.TraceAsync` with the specified parameters.
-15. For every `FeatureLayer` in the map, select the features returned with `GetFeaturesForElementsAsync` from the elements matching their `UtilityNetworkSource.FeatureTable` with the layer's `FeatureTable`.
+13. Set the `UtilityTraceParameters.TraceConfiguration` with the tier's `UtilityTier.getDefaultTraceConfiguration()` result.
+14. Run a `UtilityNetwork.trace()` with the specified parameters.
+15. For every `FeatureLayer` in the map, select the features returned with elements matching their `UtilityNetworkSource.FeatureTable` with the layer's `FeatureTable`.
 
 ## Relevant API
 
 * FractionAlong
-* ServiceGeodatabase
 * UtilityAssetType
 * UtilityDomainNetwork
 * UtilityElement
@@ -59,6 +57,8 @@ Using utility network on ArcGIS Enterprise 10.8 requires an ArcGIS Enterprise me
 
 A `UtilityNetworkTrace` toolkit component can be used for various utility network related use cases. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit repository](https://github.com/Esri/arcgis-maps-sdk-swift-toolkit).
 
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView. Use the [UtilityNetworkTrace](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/utilitynetworks) tool to help configure, run, and visualize UtilityNetworkTraces on a composable MapView.
+
 ## Tags
 
-condition barriers, downstream trace, network analysis, subnetwork trace, toolkit, trace configuration, traversability, upstream trace, utility network, validate consistency
+condition barriers, downstream trace, geoview-compose, network analysis, subnetwork trace, toolkit, trace configuration, traversability, upstream trace, utility network, validate consistency

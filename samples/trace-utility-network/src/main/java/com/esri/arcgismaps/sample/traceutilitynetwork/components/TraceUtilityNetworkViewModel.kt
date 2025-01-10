@@ -25,6 +25,7 @@ import com.arcgismaps.Color
 import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.data.ServiceFeatureTable
+import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
@@ -33,6 +34,7 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.layers.SelectionMode
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
@@ -72,58 +74,59 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     private val _canTrace = MutableStateFlow(false)
     val canTrace = _canTrace.asStateFlow()
 
-    // The managed trace state for the sample
+    // The trace state used for the sample
     private val _traceState = MutableStateFlow(TraceState.NOT_STARTED)
     val traceState = _traceState.asStateFlow()
 
-    // Currently selected trace type
+    // Currently selected utility trace type
     private val _selectedTraceType = MutableStateFlow<UtilityTraceType?>(null)
     val selectedTraceType = _selectedTraceType.asStateFlow()
 
-    // Currently selected point type
+    // Currently selected point type (start/barrier)
     private val _selectedPointType = MutableStateFlow(PointType.None)
     val selectedPointType = _selectedPointType.asStateFlow()
 
-    // Terminal configuration options
+    // Terminal configuration options (high/low)
     private val _terminalConfigurationOptions = MutableStateFlow<List<UtilityTerminal>>(listOf())
     val terminalConfigurationOptions = _terminalConfigurationOptions.asStateFlow()
 
+    // Currently selected terminal configuration
     private var _selectedTerminalConfigurationIndex = MutableStateFlow<Int?>(null)
 
-    // An ArcGISMap holding the UtilityNetwork and operational layers
+    // ArcGISMap holding the UtilityNetwork and operational layers
     val arcGISMap = ArcGISMap(
         item = PortalItem(
             portal = Portal.arcGISOnline(connection = Portal.Connection.Authenticated),
             itemId = NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID
         )
     ).apply {
-        // add the map with streets night vector basemap
+        // Add the map with streets night vector basemap
         setBasemap(Basemap(BasemapStyle.ArcGISStreetsNight))
     }
 
     // Used to handle map view animations
     val mapViewProxy = MapViewProxy()
 
-    // The UtilityNetwork object, assumed to be in map.utilityNetworks[0]
+    // The utility network used for tracing.
     private val utilityNetwork: UtilityNetwork
         get() = arcGISMap.utilityNetworks[0]
 
-    // Domain network
+    // Use the ElectricDistribution domain network
     private val electricDistribution: UtilityDomainNetwork?
         get() = utilityNetwork.definition?.getDomainNetwork("ElectricDistribution")
 
-    // Tier
+    // Use the Medium Voltage Tier
     private val mediumVoltageTier: UtilityTier?
         get() = electricDistribution?.getTier("Medium Voltage Radial")
 
-    // Graphics overlay for the barrier and starting point graphics.
-    val graphicsOverlay = GraphicsOverlay()
-
-    // create lists for starting locations and barriers
+    // Create lists for starting locations and barriers
     private val utilityElementStartingLocations: MutableList<UtilityElement> = mutableListOf()
     private val utilityElementBarriers: MutableList<UtilityElement> = mutableListOf()
 
-    // create symbols for the starting point and barriers
+    // Graphics overlay for the starting locations and barrier graphics
+    val graphicsOverlay = GraphicsOverlay()
+
+    // Create symbols for the starting point and barriers
     private val startingPointSymbol = SimpleMarkerSymbol(
         style = SimpleMarkerSymbolStyle.Cross,
         color = Color.green,
@@ -135,7 +138,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         size = 25f
     )
 
-    // Add custom unique renderer values for the electrical distribution layer.
+    // Add custom unique renderer values for the electrical distribution layer
     private val electricalDistributionUniqueValueRenderer = UniqueValueRenderer(
         fieldNames = listOf("ASSETGROUP"),
         uniqueValues = listOf(
@@ -162,33 +165,19 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         )
     )
 
-    companion object {
-        const val USERNAME = "viewer01"
-        const val PASSWORD = "I68VGU^nMurF"
-
-        // The portal item ID for Naperville’s electrical network
-        private const val NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID = "471eb0bf37074b1fbb972b1da70fb310"
-        private const val SAMPLE_SERVER_7 = "https://sampleserver7.arcgisonline.com"
-        private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
-        private const val FEATURE_SERVICE_URL =
-            "$SAMPLE_SERVER_7/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
-    }
-
     /**
-     * Sets up the map and utility network:
-     * - Adds credentials
-     * - Loads the map & network
-     * - Adds relevant operational layers
+     * Initializes view model by adding credentials, loading map and utility network,
+     * and electrical device and distribution feature layers.
      */
     init {
         viewModelScope.launch {
-            // A licensed user is required to perform utility network operations.
+            // A licensed user is required to perform utility network operations
             TokenCredential.create(
                 url = SAMPLE_PORTAL_URL,
                 username = USERNAME,
                 password = PASSWORD
             ).onSuccess { tokenCredential ->
-                // Add the loaded token credential to the app session's authenticationManager.
+                // Add the loaded token credential to the app session's authenticationManager
                 ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
                 // Load the NapervilleElectric web-map
                 arcGISMap.load().getOrElse {
@@ -197,7 +186,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                         description = it.cause.toString()
                     )
                 }
-                // Load the utility network associated with the web-map.
+                // Load the utility network associated with the web-map
                 utilityNetwork.load().getOrElse {
                     handleError(
                         title = "Error loading the utility network: ${it.message}",
@@ -205,10 +194,10 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     )
                 }
 
-                // Once loaded, remove all operational layers.
+                // Once loaded, remove all operational layers
                 arcGISMap.operationalLayers.clear()
 
-                // Create the two service feature table to be added as layers.
+                // Create the two service feature table to be added as layers
                 val electricalDeviceTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/0")
                 val electricalDistributionTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/3")
 
@@ -223,7 +212,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     renderer = electricalDistributionUniqueValueRenderer
                 }
 
-                // Add the two feature layers to the map's operational layers.
+                // Add the two feature layers to the map's operational layers
                 arcGISMap.operationalLayers.addAll(
                     listOf(
                         electricalDistributionFeatureLayer,
@@ -238,6 +227,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             }
         }
 
+        // Update hint values to reflect trace stage changes
         viewModelScope.launch {
             _traceState.collect {
                 _hint.value = it
@@ -254,7 +244,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         screenCoordinate: ScreenCoordinate
     ) {
         viewModelScope.launch {
-            // identify the feature to be used
+            // Identify the feature on the tapped location
             val identifyResults: List<IdentifyLayerResult> =
                 mapViewProxy.identifyLayers(
                     screenCoordinate = screenCoordinate,
@@ -262,11 +252,10 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     returnPopupsOnly = false,
                     maximumResults = 1
                 ).getOrThrow()
-            // if the identify returns a result, retrieve the geoelement as an ArcGISFeature
-            val identifiedFeature = identifyResults.firstOrNull()?.geoElements?.firstOrNull()
-            if (identifiedFeature != null) {
+            // If the identify returns a result, retrieve the geoelement as an ArcGISFeature
+            identifyResults.firstOrNull()?.geoElements?.firstOrNull()?.let { identifiedFeature ->
                 (identifiedFeature as? ArcGISFeature)?.let { arcGISFeature ->
-                    // identify the utility element associated with the selected feature
+                    // Identify the utility element associated with the selected feature
                     identifyUtilityElement(
                         identifiedFeature = arcGISFeature,
                         mapPoint = mapPoint
@@ -277,62 +266,144 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     }
 
     /**
-     * Add a feature to the trace (barrier or start) based on the current tracing state.
-     */
-    /**
      * Uses the [mapPoint] to identify any utility elements in the utility network.
-     * Based on the selection mode, the utility element is added either to the
-     * starting locations or barriers for the trace parameters. An appropriate graphic is created at
-     * the tapped location to mark the element as either a starting location or barrier.
+     * Based on the [UtilityNetworkSourceType] create an element for a junction or an edge.
      */
     private fun identifyUtilityElement(
         identifiedFeature: ArcGISFeature,
         mapPoint: Point
     ) {
-        // get the network source of the identified feature
+        // Get the network source of the identified feature
         val utilityNetworkSource = utilityNetwork.definition?.networkSources?.value?.firstOrNull {
             it.featureTable.tableName == identifiedFeature.featureTable?.tableName
         } ?: return handleError("Selected feature does not contain a Utility Network Source.")
 
-        // check if the network source is a junction or an edge
+        // Check if the network source is a junction or an edge
         when (utilityNetworkSource.sourceType) {
             UtilityNetworkSourceType.Junction -> {
-                // create a utility element with the identified feature
-                createUtilityElement(
+                // Create a junction element with the identified feature
+                createJunctionUtilityElement(
                     identifiedFeature = identifiedFeature,
                     utilityNetworkSource = utilityNetworkSource
                 )
             }
 
             UtilityNetworkSourceType.Edge -> {
-                //  create a utility element with the identified feature
-                val element = (utilityNetwork.createElementOrNull(identifiedFeature, null)
-                    ?: return handleError("Error creating element"))
-
-                // calculate how far the clicked location is along the edge feature
-                element.fractionAlongEdge = GeometryEngine.fractionAlong(
-                    line = GeometryEngine.createWithZ(
-                        geometry = identifiedFeature.geometry!!,
-                        z = null // remove the z-coordinate value from the identified geometry
-                    ) as Polyline,
-                    point = mapPoint,
-                    tolerance = -1.0
-                )
-                // set the trace location graphic to the nearest coordinate to the tapped point
-                addUtilityElementToMap(
+                // Create an edge element with the identified feature
+                createEdgeUtilityElement(
                     identifiedFeature = identifiedFeature,
-                    mapPoint = mapPoint,
-                    utilityElement = element
+                    mapPoint = mapPoint
                 )
-                // update the hint text
-                _hint.value = "R.string.fraction_message: ${element.fractionAlongEdge}"
             }
         }
     }
 
     /**
-     * Add [utilityElement] to either the starting locations or barriers list and add a graphic
-     * representing it to the graphics overlay.
+     * Create a [UtilityElement] of the [identifiedFeature].
+     */
+    private fun createJunctionUtilityElement(
+        identifiedFeature: ArcGISFeature,
+        utilityNetworkSource: UtilityNetworkSource
+    ) {
+        // Find the code matching the asset group name in the feature's attributes
+        val assetGroupCode = identifiedFeature.attributes["assetgroup"] as Int
+        // Find the network source's asset group with the matching code
+        utilityNetworkSource.assetGroups.filter { it.code == assetGroupCode }[0].assetTypes
+            // Find the asset group type code matching the feature's asset type code
+            .filter { it.code == identifiedFeature.attributes["assettype"].toString().toInt() }[0]
+            .let { utilityAssetType ->
+                // Get the list of terminals for the feature
+                val terminals = utilityAssetType.terminalConfiguration?.terminals
+                    ?: return handleError("Error retrieving terminal configuration")
+
+                // If there is only one terminal, use it to create a utility element
+                when (terminals.size) {
+                    1 -> {
+                        // Create a utility element
+                        utilityNetwork.createElementOrNull(
+                            arcGISFeature = identifiedFeature,
+                            terminal = terminals[0]
+                        )?.let { utilityElement ->
+                            // Add the utility element to the map
+                            addUtilityElementToMap(
+                                identifiedFeature = identifiedFeature,
+                                mapPoint = identifiedFeature.geometry as Point,
+                                utilityElement = utilityElement
+                            )
+                        }
+                    }
+                    // If there is more than one terminal, prompt the user to select one
+                    else -> {
+                        // Reset the index, as the user would need to make a choice
+                        _selectedTerminalConfigurationIndex.value = null
+                        // Get a list of terminal names from the terminal configuration
+                        val terminalConfiguration = utilityAssetType.terminalConfiguration ?: return
+                        // Update the list of available terminal options
+                        _terminalConfigurationOptions.value = terminalConfiguration.terminals
+                        // Show the dialog to choose a terminal configuration
+                        _traceState.value = TraceState.TERMINAL_CONFIGURATION_REQUIRED
+
+                        viewModelScope.launch {
+                            _selectedTerminalConfigurationIndex.collect { selectedIndex ->
+                                if (selectedIndex != null) {
+                                    // Create a utility element
+                                    val element = utilityNetwork.createElementOrNull(
+                                        arcGISFeature = identifiedFeature,
+                                        terminal = terminals[selectedIndex]
+                                    ) ?: return@collect handleError(
+                                        "Error creating utility element"
+                                    )
+                                    // Add the utility element graphic to the map
+                                    addUtilityElementToMap(
+                                        identifiedFeature = identifiedFeature,
+                                        mapPoint = identifiedFeature.geometry as Point,
+                                        utilityElement = element
+                                    )
+                                    // Update thr trace state
+                                    _traceState.value = TraceState.STARTING_LOCATION_SELECTED
+                                    return@collect
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
+    /**
+     * Create a [UtilityElement] of the [identifiedFeature].
+     */
+    private fun createEdgeUtilityElement(
+        identifiedFeature: ArcGISFeature,
+        mapPoint: Point
+    ) {
+        // Create a utility element with the identified feature
+        val element = (utilityNetwork.createElementOrNull(
+            arcGISFeature = identifiedFeature,
+            terminal = null
+        ) ?: return handleError("Error creating element"))
+        // Calculate the fraction along these the map point is located
+        element.fractionAlongEdge = GeometryEngine.fractionAlong(
+            line = GeometryEngine.createWithZ(
+                geometry = identifiedFeature.geometry!!,
+                z = null // Remove the z-coordinate value from the identified geometry
+            ) as Polyline,
+            point = mapPoint,
+            tolerance = -1.0
+        )
+        // Add the utility element graphic to the map
+        addUtilityElementToMap(
+            identifiedFeature = identifiedFeature,
+            mapPoint = mapPoint,
+            utilityElement = element
+        )
+        // Update the hint text
+        _hint.value = "Fraction along the edge: ${element.fractionAlongEdge}"
+    }
+
+    /**
+     * Add [utilityElement] to either the starting locations or barriers list
+     * and add a graphic representing it to the [graphicsOverlay].
      */
     private fun addUtilityElementToMap(
         identifiedFeature: ArcGISFeature,
@@ -346,7 +417,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     point = mapPoint
                 )?.coordinate
             ).apply {
-                // add the element to the appropriate list (starting locations or barriers),
+                // Add the element to the appropriate list (starting locations or barriers),
                 // and add the appropriate symbol to the graphic
                 when (_selectedPointType.value) {
                     PointType.Start -> {
@@ -367,105 +438,34 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     }
 
     /**
-     * Uses a [utilityNetworkSource] to create a UtilityElement object out of the [identifiedFeature].
-     */
-    private fun createUtilityElement(
-        identifiedFeature: ArcGISFeature,
-        utilityNetworkSource: UtilityNetworkSource
-    ) {
-        // find the code matching the asset group name in the feature's attributes
-        val assetGroupCode = identifiedFeature.attributes["assetgroup"] as Int
-        // find the network source's asset group with the matching code
-        utilityNetworkSource.assetGroups.filter { it.code == assetGroupCode }[0].assetTypes
-            // find the asset group type code matching the feature's asset type code
-            .filter { it.code == identifiedFeature.attributes["assettype"].toString().toInt() }[0]
-            .let { utilityAssetType ->
-                // get the list of terminals for the feature
-                val terminals = utilityAssetType.terminalConfiguration?.terminals
-                    ?: return handleError("Error retrieving terminal configuration")
-
-                // if there is only one terminal, use it to create a utility element
-                when (terminals.size) {
-                    1 -> {
-                        // create a utility element
-                        utilityNetwork.createElementOrNull(
-                            arcGISFeature = identifiedFeature,
-                            terminal = terminals[0]
-                        )?.let { utilityElement ->
-                            // add the utility element to the map
-                            addUtilityElementToMap(
-                                identifiedFeature = identifiedFeature,
-                                mapPoint = identifiedFeature.geometry as Point,
-                                utilityElement = utilityElement
-                            )
-                        }
-                    }
-                    // if there is more than one terminal, prompt the user to select one
-                    else -> {
-                        // reset the index, as the user would need to make a choice
-                        _selectedTerminalConfigurationIndex.value = null
-
-                        // get a list of terminal names from the terminal configuration
-                        val terminalConfiguration = utilityAssetType.terminalConfiguration ?: return
-                        // update the list of available terminal options
-                        _terminalConfigurationOptions.value = terminalConfiguration.terminals
-                        // show the dialog to choose a terminal configuration
-                        _traceState.value = TraceState.TERMINAL_CONFIGURATION_REQUIRED
-
-                        viewModelScope.launch {
-                            _selectedTerminalConfigurationIndex.collect { selectedIndex ->
-                                if (selectedIndex != null) {
-                                    // create a utility element
-                                    val element = utilityNetwork.createElementOrNull(
-                                        arcGISFeature = identifiedFeature,
-                                        terminal = terminals[selectedIndex]
-                                    ) ?: return@collect handleError(
-                                        "Error creating utility element"
-                                    )
-                                    // add the utility element to the map
-                                    addUtilityElementToMap(
-                                        identifiedFeature = identifiedFeature,
-                                        mapPoint = identifiedFeature.geometry!! as Point,
-                                        utilityElement = element
-                                    )
-                                    _traceState.value = TraceState.STARTING_LOCATION_SELECTED
-                                    return@collect
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-    }
-
-    /**
-     * Uses the elements selected as starting locations and (optionally) barriers to perform a connected trace,
-     * then selects all connected elements found in the trace to highlight them.
+     * Uses the elements selected as starting locations and (optionally) barriers
+     * to perform a connected trace, then selects all connected elements
+     * found in the trace to highlight them.
      */
     fun traceUtilityNetwork() {
-        // check that the utility trace parameters are valid
+        // Check that the utility trace parameters are valid
         if (utilityElementStartingLocations.isEmpty()) {
             return handleError("No starting locations provided for trace.")
         }
 
         val traceType = _selectedTraceType.value ?: return handleError("Select a valid trace type")
 
-        // create utility trace parameters for the given trace type
+        // Create utility trace parameters for the given trace type
         val traceParameters = UtilityTraceParameters(
             traceType = traceType,
             startingLocations = utilityElementStartingLocations
         ).apply {
-            // if any barriers have been created, add them to the parameters
+            // If any barriers have been created, add them to the parameters
             barriers.addAll(utilityElementBarriers)
-            // set the trace configuration using the tier from the utility domain network
+            // Set the trace configuration using the tier from the utility domain network
             traceConfiguration = mediumVoltageTier?.getDefaultTraceConfiguration()
         }
 
-        // run the utility trace and get the results
+        // Run the utility trace and get the results
         viewModelScope.launch {
-            // update the trace state
+            // Update the trace state
             _traceState.value = TraceState.RUNNING_TRACE_UTILITY_NETWORK
-            // perform the trace with the above parameters, and obtain the results list
+            // Perform the trace with the above parameters, and obtain the results list
             val traceResults = utilityNetwork.trace(traceParameters)
                 .getOrElse {
                     return@launch handleError(
@@ -474,7 +474,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     )
                 }
 
-            // get the utility trace result's first result as a utility element trace result
+            // Get the utility trace result's first result as a utility element trace result
             (traceResults[0] as? UtilityElementTraceResult)?.let { utilityElementTraceResult ->
                 // Ensure the result is not empty
                 if (utilityElementTraceResult.elements.isEmpty())
@@ -484,15 +484,17 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     .forEach { featureLayer ->
                         // Clear previous selection
                         featureLayer.clearSelection()
-                        val params = QueryParameters()
+                        val params = QueryParameters().apply {
+                            returnGeometry = true // Used to calculate the viewpoint result
+                        }
                         // Create query parameters to find features who's network source name matches the layer's feature table name
                         utilityElementTraceResult.elements.filter {
                             it.networkSource.name == featureLayer.featureTable?.tableName
                         }.forEach { utilityElement ->
                             params.objectIds.add(utilityElement.objectId)
                         }
-                        // select features that match the query
-                        featureLayer.selectFeatures(
+                        // Select features that match the query
+                        val featureQueryResult = featureLayer.selectFeatures(
                             parameters = params,
                             mode = SelectionMode.New
                         ).getOrElse {
@@ -501,13 +503,26 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                                 description = it.cause.toString()
                             )
                         }
+
+                        // Create list of all the feature result geometries
+                        val resultGeometryList = mutableListOf<Geometry>()
+                        featureQueryResult.iterator().forEach { feature ->
+                            feature.geometry?.let {
+                                resultGeometryList.add(it)
+                            }
+                        }
+
+                        // Obtain the union geometry of all the feature geometries
+                        GeometryEngine.unionOrNull(resultGeometryList)?.let { unionGeometry ->
+                            // Set the map's viewpoint to the union result geometry
+                            mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = unionGeometry))
+                        }
                     }
 
+                // Update the trace state
+                _traceState.value = TraceState.TRACE_COMPLETED
             }
-            // update the trace state
-            _traceState.value = TraceState.TRACE_COMPLETED
         }
-
     }
 
     /**
@@ -517,6 +532,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         arcGISMap.operationalLayers
             .filterIsInstance<FeatureLayer>()
             .forEach { it.clearSelection() }
+        utilityElementBarriers.clear()
+        utilityElementStartingLocations.clear()
         graphicsOverlay.graphics.clear()
         _traceState.value = TraceState.NOT_STARTED
         _canTrace.value = false
@@ -554,6 +571,9 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         }
     }
 
+    /**
+     * Update the index used to select the [terminalConfigurationOptions]
+     */
     fun updateTerminalConfigurationOption(index: Int) {
         _selectedTerminalConfigurationIndex.value = index
     }
@@ -565,6 +585,19 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         reset()
         _traceState.value = TraceState.TRACE_FAILED
         messageDialogVM.showMessageDialog(title, description)
+    }
+
+    companion object {
+        // Public credentials for the data in this sample.
+        const val USERNAME = "viewer01"
+        const val PASSWORD = "I68VGU^nMurF"
+
+        // The portal item ID for Naperville’s electrical network
+        private const val NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID = "471eb0bf37074b1fbb972b1da70fb310"
+        private const val SAMPLE_SERVER_7 = "https://sampleserver7.arcgisonline.com"
+        private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
+        private const val FEATURE_SERVICE_URL =
+            "$SAMPLE_SERVER_7/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
     }
 }
 

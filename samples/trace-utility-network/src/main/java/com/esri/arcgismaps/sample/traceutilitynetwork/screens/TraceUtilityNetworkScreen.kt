@@ -19,8 +19,9 @@
 package com.esri.arcgismaps.sample.traceutilitynetwork.screens
 
 import android.content.res.Configuration
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,13 +30,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
@@ -68,6 +73,7 @@ import com.arcgismaps.mapping.view.SelectionProperties
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.utilitynetworks.UtilityTerminal
 import com.arcgismaps.utilitynetworks.UtilityTraceType
+import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -76,6 +82,9 @@ import com.esri.arcgismaps.sample.traceutilitynetwork.components.PointType
 import com.esri.arcgismaps.sample.traceutilitynetwork.components.TraceState
 import com.esri.arcgismaps.sample.traceutilitynetwork.components.TraceUtilityNetworkViewModel
 
+/**
+ * Main screen containing utility network map view and trace controls.
+ */
 @Composable
 fun TraceUtilityNetworkScreen(sampleName: String) {
     // Create the view model used by the sample
@@ -95,42 +104,51 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     val terminalConfigurationOptions by mapViewModel.terminalConfigurationOptions
         .collectAsStateWithLifecycle(listOf())
 
+    // Set up the bottom sheet controls
+    var isBottomSheetVisible by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { padding ->
-            Column(modifier = Modifier.padding(padding)) {
+            Box(modifier = Modifier.padding(padding)) {
                 MapView(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                        .fillMaxSize(),
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     selectionProperties = SelectionProperties(color = Color.yellow),
                     onSingleTapConfirmed = { tapEvent ->
+                        // Identify tapped location if current state is valid.
                         tapEvent.mapPoint?.let {
-                            mapViewModel.identifyNearestArcGISFeature(
-                                mapPoint = it,
-                                screenCoordinate = tapEvent.screenCoordinate
-                            )
+                            if (traceState != TraceState.NOT_STARTED && traceState != TraceState.CHOOSE_POINT_TYPE)
+                                mapViewModel.identifyNearestArcGISFeature(
+                                    mapPoint = it,
+                                    screenCoordinate = tapEvent.screenCoordinate
+                                )
                         }
+                    },
+                    onDown = {
+                        isBottomSheetVisible = false
                     }
                 )
 
-                // Bottom toolbar with trace options
-                TraceOptions(
-                    hintText = hintText ?: "Trace Options",
-                    isTraceButtonEnabled = canPerformTrace,
-                    utilityTraceType = selectedTraceType,
-                    pointType = selectedPointType,
-                    traceState = traceState,
-                    onTraceSelected = mapViewModel::traceUtilityNetwork,
-                    onPointTypeChanged = mapViewModel::updatePointType,
-                    onTraceTypeSelected = mapViewModel::updateTraceType,
-                    onResetSelected = mapViewModel::reset
-                )
+                BottomSheet(isVisible = isBottomSheetVisible) {
+                    TraceOptions(
+                        hintText = hintText ?: "Trace Options",
+                        isTraceButtonEnabled = canPerformTrace,
+                        utilityTraceType = selectedTraceType,
+                        pointType = selectedPointType,
+                        traceState = traceState,
+                        onTraceSelected = mapViewModel::traceUtilityNetwork,
+                        onPointTypeChanged = mapViewModel::updatePointType,
+                        onTraceTypeSelected = mapViewModel::updateTraceType,
+                        onResetSelected = mapViewModel::reset
+                    )
+                }
             }
 
+            // Displays dialog to select a terminal configuration when required
             if (traceState == TraceState.TERMINAL_CONFIGURATION_REQUIRED) {
                 TerminalConfigurationDialog(
                     terminalConfigurationOptions = terminalConfigurationOptions,
@@ -138,12 +156,14 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                 )
             }
 
+            // Displays a loading dialog when trace is running
             if (traceState == TraceState.RUNNING_TRACE_UTILITY_NETWORK) {
                 RunningTraceDialog(
                     traceName = selectedTraceType?.javaClass?.simpleName.toString()
                 )
             }
 
+            // Displays a dialog when sample encounters an error
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
@@ -153,10 +173,21 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                     )
                 }
             }
+        },
+        floatingActionButton = {
+            if (!isBottomSheetVisible) {
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
+                    onClick = { isBottomSheetVisible = true }
+                ) { Icon(Icons.Filled.Settings, contentDescription = "Show Trace Options") }
+            }
         }
     )
 }
 
+/**
+ * Displays dialog to select a terminal configuration when required
+ */
 @Composable
 fun TerminalConfigurationDialog(
     terminalConfigurationOptions: List<UtilityTerminal>,
@@ -167,10 +198,16 @@ fun TerminalConfigurationDialog(
         properties = DialogProperties()
     ) {
         Surface {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 Text(
-                    modifier = Modifier.padding(24.dp),
-                    text = "Select Terminal"
+                    text = "Select Terminal",
+                    style = MaterialTheme.typography.titleMedium
                 )
                 terminalConfigurationOptions.fastForEachIndexed { index, utilityTerminal ->
                     OutlinedButton(onClick = { onTerminalConfigurationSelected(index) }) {
@@ -184,9 +221,8 @@ fun TerminalConfigurationDialog(
 
 
 /**
- * - A trace-type picker
- * - A segmented button for Start vs. Barrier
- * - “Trace” and “Reset” buttons
+ * Trace options layout with options for the trace type, starting vs barrier locations,
+ * reset and tracing buttons.
  */
 @Composable
 fun TraceOptions(
@@ -199,17 +235,17 @@ fun TraceOptions(
     onPointTypeChanged: (PointType) -> Unit,
     onResetSelected: () -> Unit,
     onTraceSelected: () -> Unit
-
 ) {
     Column(
         modifier = Modifier
             .wrapContentSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(12.dp)
-            .animateContentSize(),
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        // Displays contextual hints
         Text(text = hintText, style = MaterialTheme.typography.labelLarge)
 
         // Show a dropdown menu to pick a new trace type
@@ -227,14 +263,12 @@ fun TraceOptions(
 
         // Display a row with reset and trace controls
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             OutlinedButton(
                 onClick = { onResetSelected() },
-                enabled = true
+                enabled = traceState != TraceState.RUNNING_TRACE_UTILITY_NETWORK
             ) {
                 Text("Reset")
             }
@@ -249,7 +283,7 @@ fun TraceOptions(
 }
 
 /**
- * A simple example of a “Trace Type” dropdown using ExposedDropdownMenuBox.
+ * A ExposedDropdownMenuBox with a list of supported [UtilityTraceType].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -312,6 +346,10 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
     }
 }
 
+/**
+ * A SingleChoiceSegmentedButtonRow with a choice between
+ * starting or barrier point type.
+ */
 @Composable
 fun SegmentedButtonTracePointTypes(
     currentPointType: PointType?,
@@ -321,7 +359,6 @@ fun SegmentedButtonTracePointTypes(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    // Show segmented button for Start vs Barrier
     var selectedIndex = when (currentPointType) {
         PointType.None -> -1
         PointType.Start -> 0
@@ -330,7 +367,7 @@ fun SegmentedButtonTracePointTypes(
     }
 
     LaunchedEffect(currentPointType) {
-        if (currentPointType == null) {
+        if (currentPointType == null || currentPointType == PointType.None) {
             focusManager.clearFocus()
             selectedIndex = -1
         } else {
@@ -346,9 +383,7 @@ fun SegmentedButtonTracePointTypes(
         val options = listOf("Add starting location(s)", "Add barrier(s)")
         options.forEachIndexed { index, label ->
             SegmentedButton(
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = index, count = options.size
-                ),
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
                 onClick = {
                     selectedIndex = index
                     // Switch between Start/Barrier
