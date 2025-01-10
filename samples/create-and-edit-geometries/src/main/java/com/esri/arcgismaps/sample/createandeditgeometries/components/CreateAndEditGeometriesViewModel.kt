@@ -41,9 +41,15 @@ import kotlinx.coroutines.launch
 
 class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewModel(application) {
     //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
+    // create a map with the imagery basemap style
     val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+        ArcGISMap(BasemapStyle.ArcGISImagery).apply {
+            // a viewpoint centered at the island of Inis Meáin (Aran Islands) in Ireland
+            initialViewpoint = Viewpoint(
+                latitude = 53.08230,
+                longitude = -9.5920,
+                scale = 5000.0
+            )
         }
     )
 
