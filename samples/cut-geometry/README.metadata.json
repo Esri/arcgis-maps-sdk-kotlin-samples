@@ -10,9 +10,11 @@
         "cut",
         "geometry",
         "split",
-        "GeometryEngine",	
-        "Polygon",	
-        "Polyline"
+        "GeometryEngine",
+        "Polygon",
+        "Polyline",
+        "geoview-compose",
+        "toolkit"
     ],
     "language": "kotlin",
     "redirect_from": [
