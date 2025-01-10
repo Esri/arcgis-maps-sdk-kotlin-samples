@@ -36,9 +36,9 @@
         "Stop"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/findroute/FindRouteViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/findroute/components/FindRouteViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/findroute/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/findroute/FindRouteScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/findroute/screens/FindRouteScreen.kt"
     ],
     "title": "Find route"
 }
