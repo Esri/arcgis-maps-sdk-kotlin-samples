@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 
 class CutGeometryViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Create a map with the topographic basemap style
+    // create a map with the topographic basemap style
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
             initialViewpoint = Viewpoint(
@@ -57,10 +57,10 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }
     )
 
-    // Create a MapViewProxy to interact with the MapView
+    // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
-    // Create a polygon corresponding to Lake Superior
+    // create a polygon corresponding to Lake Superior
     private val lakeSuperiorPolygon by lazy {
         PolygonBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-10254374.668616, 5908345.076380))
@@ -96,7 +96,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }.toGeometry()
     }
 
-    // Create a polyline that divides Lake Superior into a Canada side and US side
+    // create a polyline that divides Lake Superior into a Canada side and US side
     private val borderPolyline by lazy {
         PolylineBuilder(SpatialReference.webMercator()) {
             addPoint(Point(-9981328.687124, 6111053.281447))
@@ -109,7 +109,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }.toGeometry()
     }
 
-    // Create a blue polygon graphic to represent Lake Superior
+    // create a blue polygon graphic to represent lake superior
     private val polygonGraphic = Graphic(
         lakeSuperiorPolygon,
         SimpleFillSymbol(
@@ -118,7 +118,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         )
     )
 
-    // Create a red polyline graphic to represent the cut line
+    // create a red polyline graphic to represent the cut line
     private val polylineGraphic = Graphic(
         borderPolyline, SimpleLineSymbol(
             SimpleLineSymbolStyle.Dot,
@@ -132,10 +132,10 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     private val _isCutButtonEnabled = MutableStateFlow(false)
     val isCutButtonEnabled = _isCutButtonEnabled.asStateFlow()
 
-    // Create a graphic overlay
+    // create a graphic overlay
     val graphicsOverlay = GraphicsOverlay()
 
-    // Create a message dialog view model for handling error messages
+    // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
@@ -182,7 +182,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
                 polylineGraphic.geometry as Polyline
             )
 
-            // Create graphics for the US and Canada sides
+            // create graphics for the US and Canada sides
             val canadaSide = Graphic(
                 parts[0], SimpleFillSymbol(
                     SimpleFillSymbolStyle.BackwardDiagonal,
@@ -195,10 +195,10 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
                     Color.yellow, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.blue, 0F)
                 )
             )
-            // Add the graphics to the graphics overlay
+            // add the graphics to the graphics overlay
             graphicsOverlay.graphics.addAll(listOf(canadaSide, usSide))
 
-            // Update button state
+            // update button state
             _isCutButtonEnabled.value = false
             _isResetButtonEnabled.value = true
         }
