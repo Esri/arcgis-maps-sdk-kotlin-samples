@@ -1,0 +1,34 @@
+{
+    "category": "Augmented Reality",
+    "description": "Use augmented reality (AR) to pin a scene to a table or desk for easy exploration.",
+    "formal_name": "AugmentRealityToShowTabletopScene",
+    "ignore": false,
+    "images": [
+        "augment-reality-to-show-tabletop-scene.png"
+    ],
+    "keywords": [
+        "augmented reality",
+        "drop",
+        "mixed reality",
+        "model",
+        "pin",
+        "place",
+        "table-top",
+        "tabletop",
+        "ArcGISScene",
+        "TableTopSceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ArcGISScene",
+        "TableTopSceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/components/AugmentRealityToShowTabletopSceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/screens/AugmentRealityToShowTabletopSceneScreen.kt"
+    ],
+    "title": "Augment reality to show tabletop scene"
+}

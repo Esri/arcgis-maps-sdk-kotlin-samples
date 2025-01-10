@@ -1,7 +1,7 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.7.0-4452"
+arcgisMapsKotlinVersion = "200.7.0-4476"
 
 ### Android versions
 androidGradlePlugin = "8.7.3"
@@ -39,6 +39,7 @@ versionCode = "2007000"
 versionName = "200.7.0"
 minSdk = "26"
 targetSdk = "35"
+core = "1.47.0"
 
 ### Third party libraries
 
@@ -78,6 +79,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 arcgis-maps-kotlin = { group = "com.esri", name = "arcgis-maps-kotlin", version.ref = "arcgisMapsKotlinVersion" }
 arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisMapsKotlinVersion" }
 arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
+arcgis-maps-kotlin-toolkit-ar = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-ar" }
 arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geoview-compose" }
 arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-featureforms" }
 
@@ -95,6 +97,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+core = { group = "com.google.ar", name = "core", version.ref = "core" }
 
 
 [plugins]
