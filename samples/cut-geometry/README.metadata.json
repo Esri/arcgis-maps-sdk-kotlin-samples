@@ -1,34 +1,34 @@
 {
-    "category": "Edit and Manage Data",
-    "description": "Cut a geometry along a polyline.",
-    "formal_name": "CutGeometry",
-    "ignore": false,
-    "images": [
-        "cut-geometry.png"
-    ],
-    "keywords": [
-        "cut",
-        "geometry",
-        "split",
-        "GeometryEngine",
-        "Polygon",
-        "Polyline",
-        "geoview-compose",
-        "toolkit"
-    ],
-    "language": "kotlin",
-    "redirect_from": [
-        "/android/latest/sample-code/cut-geometry.htm"
-    ],
-    "relevant_apis": [
-        "GeometryEngine",
-        "Polygon",
-        "Polyline"
-    ],
-    "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/cutgeometry/CutGeometryViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/cutgeometry/CutGeometryScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/cutgeometry/MainActivity.kt"
-    ],
-    "title": "Cut geometry"
+  "category": "Edit and Manage Data",
+  "description": "Cut a geometry along a polyline.",
+  "formal_name": "CutGeometry",
+  "ignore": false,
+  "images": [
+      "cut-geometry.png"
+  ],
+  "keywords": [
+      "cut",
+      "geometry",
+      "geoview-compose",
+      "split",
+      "toolkit",
+      "GeometryEngine",
+      "Polygon",
+      "Polyline"
+  ],
+  "language": "kotlin",
+  "redirect_from": [
+      "/android/latest/sample-code/cut-geometry.htm"
+  ],
+  "relevant_apis": [
+      "GeometryEngine",
+      "Polygon",
+      "Polyline"
+  ],
+  "snippets": [
+      "src/main/java/com/esri/arcgismaps/sample/cutgeometry/components/CutGeometryViewModel.kt",
+      "src/main/java/com/esri/arcgismaps/sample/cutgeometry/MainActivity.kt",
+      "src/main/java/com/esri/arcgismaps/sample/cutgeometry/screens/CutGeometryScreen.kt"
+  ],
+  "title": "Cut geometry"
 }

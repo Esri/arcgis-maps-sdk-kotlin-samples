@@ -23,10 +23,10 @@ Tap the "Cut" button to cut the polygon with the polyline and see the resulting 
 * Polygon
 * Polyline
 
-# Additional information
+## Additional information
 
 This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 
-cut, geometry, split, geoview-compose, toolkit
+cut, geometry, geoview-compose, split, toolkit
