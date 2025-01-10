@@ -72,7 +72,7 @@ fun ClipGeometryScreen(sampleName: String) {
                         }
                     ) {
                         Text(
-                            text = stringResource(R.string.rest_button_text)
+                            text = stringResource(R.string.reset_button_text)
                         )
                     }
                     Button(
