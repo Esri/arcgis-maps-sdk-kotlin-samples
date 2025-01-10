@@ -21,10 +21,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewModel(application) {
@@ -38,6 +43,15 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
+    // create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
+    val mapViewProxy = MapViewProxy()
+
+    // create a geometry editor
+    val geometryEditor = GeometryEditor()
+
+    private val _isCreateButtonEnabled = MutableStateFlow(false)
+    val isCreateButtonEnabled = _isCreateButtonEnabled.asStateFlow()
+
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
@@ -45,7 +59,20 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
                     "Failed to load map",
                     error.message.toString()
                 )
+            }.onSuccess {
+                _isCreateButtonEnabled.value = true
             }
         }
     }
+
+    /**
+     * Starts the GeometryEditor using the selected [GeometryType].
+     */
+    fun startEditor(selectedGeometry: GeometryType) {
+        if (!geometryEditor.isStarted.value) {
+            geometryEditor.start(selectedGeometry)
+            _isCreateButtonEnabled.value = false
+        }
+    }
+
 }

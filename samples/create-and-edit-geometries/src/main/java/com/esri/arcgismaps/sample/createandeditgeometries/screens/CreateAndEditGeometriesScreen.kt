@@ -47,9 +47,11 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    geometryEditor = mapViewModel.geometryEditor
                 )
-                // TODO: Add UI components in this Column ...
+                ButtonMenu(mapViewModel)
             }
 
             mapViewModel.messageDialogVM.apply {
