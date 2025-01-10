@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -45,10 +47,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,19 +59,22 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
+import com.arcgismaps.mapping.view.SelectionProperties
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.utilitynetworks.UtilityTerminal
 import com.arcgismaps.utilitynetworks.UtilityTraceType
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.traceutilitynetwork.components.PointType
-import com.esri.arcgismaps.sample.traceutilitynetwork.components.TraceUtilityNetworkViewModel
 import com.esri.arcgismaps.sample.traceutilitynetwork.components.TraceState
+import com.esri.arcgismaps.sample.traceutilitynetwork.components.TraceUtilityNetworkViewModel
 
 @Composable
 fun TraceUtilityNetworkScreen(sampleName: String) {
@@ -81,14 +84,16 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     // Observe relevant states
     val hintText by mapViewModel.hint
         .collectAsStateWithLifecycle(null)
-    val traceState by mapViewModel.traceState
-        .collectAsStateWithLifecycle(TraceState.None)
-    val pendingTraceParameters by mapViewModel.pendingTraceParameters
-        .collectAsStateWithLifecycle(null)
-    val terminalSelectorIsOpen by mapViewModel.terminalSelectorIsOpen
-        .collectAsStateWithLifecycle(false)
+    val selectedTraceType by mapViewModel.selectedTraceType
+        .collectAsStateWithLifecycle()
+    val selectedPointType by mapViewModel.selectedPointType
+        .collectAsStateWithLifecycle(PointType.None)
     val canPerformTrace by mapViewModel.canTrace
         .collectAsStateWithLifecycle(false)
+    val traceState by mapViewModel.traceState
+        .collectAsStateWithLifecycle(TraceState.NOT_STARTED)
+    val terminalConfigurationOptions by mapViewModel.terminalConfigurationOptions
+        .collectAsStateWithLifecycle(listOf())
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -100,33 +105,42 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
-                    graphicsOverlays = listOf(mapViewModel.pointsOverlay),
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                    selectionProperties = SelectionProperties(color = Color.yellow),
                     onSingleTapConfirmed = { tapEvent ->
-                        mapViewModel.identifyFeature(tapEvent)
+                        tapEvent.mapPoint?.let {
+                            mapViewModel.identifyNearestArcGISFeature(
+                                mapPoint = it,
+                                screenCoordinate = tapEvent.screenCoordinate
+                            )
+                        }
                     }
                 )
 
                 // Bottom toolbar with trace options
                 TraceOptions(
-                    traceState = traceState,
                     hintText = hintText ?: "Trace Options",
                     isTraceButtonEnabled = canPerformTrace,
-                    selectedTraceType = pendingTraceParameters?.traceType,
-                    currentPointType = (traceState as? TraceState.SettingPoints)?.pointType,
-                    onPointTypeChanged = mapViewModel::setPointType,
-                    onTraceTypeSelected = mapViewModel::setTraceParameters,
-                    onResetSelected = mapViewModel::reset,
-                    onTraceSelected = mapViewModel::trace
+                    utilityTraceType = selectedTraceType,
+                    pointType = selectedPointType,
+                    traceState = traceState,
+                    onTraceSelected = mapViewModel::traceUtilityNetwork,
+                    onPointTypeChanged = mapViewModel::updatePointType,
+                    onTraceTypeSelected = mapViewModel::updateTraceType,
+                    onResetSelected = mapViewModel::reset
                 )
             }
 
-            if (terminalSelectorIsOpen) {
-                TerminalConfigurationDialog()
+            if (traceState == TraceState.TERMINAL_CONFIGURATION_REQUIRED) {
+                TerminalConfigurationDialog(
+                    terminalConfigurationOptions = terminalConfigurationOptions,
+                    onTerminalConfigurationSelected = mapViewModel::updateTerminalConfigurationOption
+                )
             }
 
-            if (traceState is TraceState.TraceRunning && pendingTraceParameters?.traceType != null) {
+            if (traceState == TraceState.RUNNING_TRACE_UTILITY_NETWORK) {
                 RunningTraceDialog(
-                    traceName = pendingTraceParameters?.traceType?.javaClass?.simpleName.toString()
+                    traceName = selectedTraceType?.javaClass?.simpleName.toString()
                 )
             }
 
@@ -144,20 +158,24 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
 }
 
 @Composable
-fun TerminalConfigurationDialog() {
+fun TerminalConfigurationDialog(
+    terminalConfigurationOptions: List<UtilityTerminal>,
+    onTerminalConfigurationSelected: (Int) -> Unit,
+) {
     BasicAlertDialog(
         onDismissRequest = {},
         properties = DialogProperties()
     ) {
         Surface {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 Text(
                     modifier = Modifier.padding(24.dp),
                     text = "Select Terminal"
                 )
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedButton(onClick = {}) { Text("High") }
-                    OutlinedButton(onClick = {}) { Text("Low") }
+                terminalConfigurationOptions.fastForEachIndexed { index, utilityTerminal ->
+                    OutlinedButton(onClick = { onTerminalConfigurationSelected(index) }) {
+                        Text(utilityTerminal.name)
+                    }
                 }
             }
         }
@@ -173,10 +191,10 @@ fun TerminalConfigurationDialog() {
 @Composable
 fun TraceOptions(
     isTraceButtonEnabled: Boolean,
-    traceState: TraceState,
     hintText: String,
-    selectedTraceType: UtilityTraceType?,
-    currentPointType: PointType?,
+    utilityTraceType: UtilityTraceType?,
+    pointType: PointType?,
+    traceState: String,
     onTraceTypeSelected: (UtilityTraceType) -> Unit,
     onPointTypeChanged: (PointType) -> Unit,
     onResetSelected: () -> Unit,
@@ -196,15 +214,15 @@ fun TraceOptions(
 
         // Show a dropdown menu to pick a new trace type
         ExposedDropdownMenuBoxWithTraceTypes(
-            selectedTraceType = selectedTraceType,
+            selectedTraceType = utilityTraceType,
             onTraceTypeSelected = onTraceTypeSelected
         )
 
         // Display segmented button for starting point type or barrier point type
         SegmentedButtonTracePointTypes(
-            currentPointType = currentPointType,
+            currentPointType = pointType,
             onPointTypeChanged = onPointTypeChanged,
-            isPointTypesEnabled = selectedTraceType != null
+            isPointTypesEnabled = utilityTraceType != null
         )
 
         // Display a row with reset and trace controls
@@ -216,7 +234,7 @@ fun TraceOptions(
         ) {
             OutlinedButton(
                 onClick = { onResetSelected() },
-                enabled = (traceState !is TraceState.TraceRunning)
+                enabled = true
             ) {
                 Text("Reset")
             }
@@ -256,7 +274,7 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
         if (selectedTraceType == null) {
             focusManager.clearFocus()
             selectedTraceName = "Select a trace type"
-        } else selectedTraceName = traceTypeDisplayName(selectedTraceType)
+        } else selectedTraceName = selectedTraceType.javaClass.simpleName
     }
 
     ExposedDropdownMenuBox(
@@ -279,9 +297,8 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
             onDismissRequest = { expanded = false }
         ) {
             traceOptions.forEachIndexed { index, traceType ->
-                val displayName = traceTypeDisplayName(traceType)
                 DropdownMenuItem(
-                    text = { Text(displayName) },
+                    text = { Text(traceType.javaClass.simpleName) },
                     onClick = {
                         expanded = false
                         onTraceTypeSelected(traceType)
@@ -305,7 +322,12 @@ fun SegmentedButtonTracePointTypes(
     val focusManager = LocalFocusManager.current
 
     // Show segmented button for Start vs Barrier
-    var selectedIndex by remember { mutableIntStateOf(-1) }
+    var selectedIndex = when (currentPointType) {
+        PointType.None -> -1
+        PointType.Start -> 0
+        PointType.Barrier -> 1
+        null -> -1
+    }
 
     LaunchedEffect(currentPointType) {
         if (currentPointType == null) {
@@ -345,18 +367,6 @@ fun RunningTraceDialog(traceName: String) {
     LoadingDialog(loadingMessage = "Running $traceName trace...")
 }
 
-fun traceTypeDisplayName(type: UtilityTraceType): String =
-    when (type) {
-        UtilityTraceType.Connected -> "Connected"
-        UtilityTraceType.Downstream -> "Downstream"
-        UtilityTraceType.Isolation -> "Isolation"
-        UtilityTraceType.Loops -> "Loops"
-        UtilityTraceType.ShortestPath -> "Shortest Path"
-        UtilityTraceType.Subnetwork -> "Subnetwork"
-        UtilityTraceType.Upstream -> "Upstream"
-        else -> "Unknown"
-    }
-
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
@@ -365,14 +375,14 @@ fun PreviewTraceUtilityNetworkScreen() {
         Surface {
             TraceOptions(
                 isTraceButtonEnabled = true,
-                traceState = TraceState.None,
-                selectedTraceType = null,
-                currentPointType = null,
                 hintText = "Trace options",
+                utilityTraceType = null,
+                pointType = null,
+                traceState = TraceState.NOT_STARTED,
                 onTraceTypeSelected = { },
                 onPointTypeChanged = { },
                 onResetSelected = { },
-                onTraceSelected = { },
+                onTraceSelected = { }
             )
         }
     }
@@ -383,7 +393,7 @@ fun PreviewTraceUtilityNetworkScreen() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewTerminalConfigurationDialog() {
-    SampleAppTheme { Surface { TerminalConfigurationDialog() } }
+    SampleAppTheme { Surface { TerminalConfigurationDialog(listOf()) {} } }
 }
 
 
