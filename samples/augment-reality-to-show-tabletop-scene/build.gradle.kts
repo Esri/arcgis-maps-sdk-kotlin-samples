@@ -18,7 +18,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.core)
+    implementation(libs.ar.core)
     // Only module specific dependencies needed here
     implementation(libs.arcgis.maps.kotlin.toolkit.ar)
 }

@@ -39,7 +39,7 @@ versionCode = "2007000"
 versionName = "200.7.0"
 minSdk = "26"
 targetSdk = "35"
-core = "1.47.0"
+arcore = "1.47.0"
 
 ### Third party libraries
 
@@ -97,7 +97,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
-core = { group = "com.google.ar", name = "core", version.ref = "core" }
+ar-core = { group = "com.google.ar", name = "core", version.ref = "arcore" }
 
 
 [plugins]
