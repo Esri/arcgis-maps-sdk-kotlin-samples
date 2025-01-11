@@ -14,35 +14,46 @@
  *
  */
 
-package com.esri.arcgismaps.sample.clipgeometry.screens
+package com.esri.arcgismaps.sample.projectgeometry.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.geometry.Point
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.clipgeometry.R
-import com.esri.arcgismaps.sample.clipgeometry.components.ClipGeometryViewModel
+import com.esri.arcgismaps.sample.projectgeometry.R
+import com.esri.arcgismaps.sample.projectgeometry.components.ProjectGeometryViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import java.util.Locale
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun ClipGeometryScreen(sampleName: String) {
-    // create a ViewModel to handle MapView interactions
-    val mapViewModel: ClipGeometryViewModel = viewModel()
+fun ProjectGeometryScreen(sampleName: String) {
+    val mapViewModel: ProjectGeometryViewModel = viewModel()
+    val pointProjectionInfo by mapViewModel.pointProjectionFlow.collectAsStateWithLifecycle()
+
+    val infoText = pointProjectionInfo?.let { (original, projection) ->
+        stringResource(
+            R.string.projection_info_text,
+            original.toDisplayFormat(),
+            projection.toDisplayFormat()
+        )
+    } ?: ""
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -57,36 +68,29 @@ fun ClipGeometryScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
-                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay)
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                    onSingleTapConfirmed = mapViewModel::onMapViewTapped
                 )
+
                 Row(
-                    modifier = Modifier.
-                    fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth()
                 ) {
-                    Button(
-                        modifier = Modifier.padding(12.dp),
-                        enabled = mapViewModel.isResetButtonEnabled,
-                        onClick = {
-                            mapViewModel.resetGeometry()
-                        }
-                    ) {
+                    Column {
                         Text(
-                            text = stringResource(R.string.reset_button_text)
+                            text = pointProjectionInfo?.let { stringResource(R.string.title_text) }
+                                ?: stringResource(R.string.tap_to_begin),
+                            fontWeight = FontWeight.Bold
                         )
-                    }
-                    Button(
-                        modifier = Modifier.padding(12.dp),
-                        enabled = mapViewModel.isClipButtonEnabled,
-                        onClick = {
-                            mapViewModel.clipGeometry()
-                        }
-                    ) {
                         Text(
-                            text = stringResource(R.string.clip_geometry_button_text)
+                            text = infoText,
+                            minLines = 2
                         )
                     }
                 }
+
             }
 
             mapViewModel.messageDialogVM.apply {
@@ -101,3 +105,10 @@ fun ClipGeometryScreen(sampleName: String) {
         }
     )
 }
+
+/**
+ * Extension function for the Point type that returns
+ * a float-precision formatted string suitable for display
+ */
+private fun Point.toDisplayFormat() =
+    "${String.format(Locale.getDefault(),"%.5f", x)}, ${String.format(Locale.getDefault(),"%.5f", y)}"

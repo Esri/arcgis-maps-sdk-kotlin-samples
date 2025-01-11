@@ -11,24 +11,28 @@
         "Web Mercator",
         "coordinate system",
         "coordinates",
+        "geoview-compose",
         "latitude",
         "longitude",
         "projected",
         "projection",
         "spatial reference",
+        "toolkit",
         "GeometryEngine",
         "Point",
         "SpatialReference"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": [],
     "relevant_apis": [
         "GeometryEngine",
         "Point",
         "SpatialReference"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/components/ProjectGeometryViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/projectgeometry/screens/ProjectGeometryScreen.kt"
     ],
     "title": "Project geometry"
 }
