@@ -26,8 +26,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/components/AugmentRealityToShowTabletopSceneViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/screens/AugmentRealityToShowTabletopSceneScreen.kt"
     ],
     "title": "Augment reality to show tabletop scene"
