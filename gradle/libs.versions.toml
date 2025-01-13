@@ -39,9 +39,9 @@ versionCode = "2007000"
 versionName = "200.7.0"
 minSdk = "26"
 targetSdk = "35"
-arcore = "1.47.0"
 
 ### Third party libraries
+arcore = "1.47.0"
 
 [libraries]
 
