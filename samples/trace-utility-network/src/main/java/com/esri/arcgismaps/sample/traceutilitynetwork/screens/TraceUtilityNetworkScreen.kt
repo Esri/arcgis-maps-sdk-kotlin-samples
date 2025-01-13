@@ -90,6 +90,9 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     // Create the view model used by the sample
     val mapViewModel: TraceUtilityNetworkViewModel = viewModel()
 
+    // Load map, utility network, and adds layers. 
+    LaunchedEffect(Unit) { mapViewModel.initializeTrace() }
+
     // Observe relevant states
     val hintText by mapViewModel.hint
         .collectAsStateWithLifecycle(null)

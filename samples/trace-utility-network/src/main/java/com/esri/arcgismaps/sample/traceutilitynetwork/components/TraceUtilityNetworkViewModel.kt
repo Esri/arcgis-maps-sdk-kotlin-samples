@@ -169,69 +169,65 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      * Initializes view model by adding credentials, loading map and utility network,
      * and electrical device and distribution feature layers.
      */
-    init {
-        viewModelScope.launch {
-            // A licensed user is required to perform utility network operations
-            TokenCredential.create(
-                url = SAMPLE_PORTAL_URL,
-                username = USERNAME,
-                password = PASSWORD
-            ).onSuccess { tokenCredential ->
-                // Add the loaded token credential to the app session's authenticationManager
-                ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
-                // Load the NapervilleElectric web-map
-                arcGISMap.load().getOrElse {
-                    handleError(
-                        title = "Error loading the web-map: ${it.message}",
-                        description = it.cause.toString()
-                    )
-                }
-                // Load the utility network associated with the web-map
-                utilityNetwork.load().getOrElse {
-                    handleError(
-                        title = "Error loading the utility network: ${it.message}",
-                        description = it.cause.toString()
-                    )
-                }
-
-                // Once loaded, remove all operational layers
-                arcGISMap.operationalLayers.clear()
-
-                // Create the two service feature table to be added as layers
-                val electricalDeviceTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/0")
-                val electricalDistributionTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/3")
-
-                // Create feature layers from the service feature tables.
-                val electricalDeviceFeatureLayer = FeatureLayer.createWithFeatureTable(
-                    featureTable = electricalDeviceTable
-                )
-                val electricalDistributionFeatureLayer = FeatureLayer.createWithFeatureTable(
-                    featureTable = electricalDistributionTable
-                ).apply {
-                    // Customize rendering for the layer
-                    renderer = electricalDistributionUniqueValueRenderer
-                }
-
-                // Add the two feature layers to the map's operational layers
-                arcGISMap.operationalLayers.addAll(
-                    listOf(
-                        electricalDistributionFeatureLayer,
-                        electricalDeviceFeatureLayer
-                    )
-                )
-            }.onFailure {
+    suspend fun initializeTrace() {
+        // A licensed user is required to perform utility network operations
+        TokenCredential.create(
+            url = SAMPLE_PORTAL_URL,
+            username = USERNAME,
+            password = PASSWORD
+        ).onSuccess { tokenCredential ->
+            // Add the loaded token credential to the app session's authenticationManager
+            ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
+            // Load the NapervilleElectric web-map
+            arcGISMap.load().getOrElse {
                 handleError(
-                    title = "Error using TokenCredential: ${it.message}",
+                    title = "Error loading the web-map: ${it.message}",
                     description = it.cause.toString()
                 )
             }
-        }
-
-        // Update hint values to reflect trace stage changes
-        viewModelScope.launch {
-            _traceState.collect {
-                _hint.value = it
+            // Load the utility network associated with the web-map
+            utilityNetwork.load().getOrElse {
+                handleError(
+                    title = "Error loading the utility network: ${it.message}",
+                    description = it.cause.toString()
+                )
             }
+
+            // Once loaded, remove all operational layers
+            arcGISMap.operationalLayers.clear()
+
+            // Create the two service feature table to be added as layers
+            val electricalDeviceTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/0")
+            val electricalDistributionTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/3")
+
+            // Create feature layers from the service feature tables.
+            val electricalDeviceFeatureLayer = FeatureLayer.createWithFeatureTable(
+                featureTable = electricalDeviceTable
+            )
+            val electricalDistributionFeatureLayer = FeatureLayer.createWithFeatureTable(
+                featureTable = electricalDistributionTable
+            ).apply {
+                // Customize rendering for the layer
+                renderer = electricalDistributionUniqueValueRenderer
+            }
+
+            // Add the two feature layers to the map's operational layers
+            arcGISMap.operationalLayers.addAll(
+                listOf(
+                    electricalDistributionFeatureLayer,
+                    electricalDeviceFeatureLayer
+                )
+            )
+
+            // Update hint values to reflect trace stage changes
+            viewModelScope.launch {
+                _traceState.collect { updateHint(it) }
+            }
+        }.onFailure {
+            handleError(
+                title = "Error using TokenCredential: ${it.message}",
+                description = it.cause.toString()
+            )
         }
     }
 
@@ -359,9 +355,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                                         mapPoint = identifiedFeature.geometry as Point,
                                         utilityElement = element
                                     )
-                                    // Update thr trace state
+                                    // Update the trace state
                                     _traceState.value = TraceState.STARTING_LOCATION_SELECTED
-                                    return@collect
                                 }
                             }
                         }
@@ -398,7 +393,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             utilityElement = element
         )
         // Update the hint text
-        _hint.value = "Fraction along the edge: ${element.fractionAlongEdge}"
+        updateHint("Fraction along the edge: ${element.fractionAlongEdge}")
     }
 
     /**
@@ -576,6 +571,13 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      */
     fun updateTerminalConfigurationOption(index: Int) {
         _selectedTerminalConfigurationIndex.value = index
+    }
+
+    /**
+     * Update the hint flow to display new [message].
+     */
+    private fun updateHint(message: String) {
+        _hint.value = message
     }
 
     // Create a message dialog view model for handling error messages
