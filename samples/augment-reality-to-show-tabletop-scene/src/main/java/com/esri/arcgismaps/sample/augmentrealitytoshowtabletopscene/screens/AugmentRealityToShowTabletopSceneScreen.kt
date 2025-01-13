@@ -37,6 +37,7 @@ fun DisplaySceneInTabletopARScreen(sampleName: String) {
     val sceneViewModel: AugmentRealityToShowTabletopSceneViewModel = viewModel()
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = { paddingValues ->
         sceneViewModel.scene?.let {
+            // Scene view that provides an augmented reality table top experience
             TableTopSceneView(
                 modifier = Modifier
                     .fillMaxSize()
