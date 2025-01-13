@@ -166,9 +166,9 @@ fun DirectionManeuversSheet(
     onDirectionManeuverSelected: (DirectionManeuver) -> Unit,
     onDismissSelected: () -> Unit
 ) {
-    // Use 1/2 screen height to display sheet
     Column(
         modifier = Modifier
+            // Use 1/2 screen height to display sheet
             .height((LocalConfiguration.current.screenHeightDp * 0.5).dp)
             .background(MaterialTheme.colorScheme.background)
             .padding(12.dp),

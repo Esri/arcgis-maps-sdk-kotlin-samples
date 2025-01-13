@@ -172,7 +172,7 @@ class FindRouteViewModel(private val application: Application) : AndroidViewMode
                 } as RouteResult
 
                 // obtain the first route result
-                val route = routeResult.routes[0]
+                val route = routeResult.routes.first()
 
                 // create a graphic for the route and add it to the graphics overlay
                 graphicsOverlay.graphics.add(
@@ -184,7 +184,7 @@ class FindRouteViewModel(private val application: Application) : AndroidViewMode
 
                 // get the list of direction maneuvers and display it
                 // NOTE: to get turn-by-turn directions the route parameters
-                //  must have the returnDirections parameter set to true.
+                // must have the returnDirections parameter set to true.
                 directions = route.directionManeuvers
 
                 // set the time and distance info for the route
@@ -211,6 +211,10 @@ class FindRouteViewModel(private val application: Application) : AndroidViewMode
         }
     }
 
+    /**
+     * Selects the [directionManeuver] graphic and
+     * set's the viewpoint to the bounds of the maneuver geometry
+     */
     fun selectDirectionManeuver(directionManeuver: DirectionManeuver) {
         directionManeuver.geometry?.let { geometry ->
             // update the graphic of the selected direction maneuver
