@@ -18,28 +18,26 @@ package com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene
 
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene.components.AugmentRealityToShowTabletopSceneViewModel
 import com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene.screens.DisplaySceneInTabletopARScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.google.ar.core.ArCoreApk
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
 
-    private var userRequestedInstall: Boolean = true
+    private val sceneViewModel: AugmentRealityToShowTabletopSceneViewModel by viewModels()
 
-    // Flow to track if Google Play Services for AR is installed on the device
-    // By using `collectAsStateWithLifecycle()` in the composable, the UI will recompose when the
-    // value changes
-    private val isGooglePlayServicesArInstalled = MutableStateFlow(false)
+    private var userRequestedInstall = true
 
+    private var isGooglePlayServicesArInstalled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,10 +57,11 @@ class MainActivity : ComponentActivity() {
         checkGooglePlayServicesArInstalled()
     }
 
+    /**
+     *  Check if Google Play Services for AR is installed on the device. If it's not installed, this method should get
+     *  called twice: once to request the installation and once to ensure it was installed when the activity resumes.
+     */
     private fun checkGooglePlayServicesArInstalled() {
-        // Check if Google Play Services for AR is installed on the device
-        // If it's not installed, this method should get called twice: once to request the installation
-        // and once to ensure it was installed when the activity resumes
         try {
             when (ArCoreApk.getInstance().requestInstall(this, userRequestedInstall)) {
                 ArCoreApk.InstallStatus.INSTALL_REQUESTED -> {
@@ -71,15 +70,17 @@ class MainActivity : ComponentActivity() {
                 }
 
                 ArCoreApk.InstallStatus.INSTALLED -> {
-                    isGooglePlayServicesArInstalled.value = true
+                    isGooglePlayServicesArInstalled = true
                     return
                 }
             }
         } catch (e: Exception) {
-            Log.e("ArTabletopApp", "Error checking Google Play Services for AR: ${e.message}")
+            sceneViewModel.messageDialogVM.showMessageDialog(
+                "Error checking Google Play Services for AR",
+                e.message.toString()
+            )
         }
     }
-
 
     @Composable
     private fun DisplaySceneInTabletopARApp() {
@@ -90,4 +91,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

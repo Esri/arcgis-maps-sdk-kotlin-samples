@@ -35,7 +35,7 @@ This sample uses the [Philadelphia Mobile Scene Package](https://www.arcgis.com/
 
 This sample requires a device that is compatible with ARCore on Android.
 
-This sample uses [AR from the Maps SDK Toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/ar). See [Augmented reality](https://developers.arcgis.com/android/scenes-3d/display-scenes-in-augmented-reality/) in the guide for more information about augmented reality and adding it to your app.
+This sample uses [AR from the Maps SDK Toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/ar). 
 
 ## Tags
 
