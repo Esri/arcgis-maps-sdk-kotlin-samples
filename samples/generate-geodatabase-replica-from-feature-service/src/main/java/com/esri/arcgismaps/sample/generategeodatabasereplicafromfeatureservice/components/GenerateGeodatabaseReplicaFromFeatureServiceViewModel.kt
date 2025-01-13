@@ -17,10 +17,6 @@
 package com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,6 +37,8 @@ import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -95,19 +93,9 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
     // a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // job progress dialog visibility state
-    var showJobProgressDialog by mutableStateOf(false)
-        private set
-
-    // job progress percentage
-    var jobProgress by mutableIntStateOf(0)
-        private set
-
-    // state variables indicating if the buttons are enabled
-    var resetButtonEnabled by mutableStateOf(false)
-        private set
-    var generateButtonEnabled by mutableStateOf(false)
-        private set
+    // state flow to expose current UI state to UI
+    private val _uiStateFlow = MutableStateFlow(UiState(status = UiStatus.STARTING))
+    val uiStateFlow = _uiStateFlow.asStateFlow()
 
     // create a GeodatabaseSyncTask with the URL of the feature service
     private var geodatabaseSyncTask = GeodatabaseSyncTask(FEATURE_SERVICE_URL)
@@ -127,7 +115,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             arcGISMap.load().onSuccess {
                 // load the GeodatabaseSyncTask
                 geodatabaseSyncTask.load().onSuccess {
-                    generateButtonEnabled = true
+                    _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
                 }.onFailure { error ->
                     messageDialogVM.showMessageDialog(
                         title = "Failed to load GeodatabaseSyncTask",
@@ -187,17 +175,14 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         arcGISMap.operationalLayers.add(featureLayer)
         // close the current geodatabase, if a replica was already generated
         geodatabase?.close()
-        // show the Generate button
-        generateButtonEnabled = true
-        resetButtonEnabled = false
+        _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
     }
 
     /**
      * Generate the geodatabase replica.
      */
     fun generateGeodatabaseReplica() {
-        // disable the Generate button
-        generateButtonEnabled = false
+        _uiStateFlow.value = UiState(status = UiStatus.GENERATING, jobProgress = 0)
 
         val offlineGeodatabasePath =
             application.getExternalFilesDir(null)?.path + "/portland_trees_gdb.geodatabase"
@@ -250,18 +235,14 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         // create a flow-collection for the job's progress
         viewModelScope.launch(Dispatchers.Main) {
             job.progress.collect { progress ->
-                jobProgress = progress
+                _uiStateFlow.value = UiState(status = UiStatus.GENERATING, jobProgress = progress)
             }
         }
-
-        // show the Job Progress Dialog
-        showJobProgressDialog = true
 
         // start the job and wait for Job result
         job.start()
         job.result().onSuccess { geodatabase ->
-            // dismiss the progress dialog and display the data
-            showJobProgressDialog = false
+            // display the data
             loadGeodatabaseAndAddToMap(geodatabase)
 
             // unregister the geodatabase since we will not sync changes to the service
@@ -272,12 +253,11 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
                 )
             }
         }.onFailure { error ->
+            _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
             messageDialogVM.showMessageDialog(
                 title = "Error generating geodatabase",
                 description = error.message.toString()
             )
-            showJobProgressDialog = false
-            generateButtonEnabled = true
         }
     }
 
@@ -297,13 +277,14 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             }
             // keep track of the geodatabase to close it before generating a new replica
             geodatabase = replicaGeodatabase
+            _uiStateFlow.value = UiState(status = UiStatus.REPLICA_DISPLAYED)
         }.onFailure { error ->
+            _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
             messageDialogVM.showMessageDialog(
                 title = "Error loading geodatabase",
                 description = error.message.toString()
             )
         }
-        resetButtonEnabled = true
     }
 
     /**
@@ -313,7 +294,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             generateGeodatabaseJob?.cancel()
         }
-        generateButtonEnabled = true
+        _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
     }
 
     override fun onCleared() {
@@ -321,4 +302,19 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         // close the current geodatabase, if any, to release internal resources and file locks
         geodatabase?.close()
     }
+}
+
+/**
+ * Data class representing the UI state.
+ */
+data class UiState(
+    val status: UiStatus,
+    val jobProgress: Int = 0
+)
+
+enum class UiStatus {
+    STARTING,
+    READY_FOR_GENERATE,
+    GENERATING,
+    REPLICA_DISPLAYED
 }

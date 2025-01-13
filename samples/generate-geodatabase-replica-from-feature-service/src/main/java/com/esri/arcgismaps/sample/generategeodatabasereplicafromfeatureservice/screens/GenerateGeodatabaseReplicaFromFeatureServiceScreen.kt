@@ -26,16 +26,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.components.GenerateGeodatabaseReplicaFromFeatureServiceViewModel
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.R
+import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.components.UiStatus
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -47,6 +50,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
     val application = LocalContext.current.applicationContext
     val mapViewModel: GenerateGeodatabaseReplicaFromFeatureServiceViewModel = viewModel()
+    val uiState by mapViewModel.uiStateFlow.collectAsStateWithLifecycle()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -90,7 +94,7 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                         onClick = {
                             mapViewModel.resetMap()
                         },
-                        enabled = mapViewModel.resetButtonEnabled
+                        enabled = uiState.status == UiStatus.REPLICA_DISPLAYED
                     ) {
                         Text(text = getString(application, R.string.reset_map))
                     }
@@ -99,17 +103,17 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                         onClick = {
                             mapViewModel.generateGeodatabaseReplica()
                         },
-                        enabled = mapViewModel.generateButtonEnabled
+                        enabled = uiState.status == UiStatus.READY_FOR_GENERATE
                     ) {
                         Text(text = getString(application, R.string.generate_button_text))
                     }
                 }
 
                 // display progress dialog while generating a geodatabase replica
-                if (mapViewModel.showJobProgressDialog) {
+                if (uiState.status == UiStatus.GENERATING) {
                     JobLoadingDialog(
                         title = getString(application, R.string.dialog_title),
-                        progress = mapViewModel.jobProgress,
+                        progress = uiState.jobProgress,
                         cancelJobRequest = { mapViewModel.cancelOfflineGeodatabaseJob() }
                     )
                 }
