@@ -1,3 +1,11 @@
 <resources>
     <string name="augment_reality_to_show_tabeltop_scene_app_name">Augment reality to show tabletop scene</string>
+    <string name="arcore_not_installed_screen_message">Google Play Services for AR must be installed to run this app.</string>
+    <string name="initialization_status">Initialization status: %1$s</string>
+    <string name="detect_planes_overlay">Move your phone around to detect planes…</string>
+    <string name="lat_lon">Lat: %1$s, Lon: %2$s</string>
+    <string name="tap_scene_overlay">Tap on a plane to place the scene</string>
+    <string name="initializing_overlay">Setting up AR…</string>
+    <string name="failed_to_initialize_overlay">Failed to initialize: %1$s</string>
+    <string name="failed_to_load_scene">Failed to load scene: %1$s</string>
 </resources>
