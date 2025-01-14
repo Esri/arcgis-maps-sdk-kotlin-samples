@@ -39,16 +39,14 @@ fun DisplaySceneInTabletopARScreen(sampleName: String) {
         sceneViewModel.scene?.let {
             // Scene view that provides an augmented reality table top experience
             TableTopSceneView(
+                arcGISScene = it,
+                arcGISSceneAnchor = Point(
+                    x = -75.16996728256345, y = 39.95787000283599, spatialReference = SpatialReference.wgs84()
+                ),
+                translationFactor = 800.0,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
-                arcGISScene = it,
-                arcGISSceneAnchor = Point(
-                    x = -75.16996728256345,
-                    y = 39.95787000283599,
-                    spatialReference = SpatialReference.wgs84()
-                ),
-                translationFactor = 800.0,
                 clippingDistance = 800.0,
             )
         }

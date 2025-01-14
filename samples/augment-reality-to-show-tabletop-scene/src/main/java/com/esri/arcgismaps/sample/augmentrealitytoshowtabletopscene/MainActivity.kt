@@ -33,8 +33,6 @@ import com.google.ar.core.ArCoreApk
 
 class MainActivity : ComponentActivity() {
 
-    private val sceneViewModel: AugmentRealityToShowTabletopSceneViewModel by viewModels()
-
     private var userRequestedInstall = true
 
     private var isGooglePlayServicesArInstalled = false
@@ -75,6 +73,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (e: Exception) {
+            val sceneViewModel: AugmentRealityToShowTabletopSceneViewModel by viewModels()
             sceneViewModel.messageDialogVM.showMessageDialog(
                 "Error checking Google Play Services for AR",
                 e.message.toString()

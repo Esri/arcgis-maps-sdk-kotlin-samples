@@ -12,7 +12,7 @@ Tabletop scenes allow you to use your device to interact with scenes as if they 
 
 Once the scene loads, you'll see a feed from the camera. Wait for ArCore to highlight a plane and tap on one to place the scene. With the scene placed, you can move the camera around the scene to explore.
 
-NOTE: [Google Play Services for AR](https://play.google.com/store/apps/details?id=com.google.ar.core) must be installed to run this app.
+NOTE: [Google Play Services for AR](https://play.google.com/store/apps/details?id=com.google.ar.core) must be installed to run this app and the application code will prompt the user to install it if it is not already installed.
 
 ## How it works
 
