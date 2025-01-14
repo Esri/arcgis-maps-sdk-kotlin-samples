@@ -38,7 +38,7 @@ import com.arcgismaps.LoadStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.components.GenerateGeodatabaseReplicaFromFeatureServiceViewModel
 import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.R
-import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.components.UiStatus
+import com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.components.AppStatus
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -94,7 +94,7 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                         onClick = {
                             mapViewModel.resetMap()
                         },
-                        enabled = uiState.status == UiStatus.REPLICA_DISPLAYED
+                        enabled = uiState.appStatus == AppStatus.REPLICA_DISPLAYED
                     ) {
                         Text(text = getString(application, R.string.reset_map))
                     }
@@ -103,14 +103,14 @@ fun GenerateGeodatabaseReplicaFromFeatureServiceScreen(sampleName: String) {
                         onClick = {
                             mapViewModel.generateGeodatabaseReplica()
                         },
-                        enabled = uiState.status == UiStatus.READY_FOR_GENERATE
+                        enabled = uiState.appStatus == AppStatus.READY_TO_GENERATE
                     ) {
                         Text(text = getString(application, R.string.generate_button_text))
                     }
                 }
 
                 // display progress dialog while generating a geodatabase replica
-                if (uiState.status == UiStatus.GENERATING) {
+                if (uiState.appStatus == AppStatus.GENERATING) {
                     JobLoadingDialog(
                         title = getString(application, R.string.dialog_title),
                         progress = uiState.jobProgress,

@@ -93,8 +93,8 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
     // a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // state flow to expose current UI state to UI
-    private val _uiStateFlow = MutableStateFlow(UiState(status = UiStatus.STARTING))
+    // state flow to expose the current UI state
+    private val _uiStateFlow = MutableStateFlow(UiState(appStatus = AppStatus.STARTING))
     val uiStateFlow = _uiStateFlow.asStateFlow()
 
     // create a GeodatabaseSyncTask with the URL of the feature service
@@ -115,7 +115,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             arcGISMap.load().onSuccess {
                 // load the GeodatabaseSyncTask
                 geodatabaseSyncTask.load().onSuccess {
-                    _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
+                    _uiStateFlow.value = UiState(appStatus = AppStatus.READY_TO_GENERATE)
                 }.onFailure { error ->
                     messageDialogVM.showMessageDialog(
                         title = "Failed to load GeodatabaseSyncTask",
@@ -175,14 +175,14 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         arcGISMap.operationalLayers.add(featureLayer)
         // close the current geodatabase, if a replica was already generated
         geodatabase?.close()
-        _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
+        _uiStateFlow.value = UiState(appStatus = AppStatus.READY_TO_GENERATE)
     }
 
     /**
      * Generate the geodatabase replica.
      */
     fun generateGeodatabaseReplica() {
-        _uiStateFlow.value = UiState(status = UiStatus.GENERATING, jobProgress = 0)
+        _uiStateFlow.value = UiState(appStatus = AppStatus.GENERATING, jobProgress = 0)
 
         val offlineGeodatabasePath =
             application.getExternalFilesDir(null)?.path + "/portland_trees_gdb.geodatabase"
@@ -235,7 +235,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         // create a flow-collection for the job's progress
         viewModelScope.launch(Dispatchers.Main) {
             job.progress.collect { progress ->
-                _uiStateFlow.value = UiState(status = UiStatus.GENERATING, jobProgress = progress)
+                _uiStateFlow.value = UiState(appStatus = AppStatus.GENERATING, jobProgress = progress)
             }
         }
 
@@ -253,7 +253,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
                 )
             }
         }.onFailure { error ->
-            _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
+            _uiStateFlow.value = UiState(appStatus = AppStatus.READY_TO_GENERATE)
             messageDialogVM.showMessageDialog(
                 title = "Error generating geodatabase",
                 description = error.message.toString()
@@ -277,9 +277,9 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             }
             // keep track of the geodatabase to close it before generating a new replica
             geodatabase = replicaGeodatabase
-            _uiStateFlow.value = UiState(status = UiStatus.REPLICA_DISPLAYED)
+            _uiStateFlow.value = UiState(appStatus = AppStatus.REPLICA_DISPLAYED)
         }.onFailure { error ->
-            _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
+            _uiStateFlow.value = UiState(appStatus = AppStatus.READY_TO_GENERATE)
             messageDialogVM.showMessageDialog(
                 title = "Error loading geodatabase",
                 description = error.message.toString()
@@ -294,7 +294,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             generateGeodatabaseJob?.cancel()
         }
-        _uiStateFlow.value = UiState(status = UiStatus.READY_FOR_GENERATE)
+        _uiStateFlow.value = UiState(appStatus = AppStatus.READY_TO_GENERATE)
     }
 
     override fun onCleared() {
@@ -308,13 +308,13 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
  * Data class representing the UI state.
  */
 data class UiState(
-    val status: UiStatus,
+    val appStatus: AppStatus,
     val jobProgress: Int = 0
 )
 
-enum class UiStatus {
+enum class AppStatus {
     STARTING,
-    READY_FOR_GENERATE,
+    READY_TO_GENERATE,
     GENERATING,
     REPLICA_DISPLAYED
 }
