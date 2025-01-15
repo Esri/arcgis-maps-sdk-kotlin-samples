@@ -37,13 +37,9 @@ import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class CreateAndEditGeometriesViewModel(
-    application: Application,
-    private val sampleCoroutineScope: CoroutineScope
-) : AndroidViewModel(application) {
+class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewModel(application) {
     // create a map with the imagery basemap style
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISImagery).apply {
@@ -126,7 +122,7 @@ class CreateAndEditGeometriesViewModel(
      * [singleTapConfirmedEvent].
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
-        sampleCoroutineScope.launch {
+        viewModelScope.launch {
             val graphicsResult = mapViewProxy.identifyGraphicsOverlays(
                 screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
                 tolerance = 10.0.dp,
