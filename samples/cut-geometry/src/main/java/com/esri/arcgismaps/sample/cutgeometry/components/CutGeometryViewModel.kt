@@ -146,8 +146,8 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
                     error.message.toString()
                 )
             }.onSuccess {
-                graphicsOverlay.graphics.add(polylineGraphic)
                 graphicsOverlay.graphics.add(polygonGraphic)
+                graphicsOverlay.graphics.add(polylineGraphic)
                 polygonGraphic.geometry?.let { polygonToCut ->
                     mapViewProxy.setViewpoint(Viewpoint(polygonToCut))
                 }
@@ -161,8 +161,8 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
      * */
     fun resetGeometry() {
         graphicsOverlay.graphics.clear()
-        graphicsOverlay.graphics.add(polylineGraphic)
         graphicsOverlay.graphics.add(polygonGraphic)
+        graphicsOverlay.graphics.add(polylineGraphic)
         polygonGraphic.geometry?.let { polygonToCut ->
             mapViewProxy.setViewpoint(Viewpoint(polygonToCut))
         }
