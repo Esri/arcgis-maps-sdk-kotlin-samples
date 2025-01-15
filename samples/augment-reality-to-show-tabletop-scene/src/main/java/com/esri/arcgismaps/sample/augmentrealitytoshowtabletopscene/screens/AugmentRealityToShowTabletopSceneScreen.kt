@@ -106,7 +106,7 @@ fun DisplaySceneInTabletopARScreen(sampleName: String) {
 }
 
 /**
- * Displays the provided [text] on top of a half-transparent gray background.
+ * Displays the provided [text] in the middle of the screen.
  */
 @Composable
 fun ShowInstruction(text: String) {
