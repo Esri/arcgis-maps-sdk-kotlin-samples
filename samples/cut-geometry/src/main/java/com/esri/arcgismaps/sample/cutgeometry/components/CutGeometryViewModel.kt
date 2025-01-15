@@ -81,7 +81,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         )
     )
 
-    // create a red polyline graphic to represent the cut line
+    // create a graphic for the cut line
     private val polylineGraphic = Graphic(
         geometry = borderPolyline,
         symbol = SimpleLineSymbol(
