@@ -14,11 +14,11 @@
     <application>
         <activity
             android:name=".DownloadActivity"
-            android:label="@string/augment_reality_to_show_tabeltop_scene_app_name" />
+            android:label="@string/augment_reality_to_show_tabletop_scene_app_name" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/augment_reality_to_show_tabeltop_scene_app_name">
+            android:label="@string/augment_reality_to_show_tabletop_scene_app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

@@ -26,7 +26,7 @@ class DownloadActivity : DownloaderActivity() {
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the app name of the sample
-            getString(R.string.augment_reality_to_show_tabeltop_scene_app_name),
+            getString(R.string.augment_reality_to_show_tabletop_scene_app_name),
             listOf(
                 // ArcGIS Portal item containing the Philadelphia mobile scene package.
                 "https://www.arcgis.com/home/item.html?id=7dd2f97bb007466ea939160d0de96a9d"

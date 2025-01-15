@@ -34,7 +34,7 @@ import java.io.File
 class AugmentRealityToShowTabletopSceneViewModel(application: Application) : AndroidViewModel(application) {
 
     private val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(R.string.augment_reality_to_show_tabeltop_scene_app_name)
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(R.string.augment_reality_to_show_tabletop_scene_app_name)
     }
 
     // Get the folder path containing the mobile scene package (.mspk) file

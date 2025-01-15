@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
     private fun DisplaySceneInTabletopARApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
             DisplaySceneInTabletopARScreen(
-                sampleName = getString(R.string.augment_reality_to_show_tabeltop_scene_app_name)
+                sampleName = getString(R.string.augment_reality_to_show_tabletop_scene_app_name)
             )
         }
     }

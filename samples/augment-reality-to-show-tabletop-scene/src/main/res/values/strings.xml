@@ -1,5 +1,5 @@
 <resources>
-    <string name="augment_reality_to_show_tabeltop_scene_app_name">Augment reality to show tabletop scene</string>
+    <string name="augment_reality_to_show_tabletop_scene_app_name">Augment reality to show tabletop scene</string>
     <string name="arcore_not_installed_screen_message">Google Play Services for AR must be installed to run this app.</string>
     <string name="initialization_status">Initialization status: %1$s</string>
     <string name="detect_planes_overlay">Move your phone around to detect planes…</string>
