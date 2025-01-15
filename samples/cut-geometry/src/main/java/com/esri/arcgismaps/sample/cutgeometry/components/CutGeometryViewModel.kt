@@ -63,66 +63,73 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     // create a polygon corresponding to Lake Superior
     private val lakeSuperiorPolygon by lazy {
         PolygonBuilder(SpatialReference.webMercator()) {
-            addPoint(Point(-10254374.668616, 5908345.076380))
-            addPoint(Point(-10178382.525314, 5971402.386779))
-            addPoint(Point(-10118558.923141, 6034459.697178))
-            addPoint(Point(-9993252.729399, 6093474.872295))
-            addPoint(Point(-9882498.222673, 6209888.368416))
-            addPoint(Point(-9821057.766387, 6274562.532928))
-            addPoint(Point(-9690092.583250, 6241417.023616))
-            addPoint(Point(-9605207.742329, 6206654.660191))
-            addPoint(Point(-9564786.389509, 6108834.986367))
-            addPoint(Point(-9449989.747500, 6095091.726408))
-            addPoint(Point(-9462116.153346, 6044160.821855))
-            addPoint(Point(-9417652.665244, 5985145.646738))
-            addPoint(Point(-9438671.768711, 5946341.148031))
-            addPoint(Point(-9398250.415891, 5922088.336339))
-            addPoint(Point(-9419269.519357, 5855797.317714))
-            addPoint(Point(-9467775.142741, 5858222.598884))
-            addPoint(Point(-9462924.580403, 5902686.086985))
-            addPoint(Point(-9598740.325877, 5884092.264688))
-            addPoint(Point(-9643203.813979, 5845287.765981))
-            addPoint(Point(-9739406.633691, 5879241.702350))
-            addPoint(Point(-9783061.694736, 5922896.763395))
-            addPoint(Point(-9844502.151022, 5936640.023354))
-            addPoint(Point(-9773360.570059, 6019099.583107))
-            addPoint(Point(-9883306.649729, 5968977.105610))
-            addPoint(Point(-9957681.938918, 5912387.211662))
-            addPoint(Point(-10055501.612742, 5871965.858842))
-            addPoint(Point(-10116942.069028, 5884092.264688))
-            addPoint(Point(-10111283.079633, 5933406.315128))
-            addPoint(Point(-10214761.742852, 5888134.399970))
-            addPoint(Point(-10254374.668616, 5901877.659929))
+            addPoint(Point(x = -10254374.668616, y = 5908345.076380))
+            addPoint(Point(x = -10178382.525314, y = 5971402.386779))
+            addPoint(Point(x = -10118558.923141, y = 6034459.697178))
+            addPoint(Point(x = -9993252.729399, y = 6093474.872295))
+            addPoint(Point(x = -9882498.222673, y = 6209888.368416))
+            addPoint(Point(x = -9821057.766387, y = 6274562.532928))
+            addPoint(Point(x = -9690092.583250, y = 6241417.023616))
+            addPoint(Point(x = -9605207.742329, y = 6206654.660191))
+            addPoint(Point(x = -9564786.389509, y = 6108834.986367))
+            addPoint(Point(x = -9449989.747500, y = 6095091.726408))
+            addPoint(Point(x = -9462116.153346, y = 6044160.821855))
+            addPoint(Point(x = -9417652.665244, y = 5985145.646738))
+            addPoint(Point(x = -9438671.768711, y = 5946341.148031))
+            addPoint(Point(x = -9398250.415891, y = 5922088.336339))
+            addPoint(Point(x = -9419269.519357, y = 5855797.317714))
+            addPoint(Point(x = -9467775.142741, y = 5858222.598884))
+            addPoint(Point(x = -9462924.580403, y = 5902686.086985))
+            addPoint(Point(x = -9598740.325877, y = 5884092.264688))
+            addPoint(Point(x = -9643203.813979, y = 5845287.765981))
+            addPoint(Point(x = -9739406.633691, y = 5879241.702350))
+            addPoint(Point(x = -9783061.694736, y = 5922896.763395))
+            addPoint(Point(x = -9844502.151022, y = 5936640.023354))
+            addPoint(Point(x = -9773360.570059, y = 6019099.583107))
+            addPoint(Point(x = -9883306.649729, y = 5968977.105610))
+            addPoint(Point(x = -9957681.938918, y = 5912387.211662))
+            addPoint(Point(x = -10055501.612742, y = 5871965.858842))
+            addPoint(Point(x = -10116942.069028, y = 5884092.264688))
+            addPoint(Point(x = -10111283.079633, y = 5933406.315128))
+            addPoint(Point(x = -10214761.742852, y = 5888134.399970))
+            addPoint(Point(x = -10254374.668616, y = 5901877.659929))
         }.toGeometry()
     }
 
     // create a polyline that divides Lake Superior into a Canada side and US side
     private val borderPolyline by lazy {
         PolylineBuilder(SpatialReference.webMercator()) {
-            addPoint(Point(-9981328.687124, 6111053.281447))
-            addPoint(Point(-9946518.044066, 6102350.620682))
-            addPoint(Point(-9872545.427566, 6152390.920079))
-            addPoint(Point(-9838822.617103, 6157830.083057))
-            addPoint(Point(-9446115.050097, 5927209.572793))
-            addPoint(Point(-9430885.393759, 5876081.440801))
-            addPoint(Point(-9415655.737420, 5860851.784463))
+            addPoint(Point(x = -9981328.687124, y = 6111053.281447))
+            addPoint(Point(x = -9946518.044066, y = 6102350.620682))
+            addPoint(Point(x = -9872545.427566, y = 6152390.920079))
+            addPoint(Point(x = -9838822.617103, y = 6157830.083057))
+            addPoint(Point(x = -9446115.050097, y = 5927209.572793))
+            addPoint(Point(x = -9430885.393759, y = 5876081.440801))
+            addPoint(Point(x = -9415655.737420, y = 5860851.784463))
         }.toGeometry()
     }
 
     // create a blue polygon graphic to represent lake superior
     private val polygonGraphic = Graphic(
-        lakeSuperiorPolygon,
-        SimpleFillSymbol(
-            SimpleFillSymbolStyle.Solid, Color(R.color.transparentBlue),
-            SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 2F)
+        geometry = lakeSuperiorPolygon,
+        symbol = SimpleFillSymbol(
+            style = SimpleFillSymbolStyle.Solid,
+            color = Color(R.color.transparentBlue),
+            outline = SimpleLineSymbol(
+                style = SimpleLineSymbolStyle.Solid,
+                color = Color.blue,
+                width = 2F
+            )
         )
     )
 
     // create a red polyline graphic to represent the cut line
     private val polylineGraphic = Graphic(
-        borderPolyline, SimpleLineSymbol(
-            SimpleLineSymbolStyle.Dot,
-            Color.red, 3F
+        geometry = borderPolyline,
+        symbol = SimpleLineSymbol(
+            style = SimpleLineSymbolStyle.Dot,
+            color = Color.red,
+            width = 3F
         )
     )
 
@@ -142,8 +149,8 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
+                    title = "Failed to load map",
+                    description = error.message.toString()
                 )
             }.onSuccess {
                 graphicsOverlay.graphics.add(polygonGraphic)
@@ -178,21 +185,33 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     fun cutGeometry() {
         polygonGraphic.geometry?.let { graphicGeometry ->
             val parts = GeometryEngine.tryCut(
-                graphicGeometry,
-                polylineGraphic.geometry as Polyline
+                geometry = graphicGeometry,
+                cutter = polylineGraphic.geometry as Polyline
             )
 
             // create graphics for the US and Canada sides
             val canadaSide = Graphic(
-                parts[0], SimpleFillSymbol(
-                    SimpleFillSymbolStyle.BackwardDiagonal,
-                    Color.green, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.blue, 0F)
+                geometry = parts[0],
+                symbol = SimpleFillSymbol(
+                    style = SimpleFillSymbolStyle.BackwardDiagonal,
+                    color = Color.green,
+                    outline = SimpleLineSymbol(
+                        style = SimpleLineSymbolStyle.Null,
+                        color = Color.blue,
+                        width = 0F
+                    )
                 )
             )
             val usSide = Graphic(
-                parts[1], SimpleFillSymbol(
-                    SimpleFillSymbolStyle.ForwardDiagonal,
-                    Color.yellow, SimpleLineSymbol(SimpleLineSymbolStyle.Null, Color.blue, 0F)
+                geometry = parts[1],
+                symbol = SimpleFillSymbol(
+                    style = SimpleFillSymbolStyle.ForwardDiagonal,
+                    color = Color.yellow,
+                    outline = SimpleLineSymbol(
+                        style = SimpleLineSymbolStyle.Null,
+                        color = Color.blue,
+                        width = 0F
+                    )
                 )
             )
             // add the graphics to the graphics overlay
@@ -209,7 +228,12 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
      */
     private val Color.Companion.blue: Color
         get() {
-            return fromRgba(0, 0, 255, 255)
+            return fromRgba(
+                r = 0,
+                g = 0,
+                b = 255,
+                a = 255
+            )
         }
 
 }
