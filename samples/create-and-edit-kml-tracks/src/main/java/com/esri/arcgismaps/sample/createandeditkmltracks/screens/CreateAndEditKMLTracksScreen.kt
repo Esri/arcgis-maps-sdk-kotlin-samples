@@ -16,25 +16,41 @@
 
 package com.esri.arcgismaps.sample.createandeditkmltracks.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.createandeditkmltracks.components.CreateAndEditKMLTracksViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
 fun CreateAndEditKMLTracksScreen(sampleName: String) {
-    val mapViewModel: CreateAndEditKMLTracksViewModel = viewModel()
+    val locationDisplay = rememberLocationDisplay()
+    val mapViewModel = viewModel<CreateAndEditKMLTracksViewModel>().apply {
+        setLocationDisplay(locationDisplay)
+    }
+
+    var hint by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -42,13 +58,34 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    locationDisplay = locationDisplay,
+                    onSingleTapConfirmed = {
+                        if (locationDisplay.autoPanMode.value == LocationDisplayAutoPanMode.Off) {
+                            locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+                        }
+                        if (mapViewModel.isTrackLocation) {
+                            mapViewModel.isTrackLocation = false
+                            hint = "Tracking has stopped"
+                        } else {
+                            mapViewModel.isTrackLocation = true
+                            hint = "Tracking has started"
+                        }
+                    },
+                    graphicsOverlays = listOf(
+                        mapViewModel.locationHistoryOverlay,
+                        mapViewModel.locationHistoryLineOverlay
+                    )
                 )
+                Text(text = hint)
+
                 // TODO: Add UI components in this Column ...
             }
 
