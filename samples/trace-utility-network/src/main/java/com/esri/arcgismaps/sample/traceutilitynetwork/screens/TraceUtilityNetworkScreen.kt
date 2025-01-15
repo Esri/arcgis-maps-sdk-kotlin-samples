@@ -20,6 +20,7 @@ package com.esri.arcgismaps.sample.traceutilitynetwork.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,6 +70,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.Color
+import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.view.SelectionProperties
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.utilitynetworks.UtilityTerminal
@@ -90,8 +92,15 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     // Create the view model used by the sample
     val mapViewModel: TraceUtilityNetworkViewModel = viewModel()
 
-    // Load map, utility network, and adds layers. 
-    LaunchedEffect(Unit) { mapViewModel.initializeTrace() }
+    // Load map, utility network, and adds layers.
+    LaunchedEffect(Unit) {
+        mapViewModel.arcGISMap.apply {
+            // Check if the network is not loaded
+            if (utilityNetworks.size == 0 || loadStatus.value == LoadStatus.NotLoaded) {
+                mapViewModel.initializeTrace()
+            }
+        }
+    }
 
     // Observe relevant states
     val hintText by mapViewModel.hint
@@ -394,7 +403,14 @@ fun SegmentedButtonTracePointTypes(
                 },
                 enabled = isPointTypesEnabled,
                 selected = (index == selectedIndex)
-            ) { Text(label) }
+            ) {
+                Text(
+                    modifier = Modifier.basicMarquee(),
+                    text = label,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
         }
     }
 }
