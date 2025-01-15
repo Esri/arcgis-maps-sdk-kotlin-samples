@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.createandeditgeometries.components
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.GeometryType
@@ -31,13 +32,18 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewModel(application) {
+class CreateAndEditGeometriesViewModel(
+    application: Application,
+    private val sampleCoroutineScope: CoroutineScope
+) : AndroidViewModel(application) {
     // create a map with the imagery basemap style
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISImagery).apply {
@@ -112,6 +118,34 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
         }
         graphicsOverlay.graphics.add(graphic)
         graphic.isSelected = false
+    }
+
+    /**
+     * Identifies the graphic at the tapped screen coordinate in the provided [singleTapConfirmedEvent]
+     * and starts the GeometryEditor using the identified graphic's geometry. Hide the BottomSheet on
+     * [singleTapConfirmedEvent].
+     */
+    fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+        sampleCoroutineScope.launch {
+            val graphicsResult = mapViewProxy.identifyGraphicsOverlays(
+                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
+                tolerance = 10.0.dp,
+                returnPopupsOnly = false
+            ).getOrNull()
+
+            if (!geometryEditor.isStarted.value) {
+                if (graphicsResult != null) {
+                    if (graphicsResult.isNotEmpty()) {
+                        identifiedGraphic = graphicsResult[0].graphics[0]
+                        identifiedGraphic.isSelected = true
+                        identifiedGraphic.geometry?.let {
+                            geometryEditor.start(it)
+                        }
+                    }
+                }
+                identifiedGraphic.geometry = null
+            }
+        }
     }
 
 }
