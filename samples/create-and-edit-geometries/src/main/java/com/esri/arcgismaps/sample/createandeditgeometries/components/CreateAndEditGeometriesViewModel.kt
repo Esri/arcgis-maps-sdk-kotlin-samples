@@ -35,12 +35,9 @@ import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewModel(application) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     // create a map with the imagery basemap style
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISImagery).apply {
@@ -59,18 +56,17 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     // create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
     val mapViewProxy = MapViewProxy()
 
-    // create a graphic, graphic overlay, and geometry editorenc
+    // create a graphic, graphic overlay, and geometry editor
     private var identifiedGraphic = Graphic()
     val graphicsOverlay = GraphicsOverlay()
-    // create a geometry editor
     val geometryEditor = GeometryEditor()
 
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
+                    title = "Failed to load map",
+                    description = error.message.toString()
                 )
             }
         }
@@ -98,13 +94,13 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
-     * Creates a graphic from the geometry and add it to the GraphicsOverlay.
+     * Creates a graphic from the geometry and adds it to the GraphicsOverlay.
      */
     private fun createGraphic() {
         val geometry = geometryEditor.stop()
             ?: return messageDialogVM.showMessageDialog(
-                "Error!",
-                "Error stopping editing session"
+                title = "Error!",
+                description = "Error stopping editing session"
             )
         val graphic = Graphic(geometry)
 

@@ -16,20 +16,18 @@
 
 package com.esri.arcgismaps.sample.createandeditgeometries.screens
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,13 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material3.Text
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcgismaps.geometry.GeometryType
-import com.esri.arcgismaps.sample.createandeditgeometries.components.CreateAndEditGeometriesViewModel
 import com.esri.arcgismaps.sample.createandeditgeometries.R
+import com.esri.arcgismaps.sample.createandeditgeometries.components.CreateAndEditGeometriesViewModel
 
 /**
  * Composable component to display the menu buttons.
@@ -56,7 +51,6 @@ fun ButtonMenu(
     val rowModifier = Modifier
         .padding(12.dp)
         .fillMaxWidth()
-        .horizontalScroll(rememberScrollState()) // TODO: check if this is still necessary
 
     val isGeometryEditorStarted by mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle()
 
@@ -112,7 +106,7 @@ fun ButtonMenu(
             enabled = isGeometryEditorStarted,
             onClick = { mapViewModel.stopEditor() }
         ) {
-            Icon(vector.vectorResource(R.drawable.check_32), contentDescription = "Save Edits")
+            Icon(vector.vectorResource(id = R.drawable.check_32), contentDescription = "Save Edits")
         }
     }
 }
