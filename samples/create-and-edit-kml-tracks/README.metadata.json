@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "CreateAndEditKMLTracks",
+    "ignore": false,
+    "images": [
+        "create-and-edit-kml-tracks.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createandeditkmltracks/CreateAndEditKMLTracksViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createandeditkmltracks/CreateAndEditKMLTracksScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createandeditkmltracks/MainActivity.kt"
+    ],
+    "title": "Create and edit KML tracks"
+}
