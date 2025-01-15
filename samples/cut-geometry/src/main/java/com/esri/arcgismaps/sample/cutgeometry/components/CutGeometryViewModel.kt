@@ -235,8 +235,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * Create a geometry corresponding to the US/Canada border over Lake Superior
-     * from a series of points
+     * Create a polyline corresponding to the US/Canada border over Lake Superior
      */
     private fun makeBorderPolyline() : Polyline {
         return PolylineBuilder(SpatialReference.webMercator()) {
