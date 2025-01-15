@@ -67,7 +67,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     // get a polyline that divides Lake Superior into a Canada side and US side
     private val borderPolyline = makeBorderPolyline()
 
-    // create a blue polygon graphic to represent lake superior
+    // create a graphic for the polygon representing Lake Superior
     private val polygonGraphic = Graphic(
         geometry = lakeSuperiorPolygon,
         symbol = SimpleFillSymbol(
