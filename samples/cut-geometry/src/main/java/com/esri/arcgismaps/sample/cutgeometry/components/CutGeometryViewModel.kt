@@ -224,7 +224,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * Companion for a nicer color
+     * Define a blue color for polygon boundary
      */
     private val Color.Companion.blue: Color
         get() {
