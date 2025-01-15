@@ -197,7 +197,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }
 
     /**
-     * Create a geometry corresponding to Lake Superior from a series of points
+     * Create a polygon corresponding to Lake Superior
      */
     private fun makeLakeSuperior() : Polygon {
         return PolygonBuilder(SpatialReference.webMercator()) {
