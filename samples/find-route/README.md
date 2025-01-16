@@ -31,6 +31,10 @@ For simplicity, the sample comes loaded with a start and end stop. You can tap o
 * RouteTask
 * Stop
 
+## Additional information
+
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+
 ## Tags
 
-directions, driving, navigation, network, network analysis, route, routing, shortest path, turn-by-turn
+directions, driving, geoview-compose, navigation, network, network analysis, route, routing, shortest path, toolkit, turn-by-turn
