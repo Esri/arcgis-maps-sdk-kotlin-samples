@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice"
+    namespace = "com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene"
     buildFeatures {
         buildConfig = true
     }
@@ -19,4 +19,6 @@ android {
 
 dependencies {
     // Only module specific dependencies needed here
+    implementation(libs.ar.core)
+    implementation(libs.arcgis.maps.kotlin.toolkit.ar)
 }

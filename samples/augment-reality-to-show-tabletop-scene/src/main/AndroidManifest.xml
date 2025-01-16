@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Limits app visibility in the Google Play Store to ARCore supported devices
+         (https://developers.google.com/ar/devices). -->
+    <uses-feature android:name="android.hardware.camera.ar" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <application>
+        <activity
+            android:name=".DownloadActivity"
+            android:label="@string/augment_reality_to_show_tabletop_scene_app_name" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/augment_reality_to_show_tabletop_scene_app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <!-- "AR Required" app, requires "Google Play Services for AR" (ARCore)
+             to be installed, as the app does not include any non-AR features. -->
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
+    </application>
+
+</manifest>

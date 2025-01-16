@@ -16,9 +16,9 @@ Zoom to any extent. Then click the generate button to generate a geodatabase of 
 
 1. Create a `GeodatabaseSyncTask` with the URL of the feature service and load it.
 2. Create `GenerateGeodatabaseParameters` specifying the extent and whether to include attachments.
-3. Create a `GenerateGeodatabaseJob` with `geodatabaseSyncTask.generateGeodatabaseAsync(parameters, downloadPath)`. Start the job with `job.start()`.
+3. Create a `GenerateGeodatabaseJob` with `geodatabaseSyncTask.createGenerateGeodatabaseJob(parameters, downloadPath)`. Start the job with `job.start()`.
 4. When the job is done, `job.result()` will return the geodatabase. Inside the geodatabase are feature tables which can be used to add feature layers to the map.
-5. Call `syncTask.unregisterGeodatabaseAsync(geodatabase)` after generation when you're not planning on syncing changes to the service.
+5. Call `geodatabaseSyncTask.unregisterGeodatabase(geodatabase)` after generation when you're not planning on syncing changes to the service.
 
 ## Relevant API
 
@@ -27,6 +27,10 @@ Zoom to any extent. Then click the generate button to generate a geodatabase of 
 * Geodatabase
 * GeodatabaseSyncTask
 
+## Additional information
+
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
+
 ## Tags
 
-disconnected, local geodatabase, offline, replica, sync
+disconnected, geoview-compose, local geodatabase, offline, replica, sync, toolkit
