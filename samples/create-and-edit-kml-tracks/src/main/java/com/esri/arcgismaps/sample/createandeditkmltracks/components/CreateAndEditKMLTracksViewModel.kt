@@ -24,17 +24,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Multipoint
-import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.location.Location
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
 import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.kml.KmlAltitudeMode
 import com.arcgismaps.mapping.kml.KmlDocument
 import com.arcgismaps.mapping.kml.KmlMultiTrack
@@ -59,35 +57,20 @@ import java.time.Instant
 
 class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewModel(application) {
 
-    val mapViewProxy = MapViewProxy()
-
-    // create a center point for the data in West Los Angeles, California
-    val center = Point(-13185535.98, 4037766.28, SpatialReference(102100))
-
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(center, 7000.0)
-        }
-    )
-
-    // create a graphics overlay for the points and use a red circle for the symbols
-    private val locationSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 10f)
-
-    // Create a message dialog view model for handling error messages
-    val messageDialogVM = MessageDialogViewModel()
-
-    var isTrackLocation by mutableStateOf(false)
-
-    var isRecenterButtonEnabled by mutableStateOf(false)
-    var isRecordingTrack by mutableStateOf(false)
-
-    val graphicsOverlay = GraphicsOverlay()
-
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() +
                 File.separator +
                 application.getString(R.string.create_and_edit_kml_tracks_app_name)
     }
+
+    // Create a message dialog view model for handling error messages
+    val messageDialogVM = MessageDialogViewModel()
+
+    val mapViewProxy = MapViewProxy()
+    val graphicsOverlay = GraphicsOverlay()
+    val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISNavigationNight))
+
+    private val locationSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 10f)
 
     private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 3f)
 
@@ -97,8 +80,6 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
     // default location display object, which is updated by rememberLocationDisplay
     private var locationDisplay: LocationDisplay = LocationDisplay()
 
-    // private var simulatedLocationDataSource: SimulatedLocationDataSource? = null
-
     fun setLocationDisplay(locationDisplay: LocationDisplay) {
         this.locationDisplay = locationDisplay
     }
@@ -106,6 +87,11 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
     private val kmlDocument = KmlDocument()
     val kmlTrackElements = mutableListOf<KmlTrackElement>()
     val kmlTracks = mutableListOf<KmlTrack>()
+
+
+    var isTrackLocation by mutableStateOf(false)
+    var isRecenterButtonEnabled by mutableStateOf(false)
+    var isRecordingTrack by mutableStateOf(false)
 
     init {
         // get the route geometry
@@ -183,7 +169,12 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
             )
         )
 
-        graphicsOverlay.graphics.add(Graphic(locationPoint.position, locationSymbol))
+        graphicsOverlay.graphics.add(
+            Graphic(
+                geometry = locationPoint.position,
+                symbol = locationSymbol
+            )
+        )
     }
 
     fun startRecordingKmlTrack() {
@@ -233,16 +224,24 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
         resetKmlTrack()
     }
 
-    private fun resetKmlTrack() {
-
-    }
-
     private fun displayKmlTracks() {
         graphicsOverlay.graphics.clear()
-        kmlTracks.forEach {
-            val multipoint = it.geometry as Multipoint
-            graphicsOverlay.graphics.add(Graphic(Polyline(multipoint.points), symbol = lineSymbol))
+        kmlTracks.forEach { kmlTrack ->
+            val mapSpatialReference = arcGISMap.spatialReference
+                ?: return messageDialogVM.showMessageDialog("Error retrieving spacial-ref")
+
+            val multipoint = (kmlTrack.geometry as Multipoint)
+            val polyline = GeometryEngine.projectOrNull(
+                geometry = Polyline(multipoint.points),
+                spatialReference = mapSpatialReference
+            ) ?: return messageDialogVM.showMessageDialog("Error converting geometry spacial-ref")
+
+            graphicsOverlay.graphics.add(Graphic(geometry = polyline, symbol = lineSymbol))
         }
+    }
+
+    private fun resetKmlTrack() {
+        // TODO
     }
 
     fun recenter() {
