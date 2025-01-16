@@ -34,35 +34,30 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun GetElevationAtPointOnSurfaceScreen(sampleName: String) {
     val sceneViewModel: GetElevationAtPointOnSurfaceViewModel = viewModel()
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
+    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+        ) {
+            SceneView(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
-            ) {
-                SceneView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISScene = sceneViewModel.arcGISScene,
-                    graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
-                    // On single tap, call get elevation in the view model
-                    onSingleTapConfirmed = sceneViewModel::getElevation,
-                    sceneViewProxy = sceneViewModel.sceneViewProxy,
+                    .weight(1f),
+                arcGISScene = sceneViewModel.arcGISScene,
+                graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
+                // On single tap, call get elevation in the view model
+                onSingleTapConfirmed = sceneViewModel::getElevation,
+                sceneViewProxy = sceneViewModel.sceneViewProxy,
+            )
+        }
+
+        sceneViewModel.messageDialogVM.apply {
+            if (dialogStatus) {
+                MessageDialog(
+                    title = messageTitle, description = messageDescription, onDismissRequest = ::dismissDialog
                 )
             }
-
-            sceneViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
-            }
         }
-    )
+    })
 }

@@ -78,10 +78,16 @@ class GetElevationAtPointOnSurfaceViewModel(application: Application) : AndroidV
         viewModelScope.launch {
             sceneViewProxy.screenToLocation(singleTapConfirmedEvent.screenCoordinate).onSuccess { scenePoint ->
                 arcGISScene.baseSurface.getElevation(scenePoint).onSuccess { elevation ->
-                    // create a point symbol to mark where elevation is being measured
-                    val circleSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, com.arcgismaps.Color.red, 10f)
-                    graphicsOverlay.graphics.add(Graphic(scenePoint, circleSymbol))
-                    Toast.makeText(getApplication(), "Elevation at point is ${elevation.roundToInt()} meters", Toast.LENGTH_LONG).show()
+                    // Create a point symbol to mark where elevation is being measured
+                    val circleSymbol = SimpleMarkerSymbol(
+                        style = SimpleMarkerSymbolStyle.Circle, color = com.arcgismaps.Color.red, size = 10f
+                    )
+                    // Add the graphic to the graphics overlay
+                    graphicsOverlay.graphics.add(Graphic(geometry = scenePoint, symbol = circleSymbol))
+                    // Show a toast message with the elevation
+                    Toast.makeText(
+                        getApplication(), "Elevation at point is ${elevation.roundToInt()} meters", Toast.LENGTH_LONG
+                    ).show()
                 }.onFailure { error ->
                     messageDialogVM.showMessageDialog(
                         "Failed to get elevation", error.message.toString()

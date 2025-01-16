@@ -15,7 +15,7 @@
         "WmsLayer"
     ],
     "language": "kotlin",
-    "redirect_from": "/android/latest/sample-code/wms-layer-url.htm",
+    "redirect_from": "",
     "relevant_apis": [
         "ArcGISMap",
         "MapView",
