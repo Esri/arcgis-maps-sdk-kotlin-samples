@@ -24,21 +24,27 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geometry.PolylineBuilder
 import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.location.Location
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
 import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.kml.KmlAltitudeMode
+import com.arcgismaps.mapping.kml.KmlDocument
+import com.arcgismaps.mapping.kml.KmlMultiTrack
+import com.arcgismaps.mapping.kml.KmlPlacemark
+import com.arcgismaps.mapping.kml.KmlTrack
+import com.arcgismaps.mapping.kml.KmlTrackElement
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
-import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.LocationDisplay
@@ -46,7 +52,9 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.createandeditkmltracks.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.Instant
 
 class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewModel(application) {
@@ -64,21 +72,24 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
 
     // create a graphics overlay for the points and use a red circle for the symbols
     private val locationSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 10f)
-    val locationHistoryOverlay = GraphicsOverlay().apply {
-        renderer = SimpleRenderer(locationSymbol)
-    }
-
-    // create a graphics overlay for the lines connecting the points and use a blue line for the symbol
-    private val locationLineSymbol =
-        SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2.0f)
-    val locationHistoryLineOverlay = GraphicsOverlay().apply {
-        renderer = SimpleRenderer(locationLineSymbol)
-    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     var isTrackLocation by mutableStateOf(false)
+
+    var isRecenterButtonEnabled by mutableStateOf(false)
+    var isRecordingTrack by mutableStateOf(false)
+
+    val graphicsOverlay = GraphicsOverlay()
+
+    private val provisionPath: String by lazy {
+        application.getExternalFilesDir(null)?.path.toString() +
+                File.separator +
+                application.getString(R.string.create_and_edit_kml_tracks_app_name)
+    }
+
+    private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 3f)
 
     // keep track of the the location display job when navigation is enabled
     private var locationDisplayJob: Job? = null
@@ -86,62 +97,157 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
     // default location display object, which is updated by rememberLocationDisplay
     private var locationDisplay: LocationDisplay = LocationDisplay()
 
+    // private var simulatedLocationDataSource: SimulatedLocationDataSource? = null
+
     fun setLocationDisplay(locationDisplay: LocationDisplay) {
         this.locationDisplay = locationDisplay
     }
 
+    private val kmlDocument = KmlDocument()
+    val kmlTrackElements = mutableListOf<KmlTrackElement>()
+    val kmlTracks = mutableListOf<KmlTrack>()
+
     init {
+        // get the route geometry
+        val routeGeometry = Geometry.fromJsonOrNull(
+            json = application.getString(R.string.polyline_data)
+        ) as Polyline
+        // create a simulated location data source from json data with simulation parameters to set a consistent velocity
+        val simulatedLocationDataSource = SimulatedLocationDataSource(
+            polyline = routeGeometry,
+            parameters = SimulationParameters(
+                startTime = Instant.now(),
+                velocity = 30.0,
+                horizontalAccuracy = 0.0,
+                verticalAccuracy = 0.0
+            )
+        )
+
+
         viewModelScope.launch {
-            arcGISMap.load().onFailure { error ->
+            arcGISMap.load().getOrElse { error ->
                 messageDialogVM.showMessageDialog(
                     "Failed to load map",
                     error.message.toString()
                 )
             }
+
+            startNavigation(simulatedLocationDataSource)
         }
+    }
 
-        // create a polyline builder to connect the location points
-        val polylineBuilder = PolylineBuilder(SpatialReference(102100))
+    private fun startNavigation(simulationDataSource: SimulatedLocationDataSource) {
+        locationDisplayJob = with(viewModelScope) {
+            launch {
+                // automatically enable recenter button when navigation pan is disabled
+                locationDisplay.autoPanMode.filter { it == LocationDisplayAutoPanMode.Off }
+                    .collect {
+                        isRecenterButtonEnabled = true
+                    }
+            }
+            launch {
+                // set the simulated location data source as the location data source for this app
+                locationDisplay.dataSource = simulationDataSource
 
-        // create a simulated location data source from json data with simulation parameters to set a consistent velocity
-        val simulatedLocationDataSource = SimulatedLocationDataSource(
-            Geometry.fromJsonOrNull(application.getString(R.string.polyline_data)) as Polyline,
-            SimulationParameters(Instant.now(), 30.0, 0.0, 0.0)
-        )
-
-        // coroutine scope to collect data source location changes
-        viewModelScope.launch {
-            simulatedLocationDataSource.locationChanged.collect { location ->
-                // if location tracking is turned off, do not add to the polyline
-                if (!isTrackLocation) {
-                    return@collect
+                // start the location data source
+                locationDisplay.dataSource.start().getOrElse {
+                    messageDialogVM.showMessageDialog(
+                        title = "Error starting location data source",
+                        description = it.message.toString()
+                    )
                 }
-                // get the point from the location
-                val nextPoint = location.position
-                // add the new point to the polyline builder
-                polylineBuilder.addPoint(nextPoint)
-                // add the new point to the two graphics overlays and reset the line connecting the points
-                locationHistoryOverlay.graphics.add(Graphic(nextPoint))
-                locationHistoryLineOverlay.graphics.apply {
-                    clear()
-                    add((Graphic(polylineBuilder.toGeometry())))
+
+                // set the auto pan to navigation mode
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+            }
+
+            launch {
+                // listen for changes in location
+                locationDisplay.location.collect {
+                    it?.let { locationPoint ->
+                        if (isRecordingTrack) {
+                            addTrackElement(locationPoint)
+                        }
+                    }
                 }
             }
         }
+    }
 
-        // configure the map view's location display to follow the simulated location data source
-        locationDisplay.apply {
-            dataSource = simulatedLocationDataSource
-            setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
-            initialZoomScale = 7000.0
+    private fun addTrackElement(locationPoint: Location) {
+        kmlTrackElements.add(
+            KmlTrackElement(
+                instant = Instant.now(),
+                coordinate = locationPoint.position,
+                angle = null
+            )
+        )
+
+        graphicsOverlay.graphics.add(Graphic(locationPoint.position, locationSymbol))
+    }
+
+    fun startRecordingKmlTrack() {
+        isRecordingTrack = true
+        kmlTrackElements.clear()
+        graphicsOverlay.graphics.clear()
+    }
+
+    fun stopRecordingKmlTrack() {
+        kmlTracks.add(
+            KmlTrack(
+                elements = kmlTrackElements,
+                altitudeMode = KmlAltitudeMode.RelativeToGround,
+                isExtruded = true,
+                isTessellated = true,
+                model = null
+            )
+        )
+
+        displayKmlTracks()
+
+        isRecordingTrack = false
+    }
+
+    fun exportKmlMultiTrack() {
+        val multiTrack = KmlMultiTrack(kmlTracks)
+        kmlDocument.childNodes.add(KmlPlacemark(geometry = multiTrack))
+
+        val savedKmzFile = File(provisionPath, "HikingTracks.kmz").apply {
+            if (exists()) delete()
         }
 
-        // coroutine scope to start the simulated location data source
         viewModelScope.launch {
-            simulatedLocationDataSource.start()
+            kmlDocument.saveAs(savedKmzFile.canonicalPath).onSuccess {
+                messageDialogVM.showMessageDialog(
+                    title = "Saved KmlMultiTrack",
+                    description = "Path: " + savedKmzFile.canonicalPath
+                )
+            }.onFailure {
+                messageDialogVM.showMessageDialog(
+                    title = it.message.toString(),
+                    description = it.cause.toString()
+                )
+            }
+        }
 
-            // set the auto pan to navigation mode
-            locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+        resetKmlTrack()
+    }
+
+    private fun resetKmlTrack() {
+
+    }
+
+    private fun displayKmlTracks() {
+        graphicsOverlay.graphics.clear()
+        kmlTracks.forEach {
+            val multipoint = it.geometry as Multipoint
+            graphicsOverlay.graphics.add(Graphic(Polyline(multipoint.points), symbol = lineSymbol))
         }
     }
+
+    fun recenter() {
+        locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+        isRecenterButtonEnabled = false
+    }
+
 }

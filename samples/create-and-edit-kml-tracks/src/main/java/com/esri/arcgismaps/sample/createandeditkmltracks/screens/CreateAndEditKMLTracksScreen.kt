@@ -16,19 +16,27 @@
 
 package com.esri.arcgismaps.sample.createandeditkmltracks.screens
 
+import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.location.LocationDisplayAutoPanMode
@@ -37,6 +45,7 @@ import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.createandeditkmltracks.components.CreateAndEditKMLTracksViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 
 /**
@@ -48,8 +57,6 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
     val mapViewModel = viewModel<CreateAndEditKMLTracksViewModel>().apply {
         setLocationDisplay(locationDisplay)
     }
-
-    var hint by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -73,18 +80,27 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
                         }
                         if (mapViewModel.isTrackLocation) {
                             mapViewModel.isTrackLocation = false
-                            hint = "Tracking has stopped"
                         } else {
                             mapViewModel.isTrackLocation = true
-                            hint = "Tracking has started"
                         }
                     },
-                    graphicsOverlays = listOf(
-                        mapViewModel.locationHistoryOverlay,
-                        mapViewModel.locationHistoryLineOverlay
-                    )
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay)
                 )
-                Text(text = hint)
+                TrackOptions(
+                    isRecenterEnabled = mapViewModel.isRecenterButtonEnabled,
+                    isRecordButtonEnabled = !mapViewModel.isRecordingTrack,
+                    sizeOfTracks = mapViewModel.kmlTracks.size,
+                    sizeOfElements = mapViewModel.kmlTrackElements.size,
+                    onRecenterClicked = { mapViewModel.recenter() },
+                    onExportClicked = { mapViewModel.exportKmlMultiTrack() },
+                    onRecordButtonClicked = {
+                        if (!mapViewModel.isRecordingTrack) {
+                            mapViewModel.startRecordingKmlTrack()
+                        } else {
+                            mapViewModel.stopRecordingKmlTrack()
+                        }
+                    },
+                )
 
                 // TODO: Add UI components in this Column ...
             }
@@ -100,4 +116,68 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
             }
         }
     )
+}
+
+@Composable
+fun TrackOptions(
+    isRecenterEnabled: Boolean,
+    isRecordButtonEnabled: Boolean,
+    onRecordButtonClicked: () -> Unit,
+    onRecenterClicked: () -> Unit,
+    onExportClicked: () -> Unit,
+    sizeOfElements: Int,
+    sizeOfTracks: Int,
+) {
+
+    Column(
+        modifier = Modifier.padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Is tracking: ${!isRecordButtonEnabled}\n" +
+                    "KmlElements size: $sizeOfElements\n" +
+                    "KmlTracks added: $sizeOfTracks"
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            FilledTonalIconButton(onClick = onRecenterClicked, enabled = isRecenterEnabled) {
+                Icon(Icons.Default.LocationOn, "RecenterIcon")
+            }
+
+            Button(
+                modifier = Modifier.animateContentSize(),
+                onClick = onRecordButtonClicked
+            ) {
+                Text(if (isRecordButtonEnabled) "Record Track" else "Stop Recording")
+            }
+            OutlinedButton(
+                onClick = onExportClicked,
+                enabled = isRecordButtonEnabled
+            ) {
+                Text("Export KmzMultiTrack")
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun TrackOptionsPreview() {
+    SampleAppTheme {
+        Surface {
+            TrackOptions(
+                isRecenterEnabled = true,
+                isRecordButtonEnabled = true,
+                onRecordButtonClicked = { },
+                onRecenterClicked = { },
+                onExportClicked = { },
+                sizeOfElements = 0,
+                sizeOfTracks = 0,
+            )
+        }
+    }
 }
