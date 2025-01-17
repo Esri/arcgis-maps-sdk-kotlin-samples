@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.traceutilitynetwork.components
 
 import android.app.Application
+import android.widget.Toast
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -390,7 +391,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             ) as Polyline,
             point = mapPoint,
             tolerance = -1.0
-        )
+        ).roundToThreeDecimals()
+
         // Add the utility element graphic to the map
         addUtilityElementToMap(
             identifiedFeature = identifiedFeature,
@@ -467,8 +469,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             val traceResults = utilityNetwork.trace(traceParameters)
                 .getOrElse {
                     return@launch handleError(
-                        title = "Error performing trace: ${it.message}",
-                        description = it.cause.toString()
+                        title = "Error performing trace",
+                        description = it.message.toString()
                     )
                 }
 
@@ -491,29 +493,39 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                         }.forEach { utilityElement ->
                             params.objectIds.add(utilityElement.objectId)
                         }
-                        // Select features that match the query
-                        val featureQueryResult = featureLayer.selectFeatures(
-                            parameters = params,
-                            mode = SelectionMode.New
-                        ).getOrElse {
-                            return@launch handleError(
-                                title = it.message.toString(),
-                                description = it.cause.toString()
-                            )
-                        }
 
-                        // Create list of all the feature result geometries
-                        val resultGeometryList = mutableListOf<Geometry>()
-                        featureQueryResult.iterator().forEach { feature ->
-                            feature.geometry?.let {
-                                resultGeometryList.add(it)
+                        // Check if any trace results were added from the above filter
+                        if (params.objectIds.isNotEmpty()) {
+                            // Select features that match the query
+                            val featureQueryResult = featureLayer.selectFeatures(
+                                parameters = params,
+                                mode = SelectionMode.New
+                            ).getOrElse {
+                                return@launch handleError(
+                                    title = it.message.toString(),
+                                    description = it.cause.toString()
+                                )
                             }
-                        }
 
-                        // Obtain the union geometry of all the feature geometries
-                        GeometryEngine.unionOrNull(resultGeometryList)?.let { unionGeometry ->
-                            // Set the map's viewpoint to the union result geometry
-                            mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = unionGeometry))
+                            // Create list of all the feature result geometries
+                            val resultGeometryList = mutableListOf<Geometry>()
+                            featureQueryResult.iterator().forEach { feature ->
+                                feature.geometry?.let {
+                                    resultGeometryList.add(it)
+                                }
+                            }
+
+                            // Obtain the union geometry of all the feature geometries
+                            GeometryEngine.unionOrNull(resultGeometryList)?.let { unionGeometry ->
+                                // Set the map's viewpoint to the union result geometry
+                                mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = unionGeometry))
+                            }
+                        } else {
+                            Toast.makeText(
+                                getApplication(),
+                                "Trace result found 0 elements",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
 
@@ -599,6 +611,10 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
         private const val FEATURE_SERVICE_URL =
             "$SAMPLE_SERVER_7/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
+    }
+
+    private fun Double.roundToThreeDecimals(): Double {
+        return Math.round(this * 1000.0) / 1000.0
     }
 }
 
