@@ -52,19 +52,22 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
         }
     )
 
-    // Create a message dialog view model for handling error messages
+    // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     // create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
     val mapViewProxy = MapViewProxy()
 
-    // create a graphic, graphic overlay, and geometry editor
+    // create a graphic to hold graphics identified on tap
     private var identifiedGraphic = Graphic()
+    // create a graphics overlay
     val graphicsOverlay = GraphicsOverlay()
+    // create a geometry editor
     val geometryEditor = GeometryEditor()
 
     init {
         viewModelScope.launch {
+            // load the map
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     title = "Failed to load map",
@@ -87,10 +90,14 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
      * Stops the GeometryEditor and updates the identified graphic or calls [createGraphic].
      */
     fun stopEditor() {
+        // check if there was a previously identified graphic
         if (identifiedGraphic.geometry != null) {
+            // update the identified graphic
             identifiedGraphic.geometry = geometryEditor.stop()
+            // deselect the identified graphic
             identifiedGraphic.isSelected = false
         } else if (geometryEditor.isStarted.value) {
+            // create a graphic from the geometry that was being edited
             createGraphic()
         }
     }
@@ -99,20 +106,26 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
      * Creates a graphic from the geometry and adds it to the GraphicsOverlay.
      */
     private fun createGraphic() {
+        // stop the geometry editor and get its final geometry state
         val geometry = geometryEditor.stop()
             ?: return messageDialogVM.showMessageDialog(
                 title = "Error!",
                 description = "Error stopping editing session"
             )
+
+        // create a graphic to represent the new geometry
         val graphic = Graphic(geometry)
 
+        // give the graphic an appropriate fill based on the geometry type
         when (geometry) {
             is Point, is Multipoint -> graphic.symbol = GeometryEditorStyle().vertexSymbol
             is Polyline -> graphic.symbol = GeometryEditorStyle().lineSymbol
             is Polygon -> graphic.symbol = GeometryEditorStyle().fillSymbol
             else -> {}
         }
+        // add the graphic to the graphics overlay
         graphicsOverlay.graphics.add(graphic)
+        // deselect the graphic
         graphic.isSelected = false
     }
 
@@ -123,6 +136,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
+            // attempt to identify a graphic at the location the user tapped
             val graphicsResult = mapViewProxy.identifyGraphicsOverlays(
                 screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
                 tolerance = 10.0.dp,
@@ -132,13 +146,17 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
             if (!geometryEditor.isStarted.value) {
                 if (graphicsResult != null) {
                     if (graphicsResult.isNotEmpty()) {
+                        // get the tapped graphic
                         identifiedGraphic = graphicsResult.first().graphics.first()
+                        // select the graphic
                         identifiedGraphic.isSelected = true
+                        // start the geometry editor with the identified graphic
                         identifiedGraphic.geometry?.let {
                             geometryEditor.start(it)
                         }
                     }
                 }
+                // reset the identified graphic back to null
                 identifiedGraphic.geometry = null
             }
         }
