@@ -109,7 +109,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
 
     // The utility network used for tracing.
     private val utilityNetwork: UtilityNetwork
-        get() = arcGISMap.utilityNetworks[0]
+        get() = arcGISMap.utilityNetworks.first()
 
     // Use the ElectricDistribution domain network
     private val electricDistribution: UtilityDomainNetwork?
