@@ -27,8 +27,10 @@ import kotlinx.coroutines.launch
 
 class DisplayWebSceneFromPortalItemViewModel(application: Application) : AndroidViewModel(application) {
 
+    // Create a portal
     val portal = Portal("https://www.arcgis.com/")
 
+    // Create a portal item
     val portalItem = PortalItem(portal, "31874da8a16d45bfbc1273422f772270")
 
     val arcGISScene = ArcGISScene(portalItem)
