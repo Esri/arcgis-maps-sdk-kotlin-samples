@@ -58,6 +58,8 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     // create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
     val mapViewProxy = MapViewProxy()
 
+    // create a geometryEditorStyle
+    private val geometryEditorStyle = GeometryEditorStyle()
     // create a graphic to hold graphics identified on tap
     private var identifiedGraphic = Graphic()
     // create a graphics overlay
@@ -118,9 +120,9 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
 
         // give the graphic an appropriate fill based on the geometry type
         when (geometry) {
-            is Point, is Multipoint -> graphic.symbol = GeometryEditorStyle().vertexSymbol
-            is Polyline -> graphic.symbol = GeometryEditorStyle().lineSymbol
-            is Polygon -> graphic.symbol = GeometryEditorStyle().fillSymbol
+            is Point, is Multipoint -> graphic.symbol = geometryEditorStyle.vertexSymbol
+            is Polyline -> graphic.symbol = geometryEditorStyle.lineSymbol
+            is Polygon -> graphic.symbol = geometryEditorStyle.fillSymbol
             else -> {}
         }
         // add the graphic to the graphics overlay
