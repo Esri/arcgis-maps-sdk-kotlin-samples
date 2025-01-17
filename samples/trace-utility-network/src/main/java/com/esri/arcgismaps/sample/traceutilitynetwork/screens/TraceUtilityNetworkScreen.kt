@@ -60,9 +60,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -108,11 +105,11 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
     val selectedTraceType by mapViewModel.selectedTraceType
         .collectAsStateWithLifecycle()
     val selectedPointType by mapViewModel.selectedPointType
-        .collectAsStateWithLifecycle(PointType.None)
+        .collectAsStateWithLifecycle(PointType.Start)
     val canPerformTrace by mapViewModel.canTrace
         .collectAsStateWithLifecycle(false)
     val traceState by mapViewModel.traceState
-        .collectAsStateWithLifecycle(TraceState.NOT_STARTED)
+        .collectAsStateWithLifecycle(TraceState.ADD_STARTING_POINT)
     val terminalConfigurationOptions by mapViewModel.terminalConfigurationOptions
         .collectAsStateWithLifecycle(listOf())
 
@@ -133,11 +130,10 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                     onSingleTapConfirmed = { tapEvent ->
                         // Identify tapped location if current state is valid.
                         tapEvent.mapPoint?.let {
-                            if (traceState != TraceState.NOT_STARTED && traceState != TraceState.CHOOSE_POINT_TYPE)
-                                mapViewModel.identifyNearestArcGISFeature(
-                                    mapPoint = it,
-                                    screenCoordinate = tapEvent.screenCoordinate
-                                )
+                            mapViewModel.identifyNearestArcGISFeature(
+                                mapPoint = it,
+                                screenCoordinate = tapEvent.screenCoordinate
+                            )
                         }
                     },
                     onDown = {
@@ -171,7 +167,7 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
             // Displays a loading dialog when trace is running
             if (traceState == TraceState.RUNNING_TRACE_UTILITY_NETWORK) {
                 RunningTraceDialog(
-                    traceName = selectedTraceType?.javaClass?.simpleName.toString()
+                    traceName = selectedTraceType.javaClass.simpleName.toString()
                 )
             }
 
@@ -240,8 +236,8 @@ fun TerminalConfigurationDialog(
 fun TraceOptions(
     isTraceButtonEnabled: Boolean,
     hintText: String,
-    utilityTraceType: UtilityTraceType?,
-    pointType: PointType?,
+    utilityTraceType: UtilityTraceType,
+    pointType: PointType,
     traceState: String,
     onTraceTypeSelected: (UtilityTraceType) -> Unit,
     onPointTypeChanged: (PointType) -> Unit,
@@ -270,7 +266,6 @@ fun TraceOptions(
         SegmentedButtonTracePointTypes(
             currentPointType = pointType,
             onPointTypeChanged = onPointTypeChanged,
-            isPointTypesEnabled = utilityTraceType != null
         )
 
         // Display a row with reset and trace controls
@@ -300,7 +295,7 @@ fun TraceOptions(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposedDropdownMenuBoxWithTraceTypes(
-    selectedTraceType: UtilityTraceType?,
+    selectedTraceType: UtilityTraceType,
     onTraceTypeSelected: (UtilityTraceType) -> Unit
 ) {
     val traceOptions = listOf(
@@ -313,18 +308,11 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
     var selectedTraceName by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
 
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
     LaunchedEffect(selectedTraceType) {
-        if (selectedTraceType == null) {
-            focusManager.clearFocus()
-            selectedTraceName = "Select a trace type"
-        } else selectedTraceName = selectedTraceType.javaClass.simpleName
+        selectedTraceName = selectedTraceType.javaClass.simpleName
     }
 
     ExposedDropdownMenuBox(
-        modifier = Modifier.focusRequester(focusRequester),
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
@@ -364,34 +352,19 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
  */
 @Composable
 fun SegmentedButtonTracePointTypes(
-    currentPointType: PointType?,
-    onPointTypeChanged: (PointType) -> Unit,
-    isPointTypesEnabled: Boolean
+    currentPointType: PointType,
+    onPointTypeChanged: (PointType) -> Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
     var selectedIndex = when (currentPointType) {
-        PointType.None -> -1
         PointType.Start -> 0
         PointType.Barrier -> 1
-        null -> -1
     }
 
     LaunchedEffect(currentPointType) {
-        if (currentPointType == null || currentPointType == PointType.None) {
-            focusManager.clearFocus()
-            selectedIndex = -1
-        } else {
-            selectedIndex = if (currentPointType == PointType.Start) 0 else 1
-        }
+        selectedIndex = if (currentPointType == PointType.Start) 0 else 1
     }
 
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester)
-    ) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
         val options = listOf("Add starting location(s)", "Add barrier(s)")
         options.forEachIndexed { index, label ->
             SegmentedButton(
@@ -401,7 +374,6 @@ fun SegmentedButtonTracePointTypes(
                     // Switch between Start/Barrier
                     onPointTypeChanged(if (index == 0) PointType.Start else PointType.Barrier)
                 },
-                enabled = isPointTypesEnabled,
                 selected = (index == selectedIndex)
             ) {
                 Text(
@@ -430,9 +402,9 @@ fun PreviewTraceUtilityNetworkScreen() {
             TraceOptions(
                 isTraceButtonEnabled = true,
                 hintText = "Trace options",
-                utilityTraceType = null,
-                pointType = null,
-                traceState = TraceState.NOT_STARTED,
+                utilityTraceType = UtilityTraceType.Downstream,
+                pointType = PointType.Start,
+                traceState = TraceState.ADD_STARTING_POINT,
                 onTraceTypeSelected = { },
                 onPointTypeChanged = { },
                 onResetSelected = { },

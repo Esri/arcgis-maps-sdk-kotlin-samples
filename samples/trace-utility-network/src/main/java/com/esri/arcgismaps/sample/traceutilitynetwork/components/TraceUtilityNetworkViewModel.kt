@@ -75,15 +75,15 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     val canTrace = _canTrace.asStateFlow()
 
     // The trace state used for the sample
-    private val _traceState = MutableStateFlow(TraceState.NOT_STARTED)
+    private val _traceState = MutableStateFlow(TraceState.ADD_STARTING_POINT)
     val traceState = _traceState.asStateFlow()
 
     // Currently selected utility trace type
-    private val _selectedTraceType = MutableStateFlow<UtilityTraceType?>(null)
+    private val _selectedTraceType = MutableStateFlow<UtilityTraceType>(UtilityTraceType.Connected)
     val selectedTraceType = _selectedTraceType.asStateFlow()
 
     // Currently selected point type (start/barrier)
-    private val _selectedPointType = MutableStateFlow(PointType.None)
+    private val _selectedPointType = MutableStateFlow(PointType.Start)
     val selectedPointType = _selectedPointType.asStateFlow()
 
     // Terminal configuration options (high/low)
@@ -178,7 +178,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         ).onSuccess { tokenCredential ->
             // Add the loaded token credential to the app session's authenticationManager
             ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
-            // Load the NapervilleElectric web-map
+            // Load the Naperville electric web-map
             arcGISMap.load().getOrElse {
                 handleError(
                     title = "Error loading the web-map: ${it.message}",
@@ -247,7 +247,12 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     tolerance = 4.dp,
                     returnPopupsOnly = false,
                     maximumResults = 1
-                ).getOrThrow()
+                ).getOrElse {
+                    return@launch messageDialogVM.showMessageDialog(
+                        title = it.message.toString(),
+                        description = it.cause.toString()
+                    )
+                }
             // If the identify returns a result, retrieve the geoelement as an ArcGISFeature
             identifyResults.firstOrNull()?.geoElements?.firstOrNull()?.let { identifiedFeature ->
                 (identifiedFeature as? ArcGISFeature)?.let { arcGISFeature ->
@@ -304,9 +309,9 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         // Find the code matching the asset group name in the feature's attributes
         val assetGroupCode = identifiedFeature.attributes["assetgroup"] as Int
         // Find the network source's asset group with the matching code
-        utilityNetworkSource.assetGroups.filter { it.code == assetGroupCode }[0].assetTypes
+        utilityNetworkSource.assetGroups.first { it.code == assetGroupCode }.assetTypes
             // Find the asset group type code matching the feature's asset type code
-            .filter { it.code == identifiedFeature.attributes["assettype"].toString().toInt() }[0]
+            .first { it.code == identifiedFeature.attributes["assettype"].toString().toInt() }
             .let { utilityAssetType ->
                 // Get the list of terminals for the feature
                 val terminals = utilityAssetType.terminalConfiguration?.terminals
@@ -355,8 +360,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                                         mapPoint = identifiedFeature.geometry as Point,
                                         utilityElement = element
                                     )
-                                    // Update the trace state
-                                    _traceState.value = TraceState.STARTING_LOCATION_SELECTED
+                                    // Dismiss the dialog to choose another point
+                                    _traceState.value = TraceState.ADD_STARTING_POINT
                                 }
                             }
                         }
@@ -425,8 +430,6 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                         utilityElementBarriers.add(utilityElement)
                         symbol = barrierPointSymbol
                     }
-
-                    PointType.None -> {}
                 }
             }
         )
@@ -443,7 +446,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             return handleError("No starting locations provided for trace.")
         }
 
-        val traceType = _selectedTraceType.value ?: return handleError("Select a valid trace type")
+        val traceType = _selectedTraceType.value
 
         // Create utility trace parameters for the given trace type
         val traceParameters = UtilityTraceParameters(
@@ -470,7 +473,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 }
 
             // Get the utility trace result's first result as a utility element trace result
-            (traceResults[0] as? UtilityElementTraceResult)?.let { utilityElementTraceResult ->
+            (traceResults.first() as? UtilityElementTraceResult)?.let { utilityElementTraceResult ->
                 // Ensure the result is not empty
                 if (utilityElementTraceResult.elements.isEmpty())
                     return@launch handleError("No elements found in the trace result")
@@ -530,11 +533,11 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         utilityElementBarriers.clear()
         utilityElementStartingLocations.clear()
         graphicsOverlay.graphics.clear()
-        _traceState.value = TraceState.NOT_STARTED
+        _traceState.value = TraceState.ADD_STARTING_POINT
         _canTrace.value = false
-        _selectedTraceType.value = null
+        _selectedTraceType.value = UtilityTraceType.Connected
         _selectedTerminalConfigurationIndex.value = null
-        _selectedPointType.value = PointType.None
+        _selectedPointType.value = PointType.Start
         _terminalConfigurationOptions.value = listOf()
     }
 
@@ -543,7 +546,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      */
     fun updateTraceType(utilityTraceType: UtilityTraceType) {
         _selectedTraceType.value = utilityTraceType
-        _traceState.value = TraceState.CHOOSE_POINT_TYPE
+        _traceState.value = TraceState.ADD_STARTING_POINT
     }
 
     /**
@@ -553,15 +556,11 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         _selectedPointType.value = pointType
         when (pointType) {
             PointType.Start -> {
-                _traceState.value = TraceState.STARTING_LOCATION_SELECTED
+                _traceState.value = TraceState.ADD_STARTING_POINT
             }
 
             PointType.Barrier -> {
-                _traceState.value = TraceState.BARRIER_SELECTED
-            }
-
-            PointType.None -> {
-                _traceState.value = TraceState.CHOOSE_POINT_TYPE
+                _traceState.value = TraceState.ADD_BARRIER_POINT
             }
         }
     }
@@ -605,15 +604,12 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
 
 enum class PointType {
     Start,
-    Barrier,
-    None
+    Barrier
 }
 
 object TraceState {
-    const val NOT_STARTED = "Choose a trace type"
-    const val CHOOSE_POINT_TYPE = "Select a starting location / barrier point type"
-    const val STARTING_LOCATION_SELECTED = "Tap on map to add a stating location point(s)"
-    const val BARRIER_SELECTED = "Tap on map to add a barrier point(s)"
+    const val ADD_STARTING_POINT = "Tap on map to add a stating location point(s)"
+    const val ADD_BARRIER_POINT = "Tap on map to add a barrier point(s)"
     const val TERMINAL_CONFIGURATION_REQUIRED = "Select Terminal Configuration"
     const val RUNNING_TRACE_UTILITY_NETWORK = "Evaluating trace utility network"
     const val TRACE_COMPLETED = "Trace completed"
