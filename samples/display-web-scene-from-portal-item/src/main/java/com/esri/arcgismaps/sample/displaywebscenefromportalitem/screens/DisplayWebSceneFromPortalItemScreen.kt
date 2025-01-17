@@ -40,6 +40,7 @@ fun DisplayWebSceneFromPortalItemScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
+                // Pass the scene to the SceneView
                 arcGISScene = mapViewModel.arcGISScene
             )
             mapViewModel.messageDialogVM.apply {

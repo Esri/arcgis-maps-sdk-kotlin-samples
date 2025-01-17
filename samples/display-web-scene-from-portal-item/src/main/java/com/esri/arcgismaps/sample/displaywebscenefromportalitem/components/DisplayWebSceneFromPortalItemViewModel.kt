@@ -33,6 +33,7 @@ class DisplayWebSceneFromPortalItemViewModel(application: Application) : Android
     // Create a portal item
     val portalItem = PortalItem(portal, "31874da8a16d45bfbc1273422f772270")
 
+    // Create a scene from the portal item
     val arcGISScene = ArcGISScene(portalItem)
 
     // Create a message dialog view model for handling error messages
