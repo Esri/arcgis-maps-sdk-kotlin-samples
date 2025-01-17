@@ -323,7 +323,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                         // Create a utility element
                         utilityNetwork.createElementOrNull(
                             arcGISFeature = identifiedFeature,
-                            terminal = terminals[0]
+                            terminal = terminals.first()
                         )?.let { utilityElement ->
                             // Add the utility element to the map
                             addUtilityElementToMap(
