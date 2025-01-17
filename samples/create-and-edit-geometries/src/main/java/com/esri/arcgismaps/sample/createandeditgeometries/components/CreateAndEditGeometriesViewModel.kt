@@ -132,7 +132,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
             if (!geometryEditor.isStarted.value) {
                 if (graphicsResult != null) {
                     if (graphicsResult.isNotEmpty()) {
-                        identifiedGraphic = graphicsResult[0].graphics[0]
+                        identifiedGraphic = graphicsResult.first().graphics.first()
                         identifiedGraphic.isSelected = true
                         identifiedGraphic.geometry?.let {
                             geometryEditor.start(it)
