@@ -36,23 +36,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcgismaps.geometry.GeometryType
 import com.esri.arcgismaps.sample.createandeditgeometries.R
-import com.esri.arcgismaps.sample.createandeditgeometries.components.CreateAndEditGeometriesViewModel
 
 /**
  * Composable component to display the menu buttons.
  */
 @Composable
 fun ButtonMenu(
-    mapViewModel: CreateAndEditGeometriesViewModel
+    isGeometryEditorStarted: Boolean,
+    onStartEditingButtonClick: (GeometryType) -> Unit,
+    onStopEditingButtonClick: () -> Unit
 ) {
     val rowModifier = Modifier
         .padding(12.dp)
         .fillMaxWidth()
-
-    val isGeometryEditorStarted by mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle()
 
     Row(
         modifier = rowModifier
@@ -75,28 +73,28 @@ fun ButtonMenu(
                 DropdownMenuItem(
                     text = { Text("Point") },
                     onClick = {
-                        mapViewModel.startEditor(GeometryType.Point)
+                        onStartEditingButtonClick(GeometryType.Point)
                         expanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("Multipoint") },
                     onClick = {
-                        mapViewModel.startEditor(GeometryType.Multipoint)
+                        onStartEditingButtonClick(GeometryType.Multipoint)
                         expanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("Polyline") },
                     onClick = {
-                        mapViewModel.startEditor(GeometryType.Polyline)
+                        onStartEditingButtonClick(GeometryType.Polyline)
                         expanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("Polygon") },
                     onClick = {
-                        mapViewModel.startEditor(GeometryType.Polygon)
+                        onStartEditingButtonClick(GeometryType.Polygon)
                         expanded = false
                     }
                 )
@@ -104,7 +102,7 @@ fun ButtonMenu(
         }
         IconButton(
             enabled = isGeometryEditorStarted,
-            onClick = { mapViewModel.stopEditor() }
+            onClick = { onStopEditingButtonClick() }
         ) {
             Icon(vector.vectorResource(id = R.drawable.check_32), contentDescription = "Save Edits")
         }

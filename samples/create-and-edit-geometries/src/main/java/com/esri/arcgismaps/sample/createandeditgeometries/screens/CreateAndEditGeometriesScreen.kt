@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.createandeditgeometries.components.CreateAndEditGeometriesViewModel
@@ -54,7 +55,11 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     onSingleTapConfirmed = mapViewModel::identify,
                 )
-                ButtonMenu(mapViewModel)
+                ButtonMenu(
+                    mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle().value,
+                    mapViewModel::startEditor,
+                    mapViewModel::stopEditor
+                )
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {
                         MessageDialog(
