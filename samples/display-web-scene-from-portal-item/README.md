@@ -18,15 +18,15 @@ When the sample opens, it will automatically display the scene from ArcGIS Onlin
 2. Create an `ArcGISScene` passing in the portal item.
 3. Set the scene to the Composable `SceneView` to display it.
 
-## About the data
-
-This sample uses a [Berlin, Germany](https://www.arcgis.com/home/item.html?id=31874da8a16d45bfbc1273422f772270) scene hosted on ArcGIS Online.
-
 ## Relevant API
 
 * ArcGISScene
 * PortalItem
 * SceneView
+
+## About the data
+
+This sample uses a [Berlin, Germany](https://www.arcgis.com/home/item.html?id=31874da8a16d45bfbc1273422f772270) scene hosted on ArcGIS Online.
 
 ## Tags
 
