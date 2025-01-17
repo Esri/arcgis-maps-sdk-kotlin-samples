@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "CreateSymbolStylesFromWebStyles",
+    "ignore": false,
+    "images": [
+        "create-symbol-styles-from-web-styles.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/CreateSymbolStylesFromWebStylesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/CreateSymbolStylesFromWebStylesScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/MainActivity.kt"
+    ],
+    "title": "Create symbol styles from web styles"
+}
