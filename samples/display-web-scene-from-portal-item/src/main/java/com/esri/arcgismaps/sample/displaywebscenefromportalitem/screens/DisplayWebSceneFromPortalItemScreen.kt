@@ -32,7 +32,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun DisplayWebSceneFromPortalItemScreen(sampleName: String) {
-    val mapViewModel: DisplayWebSceneFromPortalItemViewModel = viewModel()
+    val sceneViewModel: DisplayWebSceneFromPortalItemViewModel = viewModel()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -41,9 +41,9 @@ fun DisplayWebSceneFromPortalItemScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
                 // Pass the scene to the SceneView
-                arcGISScene = mapViewModel.arcGISScene
+                arcGISScene = sceneViewModel.arcGISScene
             )
-            mapViewModel.messageDialogVM.apply {
+            sceneViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
