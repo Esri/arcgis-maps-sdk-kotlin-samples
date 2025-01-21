@@ -6,7 +6,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/display_composable_map_view_app_name">
+            android:label="@string/display_web_scene_from_portal_item_app_name">
             
         </activity>
     </application>
