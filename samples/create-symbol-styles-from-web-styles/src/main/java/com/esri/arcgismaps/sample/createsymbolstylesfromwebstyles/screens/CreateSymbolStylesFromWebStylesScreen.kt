@@ -93,11 +93,7 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                 ) {
                     // For each pair of symbol name and icon
                     for ((symbolName, symbolIcon) in symbolsAndIcons) {
-                        Row(
-                            modifier = Modifier
-                                .wrapContentSize()
-                                .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
-                        ) {
+                        Row(Modifier.padding(8.dp)) {
                             // Show the symbol
                             Image(
                                 bitmap = symbolIcon.bitmap.asImageBitmap(), contentDescription = "Symbol image"
