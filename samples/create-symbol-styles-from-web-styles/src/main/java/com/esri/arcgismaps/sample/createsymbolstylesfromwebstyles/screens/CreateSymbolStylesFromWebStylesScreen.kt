@@ -83,8 +83,8 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                     Icon(Icons.Filled.Info, contentDescription = "Show legend button")
                     Spacer(Modifier.padding(8.dp))
                 }
-                // Show the legend
             } else {
+                // Show the legend
                 Column(
                     modifier = Modifier
                         .wrapContentSize()
