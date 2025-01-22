@@ -23,7 +23,6 @@ Tap **Start Navigation** to begin moving along a simulated trail. Tap **Record T
 
 ## Relevant API
 
-- ArcGISMap  
 - KmlDataset  
 - KmlDocument  
 - KmlMultiTrack  
@@ -34,8 +33,8 @@ Tap **Start Navigation** to begin moving along a simulated trail. Tap **Record T
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 
-export, geoview-compose, mutli-track, kmz, hiking, kml, record, track
+export, geoview-compose, hiking, kml, kmz, mutli-track, record, track
