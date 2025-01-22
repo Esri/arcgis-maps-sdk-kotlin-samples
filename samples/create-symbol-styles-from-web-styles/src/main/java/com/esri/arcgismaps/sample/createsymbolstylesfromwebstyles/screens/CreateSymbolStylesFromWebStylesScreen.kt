@@ -93,7 +93,7 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                         .background(Color.White)
                 ) {
                     // For each pair of symbol name and icon
-                    for ((symbolName, symbolIcon) in mapViewModel.symbolNamesAndIconsFlow.collectAsState().value) {
+                    for ((symbolName, symbolIcon) in symbolsAndIcons) {
                         Row(
                             modifier = Modifier
                                 .wrapContentSize()
