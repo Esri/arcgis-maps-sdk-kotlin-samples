@@ -126,13 +126,11 @@ fun CreateKMLMultiTrackScreen(sampleName: String) {
                         },
                     )
                 } else {
-                    localMultiTrackGeometries?.let { multiTrack ->
-                        TrackPreviewOptions(
-                            multiTrackGeometries = multiTrack,
-                            onTrackSelected = mapViewModel::previewKmlTrack,
-                            onResetButtonClicked = mapViewModel::reset
-                        )
-                    }
+                    TrackPreviewOptions(
+                        multiTrackGeometries = localMultiTrackGeometries,
+                        onTrackSelected = mapViewModel::previewKmlTrack,
+                        onResetButtonClicked = mapViewModel::reset
+                    )
                 }
             }
 
@@ -245,7 +243,7 @@ fun TrackStatusText(
 
 @Composable
 fun TrackPreviewOptions(
-    multiTrackGeometries: List<Geometry>,
+    multiTrackGeometries: List<Geometry>?,
     onTrackSelected: (Geometry) -> Unit,
     onResetButtonClicked: () -> Unit
 ) {
@@ -280,7 +278,7 @@ fun TrackPreviewOptions(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    multiTrackGeometries.forEachIndexed { index, kmlTrackGeometry ->
+                    multiTrackGeometries?.forEachIndexed { index, kmlTrackGeometry ->
                         DropdownMenuItem(
                             text = { Text(if (index == 0) "Show all KML tracks" else "KML track #$index") },
                             onClick = {
