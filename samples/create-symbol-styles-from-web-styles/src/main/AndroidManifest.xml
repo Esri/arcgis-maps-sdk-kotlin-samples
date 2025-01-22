@@ -6,7 +6,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/display_composable_map_view_app_name">
+            android:label="@string/create_symbol_styles_from_web_styles_app_name">
             
         </activity>
     </application>
