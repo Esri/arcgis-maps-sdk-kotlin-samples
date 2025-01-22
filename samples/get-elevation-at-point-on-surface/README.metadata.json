@@ -1,0 +1,31 @@
+{
+    "category": "Scenes",
+    "description": "Get the elevation for a given point on a surface in a scene.",
+    "formal_name": "GetElevationAtPointOnSurface",
+    "ignore": false,
+    "images": [
+        "get-elevation-at-point-on-surface.png"
+    ],
+    "keywords": [
+        "elevation",
+        "surface",
+        "ArcGISTiledElevationSource",
+        "BaseSurface",
+        "ElevationSource",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISTiledElevationSource",
+        "BaseSurface",
+        "ElevationSource",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/getelevationatpointonsurface/components/GetElevationAtPointOnSurfaceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/getelevationatpointonsurface/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/getelevationatpointonsurface/screens/GetElevationAtPointOnSurfaceScreen.kt"
+    ],
+    "title": "Get elevation at point on surface"
+}
