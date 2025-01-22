@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -33,11 +34,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
-import com.esri.arcgismaps.sample.createandeditgeometries.R
 
 /**
  * Composable component to display the menu buttons.
@@ -55,7 +53,6 @@ fun ButtonMenu(
     Row(
         modifier = rowModifier
     ) {
-        val vector = ImageVector
         var expanded by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier
@@ -104,7 +101,7 @@ fun ButtonMenu(
             enabled = isGeometryEditorStarted,
             onClick = { onStopEditingButtonClick() }
         ) {
-            Icon(vector.vectorResource(id = R.drawable.check_32), contentDescription = "Save Edits")
+            Icon(imageVector = Icons.Default.Check, contentDescription = "Save Edits")
         }
     }
 }
