@@ -158,7 +158,7 @@ fun TrackSimulationOptions(
     onExportClicked: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(24.dp),
+        modifier = Modifier.padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -196,7 +196,7 @@ fun TrackSimulationOptions(
             Button(onClick = onRecordButtonClicked) {
                 Text(
                     modifier = Modifier.animateContentSize(),
-                    text = if (isRecordButtonEnabled) "Record Track" else "Stop Recording"
+                    text = if (isRecordButtonEnabled) "Record Track(s)" else "Stop Recording"
                 )
             }
             FilledTonalIconButton(

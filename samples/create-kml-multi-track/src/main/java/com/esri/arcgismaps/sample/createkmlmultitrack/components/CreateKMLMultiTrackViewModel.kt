@@ -249,15 +249,16 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
     private fun displayKmlTracks() {
         graphicsOverlay.graphics.clear()
         _kmlTracks.value.forEach { kmlTrack ->
+            // Get the map's spacial reference
             val mapSpatialReference = arcGISMap.spatialReference
                 ?: return messageDialogVM.showMessageDialog("Error retrieving spacial-ref")
-
+            // Set the KML geometry to use the same projection
             val multipoint = (kmlTrack.geometry as Multipoint)
             val polyline = GeometryEngine.projectOrNull(
                 geometry = Polyline(multipoint.points),
                 spatialReference = mapSpatialReference
             ) ?: return messageDialogVM.showMessageDialog("Error converting geometry spacial-ref")
-
+            // Add the polyline graphic to the map
             graphicsOverlay.graphics.add(Graphic(geometry = polyline, symbol = lineSymbol))
         }
     }
@@ -313,33 +314,35 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
      * Once loaded, [onLocalKmlFileLoaded] is invoked with the KML multi track contents.
      */
     suspend fun loadLocalKmlFile(onLocalKmlFileLoaded: (List<Geometry>) -> Unit) {
+        // Create the file path for the local KML file
         val localKmlFile = File(provisionPath, "HikingTracks.kmz")
-
+        // Check if file exists
         if (!localKmlFile.exists())
             return messageDialogVM.showMessageDialog("Error locating KML file")
-
+        // Create a KML dataset using the local file path
         val localKmlDataset = KmlDataset(localKmlFile.canonicalPath)
-
+        // Load the KML dataset
         localKmlDataset.load().getOrElse {
             return messageDialogVM.showMessageDialog("Error parsing KML file")
         }
-
+        // Get the document's node which contains the placemark
         val kmlDocument = localKmlDataset.rootNodes.first() as KmlDocument
         val kmlPlacemark = kmlDocument.childNodes.first() as KmlPlacemark
+        // Get the multi track geometry from the placemark
         val kmlMultiTrack = kmlPlacemark.kmlGeometry as KmlMultiTrack
-
+        // Calculate the union of all the KML tracks
         val allTracksGeometry = GeometryEngine.unionOrNull(kmlMultiTrack.tracks.map { it.geometry })
             ?: return messageDialogVM.showMessageDialog("KmlMultiTrack has no geometry")
-
+        // Set the viewpoint to the union geometry
         mapViewProxy.setViewpointGeometry(
             boundingGeometry = allTracksGeometry,
             paddingInDips = 25.0
         )
-
+        // Add the other individual track geometry as well
         val trackGeometries = mutableListOf(allTracksGeometry).apply {
             addAll(kmlMultiTrack.tracks.map { it.geometry })
         }
-
+        // Invoke UI to display the list of geometry tracks
         onLocalKmlFileLoaded(trackGeometries)
     }
 
