@@ -85,12 +85,11 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                 }
             } else {
                 // Show the legend
-                Column(
+                Card(
                     modifier = Modifier
                         .wrapContentSize()
                         .align(Alignment.BottomEnd)
                         .padding(bottom = 36.dp, end = 12.dp)
-                        .background(Color.White)
                 ) {
                     // For each pair of symbol name and icon
                     for ((symbolName, symbolIcon) in symbolsAndIcons) {
