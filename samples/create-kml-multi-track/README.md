@@ -6,7 +6,7 @@ Create a KML multi-track by recording simulated location data, then save and pre
 
 ## Use case
 
-When you are hiking along a trail, it can be useful to record your path and share it later as a KML file. You might also want to capture multiple tracks in one trip. This sample demonstrates how you can collect individual KML tracks during a navigation session, then combine and export them as a single KML multi-track.
+When out hiking, it can be useful to record your path or multiple paths. You may want to share it later as a KML file. This sample demonstrates how you can collect individual KML tracks during a navigation session, then combine and export them as a single KML multi-track.
 
 ## How to use the sample
 
@@ -15,11 +15,12 @@ Tap **Start Navigation** to begin moving along a simulated trail. Tap **Record T
 ## How it works
 
 1. Use an `ArcGISMap` to display a basemap and a path geometry for your navigation route.  
-2. Create a simulated location data source (`SimulatedLocationDataSource`) to drive the `LocationDisplay`.  
-3. As you receive `Location` updates, add each point to a list of `KmlTrackElement` objects while recording.  
-4. Combine one or more `KmlTrack` objects into a `KmlMultiTrack`.  
-5. Save the `KmlMultiTrack` inside a `KmlDocument`, then export the document to a `.kmz` file.  
-6. Load the saved `.kmz` file into a `KmlDataset` to preview your tracks on the map.
+2. Create a simulated location data source `SimulatedLocationDataSource` to drive the `LocationDisplay`.  
+3. As you receive `Location` updates, add each point to a list of `KmlTrackElement` objects while recording. 
+4. On recording stopped, create `KmlTrack` using one or more `KmlTrackElement` objects.
+5. Combine one or more `KmlTrack` objects into a `KmlMultiTrack`.  
+6. Save the `KmlMultiTrack` inside a `KmlDocument`, then export the document to a `.kmz` file.  
+7. Load the saved `.kmz` file into a `KmlDataset` to preview your tracks on the map.
 
 ## Relevant API
 
@@ -37,4 +38,4 @@ This sample uses the GeoView-Compose Toolkit module to be able to implement a co
 
 ## Tags
 
-export, geoview-compose, hiking, kml, kmz, mutli-track, record, track
+export, geoview-compose, hiking, kml, kmz, multi-track, record, track

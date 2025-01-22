@@ -110,7 +110,7 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
         private set
 
     // Updates the UI to display the tracks of the local .kmz file
-    var isPreviewTracksEnabled by mutableStateOf(false)
+    var isShowTracksFromFileEnabled by mutableStateOf(false)
         private set
 
     // Runs the location display simulation and is canceled when completed.
@@ -148,42 +148,36 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
         // Set the map's initial viewpoint
         mapViewProxy.setViewpointGeometry(routeGeometry, 25.0)
         // Update sample UI state
-        isPreviewTracksEnabled = false
+        isShowTracksFromFileEnabled = false
         // Create a new job with the following coroutines
         locationDisplayJob = with(viewModelScope) {
             launch {
-                // set the simulated location data source as the location data source for this app
+                // Set the simulated location data source as the location data source for this app
                 locationDisplay.dataSource = simulatedLocationDataSource
 
-                // start the location data source
-                locationDisplay.dataSource.start().getOrElse {
+                // Start the location data source
+                locationDisplay.dataSource.start().onFailure {
                     messageDialogVM.showMessageDialog(
                         title = "Error starting location data source",
                         description = it.message.toString()
                     )
                 }
 
-                // set the auto pan to navigation mode
+                // Set the auto pan to navigation mode
                 locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
             }
             launch {
-                // automatically enable recenter button when navigation pan is disabled
+                // Automatically enable recenter button when navigation pan is disabled
                 locationDisplay.autoPanMode.collect {
                     when (it) {
-                        LocationDisplayAutoPanMode.Off -> {
-                            isRecenterButtonEnabled = true
-                        }
-
-                        LocationDisplayAutoPanMode.Navigation -> {
-                            isRecenterButtonEnabled = false
-                        }
-
+                        LocationDisplayAutoPanMode.Off -> isRecenterButtonEnabled = true
+                        LocationDisplayAutoPanMode.Navigation -> isRecenterButtonEnabled = false
                         else -> {}
                     }
                 }
             }
             launch {
-                // listen for changes in location
+                // Listen for changes in location
                 locationDisplay.location.collect {
                     it?.let { locationPoint ->
                         if (isRecordingTrack) {
@@ -200,19 +194,19 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
      * of [kmlTrackElements] and display the graphic on the map.
      */
     private fun addTrackElement(location: Location) {
-        viewModelScope.launch(Dispatchers.IO) {
-            // convert to WGS_84 as per KML spec
+        viewModelScope.launch {
+            // Convert to WGS_84 as per KML spec
             val positionPoint = GeometryEngine.projectOrNull(
                 geometry = location.position,
                 spatialReference = SpatialReference.wgs84()
             )
-            // add a new element to the state flow
+            // Add a new element to the state flow
             _kmlTrackElements.value += KmlTrackElement(
                 coordinate = positionPoint,
                 instant = Instant.now(),
                 angle = null
             )
-            // add a graphic at the location's position
+            // Add a graphic at the location's position
             graphicsOverlay.graphics.add(
                 Graphic(
                     geometry = positionPoint,
@@ -244,20 +238,20 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
     }
 
     /**
-     * Displays various polylines on map representing all the recorded KML tracks.
+     * Display polylines on the map representing all the recorded KML tracks.
      */
     private fun displayKmlTracks() {
         graphicsOverlay.graphics.clear()
         _kmlTracks.value.forEach { kmlTrack ->
             // Get the map's spacial reference
             val mapSpatialReference = arcGISMap.spatialReference
-                ?: return messageDialogVM.showMessageDialog("Error retrieving spacial-ref")
+                ?: return messageDialogVM.showMessageDialog("Error retrieving spacial reference")
             // Set the KML geometry to use the same projection
             val multipoint = (kmlTrack.geometry as Multipoint)
             val polyline = GeometryEngine.projectOrNull(
                 geometry = Polyline(multipoint.points),
                 spatialReference = mapSpatialReference
-            ) ?: return messageDialogVM.showMessageDialog("Error converting geometry spacial-ref")
+            ) ?: return messageDialogVM.showMessageDialog("Error converting geometry spacial reference")
             // Add the polyline graphic to the map
             graphicsOverlay.graphics.add(Graphic(geometry = polyline, symbol = lineSymbol))
         }
@@ -305,7 +299,7 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
                 locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
                 locationDisplayJob?.cancelAndJoin()
             }
-            isPreviewTracksEnabled = true
+            isShowTracksFromFileEnabled = true
         }
     }
 
@@ -322,7 +316,7 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
         // Create a KML dataset using the local file path
         val localKmlDataset = KmlDataset(localKmlFile.canonicalPath)
         // Load the KML dataset
-        localKmlDataset.load().getOrElse {
+        localKmlDataset.load().onFailure {
             return messageDialogVM.showMessageDialog("Error parsing KML file")
         }
         // Get the document's node which contains the placemark
@@ -372,6 +366,6 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
     fun reset() {
         _kmlTracks.value = listOf()
         graphicsOverlay.graphics.clear()
-        isPreviewTracksEnabled = false
+        isShowTracksFromFileEnabled = false
     }
 }

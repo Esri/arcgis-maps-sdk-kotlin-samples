@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,17 +72,20 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
  */
 @Composable
 fun CreateKMLMultiTrackScreen(sampleName: String) {
+    // Create a location display using the current application's context
     val locationDisplay = rememberLocationDisplay()
+    // Create the map view-model and set the location display to be used for simulation
     val mapViewModel = viewModel<CreateKMLMultiTrackViewModel>().apply {
         setLocationDisplay(locationDisplay)
     }
+    // Observe viewmodel states
     val currentKmlMultiTrack by mapViewModel.kmlTracks.collectAsStateWithLifecycle()
     val currentKmlTrackElements by mapViewModel.kmlTrackElements.collectAsStateWithLifecycle()
     var localMultiTrackGeometries by remember { mutableStateOf<List<Geometry>?>(null) }
-    val isPreviewEnabled = mapViewModel.isPreviewTracksEnabled
-
-    LaunchedEffect(isPreviewEnabled) {
-        if (isPreviewEnabled) {
+    val isShowTracksFromFileEnabled = mapViewModel.isShowTracksFromFileEnabled
+    // Update UI between recording option and browse tracks options.
+    LaunchedEffect(isShowTracksFromFileEnabled) {
+        if (isShowTracksFromFileEnabled) {
             mapViewModel.loadLocalKmlFile(onLocalKmlFileLoaded = { localMultiTrackGeometries = it })
         } else {
             mapViewModel.startNavigation()
@@ -106,10 +110,9 @@ fun CreateKMLMultiTrackScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
                     locationDisplay = locationDisplay,
-                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
-                    onSingleTapConfirmed = {}
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay)
                 )
-                if (!isPreviewEnabled) {
+                if (!isShowTracksFromFileEnabled) {
                     TrackSimulationOptions(
                         isRecenterEnabled = mapViewModel.isRecenterButtonEnabled,
                         isRecordButtonEnabled = !mapViewModel.isRecordingTrack,
@@ -126,7 +129,7 @@ fun CreateKMLMultiTrackScreen(sampleName: String) {
                         },
                     )
                 } else {
-                    TrackPreviewOptions(
+                    TrackBrowseOptions(
                         multiTrackGeometries = localMultiTrackGeometries,
                         onTrackSelected = mapViewModel::previewKmlTrack,
                         onResetButtonClicked = mapViewModel::reset
@@ -173,7 +176,7 @@ fun TrackSimulationOptions(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Number of tracks in MultiTrack:",
+                text = stringResource(R.string.kml_multi_track_hint),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
@@ -221,19 +224,19 @@ fun TrackStatusText(
     Box(Modifier.animateContentSize()) {
         if (isDisplayingTracks) {
             Text(
-                text = "Displaying contents of saved HikingTracks.kmz file.",
+                text = stringResource(R.string.kml_multi_track_browse_hint),
                 style = MaterialTheme.typography.labelLarge
             )
         } else {
             if (isRecordingTrackElements) {
                 Text(
-                    text = "Recording KML track. Elements added = $kmlTrackElementsSize",
+                    text = stringResource(R.string.kml_multi_track_recording_hint) + kmlTrackElementsSize,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.error
                 )
             } else {
                 Text(
-                    text = "Click record to capture KML track elements",
+                    text = stringResource(R.string.kml_multi_track_start_record_hint),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -242,7 +245,7 @@ fun TrackStatusText(
 }
 
 @Composable
-fun TrackPreviewOptions(
+fun TrackBrowseOptions(
     multiTrackGeometries: List<Geometry>?,
     onTrackSelected: (Geometry) -> Unit,
     onResetButtonClicked: () -> Unit
@@ -320,6 +323,21 @@ fun TrackOptionsPreview() {
                 onExportClicked = { },
                 kmlTracksSize = 1,
                 kmlTrackElementSize = 1
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun TrackBrowseOptionsPreview() {
+    SampleAppTheme {
+        Surface {
+            TrackBrowseOptions(
+                multiTrackGeometries = listOf(),
+                onTrackSelected = { },
+                onResetButtonClicked = { }
             )
         }
     }
