@@ -53,8 +53,13 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
+
+    // Get a reference to the view model
     val mapViewModel: CreateSymbolStylesFromWebStylesViewModel = viewModel()
+
+    // Keep track of legend visibility state
     var showLegend by remember { mutableStateOf(false) }
+
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
         Box(
             modifier = Modifier
@@ -62,20 +67,23 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                 .padding(it),
         ) {
             MapView(
-                modifier = Modifier.fillMaxSize(),
-                arcGISMap = mapViewModel.arcGISMap,
+                modifier = Modifier.fillMaxSize(), arcGISMap = mapViewModel.arcGISMap,
+                // Hide the legend on any tap of the map view
                 onDown = { showLegend = false },
+                // Update the map scale in the view model
                 onMapScaleChanged = mapViewModel::onMapScaleChanged
             )
-            // show the "Edit map" button only when the bottom sheet is not visible
+            // Show the FAB
             if (!showLegend) {
                 FloatingActionButton(modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 36.dp, end = 24.dp),
+                    // On click, show the legend
                     onClick = { showLegend = true }) {
                     Icon(Icons.Filled.Info, contentDescription = "Show legend button")
                     Spacer(Modifier.padding(8.dp))
                 }
+                // Show the legend
             } else {
                 Column(
                     modifier = Modifier
@@ -84,15 +92,18 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                         .padding(bottom = 36.dp, end = 12.dp)
                         .background(Color.White)
                 ) {
+                    // For each pair of symbol name and icon
                     for ((symbolName, symbolIcon) in mapViewModel.symbolNamesAndIconsFlow.collectAsState().value) {
                         Row(
                             modifier = Modifier
                                 .wrapContentSize()
                                 .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
                         ) {
+                            // Show the symbol
                             Image(
                                 bitmap = symbolIcon.bitmap.asImageBitmap(), contentDescription = "Symbol image"
                             )
+                            // Show the symbol name
                             Text(modifier = Modifier.padding(start = 8.dp), text = symbolName)
                         }
                     }
@@ -100,6 +111,7 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
             }
         }
 
+        // Show any errors in a message dialog
         mapViewModel.messageDialogVM.apply {
             if (dialogStatus) {
                 MessageDialog(

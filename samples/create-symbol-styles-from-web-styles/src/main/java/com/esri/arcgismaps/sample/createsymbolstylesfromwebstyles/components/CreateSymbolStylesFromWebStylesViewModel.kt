@@ -39,6 +39,20 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
 
     val mapViewProxy = MapViewProxy()
 
+    // Create a unique value renderer
+    private val uniqueValueRenderer = UniqueValueRenderer().apply {
+        // Add the name of a field from the feature layer data that symbols will be mapped to
+        fieldNames.add("cat2")
+    }
+
+    // Create a feature layer from a service
+    val featureLayer =
+        FeatureLayer.createWithFeatureTable(ServiceFeatureTable("http://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/LA_County_Points_of_Interest/FeatureServer/0"))
+            .apply {
+                // Set the unique value renderer on the feature layer
+                renderer = uniqueValueRenderer
+            }
+
     /**
      * Only scale symbols if map scale greater than or equal to 80,000
      */
@@ -46,35 +60,21 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
         featureLayer.scaleSymbols = scale >= 80000
     }
 
-    // create a unique value renderer
-    private val uniqueValueRenderer = UniqueValueRenderer().apply {
-        // add the name of a field from the feature layer data that symbols will be mapped to
-        fieldNames.add("cat2")
-    }
-
-    // create a feature layer from a service
-    val featureLayer =
-        FeatureLayer.createWithFeatureTable(ServiceFeatureTable("http://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/LA_County_Points_of_Interest/FeatureServer/0"))
-            .apply {
-                // set the unique value renderer on the feature layer
-                renderer = uniqueValueRenderer
-            }
-
-    // create a map with the light gray basemap style
+    // Create a map with the light gray basemap style
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
-        // set a viewpoint
+        // Set a viewpoint
         initialViewpoint = Viewpoint(34.28301, -118.44186, 7000.0)
-        // set an initial reference scale on the map for controlling symbol size
+        // Set a reference scale on the map for controlling symbol size
         referenceScale = 100000.0
-        // add the feature layer to the map's operational layers
+        // Add the feature layer to the map's operational layers
         operationalLayers.add(featureLayer)
     }
 
-    // create a symbol style from a web style
-    // note: ArcGIS Online is used as the default portal when null is passed as the portal parameter
+    // Create a symbol style from a web style. ArcGIS Online is used as the default portal when null is passed as the
+    // portal parameter
     private val symbolStyle = SymbolStyle.createWithStyleNameAndPortal("Esri2DPointSymbolsStyle", null)
 
-    // create a list of the required symbol names from the web style
+    // Create a list of the required symbol names in the web style
     private val symbolNames = listOf(
         "atm",
         "beach",
@@ -90,6 +90,7 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
         "trail"
     )
 
+    // Create a flow to hold the symbol names and icons
     private val _symbolNamesAndIconsFlow = MutableStateFlow<List<Pair<String, BitmapDrawable>>>(emptyList())
     val symbolNamesAndIconsFlow = _symbolNamesAndIconsFlow.asStateFlow()
 
@@ -97,34 +98,9 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-
-        val symbolNamesAndIconsList = mutableListOf<Pair<String, BitmapDrawable>>()
-
+        // Load the symbols into a list
         viewModelScope.launch {
-            symbolNames.forEach { symbolName ->
-                // search for each symbol in the symbol style
-                symbolStyle.getSymbol(listOf(symbolName)).onSuccess { symbol ->
-                    // get a list of all categories to be mapped to the symbol
-                    val categories = mapSymbolNameToField(symbolName)
-                    categories.forEach { category ->
-                        // add each unique value category to the unique value renderer
-                        uniqueValueRenderer.uniqueValues.add(
-                            UniqueValue(
-                                label = symbolName, symbol = symbol, values = listOf(category)
-                            )
-                        )
-                    }
-                    // create a swatch from symbol
-                    symbol.createSwatch(
-                        screenScale = 2.0f, width = 30.0f, height = 30.0f, backgroundColor = Color.white
-                    ).onSuccess { symbolBitmap ->
-                        symbolNamesAndIconsList.add(Pair(symbolName, symbolBitmap))
-                    }
-                }
-            }
-            // sort the symbol name alphabetically
-            symbolNamesAndIconsList.sortBy { it.first }
-            _symbolNamesAndIconsFlow.value = symbolNamesAndIconsList
+            _symbolNamesAndIconsFlow.value = createUniqueValueSymbols()
         }
 
         viewModelScope.launch {
@@ -135,13 +111,45 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
             }
         }
     }
+
+    /**
+     * Create a series of unique values and add them to the unique value renderer. Also create a list of the symbol
+     * names and icons and return them as a list of pairs.
+     */
+    private suspend fun createUniqueValueSymbols(): MutableList<Pair<String, BitmapDrawable>> {
+        // Create a list to hold the symbol names and icons
+        val symbolNamesAndIconsList = mutableListOf<Pair<String, BitmapDrawable>>()
+        symbolNames.forEach { symbolName ->
+            // Search for each symbol in the symbol style
+            symbolStyle.getSymbol(listOf(symbolName)).onSuccess { symbol ->
+                // Get a list of all categories to be mapped to the symbol
+                val categories = mapSymbolNameToField(symbolName)
+                categories.forEach { category ->
+                    // Add each unique value category to the unique value renderer
+                    uniqueValueRenderer.uniqueValues.add(
+                        UniqueValue(
+                            label = symbolName, symbol = symbol, values = listOf(category)
+                        )
+                    )
+                }
+                // Create a swatch from the symbol
+                symbol.createSwatch(
+                    screenScale = 2.0f, width = 30.0f, height = 30.0f, backgroundColor = Color.white
+                ).onSuccess { symbolBitmap ->
+                    // Add the symbol name and symbol to the list
+                    symbolNamesAndIconsList.add(Pair(symbolName, symbolBitmap))
+                }
+            }
+        }
+        // Sort the symbol name alphabetically
+        symbolNamesAndIconsList.sortBy { it.first }
+        // Update the flow with the new list
+        return symbolNamesAndIconsList
+    }
 }
 
 /**
  * Returns a list of categories to be matched to a symbol name.
- *
- * @param symbolName the name of a symbol from a symbol style
- * @return categories a list of categories matched to the provided symbol name
  */
 private fun mapSymbolNameToField(symbolName: String): List<String> {
     return mutableListOf<String>().apply {

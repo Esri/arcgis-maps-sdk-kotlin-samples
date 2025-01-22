@@ -1,19 +1,35 @@
 {
     "category": "Visualization",
-    "description": "TODO",
+    "description": "Create symbol styles from a style file hosted on a portal.",
     "formal_name": "CreateSymbolStylesFromWebStyles",
     "ignore": false,
     "images": [
         "create-symbol-styles-from-web-styles.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "renderer",
+        "symbol",
+        "symbology",
+        "web style",
+        "FeatureLayer",
+        "Symbol",
+        "SymbolStyle",
+        "UniqueValue",
+        "UniqueValueRenderer"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "FeatureLayer",
+        "Symbol",
+        "SymbolStyle",
+        "UniqueValue",
+        "UniqueValueRenderer"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/CreateSymbolStylesFromWebStylesViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/CreateSymbolStylesFromWebStylesScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/components/CreateSymbolStylesFromWebStylesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createsymbolstylesfromwebstyles/screens/CreateSymbolStylesFromWebStylesScreen.kt"
     ],
     "title": "Create symbol styles from web styles"
 }
