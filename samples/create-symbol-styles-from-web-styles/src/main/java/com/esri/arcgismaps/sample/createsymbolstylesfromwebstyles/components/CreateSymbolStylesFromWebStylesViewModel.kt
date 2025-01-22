@@ -100,15 +100,14 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
     init {
         // Load the symbols into a list
         viewModelScope.launch {
-            _symbolNamesAndIconsFlow.value = createUniqueValueSymbols()
-        }
-
-        viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     "Failed to load map", error.message.toString()
                 )
             }
+
+            // Once map is loaded, create unique value symbols
+            _symbolNamesAndIconsFlow.value = createUniqueValueSymbols()
         }
     }
 
