@@ -39,7 +39,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun CutGeometryScreen(sampleName: String) {

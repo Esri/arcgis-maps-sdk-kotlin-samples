@@ -124,8 +124,8 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * Clear the current graphics, then re-add the graphics for Lake Superior and the cut polyline
-     * */
+     * Clear the current graphics, then re-add the graphics for Lake Superior and the cut polyline.
+     */
     fun resetGeometry() {
         graphicsOverlay.graphics.clear()
         graphicsOverlay.graphics.add(polygonGraphic)
@@ -140,7 +140,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
 
     /**
      * Cut the Lake Superior graphic into a US side and Canada side using the cut polyline
-     * and then add the resulting graphics to the graphics overlay
+     * and then add the resulting graphics to the graphics overlay.
      */
     fun cutGeometry() {
         polygonGraphic.geometry?.let { graphicGeometry ->
@@ -184,7 +184,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * Define a blue color for polygon boundary
+     * Define a blue color for polygon boundary.
      */
     private val Color.Companion.blue: Color
         get() {
@@ -197,7 +197,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
         }
 
     /**
-     * Create a polygon corresponding to Lake Superior
+     * Create a polygon corresponding to Lake Superior.
      */
     private fun makeLakeSuperior() : Polygon {
         return PolygonBuilder(SpatialReference.webMercator()) {
@@ -235,7 +235,7 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * Create a polyline corresponding to the US/Canada border over Lake Superior
+     * Create a polyline corresponding to the US/Canada border over Lake Superior.
      */
     private fun makeBorderPolyline() : Polyline {
         return PolylineBuilder(SpatialReference.webMercator()) {
