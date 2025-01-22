@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.findroute"
+    namespace = "com.esri.arcgismaps.sample.displaywebscenefromportalitem"
     buildFeatures {
         buildConfig = true
     }

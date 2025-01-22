@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.findroute
+package com.esri.arcgismaps.sample.traceutilitynetwork
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,10 +22,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.findroute.screens.FindRouteScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.traceutilitynetwork.screens.TraceUtilityNetworkScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,17 +38,24 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                FindRouteApp()
+                TraceUtilityNetworkApp()
             }
         }
     }
 
     @Composable
-    private fun FindRouteApp() {
+    private fun TraceUtilityNetworkApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            FindRouteScreen(
-                sampleName = getString(R.string.find_route_app_name)
+            TraceUtilityNetworkScreen(
+                sampleName = getString(R.string.trace_utility_network_app_name)
             )
+
+            // remove credentials on screen dispose
+            DisposableEffect(Unit) {
+                onDispose {
+                    ArcGISEnvironment.authenticationManager.arcGISCredentialStore.removeAll()
+                }
+            }
         }
     }
 }

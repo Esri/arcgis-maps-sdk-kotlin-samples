@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.findroute
+package com.esri.arcgismaps.sample.displaywebscenefromportalitem
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,8 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.findroute.screens.FindRouteScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.displaywebscenefromportalitem.screens.DisplayWebSceneFromPortalItemScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                FindRouteApp()
+                DisplayWebSceneFromPortalItemApp()
             }
         }
     }
 
     @Composable
-    private fun FindRouteApp() {
+    private fun DisplayWebSceneFromPortalItemApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            FindRouteScreen(
-                sampleName = getString(R.string.find_route_app_name)
+            DisplayWebSceneFromPortalItemScreen(
+                sampleName = getString(R.string.display_web_scene_from_portal_item_app_name)
             )
         }
     }
