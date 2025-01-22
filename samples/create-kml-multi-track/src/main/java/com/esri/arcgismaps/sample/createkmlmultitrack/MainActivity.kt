@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.createandeditkmltracks
+package com.esri.arcgismaps.sample.createkmlmultitrack
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.createandeditkmltracks.screens.CreateAndEditKMLTracksScreen
+import com.esri.arcgismaps.sample.createkmlmultitrack.screens.CreateKMLMultiTrackScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                CreateAndEditKMLTracksApp()
+                CreateKMLMultiTrackApp()
             }
         }
     }
 
     @Composable
-    private fun CreateAndEditKMLTracksApp() {
+    private fun CreateKMLMultiTrackApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            CreateAndEditKMLTracksScreen(
-                sampleName = getString(R.string.create_and_edit_kml_tracks_app_name)
+            CreateKMLMultiTrackScreen(
+                sampleName = getString(R.string.create_kml_multi_track_app_name)
             )
         }
     }

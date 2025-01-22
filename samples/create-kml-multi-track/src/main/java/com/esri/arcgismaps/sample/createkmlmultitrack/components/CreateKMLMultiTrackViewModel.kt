@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.createandeditkmltracks.components
+package com.esri.arcgismaps.sample.createkmlmultitrack.components
 
 import android.app.Application
 import android.widget.Toast
@@ -50,7 +50,7 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
-import com.esri.arcgismaps.sample.createandeditkmltracks.R
+import com.esri.arcgismaps.sample.createkmlmultitrack.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -61,64 +61,81 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.time.Instant
 
-class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewModel(application) {
-
+class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(application) {
     private val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
-            R.string.create_and_edit_kml_tracks_app_name
-        )
+        application.getExternalFilesDir(null)?.path.toString() +
+                File.separator + application.getString(R.string.create_kml_multi_track_app_name)
     }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
+    // This should be passed to the composable MapView
     val mapViewProxy = MapViewProxy()
-    val graphicsOverlay = GraphicsOverlay()
+
+    // Display a map with a street basemap style
     val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISStreets))
 
-    private val locationSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.red, 10f)
+    // Overlay to display kml tracks and location points
+    val graphicsOverlay = GraphicsOverlay()
 
-    private val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 3f)
+    // Marker symbol to display KmlTrackElements
+    private val locationSymbol = SimpleMarkerSymbol(
+        style = SimpleMarkerSymbolStyle.Circle,
+        color = Color.red,
+        size = 10f
+    )
 
-    // keep track of the the location display job when navigation is enabled
+    // Line symbol to display KmlTrack
+    private val lineSymbol = SimpleLineSymbol(
+        style = SimpleLineSymbolStyle.Solid,
+        color = Color.black,
+        width = 3f
+    )
+
+    // Observe the list of KML track elements being added when recording a KML track
+    private var _kmlTrackElements = MutableStateFlow<List<KmlTrackElement>>(listOf())
+    val kmlTrackElements = _kmlTrackElements.asStateFlow()
+
+    // Observe the list of KML tracks being added for the multi track
+    private var _kmlTracks = MutableStateFlow<List<KmlTrack>>(listOf())
+    val kmlTracks = _kmlTracks.asStateFlow()
+
+    // Enables the recenter button when not in navigation autopan
+    var isRecenterButtonEnabled by mutableStateOf(false)
+        private set
+
+    // Updates UI to reflect recording buttons and text information
+    var isRecordingTrack by mutableStateOf(false)
+        private set
+
+    // Updates the UI to display the tracks of the local .kmz file
+    var isPreviewTracksEnabled by mutableStateOf(false)
+        private set
+
+    // Runs the location display simulation and is canceled when completed.
     private var locationDisplayJob: Job? = null
 
-    // default location display object, which is updated by rememberLocationDisplay
+    // Default location display object, which is updated by rememberLocationDisplay
     private var locationDisplay: LocationDisplay = LocationDisplay()
 
+    // Sets the location display
     fun setLocationDisplay(locationDisplay: LocationDisplay) {
         this.locationDisplay = locationDisplay
     }
 
-    private val kmlDocument = KmlDocument()
-
-    private var _kmlTrackElements = MutableStateFlow<List<KmlTrackElement>>(listOf())
-    val kmlTrackElements = _kmlTrackElements.asStateFlow()
-
-    private var _kmlTracks = MutableStateFlow<List<KmlTrack>>(listOf())
-    val kmlTracks = _kmlTracks.asStateFlow()
-
-    var isRecenterButtonEnabled by mutableStateOf(false)
-        private set
-    var isRecordingTrack by mutableStateOf(false)
-        private set
-    var isPreviewTracksEnabled by mutableStateOf(false)
-        private set
-
+    /**
+     * Loads the hiking path polyline and starts a simulation down a path.
+     * Updates the navigation autopan buttons based on state, and calls [addTrackElement]
+     * with the current simulation [Location] when [isRecordingTrack] is enabled.
+     */
     suspend fun startNavigation() {
-        arcGISMap.load().getOrElse { error ->
-            messageDialogVM.showMessageDialog(
-                "Failed to load map",
-                error.message.toString()
-            )
-        }
-
-        // get the route geometry
+        // Get the hiking path geometry
         val routeGeometry = Geometry.fromJsonOrNull(
             json = getApplication<Application>().getString(R.string.Coastal_Trail)
         ) as Polyline
-
-        // create a simulated location data source from json data with simulation parameters to set a consistent velocity
+        // Create a simulated location data source from json data
+        // with simulation parameters to set a consistent velocity
         val simulatedLocationDataSource = SimulatedLocationDataSource(
             polyline = routeGeometry,
             parameters = SimulationParameters(
@@ -128,11 +145,27 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
                 verticalAccuracy = 0.0
             )
         )
-
-        mapViewProxy.setViewpointGeometry(routeGeometry, 20.0)
-
+        // Set the map's initial viewpoint
+        mapViewProxy.setViewpointGeometry(routeGeometry, 25.0)
+        // Update sample UI state
         isPreviewTracksEnabled = false
+        // Create a new job with the following coroutines
         locationDisplayJob = with(viewModelScope) {
+            launch {
+                // set the simulated location data source as the location data source for this app
+                locationDisplay.dataSource = simulatedLocationDataSource
+
+                // start the location data source
+                locationDisplay.dataSource.start().getOrElse {
+                    messageDialogVM.showMessageDialog(
+                        title = "Error starting location data source",
+                        description = it.message.toString()
+                    )
+                }
+
+                // set the auto pan to navigation mode
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+            }
             launch {
                 // automatically enable recenter button when navigation pan is disabled
                 locationDisplay.autoPanMode.collect {
@@ -150,22 +183,6 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
                 }
             }
             launch {
-                // set the simulated location data source as the location data source for this app
-                locationDisplay.dataSource = simulatedLocationDataSource
-
-                // start the location data source
-                locationDisplay.dataSource.start().getOrElse {
-                    messageDialogVM.showMessageDialog(
-                        title = "Error starting location data source",
-                        description = it.message.toString()
-                    )
-                }
-
-                // set the auto pan to navigation mode
-                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
-            }
-
-            launch {
                 // listen for changes in location
                 locationDisplay.location.collect {
                     it?.let { locationPoint ->
@@ -178,87 +195,57 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
         }
     }
 
+    /**
+     * When recording is enabled, add the given [location] to the list
+     * of [kmlTrackElements] and display the graphic on the map.
+     */
     private fun addTrackElement(location: Location) {
         viewModelScope.launch(Dispatchers.IO) {
-            // convert to map view's spacial reference
+            // convert to WGS_84 as per KML spec
             val positionPoint = GeometryEngine.projectOrNull(
                 geometry = location.position,
                 spatialReference = SpatialReference.wgs84()
             )
-
+            // add a new element to the state flow
             _kmlTrackElements.value += KmlTrackElement(
                 coordinate = positionPoint,
                 instant = Instant.now(),
-                // coordinate = location.position,
                 angle = null
             )
-
+            // add a graphic at the location's position
             graphicsOverlay.graphics.add(
                 Graphic(
                     geometry = positionPoint,
-                    // geometry = location.position,
                     symbol = locationSymbol
                 )
             )
         }
     }
 
+    /**
+     * Enables recording state to collect position values from the location data source.
+     */
     fun startRecordingKmlTrack() {
         isRecordingTrack = true
         _kmlTrackElements.value = listOf()
     }
 
+    /**
+     * Disables recording to create a new [KmlTrack] and display the track graphic on the map.
+     */
     fun stopRecordingKmlTrack() {
         _kmlTracks.value += KmlTrack(
             elements = _kmlTrackElements.value,
-            altitudeMode = KmlAltitudeMode.RelativeToGround,
-            isExtruded = true,
-            isTessellated = true,
-            model = null
+            altitudeMode = KmlAltitudeMode.RelativeToGround
         )
 
         displayKmlTracks()
-
         isRecordingTrack = false
     }
 
-    fun exportKmlMultiTrack() {
-        val multiTrack = KmlMultiTrack(_kmlTracks.value)
-        kmlDocument.childNodes.add(KmlPlacemark(geometry = multiTrack))
-
-        val localKmlFile = File(provisionPath, "HikingTracks.kmz").apply {
-            if (exists()) delete()
-        }
-
-        viewModelScope.launch {
-            kmlDocument.saveAs(localKmlFile.canonicalPath).onSuccess {
-                Toast.makeText(
-                    getApplication(),
-                    "Saved KmlMultiTrack: ${localKmlFile.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }.onFailure {
-                messageDialogVM.showMessageDialog(
-                    title = it.message.toString(),
-                    description = it.cause.toString()
-                )
-            }
-            stopNavigation()
-        }
-
-    }
-
-    private fun stopNavigation() {
-        viewModelScope.launch {
-            if (locationDisplayJob?.isActive == true) {
-                locationDisplay.dataSource.stop()
-                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
-                locationDisplayJob?.cancelAndJoin()
-            }
-            isPreviewTracksEnabled = true
-        }
-    }
-
+    /**
+     * Displays various polylines on map representing all the recorded KML tracks.
+     */
     private fun displayKmlTracks() {
         graphicsOverlay.graphics.clear()
         _kmlTracks.value.forEach { kmlTrack ->
@@ -275,7 +262,57 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
         }
     }
 
-    suspend fun loadLocalKmlFile(onLocalKmlFileLoaded: (KmlMultiTrack) -> Unit) {
+    /**
+     * Exports the [KmlMultiTrack] as a kmz file to local storage.
+     */
+    fun exportKmlMultiTrack() {
+        // Create a default KML document which will export file to device
+        val kmlDocument = KmlDocument()
+        // Create a KML multi track using the current list of tracks
+        val multiTrack = KmlMultiTrack(_kmlTracks.value)
+        // Add the multi track as a placemark KML node to the KML document
+        kmlDocument.childNodes.add(KmlPlacemark(geometry = multiTrack))
+        // Define the save file path
+        val localKmlFile = File(provisionPath, "HikingTracks.kmz").apply {
+            if (exists()) delete()
+        }
+        // Save KML file to local storage
+        viewModelScope.launch {
+            kmlDocument.saveAs(localKmlFile.canonicalPath).onSuccess {
+                Toast.makeText(
+                    getApplication(),
+                    "Saved KmlMultiTrack: ${localKmlFile.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }.onFailure {
+                messageDialogVM.showMessageDialog(
+                    title = it.message.toString(),
+                    description = it.cause.toString()
+                )
+            }
+            stopNavigation()
+        }
+    }
+
+    /**
+     * Stop the [locationDisplay] and [locationDisplayJob]. Updates UI to display results.
+     */
+    private fun stopNavigation() {
+        viewModelScope.launch {
+            if (locationDisplayJob?.isActive == true) {
+                locationDisplay.dataSource.stop()
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
+                locationDisplayJob?.cancelAndJoin()
+            }
+            isPreviewTracksEnabled = true
+        }
+    }
+
+    /**
+     * Called from screen to load the KML file from local storage.
+     * Once loaded, [onLocalKmlFileLoaded] is invoked with the KML multi track contents.
+     */
+    suspend fun loadLocalKmlFile(onLocalKmlFileLoaded: (List<Geometry>) -> Unit) {
         val localKmlFile = File(provisionPath, "HikingTracks.kmz")
 
         if (!localKmlFile.exists())
@@ -291,31 +328,47 @@ class CreateAndEditKMLTracksViewModel(application: Application) : AndroidViewMod
         val kmlPlacemark = kmlDocument.childNodes.first() as KmlPlacemark
         val kmlMultiTrack = kmlPlacemark.kmlGeometry as KmlMultiTrack
 
-        onLocalKmlFileLoaded(kmlMultiTrack)
-
-        val unionGeometry = GeometryEngine.unionOrNull(kmlMultiTrack.tracks.map { it.geometry })
+        val allTracksGeometry = GeometryEngine.unionOrNull(kmlMultiTrack.tracks.map { it.geometry })
             ?: return messageDialogVM.showMessageDialog("KmlMultiTrack has no geometry")
 
         mapViewProxy.setViewpointGeometry(
-            boundingGeometry = unionGeometry,
-            paddingInDips = 20.0
+            boundingGeometry = allTracksGeometry,
+            paddingInDips = 25.0
         )
+
+        val trackGeometries = mutableListOf(allTracksGeometry).apply {
+            addAll(kmlMultiTrack.tracks.map { it.geometry })
+        }
+
+        onLocalKmlFileLoaded(trackGeometries)
     }
 
+    /**
+     * Update viewpoint to display [kmlTrackGeometry].
+     */
     fun previewKmlTrack(kmlTrackGeometry: Geometry) {
         viewModelScope.launch {
-            mapViewProxy.setViewpointGeometry(kmlTrackGeometry, 20.0)
+            mapViewProxy.setViewpointGeometry(
+                boundingGeometry = kmlTrackGeometry,
+                paddingInDips = 25.0
+            )
         }
     }
 
+    /**
+     * Sets the autopan mode to navigation, and update UI.
+     */
     fun recenter() {
         locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
         isRecenterButtonEnabled = false
     }
 
+    /**
+     * Resets UI and map graphics.
+     */
     fun reset() {
-        isPreviewTracksEnabled = false
         _kmlTracks.value = listOf()
         graphicsOverlay.graphics.clear()
+        isPreviewTracksEnabled = false
     }
 }

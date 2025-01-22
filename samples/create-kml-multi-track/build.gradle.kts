@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.createandeditkmltracks"
+    namespace = "com.esri.arcgismaps.sample.createkmlmultitrack"
     buildFeatures {
         buildConfig = true
     }

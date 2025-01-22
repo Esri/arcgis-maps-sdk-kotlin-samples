@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "CreateKMLMultiTrack",
+    "ignore": false,
+    "images": [
+        "create-kml-multi-track.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createkmlmultitrack/CreateKMLMultiTrackViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createkmlmultitrack/CreateKMLMultiTrackScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createkmlmultitrack/MainActivity.kt"
+    ],
+    "title": "Create KML multi track"
+}

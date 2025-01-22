@@ -16,18 +16,18 @@
 
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.esri.arcgismaps.sample.createandeditkmltracks.screens
+package com.esri.arcgismaps.sample.createkmlmultitrack.screens
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -52,45 +52,40 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.geometry.Geometry
-import com.arcgismaps.geometry.GeometryEngine
-import com.arcgismaps.mapping.kml.KmlMultiTrack
-import com.arcgismaps.mapping.kml.KmlTrack
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
-import com.esri.arcgismaps.sample.createandeditkmltracks.R
-import com.esri.arcgismaps.sample.createandeditkmltracks.components.CreateAndEditKMLTracksViewModel
+import com.esri.arcgismaps.sample.createkmlmultitrack.R
+import com.esri.arcgismaps.sample.createkmlmultitrack.components.CreateKMLMultiTrackViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun CreateAndEditKMLTracksScreen(sampleName: String) {
+fun CreateKMLMultiTrackScreen(sampleName: String) {
     val locationDisplay = rememberLocationDisplay()
-    val mapViewModel = viewModel<CreateAndEditKMLTracksViewModel>().apply {
+    val mapViewModel = viewModel<CreateKMLMultiTrackViewModel>().apply {
         setLocationDisplay(locationDisplay)
     }
-
-    var localKmlMultiTrack by remember { mutableStateOf<KmlMultiTrack?>(null) }
     val currentKmlMultiTrack by mapViewModel.kmlTracks.collectAsStateWithLifecycle()
-    val kmlTrackElements by mapViewModel.kmlTrackElements.collectAsStateWithLifecycle()
+    val currentKmlTrackElements by mapViewModel.kmlTrackElements.collectAsStateWithLifecycle()
+    var localMultiTrackGeometries by remember { mutableStateOf<List<Geometry>?>(null) }
     val isPreviewEnabled = mapViewModel.isPreviewTracksEnabled
 
-    LaunchedEffect(mapViewModel.isPreviewTracksEnabled) {
-        if (mapViewModel.isPreviewTracksEnabled) {
-            mapViewModel.loadLocalKmlFile(onLocalKmlFileLoaded = { localKmlMultiTrack = it })
+    LaunchedEffect(isPreviewEnabled) {
+        if (isPreviewEnabled) {
+            mapViewModel.loadLocalKmlFile(onLocalKmlFileLoaded = { localMultiTrackGeometries = it })
         } else {
             mapViewModel.startNavigation()
+            localMultiTrackGeometries = null
         }
     }
 
@@ -104,11 +99,6 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TrackStatusText(
-                    isDisplayingTracks = isPreviewEnabled,
-                    isRecordingTrackElements = mapViewModel.isRecordingTrack,
-                    elementsAdded = kmlTrackElements.size
-                )
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
@@ -123,7 +113,8 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
                     TrackSimulationOptions(
                         isRecenterEnabled = mapViewModel.isRecenterButtonEnabled,
                         isRecordButtonEnabled = !mapViewModel.isRecordingTrack,
-                        kmlTracks = currentKmlMultiTrack,
+                        kmlTracksSize = currentKmlMultiTrack.size,
+                        kmlTrackElementSize = currentKmlTrackElements.size,
                         onRecenterClicked = mapViewModel::recenter,
                         onExportClicked = mapViewModel::exportKmlMultiTrack,
                         onRecordButtonClicked = {
@@ -135,9 +126,9 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
                         },
                     )
                 } else {
-                    localKmlMultiTrack?.let { multiTrack ->
+                    localMultiTrackGeometries?.let { multiTrack ->
                         TrackPreviewOptions(
-                            localKmlMultiTrack = multiTrack,
+                            multiTrackGeometries = multiTrack,
                             onTrackSelected = mapViewModel::previewKmlTrack,
                             onResetButtonClicked = mapViewModel::reset
                         )
@@ -159,29 +150,118 @@ fun CreateAndEditKMLTracksScreen(sampleName: String) {
 }
 
 @Composable
-fun TrackPreviewOptions(
-    localKmlMultiTrack: KmlMultiTrack,
-    onTrackSelected: (Geometry) -> Unit,
-    onResetButtonClicked: () -> Unit
+fun TrackSimulationOptions(
+    isRecenterEnabled: Boolean,
+    isRecordButtonEnabled: Boolean,
+    kmlTrackElementSize: Int,
+    kmlTracksSize: Int,
+    onRecordButtonClicked: () -> Unit,
+    onRecenterClicked: () -> Unit,
+    onExportClicked: () -> Unit
 ) {
-    val trackGeometries = mutableListOf(
-        GeometryEngine.unionOrNull(
-            geometries = localKmlMultiTrack.tracks.map { it.geometry })!!
-    ).apply {
-        addAll(localKmlMultiTrack.tracks.map { it.geometry })
-    }
-
     Column(
-        modifier = Modifier.padding(12.dp),
+        modifier = Modifier.padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TrackStatusText(
+            isDisplayingTracks = false,
+            isRecordingTrackElements = !isRecordButtonEnabled,
+            kmlTrackElementsSize = kmlTrackElementSize
+        )
+        HorizontalDivider()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Number of tracks in MultiTrack:",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = kmlTracksSize.toString(),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            FilledTonalIconButton(onClick = onRecenterClicked, enabled = isRecenterEnabled) {
+                Icon(
+                    painter = painterResource(R.drawable.gps_on_24),
+                    contentDescription = "RecenterIcon"
+                )
+            }
+            Button(onClick = onRecordButtonClicked) {
+                Text(
+                    modifier = Modifier.animateContentSize(),
+                    text = if (isRecordButtonEnabled) "Record Track" else "Stop Recording"
+                )
+            }
+            FilledTonalIconButton(
+                onClick = onExportClicked,
+                enabled = isRecordButtonEnabled
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.save_24),
+                    contentDescription = "Export KML multi-track"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TrackStatusText(
+    isRecordingTrackElements: Boolean = false,
+    kmlTrackElementsSize: Int = 0,
+    isDisplayingTracks: Boolean
+) {
+    Box(Modifier.animateContentSize()) {
+        if (isDisplayingTracks) {
+            Text(
+                text = "Displaying contents of saved HikingTracks.kmz file.",
+                style = MaterialTheme.typography.labelLarge
+            )
+        } else {
+            if (isRecordingTrackElements) {
+                Text(
+                    text = "Recording KML track. Elements added = $kmlTrackElementsSize",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                Text(
+                    text = "Click record to capture KML track elements",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TrackPreviewOptions(
+    multiTrackGeometries: List<Geometry>,
+    onTrackSelected: (Geometry) -> Unit,
+    onResetButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TrackStatusText(isDisplayingTracks = true)
+        HorizontalDivider()
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // FPS Dropdown Menu
+            // Tracks Dropdown Menu
             var expanded by remember { mutableStateOf(false) }
             var selectedTrackIndex by remember { mutableIntStateOf(0) }
             ExposedDropdownMenuBox(
@@ -200,7 +280,7 @@ fun TrackPreviewOptions(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    trackGeometries.forEachIndexed { index, kmlTrackGeometry ->
+                    multiTrackGeometries.forEachIndexed { index, kmlTrackGeometry ->
                         DropdownMenuItem(
                             text = { Text(if (index == 0) "Show all KML tracks" else "KML track #$index") },
                             onClick = {
@@ -209,7 +289,7 @@ fun TrackPreviewOptions(
                                 expanded = false
                             })
                         // Show a divider between dropdown menu options
-                        if (index < localKmlMultiTrack.tracks.lastIndex) {
+                        if (index < multiTrackGeometries.lastIndex) {
                             HorizontalDivider()
                         }
                     }
@@ -222,91 +302,6 @@ fun TrackPreviewOptions(
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "Reset KML multi-track"
-                )
-            }
-        }
-    }
-
-}
-
-@Composable
-fun TrackStatusText(
-    isRecordingTrackElements: Boolean,
-    elementsAdded: Int,
-    isDisplayingTracks: Boolean
-) {
-    if (isDisplayingTracks) {
-        Text(
-            text = "Displaying contents of saved HikingTracks.kmz file.",
-            style = MaterialTheme.typography.labelLarge
-        )
-    } else {
-        if (isRecordingTrackElements) {
-            Text(
-                text = "Recording KML track. Elements added = $elementsAdded",
-                style = MaterialTheme.typography.labelLarge,
-                color = Color.Red
-            )
-        } else {
-            Text(
-                text = "Click button to capture KML track elements",
-                style = MaterialTheme.typography.labelLarge
-            )
-        }
-    }
-}
-
-@Composable
-fun TrackSimulationOptions(
-    isRecenterEnabled: Boolean,
-    isRecordButtonEnabled: Boolean,
-    onRecordButtonClicked: () -> Unit,
-    onRecenterClicked: () -> Unit,
-    onExportClicked: () -> Unit,
-    kmlTracks: List<KmlTrack>,
-) {
-    Column(
-        modifier = Modifier.padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Number of tracks in MultiTrack:",
-                style = MaterialTheme.typography.labelLarge
-            )
-            Text(
-                text = kmlTracks.size.toString(),
-                style = MaterialTheme.typography.labelLarge
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            FilledTonalIconButton(onClick = onRecenterClicked, enabled = isRecenterEnabled) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_navigation_24),
-                    contentDescription = "RecenterIcon"
-                )
-            }
-
-            Button(
-                modifier = Modifier.animateContentSize(),
-                onClick = onRecordButtonClicked
-            ) {
-                Text(if (isRecordButtonEnabled) "Record Track" else "Stop Recording")
-            }
-            FilledTonalIconButton(
-                onClick = onExportClicked,
-                enabled = isRecordButtonEnabled
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    contentDescription = "Export KML multi-track"
                 )
             }
         }
@@ -325,7 +320,8 @@ fun TrackOptionsPreview() {
                 onRecordButtonClicked = { },
                 onRecenterClicked = { },
                 onExportClicked = { },
-                kmlTracks = mutableListOf()
+                kmlTracksSize = 1,
+                kmlTrackElementSize = 1
             )
         }
     }
