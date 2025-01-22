@@ -73,8 +73,8 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                 // Update the map scale in the view model
                 onMapScaleChanged = mapViewModel::onMapScaleChanged
             )
-            // Show the FAB
             if (!showLegend) {
+                // Show the FAB
                 FloatingActionButton(modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 36.dp, end = 24.dp),
