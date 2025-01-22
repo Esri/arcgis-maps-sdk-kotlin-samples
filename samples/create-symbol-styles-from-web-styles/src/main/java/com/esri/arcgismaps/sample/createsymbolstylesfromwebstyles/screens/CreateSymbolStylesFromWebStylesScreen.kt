@@ -17,16 +17,17 @@
 package com.esri.arcgismaps.sample.createsymbolstylesfromwebstyles.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -60,6 +61,9 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
     // Keep track of legend visibility state
     var showLegend by remember { mutableStateOf(false) }
 
+    // Keep track of the state flow containing symbol names and symbol bitmaps
+    val symbolsAndIcons by mapViewModel.symbolNamesAndIconsFlow.collectAsState()
+
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
         Box(
             modifier = Modifier
@@ -90,6 +94,7 @@ fun CreateSymbolStylesFromWebStylesScreen(sampleName: String) {
                         .wrapContentSize()
                         .align(Alignment.BottomEnd)
                         .padding(bottom = 36.dp, end = 12.dp)
+                        .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(8.dp))
                 ) {
                     // For each pair of symbol name and icon
                     for ((symbolName, symbolIcon) in symbolsAndIcons) {

@@ -20,7 +20,6 @@ import android.app.Application
 import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.Color
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -53,13 +52,6 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
                 renderer = uniqueValueRenderer
             }
 
-    /**
-     * Only scale symbols if map scale greater than or equal to 80,000
-     */
-    fun onMapScaleChanged(scale: Double) {
-        featureLayer.scaleSymbols = scale >= 80000
-    }
-
     // Create a map with the light gray basemap style
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
         // Set a viewpoint
@@ -72,7 +64,8 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
 
     // Create a symbol style from a web style. ArcGIS Online is used as the default portal when null is passed as the
     // portal parameter
-    private val symbolStyle = SymbolStyle.createWithStyleNameAndPortal("Esri2DPointSymbolsStyle", null)
+    private val symbolStyle =
+        SymbolStyle.createWithStyleNameAndPortal(styleName = "Esri2DPointSymbolsStyle", portal = null)
 
     // Create a list of the required symbol names in the web style
     private val symbolNames = listOf(
@@ -112,6 +105,13 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
     }
 
     /**
+     * Only scale symbols if map scale greater than or equal to 80,000
+     */
+    fun onMapScaleChanged(scale: Double) {
+        featureLayer.scaleSymbols = scale >= 80000
+    }
+
+    /**
      * Create a series of unique values and add them to the unique value renderer. Also create a list of the symbol
      * names and icons and return them as a list of pairs.
      */
@@ -133,10 +133,14 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
                 }
                 // Create a swatch from the symbol
                 symbol.createSwatch(
-                    screenScale = 2.0f, width = 30.0f, height = 30.0f, backgroundColor = Color.white
+                    screenScale = 2.0f, width = 30.0f, height = 30.0f
                 ).onSuccess { symbolBitmap ->
                     // Add the symbol name and symbol to the list
                     symbolNamesAndIconsList.add(Pair(symbolName, symbolBitmap))
+                }.onFailure {
+                    messageDialogVM.showMessageDialog(
+                        "Failed to create swatch for: $symbolName", it.message.toString()
+                    )
                 }
             }
         }
