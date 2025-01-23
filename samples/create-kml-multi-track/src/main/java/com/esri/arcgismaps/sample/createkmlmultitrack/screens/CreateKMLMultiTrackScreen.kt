@@ -199,7 +199,8 @@ fun TrackSimulationOptions(
             Button(onClick = onRecordButtonClicked) {
                 Text(
                     modifier = Modifier.animateContentSize(),
-                    text = if (isRecordButtonEnabled) "Record Track(s)" else "Stop Recording"
+                    text = if (isRecordButtonEnabled) stringResource(R.string.record_track_hint)
+                    else stringResource(R.string.stop_recording_hint)
                 )
             }
             FilledTonalIconButton(
@@ -271,7 +272,8 @@ fun TrackBrowseOptions(
                 onExpandedChange = { expanded = !expanded }
             ) {
                 TextField(
-                    value = if (selectedTrackIndex == 0) "Show all KML tracks" else "KML track #$selectedTrackIndex",
+                    value = if (selectedTrackIndex == 0) stringResource(R.string.show_all_kml_tracks_hint)
+                    else stringResource(R.string.kml_track_number_hint) + selectedTrackIndex,
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -283,7 +285,12 @@ fun TrackBrowseOptions(
                 ) {
                     multiTrackGeometries?.forEachIndexed { index, kmlTrackGeometry ->
                         DropdownMenuItem(
-                            text = { Text(if (index == 0) "Show all KML tracks" else "KML track #$index") },
+                            text = {
+                                Text(
+                                    if (index == 0) stringResource(R.string.show_all_kml_tracks_hint)
+                                    else stringResource(R.string.kml_track_number_hint) + index
+                                )
+                            },
                             onClick = {
                                 onTrackSelected(kmlTrackGeometry)
                                 selectedTrackIndex = index
