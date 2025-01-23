@@ -14,23 +14,23 @@ Tap **Start Navigation** to begin moving along a simulated trail. Tap **Record T
 
 ## How it works
 
-1. Use an `ArcGISMap` to display a basemap and a path geometry for your navigation route.  
-2. Create a simulated location data source `SimulatedLocationDataSource` to drive the `LocationDisplay`.  
-3. As you receive `Location` updates, add each point to a list of `KmlTrackElement` objects while recording. 
+1. Use an `ArcGISMap` to display a basemap and a path geometry for your navigation route.
+2. Create a simulated location data source `SimulatedLocationDataSource` to drive the `LocationDisplay`.
+3. As you receive `Location` updates, add each point to a list of `KmlTrackElement` objects while recording.
 4. On recording stopped, create `KmlTrack` using one or more `KmlTrackElement` objects.
-5. Combine one or more `KmlTrack` objects into a `KmlMultiTrack`.  
-6. Save the `KmlMultiTrack` inside a `KmlDocument`, then export the document to a `.kmz` file.  
+5. Combine one or more `KmlTrack` objects into a `KmlMultiTrack`.
+6. Save the `KmlMultiTrack` inside a `KmlDocument`, then export the document to a `.kmz` file.
 7. Load the saved `.kmz` file into a `KmlDataset` to preview your tracks on the map.
 
 ## Relevant API
 
-- KmlDataset  
-- KmlDocument  
-- KmlMultiTrack  
-- KmlPlacemark  
-- KmlTrack  
-- LocationDisplay  
-- SimulatedLocationDataSource  
+* KmlDataset
+* KmlDocument
+* KmlMultiTrack
+* KmlPlacemark
+* KmlTrack
+* LocationDisplay
+* SimulatedLocationDataSource
 
 ## Additional information
 
