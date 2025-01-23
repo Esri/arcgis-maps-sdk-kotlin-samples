@@ -28,15 +28,12 @@ import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.symbology.SymbolStyle
 import com.arcgismaps.mapping.symbology.UniqueValue
 import com.arcgismaps.mapping.symbology.UniqueValueRenderer
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CreateSymbolStylesFromWebStylesViewModel(application: Application) : AndroidViewModel(application) {
-
-    val mapViewProxy = MapViewProxy()
 
     // Create a unique value renderer
     private val uniqueValueRenderer = UniqueValueRenderer().apply {
