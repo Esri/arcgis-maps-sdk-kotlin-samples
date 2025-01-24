@@ -20,7 +20,7 @@ Tap **Start Navigation** to begin moving along a simulated trail. Tap **Record T
 4. On recording stopped, create a `KmlTrack` using one or more `KmlTrackElement` objects.
 5. Combine one or more `KmlTrack` objects into a `KmlMultiTrack`.
 6. Save the `KmlMultiTrack` inside a `KmlDocument`, then export the document to a `.kmz` file.
-7. Load the saved `.kmz` file into a `KmlDataset`, then navigate through the dataset's `rootNodes` to locate the `KmlDocument` which contains the `KmlPlacemark` which again contains the `KmlMultiTrack` geometry.
+7. Load the saved `.kmz` file into a `KmlDataset` and locate the `KmlDocument` in the dataset's `rootNodes`. From the document's `childNodes` get the `KmlPlacemark` and retrieve the `KmlMultiTrack` geometry.
 8. Retrieve the geometry of each track in the `KmlMultiTrack` by iterating through the list of tracks and obtaining the respective `KmlTrack.geometry`.
 
 ## Relevant API
