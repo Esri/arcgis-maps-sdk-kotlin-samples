@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -44,7 +45,8 @@ import com.arcgismaps.geometry.GeometryType
 fun ButtonMenu(
     isGeometryEditorStarted: Boolean,
     onStartEditingButtonClick: (GeometryType) -> Unit,
-    onStopEditingButtonClick: () -> Unit
+    onStopEditingButtonClick: () -> Unit,
+    onDiscardEditsButtonClick: () -> Unit,
 ) {
     val rowModifier = Modifier
         .padding(12.dp)
@@ -102,6 +104,12 @@ fun ButtonMenu(
             onClick = { onStopEditingButtonClick() }
         ) {
             Icon(imageVector = Icons.Default.Check, contentDescription = "Save Edits")
+        }
+        IconButton(
+            enabled = isGeometryEditorStarted,
+            onClick = { onDiscardEditsButtonClick() }
+        ) {
+            Icon(imageVector = Icons.Default.Clear, contentDescription = "Discard Edits")
         }
     }
 }
