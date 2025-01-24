@@ -115,6 +115,24 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
+     * Reverts the last event on the geometry editor.
+     */
+    fun editorUndo() {
+        if (geometryEditor.canUndo.value) {
+            geometryEditor.undo()
+        }
+    }
+
+    /**
+     * Redoes the last event on the geometry editor
+     */
+    fun editorRedo() {
+        if (geometryEditor.canRedo.value) {
+            geometryEditor.redo()
+        }
+    }
+
+    /**
      * Creates a graphic from the geometry and adds it to the GraphicsOverlay.
      */
     private fun createGraphic() {

@@ -57,9 +57,13 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                 )
                 ButtonMenu(
                     mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle().value,
+                    mapViewModel.geometryEditor.canUndo.collectAsStateWithLifecycle().value,
+                    mapViewModel.geometryEditor.canRedo.collectAsStateWithLifecycle().value,
                     mapViewModel::startEditor,
                     mapViewModel::stopEditor,
-                    mapViewModel::discardEdits
+                    mapViewModel::discardEdits,
+                    mapViewModel::editorUndo,
+                    mapViewModel::editorRedo
                 )
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {

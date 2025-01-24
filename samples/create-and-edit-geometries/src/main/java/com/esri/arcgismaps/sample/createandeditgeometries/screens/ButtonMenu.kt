@@ -35,8 +35,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
+import com.esri.arcgismaps.sample.createandeditgeometries.R
 
 /**
  * Composable component to display the menu buttons.
@@ -44,9 +47,13 @@ import com.arcgismaps.geometry.GeometryType
 @Composable
 fun ButtonMenu(
     isGeometryEditorStarted: Boolean,
+    canGeometryEditorUndo: Boolean,
+    canGeometryEditorRedo: Boolean,
     onStartEditingButtonClick: (GeometryType) -> Unit,
     onStopEditingButtonClick: () -> Unit,
     onDiscardEditsButtonClick: () -> Unit,
+    onUndoButtonClick: () -> Unit,
+    onRedoButtonClick: () -> Unit
 ) {
     val rowModifier = Modifier
         .padding(12.dp)
@@ -55,6 +62,7 @@ fun ButtonMenu(
     Row(
         modifier = rowModifier
     ) {
+        val vector = ImageVector
         var expanded by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier
@@ -98,6 +106,18 @@ fun ButtonMenu(
                     }
                 )
             }
+        }
+        IconButton(
+            enabled = canGeometryEditorUndo,
+            onClick = { onUndoButtonClick() }
+        ) {
+            Icon(imageVector = vector.vectorResource(R.drawable.undo_24), contentDescription = "Discard Edits")
+        }
+        IconButton(
+            enabled = canGeometryEditorRedo,
+            onClick = { onRedoButtonClick() }
+        ) {
+            Icon(imageVector = vector.vectorResource(R.drawable.redo_24), contentDescription = "Discard Edits")
         }
         IconButton(
             enabled = isGeometryEditorStarted,
