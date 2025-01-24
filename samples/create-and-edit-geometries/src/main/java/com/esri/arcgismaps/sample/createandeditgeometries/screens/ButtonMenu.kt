@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -49,9 +50,12 @@ fun ButtonMenu(
     isGeometryEditorStarted: Boolean,
     canGeometryEditorUndo: Boolean,
     canGeometryEditorRedo: Boolean,
+    canDeleteSelectedGeometry: Boolean,
     onStartEditingButtonClick: (GeometryType) -> Unit,
     onStopEditingButtonClick: () -> Unit,
     onDiscardEditsButtonClick: () -> Unit,
+    onDeleteSelectedElementButtonClick: () -> Unit,
+    onDeleteAllGeometriesButtonClick:() -> Unit,
     onUndoButtonClick: () -> Unit,
     onRedoButtonClick: () -> Unit
 ) {
@@ -63,46 +67,47 @@ fun ButtonMenu(
         modifier = rowModifier
     ) {
         val vector = ImageVector
-        var expanded by remember { mutableStateOf(false) }
+        var drawMenuExpanded by remember { mutableStateOf(false) }
+        var deleteMenuExpanded by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier
         ) {
             IconButton(
                 enabled = !isGeometryEditorStarted,
-                onClick = { expanded = !expanded }
+                onClick = { drawMenuExpanded = !drawMenuExpanded }
             ) {
                 Icon(imageVector = Icons.Default.Create, contentDescription = "Start")
             }
             DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+                expanded = drawMenuExpanded,
+                onDismissRequest = { drawMenuExpanded = false }
             ) {
                 DropdownMenuItem(
                     text = { Text("Point") },
                     onClick = {
                         onStartEditingButtonClick(GeometryType.Point)
-                        expanded = false
+                        drawMenuExpanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("Multipoint") },
                     onClick = {
                         onStartEditingButtonClick(GeometryType.Multipoint)
-                        expanded = false
+                        drawMenuExpanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("Polyline") },
                     onClick = {
                         onStartEditingButtonClick(GeometryType.Polyline)
-                        expanded = false
+                        drawMenuExpanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("Polygon") },
                     onClick = {
                         onStartEditingButtonClick(GeometryType.Polygon)
-                        expanded = false
+                        drawMenuExpanded = false
                     }
                 )
             }
@@ -118,6 +123,36 @@ fun ButtonMenu(
             onClick = { onRedoButtonClick() }
         ) {
             Icon(imageVector = vector.vectorResource(R.drawable.redo_24), contentDescription = "Discard Edits")
+        }
+        Box(
+            modifier = Modifier
+        ) {
+            IconButton(
+                onClick = { deleteMenuExpanded = !deleteMenuExpanded }
+            ) {
+                Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete Geometry Menu")
+            }
+            DropdownMenu(
+                expanded = deleteMenuExpanded,
+                onDismissRequest = { deleteMenuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Delete Selected Element") },
+                    enabled = canDeleteSelectedGeometry,
+                    onClick = {
+                        onDeleteSelectedElementButtonClick()
+                        deleteMenuExpanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    enabled = !isGeometryEditorStarted,
+                    text = { Text("Delete All Geometries") },
+                    onClick = {
+                        onDeleteAllGeometriesButtonClick()
+                        deleteMenuExpanded = false
+                    }
+                )
+            }
         }
         IconButton(
             enabled = isGeometryEditorStarted,

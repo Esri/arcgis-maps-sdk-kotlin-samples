@@ -59,9 +59,12 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle().value,
                     mapViewModel.geometryEditor.canUndo.collectAsStateWithLifecycle().value,
                     mapViewModel.geometryEditor.canRedo.collectAsStateWithLifecycle().value,
+                    mapViewModel.geometryEditor.selectedElement.collectAsStateWithLifecycle().value != null,
                     mapViewModel::startEditor,
                     mapViewModel::stopEditor,
                     mapViewModel::discardEdits,
+                    mapViewModel::deleteSelectedElement,
+                    mapViewModel::deleteAllGeometries,
                     mapViewModel::editorUndo,
                     mapViewModel::editorRedo
                 )

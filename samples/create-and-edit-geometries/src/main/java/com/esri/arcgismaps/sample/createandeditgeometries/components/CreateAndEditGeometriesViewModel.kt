@@ -115,6 +115,22 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
+     * Deletes the selected element.
+     */
+    fun deleteSelectedElement() {
+        if (geometryEditor.selectedElement.value != null) {
+            geometryEditor.deleteSelectedElement()
+        }
+    }
+
+    /**
+     * Deletes all all the geometries on the map.
+     */
+    fun deleteAllGeometries() {
+        graphicsOverlay.graphics.clear()
+    }
+
+    /**
      * Reverts the last event on the geometry editor.
      */
     fun editorUndo() {
