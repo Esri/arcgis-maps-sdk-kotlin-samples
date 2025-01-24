@@ -124,7 +124,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
-     * Redoes the last event on the geometry editor
+     * Redoes the last event on the geometry editor.
      */
     fun editorRedo() {
         if (geometryEditor.canRedo.value) {
