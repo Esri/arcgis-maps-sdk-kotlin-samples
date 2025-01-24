@@ -1,0 +1,43 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Create, save and preview a KML multi-track, captured from a location data source.",
+    "formal_name": "CreateKmlMultiTrack",
+    "ignore": false,
+    "images": [
+        "create-kml-multi-track.png"
+    ],
+    "keywords": [
+        "export",
+        "geoview-compose",
+        "hiking",
+        "kml",
+        "kmz",
+        "multi-track",
+        "record",
+        "track",
+        "KmlDataset",
+        "KmlDocument",
+        "KmlMultiTrack",
+        "KmlPlacemark",
+        "KmlTrack",
+        "LocationDisplay",
+        "SimulatedLocationDataSource"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "KmlDataset",
+        "KmlDocument",
+        "KmlMultiTrack",
+        "KmlPlacemark",
+        "KmlTrack",
+        "LocationDisplay",
+        "SimulatedLocationDataSource"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createkmlmultitrack/components/CreateKMLMultiTrackViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createkmlmultitrack/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createkmlmultitrack/screens/CreateKMLMultiTrackScreen.kt"
+    ],
+    "title": "Create KML multi-track"
+}
