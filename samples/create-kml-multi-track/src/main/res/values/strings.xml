@@ -1,5 +1,5 @@
 <resources>
-    <string name="create_kml_multi_track_app_name">Create KML multi track</string>
+    <string name="create_kml_multi_track_app_name">Create KML multi-track</string>
     <string name="kml_multi_track_hint">Number of tracks in MultiTrack:</string>
     <string name="kml_multi_track_browse_hint">Displaying contents of saved HikingTracks.kmz file.</string>
     <string name="kml_multi_track_recording_hint">"Recording KML track. Elements added = "</string>
