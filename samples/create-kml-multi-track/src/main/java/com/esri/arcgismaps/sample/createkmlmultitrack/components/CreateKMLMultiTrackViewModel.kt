@@ -52,7 +52,6 @@ import com.arcgismaps.mapping.view.LocationDisplay
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.createkmlmultitrack.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -194,26 +193,24 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
      * of [kmlTrackElements] and display the graphic on the map.
      */
     private fun addTrackElement(location: Location) {
-        viewModelScope.launch {
-            // Convert to WGS_84 as per KML spec
-            val positionPoint = GeometryEngine.projectOrNull(
-                geometry = location.position,
-                spatialReference = SpatialReference.wgs84()
+        // Convert to WGS_84 as per KML spec
+        val positionPoint = GeometryEngine.projectOrNull(
+            geometry = location.position,
+            spatialReference = SpatialReference.wgs84()
+        )
+        // Add a new element to the state flow
+        _kmlTrackElements.value += KmlTrackElement(
+            coordinate = positionPoint,
+            instant = Instant.now(),
+            angle = null
+        )
+        // Add a graphic at the location's position
+        graphicsOverlay.graphics.add(
+            Graphic(
+                geometry = positionPoint,
+                symbol = locationSymbol
             )
-            // Add a new element to the state flow
-            _kmlTrackElements.value += KmlTrackElement(
-                coordinate = positionPoint,
-                instant = Instant.now(),
-                angle = null
-            )
-            // Add a graphic at the location's position
-            graphicsOverlay.graphics.add(
-                Graphic(
-                    geometry = positionPoint,
-                    symbol = locationSymbol
-                )
-            )
-        }
+        )
     }
 
     /**
@@ -228,6 +225,12 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
      * Disables recording to create a new [KmlTrack] and display the track graphic on the map.
      */
     fun stopRecordingKmlTrack() {
+        if (_kmlTrackElements.value.isEmpty())
+            return messageDialogVM.showMessageDialog(
+                title = "Empty track elements",
+                description = "Cannot create a KmlTrack with 0 KmlTrackElements"
+            )
+
         _kmlTracks.value += KmlTrack(
             elements = _kmlTrackElements.value,
             altitudeMode = KmlAltitudeMode.RelativeToGround
@@ -327,6 +330,7 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
         // Calculate the union of all the KML tracks
         val allTracksGeometry = GeometryEngine.unionOrNull(kmlMultiTrack.tracks.map { it.geometry })
             ?: return messageDialogVM.showMessageDialog("KmlMultiTrack has no geometry")
+
         // Set the viewpoint to the union geometry
         mapViewProxy.setViewpointGeometry(
             boundingGeometry = allTracksGeometry,

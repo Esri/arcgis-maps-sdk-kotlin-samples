@@ -1,26 +1,27 @@
-# Create KML multi track
+# Create KML multi-track
 
-Create a KML multi-track by recording simulated location data, then save and preview your recorded hiking paths.
+Create, save and preview a KML multi-track, captured from a location data source.
 
-![Create KML multi track sample app](create-kml-multi-track.png)
+![Create KML multi-track](create-kml-multi-track.png)
 
 ## Use case
 
-When out hiking, it can be useful to record your path or multiple paths. You may want to share it later as a KML file. This sample demonstrates how you can collect individual KML tracks during a navigation session, then combine and export them as a single KML multi-track.
+When capturing location data for outdoor activities such as hiking or skiing, it can be useful to record and share your path. This sample demonstrates how you can collect individual KML tracks during a navigation session, then combine and export them as a KML multi-track.
 
 ## How to use the sample
 
-Tap **Start Navigation** to begin moving along a simulated trail. Tap **Record Track** to start recording your current path. Tap **Stop Recording** to end recording. Repeat steps to capture multiple KML tracks in a single session. Tap **Save** button to save your recorded tracks as a `.kmz` file to local storage. Then review tracks to load and display the created `.kmz` file containing your KML multi-track.
+Tap **Start Navigation** to begin moving along a simulated trail. Tap **Record Track** to start recording your current path. Tap **Stop Recording** to end recording and capture a KML track. Repeat steps to capture multiple KML tracks in a single session. Tap the **Save** button to save your recorded tracks as a `.kmz` file to local storage. Then load the created `.kmz` file containing your KML multi-track to view all created tracks on the map.
 
 ## How it works
 
-1. Use an `ArcGISMap` to display a basemap and a path geometry for your navigation route.
-2. Create a simulated location data source `SimulatedLocationDataSource` to drive the `LocationDisplay`.
+1. Create an `ArcGISMap` with a basemap and a `GraphicsOverlay` to display the path geometry for your navigation route.
+2. Create a `SimulatedLocationDataSource` to drive the `LocationDisplay`.
 3. As you receive `Location` updates, add each point to a list of `KmlTrackElement` objects while recording.
-4. On recording stopped, create `KmlTrack` using one or more `KmlTrackElement` objects.
+4. On recording stopped, create a `KmlTrack` using one or more `KmlTrackElement` objects.
 5. Combine one or more `KmlTrack` objects into a `KmlMultiTrack`.
 6. Save the `KmlMultiTrack` inside a `KmlDocument`, then export the document to a `.kmz` file.
-7. Load the saved `.kmz` file into a `KmlDataset` to preview your tracks on the map.
+7. Load the saved `.kmz` file into a `KmlDataset`, then navigate through the dataset's `rootNodes` to locate the `KmlDocument` which contains the `KmlPlacemark` which again contains the `KmlMultiTrack` geometry.
+8. Retrieve the geometry of each track in the `KmlMultiTrack` by iterating through the list of tracks and obtaining the respective `KmlTrack.geometry`.
 
 ## Relevant API
 
