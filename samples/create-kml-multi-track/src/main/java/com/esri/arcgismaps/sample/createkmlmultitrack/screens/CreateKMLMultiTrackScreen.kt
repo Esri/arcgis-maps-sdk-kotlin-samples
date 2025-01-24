@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.mapping.kml.KmlTrackElement
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.createkmlmultitrack.R
@@ -66,6 +67,8 @@ import com.esri.arcgismaps.sample.createkmlmultitrack.components.CreateKMLMultiT
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Main screen layout for the sample app
@@ -80,7 +83,6 @@ fun CreateKMLMultiTrackScreen(sampleName: String) {
     }
     // Observe viewmodel states
     val currentKmlMultiTrack by mapViewModel.kmlTracks.collectAsStateWithLifecycle()
-    val currentKmlTrackElements by mapViewModel.kmlTrackElements.collectAsStateWithLifecycle()
     var localMultiTrackGeometries by remember { mutableStateOf<List<Geometry>?>(null) }
     val isShowTracksFromFileEnabled = mapViewModel.isShowTracksFromFileEnabled
     // Update UI between recording option and browse tracks options.
@@ -117,7 +119,7 @@ fun CreateKMLMultiTrackScreen(sampleName: String) {
                         isRecenterEnabled = mapViewModel.isRecenterButtonEnabled,
                         isRecordButtonEnabled = !mapViewModel.isRecordingTrack,
                         kmlTracksSize = currentKmlMultiTrack.size,
-                        kmlTrackElementSize = currentKmlTrackElements.size,
+                        kmlTrackElementsFlow = mapViewModel.kmlTrackElements,
                         onRecenterClicked = mapViewModel::recenter,
                         onExportClicked = mapViewModel::exportKmlMultiTrack,
                         onRecordButtonClicked = {
@@ -154,12 +156,18 @@ fun CreateKMLMultiTrackScreen(sampleName: String) {
 fun TrackSimulationOptions(
     isRecenterEnabled: Boolean,
     isRecordButtonEnabled: Boolean,
-    kmlTrackElementSize: Int,
+    kmlTrackElementsFlow: StateFlow<List<KmlTrackElement>>,
     kmlTracksSize: Int,
     onRecordButtonClicked: () -> Unit,
     onRecenterClicked: () -> Unit,
     onExportClicked: () -> Unit
 ) {
+    // Observe the track element size
+    var kmlTrackElementSize by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        kmlTrackElementsFlow.collect { kmlTrackElementSize = it.size }
+    }
+
     Column(
         modifier = Modifier.padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -329,7 +337,7 @@ fun TrackOptionsPreview() {
                 onRecenterClicked = { },
                 onExportClicked = { },
                 kmlTracksSize = 1,
-                kmlTrackElementSize = 1
+                kmlTrackElementsFlow = MutableStateFlow(listOf())
             )
         }
     }

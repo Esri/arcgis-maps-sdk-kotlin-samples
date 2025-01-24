@@ -27,8 +27,8 @@ import com.arcgismaps.Color
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Multipoint
+import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.location.Location
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
@@ -178,9 +178,9 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
             launch {
                 // Listen for changes in location
                 locationDisplay.location.collect {
-                    it?.let { locationPoint ->
+                    it?.let { location ->
                         if (isRecordingTrack) {
-                            addTrackElement(locationPoint)
+                            addTrackElement(location.position)
                         }
                     }
                 }
@@ -189,25 +189,20 @@ class CreateKMLMultiTrackViewModel(application: Application) : AndroidViewModel(
     }
 
     /**
-     * When recording is enabled, add the given [location] to the list
+     * When recording is enabled, add the given [locationPoint] to the list
      * of [kmlTrackElements] and display the graphic on the map.
      */
-    private fun addTrackElement(location: Location) {
-        // Convert to WGS_84 as per KML spec
-        val positionPoint = GeometryEngine.projectOrNull(
-            geometry = location.position,
-            spatialReference = SpatialReference.wgs84()
-        )
+    private fun addTrackElement(locationPoint: Point) {
         // Add a new element to the state flow
         _kmlTrackElements.value += KmlTrackElement(
-            coordinate = positionPoint,
+            coordinate = locationPoint,
             instant = Instant.now(),
             angle = null
         )
         // Add a graphic at the location's position
         graphicsOverlay.graphics.add(
             Graphic(
-                geometry = positionPoint,
+                geometry = locationPoint,
                 symbol = locationSymbol
             )
         )
