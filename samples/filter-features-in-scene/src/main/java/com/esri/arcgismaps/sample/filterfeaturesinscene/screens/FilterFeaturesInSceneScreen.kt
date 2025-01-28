@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.filterfeaturesinscene.R
 import com.esri.arcgismaps.sample.filterfeaturesinscene.components.FilterFeaturesInSceneViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -49,8 +50,6 @@ fun FilterFeaturesInSceneScreen(sampleName: String) {
                     .padding(padding)
                     .fillMaxSize()
             ) {
-
-                // composable function that wraps the SceneView
                 SceneView(
                     modifier = Modifier
                         .fillMaxSize()
@@ -59,17 +58,26 @@ fun FilterFeaturesInSceneScreen(sampleName: String) {
                     sceneViewProxy = sceneViewModel.sceneViewProxy,
                     graphicsOverlays = listOf(sceneViewModel.graphicsOverlay)
                 )
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
                         onClick = { sceneViewModel.filterScene() }
                     ) {
                         Text(text = stringResource(R.string.filter_osm_buildings))
+                    }
+                }
+                // display a MessageDialog if the sample encounters an error
+                sceneViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
                     }
                 }
             }

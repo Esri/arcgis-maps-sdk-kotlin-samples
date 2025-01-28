@@ -41,11 +41,15 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.runBlocking
 
 class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewModel(application) {
 
     val sceneViewProxy = SceneViewProxy()
+
+    // create a ViewModel to handle dialog interactions
+    val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
     // Create an OSM Buildings ArcGISSceneLayer from a portal item
     private val osmBuildingsSceneLayer = ArcGISSceneLayer(
@@ -106,6 +110,8 @@ class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewMode
                     addPoint(it.xMin, it.yMax)
                 }.toGeometry()
             }
+        }.onFailure {
+            messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
         }
         // Return null if the layer doesn't load or the extent is not available
         return null
@@ -122,7 +128,6 @@ class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewMode
             val sceneLayerPolygonFilter = SceneLayerPolygonFilter(listOf(boundary), SceneLayerPolygonFilterSpatialRelationship.Disjoint)
             // Set the polygon filter to the OSM buildings layer
             osmBuildingsSceneLayer.polygonFilter = sceneLayerPolygonFilter
-
         }
     }
 }
