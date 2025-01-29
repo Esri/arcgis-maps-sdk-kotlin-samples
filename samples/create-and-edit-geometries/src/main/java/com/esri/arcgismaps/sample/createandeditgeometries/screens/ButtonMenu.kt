@@ -116,13 +116,13 @@ fun ButtonMenu(
             enabled = canGeometryEditorUndo,
             onClick = { onUndoButtonClick() }
         ) {
-            Icon(imageVector = vector.vectorResource(R.drawable.undo_24), contentDescription = "Discard Edits")
+            Icon(imageVector = vector.vectorResource(R.drawable.undo_24), contentDescription = "Undo")
         }
         IconButton(
             enabled = canGeometryEditorRedo,
             onClick = { onRedoButtonClick() }
         ) {
-            Icon(imageVector = vector.vectorResource(R.drawable.redo_24), contentDescription = "Discard Edits")
+            Icon(imageVector = vector.vectorResource(R.drawable.redo_24), contentDescription = "Redo")
         }
         Box(
             modifier = Modifier
