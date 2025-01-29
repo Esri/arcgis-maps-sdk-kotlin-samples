@@ -105,7 +105,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
-     * Undo all edits made using that GeometryEditor then call [stopEditor].
+     * Undoes all edits made using the GeometryEditor then calls [stopEditor].
      */
     fun discardEdits() {
         while (geometryEditor.canUndo.value) {
@@ -124,7 +124,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
-     * Deletes all all the geometries on the map.
+     * Deletes all the geometries on the map.
      */
     fun deleteAllGeometries() {
         graphicsOverlay.graphics.clear()
