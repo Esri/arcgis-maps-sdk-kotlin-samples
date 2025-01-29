@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "CreateAndEditGeometries",
+    "ignore": false,
+    "images": [
+        "create-and-edit-geometries.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/CreateAndEditGeometriesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/CreateAndEditGeometriesScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/MainActivity.kt"
+    ],
+    "title": "Create and edit geometries"
+}
