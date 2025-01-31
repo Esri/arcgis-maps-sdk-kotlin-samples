@@ -23,6 +23,8 @@
         "ProximityResult"
     ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/findnearestvertex/FindNearestVertexViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/findnearestvertex/FindNearestVertexScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/findnearestvertex/MainActivity.kt"
     ],
     "title": "Find nearest vertex"
