@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "GenerateOfflineMapWithCustomParameters",
+    "ignore": false,
+    "images": [
+        "generate-offline-map-with-custom-parameters.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/GenerateOfflineMapWithCustomParametersViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/GenerateOfflineMapWithCustomParametersScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/MainActivity.kt"
+    ],
+    "title": "Generate offline map with custom parameters"
+}
