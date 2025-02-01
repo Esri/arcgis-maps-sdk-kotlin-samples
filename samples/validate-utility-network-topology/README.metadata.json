@@ -1,0 +1,19 @@
+{
+    "category": "Utility Networks",
+    "description": "TODO",
+    "formal_name": "ValidateUtilityNetworkTopology",
+    "ignore": false,
+    "images": [
+        "validate-utility-network-topology.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/validateutilitynetworktopology/ValidateUtilityNetworkTopologyViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/validateutilitynetworktopology/ValidateUtilityNetworkTopologyScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/validateutilitynetworktopology/MainActivity.kt"
+    ],
+    "title": "Validate utility network topology"
+}
