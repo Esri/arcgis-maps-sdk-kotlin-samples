@@ -255,7 +255,7 @@ fun EditFeatureFieldOptions(
                 text = "Edit Feature",
                 style = MaterialTheme.typography.titleMedium
             )
-            Button(onClick = onApplyEditsSelected) { Text("Apply") }
+            Button(onClick = onApplyEditsSelected) { Text("Apply Edits") }
         }
         Text(
             modifier = Modifier.padding(horizontal = 24.dp),

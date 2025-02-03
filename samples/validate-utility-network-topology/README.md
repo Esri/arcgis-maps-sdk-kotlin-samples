@@ -10,7 +10,7 @@ Dirty areas are generated where edits to utility network features have not been 
 
 ## How to use the sample
 
-Select features to make edits and then use 'Update and Apply Edit' to send edits to the server.
+Select features to make edits and then use 'Apply' to send edits to the server.
 
 * Click 'Get state' to check if validate is required or if tracing is available.
 * Click 'Validate' to validate network topology and clear dirty areas.
@@ -25,10 +25,10 @@ Select features to make edits and then use 'Update and Apply Edit' to send edits
 5. Set a default starting location and trace parameters to stop traversability on an open device.
 6. Get the `UtilityNetworkCapabilities` from the `UtilityNetworkDefinition` and use these values to enable or disable the 'Get State', 'Validate', and 'Trace' buttons.
 7. When an `ArcGISFeature` is selected for editing, populate the choice list for the field value using the field's `CodedValueDomain.codedValues`.
-8. When 'Update and Apply Edits' is clicked, update the value of the selected feature's attribute value with the selected `CodedValue.code` and call `ServiceGeodatabase.applyEditsAsync()`.
-9. When 'Get State' is clicked, call `UtilityNetwork.getStateAsync()` and print the results.
+8. When 'Apply' is clicked, update the value of the selected feature's attribute value with the selected `CodedValue.code` and call `ServiceGeodatabase.applyEdits()`.
+9. When 'Get State' is clicked, call `UtilityNetwork.getState()` and print the results.
 10. When 'Validate' is clicked, get the current map extent and call `UtilityNetwork.validateNetworkTopology()`.
-11. When 'Trace' is clicked, call `UtilityNetwork.traceAsync()` with the predefined parameters and select all features returned.
+11. When 'Trace' is clicked, call `UtilityNetwork.trace()` with the predefined parameters and select all features returned.
 12. When 'Clear Selection' or 'Cancel' are clicked, clear all selected features on each layer in the map and close the attribute picker.
 
 ## Relevant API
