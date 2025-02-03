@@ -51,7 +51,6 @@ After you have set up the overrides to your liking, tap the "Generate offline ma
 * GenerateOfflineMapJob
 * GenerateOfflineMapParameterOverrides
 * GenerateOfflineMapParameters
-* GenerateOfflineMapResult
 * OfflineMapParametersKey
 * OfflineMapTask
 
