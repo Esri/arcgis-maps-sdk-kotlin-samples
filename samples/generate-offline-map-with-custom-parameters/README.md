@@ -1,8 +1,8 @@
-# Generate offline map (overrides)
+# Generate offline map with custom parameters
 
 Take a web map offline with additional options for each layer.
 
-![Image of generate offline map overrides](generate-offline-map-overrides.png)
+![Image of generate offline map with custom parameters](generate-offline-map-with-custom-parameters.png)
 
 ## Use case
 

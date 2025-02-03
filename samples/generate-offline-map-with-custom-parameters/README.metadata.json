@@ -1,7 +1,7 @@
 {
     "category": "Edit and Manage Data",
     "description": "Take a web map offline with additional options for each layer.",
-    "formal_name": "GenerateOfflineMapOverrides",
+    "formal_name": "GenerateOfflineMapWithCustomParameters",
     "ignore": false,
     "images": [
         "generate-offline-map-with-custom-parameters.png"
@@ -29,7 +29,9 @@
         "OfflineMapTask"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": [
+        "TODO"
+    ],
     "relevant_apis": [
         "ExportTileCacheParameters",
         "GenerateGeodatabaseParameters",
@@ -46,5 +48,5 @@
         "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/screens/GenerateOfflineMapWithCustomParametersScreen.kt"
     ],
-    "title": "Generate offline map (overrides)"
+    "title": "Generate offline map with custom parameters"
 }
