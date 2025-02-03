@@ -24,13 +24,12 @@
         "GenerateOfflineMapJob",
         "GenerateOfflineMapParameterOverrides",
         "GenerateOfflineMapParameters",
-        "GenerateOfflineMapResult",
         "OfflineMapParametersKey",
         "OfflineMapTask"
     ],
     "language": "kotlin",
     "redirect_from": [
-        "TODO"
+        ""
     ],
     "relevant_apis": [
         "ExportTileCacheParameters",
@@ -39,7 +38,6 @@
         "GenerateOfflineMapJob",
         "GenerateOfflineMapParameterOverrides",
         "GenerateOfflineMapParameters",
-        "GenerateOfflineMapResult",
         "OfflineMapParametersKey",
         "OfflineMapTask"
     ],
