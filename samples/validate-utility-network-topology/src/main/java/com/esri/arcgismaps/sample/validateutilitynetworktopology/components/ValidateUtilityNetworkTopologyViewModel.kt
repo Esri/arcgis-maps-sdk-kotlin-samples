@@ -16,25 +16,7 @@
 
 package com.esri.arcgismaps.sample.validateutilitynetworktopology.components
 
-/*
- * Copyright 2025 Esri
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
 import android.app.Application
-import android.util.Log
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,6 +30,7 @@ import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.data.CodedValueDomain
 import com.arcgismaps.data.Field
+import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.data.ServiceGeodatabase
 import com.arcgismaps.geometry.Envelope
@@ -64,7 +47,11 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.labeling.LabelDefinition
 import com.arcgismaps.mapping.labeling.SimpleLabelExpression
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.layers.SelectionMode
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.TextSymbol
+import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.portal.Portal
@@ -87,7 +74,7 @@ import java.util.UUID
 class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     AndroidViewModel(application) {
 
-    // The ArcGISMap containing the Naperville Electric web map
+    // The map containing the Naperville Electric web map
     val arcGISMap = ArcGISMap(
         item = PortalItem(
             itemId = NAPERVILLE_ELECTRIC_WEBMAP_ITEM_ID,
@@ -97,42 +84,52 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
             )
         )
     ).apply {
-        initialViewpoint = Viewpoint(center = Point(-9815160.0, 5128880.0), scale = 3640.0)
+        initialViewpoint = Viewpoint(center = Point(-9815160.0, 5128780.0), scale = 4000.0)
+        // Set the map to load in persistent session mode (workaround for server caching issue)
+        // https://support.esri.com/en-us/bug/asynchronous-validate-request-for-utility-network-servi-bug-000160443
+        loadSettings.featureServiceSessionType = FeatureServiceSessionType.Persistent
     }
 
     // Used to update map viewpoint and identify layers on tap
     val mapViewProxy = MapViewProxy()
 
-    // Shows the starting location for tracing or other markers if desired
-    val graphicsOverlay = GraphicsOverlay()
+    // Graphic to represent the starting point of the downstream trace
+    private val startingLocationGraphic = Graphic(
+        symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Cross, color = Color.green, size = 25f
+        )
+    )
+
+    // Overlay to show the starting location for tracing
+    val graphicsOverlay = GraphicsOverlay(listOf(startingLocationGraphic))
 
     // The utility network used for tracing
     private val utilityNetwork: UtilityNetwork
         get() = arcGISMap.utilityNetworks.first()
 
-    // ServiceGeodatabase from the utility network, used for editing and for version management
+    // ServiceGeodatabase from the utility network, used for switching to a new version
     private var serviceGeodatabase: ServiceGeodatabase? = null
 
-    // Basic downstream trace parameters for the sample, once loaded
+    // Parameters for a downstream trace
     private var traceParameters: UtilityTraceParameters? = null
 
-    // Whether we can call "Get State" (checking utility network capabilities)
+    // Track the state of utility network capabilities
     private val _canGetState = MutableStateFlow(false)
     val canGetState = _canGetState.asStateFlow()
 
-    // Whether we can perform a trace right now (depends on network topology)
+    // Track the state of utility network topology
     private val _canTrace = MutableStateFlow(false)
     val canTrace = _canTrace.asStateFlow()
 
-    // Whether we can validate the utility network topology (when we have dirty areas or errors)
+    // Track the state when we have dirty areas or errors
     private val _canValidateNetworkTopology = MutableStateFlow(false)
     val canValidateNetworkTopology = _canValidateNetworkTopology.asStateFlow()
 
-    // Whether we can clear the current feature selection from the map
+    // Track the state when selections can be cleared from map
     private val _canClearSelection = MutableStateFlow(false)
     val canClearSelection = _canClearSelection.asStateFlow()
 
-    // A status message or log that is shown in the UI
+    // A collapsable status message to display in the UI
     private val _statusMessage = MutableStateFlow("")
     val statusMessage = _statusMessage.asStateFlow()
 
@@ -143,42 +140,24 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     // Field being edited on the selected feature (e.g. "devicestatus" or "nominalvoltage")
     private var selectedField: Field? = null
 
-    // Available coded values from the above field's domain
+    // List of coded values from the above field's domain
     private val _fieldValueOptions = MutableStateFlow<List<CodedValue>>(emptyList())
     val fieldValueOptions = _fieldValueOptions.asStateFlow()
 
-    // Currently selected coded value from the domain
+    // Selected field coded value from the domain
     private val _selectedFieldValue = MutableStateFlow<CodedValue?>(null)
     val selectedFieldValue = _selectedFieldValue.asStateFlow()
 
-    // Keep track of the current visible area of the MapView
+    // Keep track of the current visible area to validate network topology
     private val _currentVisibleArea = MutableStateFlow(Envelope(Point(0.0, 0.0), Point(0.0, 0.0)))
-
-    // Simple message dialog for errors or important info
-    val messageDialogVM = MessageDialogViewModel()
-
-    /**
-     * Clears any selected features from the map.
-     */
-    fun clearSelection() {
-        clearLayerSelections()
-        _selectedFeature.value = null
-        selectedField = null
-        _fieldValueOptions.value = emptyList()
-        _selectedFieldValue.value = null
-        _canClearSelection.value = false
-        _statusMessage.value = INIT_STATUS_MESSAGE
-        setButtonStatesFromCapabilities()
-    }
 
     /**
      * Add credentials and loads the map & utility network. Then creates & switches to a
-     * new version for editing. Setting up the default trace parameters. Adds the dirty area
-     * table as a feature layer to the map. Then checks the utility network capabilities
-     * to set button states.
+     * new version for editing. Sets up the default trace parameters and adds the dirty area
+     * table as a feature layer to the map. Sets the button states based on
+     * utility network capabilities.
      */
     suspend fun initialize() {
-        Log.e("INITIALIZED","Initialize called")
         // Authenticate and load ArcGIS map
         setupMap()
         // Load utility network, and switch to a new version to allow edits
@@ -187,22 +166,20 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
         setupTraceParameters()
         // Check capabilities from the network definition to enable/disable relevant UI.
         setButtonStatesFromCapabilities()
-
+        // Display contextual hint
         _statusMessage.value = INIT_STATUS_MESSAGE
     }
 
+    /**
+     * Authenticate and load map
+     */
     private suspend fun setupMap() {
         ArcGISEnvironment.apply {
             applicationContext = getApplication<Application>().applicationContext
             authenticationManager.arcGISAuthenticationChallengeHandler = getAuthChallengeHandler()
         }
-
         // Load the Naperville electric web-map
-        arcGISMap.apply {
-            // Set the map to load in persistent session mode (workaround for server caching issue)
-            // https://support.esri.com/en-us/bug/asynchronous-validate-request-for-utility-network-servi-bug-000160443
-            loadSettings.featureServiceSessionType = FeatureServiceSessionType.Persistent
-        }.load().onFailure {
+        arcGISMap.load().onFailure {
             handleError(
                 title = "Error loading the web-map: ${it.message}",
                 description = it.cause.toString()
@@ -211,7 +188,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     }
 
     /**
-     * Create a new version and switch to if to allow for attribute editing.
+     * Create a new version and switch to allow for attribute editing.
      */
     private suspend fun setupUtilityNetwork() {
         // Load the utility network associated with the web-map
@@ -227,7 +204,6 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
             description = "Validate network topology with ArcGIS Maps SDK."
             access = VersionAccess.Private
         }
-
         // Retrieve the service geodatabase from the utility network
         serviceGeodatabase = (utilityNetwork.serviceGeodatabase)?.apply {
             // Load the service geodatabase
@@ -235,11 +211,11 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
                 return handleError("Error loading service geodatabase: ${it.message}")
             }
             // Create a new private service version
-            val versionInfo = createVersion(parameters).getOrElse {
+            val versionInfo = createVersion(newVersion = parameters).getOrElse {
                 return handleError("Unable to create version", "${it.message}")
             }
             // Switch the service geodatabase to the newly created version
-            switchVersion(versionInfo.name).onFailure {
+            switchVersion(versionName = versionInfo.name).onFailure {
                 return handleError("Failed to switch to version", "${it.message}")
             }
         }
@@ -249,7 +225,6 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
                 element = FeatureLayer.createWithFeatureTable(dirtyAreaTable)
             )
         }
-
         // Add labels to the map to visualize attribute editing
         addLabels(
             layerName = DEVICE_TABLE_NAME,
@@ -264,43 +239,48 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     }
 
     /**
-     * Downstream trace parameters from a known device location, stopping traversal on an open device.
+     * Downstream trace parameters from a known device location,
+     * stopping traversal on an open device.
      */
-    private fun setupTraceParameters() {
+    private suspend fun setupTraceParameters() {
+        // Get the definition of the utility network
         val networkDefinition = utilityNetwork.definition ?: return
-        val domainNetwork = networkDefinition.getDomainNetwork("ElectricDistribution") ?: return
-        val mediumVoltageRadial = domainNetwork.getTier("Medium Voltage Radial") ?: return
-
-        // Look up the relevant network source by its table name
-        val deviceSource = networkDefinition.networkSources.value.first {
+        // Look up the network source by its table name
+        val utilityNetworkSource = networkDefinition.networkSources.value.first {
             it.name == DEVICE_TABLE_NAME
         }
-
-        val circuitBreakerGroup = deviceSource.assetGroups.first {
+        // Get the asset group
+        val circuitBreakerGroup = utilityNetworkSource.assetGroups.first {
             it.name == "Circuit Breaker"
         }
-
+        // Get the asset type
         val threePhaseType = circuitBreakerGroup.assetTypes.first {
             it.name == "Three Phase"
         }
-
         // Create the element for the known globalID
-        val startElement = utilityNetwork.createElementOrNull(
+        val startingElement = utilityNetwork.createElementOrNull(
             assetType = threePhaseType,
             globalId = STARTING_LOCATION_GLOBAL_ID
-        ) ?: return messageDialogVM.showMessageDialog("Error creating utility network element")
-
-        // Find the "Load" terminal
-        startElement.terminal = threePhaseType.terminalConfiguration?.terminals?.firstOrNull {
-            it.name == "Load"
-        }
-
+        )?.apply {
+            // Find the "Load" terminal
+            terminal = threePhaseType.terminalConfiguration?.terminals?.first { it.name == "Load" }
+        } ?: return handleError("Error creating utility network element")
+        // Convert the utility element to an ArcGIS feature
+        val startingFeature = utilityNetwork.getFeaturesForElements(
+            elements = listOf(startingElement)
+        ).getOrNull()?.firstOrNull()
+        // Add a graphic to indicate the location on the map
+        startingLocationGraphic.geometry = startingFeature?.geometry
+        // Get the utility domain network
+        val domainNetwork = networkDefinition.getDomainNetwork("ElectricDistribution") ?: return
+        // Get the utility tier object
+        val mediumVoltageRadial = domainNetwork.getTier("Medium Voltage Radial") ?: return
         // Create trace parameters for a downstream trace from the element
         traceParameters = UtilityTraceParameters(
             traceType = UtilityTraceType.Downstream,
-            startingLocations = listOf(startElement)
+            startingLocations = listOf(startingElement)
         ).apply {
-            // Copy the default trace config from that tier
+            // Use the same trace config from the utility tier
             traceConfiguration = mediumVoltageRadial.getDefaultTraceConfiguration()
         }
     }
@@ -322,7 +302,6 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     private fun addLabels(layerName: String, fieldName: String, textColor: Color) {
         // Create a expression for the label using the given field name
         val expression = SimpleLabelExpression(simpleExpression = "[$fieldName]")
-
         // Create a symbol for label's text using the given color
         val symbol = TextSymbol().apply {
             color = textColor
@@ -330,10 +309,8 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
             haloColor = Color.white
             haloWidth = 2f
         }
-
         // Create the definition from the expression and text symbol
         val definition = LabelDefinition(labelExpression = expression, textSymbol = symbol)
-
         // Add the definition to the map layer with the given layer name.
         val layer = arcGISMap.operationalLayers.first { it.name == layerName } as FeatureLayer
         layer.labelDefinitions.add(definition)
@@ -347,7 +324,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
         _statusMessage.value = "Getting utility network state…"
         viewModelScope.launch {
             val networkState = utilityNetwork.getState().getOrElse {
-                return@launch handleError("Get state failed: ${it.message}")
+                return@launch handleError("Get state failed", it.message.toString())
             }
             // Update to true if there are unsaved changes or errors in the utility network state
             _canValidateNetworkTopology.value = networkState.hasDirtyAreas || networkState.hasErrors
@@ -362,7 +339,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
                 appendLine("Has dirty areas: ${networkState.hasDirtyAreas}")
                 appendLine("Has errors: ${networkState.hasErrors}")
                 appendLine("Network topology enabled: ${networkState.isNetworkTopologyEnabled}")
-                appendLine(tip)
+                append(tip)
             }
         }
     }
@@ -389,16 +366,19 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
                 appendLine("Network Validation Result")
                 appendLine("Has dirty areas: ${validationResult.hasDirtyAreas}")
                 appendLine("Has errors: ${validationResult.hasErrors}")
-                appendLine("Tap \"Get State\" to check the updated network state.")
+                append("Tap 'Get State' to check the updated network state.")
             }
         }
     }
 
     /**
-     * Identify a single feature from a tap on the map, if it belongs to the device or line layer,
-     * then gather the coded-value domain from the relevant field to allow editing.
+     * Identify a single feature from the [screenCoordinate], check if belongs to the
+     * device or line layer, get the coded-value domain from it's field to allow editing.
      */
-    fun identifyFeatureAt(screenCoordinate: ScreenCoordinate, selectedFieldAlias: (String) -> Unit) {
+    fun identifyFeatureAt(
+        screenCoordinate: ScreenCoordinate,
+        selectedFieldAlias: (String) -> Unit
+    ) {
         viewModelScope.launch {
             // Perform an identify operation at the given screen coords
             val identifyLayerResults = mapViewProxy.identifyLayers(
@@ -407,23 +387,18 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
                 returnPopupsOnly = false,
                 maximumResults = 1
             ).getOrElse { return@launch handleError("Select feature failed: ${it.message}") }
-
             // Find the first result from identify results for device/line layers
             val identifyLayerResult = identifyLayerResults.firstOrNull { layerResult ->
                 val layerName = layerResult.layerContent.name
                 layerName == DEVICE_TABLE_NAME || layerName == LINE_TABLE_NAME
             }
-
-            // Find the first ArcGISFeature from results
+            // Find the first feature from results
             val foundFeature = identifyLayerResult?.geoElements?.firstOrNull() as? ArcGISFeature
-
             // Return if no feature was identified
             if (foundFeature == null) {
-                _statusMessage.value =
-                    "No feature identified. Tap a feature in the device or line layer."
+                _statusMessage.value = "No feature identified. Tap in the device or line layer."
                 return@launch
             }
-
             // Find the coded-value domain field to edit
             val (fieldName, fieldAlias) = when (foundFeature.featureTable?.tableName) {
                 DEVICE_TABLE_NAME -> DEVICE_STATUS_FIELD to "Device Status"
@@ -434,75 +409,59 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
                 _statusMessage.value = "Selected feature is not editable."
                 return@launch
             }
-
-            // Attempt to retrieve the field from the feature table
+            // Retrieve the field from the feature table
             val tableField = foundFeature.featureTable?.fields?.firstOrNull {
                 it.name == fieldName
             } ?: return@launch handleError("Field '$fieldName' not found in feature table.")
-
             // Obtain the list of coded value fields in the selected feature
             val codedValues = (tableField.domain as? CodedValueDomain)?.codedValues ?: emptyList()
-
             // Update the currently selected field that the user is editing
             selectedField = tableField
-
             // Update the list of field value options of the selected feature
             _fieldValueOptions.value = codedValues
-
-            // Retrieve the current attribute
-            val currentValue = foundFeature.attributes[fieldName]
-            val matchedCode = codedValues.find { domainValue ->
-                valuesAreEqual(domainValue.code, currentValue)
+            // Retrieve the currently selected attribute
+            _selectedFieldValue.value = codedValues.find { codedValue ->
+                codedValue.code == foundFeature.attributes[fieldName]
             }
-
-            _selectedFieldValue.value = matchedCode
-
-            // clear any previous selection
+            // Clear any previous selections
             clearLayerSelections()
-
             // Select the identified feature on its layer
             (foundFeature.featureTable?.layer as? FeatureLayer)?.selectFeature(foundFeature)
-
+            // Set the viewpoint to the selected feature
+            foundFeature.geometry?.let { mapViewProxy.setViewpointGeometry(it, 20.0) }
             // Update the currently selected feature that the user is editing
             _selectedFeature.value = foundFeature
-
+            // Update UI with selected feature info
+            _statusMessage.value = "Select a new '$fieldAlias' value, then tap Apply."
             _canClearSelection.value = true
-
-            _statusMessage.value = "Select a new '$fieldAlias' value, then tap 'Apply.'"
             selectedFieldAlias(fieldAlias.toString())
         }
     }
 
     /**
-     * Runs a simple downstream trace from the previously configured trace parameters.
-     * Selects any features found by the trace.
+     * Run a simple downstream trace from the previously configured trace parameters.
+     * Then select any features found by the trace.
      */
     fun trace() {
+        _statusMessage.value = "Running a downstream trace…"
         viewModelScope.launch {
-            clearLayerSelections() // Clear previous selections
-
-            _statusMessage.value = "Running a downstream trace…"
-
+            // Clear previous selections
+            clearLayerSelections()
+            // Get the trace params
             val params = traceParameters ?: return@launch handleError("Trace parameters not set.")
-
+            // Run trace, and obtain results, if errors/dirty areas are found the trace will fail
             val traceResults = utilityNetwork.trace(params).getOrElse {
                 return@launch handleError("Trace failed", it.message + "\n" + it.cause)
             }
-
+            // Get the first trace element result
             val elementTraceResult = traceResults.firstOrNull {
                 it is UtilityElementTraceResult
             } as? UtilityElementTraceResult ?: return@launch
-
-            if (elementTraceResult.elements.isEmpty()) {
-                _statusMessage.value = "Trace completed: 0 elements found."
-                return@launch
-            }
-
             // Group elements by which layer/table they belong to and select them.
             selectTraceResultElements(elementTraceResult.elements)
-
-            _statusMessage.value =
-                "Trace completed: ${elementTraceResult.elements.size} elements found."
+            // Update contextual hint
+            _statusMessage.value = "Trace completed:" +
+                    "${elementTraceResult.elements.size} elements found."
         }
     }
 
@@ -510,38 +469,44 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
      * Select all features that match the given list of utility elements found by the trace.
      */
     private suspend fun selectTraceResultElements(elements: List<UtilityElement>) {
-        val selectedTraceGeometryList = mutableListOf<Geometry>()
-        arcGISMap.operationalLayers.filterIsInstance<FeatureLayer>().forEach { layer ->
-            val matchingElements = elements.filter { element ->
-                element.networkSource.featureTable.tableName == layer.featureTable?.tableName
-            }
-
-            if (matchingElements.isNotEmpty()) {
-                // Query the list of matching features from the network
-                val featureResult = utilityNetwork
-                    .getFeaturesForElements(matchingElements)
-                    .getOrElse {
+        // Ensure the result is not empty
+        if (elements.isEmpty()) return handleError("No elements found in the trace result")
+        // Find the matching feature's geometry of each utility element in all layers
+        arcGISMap.operationalLayers.filterIsInstance<FeatureLayer>()
+            .forEach { featureLayer ->
+                // Clear previous selection
+                featureLayer.clearSelection()
+                // Used to calculate the viewpoint result
+                val params = QueryParameters().apply { returnGeometry = true }
+                // Create query parameters to find features who's network source name matches the layer's feature table name
+                elements.filter { it.networkSource.name == featureLayer.featureTable?.tableName }
+                    .forEach { utilityElement -> params.objectIds.add(utilityElement.objectId) }
+                // Check if any trace results were added from the above filter
+                if (params.objectIds.isNotEmpty()) {
+                    // Select features that match the query
+                    val featureQueryResult = featureLayer.selectFeatures(
+                        parameters = params,
+                        mode = SelectionMode.New
+                    ).getOrElse {
                         return handleError(
-                            title = "Error retrieving features for trace result",
-                            description = it.message + "\n" + it.cause
+                            title = it.message.toString(),
+                            description = it.cause.toString()
                         )
                     }
-                //  Select the list of features returned from the query
-                layer.selectFeatures(featureResult)
-                // Zoom to the union geometry of all selected features
-                selectedTraceGeometryList.addAll(featureResult.mapNotNull { it.geometry })
-                Log.e("Added", "Added geometry: ${selectedTraceGeometryList.size}")
+                    // Create list of all the feature result geometries
+                    val resultGeometryList = mutableListOf<Geometry>()
+                    featureQueryResult.iterator().forEach { feature ->
+                        feature.geometry?.let {
+                            resultGeometryList.add(it)
+                        }
+                    }
+                    // Obtain the union geometry of all the feature geometries
+                    GeometryEngine.unionOrNull(resultGeometryList)?.let { unionGeometry ->
+                        // Set the map's viewpoint to the union result geometry
+                        mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = unionGeometry))
+                    }
+                }
             }
-        }
-
-        // Calculate the union geometry of all the selected features
-        val unionGeometry = GeometryEngine.unionOrNull(selectedTraceGeometryList)
-
-        // Set the viewpoint of the map to the result
-        unionGeometry?.let {
-            mapViewProxy.setViewpointGeometry(boundingGeometry = it, paddingInDips = 20.0)
-        }
-
         _canClearSelection.value = true
     }
 
@@ -549,54 +514,57 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
      * Update the feature with the new coded value and apply the edit to the feature service.
      */
     fun applyEdits() {
-        // Apply the local edits to the server
         _statusMessage.value = "Applying edits…"
-
+        // Get the selected feature to update
         val feature = _selectedFeature.value ?: return
-
+        // Get the table which related to the feature
         val serviceFeatureTable = feature.featureTable as? ServiceFeatureTable
             ?: return handleError("Feature is not from a service feature table.")
-
+        // Get the selected field value coded value
         val newCode = _selectedFieldValue.value?.code
             ?: return handleError("No new coded value selected.")
-
         // Update the feature's attribute
         val fieldName = selectedField?.name ?: return
-        _statusMessage.value = "Updating feature attribute…"
         feature.attributes[fieldName] = newCode
-
+        // Apply edits and handle results
         viewModelScope.launch {
+            // Update the backing service feature table
             serviceFeatureTable.updateFeature(feature).getOrElse {
                 return@launch handleError("Failed to update feature", it.message + "\n" + it.cause)
             }
-
-            val utilityNetworkServiceGeodatabase = serviceGeodatabase
-                ?: return@launch handleError("ServiceGeodatabase not found.")
-
-            val editResults = utilityNetworkServiceGeodatabase.applyEdits().getOrElse {
+            // Apply all local edits in all tables to the service geodatabase
+            val editResults = serviceGeodatabase?.applyEdits()?.getOrElse {
                 return@launch handleError("Apply edits failed: ${it.message}")
             }
-
             // Check for any feature edit errors
-            val hadErrors = editResults.any { tableEditResult ->
-                tableEditResult.editResults.any { featureEditResult -> featureEditResult.completedWithErrors }
-            }
-
-            if (hadErrors) {
-                _statusMessage.value = "Apply edits completed with error(s)."
-            } else {
-                _statusMessage.value = """
-                        Edits applied successfully.
-                        Tap "Get State" to see if the utility network is now dirty.
-                    """.trimIndent()
-                // Typically, once you've edited, you may want to validate the network again.
-                _canValidateNetworkTopology.value = true
-            }
+            val hadErrors = editResults?.any { tableEditResult ->
+                tableEditResult.editResults.any { featureEditResult ->
+                    featureEditResult.completedWithErrors
+                }
+            } ?: true
+            if (hadErrors) _statusMessage.value = "Apply edits completed with error(s)."
+            else _statusMessage.value = "Edits applied successfully.\n" +
+                    "Tap 'Get State' to check the updated network state."
+            // Once edits are applied, enable to validate the network again.
+            _canValidateNetworkTopology.value = true
         }
     }
 
     /**
-     * Clear the selection on all FeatureLayers in the map.
+     * Clears any selected features being edited on the map.
+     */
+    fun clearFeatureEditSelection() {
+        clearLayerSelections()
+        _selectedFeature.value = null
+        selectedField = null
+        _fieldValueOptions.value = emptyList()
+        _selectedFieldValue.value = null
+        _canClearSelection.value = false
+        _statusMessage.value = INIT_STATUS_MESSAGE
+    }
+
+    /**
+     * Clear the selection on all feature layers in the map.
      */
     private fun clearLayerSelections() {
         arcGISMap.operationalLayers.filterIsInstance<FeatureLayer>().forEach { layer ->
@@ -605,32 +573,27 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     }
 
     /**
-     * Compare two attribute values for equality, accounting for domain code types.
+     * Update the currently selected field value
      */
-    private fun valuesAreEqual(lhs: Any?, rhs: Any?): Boolean {
-        // Basic checks
-        if (lhs == null && rhs == null) return true
-        if (lhs == null || rhs == null) return false
-
-        // Convert to string, Int, or Double for some common domain code use-cases
-        return when (lhs) {
-            is Number -> lhs.toDouble() == (rhs as? Number)?.toDouble()
-            else -> lhs == rhs
-        }
-    }
-
     fun updateSelectedValue(codedValue: CodedValue) {
         _selectedFieldValue.value = codedValue
     }
 
+    /**
+     * Update the currently visible extent
+     */
     fun updateVisibleArea(polygon: Polygon) {
         _currentVisibleArea.value = polygon.extent
-        Log.e("VISIBLEAREA", "Current visible area updated.")
     }
 
+    // Message dialog for errors
+    val messageDialogVM = MessageDialogViewModel()
+
+    /**
+     * Display error and reset
+     */
     private fun handleError(title: String, description: String = "") {
         reset()
-        // _traceState.value = TraceState.TRACE_FAILED
         messageDialogVM.showMessageDialog(title, description)
     }
 
@@ -642,12 +605,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
             .filterIsInstance<FeatureLayer>()
             .forEach { it.clearSelection() }
         graphicsOverlay.graphics.clear()
-        //_traceState.value = TraceState.ADD_STARTING_POINT
         _canTrace.value = false
-        //_selectedTraceType.value = UtilityTraceType.Connected
-        //_selectedTerminalConfigurationIndex.value = null
-        //_selectedPointType.value = PointType.Start
-        //_terminalConfigurationOptions.value = listOf()
     }
 
     companion object {
@@ -671,12 +629,10 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
         // Tolerance in device-independent pixels for identify
         private const val IDENTIFY_TOLERANCE = 10f
 
-        private const val INIT_STATUS_MESSAGE = """
-                Utility network loaded.
-                Tap on a feature to edit its domain-coded field.
-                Then tap "Apply" to update the value on the server.
-                Use "Get State" to see if validating is needed or if tracing is available.
-                """
+        private const val INIT_STATUS_MESSAGE = "Utility network loaded.\n" +
+                "Tap on a feature to edit.\n" +
+                "Tap on 'Get State' to check if validating is necessary or if tracing is available.\n" +
+                "Tap 'Trace' to run a trace."
     }
 }
 
