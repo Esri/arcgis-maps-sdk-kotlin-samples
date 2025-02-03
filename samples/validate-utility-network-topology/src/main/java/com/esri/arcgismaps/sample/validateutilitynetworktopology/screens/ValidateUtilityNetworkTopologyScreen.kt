@@ -198,7 +198,7 @@ fun ValidateUtilityNetworkTopologyScreen(sampleName: String) {
 
 @Composable
 fun NetworkStatusMessage(modifier: Modifier, statusMessage: String) {
-    var isCollapsed by remember { mutableStateOf(true) }
+    var isCollapsed by remember { mutableStateOf(false) }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -311,11 +311,16 @@ fun BottomRowOptions(
     LazyVerticalGrid(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 12.dp),
+            .padding(vertical = 4.dp, horizontal = 24.dp),
         columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        item {
+            Button(
+                onClick = onClearSelected,
+                enabled = isClearSelectionEnabled
+            ) { Text("Clear") }
+        }
         item {
             Button(
                 onClick = onGetStateSelected,
@@ -328,13 +333,6 @@ fun BottomRowOptions(
                 onClick = onValidateSelected,
                 enabled = isValidateEnabled
             ) { Text("Validate") }
-        }
-
-        item {
-            Button(
-                onClick = onClearSelected,
-                enabled = isClearSelectionEnabled
-            ) { Text("Clear") }
         }
 
         item {
