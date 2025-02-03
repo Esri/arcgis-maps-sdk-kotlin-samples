@@ -120,6 +120,9 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         }
     }
 
+    /**
+     * Define the [GenerateOfflineMapParameterOverrides] for the offline map job with the given parameters.
+     */
     fun defineParameters(
         minScale: Int,
         maxScale: Int,
@@ -136,22 +139,22 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                 // Create default generate offline map parameters from the offline map task
                 offlineMapTask.createDefaultGenerateOfflineMapParameters(areaOfInterest = downloadArea)
                     .onSuccess { generateOfflineMapParameters ->
-                        // dDon't let generate offline map parameters continue on errors (including canceling during authentication)
+                        // Don't let generate offline map parameters continue on errors (including canceling during authentication)
                         generateOfflineMapParameters.continueOnErrors = false
-                        // create parameter overrides for greater control
+                        // Create parameter overrides for greater control
                         offlineMapTask.createGenerateOfflineMapParameterOverrides(generateOfflineMapParameters)
                             .onSuccess { parameterOverrides ->
-                                // set basemap scale and area of interest
+                                // Set basemap scale and area of interest
                                 setBasemapScaleAndAreaOfInterest(parameterOverrides, minScale, maxScale, bufferDistance)
-                                // exclude system valve layer
+                                // Exclude system valve layer
                                 if (!includeSystemValves) {
                                     excludeLayerFromDownload(parameterOverrides, "System Valve")
                                 }
-                                // exclude service connection layer
+                                // Exclude service connection layer
                                 if (!includeServiceConnections) {
                                     excludeLayerFromDownload(parameterOverrides, "Service Connection")
                                 }
-                                // crop pipes layer
+                                // Crop pipes layer
                                 if (cropWaterPipes) {
                                     getGenerateGeodatabaseParameters(parameterOverrides, "Main")?.layerOptions?.forEach {
                                         it.useGeometry = true
@@ -170,7 +173,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                                         it.queryOption = GenerateLayerQueryOption.UseFilter
                                     }
                                 }
-                                // start a an offline map job from the task and parameters
+                                // Start a an offline map job from the task and parameters
                                 createOfflineMapJob(offlineMapTask, generateOfflineMapParameters, parameterOverrides)
                             }
                     }
@@ -188,8 +191,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         parameterOverrides: GenerateOfflineMapParameterOverrides
     ) {
         // Store the offline map in the app's scoped storage directory
-        val offlineMapPath =
-            application.getExternalFilesDir(null)?.path + File.separator + "offlineMap"
+        val offlineMapPath = application.getExternalFilesDir(null)?.path + File.separator + "offlineMap"
 
         // Delete any offline map already present
         File(offlineMapPath).deleteRecursively()

@@ -1,19 +1,50 @@
 {
     "category": "Edit and Manage Data",
-    "description": "TODO",
-    "formal_name": "GenerateOfflineMapWithCustomParameters",
+    "description": "Take a web map offline with additional options for each layer.",
+    "formal_name": "GenerateOfflineMapOverrides",
     "ignore": false,
     "images": [
         "generate-offline-map-with-custom-parameters.png"
     ],
-    "keywords": [ ],
-    "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
-    "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/GenerateOfflineMapWithCustomParametersViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/GenerateOfflineMapWithCustomParametersScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/MainActivity.kt"
+    "keywords": [
+        "LOD",
+        "adjust",
+        "download",
+        "extent",
+        "filter",
+        "offline",
+        "override",
+        "parameters",
+        "reduce",
+        "scale range",
+        "setting",
+        "ExportTileCacheParameters",
+        "GenerateGeodatabaseParameters",
+        "GenerateLayerOption",
+        "GenerateOfflineMapJob",
+        "GenerateOfflineMapParameterOverrides",
+        "GenerateOfflineMapParameters",
+        "GenerateOfflineMapResult",
+        "OfflineMapParametersKey",
+        "OfflineMapTask"
     ],
-    "title": "Generate offline map with custom parameters"
+    "language": "kotlin",
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ExportTileCacheParameters",
+        "GenerateGeodatabaseParameters",
+        "GenerateLayerOption",
+        "GenerateOfflineMapJob",
+        "GenerateOfflineMapParameterOverrides",
+        "GenerateOfflineMapParameters",
+        "GenerateOfflineMapResult",
+        "OfflineMapParametersKey",
+        "OfflineMapTask"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/components/GenerateOfflineMapWithCustomParametersViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/generateofflinemapwithcustomparameters/screens/GenerateOfflineMapWithCustomParametersScreen.kt"
+    ],
+    "title": "Generate offline map (overrides)"
 }
