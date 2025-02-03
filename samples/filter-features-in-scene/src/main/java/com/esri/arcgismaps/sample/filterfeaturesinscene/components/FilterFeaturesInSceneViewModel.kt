@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.PolygonBuilder
 import com.arcgismaps.mapping.ArcGISScene
@@ -72,8 +71,16 @@ class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewMode
         operationalLayers.add(sanFranciscoBuildingsSceneLayer)
         // Set the initial viewpoint of the scene
         initialViewpoint = Viewpoint(
-            Point(0.0, 0.0), Camera(
-                latitude = 37.7041, longitude = -122.421, altitude = 207.0, heading = 60.0, pitch = 70.0, roll = 0.0
+            latitude = 37.7041,
+            longitude = -122.421,
+            1000.0,
+            Camera(
+                latitude = 37.7041,
+                longitude = -122.421,
+                altitude = 207.0,
+                heading = 60.0,
+                pitch = 70.0,
+                roll = 0.0
             )
         )
     })
