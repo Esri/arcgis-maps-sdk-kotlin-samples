@@ -1,4 +1,5 @@
 <resources>
     <string name="filter_features_in_scene_app_name">Filter features in scene</string>
     <string name="filter_osm_buildings">Filter OSM buildings</string>
+    <string name="reset_filter">Reset filter</string>
 </resources>

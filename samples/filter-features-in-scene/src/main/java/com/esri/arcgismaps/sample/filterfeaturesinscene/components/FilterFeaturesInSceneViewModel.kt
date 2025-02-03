@@ -20,6 +20,7 @@ import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
@@ -40,13 +41,10 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewModel(application) {
-
-    val sceneViewProxy = SceneViewProxy()
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -65,7 +63,9 @@ class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewMode
     // Create a new ArcGISScene and set a basemap from a portal item with a vector tile layer
     val arcGISScene: ArcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
         // Add an elevation source to the scene's base surface.
-        baseSurface.elevationSources.add(ArcGISTiledElevationSource(uri = "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"))
+        val tiledElevationSource =
+            ArcGISTiledElevationSource(uri = "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
+        baseSurface.elevationSources.add(tiledElevationSource)
         // OSM building layer
         operationalLayers.add(osmBuildingsSceneLayer)
         // Add the buildings scene layer to the operational layers
@@ -78,43 +78,45 @@ class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewMode
         )
     })
 
-    // Create a boundary polygon that will be populated with the extent of the San Francisco buildings layer once loaded
-    private val sanFranciscoBuildingsBoundary = runBlocking { createBoundaryPolygon() }
-
-    // Set up graphic overlay and graphic for the San Francisco buildings layer extent. It is assigned to the SceneView
-    // in the composable function
-    val graphicsOverlay = GraphicsOverlay().apply {
-        graphics.add(
-            Graphic(
-                sanFranciscoBuildingsBoundary, SimpleFillSymbol(
-                    style = SimpleFillSymbolStyle.Solid, color = Color.transparent, outline = SimpleLineSymbol(
-                        style = SimpleLineSymbolStyle.Solid, color = Color.red, width = 5.0f
-                    )
-                )
+    // Define a red boundary graphic
+    private val boundaryGraphic = Graphic(
+        symbol = SimpleFillSymbol(
+            style = SimpleFillSymbolStyle.Solid,
+            color = Color.transparent,
+            outline = SimpleLineSymbol(
+                style = SimpleLineSymbolStyle.Solid,
+                color = Color.red,
+                width = 5.0f
             )
         )
+    )
+
+    // Set up graphic overlay and graphic for the San Francisco buildings layer extent.
+    val graphicsOverlay = GraphicsOverlay(listOf(boundaryGraphic))
+
+    init {
+        loadBuildingsLayer()
     }
 
     /**
-     * One the San Francisco buildings layer is loaded, create and return a boundary [Polygon].
+     * Load the San Francisco buildings layer and create a polygon boundary using the layer extent.
      */
-    private suspend fun createBoundaryPolygon(): Polygon? {
-        // Load the San Francisco buildings layer
-        sanFranciscoBuildingsSceneLayer.load().onSuccess {
+    private fun loadBuildingsLayer() {
+        viewModelScope.launch {
+            // Load the San Francisco buildings layer
+            sanFranciscoBuildingsSceneLayer.load().onFailure {
+                messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
+            }
             // Create a polygon boundary using the San Francisco buildings layer extent
-            return sanFranciscoBuildingsSceneLayer.fullExtent?.let {
-                PolygonBuilder().apply {
+            sanFranciscoBuildingsSceneLayer.fullExtent?.let {
+                boundaryGraphic.geometry = PolygonBuilder().apply {
                     addPoint(it.xMin, it.yMin)
                     addPoint(it.xMax, it.yMin)
                     addPoint(it.xMax, it.yMax)
                     addPoint(it.xMin, it.yMax)
                 }.toGeometry()
             }
-        }.onFailure {
-            messageDialogVM.showMessageDialog(it.message.toString(), it.cause.toString())
         }
-        // Return null if the layer doesn't load or the extent is not available
-        return null
     }
 
     /**
@@ -123,11 +125,23 @@ class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewMode
      */
     fun filterScene() {
         // Check that the San Francisco buildings layer extent is available
-        sanFranciscoBuildingsBoundary?.let { boundary ->
+        (boundaryGraphic.geometry as? Polygon)?.let { boundary ->
             // Create a polygon filter with the San Francisco buildings layer boundary polygon and set it to be disjoint
-            val sceneLayerPolygonFilter = SceneLayerPolygonFilter(listOf(boundary), SceneLayerPolygonFilterSpatialRelationship.Disjoint)
+            val sceneLayerPolygonFilter =
+                SceneLayerPolygonFilter(
+                    polygons = listOf(boundary),
+                    spatialRelationship = SceneLayerPolygonFilterSpatialRelationship.Disjoint
+                )
             // Set the polygon filter to the OSM buildings layer
             osmBuildingsSceneLayer.polygonFilter = sceneLayerPolygonFilter
         }
+    }
+
+    /**
+     * Reset the OSM buildings layer filter to show all buildings.
+     */
+    fun resetFilter() {
+        // Clear all polygon filters
+        osmBuildingsSceneLayer.polygonFilter?.polygons?.clear()
     }
 }

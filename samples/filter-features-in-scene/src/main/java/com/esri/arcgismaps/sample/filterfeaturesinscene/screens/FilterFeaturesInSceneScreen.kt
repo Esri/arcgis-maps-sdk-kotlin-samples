@@ -26,6 +26,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,6 +46,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun FilterFeaturesInSceneScreen(sampleName: String) {
     val sceneViewModel: FilterFeaturesInSceneViewModel = viewModel()
+
+    var filteringScene by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { padding ->
@@ -55,7 +62,6 @@ fun FilterFeaturesInSceneScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISScene = sceneViewModel.arcGISScene,
-                    sceneViewProxy = sceneViewModel.sceneViewProxy,
                     graphicsOverlays = listOf(sceneViewModel.graphicsOverlay)
                 )
                 Row(
@@ -64,10 +70,25 @@ fun FilterFeaturesInSceneScreen(sampleName: String) {
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(
-                        onClick = { sceneViewModel.filterScene() }
-                    ) {
-                        Text(text = stringResource(R.string.filter_osm_buildings))
+                    if (!filteringScene) {
+                        Button(
+                            onClick = {
+                                sceneViewModel.filterScene()
+                                filteringScene = true
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.filter_osm_buildings))
+                        }
+
+                    } else {
+                        Button(
+                            onClick = {
+                                sceneViewModel.resetFilter()
+                                filteringScene = false
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.reset_filter))
+                        }
                     }
                 }
                 // display a MessageDialog if the sample encounters an error
