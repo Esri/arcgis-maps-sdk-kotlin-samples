@@ -32,6 +32,7 @@ import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
@@ -277,7 +278,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     ) {
         (arcGISMap.basemap.value?.baseLayers?.first())?.let { basemapLayer ->
             // get the export tile cache parameters
-            getExportTileCacheParameters(parameterOverrides, basemapLayer as? FeatureLayer)?.let { exportTileCacheParameters ->
+            getExportTileCacheParameters(parameterOverrides, basemapLayer as? Layer)?.let { exportTileCacheParameters ->
                 // create a new sublist of LODs in the range requested by the user
                 exportTileCacheParameters.levelIds.clear()
                 (minScale until maxScale).forEach { i ->
@@ -318,7 +319,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     /**
      * Helper function to get export tile cache parameters for the given layer.
      */
-    private fun getExportTileCacheParameters(parameterOverrides: GenerateOfflineMapParameterOverrides, targetFeatureLayer: FeatureLayer?): ExportTileCacheParameters? {
+    private fun getExportTileCacheParameters(parameterOverrides: GenerateOfflineMapParameterOverrides, targetFeatureLayer: Layer?): ExportTileCacheParameters? {
         targetFeatureLayer?.let {
             val key = OfflineMapParametersKey(it)
             return parameterOverrides.exportTileCacheParameters[key]
