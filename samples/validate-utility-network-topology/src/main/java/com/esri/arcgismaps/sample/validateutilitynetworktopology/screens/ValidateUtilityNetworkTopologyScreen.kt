@@ -113,7 +113,7 @@ fun ValidateUtilityNetworkTopologyScreen(sampleName: String) {
 
     // Track when the selected feature changes to display bottom sheet
     LaunchedEffect(selectedFeature) {
-        isEditingFeature = selectedFeature != null
+        isEditingFeature = (selectedFeature != null)
         fieldValueOptions = mapViewModel.fieldValueOptions.value
     }
 
@@ -212,13 +212,13 @@ fun NetworkStatusMessage(modifier: Modifier, statusMessage: String) {
                 .fillMaxWidth()
                 .weight(1f),
             style = MaterialTheme.typography.labelLarge,
-            maxLines = if (isCollapsed) 1 else 100,
+            maxLines = if (isCollapsed) 1 else 10,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center
         )
 
         OutlinedIconButton(
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(20.dp).padding(1.dp),
             onClick = { isCollapsed = !isCollapsed }
         ) {
             Icon(

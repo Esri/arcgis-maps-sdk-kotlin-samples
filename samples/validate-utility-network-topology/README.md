@@ -1,8 +1,8 @@
 # Validate utility network topology
 
-Demonstrates the workflow of getting the network state and validating the topology of a utility network.
+Demonstrates how to get the network state and validate the topology of a utility network.
 
-![Image of Validate network](validate-utility-network-topology.png)
+![Image of validate utility network topology](validate-utility-network-topology.png)
 
 ## Use case
 
@@ -18,17 +18,17 @@ Select features to make edits and then use 'Apply' to send edits to the server.
 
 ## How it works
 
-1. Create and load a `Map` with a web map item URL.
+1. Create and load an `ArcGISMap` with a web map item URL.
 2. Load the `UtilityNetwork` from the web map and switch its `ServiceGeodatabase` to a new branch version.
 3. Add `LabelDefinition`s for the fields that will be updated on a feature edit.
 4. Add the `UtilityNetwork.dirtyAreaTable` to the map to visualize dirty areas or errors.
 5. Set a default starting location and trace parameters to stop traversability on an open device.
-6. Get the `UtilityNetworkCapabilities` from the `UtilityNetworkDefinition` and use these values to enable or disable the 'Get State', 'Validate', and 'Trace' buttons.
+6. Get the `UtilityNetworkCapabilities` from the `UtilityNetworkDefinition` and use these values to enable or disable the 'Get state', 'Validate', and 'Trace' buttons.
 7. When an `ArcGISFeature` is selected for editing, populate the choice list for the field value using the field's `CodedValueDomain.codedValues`.
 8. When 'Apply' is clicked, update the value of the selected feature's attribute value with the selected `CodedValue.code` and call `ServiceGeodatabase.applyEdits()`.
-9. When 'Get State' is clicked, call `UtilityNetwork.getState()` and print the results.
-10. When 'Validate' is clicked, get the current map extent and call `UtilityNetwork.validateNetworkTopology()`.
-11. When 'Trace' is clicked, call `UtilityNetwork.trace()` with the predefined parameters and select all features returned.
+9. When 'Get state' is clicked, call `UtilityNetwork.getState()` and print the results.
+10. When 'Validate' is clicked, get the current map extent and call `UtilityNetwork.validateNetworkTopology(...)`.
+11. When 'Trace' is clicked, call `UtilityNetwork.trace(...)` with the predefined parameters and select all features returned.
 12. When 'Clear Selection' or 'Cancel' are clicked, clear all selected features on each layer in the map and close the attribute picker.
 
 ## Relevant API
@@ -49,13 +49,13 @@ The [Naperville electric](https://sampleserver7.arcgisonline.com/server/rest/ser
 
 ## Additional information
 
-Starting from 200.4, Advanced Editing extension is required for editing a utility network in following cases:
+Starting from 200.4, an Advanced Editing extension license is required for editing a utility network in the following cases:
 
 * Stand-alone mobile geodatabase that is exported from ArcGIS Pro 2.7 or higher
 * Sync-enabled mobile geodatabase that is generated from an ArcGIS Enterprise Feature Service 11.2 or higher
 * Webmap or service geodatabase that points to an ArcGIS Enterprise Feature Service 11.2 or higher
 
-Please refer to the "Advanced Editing" section in the extension license table in [License and deployment](https://developers.arcgis.com/swift/license-and-deployment/license-levels-and-capabilities/) for details.
+Please refer to the "Advanced Editing" section in the extension license table in [License levels and capabilities](https://developers.arcgis.com/swift/license-and-deployment/license-levels-and-capabilities/#extension-licenses) for details.
 
 ## Tags
 

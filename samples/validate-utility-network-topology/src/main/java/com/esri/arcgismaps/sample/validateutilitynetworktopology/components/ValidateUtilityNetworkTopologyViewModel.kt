@@ -171,7 +171,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     }
 
     /**
-     * Authenticate and load map
+     * Authenticate and load map.
      */
     private suspend fun setupMap() {
         ArcGISEnvironment.apply {
@@ -205,7 +205,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
             access = VersionAccess.Private
         }
         // Retrieve the service geodatabase from the utility network
-        serviceGeodatabase = (utilityNetwork.serviceGeodatabase)?.apply {
+        serviceGeodatabase = utilityNetwork.serviceGeodatabase?.apply {
             // Load the service geodatabase
             load().onFailure {
                 return handleError("Error loading service geodatabase: ${it.message}")
@@ -331,9 +331,11 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
             // Update trace availability
             _canTrace.value = networkState.isNetworkTopologyEnabled
             // Update contextual hint
-            val tip = if (_canValidateNetworkTopology.value)
+            val tip = if (_canValidateNetworkTopology.value) {
                 "Tap Validate before trace or expect a trace error."
-            else "Tap on a feature to edit, or tap Trace."
+            } else {
+                "Tap on a feature to edit, or tap Trace."
+            }
             _statusMessage.value = buildString {
                 appendLine("Utility Network State:")
                 appendLine("Has dirty areas: ${networkState.hasDirtyAreas}")
@@ -354,7 +356,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
         val utilityNetworkValidationJob = utilityNetwork.validateNetworkTopology(
             extent = _currentVisibleArea.value,
             executionType = GeoprocessingExecutionType.SynchronousExecute
-        ).apply { start() }
+        ).also { job -> job.start() }
         viewModelScope.launch {
             // Retrieve the result from the job
             val validationResult = utilityNetworkValidationJob.result().getOrElse {
@@ -401,8 +403,8 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
             }
             // Find the coded-value domain field to edit
             val (fieldName, fieldAlias) = when (foundFeature.featureTable?.tableName) {
-                DEVICE_TABLE_NAME -> DEVICE_STATUS_FIELD to "Device Status"
-                LINE_TABLE_NAME -> NOMINAL_VOLTAGE_FIELD to "Nominal Voltage"
+                DEVICE_TABLE_NAME -> DEVICE_STATUS_FIELD to "Device status"
+                LINE_TABLE_NAME -> NOMINAL_VOLTAGE_FIELD to "Nominal voltage"
                 else -> null to null
             }
             if (fieldName == null) {
@@ -454,9 +456,9 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
                 return@launch handleError("Trace failed", it.message + "\n" + it.cause)
             }
             // Get the first trace element result
-            val elementTraceResult = traceResults.firstOrNull {
-                it is UtilityElementTraceResult
-            } as? UtilityElementTraceResult ?: return@launch
+            val elementTraceResult =
+                traceResults.firstOrNull { it is UtilityElementTraceResult } as? UtilityElementTraceResult
+                    ?: return@launch
             // Group elements by which layer/table they belong to and select them.
             selectTraceResultElements(elementTraceResult.elements)
             // Update contextual hint
@@ -529,7 +531,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
         // Apply edits and handle results
         viewModelScope.launch {
             // Update the backing service feature table
-            serviceFeatureTable.updateFeature(feature).getOrElse {
+            serviceFeatureTable.updateFeature(feature).onFailure {
                 return@launch handleError("Failed to update feature", it.message + "\n" + it.cause)
             }
             // Apply all local edits in all tables to the service geodatabase
