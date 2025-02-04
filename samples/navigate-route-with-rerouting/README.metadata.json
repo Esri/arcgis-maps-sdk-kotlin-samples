@@ -1,0 +1,19 @@
+{
+    "category": "Routing and Logistics",
+    "description": "TODO",
+    "formal_name": "NavigateRouteWithRerouting",
+    "ignore": false,
+    "images": [
+        "navigate-route-with-rerouting.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/NavigateRouteWithReroutingViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/NavigateRouteWithReroutingScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/MainActivity.kt"
+    ],
+    "title": "Navigate route with rerouting"
+}
