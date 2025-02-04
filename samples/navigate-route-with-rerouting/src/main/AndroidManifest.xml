@@ -3,11 +3,20 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application><activity
+    <application>
+        <activity
+            android:name=".DownloadActivity"
             android:exported="true"
+            android:label="@string/navigate_route_with_rerouting_app_name">
+
+        </activity>
+        <activity
             android:name=".MainActivity"
-            android:label="@string/display_composable_map_view_app_name">
-            
+            android:exported="true"
+            android:label="@string/navigate_route_with_rerouting_app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
         </activity>
     </application>
 

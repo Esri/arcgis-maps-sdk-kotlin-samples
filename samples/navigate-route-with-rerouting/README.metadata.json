@@ -11,6 +11,7 @@
     "redirect_from": "",
     "relevant_apis": [ ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/NavigateRouteWithReroutingViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/NavigateRouteWithReroutingScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/MainActivity.kt"

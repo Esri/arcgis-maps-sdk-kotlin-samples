@@ -16,15 +16,25 @@
 
 package com.esri.arcgismaps.sample.navigateroutewithrerouting.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.navigateroutewithrerouting.components.NavigateRouteWithReroutingViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -34,33 +44,133 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun NavigateRouteWithReroutingScreen(sampleName: String) {
-    val mapViewModel: NavigateRouteWithReroutingViewModel = viewModel()
+    val locationDisplay = rememberLocationDisplay()
+    val mapViewModel = viewModel<NavigateRouteWithReroutingViewModel>().apply {
+        setLocationDisplay(locationDisplay)
+    }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(it)
             ) {
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                        .weight(1f)
+                        .animateContentSize(),
+                    arcGISMap = mapViewModel.map,
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                    locationDisplay = locationDisplay
                 )
-                // TODO: Add UI components in this Column ...
-            }
 
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
+                mapViewModel.apply {
+                    NavigateRouteOptions(
+                        isNavigateEnabled = isNavigateButtonEnabled,
+                        isRecenterEnabled = isRecenterButtonEnabled,
+                        onNavigateClicked = ::startNavigation,
+                        onRecenterClicked = ::recenterNavigation,
+                        onResetClicked = ::resetNavigation
                     )
+
+                    AnimatedVisibility(!isNavigateButtonEnabled) {
+                        NavigationRouteInfo(
+                            nextStopText,
+                            distanceRemainingText,
+                            timeRemainingText,
+                            nextDirectionText
+                        )
+                    }
+
+                    // display a MessageDialog if the sample encounters an error
+                    messageDialogVM.apply {
+                        if (dialogStatus) {
+                            MessageDialog(
+                                title = messageTitle,
+                                description = messageDescription,
+                                onDismissRequest = ::dismissDialog
+                            )
+                        }
+                    }
                 }
             }
         }
     )
+}
+
+@Composable
+fun NavigationRouteInfo(
+    nextStopText: String,
+    distanceRemainingText: String,
+    timeRemainingText: String,
+    nextDirectionText: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+            .animateContentSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = nextStopText,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Text(
+            text = distanceRemainingText,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Text(
+            text = timeRemainingText,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Text(
+            text = nextDirectionText,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
+fun NavigateRouteOptions(
+    isNavigateEnabled: Boolean,
+    onNavigateClicked: () -> Unit,
+    isRecenterEnabled: Boolean,
+    onRecenterClicked: () -> Unit,
+    onResetClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        OutlinedButton(
+            enabled = isNavigateEnabled,
+            onClick = onNavigateClicked
+        ) {
+            Text("Navigate")
+        }
+
+        OutlinedButton(
+            enabled = isRecenterEnabled,
+            onClick = onRecenterClicked
+        ) {
+            Text("Recenter")
+        }
+
+        OutlinedButton(
+            onClick = onResetClicked
+        ) {
+            Text("Reset")
+        }
+    }
 }
