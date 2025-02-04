@@ -1,20 +1,54 @@
 {
     "category": "Routing and Logistics",
-    "description": "TODO",
+    "description": "Navigate between two points and dynamically recalculate an alternate route when the original route is unavailable.",
     "formal_name": "NavigateRouteWithRerouting",
     "ignore": false,
     "images": [
         "navigate-route-with-rerouting.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "directions",
+        "maneuver",
+        "navigation",
+        "route",
+        "turn-by-turn",
+        "voice",
+        "DestinationStatus",
+        "DirectionManeuver",
+        "Location",
+        "LocationDataSource",
+        "ReroutingStrategy",
+        "Route",
+        "RouteParameters",
+        "RouteTask",
+        "RouteTracker",
+        "RouteTrackerLocationDataSource",
+        "SimulatedLocationDataSource",
+        "Stop",
+        "VoiceGuidance"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "DestinationStatus",
+        "DirectionManeuver",
+        "Location",
+        "LocationDataSource",
+        "ReroutingStrategy",
+        "Route",
+        "RouteParameters",
+        "RouteTask",
+        "RouteTracker",
+        "RouteTrackerLocationDataSource",
+        "SimulatedLocationDataSource",
+        "Stop",
+        "VoiceGuidance"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/NavigateRouteWithReroutingViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/NavigateRouteWithReroutingScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/components/NavigateRouteWithReroutingViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/screens/NavigateRouteWithReroutingScreen.kt"
     ],
     "title": "Navigate route with rerouting"
 }

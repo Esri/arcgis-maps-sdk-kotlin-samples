@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.navigateroutewithrerouting.components
 import android.app.Application
 import android.speech.tts.TextToSpeech
 import android.text.format.DateUtils
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
+import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.geometry.SpatialReference
@@ -44,8 +46,13 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.arcgismaps.navigation.DestinationStatus
+import com.arcgismaps.navigation.ReroutingParameters
+import com.arcgismaps.navigation.ReroutingStrategy
 import com.arcgismaps.navigation.RouteTracker
 import com.arcgismaps.navigation.TrackingStatus
+import com.arcgismaps.tasks.networkanalysis.DirectionManeuver
+import com.arcgismaps.tasks.networkanalysis.Route
+import com.arcgismaps.tasks.networkanalysis.RouteParameters
 import com.arcgismaps.tasks.networkanalysis.RouteResult
 import com.arcgismaps.tasks.networkanalysis.RouteTask
 import com.arcgismaps.tasks.networkanalysis.Stop
@@ -75,6 +82,12 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
     // the route tracker for navigation. Use delegate methods to update tracking status
     private var routeTracker: RouteTracker? = null
 
+    // generate a route with directions and stops for navigation
+    val routeTask = RouteTask(
+        pathToDatabase = "$provisionPath/sandiego.geodatabase",
+        networkName = "Streets_ND"
+    )
+
     // destination list of stops for the RouteParameters
     private val routeStops = listOf(
         // San Diego Convention Center
@@ -82,6 +95,15 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
         // Fleet Science Center
         Stop(Point(-117.146679, 32.730351, SpatialReference.wgs84()))
     )
+
+    // a list to keep track of directions solved by the route task
+    private val directionManeuvers = mutableListOf<DirectionManeuver>()
+
+    // the calculated route with direction maneuvers and route geometry
+    private var route: Route? = null
+
+    // the route parameters needed to calculate a route from a start and stop point
+    private var routeParameters: RouteParameters? = null
 
     // passed to the composable MapView to set the mapViewProxy
     val mapViewProxy = MapViewProxy()
@@ -92,6 +114,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
     // default location display object, which is updated by rememberLocationDisplay
     private var locationDisplay: LocationDisplay = LocationDisplay()
 
+    // the resulted route from the route task using the route parameters
     private var routeResult: RouteResult? = null
 
     // instance of the route ahead polyline
@@ -124,6 +147,11 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
     // instance of Android text-speech
     private var textToSpeech: TextToSpeech? = null
 
+    // the JSON of polylines of the path for the simulated data source
+    private val polylineJSON: String by lazy {
+        application.getString(R.string.simulation_path_json)
+    }
+
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
 
@@ -137,16 +165,9 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             }
         }
 
-
-        // generate a route with directions and stops for navigation
-        val routeTask = RouteTask(
-            pathToDatabase = "$provisionPath/sandiego.geodatabase",
-            networkName = "Streets_ND"
-        )
-
         viewModelScope.launch {
             // load and set the route parameters
-            val routeParameters = routeTask.createDefaultParameters().getOrElse {
+            routeParameters = routeTask.createDefaultParameters().getOrElse {
                 return@launch messageDialogVM.showMessageDialog(
                     title = "Error creating default parameters",
                     description = it.message.toString()
@@ -159,7 +180,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             }
 
             // get the solved route result
-            routeResult = routeTask.solveRoute(routeParameters).getOrElse {
+            routeResult = routeTask.solveRoute(routeParameters!!).getOrElse {
                 return@launch messageDialogVM.showMessageDialog(
                     title = "Error solving route",
                     description = it.message.toString()
@@ -193,9 +214,12 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
 
         // create the simulated data source using the geometry and parameters
         val simulatedLocationDataSource = SimulatedLocationDataSource(
-            polyline = routeGeometry,
+            polyline = Geometry.fromJsonOrNull(polylineJSON) as Polyline,
             parameters = simulationParameters
         )
+
+        // TODO
+        route?.directionManeuvers?.let { directionManeuvers.addAll(it) }
 
         // set up a RouteTracker for navigation along the calculated route
         routeTracker = RouteTracker(
@@ -208,11 +232,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             }
         }
 
-        // create a route tracker location data source to snap the location display to the route
-        val routeTrackerLocationDataSource = RouteTrackerLocationDataSource(
-            routeTracker = routeTracker!!,
-            locationDataSource = simulatedLocationDataSource
-        )
+
 
         locationDisplayJob = with(viewModelScope) {
             launch {
@@ -222,6 +242,30 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             }
 
             launch {
+                // check if this route task supports rerouting
+                if (routeTask.getRouteTaskInfo().supportsRerouting) {
+                    // set up the re-routing parameters
+                    val reroutingParameters = ReroutingParameters(
+                        routeTask = routeTask,
+                        routeParameters = routeParameters!!
+                    ).apply {
+                        strategy = ReroutingStrategy.ToNextWaypoint
+                        visitFirstStopOnStart = false
+                    }
+                    // enable automatic re-routing
+                    routeTracker?.enableRerouting(parameters = reroutingParameters)?.onFailure {
+                        messageDialogVM.showMessageDialog(
+                            title = it.message.toString(),
+                            description = it.cause.toString()
+                        )
+                    }
+                }
+
+                // create a route tracker location data source to snap the location display to the route
+                val routeTrackerLocationDataSource = RouteTrackerLocationDataSource(
+                    routeTracker = routeTracker!!,
+                    locationDataSource = simulatedLocationDataSource
+                )
                 // set the simulated location data source as the location data source for this app
                 locationDisplay.dataSource = routeTrackerLocationDataSource
 
@@ -259,6 +303,17 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
                     displayRouteInfo(routeTracker, trackingStatus)
                     // disable navigation button
                     isNavigateButtonEnabled = false
+                }
+            }
+            launch {
+                routeTracker?.rerouteStarted?.collect {
+                    Log.e("REROUTE", "Started rerouting")
+                }
+            }
+            launch {
+                routeTracker?.rerouteCompleted?.collect {
+                    val status = it.getOrNull()
+                    Log.e("REROUTE", "Reroute completed: ${status?.javaClass?.simpleName}")
                 }
             }
         }
