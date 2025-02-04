@@ -319,8 +319,8 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     /**
      * Helper function to get export tile cache parameters for the given layer.
      */
-    private fun getExportTileCacheParameters(parameterOverrides: GenerateOfflineMapParameterOverrides, targetFeatureLayer: Layer?): ExportTileCacheParameters? {
-        targetFeatureLayer?.let {
+    private fun getExportTileCacheParameters(parameterOverrides: GenerateOfflineMapParameterOverrides, layer: Layer?): ExportTileCacheParameters? {
+        layer?.let {
             val key = OfflineMapParametersKey(it)
             return parameterOverrides.exportTileCacheParameters[key]
         }
