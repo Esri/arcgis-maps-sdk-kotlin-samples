@@ -96,16 +96,16 @@ fun ValidateUtilityNetworkTopologyScreen(sampleName: String) {
     }
 
     // Collect UI states from the ViewModel
-    val statusMessage by mapViewModel.statusMessage.collectAsStateWithLifecycle("")
-    val canGetState by mapViewModel.canGetState.collectAsStateWithLifecycle(false)
-    val canValidate by mapViewModel.canValidateNetworkTopology.collectAsStateWithLifecycle(false)
-    val canTrace by mapViewModel.canTrace.collectAsStateWithLifecycle(false)
-    val canClearSelection by mapViewModel.canClearSelection.collectAsStateWithLifecycle(false)
+    val statusMessage by mapViewModel.statusMessage.collectAsStateWithLifecycle()
+    val canGetState by mapViewModel.canGetState.collectAsStateWithLifecycle()
+    val canValidate by mapViewModel.canValidateNetworkTopology.collectAsStateWithLifecycle()
+    val canTrace by mapViewModel.canTrace.collectAsStateWithLifecycle()
+    val canClearSelection by mapViewModel.canClearSelection.collectAsStateWithLifecycle()
 
     // For editing a feature's coded-value domain
     var fieldValueOptions by remember { mutableStateOf<List<CodedValue>>(listOf()) }
-    val selectedFieldValue by mapViewModel.selectedFieldValue.collectAsStateWithLifecycle(null)
-    val selectedFeature by mapViewModel.selectedFeature.collectAsStateWithLifecycle(null)
+    val selectedFieldValue by mapViewModel.selectedFieldValue.collectAsStateWithLifecycle()
+    val selectedFeature by mapViewModel.selectedFeature.collectAsStateWithLifecycle()
     var selectedFieldAlias by remember { mutableStateOf("") }
 
     // If we are currently editing an attribute, display bottom sheet.
