@@ -18,19 +18,23 @@ package com.esri.arcgismaps.sample.findnearestvertex.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.findnearestvertex.R
 import com.esri.arcgismaps.sample.findnearestvertex.components.FindNearestVertexViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun FindNearestVertexScreen(sampleName: String) {
@@ -47,9 +51,17 @@ fun FindNearestVertexScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                    onSingleTapConfirmed = mapViewModel::onMapViewTapped
                 )
-                // TODO: Add UI components in this Column ...
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.tap_on_the_map_to_find_vertex),
+                    textAlign = TextAlign.Center,
+                    minLines = 2
+                )
             }
 
             mapViewModel.messageDialogVM.apply {
