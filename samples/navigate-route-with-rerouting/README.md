@@ -42,22 +42,9 @@ Tap "Navigate" to simulate traveling and to receive directions from a preset sta
 * Stop
 * VoiceGuidance
 
-## Offline data
-
-1. Download the data from [ArcGIS Online](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca).
-2. Extract the contents of the downloaded zip file to disk.
-3. Open your command prompt and navigate to the folder where you extracted the contents of the data from step 1.
-4. Execute the following commands:
-
-`adb push sandiego.geodatabase /Android/data/com.esri.arcgisruntime.sample.offlinerouting/files/sandiego.geodatabase`
-
-Link | Local Location
----------|-------|
-|[San Diego Geodatabase](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca)| /Android/data/com.esri.arcgisruntime.sample.offlinerouting/files/sandiego.geodatabase |
-
 ## About the data
 
-The route taken in this sample goes from the San Diego Convention Center, site of the annual Esri User Conference, to the Fleet Science Center, San Diego.
+The [San Diego Geodatabase](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca) route taken in this sample goes from the San Diego Convention Center, site of the annual Esri User Conference, to the Fleet Science Center, San Diego.
 
 ## Additional information
 

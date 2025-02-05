@@ -45,8 +45,8 @@
         "VoiceGuidance"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/components/NavigateRouteWithReroutingViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/screens/NavigateRouteWithReroutingScreen.kt"
     ],
