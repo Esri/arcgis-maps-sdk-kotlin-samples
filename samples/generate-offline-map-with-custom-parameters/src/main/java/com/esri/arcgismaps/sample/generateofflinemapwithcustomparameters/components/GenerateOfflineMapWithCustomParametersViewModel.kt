@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
+import com.arcgismaps.LoadStatus
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.GeometryEngine
@@ -57,9 +58,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     AndroidViewModel(application) {
 
     private val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() +
-                File.separator +
-                application.getString(R.string.generate_offline_map_with_custom_parameters_app_name)
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(R.string.generate_offline_map_with_custom_parameters_app_name)
     }
 
     val mapViewProxy = MapViewProxy()
@@ -113,19 +112,22 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
      * and use [MapViewProxy] to assist in converting screen points to map points
      */
     fun calculateDownloadOfflineArea() {
-        // Upper left corner of the area to take offline
-        val minScreenPoint = ScreenCoordinate(200.0, 200.0)
-        // Lower right corner of the downloaded area
-        val maxScreenPoint = ScreenCoordinate(
-            x = mapViewSize.width - 200.0, y = mapViewSize.height - 200.0
-        )
-        // Convert screen points to map points
-        val minPoint = mapViewProxy.screenToLocationOrNull(minScreenPoint)
-        val maxPoint = mapViewProxy.screenToLocationOrNull(maxScreenPoint)
-        // Create an envelope to set the download area's geometry using the defined bounds
-        if (minPoint != null && maxPoint != null) {
-            val envelope = Envelope(minPoint, maxPoint)
-            downloadAreaGraphic.geometry = envelope
+        // Ensure the map is loaded before calculating the download area
+        if (arcGISMap.loadStatus.value == LoadStatus.Loaded) {
+            // Upper left corner of the area to take offline
+            val minScreenPoint = ScreenCoordinate(200.0, 200.0)
+            // Lower right corner of the downloaded area
+            val maxScreenPoint = ScreenCoordinate(
+                x = mapViewSize.width - 200.0, y = mapViewSize.height - 200.0
+            )
+            // Convert screen points to map points
+            val minPoint = mapViewProxy.screenToLocationOrNull(minScreenPoint)
+            val maxPoint = mapViewProxy.screenToLocationOrNull(maxScreenPoint)
+            // Create an envelope to set the download area's geometry using the defined bounds
+            if (minPoint != null && maxPoint != null) {
+                val envelope = Envelope(minPoint, maxPoint)
+                downloadAreaGraphic.geometry = envelope
+            }
         }
     }
 
@@ -144,13 +146,12 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
 
         arcGISMap = ArcGISMap(portalItem)
         viewModelScope.launch(Dispatchers.Main) {
-            arcGISMap.load()
-                .onFailure {
-                    messageDialogVM.showMessageDialog(
-                        title = it.message.toString()
-                    )
+            arcGISMap.load().onFailure {
+                messageDialogVM.showMessageDialog(
+                    title = it.message.toString()
+                )
 
-                }
+            }
         }
         showResetButton = false
     }
@@ -170,51 +171,51 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     ) {
         // Create an offline map offlineMapTask with the map
         val offlineMapTask = OfflineMapTask(arcGISMap)
-        downloadAreaGraphic.geometry?.let { downloadArea ->
-            viewModelScope.launch {
-                // Create default generate offline map parameters from the offline map task
-                offlineMapTask.createDefaultGenerateOfflineMapParameters(areaOfInterest = downloadArea)
-                    .onSuccess { generateOfflineMapParameters ->
-                        // Don't let generate offline map parameters continue on errors (including canceling during authentication)
-                        generateOfflineMapParameters.continueOnErrors = false
-                        // Create parameter overrides for greater control
-                        offlineMapTask.createGenerateOfflineMapParameterOverrides(generateOfflineMapParameters)
-                            .onSuccess { parameterOverrides ->
-                                // Set basemap scale and area of interest
-                                setBasemapScaleAndAreaOfInterest(parameterOverrides, minScale, maxScale, bufferDistance)
-                                // Exclude system valve layer
-                                if (!isIncludeSystemValvesEnabled) {
-                                    excludeLayerFromDownload(parameterOverrides, "System Valve")
-                                }
-                                // Exclude service connection layer
-                                if (!isIncludeServiceConnectionsEnabled) {
-                                    excludeLayerFromDownload(parameterOverrides, "Service Connection")
-                                }
-                                // Crop pipes layer
-                                if (isCropWaterPipesEnabled) {
-                                    getGenerateGeodatabaseParameters(
-                                        parameterOverrides, "Main"
-                                    )?.layerOptions?.forEach {
-                                        it.useGeometry = true
-                                    }
-                                }
-                                // Get a reference to the hydrant layer
-                                (arcGISMap.operationalLayers.find { it.name == "Hydrant" } as? FeatureLayer)?.let { hydrantLayer ->
-                                    // Get it's service layer id
-                                    val serviceLayerId =
-                                        (hydrantLayer.featureTable as? ServiceFeatureTable)?.layerInfo?.serviceLayerId
-                                    getGenerateGeodatabaseParameters(
-                                        parameterOverrides, hydrantLayer.name
-                                    )?.layerOptions?.filter { it.layerId == serviceLayerId }?.forEach {
-                                        it.whereClause = "FLOW >= $minHydrantFlowRate"
-                                        it.queryOption = GenerateLayerQueryOption.UseFilter
-                                    }
-                                }
-                                // Start a an offline map job from the task and parameters
-                                createOfflineMapJob(offlineMapTask, generateOfflineMapParameters, parameterOverrides)
+        // The current area of interest displayed on the map
+        val downloadArea = downloadAreaGraphic.geometry ?: return
+        viewModelScope.launch {
+            // Create default generate offline map parameters from the offline map task
+            offlineMapTask.createDefaultGenerateOfflineMapParameters(areaOfInterest = downloadArea)
+                .onSuccess { generateOfflineMapParameters ->
+                    // Return a job failure if generate offline map encounters an error
+                    generateOfflineMapParameters.continueOnErrors = false
+                    // Create parameter overrides for greater control
+                    offlineMapTask.createGenerateOfflineMapParameterOverrides(generateOfflineMapParameters)
+                        .onSuccess { parameterOverrides ->
+                            // Set basemap scale and area of interest
+                            setBasemapScaleAndAreaOfInterest(parameterOverrides, minScale, maxScale, bufferDistance)
+                            // Exclude system valve layer
+                            if (!isIncludeSystemValvesEnabled) {
+                                excludeLayerFromDownload(parameterOverrides, getFeatureLayer("System Valve"))
                             }
-                    }
-            }
+                            // Exclude service connection layer
+                            if (!isIncludeServiceConnectionsEnabled) {
+                                excludeLayerFromDownload(parameterOverrides, getFeatureLayer("Service Connection"))
+                            }
+                            // Crop pipes layer
+                            if (isCropWaterPipesEnabled) {
+                                getGenerateGeodatabaseParameters(
+                                    parameterOverrides, getFeatureLayer("Main")
+                                )?.layerOptions?.forEach {
+                                    it.useGeometry = true
+                                }
+                            }
+                            // Get a reference to the hydrant layer
+                            getFeatureLayer("Hydrant")?.let { hydrantLayer ->
+                                // Get it's service layer id
+                                val serviceLayerId = getServiceLayerId(hydrantLayer)
+                                getGenerateGeodatabaseParameters(
+                                    parameterOverrides, getFeatureLayer(hydrantLayer.name)
+                                )?.layerOptions?.filter { it.layerId == serviceLayerId }?.forEach {
+                                    it.whereClause = "FLOW >= $minHydrantFlowRate"
+                                    it.queryOption = GenerateLayerQueryOption.UseFilter
+                                }
+                            }
+                            // Start a an offline map job from the task and parameters
+                            createOfflineMapJob(offlineMapTask, generateOfflineMapParameters, parameterOverrides)
+                        }
+
+                }
         }
     }
 
@@ -229,9 +230,12 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     ) {
         // Store the offline map in the app's scoped storage directory
         val offlineMapPath = provisionPath + File.separator + "OfflineMap"
+        val offlineMapFile = File(offlineMapPath)
 
         // Delete any offline map already present
-        File(offlineMapPath).deleteRecursively()
+        offlineMapFile.deleteRecursively()
+        // Make the relevant directories for the offline map
+        offlineMapFile.mkdirs()
 
         // Report any errors that occur during the offline map job
         viewModelScope.launch(Dispatchers.Main) {
@@ -250,7 +254,6 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         )
 
         runOfflineMapJob()
-
     }
 
     /**
@@ -309,24 +312,20 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
      * Set basemap scale and area of interest using the given values
      */
     private fun setBasemapScaleAndAreaOfInterest(
-        parameterOverrides: GenerateOfflineMapParameterOverrides,
-        minScale: Int,
-        maxScale: Int,
-        bufferDistance: Int
+        parameterOverrides: GenerateOfflineMapParameterOverrides, minScale: Int, maxScale: Int, bufferDistance: Int
     ) {
         // Get the first basemap layer
-        (arcGISMap.basemap.value?.baseLayers?.first())?.let { basemapLayer ->
+        arcGISMap.basemap.value?.baseLayers?.first()?.let { basemapLayer ->
             // Use the basemap layer to make an offline map parameters key
             val key = OfflineMapParametersKey(basemapLayer)
             // Create export tile cache parameters
-            val exportTileCacheParameters = parameterOverrides.exportTileCacheParameters[key]
-            // Create a new sublist of LODs in the range requested by the user
-            exportTileCacheParameters?.levelIds?.clear()
-            (minScale until maxScale).forEach { i ->
-                exportTileCacheParameters?.levelIds?.add(i)
+            val exportTileCacheParameters = parameterOverrides.exportTileCacheParameters[key]?.apply {
+                // Create a new list of levels in the scale range requested by the user
+                levelIds.clear()
+                levelIds.addAll((minScale until maxScale).toList())
             }
             downloadAreaGraphic.geometry?.let { downloadArea ->
-                // set the area of interest to the original download area plus a buffer
+                // Set the area of interest to the original download area plus a buffer
                 exportTileCacheParameters?.areaOfInterest =
                     GeometryEngine.bufferOrNull(downloadArea, bufferDistance.toDouble())
             }
@@ -336,40 +335,46 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     /**
      * Remove the layer named from the generate layer options list in the generate geodatabase parameters.
      */
-    private fun excludeLayerFromDownload(parameterOverrides: GenerateOfflineMapParameterOverrides, layerName: String) {
-        // get the named layer as a feature layer
-        (arcGISMap.operationalLayers.find { it.name == layerName } as? FeatureLayer)?.let { targetFeatureLayer ->
-            // get the layer's id
-            val targetLayerId = getServiceLayerId(targetFeatureLayer)
-            // get the layer's layer options
-            getGenerateGeodatabaseParameters(parameterOverrides, layerName)?.layerOptions?.let { layerOptions ->
-                // remove the target layer
-                layerOptions.remove(layerOptions.find { it.layerId == targetLayerId })
-            }
+    private fun excludeLayerFromDownload(
+        parameterOverrides: GenerateOfflineMapParameterOverrides, targetFeatureLayer: FeatureLayer?
+    ) {
+        // Get the layer's id
+        val targetLayerId = getServiceLayerId(featureLayer = targetFeatureLayer)
+        // Get the layer's layer options
+        getGenerateGeodatabaseParameters(parameterOverrides, targetFeatureLayer)?.apply {
+            // Remove the target layer
+            layerOptions.remove(layerOptions.find { it.layerId == targetLayerId })
         }
+    }
+
+    /**
+     * Helper function to add the [parameterOverrides] to the generate geodatabase parameters
+     * using the given [targetFeatureLayer] to create the key.
+     */
+    private fun getGenerateGeodatabaseParameters(
+        parameterOverrides: GenerateOfflineMapParameterOverrides, targetFeatureLayer: FeatureLayer?
+    ): GenerateGeodatabaseParameters? {
+        // get the named feature layer
+        targetFeatureLayer?.let {
+            val key = OfflineMapParametersKey(it)
+            // Return the layer's geodatabase parameters options
+            return parameterOverrides.generateGeodatabaseParameters[key]
+        }
+        return null
+    }
+
+    /**
+     * Helper function to get a feature layer by it's name.
+     */
+    private fun getFeatureLayer(layerName: String): FeatureLayer? {
+        return arcGISMap.operationalLayers.find { it.name == layerName } as? FeatureLayer
     }
 
     /**
      * Helper function to get the service layer id for the given feature layer.
      */
-    private fun getServiceLayerId(featureLayer: FeatureLayer): Long? {
-        return (featureLayer.featureTable as? ServiceFeatureTable)?.layerInfo?.serviceLayerId
-    }
-
-    /**
-     * Helper function to get the generate geodatabase parameters for the given layer.
-     *
-     */
-    private fun getGenerateGeodatabaseParameters(
-        parameterOverrides: GenerateOfflineMapParameterOverrides, layerName: String
-    ): GenerateGeodatabaseParameters? {
-        // get the named feature layer
-        (arcGISMap.operationalLayers.find { it.name == layerName } as? FeatureLayer)?.let { targetFeatureLayer ->
-            val key = OfflineMapParametersKey(targetFeatureLayer)
-            // return the layer's geodatabase parameters options
-            return parameterOverrides.generateGeodatabaseParameters[key]
-        }
-        return null
+    private fun getServiceLayerId(featureLayer: FeatureLayer?): Long? {
+        return (featureLayer?.featureTable as? ServiceFeatureTable)?.layerInfo?.serviceLayerId
     }
 
     /**

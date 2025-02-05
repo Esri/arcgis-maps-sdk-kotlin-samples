@@ -33,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -70,18 +71,19 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
     // Create a ViewModel to handle MapView interactions
     val mapViewModel: GenerateOfflineMapWithCustomParametersViewModel = viewModel()
 
-    val interactionOptions = remember { MapViewInteractionOptions().apply {
-        isRotateEnabled = false
-    } }
+    val interactionOptions = remember {
+        MapViewInteractionOptions().apply {
+            isRotateEnabled = false
+        }
+    }
 
     // Set up the bottom sheet controls
     var showBottomSheet by remember { mutableStateOf(false) }
     fun setBottomSheetVisibility(isVisible: Boolean) {
         showBottomSheet = isVisible
     }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val showResetButton by remember { mutableStateOf(mapViewModel.showResetButton) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = mapViewModel.snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -111,14 +113,9 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                         }
                     },
                     onViewpointChangedForCenterAndScale = {
-                        // Ensure the map is loaded before calculating the download area
-                        if (mapViewModel.arcGISMap.loadStatus.value == LoadStatus.Loaded) {
-                            mapViewModel.calculateDownloadOfflineArea()
-                        }
-                    },
-                    onDown = {
-                        showBottomSheet = false
-                    })
+                        mapViewModel.calculateDownloadOfflineArea()
+                    }
+                )
                 // Show bottom sheet with override parameter options
                 if (showBottomSheet) {
                     ModalBottomSheet(
@@ -196,76 +193,82 @@ fun OverrideParameters(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        Text(text = "Adjust basemap", style = MaterialTheme.typography.labelLarge)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = CenterVertically
-        ) {
-            Text(text = "Min scale level:", style = MaterialTheme.typography.labelMedium)
-            Slider(
-                value = minScale,
-                // Don't let the min scale exceed the max scale
-                onValueChange = {
-                    minScale = it
-                    if (minScale >= maxScale) {
-                        maxScale = minScale + 1
-                    }
-                },
-                valueRange = 0f..22f, modifier = Modifier.weight(1f)
-            )
-            Text(text = "${minScale.toInt()}")
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = CenterVertically
-        ) {
-            Text(text = "Max scale level:", style = MaterialTheme.typography.labelMedium)
-            Slider(
-                value = maxScale,
-                // Don't let the max scale exceed the min scale
-                onValueChange = {
-                    maxScale = it
-                    if (maxScale <= minScale) {
-                        minScale = maxScale - 1
-                    }
-                },
-                valueRange = 0f..23f, modifier = Modifier.weight(1f)
-            )
-            Text(text = "${maxScale.toInt()}")
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = CenterVertically,
-        ) {
-            Text(text = "Extent buffer distance:", style = MaterialTheme.typography.labelMedium)
-            Slider(
-                value = extentBufferDistance,
-                onValueChange = { extentBufferDistance = it },
-                valueRange = 0f..500f,
-                modifier = Modifier.weight(1f)
-            )
-            Text(text = "${extentBufferDistance.toInt()}m")
-        }
-        Text(text = "Include layers", style = MaterialTheme.typography.labelLarge)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = CenterVertically
-        ) {
-            Checkbox(checked = includeSystemValves, onCheckedChange = { includeSystemValves = it })
-            Text(text = "System valves")
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = CenterVertically
-        ) {
-            Checkbox(checked = includeServiceConnections, onCheckedChange = { includeServiceConnections = it })
-            Text(text = "Service connections")
-        }
+
+            Text(text = "Adjust basemap", style = MaterialTheme.typography.labelLarge)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = CenterVertically
+            ) {
+                Text(text = "Min scale level:", style = MaterialTheme.typography.labelMedium)
+                Slider(
+                    value = minScale,
+                    // Don't let the min scale exceed the max scale
+                    onValueChange = {
+                        minScale = it
+                        if (minScale >= maxScale) {
+                            maxScale = minScale + 1
+                        }
+                    },
+                    valueRange = 0f..22f, modifier = Modifier.weight(1f),
+                    steps = 21
+                )
+                Text(text = "${minScale.toInt()}")
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = CenterVertically
+            ) {
+                Text(text = "Max scale level:", style = MaterialTheme.typography.labelMedium)
+                Slider(
+                    value = maxScale,
+                    // Don't let the max scale exceed the min scale
+                    onValueChange = {
+                        maxScale = it
+                        if (maxScale <= minScale) {
+                            minScale = maxScale - 1
+                        }
+                    },
+                    valueRange = 0f..23f, modifier = Modifier.weight(1f),
+                    steps = 22
+                )
+                Text(text = "${maxScale.toInt()}")
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = CenterVertically,
+            ) {
+                Text(text = "Extent buffer distance:", style = MaterialTheme.typography.labelMedium)
+                Slider(
+                    value = extentBufferDistance,
+                    onValueChange = { extentBufferDistance = it },
+                    valueRange = 0f..500f,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(text = "${extentBufferDistance.toInt()}m")
+            }
+        HorizontalDivider(modifier = Modifier.padding(8.dp))
+            Text(text = "Include layers", style = MaterialTheme.typography.labelLarge)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = CenterVertically
+            ) {
+                Checkbox(checked = includeSystemValves, onCheckedChange = { includeSystemValves = it })
+                Text(text = "System valves")
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = CenterVertically
+            ) {
+                Checkbox(checked = includeServiceConnections, onCheckedChange = { includeServiceConnections = it })
+                Text(text = "Service connections")
+            }
+        HorizontalDivider(modifier = Modifier.padding(8.dp))
         Text(text = "Filter feature layer", style = MaterialTheme.typography.labelLarge)
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -281,6 +284,7 @@ fun OverrideParameters(
             )
             Text(text = "${minHydrantFlowRate.toInt()} GPM")
         }
+        HorizontalDivider(modifier = Modifier.padding(8.dp))
         Text(text = "Crop layers to extent", style = MaterialTheme.typography.labelLarge)
         Row(
             modifier = Modifier.wrapContentSize(),
