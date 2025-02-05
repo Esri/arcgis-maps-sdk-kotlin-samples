@@ -32,7 +32,6 @@ import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.layers.FeatureLayer
-import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
@@ -46,8 +45,8 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameterOverrides
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapParametersKey
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
-import com.arcgismaps.tasks.tilecache.ExportTileCacheParameters
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.generateofflinemapwithcustomparameters.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,24 +56,27 @@ import java.io.File
 class GenerateOfflineMapWithCustomParametersViewModel(private val application: Application) :
     AndroidViewModel(application) {
 
+    private val provisionPath: String by lazy {
+        application.getExternalFilesDir(null)?.path.toString() +
+                File.separator +
+                application.getString(R.string.generate_offline_map_with_custom_parameters_app_name)
+    }
+
     val mapViewProxy = MapViewProxy()
 
-    // view model to handle popup dialogs
+    // View model to handle popup dialogs
     val messageDialogVM = MessageDialogViewModel()
 
-    // create a portal item with the itemId of the web map
-    var portal: Portal = Portal("https://www.arcgis.com")
-    var portalItem: PortalItem = PortalItem(portal, "acc027394bc84c2fb04d1ed317aac674")
+    // Define map that returns an ArcGISMap
+    var arcGISMap = ArcGISMap()
+        private set
 
-    // create a map with the portal item
-    var arcGISMap: ArcGISMap = ArcGISMap(portalItem)
-
-    // define the download area graphic
+    // Define the download area graphic
     private val downloadAreaGraphic = Graphic().apply {
         symbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.red, 2f)
     }
 
-    // create a graphics overlay for the map view
+    // Create a graphics overlay for the map view
     val graphicsOverlay = GraphicsOverlay().apply {
         graphics.add(downloadAreaGraphic)
     }
@@ -90,6 +92,9 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     var offlineMapJobProgress by mutableIntStateOf(0)
         private set
 
+    var showResetButton by mutableStateOf(false)
+        private set
+
     private var generateOfflineMapJob: GenerateOfflineMapJob? = null
 
     // Create an IntSize to retrieve dimensions of the map
@@ -97,6 +102,10 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
 
     fun updateMapViewSize(size: IntSize) {
         mapViewSize = size
+    }
+
+    init {
+        setUpMap()
     }
 
     /**
@@ -108,8 +117,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         val minScreenPoint = ScreenCoordinate(200.0, 200.0)
         // Lower right corner of the downloaded area
         val maxScreenPoint = ScreenCoordinate(
-            x = mapViewSize.width - 200.0,
-            y = mapViewSize.height - 200.0
+            x = mapViewSize.width - 200.0, y = mapViewSize.height - 200.0
         )
         // Convert screen points to map points
         val minPoint = mapViewProxy.screenToLocationOrNull(minScreenPoint)
@@ -122,16 +130,43 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     }
 
     /**
-     * Define the [GenerateOfflineMapParameterOverrides] for the offline map job with the given parameters.
+     * Sets up a portal item and displays map area to take offline
      */
-    fun defineParameters(
+    private fun setUpMap() {
+
+        // Create a portal item with the itemId of the web map
+        val portal = Portal("https://www.arcgis.com")
+        val portalItem = PortalItem(portal, "acc027394bc84c2fb04d1ed317aac674")
+
+        // Clear, then add the download graphic to the graphics overlay
+        graphicsOverlay.graphics.clear()
+        graphicsOverlay.graphics.add(downloadAreaGraphic)
+
+        arcGISMap = ArcGISMap(portalItem)
+        viewModelScope.launch(Dispatchers.Main) {
+            arcGISMap.load()
+                .onFailure {
+                    messageDialogVM.showMessageDialog(
+                        title = it.message.toString()
+                    )
+
+                }
+        }
+        showResetButton = false
+    }
+
+    /**
+     * Define the [GenerateOfflineMapParameters] for the offline map job and add the custom
+     * [GenerateOfflineMapParameterOverrides] using the given override values.
+     */
+    fun defineGenerateOfflineMapParameters(
         minScale: Int,
         maxScale: Int,
         bufferDistance: Int,
-        includeSystemValves: Boolean,
-        includeServiceConnections: Boolean,
-        flowRate: Int,
-        cropWaterPipes: Boolean
+        isIncludeSystemValvesEnabled: Boolean,
+        isIncludeServiceConnectionsEnabled: Boolean,
+        minHydrantFlowRate: Int,
+        isCropWaterPipesEnabled: Boolean
     ) {
         // Create an offline map offlineMapTask with the map
         val offlineMapTask = OfflineMapTask(arcGISMap)
@@ -148,16 +183,18 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                                 // Set basemap scale and area of interest
                                 setBasemapScaleAndAreaOfInterest(parameterOverrides, minScale, maxScale, bufferDistance)
                                 // Exclude system valve layer
-                                if (!includeSystemValves) {
+                                if (!isIncludeSystemValvesEnabled) {
                                     excludeLayerFromDownload(parameterOverrides, "System Valve")
                                 }
                                 // Exclude service connection layer
-                                if (!includeServiceConnections) {
+                                if (!isIncludeServiceConnectionsEnabled) {
                                     excludeLayerFromDownload(parameterOverrides, "Service Connection")
                                 }
                                 // Crop pipes layer
-                                if (cropWaterPipes) {
-                                    getGenerateGeodatabaseParameters(parameterOverrides, "Main")?.layerOptions?.forEach {
+                                if (isCropWaterPipesEnabled) {
+                                    getGenerateGeodatabaseParameters(
+                                        parameterOverrides, "Main"
+                                    )?.layerOptions?.forEach {
                                         it.useGeometry = true
                                     }
                                 }
@@ -167,10 +204,9 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                                     val serviceLayerId =
                                         (hydrantLayer.featureTable as? ServiceFeatureTable)?.layerInfo?.serviceLayerId
                                     getGenerateGeodatabaseParameters(
-                                        parameterOverrides,
-                                        hydrantLayer.name
+                                        parameterOverrides, hydrantLayer.name
                                     )?.layerOptions?.filter { it.layerId == serviceLayerId }?.forEach {
-                                        it.whereClause = "FLOW >= $flowRate"
+                                        it.whereClause = "FLOW >= $minHydrantFlowRate"
                                         it.queryOption = GenerateLayerQueryOption.UseFilter
                                     }
                                 }
@@ -192,7 +228,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         parameterOverrides: GenerateOfflineMapParameterOverrides
     ) {
         // Store the offline map in the app's scoped storage directory
-        val offlineMapPath = application.getExternalFilesDir(null)?.path + File.separator + "offlineMap"
+        val offlineMapPath = provisionPath + File.separator + "OfflineMap"
 
         // Delete any offline map already present
         File(offlineMapPath).deleteRecursively()
@@ -201,8 +237,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         viewModelScope.launch(Dispatchers.Main) {
             offlineMapTask.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    title = error.message.toString(),
-                    description = error.cause.toString()
+                    title = error.message.toString(), description = error.cause.toString()
                 )
             }
         }
@@ -239,6 +274,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                     offlineMapJob.result().onSuccess {
                         // Set the offline map result as the displayed map and clear the red bounding box graphic
                         arcGISMap = it.offlineMap
+                        showResetButton = true
                         graphicsOverlay.graphics.clear()
                         // Dismiss the progress dialog
                         showJobProgressDialog = false
@@ -246,8 +282,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                         snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
                     }.onFailure { throwable ->
                         messageDialogVM.showMessageDialog(
-                            title = throwable.message.toString(),
-                            description = throwable.cause.toString()
+                            title = throwable.message.toString(), description = throwable.cause.toString()
                         )
                         showJobProgressDialog = false
                     }
@@ -274,21 +309,26 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
      * Set basemap scale and area of interest using the given values
      */
     private fun setBasemapScaleAndAreaOfInterest(
-        parameterOverrides: GenerateOfflineMapParameterOverrides, minScale: Int, maxScale: Int, bufferDistance: Int
+        parameterOverrides: GenerateOfflineMapParameterOverrides,
+        minScale: Int,
+        maxScale: Int,
+        bufferDistance: Int
     ) {
+        // Get the first basemap layer
         (arcGISMap.basemap.value?.baseLayers?.first())?.let { basemapLayer ->
-            // get the export tile cache parameters
-            getExportTileCacheParameters(parameterOverrides, basemapLayer as? Layer)?.let { exportTileCacheParameters ->
-                // create a new sublist of LODs in the range requested by the user
-                exportTileCacheParameters.levelIds.clear()
-                (minScale until maxScale).forEach { i ->
-                    exportTileCacheParameters.levelIds.add(i)
-                }
-                downloadAreaGraphic.geometry?.let { downloadArea ->
-                    // set the area of interest to the original download area plus a buffer
-                    exportTileCacheParameters.areaOfInterest =
-                        GeometryEngine.bufferOrNull(downloadArea, bufferDistance.toDouble())
-                }
+            // Use the basemap layer to make an offline map parameters key
+            val key = OfflineMapParametersKey(basemapLayer)
+            // Create export tile cache parameters
+            val exportTileCacheParameters = parameterOverrides.exportTileCacheParameters[key]
+            // Create a new sublist of LODs in the range requested by the user
+            exportTileCacheParameters?.levelIds?.clear()
+            (minScale until maxScale).forEach { i ->
+                exportTileCacheParameters?.levelIds?.add(i)
+            }
+            downloadAreaGraphic.geometry?.let { downloadArea ->
+                // set the area of interest to the original download area plus a buffer
+                exportTileCacheParameters?.areaOfInterest =
+                    GeometryEngine.bufferOrNull(downloadArea, bufferDistance.toDouble())
             }
         }
     }
@@ -317,23 +357,11 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     }
 
     /**
-     * Helper function to get export tile cache parameters for the given layer.
-     */
-    private fun getExportTileCacheParameters(parameterOverrides: GenerateOfflineMapParameterOverrides, layer: Layer?): ExportTileCacheParameters? {
-        layer?.let {
-            val key = OfflineMapParametersKey(it)
-            return parameterOverrides.exportTileCacheParameters[key]
-        }
-        return null
-    }
-
-    /**
      * Helper function to get the generate geodatabase parameters for the given layer.
      *
      */
     private fun getGenerateGeodatabaseParameters(
-        parameterOverrides: GenerateOfflineMapParameterOverrides,
-        layerName: String
+        parameterOverrides: GenerateOfflineMapParameterOverrides, layerName: String
     ): GenerateGeodatabaseParameters? {
         // get the named feature layer
         (arcGISMap.operationalLayers.find { it.name == layerName } as? FeatureLayer)?.let { targetFeatureLayer ->
@@ -342,5 +370,15 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
             return parameterOverrides.generateGeodatabaseParameters[key]
         }
         return null
+    }
+
+    /**
+     * Clear the preview map and set up mapView again
+     */
+    fun reset() {
+        // Add the download graphic to the graphics overlay
+        graphicsOverlay.graphics.clear()
+        // Set up the portal item to take offline
+        setUpMap()
     }
 }

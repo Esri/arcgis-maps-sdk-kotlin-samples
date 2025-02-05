@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.generateofflinemapwithcustomparameters.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,6 +54,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.LoadStatus
+import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.generateofflinemapwithcustomparameters.components.GenerateOfflineMapWithCustomParametersViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.JobLoadingDialog
@@ -68,13 +70,18 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
     // Create a ViewModel to handle MapView interactions
     val mapViewModel: GenerateOfflineMapWithCustomParametersViewModel = viewModel()
 
+    val interactionOptions = remember { MapViewInteractionOptions().apply {
+        isRotateEnabled = false
+    } }
+
     // Set up the bottom sheet controls
     var showBottomSheet by remember { mutableStateOf(false) }
     fun setBottomSheetVisibility(isVisible: Boolean) {
         showBottomSheet = isVisible
     }
-
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val showResetButton by remember { mutableStateOf(mapViewModel.showResetButton) }
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = mapViewModel.snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -83,6 +90,8 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
+                    // Disable taps when job progress dialog is shown
+                    .clickable(enabled = !mapViewModel.showJobProgressDialog, onClick = { })
             ) {
                 MapView(modifier = Modifier
                     .weight(1f)
@@ -93,6 +102,7 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                     },
                     arcGISMap = mapViewModel.arcGISMap,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                    mapViewInteractionOptions = interactionOptions,
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onLayerViewStateChanged = {
                         // On launch, ensure the map is loaded before calculating the download area
@@ -116,7 +126,7 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                             showBottomSheet = false
                         }, sheetState = sheetState
                     ) {
-                        OverrideParameters(mapViewModel::defineParameters, ::setBottomSheetVisibility)
+                        OverrideParameters(mapViewModel::defineGenerateOfflineMapParameters, ::setBottomSheetVisibility)
                     }
                 }
                 // Display progress dialog while generating an offline map
@@ -134,12 +144,20 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                         )
                     }
                 }
-
+                if (mapViewModel.showResetButton) {
+                    Button(
+                        onClick = {
+                            mapViewModel.reset()
+                        }, modifier = Modifier.align(Alignment.CenterHorizontally)
+                    ) {
+                        Text("Reset to online map")
+                    }
+                }
             }
         },
         // Floating action button to show the parameter overrides bottom sheet
         floatingActionButton = {
-            if (!showBottomSheet) {
+            if (!showBottomSheet && !mapViewModel.showResetButton) {
                 FloatingActionButton(modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { showBottomSheet = true }) {
                     Icon(
