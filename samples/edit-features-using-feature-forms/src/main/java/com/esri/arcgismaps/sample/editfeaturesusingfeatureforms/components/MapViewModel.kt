@@ -185,9 +185,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             ).onSuccess { results ->
                 try {
                     results.forEach { result ->
-                        result.geoElements.firstOrNull {
-                            it is ArcGISFeature && (it.featureTable?.layer as? FeatureLayer)?.featureFormDefinition != null
-                        }?.let {
+                        result.geoElements.firstOrNull { it is ArcGISFeature }?.let {
                             val feature = it as ArcGISFeature
                             val layer = feature.featureTable!!.layer as FeatureLayer
                             val featureForm = FeatureForm(feature)
