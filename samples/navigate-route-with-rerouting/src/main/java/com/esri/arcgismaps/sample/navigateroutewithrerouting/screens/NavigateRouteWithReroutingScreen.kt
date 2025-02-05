@@ -29,6 +29,11 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -36,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.navigateroutewithrerouting.components.NavigateRouteWithReroutingViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -45,10 +51,19 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun NavigateRouteWithReroutingScreen(sampleName: String) {
     val locationDisplay = rememberLocationDisplay()
-    val mapViewModel = viewModel<NavigateRouteWithReroutingViewModel>().apply {
-        setLocationDisplay(locationDisplay)
+    val mapViewModel = viewModel<NavigateRouteWithReroutingViewModel>()
+    // On first composition, initialize the sample.
+    var isViewmodelInitialized by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!isViewmodelInitialized) {
+            mapViewModel.initialize(locationDisplay)
+            isViewmodelInitialized = true
+        }
     }
-
+    // Display loading dialog on initialization
+    if (!isViewmodelInitialized) {
+        LoadingDialog("Loading route result...")
+    }
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -67,7 +82,6 @@ fun NavigateRouteWithReroutingScreen(sampleName: String) {
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     locationDisplay = locationDisplay
                 )
-
                 mapViewModel.apply {
                     NavigateRouteOptions(
                         isNavigateEnabled = isNavigateButtonEnabled,
@@ -76,17 +90,14 @@ fun NavigateRouteWithReroutingScreen(sampleName: String) {
                         onRecenterClicked = ::recenterNavigation,
                         onResetClicked = ::resetNavigation
                     )
-
                     AnimatedVisibility(!isNavigateButtonEnabled) {
                         NavigationRouteInfo(
-                            nextStopText,
                             distanceRemainingText,
                             timeRemainingText,
                             nextDirectionText
                         )
                     }
-
-                    // display a MessageDialog if the sample encounters an error
+                    // Display a MessageDialog if the sample encounters an error
                     messageDialogVM.apply {
                         if (dialogStatus) {
                             MessageDialog(
@@ -104,7 +115,6 @@ fun NavigateRouteWithReroutingScreen(sampleName: String) {
 
 @Composable
 fun NavigationRouteInfo(
-    nextStopText: String,
     distanceRemainingText: String,
     timeRemainingText: String,
     nextDirectionText: String
@@ -116,11 +126,6 @@ fun NavigationRouteInfo(
             .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = nextStopText,
-            style = MaterialTheme.typography.bodyMedium
-        )
-
         Text(
             text = distanceRemainingText,
             style = MaterialTheme.typography.bodyMedium
