@@ -106,10 +106,7 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                     mapViewInteractionOptions = interactionOptions,
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onLayerViewStateChanged = {
-                        // On launch, ensure the map is loaded before calculating the download area
-                        if (mapViewModel.arcGISMap.loadStatus.value == LoadStatus.Loaded) {
-                            mapViewModel.calculateDownloadOfflineArea()
-                        }
+                        mapViewModel.calculateDownloadOfflineArea()
                     },
                     onViewpointChangedForCenterAndScale = {
                         mapViewModel.calculateDownloadOfflineArea()
