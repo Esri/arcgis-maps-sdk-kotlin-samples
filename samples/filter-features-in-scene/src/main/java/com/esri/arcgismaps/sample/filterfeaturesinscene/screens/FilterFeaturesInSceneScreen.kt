@@ -16,13 +16,11 @@
 
 package com.esri.arcgismaps.sample.filterfeaturesinscene.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,59 +47,49 @@ fun FilterFeaturesInSceneScreen(sampleName: String) {
 
     var filteringScene by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        content = { padding ->
-            Column(
+    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
+            SceneView(
                 modifier = Modifier
-                    .padding(padding)
                     .fillMaxSize()
-            ) {
-                SceneView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISScene = sceneViewModel.arcGISScene,
-                    graphicsOverlays = listOf(sceneViewModel.graphicsOverlay)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    if (!filteringScene) {
-                        Button(
-                            onClick = {
-                                sceneViewModel.filterScene()
-                                filteringScene = true
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.filter_osm_buildings))
-                        }
-
-                    } else {
-                        Button(
-                            onClick = {
-                                sceneViewModel.resetFilter()
-                                filteringScene = false
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.reset_filter))
-                        }
-                    }
-                }
-                // display a MessageDialog if the sample encounters an error
-                sceneViewModel.messageDialogVM.apply {
-                    if (dialogStatus) {
-                        MessageDialog(
-                            title = messageTitle,
-                            description = messageDescription,
-                            onDismissRequest = ::dismissDialog
-                        )
-                    }
+                    .weight(1f),
+                arcGISScene = sceneViewModel.arcGISScene,
+                graphicsOverlays = listOf(sceneViewModel.graphicsOverlay)
+            )
+            // display a MessageDialog if the sample encounters an error
+            sceneViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle, description = messageDescription, onDismissRequest = ::dismissDialog
+                    )
                 }
             }
         }
+    }, floatingActionButton = {
+        FloatingActionButton(
+            modifier = Modifier.padding(bottom = 16.dp),
+            onClick = {
+                if (!filteringScene) {
+                    sceneViewModel.filterScene()
+                    filteringScene = true
+                } else {
+                    sceneViewModel.resetFilter()
+                    filteringScene = false
+                }
+            }) {
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text = if (!filteringScene) {
+                    stringResource(R.string.filter_osm_buildings)
+                } else {
+                    stringResource(R.string.reset_filter)
+                }
+            )
+        }
+    }, floatingActionButtonPosition = FabPosition.Center
     )
 }
