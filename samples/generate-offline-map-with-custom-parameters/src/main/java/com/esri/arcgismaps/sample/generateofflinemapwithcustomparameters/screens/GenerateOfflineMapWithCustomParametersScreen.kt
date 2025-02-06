@@ -115,9 +115,9 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                 // Show bottom sheet with override parameter options
                 if (showBottomSheet) {
                     ModalBottomSheet(
-                        modifier = Modifier.wrapContentSize(), onDismissRequest = {
-                            showBottomSheet = false
-                        }, sheetState = sheetState
+                        modifier = Modifier.wrapContentSize(),
+                        onDismissRequest = { showBottomSheet = false },
+                        sheetState = sheetState
                     ) {
                         OverrideParameters(mapViewModel::defineGenerateOfflineMapParameters, ::setBottomSheetVisibility)
                     }
