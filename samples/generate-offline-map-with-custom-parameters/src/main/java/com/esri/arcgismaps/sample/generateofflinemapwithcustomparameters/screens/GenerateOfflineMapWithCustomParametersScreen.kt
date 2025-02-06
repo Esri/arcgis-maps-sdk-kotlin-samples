@@ -78,12 +78,11 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
     }
 
     // Set up the bottom sheet controls
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember { mutableStateOf(false) }
     fun setBottomSheetVisibility(isVisible: Boolean) {
         showBottomSheet = isVisible
     }
-
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = mapViewModel.snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
