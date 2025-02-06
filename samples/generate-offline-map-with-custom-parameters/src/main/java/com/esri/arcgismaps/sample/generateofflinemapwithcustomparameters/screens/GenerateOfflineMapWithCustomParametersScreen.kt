@@ -172,7 +172,6 @@ fun OverrideParameters(
     defineParameters: (Int, Int, Int, Boolean, Boolean, Int, Boolean) -> Unit,
     setBottomSheetVisibility: (Boolean) -> Unit
 ) {
-
     // Collection of parameter overrides to set in this composable
     var minScale by remember { mutableFloatStateOf(15f) }
     var maxScale by remember { mutableFloatStateOf(20f) }
