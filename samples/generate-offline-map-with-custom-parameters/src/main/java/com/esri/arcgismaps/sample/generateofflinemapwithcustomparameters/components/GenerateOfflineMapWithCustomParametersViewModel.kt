@@ -134,7 +134,6 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
      * Sets up a portal item and displays map area to take offline
      */
     private fun setUpMap() {
-
         // Create a portal item with the itemId of the web map
         val portal = Portal("https://www.arcgis.com")
         val portalItem = PortalItem(portal, "acc027394bc84c2fb04d1ed317aac674")
