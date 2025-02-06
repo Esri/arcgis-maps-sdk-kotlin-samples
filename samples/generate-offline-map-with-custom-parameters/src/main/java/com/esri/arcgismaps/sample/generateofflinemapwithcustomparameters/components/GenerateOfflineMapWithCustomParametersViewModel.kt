@@ -149,7 +149,6 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                 messageDialogVM.showMessageDialog(
                     title = it.message.toString()
                 )
-
             }
         }
         showResetButton = false
