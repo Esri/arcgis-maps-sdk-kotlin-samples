@@ -143,9 +143,8 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                 }
                 if (mapViewModel.showResetButton) {
                     Button(
-                        onClick = {
-                            mapViewModel.reset()
-                        }, modifier = Modifier.align(Alignment.CenterHorizontally)
+                        onClick = mapViewModel::reset,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text("Reset to online map")
                     }
