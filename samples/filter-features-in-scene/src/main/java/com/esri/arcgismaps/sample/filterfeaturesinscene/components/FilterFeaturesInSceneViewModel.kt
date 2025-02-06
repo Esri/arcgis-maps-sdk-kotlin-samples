@@ -69,7 +69,7 @@ class FilterFeaturesInSceneViewModel(application: Application) : AndroidViewMode
         operationalLayers.add(osmBuildingsSceneLayer)
         // Add the buildings scene layer to the operational layers
         operationalLayers.add(sanFranciscoBuildingsSceneLayer)
-        // Set the initial viewpoint of the scene
+        // Set the initial viewpoint of the scene to San Francisco
         initialViewpoint = Viewpoint(
             latitude = 37.7041,
             longitude = -122.421,
