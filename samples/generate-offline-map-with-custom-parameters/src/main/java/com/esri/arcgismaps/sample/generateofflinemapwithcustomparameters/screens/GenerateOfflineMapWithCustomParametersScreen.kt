@@ -119,7 +119,10 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                         onDismissRequest = { showBottomSheet = false },
                         sheetState = sheetState
                     ) {
-                        OverrideParameters(mapViewModel::defineGenerateOfflineMapParameters, ::setBottomSheetVisibility)
+                        OverrideParameters(
+                            defineParameters = mapViewModel::defineGenerateOfflineMapParameters,
+                            setBottomSheetVisibility = ::setBottomSheetVisibility
+                        )
                     }
                 }
                 // Display progress dialog while generating an offline map
