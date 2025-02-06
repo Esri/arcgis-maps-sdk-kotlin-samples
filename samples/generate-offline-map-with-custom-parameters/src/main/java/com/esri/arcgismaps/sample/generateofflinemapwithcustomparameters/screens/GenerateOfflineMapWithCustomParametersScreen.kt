@@ -195,8 +195,8 @@ fun OverrideParameters(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-            Text(text = "Adjust basemap", style = MaterialTheme.typography.labelLarge)
-            Row(
+        Text(text = "Adjust basemap", style = MaterialTheme.typography.labelLarge)
+        Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = CenterVertically
