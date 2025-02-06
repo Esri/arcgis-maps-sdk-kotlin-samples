@@ -154,10 +154,13 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
         // Floating action button to show the parameter overrides bottom sheet
         floatingActionButton = {
             if (!showBottomSheet && !mapViewModel.showResetButton) {
-                FloatingActionButton(modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
-                    onClick = { showBottomSheet = true }) {
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
+                    onClick = { showBottomSheet = true }
+                ) {
                     Icon(
-                        Icons.Filled.Settings, contentDescription = "Parameter overrides"
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "Parameter overrides"
                     )
                 }
             }
