@@ -32,7 +32,7 @@ After you have set up the overrides to your liking, tap the "Generate offline ma
     * Set the level IDs you want to download with `exportTileCacheParameters.levelIds.add(...)`.
     * To buffer the extent, use `exportTileCacheParameters.areaOfInterest` where bufferedGeometry can be calculated with the `GeometryEngine`.
 6. To remove operational layers from the download:
-    * Create a `OfflineParametersKey` with the operational layer.
+    * Create an `OfflineParametersKey` with the operational layer.
     * Get the generate geodatabase layer options using the key with `parameterOverrides.generateGeodatabaseParameters[key].layerOptions`
     * Using the `GenerateLayerOption` list, and remove the layer if its the layer option's ID matches the layer's ID.
 7. To filter the features downloaded in an operational layer:
