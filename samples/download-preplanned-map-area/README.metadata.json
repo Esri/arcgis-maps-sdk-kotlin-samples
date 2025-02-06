@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "DownloadPreplannedMapArea",
+    "ignore": false,
+    "images": [
+        "download-preplanned-map-area.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/downloadpreplannedmaparea/DownloadPreplannedMapAreaViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/downloadpreplannedmaparea/DownloadPreplannedMapAreaScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/downloadpreplannedmaparea/MainActivity.kt"
+    ],
+    "title": "Download preplanned map area"
+}
