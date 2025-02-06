@@ -351,7 +351,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     private fun getGenerateGeodatabaseParameters(
         parameterOverrides: GenerateOfflineMapParameterOverrides, targetFeatureLayer: FeatureLayer?
     ): GenerateGeodatabaseParameters? {
-        // get the named feature layer
+        // Get the named feature layer
         targetFeatureLayer?.let {
             val key = OfflineMapParametersKey(it)
             // Return the layer's geodatabase parameters options
