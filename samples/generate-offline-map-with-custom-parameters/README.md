@@ -34,7 +34,7 @@ After you have set up the overrides to your liking, tap the "Generate offline ma
 6. To remove operational layers from the download:
     * Create an `OfflineParametersKey` with the operational layer.
     * Get the generate geodatabase layer options using the key with `parameterOverrides.generateGeodatabaseParameters[key].layerOptions`
-    * Using the `GenerateLayerOption` list, and remove the layer if its the layer option's ID matches the layer's ID.
+    * Use the `GenerateLayerOption` list to remove the layer if the layer option's ID matches the layer's ID.
 7. To filter the features downloaded in an operational layer:
     * Get the layer options for the operational layer using the directions in step 6.
     * For the desired layer, set the filter clause with `generateLayerOption.whereClause(...)` and set the query option with `generateLayerOption.queryOption = GenerateLayerQueryOption.UseFilter`.
