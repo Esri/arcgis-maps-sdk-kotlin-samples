@@ -53,7 +53,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-
 class GenerateOfflineMapWithCustomParametersViewModel(private val application: Application) :
     AndroidViewModel(application) {
 
