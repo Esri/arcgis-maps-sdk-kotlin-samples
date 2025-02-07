@@ -54,41 +54,63 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
     // create a portal
     val portal = Portal("https://arcgisruntime.maps.arcgis.com")
     // get the USA States Generalized Boundaries layer from the portal using its ID
-    val portalItem = PortalItem(portal, "8c2d6d7df8fa4142b0a1211c8dd66903")
+    val portalItem = PortalItem(
+        portal = portal,
+        itemId = "8c2d6d7df8fa4142b0a1211c8dd66903"
+    )
     // create a feature layer from the portal item
-    private val usStatesGeneralizedLayer = FeatureLayer.createWithItemAndLayerId(portalItem, 0)
+    private val usStatesGeneralizedLayer = FeatureLayer.createWithItemAndLayerId(
+        item = portalItem,
+        layerId = 0
+    )
 
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
     // create graphic symbol for the tapped location
     private val tappedLocationGraphic =
-        Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.magenta, 15f))
+        Graphic(symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.X,
+            color = Color.magenta,
+            size = 15f
+        ))
 
     // create graphic symbol for the nearest coordinate
     private val nearestCoordinateGraphic =
-        Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.red, 10f))
+        Graphic(symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Diamond,
+            color = Color.red,
+            size = 10f
+        ))
 
     // create graphic symbol for the nearest vertex
     private val nearestVertexGraphic =
-        Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.blue, 15f))
+        Graphic(symbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Circle,
+            color = Color.blue,
+            size = 15f
+        ))
 
     // create a polygon geometry
     val polygon = PolygonBuilder(statePlaneCaliforniaZone5SpatialReference) {
-        addPoint(Point(6627416.41469281, 1804532.53233782))
-        addPoint(Point(6669147.89779046, 2479145.16609522))
-        addPoint(Point(7265673.02678292, 2484254.50442408))
-        addPoint(Point(7676192.55880379, 2001458.66365744))
+        addPoint(Point(x = 6627416.41469281, y = 1804532.53233782))
+        addPoint(Point(x = 6669147.89779046, y = 2479145.16609522))
+        addPoint(Point(x = 7265673.02678292, y = 2484254.50442408))
+        addPoint(Point(x = 7676192.55880379, y = 2001458.66365744))
     }.toGeometry()
     // set up the outline and fill color of the polygon
-    private val polygonOutlineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.green, 2f)
+    private val polygonOutlineSymbol = SimpleLineSymbol(
+        style = SimpleLineSymbolStyle.Solid,
+        color = Color.green,
+        width = 2f
+    )
     private val polygonFillSymbol = SimpleFillSymbol(
-        SimpleFillSymbolStyle.ForwardDiagonal,
-        Color.green,
-        polygonOutlineSymbol
+        style = SimpleFillSymbolStyle.ForwardDiagonal,
+        color = Color.green,
+        outline = polygonOutlineSymbol
     )
     // create a polygon graphic
-    private val polygonGraphic = Graphic(polygon, polygonFillSymbol)
+    private val polygonGraphic = Graphic(geometry = polygon, symbol = polygonFillSymbol)
     // create a graphics overlay to show the polygon, tapped location, and nearest vertex/coordinate
     val graphicsOverlay = GraphicsOverlay(
         listOf(
@@ -103,7 +125,10 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         ArcGISMap(statePlaneCaliforniaZone5SpatialReference).apply {
             // set the map viewpoint to the polygon
             initialViewpoint =
-                Viewpoint(polygon.extent.center, 8e6)
+                Viewpoint(
+                    center = polygon.extent.center,
+                    scale = 8e6
+                )
         }
     )
 
@@ -133,7 +158,7 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
      */
     fun onMapViewTapped(event: SingleTapConfirmedEvent) {
         event.mapPoint?.let { point ->
-            findNearestVertex(point, polygon)
+            findNearestVertex(mapPoint = point, polygon = polygon)
         }
     }
 
@@ -145,19 +170,22 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         tappedLocationGraphic.geometry = mapPoint
         // use the geometry engine to get the nearest vertex
         val nearestVertexResult =
-            GeometryEngine.nearestVertex(polygon, mapPoint)
+            GeometryEngine.nearestVertex(geometry = polygon, point = mapPoint)
         // set the nearest vertex graphic's geometry to the nearest vertex
         nearestVertexGraphic.geometry = nearestVertexResult?.coordinate
         // use the geometry engine to get the nearest coordinate
         val nearestCoordinateResult =
-            GeometryEngine.nearestCoordinate(polygon, mapPoint)
+            GeometryEngine.nearestCoordinate(geometry = polygon, point = mapPoint)
         // set the nearest coordinate graphic's geometry to the nearest coordinate
         nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
         // calculate the distances to the nearest vertex and nearest coordinate then convert to miles
         val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()!!
         val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()!!
         // update the distance information so the UI can display it
-        _distanceInformationFlow.value = DistanceInformation(vertexDistance, coordinateDistance)
+        _distanceInformationFlow.value = DistanceInformation(
+            vertexDistance = vertexDistance,
+            coordinateDistance = coordinateDistance
+        )
     }
 
     /**
@@ -165,7 +193,7 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
      */
     private val Color.Companion.blue: Color
         get() {
-            return fromRgba(0, 0, 255, 255)
+            return fromRgba(r = 0, g = 0, b = 255, a = 255)
         }
 
     /**
@@ -173,7 +201,7 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
      */
     private val Color.Companion.magenta: Color
         get() {
-            return fromRgba(255, 0, 255, 255)
+            return fromRgba(r = 255, g = 0, b = 255, a = 255)
         }
 
     /**
