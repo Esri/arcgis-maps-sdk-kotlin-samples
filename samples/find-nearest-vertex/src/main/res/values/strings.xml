@@ -1,5 +1,5 @@
 <resources>
     <string name="find_nearest_vertex_app_name">Find nearest vertex</string>
-    <string name="nearest_vertex_and_coordinate">Vertex distance: %1$d mi\nCoordinate distance: %1$d mi</string>
+    <string name="nearest_vertex_and_coordinate">Vertex distance: %1$d mi\nCoordinate distance: %2$d mi</string>
     <string name="tap_on_the_map_to_find_vertex">Tap on the map to find vertex</string>
 </resources>
