@@ -73,8 +73,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApplyHillshadeRendererToRasterScreen(sampleName: String) {
-    val mapViewModel: ApplyHillshadeRendererToRasterViewModel =
-        viewModel<ApplyHillshadeRendererToRasterViewModel>().apply { initialize() }
+    val mapViewModel: ApplyHillshadeRendererToRasterViewModel = viewModel()
 
     // Set up the bottom sheet controls
     val controlsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

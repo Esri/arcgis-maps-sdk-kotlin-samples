@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.applyhillshaderenderertoraster.components
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.layers.RasterLayer
 import com.arcgismaps.mapping.symbology.raster.HillshadeRenderer
@@ -26,7 +25,6 @@ import com.arcgismaps.raster.Raster
 import com.arcgismaps.raster.SlopeType
 import com.esri.arcgismaps.sample.applyhillshaderenderertoraster.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.launch
 import java.io.File
 
 class ApplyHillshadeRendererToRasterViewModel(application: Application) :
@@ -45,24 +43,16 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
     val messageDialogVM = MessageDialogViewModel()
 
     // Create raster
-    private val raster by lazy {
-        Raster.createWithPath(path = "$provisionPath/srtm-hillshade/srtm.tiff")
-    }
+    private val raster = Raster.createWithPath(path = "$provisionPath/srtm-hillshade/srtm.tiff")
 
     // Create raster layer
-    private val rasterLayer by lazy {
-        RasterLayer(raster)
-    }
+    private val rasterLayer = RasterLayer(raster)
 
-    fun initialize() {
-        viewModelScope.launch {
-            // Load raster layer
-            rasterLayer.load().getOrElse { messageDialogVM.showMessageDialog(it.toString()) }
-            // Add raster layer to a blank map
-            arcGISMap.operationalLayers.add(rasterLayer)
-            // Apply the renderer values
-            updateRenderer(altitude = 45.0, azimuth = 0.0, slopeType = SlopeType.None)
-        }
+    init {
+        // Add raster layer to a blank map
+        arcGISMap.operationalLayers.add(rasterLayer)
+        // Apply the renderer values
+        updateRenderer(altitude = 45.0, azimuth = 0.0, slopeType = SlopeType.None)
     }
 
     /**
