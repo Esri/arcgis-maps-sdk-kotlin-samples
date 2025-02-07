@@ -44,7 +44,7 @@ fun FindNearestVertexScreen(sampleName: String) {
     val distanceInfo by mapViewModel.distanceInformationFlow.collectAsStateWithLifecycle()
     val displayText  =
         distanceInfo?.let { (vertexDistance, coordinateDistance) ->
-            stringResource(R.string.nearest_vertex, vertexDistance) + "\n" + stringResource(R.string.nearest_coordinate, coordinateDistance)
+            stringResource(R.string.nearest_vertex_and_coordinate, vertexDistance, coordinateDistance)
         } ?: stringResource(R.string.tap_on_the_map_to_find_vertex)
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
