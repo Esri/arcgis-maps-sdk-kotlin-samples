@@ -10,8 +10,10 @@
         "analysis",
         "coordinate",
         "geometry",
+        "geoview-compose",
         "nearest",
         "proximity",
+        "toolkit",
         "vertex",
         "GeometryEngine",
         "ProximityResult"
