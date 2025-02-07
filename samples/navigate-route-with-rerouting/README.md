@@ -17,14 +17,11 @@ Tap "Navigate" to simulate traveling and to receive directions from a preset sta
 1. Create a `RouteTask` using local network data.
 2. Generate default `RouteParameters` using `RouteTask.createDefaultParameters()`.
 3. Set `returnRoutes`, `returnStops`, and `returnDirections` on the `RouteParameters` to `true`.
-4. Add `Stop`s to the parameters' list of `stops` using `RouteParameters.setStops()`.
+4. Add `Stop`s to the parameters' list of `stops` using `RouteParameters.setStops(...)`.
 5. Solve the route using `routeTask.solveRoute(routeParameters)` to get an `RouteResult`.
 6. Create an `RouteTracker` using the route result, and the index of the desired route to take.
 7. Enable rerouting in the route tracker using `routeTracker.enableRerouting(reroutingParameters)`. Pass `ReroutingStrategy.ToNextWaypoint` as the value of `strategy` to specify that in the case of a reroute, the new route goes from present location to next waypoint or stop.
-8. Implement `RouteTracker.trackLocation()` to track the location of the device and update the route tracking status.
-9. Implement `RouteTracker.TrackingStatusChangedListener()` to be notified of `TrackingStatus` changes, and use them to display updated route information. `TrackingStatus` includes a variety of information on the route progress, such as the remaining distance, remaining geometry or traversed geometry (represented by an `Polyline`), or the remaining time (`Double`), amongst others.
-10. You can also query the tracking status for the current `DirectionManeuver` index by retrieving that maneuver from the `Route` and getting its direction text to display in the GUI.
-11. To establish whether the destination has been reached, get the `DestinationStatus` from the tracking status. If the destination status is `DestinationStatus.Reached` and the `DirectionManeuvers.size` is 1, you have arrived at the destination and can stop routing. If there are several destinations on your route and the remaining destination count is greater than 1, switch the route tracker to the next destination.
+8. Retrieve the `routeTracker.trackingStatus` state flow values to track status and progress updates as a route is traversed.
 
 ## Relevant API
 

@@ -61,7 +61,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.Instant
-import java.util.concurrent.atomic.AtomicBoolean
 
 class NavigateRouteWithReroutingViewModel(application: Application) :
     AndroidViewModel(application) {
@@ -76,7 +75,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
     val mapViewProxy = MapViewProxy()
 
     // The map to display basemap, route traveled & route ahead graphics
-    val map = ArcGISMap(BasemapStyle.ArcGISStreets)
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets)
 
     // Graphics overlay to display the route ahead and traveled graphics
     val graphicsOverlay = GraphicsOverlay()
@@ -96,7 +95,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
         .apply { name = "RH Fleet Aerospace Museum" }
 
     // Generate a route with directions and stops for navigation
-    val routeTask = RouteTask(
+    private val routeTask = RouteTask(
         pathToDatabase = "$provisionPath/sandiego.geodatabase",
         networkName = "Streets_ND"
     )
@@ -141,7 +140,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
         private set
 
     // Boolean to check if Android text-speech is initialized
-    private var isTextToSpeechInitialized = AtomicBoolean(false)
+    private var isTextToSpeechInitialized = false
 
     // Instance of Android text-speech
     private var textToSpeech: TextToSpeech? = null
@@ -165,7 +164,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
         textToSpeech = TextToSpeech(context) { status ->
             if (status != TextToSpeech.ERROR) {
                 textToSpeech?.language = context.resources.configuration.locales[0]
-                isTextToSpeechInitialized.set(true)
+                isTextToSpeechInitialized = true
             }
         }
         // Load and set the route parameters
@@ -178,7 +177,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
                     returnRoutes = true
                 }
             // Load the map
-            map.load().onFailure { return@launch messageDialogVM.showMessageDialog(it) }
+            arcGISMap.load().onFailure { return@launch messageDialogVM.showMessageDialog(it) }
             // Get the solved route result
             routeResult = routeTask.solveRoute(routeParameters).getOrElse {
                 return@launch messageDialogVM.showMessageDialog(it)
@@ -215,7 +214,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             skipCoincidentStops = true
         ).apply {
             setSpeechEngineReadyCallback {
-                isTextToSpeechInitialized.get() && textToSpeech?.isSpeaking == false
+                isTextToSpeechInitialized && textToSpeech?.isSpeaking == false
             }
         }
         // Manage the job which triggers the location display
@@ -240,14 +239,15 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
                     routeTracker = routeTracker,
                     locationDataSource = simulatedLocationDataSource
                 )
-                // Set the simulated location data source as the location data source for this app
-                locationDisplay.dataSource = routeTrackerLocationDataSource
-                // Start the location data source
-                locationDisplay.dataSource.start().getOrElse {
-                    return@launch messageDialogVM.showMessageDialog(it)
+                locationDisplay.apply {
+                    // Set the simulated location data source as the location data source for this app
+                    dataSource = routeTrackerLocationDataSource.also {
+                        // Start the location data source
+                        it.start().onFailure { return@launch messageDialogVM.showMessageDialog(it) }
+                    }
+                    // Set the auto pan to navigation mode
+                    setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
                 }
-                // Set the auto pan to navigation mode
-                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
                 // Plays the direction voice guidance
                 updateVoiceGuidance(routeTracker)
                 // Zoom in the scale to focus on the navigation route

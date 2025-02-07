@@ -77,7 +77,7 @@ fun NavigateRouteWithReroutingScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f)
                         .animateContentSize(),
-                    arcGISMap = mapViewModel.map,
+                    arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
                     locationDisplay = locationDisplay
