@@ -107,17 +107,17 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         }
     )
 
-    // state flow of a point and its projection for presentation in UI
+    // state flow of nearest vertex distance and nearest coordinate distance for presentation in UI
     private val _distanceInformationFlow = MutableStateFlow<DistanceInformation?>(null)
     val distanceInformationFlow = _distanceInformationFlow.asStateFlow()
 
-    // Create a message dialog view model for handling error messages
+    // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
             arcGISMap.load().onSuccess {
-                // and add the feature layer to the map's operational layers
+                // and add the USA States Generalized Boundaries feature layer to the map's operational layers
                 arcGISMap.operationalLayers.add(usStatesGeneralizedLayer)
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
@@ -138,7 +138,7 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
     }
 
     /**
-     * Finds the nearest vertex from [mapPoint] from the [polygon]
+     * Finds the nearest vertex from [mapPoint] from the [polygon].
      */
     private fun findNearestVertex(mapPoint: Point, polygon: Polygon) {
         // show where the user clicked
