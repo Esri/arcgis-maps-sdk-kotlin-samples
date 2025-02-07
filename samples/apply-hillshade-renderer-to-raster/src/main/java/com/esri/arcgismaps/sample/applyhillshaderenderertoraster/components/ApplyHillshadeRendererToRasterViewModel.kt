@@ -54,7 +54,7 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
         RasterLayer(raster)
     }
 
-    init {
+    fun initialize() {
         viewModelScope.launch {
             // Load raster layer
             rasterLayer.load().getOrElse { messageDialogVM.showMessageDialog(it.toString()) }
