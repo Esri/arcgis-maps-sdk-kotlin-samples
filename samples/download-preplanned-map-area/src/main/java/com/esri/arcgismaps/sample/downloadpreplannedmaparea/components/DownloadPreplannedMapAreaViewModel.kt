@@ -17,9 +17,8 @@
 package com.esri.arcgismaps.sample.downloadpreplannedmaparea.components
 
 import android.app.Application
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
@@ -42,6 +41,7 @@ import java.io.File
 
 class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidViewModel(application) {
 
+    // The directory where the offline map will be saved
     private val offlineMapDirectory by lazy {
         File(application.externalCacheDir?.path + application.getString(R.string.download_preplanned_map_area_app_name))
     }
@@ -52,19 +52,26 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
     // create a portal item using the portal and the item id of a map service
     val portalItem = PortalItem(portal, "acc027394bc84c2fb04d1ed317aac674")
 
-    val onlineMap = ArcGISMap(portalItem)
+    private val offlineMapTask = OfflineMapTask(portalItem)
 
+    // A list of preplanned map areas populated by the offline map task
+    private var preplannedMapAreas = mutableListOf<PreplannedMapArea>()
+
+    // Keep a hash map of downloaded maps
+    private var downloadedMapAreas: HashMap<String, ArcGISMap> = hashMapOf()
+
+    // An online map created from the portal item
+    private val onlineMap = ArcGISMap(portalItem)
+
+    // The current map shown in the map view
     var currentMap by mutableStateOf(onlineMap)
 
-    val offlineMapTask = OfflineMapTask(portalItem)
+    // A flow of preplanned map areas and their download status
+    private var _preplannedMapAreaInfoFlow = MutableStateFlow<List<PreplannedMapAreaInfo>>(listOf())
+    var preplannedMapAreaInfoFlow = _preplannedMapAreaInfoFlow.asStateFlow()
 
-    private var _preplannedMapAreaInfoList = mutableStateListOf<PreplannedMapAreaInfo>()
-    val preplannedMapAreaInfoList: List<PreplannedMapAreaInfo> = _preplannedMapAreaInfoList
-
-    var preplannedMapAreas = mutableListOf<PreplannedMapArea>()
-
-    private var _downloadProgress = MutableStateFlow<Float?>(null)
-    val downloadProgress = _downloadProgress.asStateFlow()
+    // Defined to send messages related to offlineMapJob
+    val snackbarHostState = SnackbarHostState()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -77,18 +84,12 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
 
                 // Add all of the preplanned map areas name and download status to a list
                 it.forEach { preplannedMapArea ->
-                    _preplannedMapAreaInfoList.add(
-                        PreplannedMapAreaInfo(
-                            name = preplannedMapArea.portalItem.title
-                        )
+                    _preplannedMapAreaInfoFlow.value += PreplannedMapAreaInfo(
+                        name = preplannedMapArea.portalItem.title, progress = 0f, isDownloaded = false
                     )
                 }
             }
         }
-
-
-
-
 
         viewModelScope.launch {
             onlineMap.load().onFailure { error ->
@@ -109,21 +110,27 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
     /**
      * Download or show the already downloaded preplanned map area.
      */
-    fun downloadOrShowMap(preplannedMapAreaListItem: PreplannedMapAreaInfo) {
-        if (preplannedMapAreaListItem.isDownloaded) {
-            showOfflineMap(preplannedMapAreaListItem)
+    fun downloadOrShowOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {
+        if (preplannedMapAreaInfo.isDownloaded) {
+            showOfflineMap(preplannedMapAreaInfo)
         } else {
-            downloadOfflineMap(preplannedMapAreaListItem)
+            downloadOfflineMap(preplannedMapAreaInfo)
         }
     }
 
     /**
      * Show the offline map of the given preplanned map area name.
      */
-    fun showOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {
-
+    private fun showOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {
+        downloadedMapAreas[preplannedMapAreaInfo.name]?.let {
+            currentMap = it
+        }
     }
 
+    /**
+     * Use the [OfflineMapTask]to create [DownloadPreplannedOfflineMapParameters] for the given [PreplannedMapArea].
+     * Then use the task to create a [DownloadPreplannedOfflineMapJob] to download the preplanned offline map.
+     */
     private fun downloadOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {
         viewModelScope.launch(Dispatchers.IO) {
             // Get the area of interest for the preplanned map area
@@ -132,42 +139,37 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                 offlineMapTask.createDefaultDownloadPreplannedOfflineMapParameters(preplannedMapArea).onSuccess {
                     // Set the update mode to receive no updates
                     it.updateMode = PreplannedUpdateMode.NoUpdates
-
+                    // Define the path where the map will be saved
                     val downloadDirectoryPath = offlineMapDirectory.path + File.separator + preplannedMapAreaInfo.name
                     File(downloadDirectoryPath).mkdirs()
-
-                    // create a job to download the preplanned offline map to a temporary directory
+                    // Create a job to download the preplanned offline map
                     val downloadPreplannedOfflineMapJob = offlineMapTask.createDownloadPreplannedOfflineMapJob(
                         parameters = it, downloadDirectoryPath = downloadDirectoryPath
                     )
-
                     runOfflineMapJob(downloadPreplannedOfflineMapJob, preplannedMapAreaInfo)
                 }
             }
         }
-
     }
 
-
     /**
-     * Starts the [GenerateOfflineMapJob], shows the progress dialog and
-     * displays the result offline map to the MapView
+     * Starts the [GenerateOfflineMapJob], shows the progress dialog and displays the result offline map to the MapView.
      */
     private fun runOfflineMapJob(
         downloadPreplannedOfflineMapJob: DownloadPreplannedOfflineMapJob, preplannedMapAreaInfo: PreplannedMapAreaInfo
     ) {
-
         with(viewModelScope) {
-
             // Create a flow-collection for the job's progress
             launch(Dispatchers.Main) {
                 downloadPreplannedOfflineMapJob.progress.collect { progress ->
-                    val index = _preplannedMapAreaInfoList.indexOf(preplannedMapAreaInfo)
-                    // Display the current job's progress value
-                    _preplannedMapAreaInfoList.remove(preplannedMapAreaInfo)
-                    _preplannedMapAreaInfoList.add(index, preplannedMapAreaInfo.apply {
-                        this.progress = (progress / 100).toFloat()
-                    })
+                    // Update the UI to show the download progress
+                    _preplannedMapAreaInfoFlow.value = _preplannedMapAreaInfoFlow.value.map {
+                        if (it.name == preplannedMapAreaInfo.name) {
+                            it.copy(progress = progress.toFloat() / 100)
+                        } else {
+                            it
+                        }
+                    }
                 }
             }
 
@@ -178,8 +180,20 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                     // Set the offline map result as the displayed
                     currentMap = it.offlineMap
 
+                    // Update the UI to show the map as downloaded
+                    _preplannedMapAreaInfoFlow.value = _preplannedMapAreaInfoFlow.value.map {
+                        if (it.name == preplannedMapAreaInfo.name) {
+                            it.copy(isDownloaded = true)
+                        } else {
+                            it
+                        }
+                    }
+
+                    // Add the downloaded map to the list of downloaded maps
+                    downloadedMapAreas[preplannedMapAreaInfo.name] = it.offlineMap
+
                     // Show user where map was locally saved
-                    //snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
+                    snackbarHostState.showSnackbar(message = "Map saved at: " + downloadPreplannedOfflineMapJob.downloadDirectoryPath)
 
                 }.onFailure { throwable ->
                     messageDialogVM.showMessageDialog(
@@ -188,11 +202,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                 }
             }
         }
-
     }
 }
 
-class PreplannedMapAreaInfo(val name: String) {
-    var progress by mutableFloatStateOf(0.0f)
-    var isDownloaded by mutableStateOf(false)
-}
+data class PreplannedMapAreaInfo(val name: String, val progress: Float, val isDownloaded: Boolean)

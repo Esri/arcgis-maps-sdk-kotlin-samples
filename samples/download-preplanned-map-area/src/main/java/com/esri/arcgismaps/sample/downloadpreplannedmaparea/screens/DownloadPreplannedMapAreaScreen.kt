@@ -39,9 +39,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +61,7 @@ import com.esri.arcgismaps.sample.downloadpreplannedmaparea.components.DownloadP
 import com.esri.arcgismaps.sample.downloadpreplannedmaparea.components.PreplannedMapAreaInfo
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Main screen layout for the sample app
@@ -70,58 +73,53 @@ fun DownloadPreplannedMapAreaScreen(sampleName: String) {
 
     // Set up the bottom sheet controls
     var showBottomSheet by remember { mutableStateOf(false) }
-    fun setBottomSheetVisibility(isVisible: Boolean) {
-        showBottomSheet = isVisible
-    }
-
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-        ) {
-            MapView(
+    Scaffold(snackbarHost = { SnackbarHost(hostState = mapViewModel.snackbarHostState) },
+        topBar = { SampleTopAppBar(title = sampleName) },
+        content = {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f),
-                arcGISMap = mapViewModel.currentMap,
-            )
-            // Show bottom sheet with override parameter options
-            if (showBottomSheet) {
-                ModalBottomSheet(
-                    modifier = Modifier.wrapContentSize(), onDismissRequest = {
-                        showBottomSheet = false
-                    }, sheetState = sheetState
-                ) {
-                    DownloadPreplannedMap(
-                        mapViewModel::showOnlineMap,
-                        mapViewModel::downloadOrShowMap,
-                        mapViewModel.preplannedMapAreaInfoList
+                    .padding(it),
+            ) {
+                MapView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    arcGISMap = mapViewModel.currentMap,
+                )
+                // Show bottom sheet with override parameter options
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        modifier = Modifier.wrapContentSize(), onDismissRequest = {
+                            showBottomSheet = false
+                        }, sheetState = sheetState
+                    ) {
+                        DownloadPreplannedMap(
+                            mapViewModel::showOnlineMap,
+                            mapViewModel::downloadOrShowOfflineMap,
+                            mapViewModel.preplannedMapAreaInfoFlow
+                        )
+                    }
+                }
+            }
+            mapViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle, description = messageDescription, onDismissRequest = ::dismissDialog
                     )
                 }
             }
-        }
-
-        mapViewModel.messageDialogVM.apply {
-            if (dialogStatus) {
-                MessageDialog(
-                    title = messageTitle, description = messageDescription, onDismissRequest = ::dismissDialog
-                )
-            }
-        }
-    },
-        // Floating action button to show the parameter overrides bottom sheet
+        },
         floatingActionButton = {
             if (!showBottomSheet) {
                 FloatingActionButton(modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { showBottomSheet = true }) {
                     Icon(
-                        Icons.Filled.Settings, contentDescription = "Parameter overrides"
+                        Icons.Filled.Settings, contentDescription = "Select map"
                     )
                 }
-
             }
         })
 }
@@ -130,11 +128,8 @@ fun DownloadPreplannedMapAreaScreen(sampleName: String) {
 fun DownloadPreplannedMap(
     showOnlineMap: () -> Unit,
     downloadOrShowMap: (PreplannedMapAreaInfo) -> Unit,
-    preplannedMapAreas: List<PreplannedMapAreaInfo>
+    preplannedMapAreaInfoFlow: StateFlow<List<PreplannedMapAreaInfo>>
 ) {
-
-    val mapViewModel: DownloadPreplannedMapAreaViewModel = viewModel()
-
     Column(
         modifier = Modifier
             .wrapContentSize()
@@ -144,11 +139,11 @@ fun DownloadPreplannedMap(
         horizontalAlignment = Alignment.Start,
     ) {
         Text(
-            text = "Select map",
-            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
+                .padding(16.dp),
+            text = "Select map",
+            style = MaterialTheme.typography.titleLarge
         )
         Card(modifier = Modifier.wrapContentSize()) {
             Row(
@@ -162,12 +157,9 @@ fun DownloadPreplannedMap(
                 Text("Web map (online)")
             }
         }
-
         Text(text = "Preplanned map areas", modifier = Modifier.padding(top = 16.dp, start = 8.dp, bottom = 4.dp))
-        Card(
-            modifier = Modifier.wrapContentSize(),
-        ) {
-           preplannedMapAreas.forEach {
+        Card(modifier = Modifier.wrapContentSize()) {
+            preplannedMapAreaInfoFlow.collectAsState().value.forEach {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -178,20 +170,17 @@ fun DownloadPreplannedMap(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = CenterVertically,
                 ) {
-
                     if (!it.isDownloaded) {
-                        if (it.progress > 0) {
+                        if (it.progress <= 0) {
                             Icon(
                                 painter = painterResource(R.drawable.baseline_download_for_offline_24),
                                 contentDescription = "Download"
                             )
                         } else {
                             CircularProgressIndicator(
-                                modifier = Modifier.requiredSize(24.dp),
-                                progress = { it.progress }
-                            )
+                                modifier = Modifier.requiredSize(18.dp),
+                                progress = { it.progress })
                         }
-
                     }
                     Text(
                         text = it.name, color = if (it.isDownloaded) {
