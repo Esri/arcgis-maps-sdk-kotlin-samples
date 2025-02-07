@@ -54,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.generateofflinemapwithcustomparameters.components.GenerateOfflineMapWithCustomParametersViewModel
@@ -70,12 +69,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
     // Create a ViewModel to handle MapView interactions
     val mapViewModel: GenerateOfflineMapWithCustomParametersViewModel = viewModel()
-
-    val interactionOptions = remember {
-        MapViewInteractionOptions().apply {
-            isRotateEnabled = false
-        }
-    }
 
     // Set up the bottom sheet controls
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -103,7 +96,7 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                     },
                     arcGISMap = mapViewModel.arcGISMap,
                     graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
-                    mapViewInteractionOptions = interactionOptions,
+                    mapViewInteractionOptions = MapViewInteractionOptions(isRotateEnabled = false),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onLayerViewStateChanged = {
                         mapViewModel.calculateDownloadOfflineArea()
