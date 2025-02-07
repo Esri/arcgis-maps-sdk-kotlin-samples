@@ -23,9 +23,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.findnearestvertex.R
@@ -39,6 +41,11 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun FindNearestVertexScreen(sampleName: String) {
     val mapViewModel: FindNearestVertexViewModel = viewModel()
+    val distanceInfo by mapViewModel.distanceInformationFlow.collectAsStateWithLifecycle()
+    val displayText  =
+        distanceInfo?.let { (vertexDistance, coordinateDistance) ->
+            stringResource(R.string.nearest_vertex, vertexDistance) + "\n" + stringResource(R.string.nearest_coordinate, coordinateDistance)
+        } ?: stringResource(R.string.tap_on_the_map_to_find_vertex)
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -58,7 +65,7 @@ fun FindNearestVertexScreen(sampleName: String) {
                 )
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.tap_on_the_map_to_find_vertex),
+                    text = displayText,
                     textAlign = TextAlign.Center,
                     minLines = 2
                 )

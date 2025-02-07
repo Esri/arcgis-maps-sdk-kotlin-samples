@@ -43,28 +43,33 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FindNearestVertexViewModel(application: Application) : AndroidViewModel(application) {
     // California zone 5 (ftUS) state plane coordinate system.
     private val statePlaneCaliforniaZone5SpatialReference = SpatialReference(2229)
 
+    // create a portal
     val portal = Portal("https://arcgisruntime.maps.arcgis.com")
+    // get the USA States Generalized Boundaries layer from the portal using its ID
     val portalItem = PortalItem(portal, "8c2d6d7df8fa4142b0a1211c8dd66903")
+    // create a feature layer from the portal item
     private val usStatesGeneralizedLayer = FeatureLayer.createWithItemAndLayerId(portalItem, 0)
 
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
-    // create graphics with symbols for tapped location, nearest coordinate, and nearest vertex
+    // create graphic symbol for the tapped location
     private val tappedLocationGraphic =
         Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.X, Color.magenta, 15f))
 
-    // create graphic symbol of the nearest coordinate
+    // create graphic symbol for the nearest coordinate
     private val nearestCoordinateGraphic =
         Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Diamond, Color.red, 10f))
 
-    // create graphic symbol of the nearest vertex
+    // create graphic symbol for the nearest vertex
     private val nearestVertexGraphic =
         Graphic(symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.blue, 15f))
 
@@ -94,14 +99,17 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         )
     )
 
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     val arcGISMap by mutableStateOf(
         ArcGISMap(statePlaneCaliforniaZone5SpatialReference).apply {
             // set the map viewpoint to the polygon
             initialViewpoint =
-                Viewpoint(polygon.extent)
+                Viewpoint(polygon.extent.center, 8e6)
         }
     )
+
+    // state flow of a point and its projection for presentation in UI
+    private val _distanceInformationFlow = MutableStateFlow<DistanceInformation?>(null)
+    val distanceInformationFlow = _distanceInformationFlow.asStateFlow()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -126,7 +134,6 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
     fun onMapViewTapped(event: SingleTapConfirmedEvent) {
         event.mapPoint?.let { point ->
             findNearestVertex(point, polygon)
-            mapViewProxy.setViewpoint(Viewpoint(polygon))
         }
     }
 
@@ -146,26 +153,31 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
             GeometryEngine.nearestCoordinate(polygon, mapPoint)
         // set the nearest coordinate graphic's geometry to the nearest coordinate
         nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
-        // show the distances to the nearest vertex and nearest coordinate
-        //distanceLayout.visibility = View.VISIBLE
-        // convert distance to miles
-        val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt() // MAGIC NUMBER - CHANGE?
-        val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()
-        // set the distance to the text views
-        //vertexDistanceTextView.text = getString(R.string.nearest_vertex, vertexDistance)
-        //coordinateDistanceTextView.text =
-        //    getString(R.string.nearest_coordinate, coordinateDistance)
-
+        // calculate the distances to the nearest vertex and nearest coordinate then convert to miles
+        val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()!!
+        val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()!!
+        // update the distance information so the UI can display it
+        _distanceInformationFlow.value = DistanceInformation(vertexDistance, coordinateDistance)
     }
 
+    /**
+     * Define a blue color for the nearest vertex graphic.
+     */
     private val Color.Companion.blue: Color
         get() {
             return fromRgba(0, 0, 255, 255)
         }
 
+    /**
+     * Define a magenta color for the tapped location graphic.
+     */
     private val Color.Companion.magenta: Color
         get() {
             return fromRgba(255, 0, 255, 255)
         }
 
+    /**
+     * Data class representing vertex distance and coordinate distance.
+     */
+    data class DistanceInformation (val vertexDistance: Int, val coordinateDistance: Int)
 }
