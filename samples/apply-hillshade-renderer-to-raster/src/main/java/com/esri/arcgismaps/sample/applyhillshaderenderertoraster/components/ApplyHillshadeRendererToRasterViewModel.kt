@@ -18,81 +18,67 @@ package com.esri.arcgismaps.sample.applyhillshaderenderertoraster.components
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.RasterLayer
 import com.arcgismaps.mapping.symbology.raster.HillshadeRenderer
-import com.arcgismaps.raster.MosaicDatasetRaster
+import com.arcgismaps.raster.Raster
 import com.arcgismaps.raster.SlopeType
 import com.esri.arcgismaps.sample.applyhillshaderenderertoraster.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.launch
 import java.io.File
 
 class ApplyHillshadeRendererToRasterViewModel(application: Application) :
     AndroidViewModel(application) {
 
     private val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() +
-                File.separator + application.getString(R.string.apply_hillshade_renderer_to_raster_app_name)
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
+            R.string.apply_hillshade_renderer_to_raster_app_name
+        )
     }
 
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-        initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-    }
+    // Blank map to display raster layer
+    val arcGISMap = ArcGISMap()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // set default values for the HillshadeRenderer parameter values
-    var currentHillshadeRenderer = HillshadeParameterValues(
-        altitude = 0.0,
-        azimuth = 0.0,
-        slopeType = SlopeType.None,
-        mAltitude = 45,
-        zFactor = 0.000016,
-        pixelSizeFactor = 1.0,
-        pixelSizePower = 1.0,
-        outputBitDepth = 8,
-    )
-
-    init {
-        // Create raster
-        val raster = MosaicDatasetRaster(
-            databasePath = "$provisionPath/srtm-hillshade/srtm.tiff",
-            name = "Hillshade"
-        )
-
-        // Create raster layer
-        val rasterLayer = RasterLayer(raster)
-
-        arcGISMap.operationalLayers.add(rasterLayer)
-
-        updateRenderer(rasterLayer)
+    // Create raster
+    private val raster by lazy {
+        Raster.createWithPath(path = "$provisionPath/srtm-hillshade/srtm.tiff")
     }
 
-    private fun updateRenderer(rasterLayer: RasterLayer) {
+    // Create raster layer
+    private val rasterLayer by lazy {
+        RasterLayer(raster)
+    }
+
+    init {
+        viewModelScope.launch {
+            // Load raster layer
+            rasterLayer.load().getOrElse { messageDialogVM.showMessageDialog(it.toString()) }
+            // Add raster layer to a blank map
+            arcGISMap.operationalLayers.add(rasterLayer)
+            // Apply the renderer values
+            updateRenderer(altitude = 45.0, azimuth = 0.0, slopeType = SlopeType.None)
+        }
+    }
+
+    /**
+     * Updates the current raster layer with a new [HillshadeRenderer] using the provided parameters.
+     */
+    fun updateRenderer(altitude: Double, azimuth: Double, slopeType: SlopeType) {
         // Create blend renderer
         val hillshadeRenderer = HillshadeRenderer.create(
-            altitude = currentHillshadeRenderer.altitude,
-            azimuth = currentHillshadeRenderer.azimuth,
-            zFactor = currentHillshadeRenderer.zFactor,
-            slopeType = SlopeType.None,
-            pixelSizeFactor = currentHillshadeRenderer.pixelSizeFactor,
-            pixelSizePower = currentHillshadeRenderer.pixelSizePower
+            altitude = altitude,
+            azimuth = azimuth,
+            slopeType = slopeType,
+            zFactor = 0.000016,
+            pixelSizeFactor = 1.0,
+            pixelSizePower = 1.0,
+            outputBitDepth = 8
         )
-
         rasterLayer.renderer = hillshadeRenderer
     }
 }
-
-data class HillshadeParameterValues(
-    val altitude: Double,
-    val azimuth: Double,
-    val slopeType: SlopeType,
-    val outputBitDepth: Int,
-    val pixelSizePower: Double,
-    val pixelSizeFactor: Double,
-    val zFactor: Double,
-    val mAltitude: Int
-)
