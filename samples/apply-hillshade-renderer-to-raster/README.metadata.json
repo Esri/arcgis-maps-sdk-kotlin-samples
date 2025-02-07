@@ -1,0 +1,20 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "ApplyHillshadeRendererToRaster",
+    "ignore": false,
+    "images": [
+        "apply-hillshade-renderer-to-raster.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/ApplyHillshadeRendererToRasterViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/ApplyHillshadeRendererToRasterScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/MainActivity.kt"
+    ],
+    "title": "Apply hillshade renderer to raster"
+}
