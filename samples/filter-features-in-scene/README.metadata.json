@@ -1,0 +1,36 @@
+{
+    "category": "Scenes",
+    "description": "Filter 3D scene features out of a given geometry with a polygon filter.",
+    "formal_name": "FilterFeaturesInScene",
+    "ignore": false,
+    "images": [
+        "filter-features-in-scene.png"
+    ],
+    "keywords": [
+        "3D",
+        "OSM",
+        "buildings",
+        "disjoint",
+        "exclude",
+        "extent",
+        "filter",
+        "hide",
+        "polygon",
+        "ArcGISSceneLayer",
+        "SceneLayerPolygonFilter",
+        "SceneLayerPolygonFilterSpatialRelationship"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISSceneLayer",
+        "SceneLayerPolygonFilter",
+        "SceneLayerPolygonFilterSpatialRelationship"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/filterfeaturesinscene/components/FilterFeaturesInSceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/filterfeaturesinscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/filterfeaturesinscene/screens/FilterFeaturesInSceneScreen.kt"
+    ],
+    "title": "Filter features in scene"
+}
