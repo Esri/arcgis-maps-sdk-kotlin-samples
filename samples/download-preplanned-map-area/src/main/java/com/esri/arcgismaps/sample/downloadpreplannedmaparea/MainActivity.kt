@@ -47,10 +47,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         // Delete the offline map directory when the app is stopped
-        offlineMapDirectory.deleteOnExit()
+        offlineMapDirectory.deleteRecursively()
     }
 
     @Composable
