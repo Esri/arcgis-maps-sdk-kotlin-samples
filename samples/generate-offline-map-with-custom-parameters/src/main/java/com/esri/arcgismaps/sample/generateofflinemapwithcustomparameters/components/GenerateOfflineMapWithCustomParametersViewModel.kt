@@ -248,33 +248,33 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         }
 
         // Create an offline map job with the download directory path and parameters and start the job
-        offlineMapTask.createGenerateOfflineMapJob(
+        generateOfflineMapJob = offlineMapTask.createGenerateOfflineMapJob(
             parameters = generateOfflineMapParameters,
             downloadDirectoryPath = offlineMapPath,
             overrides = parameterOverrides
-        ).let { generateOfflineMapJob ->
-            runOfflineMapJob(generateOfflineMapJob)
-        }
+        )
+
+        runOfflineMapJob()
     }
 
     /**
      * Starts the [GenerateOfflineMapJob], shows the progress dialog and displays the result offline map to the MapView.
      */
-    private fun runOfflineMapJob(generateOfflineMapJob: GenerateOfflineMapJob) {
+    private fun runOfflineMapJob() {
         // Show the Job Progress Dialog
         showJobProgressDialog = true
         with(viewModelScope) {
             // Create a flow-collection for the job's progress
             launch(Dispatchers.Main) {
-                generateOfflineMapJob.progress.collect { progress ->
+                generateOfflineMapJob?.progress?.collect { progress ->
                     // Display the current job's progress value
                     offlineMapJobProgress = progress
                 }
             }
             launch(Dispatchers.IO) {
                 // Start the job and wait for Job result
-                generateOfflineMapJob.start()
-                generateOfflineMapJob.result().onSuccess {
+                generateOfflineMapJob?.start()
+                generateOfflineMapJob?.result()?.onSuccess {
                     // Set the offline map result as the displayed map and clear the red bounding box graphic
                     arcGISMap = it.offlineMap
                     showResetButton = true
@@ -282,8 +282,8 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                     // Dismiss the progress dialog
                     showJobProgressDialog = false
                     // Show user where map was locally saved
-                    snackbarHostState.showSnackbar(message = "Map saved at: " + generateOfflineMapJob.downloadDirectoryPath)
-                }.onFailure { throwable ->
+                    snackbarHostState.showSnackbar(message = "Map saved at: " + generateOfflineMapJob?.downloadDirectoryPath)
+                }?.onFailure { throwable ->
                     messageDialogVM.showMessageDialog(
                         title = throwable.message.toString(), description = throwable.cause.toString()
                     )

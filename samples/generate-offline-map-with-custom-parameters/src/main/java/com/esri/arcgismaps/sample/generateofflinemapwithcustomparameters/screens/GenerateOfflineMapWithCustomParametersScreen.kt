@@ -189,7 +189,9 @@ fun OverrideParametersMenu(
                 if (minScale >= maxScale) {
                     maxScale = minScale + 1
                 }
-            }, valueRange = 0f..22f, modifier = Modifier.padding(start = 12.dp, end = 12.dp), steps = 21
+            }, valueRange = 0f..22f,
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp),
+            steps = 21
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -207,7 +209,9 @@ fun OverrideParametersMenu(
                 if (maxScale <= minScale) {
                     minScale = maxScale - 1
                 }
-            }, valueRange = 0f..23f, modifier = Modifier.padding(start = 12.dp, end = 12.dp), steps = 22
+            }, valueRange = 0f..23f,
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp),
+            steps = 22
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -218,7 +222,10 @@ fun OverrideParametersMenu(
             Text(text = "${extentBufferDistance.toInt()}m")
         }
         Slider(
-            value = extentBufferDistance, onValueChange = { extentBufferDistance = it }, valueRange = 0f..500f
+            value = extentBufferDistance,
+            onValueChange = { extentBufferDistance = it },
+            valueRange = 0f..500f,
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp),
         )
         HorizontalDivider(modifier = Modifier.padding(8.dp))
         // Include layers section
