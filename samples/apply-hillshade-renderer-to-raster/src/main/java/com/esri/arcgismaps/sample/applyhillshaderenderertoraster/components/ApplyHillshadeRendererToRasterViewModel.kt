@@ -58,7 +58,7 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
         altitude: Double,
         azimuth: Double,
         slopeType: SlopeType,
-        // adjusts the vertical scaling of the terrain to ensure accurate representation of elevation changes
+        // Adjusts the vertical scaling of the terrain to ensure accurate representation of elevation changes
         zFactor: Double = 0.000016,
         pixelSizeFactor: Double = 1.0,
         pixelSizePower: Double = 1.0,
