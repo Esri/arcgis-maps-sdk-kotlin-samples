@@ -62,7 +62,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.raster.SlopeType
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applyhillshaderenderertoraster.components.ApplyHillshadeRendererToRasterViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import kotlin.math.roundToInt
@@ -109,22 +108,13 @@ fun ApplyHillshadeRendererToRasterScreen(sampleName: String) {
                     }
                 }
             }
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
-            }
         },
         floatingActionButton = {
             if (!isBottomSheetVisible) {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { isBottomSheetVisible = true }
-                ) { Icon(Icons.Filled.Settings, contentDescription = "HillshadeRendererOptions") }
+                ) { Icon(Icons.Filled.Settings, contentDescription = "Hillshade renderer options") }
             }
         }
     )

@@ -24,7 +24,6 @@ import com.arcgismaps.mapping.symbology.raster.HillshadeRenderer
 import com.arcgismaps.raster.Raster
 import com.arcgismaps.raster.SlopeType
 import com.esri.arcgismaps.sample.applyhillshaderenderertoraster.R
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import java.io.File
 
 class ApplyHillshadeRendererToRasterViewModel(application: Application) :
@@ -38,9 +37,6 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
 
     // Blank map to display raster layer
     val arcGISMap = ArcGISMap()
-
-    // Create a message dialog view model for handling error messages
-    val messageDialogVM = MessageDialogViewModel()
 
     // Create raster
     private val raster = Raster.createWithPath(path = "$provisionPath/srtm-hillshade/srtm.tiff")
@@ -58,16 +54,25 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
     /**
      * Updates the current raster layer with a new [HillshadeRenderer] using the provided parameters.
      */
-    fun updateRenderer(altitude: Double, azimuth: Double, slopeType: SlopeType) {
+    fun updateRenderer(
+        altitude: Double,
+        azimuth: Double,
+        slopeType: SlopeType,
+        // adjusts the vertical scaling of the terrain to ensure accurate representation of elevation changes
+        zFactor: Double = 0.000016,
+        pixelSizeFactor: Double = 1.0,
+        pixelSizePower: Double = 1.0,
+        outputBitDepth: Int = 8
+    ) {
         // Create blend renderer
         val hillshadeRenderer = HillshadeRenderer.create(
             altitude = altitude,
             azimuth = azimuth,
+            zFactor = zFactor,
             slopeType = slopeType,
-            zFactor = 0.000016,
-            pixelSizeFactor = 1.0,
-            pixelSizePower = 1.0,
-            outputBitDepth = 8
+            pixelSizeFactor = pixelSizeFactor,
+            pixelSizePower = pixelSizePower,
+            outputBitDepth = outputBitDepth
         )
         rasterLayer.renderer = hillshadeRenderer
     }
