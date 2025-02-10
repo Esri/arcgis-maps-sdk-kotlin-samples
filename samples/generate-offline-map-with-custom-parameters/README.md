@@ -56,7 +56,7 @@ After you have set up the overrides to your liking, tap the "Generate offline ma
 
 ## Additional information
 
-For applications where you just need to take all layers offline, use the standard workflow (using only `GenerateOfflineMapParameters`). For a simple example of how you take a map offline, please consult the "Generate offline map" sample.
+For applications where you just need to take all layers offline, use the standard workflow (using only `GenerateOfflineMapParameters`). For a simple example of how you take a map offline, please consult the [Generate offline map](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tree/main/samples/generate-offline-map) sample.
 
 ## Tags
 

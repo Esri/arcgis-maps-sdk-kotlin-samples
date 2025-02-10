@@ -172,46 +172,50 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         val downloadArea = downloadAreaGraphic.geometry ?: return
         viewModelScope.launch {
             // Create default generate offline map parameters from the offline map task
-            offlineMapTask.createDefaultGenerateOfflineMapParameters(areaOfInterest = downloadArea)
-                .onSuccess { generateOfflineMapParameters ->
+            val generateOfflineMapParameters =
+                offlineMapTask.createDefaultGenerateOfflineMapParameters(areaOfInterest = downloadArea).getOrElse {
+                    messageDialogVM.showMessageDialog(
+                        title = "Error", description = "Failed to create default generate offline map parameters"
+                    )
+                    return@launch
+                }.apply {
                     // Return a job failure if generate offline map encounters an error
-                    generateOfflineMapParameters.continueOnErrors = false
-                    // Create parameter overrides for greater control
-                    offlineMapTask.createGenerateOfflineMapParameterOverrides(generateOfflineMapParameters)
-                        .onSuccess { parameterOverrides ->
-                            // Set basemap scale and area of interest
-                            setBasemapScaleAndAreaOfInterest(parameterOverrides, minScale, maxScale, bufferDistance)
-                            // Exclude system valve layer
-                            if (!isIncludeSystemValvesEnabled) {
-                                excludeLayerFromDownload(parameterOverrides, getFeatureLayer("System Valve"))
-                            }
-                            // Exclude service connection layer
-                            if (!isIncludeServiceConnectionsEnabled) {
-                                excludeLayerFromDownload(parameterOverrides, getFeatureLayer("Service Connection"))
-                            }
-                            // Crop pipes layer
-                            if (isCropWaterPipesEnabled) {
-                                getGenerateGeodatabaseParameters(
-                                    parameterOverrides, getFeatureLayer("Main")
-                                )?.layerOptions?.forEach {
-                                    it.useGeometry = true
-                                }
-                            }
-                            // Get a reference to the hydrant layer
-                            getFeatureLayer("Hydrant")?.let { hydrantLayer ->
-                                // Get it's service layer id
-                                val serviceLayerId = getServiceLayerId(hydrantLayer)
-                                getGenerateGeodatabaseParameters(
-                                    parameterOverrides, getFeatureLayer(hydrantLayer.name)
-                                )?.layerOptions?.filter { it.layerId == serviceLayerId }?.forEach {
-                                    it.whereClause = "FLOW >= $minHydrantFlowRate"
-                                    it.queryOption = GenerateLayerQueryOption.UseFilter
-                                }
-                            }
-                            // Start a an offline map job from the task and parameters
-                            createOfflineMapJob(offlineMapTask, generateOfflineMapParameters, parameterOverrides)
+                    continueOnErrors = false
+                }
+            // Create parameter overrides for greater control
+            offlineMapTask.createGenerateOfflineMapParameterOverrides(generateOfflineMapParameters)
+                .onSuccess { parameterOverrides ->
+                    // Set basemap scale and area of interest
+                    setBasemapScaleAndAreaOfInterest(parameterOverrides, minScale, maxScale, bufferDistance)
+                    // Exclude system valve layer
+                    if (!isIncludeSystemValvesEnabled) {
+                        excludeLayerFromDownload(parameterOverrides, getFeatureLayer("System Valve"))
+                    }
+                    // Exclude service connection layer
+                    if (!isIncludeServiceConnectionsEnabled) {
+                        excludeLayerFromDownload(parameterOverrides, getFeatureLayer("Service Connection"))
+                    }
+                    // Crop pipes layer
+                    if (isCropWaterPipesEnabled) {
+                        getGenerateGeodatabaseParameters(
+                            parameterOverrides, getFeatureLayer("Main")
+                        )?.layerOptions?.forEach {
+                            it.useGeometry = true
                         }
-
+                    }
+                    // Get a reference to the hydrant layer
+                    getFeatureLayer("Hydrant")?.let { hydrantLayer ->
+                        // Get it's service layer id
+                        val serviceLayerId = getServiceLayerId(hydrantLayer)
+                        getGenerateGeodatabaseParameters(
+                            parameterOverrides, getFeatureLayer(hydrantLayer.name)
+                        )?.layerOptions?.filter { it.layerId == serviceLayerId }?.forEach {
+                            it.whereClause = "FLOW >= $minHydrantFlowRate"
+                            it.queryOption = GenerateLayerQueryOption.UseFilter
+                        }
+                    }
+                    // Start a an offline map job from the task and parameters
+                    createOfflineMapJob(offlineMapTask, generateOfflineMapParameters, parameterOverrides)
                 }
         }
     }
@@ -244,48 +248,46 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
         }
 
         // Create an offline map job with the download directory path and parameters and start the job
-        generateOfflineMapJob = offlineMapTask.createGenerateOfflineMapJob(
+        offlineMapTask.createGenerateOfflineMapJob(
             parameters = generateOfflineMapParameters,
             downloadDirectoryPath = offlineMapPath,
             overrides = parameterOverrides
-        )
-
-        runOfflineMapJob()
+        ).let { generateOfflineMapJob ->
+            runOfflineMapJob(generateOfflineMapJob)
+        }
     }
 
     /**
      * Starts the [GenerateOfflineMapJob], shows the progress dialog and displays the result offline map to the MapView.
      */
-    private fun runOfflineMapJob() {
-        generateOfflineMapJob?.let { offlineMapJob ->
-            // Show the Job Progress Dialog
-            showJobProgressDialog = true
-            with(viewModelScope) {
-                // Create a flow-collection for the job's progress
-                launch(Dispatchers.Main) {
-                    offlineMapJob.progress.collect { progress ->
-                        // Display the current job's progress value
-                        offlineMapJobProgress = progress
-                    }
+    private fun runOfflineMapJob(generateOfflineMapJob: GenerateOfflineMapJob) {
+        // Show the Job Progress Dialog
+        showJobProgressDialog = true
+        with(viewModelScope) {
+            // Create a flow-collection for the job's progress
+            launch(Dispatchers.Main) {
+                generateOfflineMapJob.progress.collect { progress ->
+                    // Display the current job's progress value
+                    offlineMapJobProgress = progress
                 }
-                launch(Dispatchers.IO) {
-                    // Start the job and wait for Job result
-                    offlineMapJob.start()
-                    offlineMapJob.result().onSuccess {
-                        // Set the offline map result as the displayed map and clear the red bounding box graphic
-                        arcGISMap = it.offlineMap
-                        showResetButton = true
-                        graphicsOverlay.graphics.clear()
-                        // Dismiss the progress dialog
-                        showJobProgressDialog = false
-                        // Show user where map was locally saved
-                        snackbarHostState.showSnackbar(message = "Map saved at: " + offlineMapJob.downloadDirectoryPath)
-                    }.onFailure { throwable ->
-                        messageDialogVM.showMessageDialog(
-                            title = throwable.message.toString(), description = throwable.cause.toString()
-                        )
-                        showJobProgressDialog = false
-                    }
+            }
+            launch(Dispatchers.IO) {
+                // Start the job and wait for Job result
+                generateOfflineMapJob.start()
+                generateOfflineMapJob.result().onSuccess {
+                    // Set the offline map result as the displayed map and clear the red bounding box graphic
+                    arcGISMap = it.offlineMap
+                    showResetButton = true
+                    graphicsOverlay.graphics.clear()
+                    // Dismiss the progress dialog
+                    showJobProgressDialog = false
+                    // Show user where map was locally saved
+                    snackbarHostState.showSnackbar(message = "Map saved at: " + generateOfflineMapJob.downloadDirectoryPath)
+                }.onFailure { throwable ->
+                    messageDialogVM.showMessageDialog(
+                        title = throwable.message.toString(), description = throwable.cause.toString()
+                    )
+                    showJobProgressDialog = false
                 }
             }
         }
