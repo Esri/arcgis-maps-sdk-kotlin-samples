@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.generateofflinemapwithcustomparameters.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,8 +24,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -73,9 +70,6 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
     // Set up the bottom sheet controls
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember { mutableStateOf(false) }
-    fun setBottomSheetVisibility(isVisible: Boolean) {
-        showBottomSheet = isVisible
-    }
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = mapViewModel.snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -84,8 +78,6 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
-                    // Disable taps when job progress dialog is shown
-                    .clickable(enabled = !mapViewModel.showJobProgressDialog, onClick = { })
             ) {
                 MapView(modifier = Modifier
                     .weight(1f)
@@ -103,8 +95,7 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                     },
                     onViewpointChangedForCenterAndScale = {
                         mapViewModel.calculateDownloadOfflineArea()
-                    }
-                )
+                    })
                 // Show bottom sheet with override parameter options
                 if (showBottomSheet) {
                     ModalBottomSheet(
@@ -112,17 +103,17 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                         onDismissRequest = { showBottomSheet = false },
                         sheetState = sheetState
                     ) {
-                        OverrideParameters(
-                            defineParameters = mapViewModel::defineGenerateOfflineMapParameters,
-                            setBottomSheetVisibility = ::setBottomSheetVisibility
-                        )
+                        OverrideParametersMenu(defineParameters = mapViewModel::defineGenerateOfflineMapParameters,
+                            setBottomSheetVisibility = { showBottomSheet = it })
                     }
                 }
                 // Display progress dialog while generating an offline map
                 if (mapViewModel.showJobProgressDialog) {
-                    JobLoadingDialog(title = "Generating offline map...",
+                    JobLoadingDialog(
+                        title = "Generating offline map...",
                         progress = mapViewModel.offlineMapJobProgress,
-                        cancelJobRequest = { mapViewModel.cancelOfflineMapJob() })
+                        cancelJobRequest = { mapViewModel.cancelOfflineMapJob() },
+                    )
                 }
 
                 // Display a dialog if the sample encounters an error
@@ -135,8 +126,7 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
                 }
                 if (mapViewModel.showResetButton) {
                     Button(
-                        onClick = mapViewModel::reset,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        onClick = mapViewModel::reset, modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text("Reset to online map")
                     }
@@ -146,13 +136,10 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
         // Floating action button to show the parameter overrides bottom sheet
         floatingActionButton = {
             if (!showBottomSheet && !mapViewModel.showResetButton) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
-                    onClick = { showBottomSheet = true }
-                ) {
+                FloatingActionButton(modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
+                    onClick = { showBottomSheet = true }) {
                     Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Parameter overrides"
+                        imageVector = Icons.Filled.Settings, contentDescription = "Show parameter overrides menu"
                     )
                 }
             }
@@ -160,7 +147,7 @@ fun GenerateOfflineMapWithCustomParametersScreen(sampleName: String) {
 }
 
 @Composable
-fun OverrideParameters(
+fun OverrideParametersMenu(
     defineParameters: (Int, Int, Int, Boolean, Boolean, Int, Boolean) -> Unit,
     setBottomSheetVisibility: (Boolean) -> Unit
 ) {
@@ -178,106 +165,99 @@ fun OverrideParameters(
             .wrapContentSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(12.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.Start,
     ) {
         Text(
             text = "Override parameters",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-
+        // Adjust basemap section
         Text(text = "Adjust basemap", style = MaterialTheme.typography.labelLarge)
         Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = CenterVertically
-            ) {
-                Text(text = "Min scale level:", style = MaterialTheme.typography.labelMedium)
-                Slider(
-                    value = minScale,
-                    // Don't let the min scale exceed the max scale
-                    onValueChange = {
-                        minScale = it
-                        if (minScale >= maxScale) {
-                            maxScale = minScale + 1
-                        }
-                    },
-                    valueRange = 0f..22f, modifier = Modifier.weight(1f),
-                    steps = 21
-                )
-                Text(text = "${minScale.toInt()}")
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = CenterVertically
-            ) {
-                Text(text = "Max scale level:", style = MaterialTheme.typography.labelMedium)
-                Slider(
-                    value = maxScale,
-                    // Don't let the max scale exceed the min scale
-                    onValueChange = {
-                        maxScale = it
-                        if (maxScale <= minScale) {
-                            minScale = maxScale - 1
-                        }
-                    },
-                    valueRange = 0f..23f, modifier = Modifier.weight(1f),
-                    steps = 22
-                )
-                Text(text = "${maxScale.toInt()}")
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = CenterVertically,
-            ) {
-                Text(text = "Extent buffer distance:", style = MaterialTheme.typography.labelMedium)
-                Slider(
-                    value = extentBufferDistance,
-                    onValueChange = { extentBufferDistance = it },
-                    valueRange = 0f..500f,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(text = "${extentBufferDistance.toInt()}m")
-            }
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = CenterVertically
+        ) {
+            Text(text = "Min scale level:", style = MaterialTheme.typography.labelMedium)
+            Text(text = "${minScale.toInt()}")
+        }
+        Slider(
+            value = minScale,
+            // Don't let the min scale exceed the max scale
+            onValueChange = {
+                minScale = it
+                if (minScale >= maxScale) {
+                    maxScale = minScale + 1
+                }
+            }, valueRange = 0f..22f, modifier = Modifier.padding(start = 12.dp, end = 12.dp), steps = 21
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = CenterVertically
+        ) {
+            Text(text = "Max scale level:", style = MaterialTheme.typography.labelMedium)
+            Text(text = "${maxScale.toInt()}")
+        }
+        Slider(
+            value = maxScale,
+            // Don't let the max scale exceed the min scale
+            onValueChange = {
+                maxScale = it
+                if (maxScale <= minScale) {
+                    minScale = maxScale - 1
+                }
+            }, valueRange = 0f..23f, modifier = Modifier.padding(start = 12.dp, end = 12.dp), steps = 22
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = CenterVertically,
+        ) {
+            Text(text = "Extent buffer distance:", style = MaterialTheme.typography.labelMedium)
+            Text(text = "${extentBufferDistance.toInt()}m")
+        }
+        Slider(
+            value = extentBufferDistance, onValueChange = { extentBufferDistance = it }, valueRange = 0f..500f
+        )
         HorizontalDivider(modifier = Modifier.padding(8.dp))
-            Text(text = "Include layers", style = MaterialTheme.typography.labelLarge)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = CenterVertically
-            ) {
-                Checkbox(checked = includeSystemValves, onCheckedChange = { includeSystemValves = it })
-                Text(text = "System valves")
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = CenterVertically
-            ) {
-                Checkbox(checked = includeServiceConnections, onCheckedChange = { includeServiceConnections = it })
-                Text(text = "Service connections")
-            }
+        // Include layers section
+        Text(text = "Include layers", style = MaterialTheme.typography.labelLarge)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = CenterVertically
+        ) {
+            Checkbox(checked = includeSystemValves, onCheckedChange = { includeSystemValves = it })
+            Text(text = "System valves")
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = CenterVertically
+        ) {
+            Checkbox(checked = includeServiceConnections, onCheckedChange = { includeServiceConnections = it })
+            Text(text = "Service connections")
+        }
         HorizontalDivider(modifier = Modifier.padding(8.dp))
+        // Filter feature layer section
         Text(text = "Filter feature layer", style = MaterialTheme.typography.labelLarge)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = CenterVertically
         ) {
             Text(text = "Min hydrant flow rate:", style = MaterialTheme.typography.labelMedium)
-            Slider(
-                value = minHydrantFlowRate,
-                onValueChange = { minHydrantFlowRate = it },
-                valueRange = 0f..2000f,
-                modifier = Modifier.weight(1f)
-            )
             Text(text = "${minHydrantFlowRate.toInt()} GPM")
         }
+        Slider(
+            value = minHydrantFlowRate,
+            onValueChange = { minHydrantFlowRate = it },
+            valueRange = 0f..2000f,
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp),
+        )
         HorizontalDivider(modifier = Modifier.padding(8.dp))
+        // Crop layers to extent section
         Text(text = "Crop layers to extent", style = MaterialTheme.typography.labelLarge)
         Row(
             modifier = Modifier.wrapContentSize(),
