@@ -17,8 +17,13 @@
 package com.esri.arcgismaps.sample.applyhillshaderenderertoraster.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.layers.RasterLayer
 import com.arcgismaps.mapping.symbology.raster.HillshadeRenderer
 import com.arcgismaps.raster.Raster
@@ -35,20 +40,28 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
         )
     }
 
-    // Blank map to display raster layer
-    val arcGISMap = ArcGISMap()
-
     // Create raster
     private val raster = Raster.createWithPath(path = "$provisionPath/srtm-hillshade/srtm.tiff")
 
     // Create raster layer
     private val rasterLayer = RasterLayer(raster)
 
+    // Blank map to display raster layer
+    val arcGISMap = ArcGISMap(Basemap(rasterLayer))
+
+    // Track UI values to be applied by the update renderer
+    var currentAltitude by mutableDoubleStateOf(45.0)
+    var currentAzimuth by mutableDoubleStateOf(0.0)
+    var currentSlopeType by mutableStateOf<SlopeType>(SlopeType.None)
+
+
     init {
-        // Add raster layer to a blank map
-        arcGISMap.operationalLayers.add(rasterLayer)
         // Apply the renderer values
-        updateRenderer(altitude = 45.0, azimuth = 0.0, slopeType = SlopeType.None)
+        updateRenderer(
+            altitude = currentAltitude,
+            azimuth = currentAzimuth,
+            slopeType = currentSlopeType
+        )
     }
 
     /**
@@ -57,23 +70,30 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
     fun updateRenderer(
         altitude: Double,
         azimuth: Double,
-        slopeType: SlopeType,
-        // Adjusts the vertical scaling of the terrain to ensure accurate representation of elevation changes
-        zFactor: Double = 0.000016,
-        pixelSizeFactor: Double = 1.0,
-        pixelSizePower: Double = 1.0,
-        outputBitDepth: Int = 8
+        slopeType: SlopeType
     ) {
         // Create blend renderer
         val hillshadeRenderer = HillshadeRenderer.create(
             altitude = altitude,
             azimuth = azimuth,
-            zFactor = zFactor,
+            zFactor = Z_FACTOR,
             slopeType = slopeType,
-            pixelSizeFactor = pixelSizeFactor,
-            pixelSizePower = pixelSizePower,
-            outputBitDepth = outputBitDepth
+            pixelSizeFactor = PIXEL_SIZE_FACTOR,
+            pixelSizePower = PIXEL_SIZE_POWER,
+            outputBitDepth = OUTPUT_BIT_DEPTH
         )
         rasterLayer.renderer = hillshadeRenderer
+
+        currentAzimuth = azimuth
+        currentAltitude = altitude
+        currentSlopeType = slopeType
+    }
+
+    companion object {
+        // Adjusts the vertical scaling of the terrain to ensure accurate representation of elevation changes
+        const val Z_FACTOR: Double = 0.000016
+        const val PIXEL_SIZE_FACTOR: Double = 1.0
+        const val PIXEL_SIZE_POWER: Double = 1.0
+        const val OUTPUT_BIT_DEPTH: Int = 8
     }
 }

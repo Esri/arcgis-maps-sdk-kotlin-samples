@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -39,7 +38,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -49,6 +47,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,6 +81,10 @@ fun ApplyHillshadeRendererToRasterScreen(sampleName: String) {
         else controlsBottomSheetState.hide()
     }
 
+    // Collect latest UI states
+    val altitude by remember { mutableDoubleStateOf(mapViewModel.currentAltitude) }
+    val azimuth by remember { mutableDoubleStateOf(mapViewModel.currentAzimuth) }
+    val slopeType by remember { mutableStateOf(mapViewModel.currentSlopeType) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -102,8 +105,10 @@ fun ApplyHillshadeRendererToRasterScreen(sampleName: String) {
                         onDismissRequest = { isBottomSheetVisible = false }
                     ) {
                         HillshadeRendererOptions(
-                            onApplyRendererClicked = mapViewModel::updateRenderer,
-                            onDismiss = { isBottomSheetVisible = false }
+                            currentAltitude = altitude,
+                            currentAzimuth = azimuth,
+                            currentSlopeType = slopeType,
+                            onApplyRenderer = mapViewModel::updateRenderer
                         )
                     }
                 }
@@ -122,15 +127,23 @@ fun ApplyHillshadeRendererToRasterScreen(sampleName: String) {
 
 @Composable
 fun HillshadeRendererOptions(
-    onDismiss: () -> Unit,
-    onApplyRendererClicked: (Double, Double, SlopeType) -> Unit
+    currentAltitude: Double,
+    currentAzimuth: Double,
+    currentSlopeType: SlopeType,
+    onApplyRenderer: (Double, Double, SlopeType) -> Unit
 ) {
-    var altitude by remember { mutableIntStateOf(0) }
-    var azimuth by remember { mutableIntStateOf(0) }
-    var selectedSlopeType by remember { mutableStateOf<SlopeType>(SlopeType.None) }
+    var altitude by remember { mutableIntStateOf(currentAltitude.roundToInt()) }
+    var azimuth by remember { mutableIntStateOf(currentAzimuth.roundToInt()) }
+    var selectedSlopeType by remember { mutableStateOf(currentSlopeType) }
     val slopeTypes = listOf(
         SlopeType.None, SlopeType.Degree, SlopeType.PercentRise, SlopeType.Scaled
     )
+
+    // Apply renderer when any one of these values are updated
+    LaunchedEffect(altitude, azimuth, selectedSlopeType) {
+        onApplyRenderer(altitude.toDouble(), azimuth.toDouble(), selectedSlopeType)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,33 +151,13 @@ fun HillshadeRendererOptions(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                    .weight(1f),
-                text = "Hillshade Renderer Settings",
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center
-            )
-            Button(onClick = {
-                onApplyRendererClicked(
-                    altitude.toDouble(),
-                    azimuth.toDouble(),
-                    selectedSlopeType
-                )
-            }) {
-                Text("Apply")
-            }
-        }
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = "Hillshade Renderer Settings",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center
+        )
         HorizontalDivider()
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -251,8 +244,10 @@ fun HillshadeRendererOptionsPreview() {
     SampleAppTheme {
         Surface {
             HillshadeRendererOptions(
-                onDismiss = { },
-                onApplyRendererClicked = { _, _, _ -> }
+                onApplyRenderer = { _, _, _ -> },
+                currentAltitude = 45.0,
+                currentAzimuth = 0.0,
+                currentSlopeType = SlopeType.None
             )
         }
     }

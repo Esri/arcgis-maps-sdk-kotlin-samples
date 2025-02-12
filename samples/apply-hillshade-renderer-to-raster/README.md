@@ -6,7 +6,7 @@ Apply a hillshade renderer to a raster.
 
 ## Use case
 
-An environmental agency may track coastal erosion by comparing images of an area taken over a a longer period of time with hillshade renderers applied.
+To monitor coastal erosion, an environmental agency could analyze images of a specific area captured over a longer period of time while applying hillshade renderers for comparison.
 
 ## How to use the sample
 
