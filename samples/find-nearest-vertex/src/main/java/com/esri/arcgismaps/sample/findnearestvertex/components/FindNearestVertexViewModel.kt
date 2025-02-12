@@ -199,8 +199,8 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         // set the nearest coordinate graphic's geometry to the nearest coordinate
         nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
         // calculate the distances to the nearest vertex and nearest coordinate then convert to miles
-        val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()
-        val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()
+        val vertexDistance = nearestVertexResult?.distance?.feetToMiles()?.toInt()
+        val coordinateDistance = nearestCoordinateResult?.distance?.feetToMiles()?.toInt()
         if (vertexDistance != null && coordinateDistance != null) {
             // update the distance information so the UI can display it
             _distanceInformationFlow.value = DistanceInformation(
@@ -225,6 +225,13 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         get() {
             return fromRgba(r = 255, g = 0, b = 255, a = 255)
         }
+
+    /**
+     * Converts a quantity in feet to miles.
+     */
+    private fun Double.feetToMiles(): Double {
+        return this/5280.0
+    }
 
     /**
      * Data class representing vertex distance and coordinate distance.
