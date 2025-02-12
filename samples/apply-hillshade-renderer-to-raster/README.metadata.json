@@ -28,8 +28,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/components/ApplyHillshadeRendererToRasterViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/screens/ApplyHillshadeRendererToRasterScreen.kt"
     ],
     "title": "Apply hillshade renderer to raster"
