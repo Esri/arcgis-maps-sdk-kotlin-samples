@@ -162,7 +162,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
         // Initialize text-to-speech to replay navigation voice guidance
         val context = getApplication<Application>().applicationContext
         textToSpeech = TextToSpeech(context) { status ->
-            if (status != TextToSpeech.ERROR) {
+            if (status == TextToSpeech.SUCCESS) {
                 textToSpeech?.language = context.resources.configuration.locales[0]
                 isTextToSpeechInitialized = true
             }
@@ -192,9 +192,6 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
      * collects updates in the location using the MapView's location display.
      * */
     fun startNavigation() {
-        // Get the current route result
-        val routeResult = routeResult
-            ?: return messageDialogVM.showMessageDialog("Error retrieving route result")
         // Set up a simulated location data source which simulates movement along the route
         val simulationParameters = SimulationParameters(
             startTime = Instant.now(),
@@ -207,16 +204,18 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             polyline = simulationPolyline,
             parameters = simulationParameters
         )
-        // set up a RouteTracker for navigation along the calculated route
-        val routeTracker = RouteTracker(
-            routeResult = routeResult,
-            routeIndex = 0,
-            skipCoincidentStops = true
-        ).apply {
-            setSpeechEngineReadyCallback {
-                isTextToSpeechInitialized && textToSpeech?.isSpeaking == false
+        // Set up a RouteTracker for navigation along the calculated route
+        val routeTracker = routeResult?.let {
+            RouteTracker(
+                routeResult = it,
+                routeIndex = 0,
+                skipCoincidentStops = true
+            ).apply {
+                setSpeechEngineReadyCallback {
+                    isTextToSpeechInitialized && textToSpeech?.isSpeaking == false
+                }
             }
-        }
+        } ?: return messageDialogVM.showMessageDialog("Error retrieving route result")
         // Manage the job which triggers the location display
         locationDisplayJob = with(viewModelScope) {
             launch {
@@ -286,15 +285,15 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
     private suspend fun displayRouteInfo(trackingStatus: TrackingStatus) {
         // Get remaining distance information
         val remainingDistance = trackingStatus.destinationProgress.remainingDistance
+        val remainingDistanceValue = remainingDistance.displayText
+        val remainingDistanceUnits = remainingDistance.displayTextUnits.abbreviation
         // Convert remaining minutes to hours:minutes:seconds
         val remainingTimeString = DateUtils.formatElapsedTime(
             (trackingStatus.destinationProgress.remainingTime * 60).toLong()
         )
         // Update text views
-        timeRemainingText = getString(R.string.time_remaining) + " " + remainingTimeString
-        distanceRemainingText = getString(R.string.distance_remaining) + " " +
-                remainingDistance.displayText + " " +
-                remainingDistance.displayTextUnits.abbreviation
+        timeRemainingText = remainingTimeString
+        distanceRemainingText = "$remainingDistanceValue $remainingDistanceUnits"
         // If the destination has been reached
         if (trackingStatus.destinationStatus == DestinationStatus.Reached) {
             // Stop the location data source
@@ -368,6 +367,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             mapViewProxy.setViewpointRotation(0.0)
             createRouteGraphics()
             isNavigateButtonEnabled = true
+            textToSpeech?.stop()
         }
     }
 
@@ -381,17 +381,13 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
             // Use Android's text to speech to speak the voice guidance
             textToSpeech?.speak(voiceGuidance.text, TextToSpeech.QUEUE_FLUSH, null, null)
             // Set next direction text
-            nextDirectionText = getString(R.string.next_direction) + " " + voiceGuidance.text
+            nextDirectionText = voiceGuidance.text
         }
     }
 
     fun recenterNavigation() {
         locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
         isRecenterButtonEnabled = false
-    }
-
-    private fun getString(id: Int): String {
-        return getApplication<Application>().resources.getString(id)
     }
 
     private fun getColorArgb(id: Int): Int {

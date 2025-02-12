@@ -107,15 +107,17 @@ class MessageDialogViewModel : ViewModel() {
     }
 
     fun showMessageDialog(throwable: Throwable) {
-        messageTitle = throwable.message.toString()
-        messageDescription = throwable.cause.toString()
-        dialogStatus = true
+        showMessageDialog(
+            title = throwable.message.toString(),
+            description = throwable.cause.toString()
+        )
     }
 
     fun showMessageDialog(exception: ArcGISException) {
-        messageTitle = exception.message
-        messageDescription = exception.additionalMessage.toString() + "\n" + exception.cause
-        dialogStatus = true
+        showMessageDialog(
+            title = exception.message,
+            description = exception.additionalMessage.toString() + "\n" + exception.cause
+        )
     }
 
     /**
