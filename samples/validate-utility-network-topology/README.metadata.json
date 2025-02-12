@@ -1,0 +1,47 @@
+{
+    "category": "Utility Networks",
+    "description": "Demonstrates how to get the network state and validate the topology of a utility network.",
+    "formal_name": "ValidateUtilityNetworkTopology",
+    "ignore": false,
+    "images": [
+        "validate-utility-network-topology.png"
+    ],
+    "keywords": [
+        "dirty areas",
+        "edit",
+        "network topology",
+        "online",
+        "state",
+        "trace",
+        "utility network",
+        "validate",
+        "UtilityElement",
+        "UtilityElementTraceResult",
+        "UtilityNetwork",
+        "UtilityNetworkCapabilities",
+        "UtilityNetworkState",
+        "UtilityNetworkValidationJob",
+        "UtilityTraceConfiguration",
+        "UtilityTraceParameters",
+        "UtilityTraceResult"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "UtilityElement",
+        "UtilityElementTraceResult",
+        "UtilityNetwork",
+        "UtilityNetworkCapabilities",
+        "UtilityNetworkState",
+        "UtilityNetworkValidationJob",
+        "UtilityTraceConfiguration",
+        "UtilityTraceParameters",
+        "UtilityTraceResult"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/validateutilitynetworktopology/components/ValidateUtilityNetworkTopologyViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/validateutilitynetworktopology/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/validateutilitynetworktopology/screens/ValidateUtilityNetworkTopologyScreen.kt"
+    ],
+    "title": "Validate utility network topology"
+}
