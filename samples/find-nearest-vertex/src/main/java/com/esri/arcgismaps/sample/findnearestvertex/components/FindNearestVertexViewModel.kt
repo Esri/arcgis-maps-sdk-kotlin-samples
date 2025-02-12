@@ -142,7 +142,7 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
     init {
         viewModelScope.launch {
             arcGISMap.load().onSuccess {
-                // and add the USA States Generalized Boundaries feature layer to the map's operational layers
+                // add the USA States Generalized Boundaries feature layer to the map's operational layers
                 arcGISMap.operationalLayers.add(usStatesGeneralizedLayer)
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
