@@ -53,43 +53,53 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
 
     // create a portal
     val portal = Portal("https://arcgisruntime.maps.arcgis.com")
+
     // get the USA States Generalized Boundaries layer from the portal using its ID
-    val portalItem = PortalItem(
-        portal = portal,
-        itemId = "8c2d6d7df8fa4142b0a1211c8dd66903"
-    )
+    val portalItem =
+        PortalItem(
+            portal = portal,
+            itemId = "8c2d6d7df8fa4142b0a1211c8dd66903"
+        )
+
     // create a feature layer from the portal item
-    private val usStatesGeneralizedLayer = FeatureLayer.createWithItemAndLayerId(
-        item = portalItem,
-        layerId = 0
-    )
+    private val usStatesGeneralizedLayer =
+        FeatureLayer.createWithItemAndLayerId(
+            item = portalItem,
+            layerId = 0
+        )
 
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
 
     // create graphic symbol for the tapped location
     private val tappedLocationGraphic =
-        Graphic(symbol = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.X,
-            color = Color.magenta,
-            size = 15f
-        ))
+        Graphic(
+            symbol = SimpleMarkerSymbol(
+                style = SimpleMarkerSymbolStyle.X,
+                color = Color.magenta,
+                size = 15f
+            )
+        )
 
     // create graphic symbol for the nearest coordinate
     private val nearestCoordinateGraphic =
-        Graphic(symbol = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Diamond,
-            color = Color.red,
-            size = 10f
-        ))
+        Graphic(
+            symbol = SimpleMarkerSymbol(
+                style = SimpleMarkerSymbolStyle.Diamond,
+                color = Color.red,
+                size = 10f
+            )
+        )
 
     // create graphic symbol for the nearest vertex
     private val nearestVertexGraphic =
-        Graphic(symbol = SimpleMarkerSymbol(
-            style = SimpleMarkerSymbolStyle.Circle,
-            color = Color.blue,
-            size = 15f
-        ))
+        Graphic(
+            symbol = SimpleMarkerSymbol(
+                style = SimpleMarkerSymbolStyle.Circle,
+                color = Color.blue,
+                size = 15f
+            )
+        )
 
     // create a polygon geometry
     val polygon = PolygonBuilder(statePlaneCaliforniaZone5SpatialReference) {
@@ -98,19 +108,29 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         addPoint(Point(x = 7265673.02678292, y = 2484254.50442408))
         addPoint(Point(x = 7676192.55880379, y = 2001458.66365744))
     }.toGeometry()
+
     // set up the outline and fill color of the polygon
-    private val polygonOutlineSymbol = SimpleLineSymbol(
-        style = SimpleLineSymbolStyle.Solid,
-        color = Color.green,
-        width = 2f
-    )
-    private val polygonFillSymbol = SimpleFillSymbol(
-        style = SimpleFillSymbolStyle.ForwardDiagonal,
-        color = Color.green,
-        outline = polygonOutlineSymbol
-    )
+    private val polygonOutlineSymbol =
+        SimpleLineSymbol(
+            style = SimpleLineSymbolStyle.Solid,
+            color = Color.green,
+            width = 2f
+        )
+
+    private val polygonFillSymbol =
+        SimpleFillSymbol(
+            style = SimpleFillSymbolStyle.ForwardDiagonal,
+            color = Color.green,
+            outline = polygonOutlineSymbol
+        )
+
     // create a polygon graphic
-    private val polygonGraphic = Graphic(geometry = polygon, symbol = polygonFillSymbol)
+    private val polygonGraphic =
+        Graphic(
+            geometry = polygon,
+            symbol = polygonFillSymbol
+        )
+
     // create a graphics overlay to show the polygon, tapped location, and nearest vertex/coordinate
     val graphicsOverlay = GraphicsOverlay(
         listOf(
@@ -207,5 +227,5 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
     /**
      * Data class representing vertex distance and coordinate distance.
      */
-    data class DistanceInformation (val vertexDistance: Int, val coordinateDistance: Int)
+    data class DistanceInformation(val vertexDistance: Int, val coordinateDistance: Int)
 }
