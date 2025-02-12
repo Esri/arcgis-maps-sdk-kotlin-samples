@@ -199,13 +199,15 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         // set the nearest coordinate graphic's geometry to the nearest coordinate
         nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
         // calculate the distances to the nearest vertex and nearest coordinate then convert to miles
-        val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()!!
-        val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()!!
-        // update the distance information so the UI can display it
-        _distanceInformationFlow.value = DistanceInformation(
-            vertexDistance = vertexDistance,
-            coordinateDistance = coordinateDistance
-        )
+        val vertexDistance = ((nearestVertexResult?.distance)?.div(5280.0))?.toInt()
+        val coordinateDistance = ((nearestCoordinateResult?.distance)?.div(5280.0))?.toInt()
+        if (vertexDistance != null && coordinateDistance != null) {
+            // update the distance information so the UI can display it
+            _distanceInformationFlow.value = DistanceInformation(
+                vertexDistance = vertexDistance,
+                coordinateDistance = coordinateDistance
+            )
+        }
     }
 
     /**
