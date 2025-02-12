@@ -56,9 +56,17 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     onSingleTapConfirmed = mapViewModel::identify,
                 )
                 ButtonMenu(
-                    mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle().value,
-                    mapViewModel::startEditor,
-                    mapViewModel::stopEditor
+                    isGeometryEditorStarted = mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle().value,
+                    canGeometryEditorUndo = mapViewModel.geometryEditor.canUndo.collectAsStateWithLifecycle().value,
+                    canGeometryEditorRedo = mapViewModel.geometryEditor.canRedo.collectAsStateWithLifecycle().value,
+                    canDeleteSelectedGeometry = mapViewModel.geometryEditor.selectedElement.collectAsStateWithLifecycle().value != null,
+                    onStartEditingButtonClick = mapViewModel::startEditor,
+                    onStopEditingButtonClick = mapViewModel::stopEditor,
+                    onDiscardEditsButtonClick = mapViewModel::discardEdits,
+                    onDeleteSelectedElementButtonClick = mapViewModel::deleteSelectedElement,
+                    onDeleteAllGeometriesButtonClick = mapViewModel::deleteAllGeometries,
+                    onUndoButtonClick = mapViewModel::editorUndo,
+                    onRedoButtonClick = mapViewModel::editorRedo
                 )
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {

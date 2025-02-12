@@ -105,6 +105,50 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
+     * Undoes all edits made using the GeometryEditor then calls [stopEditor].
+     */
+    fun discardEdits() {
+        while (geometryEditor.canUndo.value) {
+            geometryEditor.undo()
+        }
+        stopEditor()
+    }
+
+    /**
+     * Deletes the selected element.
+     */
+    fun deleteSelectedElement() {
+        if (geometryEditor.selectedElement.value != null) {
+            geometryEditor.deleteSelectedElement()
+        }
+    }
+
+    /**
+     * Deletes all the geometries on the map.
+     */
+    fun deleteAllGeometries() {
+        graphicsOverlay.graphics.clear()
+    }
+
+    /**
+     * Reverts the last event on the geometry editor.
+     */
+    fun editorUndo() {
+        if (geometryEditor.canUndo.value) {
+            geometryEditor.undo()
+        }
+    }
+
+    /**
+     * Redoes the last event on the geometry editor.
+     */
+    fun editorRedo() {
+        if (geometryEditor.canRedo.value) {
+            geometryEditor.redo()
+        }
+    }
+
+    /**
      * Creates a graphic from the geometry and adds it to the GraphicsOverlay.
      */
     private fun createGraphic() {
