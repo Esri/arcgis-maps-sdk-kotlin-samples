@@ -66,7 +66,9 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     onDeleteSelectedElementButtonClick = mapViewModel::deleteSelectedElement,
                     onDeleteAllGeometriesButtonClick = mapViewModel::deleteAllGeometries,
                     onUndoButtonClick = mapViewModel::undoEdit,
-                    onRedoButtonClick = mapViewModel::redoEdit
+                    onRedoButtonClick = mapViewModel::redoEdit,
+                    onToolChange = mapViewModel::changeTool,
+                    selectedTool = mapViewModel.selectedTool.collectAsStateWithLifecycle().value
                 )
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {

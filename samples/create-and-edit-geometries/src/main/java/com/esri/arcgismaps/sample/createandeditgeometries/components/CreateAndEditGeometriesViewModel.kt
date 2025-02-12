@@ -33,10 +33,18 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.mapping.view.geometryeditor.FreehandTool
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorTool
+import com.arcgismaps.mapping.view.geometryeditor.ReticleVertexTool
+import com.arcgismaps.mapping.view.geometryeditor.ShapeTool
+import com.arcgismaps.mapping.view.geometryeditor.ShapeToolType
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewModel(application) {
@@ -66,6 +74,30 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     val graphicsOverlay = GraphicsOverlay()
     // create a geometry editor
     val geometryEditor = GeometryEditor()
+
+    /**
+     * Enum of GeometryEditorTool types
+     */
+    enum class ToolType {
+        Vertex,
+        ReticleVertex,
+        Freehand,
+        Arrow,
+        Ellipse,
+        Rectangle,
+        Triangle
+    }
+
+    private val vertexTool = geometryEditor.tool // Use the default tool, which is vertex
+    private val reticleVertexTool = ReticleVertexTool()
+    private val freehandTool = FreehandTool()
+    private val arrowTool = ShapeTool(ShapeToolType.Arrow)
+    private val ellipseTool = ShapeTool(ShapeToolType.Ellipse)
+    private val rectangleTool = ShapeTool(ShapeToolType.Rectangle)
+    private val triangleTool = ShapeTool(ShapeToolType.Triangle)
+
+    private val _selectedTool = MutableStateFlow<ToolType>(ToolType.Vertex)
+    val selectedTool = _selectedTool.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -146,6 +178,42 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
         if (geometryEditor.canRedo.value) {
             geometryEditor.redo()
         }
+    }
+
+    /**
+     * Changes the tool type of the geometry editor to the specified tool.
+     */
+    fun changeTool(toolType: ToolType) {
+        when (toolType) {
+            ToolType.Vertex -> {
+                geometryEditor.tool = vertexTool
+            }
+
+            ToolType.ReticleVertex -> {
+                geometryEditor.tool = reticleVertexTool
+            }
+
+            ToolType.Freehand -> {
+                geometryEditor.tool = freehandTool
+            }
+
+            ToolType.Arrow -> {
+                geometryEditor.tool = arrowTool
+            }
+
+            ToolType.Ellipse -> {
+                geometryEditor.tool = ellipseTool
+            }
+
+            ToolType.Rectangle -> {
+                geometryEditor.tool = rectangleTool
+            }
+
+            ToolType.Triangle -> {
+                geometryEditor.tool = triangleTool
+            }
+        }
+        _selectedTool.value = toolType
     }
 
     /**
