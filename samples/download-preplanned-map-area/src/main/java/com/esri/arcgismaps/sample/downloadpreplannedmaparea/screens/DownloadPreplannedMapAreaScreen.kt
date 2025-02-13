@@ -92,9 +92,9 @@ fun DownloadPreplannedMapAreaScreen(sampleName: String) {
                 // Show bottom sheet with override parameter options
                 if (showBottomSheet) {
                     ModalBottomSheet(
-                        modifier = Modifier.wrapContentSize(), onDismissRequest = {
-                            showBottomSheet = false
-                        }, sheetState = sheetState
+                        modifier = Modifier.wrapContentSize(),
+                        sheetState = sheetState,
+                        onDismissRequest = { showBottomSheet = false }
                     ) {
                         DownloadPreplannedMap(
                             mapViewModel::showOnlineMap,
