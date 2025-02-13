@@ -182,9 +182,9 @@ fun DownloadPreplannedMap(
                     }
                     Text(
                         text = it.name, color = if (it.isDownloaded) {
-                            Color.Black
+                            MaterialTheme.colorScheme.onSurface
                         } else {
-                            Color.Gray
+                            MaterialTheme.colorScheme.outline
                         }
                     )
                 }
