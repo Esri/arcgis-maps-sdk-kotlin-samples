@@ -130,7 +130,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
     }
 
     /**
-     * Use the [OfflineMapTask]to create [DownloadPreplannedOfflineMapParameters] for the given [PreplannedMapArea].
+     * Use the [OfflineMapTask] to create [DownloadPreplannedOfflineMapParameters] for the given [PreplannedMapArea].
      * Then use the task to create a [DownloadPreplannedOfflineMapJob] to download the preplanned offline map.
      */
     private fun downloadOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {
