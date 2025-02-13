@@ -46,7 +46,7 @@ The [Naperville stormwater network map](https://www.arcgis.com/home/item.html?id
 * `DownloadScheduledUpdatesAndUploadNewFeatures` - Scheduled, read-only updates are downloaded from the online map area and applied to the local mobile geodatabases. Newly added features can also be uploaded to the feature service.
 * `SyncWithFeatureServices` - Changes, including local edits, will be synced directly with the underlying feature services.
 
-For more information about offline workflows, see [Offline maps, scenes, and data](https://developers.arcgis.com/documentation/mapping-apis-and-location-services/offline/) in the *ArcGIS Developers* guide.
+For more information about offline workflows, see [Offline maps, scenes, and data](https://developers.arcgis.com/documentation/offline-mapping-apps/) in the *ArcGIS Developers* guide.
 
 ## Tags
 
