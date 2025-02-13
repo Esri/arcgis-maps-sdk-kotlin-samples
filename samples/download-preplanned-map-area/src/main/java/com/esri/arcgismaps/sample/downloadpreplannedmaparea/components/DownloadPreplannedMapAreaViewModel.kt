@@ -48,7 +48,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
         )
     }
 
-    // create a portal to ArcGIS Online
+    // Create a portal to ArcGIS Online
     val portal = Portal("https://www.arcgis.com")
 
     // create a portal item using the portal and the item id of a map service
@@ -122,13 +122,13 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
      * Show the offline map of the given preplanned map area name.
      */
     private fun showOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {
-        downloadedMapAreas[preplannedMapAreaInfo.name]?.let {
-            currentMap = it
+        downloadedMapAreas[preplannedMapAreaInfo.name]?.let { selectedArcGISMap ->
+            currentMap = selectedArcGISMap
         }
     }
 
     /**
-     * Use the [OfflineMapTask]to create [DownloadPreplannedOfflineMapParameters] for the given [PreplannedMapArea].
+     * Use the [OfflineMapTask] to create [DownloadPreplannedOfflineMapParameters] for the given [PreplannedMapArea].
      * Then use the task to create a [DownloadPreplannedOfflineMapJob] to download the preplanned offline map.
      */
     private fun downloadOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {

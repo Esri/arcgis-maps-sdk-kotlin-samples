@@ -92,9 +92,9 @@ fun DownloadPreplannedMapAreaScreen(sampleName: String) {
                 // Show bottom sheet with override parameter options
                 if (showBottomSheet) {
                     ModalBottomSheet(
-                        modifier = Modifier.wrapContentSize(), onDismissRequest = {
-                            showBottomSheet = false
-                        }, sheetState = sheetState
+                        modifier = Modifier.wrapContentSize(),
+                        sheetState = sheetState,
+                        onDismissRequest = { showBottomSheet = false }
                     ) {
                         DownloadPreplannedMap(
                             mapViewModel::showOnlineMap,
@@ -163,10 +163,8 @@ fun DownloadPreplannedMap(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            downloadOrShowMap(it)
-                        },
+                        .clickable { downloadOrShowMap(it) }
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = CenterVertically,
                 ) {
@@ -184,9 +182,9 @@ fun DownloadPreplannedMap(
                     }
                     Text(
                         text = it.name, color = if (it.isDownloaded) {
-                            Color.Black
+                            MaterialTheme.colorScheme.onSurface
                         } else {
-                            Color.Gray
+                            MaterialTheme.colorScheme.outline
                         }
                     )
                 }

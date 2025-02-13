@@ -12,7 +12,7 @@ An archeology team could define preplanned map areas for dig sites which can be 
 
 ## How to use the sample
 
-Select a map area from the Preplanned map areas list. The download progress will be shown and when a download is complete it will be displayed in the the map view.
+Select a map area from the Preplanned map areas list. The download progress will be shown and when a download is complete it will be displayed in the map view.
 
 ## How it works
 
@@ -35,7 +35,7 @@ Select a map area from the Preplanned map areas list. The download progress will
 
 ## About the data
 
-The [Naperville stormwater network map](https://arcgisruntime.maps.arcgis.com/home/item.html?id=acc027394bc84c2fb04d1ed317aac674) is based on ArcGIS Solutions for Stormwater and provides a realistic depiction of a theoretical stormwater network.
+The [Naperville stormwater network map](https://www.arcgis.com/home/item.html?id=acc027394bc84c2fb04d1ed317aac674) is based on ArcGIS Solutions for Stormwater and provides a realistic depiction of a theoretical stormwater network.
 
 ## Additional information
 
@@ -46,7 +46,7 @@ The [Naperville stormwater network map](https://arcgisruntime.maps.arcgis.com/ho
 * `DownloadScheduledUpdatesAndUploadNewFeatures` - Scheduled, read-only updates are downloaded from the online map area and applied to the local mobile geodatabases. Newly added features can also be uploaded to the feature service.
 * `SyncWithFeatureServices` - Changes, including local edits, will be synced directly with the underlying feature services.
 
-For more information about offline workflows, see [Offline maps, scenes, and data](https://developers.arcgis.com/documentation/mapping-apis-and-location-services/offline/) in the *ArcGIS Developers* guide.
+For more information about offline workflows, see [Offline maps, scenes, and data](https://developers.arcgis.com/documentation/offline-mapping-apps/) in the *ArcGIS Developers* guide.
 
 ## Tags
 
