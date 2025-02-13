@@ -46,7 +46,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
         File(application.externalCacheDir?.path + application.getString(R.string.download_preplanned_map_area_app_name))
     }
 
-    // create a portal to ArcGIS Online
+    // Create a portal to ArcGIS Online
     val portal = Portal("https://www.arcgis.com")
 
     // create a portal item using the portal and the item id of a map service
