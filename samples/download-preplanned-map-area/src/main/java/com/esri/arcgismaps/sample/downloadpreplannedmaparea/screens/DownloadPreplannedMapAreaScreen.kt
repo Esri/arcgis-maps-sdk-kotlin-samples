@@ -163,10 +163,8 @@ fun DownloadPreplannedMap(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            downloadOrShowMap(it)
-                        },
+                        .clickable { downloadOrShowMap(it) }
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = CenterVertically,
                 ) {
