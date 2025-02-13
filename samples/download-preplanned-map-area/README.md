@@ -12,7 +12,7 @@ An archeology team could define preplanned map areas for dig sites which can be 
 
 ## How to use the sample
 
-Select a map area from the Preplanned map areas list. The download progress will be shown and when a download is complete it will be displayed in the the map view.
+Select a map area from the Preplanned map areas list. The download progress will be shown and when a download is complete it will be displayed in the map view.
 
 ## How it works
 
