@@ -1,19 +1,33 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Add a scale bar to visually gauge distances on a map.",
     "formal_name": "ShowScaleBar",
     "ignore": false,
     "images": [
         "show-scale-bar.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "map",
+        "measure",
+        "scale",
+        "toolkit",
+        "ArcGISMap",
+        "MapView",
+        "Scalebar",
+        "UnitSystem"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "ArcGISMap",
+        "MapView",
+        "Scalebar",
+        "UnitSystem"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/showscalebar/ShowScaleBarViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showscalebar/ShowScaleBarScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showscalebar/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showscalebar/components/ShowScaleBarViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showscalebar/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showscalebar/screens/ShowScaleBarScreen.kt"
     ],
     "title": "Show scale bar"
 }
