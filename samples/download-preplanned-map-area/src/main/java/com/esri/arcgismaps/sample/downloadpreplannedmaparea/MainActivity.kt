@@ -40,17 +40,14 @@ class MainActivity : ComponentActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
+        // Delete any existing offline maps, to reset sample state
+        offlineMapDirectory.deleteRecursively()
+
         setContent {
             SampleAppTheme {
                 DownloadPreplannedMapAreaApp()
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Delete the offline map directory when the app is stopped
-        offlineMapDirectory.deleteRecursively()
     }
 
     @Composable

@@ -173,7 +173,7 @@ fun DownloadPreplannedMap(
                     if (!it.isDownloaded) {
                         if (it.progress <= 0) {
                             Icon(
-                                painter = painterResource(R.drawable.baseline_download_for_offline_24),
+                                painter = painterResource(R.drawable.download_to_24),
                                 contentDescription = "Download"
                             )
                         } else {

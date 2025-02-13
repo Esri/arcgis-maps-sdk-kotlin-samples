@@ -42,8 +42,10 @@ import java.io.File
 class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidViewModel(application) {
 
     // The directory where the offline map will be saved
-    private val offlineMapDirectory by lazy {
-        File(application.externalCacheDir?.path + application.getString(R.string.download_preplanned_map_area_app_name))
+    private val offlineMapPath by lazy {
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
+            R.string.download_preplanned_map_area_app_name
+        )
     }
 
     // create a portal to ArcGIS Online
@@ -93,11 +95,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
             }
 
             launch(Dispatchers.Main) {
-                onlineMap.load().onFailure { error ->
-                    messageDialogVM.showMessageDialog(
-                        "Failed to load map", error.message.toString()
-                    )
-                }
+                onlineMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
             }
         }
     }
@@ -142,7 +140,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                     // Set the update mode to receive no updates
                     it.updateMode = PreplannedUpdateMode.NoUpdates
                     // Define the path where the map will be saved
-                    val downloadDirectoryPath = offlineMapDirectory.path + File.separator + preplannedMapAreaInfo.name
+                    val downloadDirectoryPath = offlineMapPath + File.separator + preplannedMapAreaInfo.name
                     File(downloadDirectoryPath).mkdirs()
                     // Create a job to download the preplanned offline map
                     val downloadPreplannedOfflineMapJob = offlineMapTask.createDownloadPreplannedOfflineMapJob(
@@ -192,11 +190,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                     downloadedMapAreas[preplannedMapAreaInfo.name] = downloadedMap.offlineMap
                     // Show user where map was locally saved
                     snackbarHostState.showSnackbar(message = "Map saved at: " + downloadPreplannedOfflineMapJob.downloadDirectoryPath)
-                }.onFailure { throwable ->
-                    messageDialogVM.showMessageDialog(
-                        title = throwable.message.toString(), description = throwable.cause.toString()
-                    )
-                }
+                }.onFailure { messageDialogVM.showMessageDialog(it) }
             }
         }
     }

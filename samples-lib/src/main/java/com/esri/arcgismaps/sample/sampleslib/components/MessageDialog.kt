@@ -28,8 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
+import com.arcgismaps.exceptions.ArcGISException
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
@@ -39,6 +41,7 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 fun MessageDialog(
     title: String,
     description: String = "",
+    icon: ImageVector = Icons.Filled.Info,
     onDismissRequest: () -> Unit
 ) {
     Log.e("SampleAlertMessage", "$title: $description")
@@ -46,7 +49,7 @@ fun MessageDialog(
     if (description.isNotEmpty()) {
         AlertDialog(
             onDismissRequest = { onDismissRequest() },
-            icon = { Icon(Icons.Filled.Info, contentDescription = null) },
+            icon = { Icon(imageVector = icon, contentDescription = null) },
             title = { Text(title) },
             text = { Text(description) },
             confirmButton = {
@@ -101,6 +104,20 @@ class MessageDialogViewModel : ViewModel() {
         messageTitle = title
         messageDescription = description
         dialogStatus = true
+    }
+
+    fun showMessageDialog(throwable: Throwable) {
+        showMessageDialog(
+            title = throwable.message.toString(),
+            description = throwable.cause.toString()
+        )
+    }
+
+    fun showMessageDialog(exception: ArcGISException) {
+        showMessageDialog(
+            title = exception.message,
+            description = exception.additionalMessage.toString() + "\n" + exception.cause
+        )
     }
 
     /**
