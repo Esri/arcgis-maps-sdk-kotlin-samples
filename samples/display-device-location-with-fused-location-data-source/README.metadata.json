@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "DisplayDeviceLocationWithFusedLocationDataSource",
+    "ignore": false,
+    "images": [
+        "display-device-location-with-fused-location-data-source.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithfusedlocationdatasource/DisplayDeviceLocationWithFusedLocationDataSourceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithfusedlocationdatasource/DisplayDeviceLocationWithFusedLocationDataSourceScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithfusedlocationdatasource/MainActivity.kt"
+    ],
+    "title": "Display device location with fused location data source"
+}
