@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "ShowScaleBar",
+    "ignore": false,
+    "images": [
+        "show-scale-bar.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showscalebar/ShowScaleBarViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showscalebar/ShowScaleBarScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showscalebar/MainActivity.kt"
+    ],
+    "title": "Show scale bar"
+}
