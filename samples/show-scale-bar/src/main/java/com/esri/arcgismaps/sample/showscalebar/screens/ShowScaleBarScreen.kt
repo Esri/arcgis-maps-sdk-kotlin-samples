@@ -37,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -61,6 +62,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.showscalebar.components.ShowScaleBarViewModel
+import com.esri.arcgismaps.sample.showscalebar.components.durationToSeconds
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -74,9 +76,9 @@ fun ShowScaleBarScreen(sampleName: String) {
     // Keep track of the currently selected scalebar
     var currentScalebarStyle by remember { mutableStateOf(ScalebarStyle.AlternatingBar) }
     var isScalebarDialogOptionsVisible by remember { mutableStateOf(false) }
-    var currentAutoHideDelay by remember { mutableStateOf(Duration.ZERO) }
+    var currentAutoHideDelay by remember { mutableStateOf(Duration.INFINITE) }
     var isGeodeticCalculationsEnabled by remember { mutableStateOf(true) }
-    var currentScalebarUnitSystem by remember { mutableStateOf<UnitSystem>(UnitSystem.Metric) }
+    var currentScalebarUnitSystem by remember { mutableStateOf<UnitSystem>(UnitSystem.Imperial) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -161,7 +163,7 @@ fun ScalebarDialogOptions(
     val scalebarStyles = ScalebarStyle.entries.toList()
     val scalebarUnitSystems = listOf(UnitSystem.Metric, UnitSystem.Imperial)
     val autoHideDelays = listOf(
-        Duration.ZERO,
+        Duration.INFINITE,
         1.toDuration(DurationUnit.SECONDS),
         3.toDuration(DurationUnit.SECONDS),
         5.toDuration(DurationUnit.SECONDS)
@@ -178,25 +180,7 @@ fun ScalebarDialogOptions(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text("Scale bar options: ", style = MaterialTheme.typography.headlineSmall)
-            DropDownMenuBox(
-                textFieldLabel = "Select scale bar style: ",
-                textFieldValue = currentScalebarStyle.name,
-                dropDownItemList = scalebarStyles.map { it.name },
-                onIndexSelected = { index -> onScalebarStyleSelected(scalebarStyles[index]) }
-            )
-            DropDownMenuBox(
-                textFieldLabel = "Select scale bar unit system: ",
-                textFieldValue = currentScalebarUnitSystem.javaClass.simpleName,
-                dropDownItemList = scalebarUnitSystems.map { it.javaClass.simpleName },
-                onIndexSelected = { index -> onScalebarUnitSystemSelected(scalebarUnitSystems[index]) }
-            )
-            DropDownMenuBox(
-                textFieldLabel = "Select scale bar auto-hide delay: ",
-                textFieldValue = currentAutoHideDelay.inWholeSeconds.toString(),
-                dropDownItemList = autoHideDelays.map { it.inWholeSeconds.toString() },
-                onIndexSelected = { index -> onAutoHideDelaySelected(autoHideDelays[index]) }
-            )
+            Text("Scale bar options: ", style = MaterialTheme.typography.titleMedium)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -211,6 +195,30 @@ fun ScalebarDialogOptions(
                     onCheckedChange = onGeodeticCalculationsToggled
                 )
             }
+            DropDownMenuBox(
+                textFieldLabel = "Scale bar style: ",
+                textFieldValue = currentScalebarStyle.name,
+                dropDownItemList = scalebarStyles.map { it.name },
+                onIndexSelected = { index -> onScalebarStyleSelected(scalebarStyles[index]) }
+            )
+            DropDownMenuBox(
+                textFieldLabel = "Scale bar unit system: ",
+                textFieldValue = currentScalebarUnitSystem.javaClass.simpleName,
+                dropDownItemList = scalebarUnitSystems.map { it.javaClass.simpleName },
+                onIndexSelected = { index -> onScalebarUnitSystemSelected(scalebarUnitSystems[index]) }
+            )
+            DropDownMenuBox(
+                textFieldLabel = "Scale bar auto-hide delay: ",
+                textFieldValue = currentAutoHideDelay.durationToSeconds(),
+                dropDownItemList = autoHideDelays.map { it.durationToSeconds() },
+                onIndexSelected = { index -> onAutoHideDelaySelected(autoHideDelays[index]) }
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                OutlinedButton(onClick = onDismissRequest) { Text("Dismiss") }
+            }
         }
     }
 }
@@ -223,8 +231,8 @@ fun PreviewScalebarDialogOptions() {
         Surface {
             ScalebarDialogOptions(
                 currentScalebarStyle = ScalebarStyle.AlternatingBar,
-                currentScalebarUnitSystem = UnitSystem.Metric,
-                currentAutoHideDelay = Duration.ZERO,
+                currentScalebarUnitSystem = UnitSystem.Imperial,
+                currentAutoHideDelay = Duration.INFINITE,
                 isGeodeticCalculationsEnabled = true,
                 onDismissRequest = { },
                 onScalebarStyleSelected = { },

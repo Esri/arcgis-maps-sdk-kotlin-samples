@@ -29,13 +29,14 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 
 class ShowScaleBarViewModel(application: Application) : AndroidViewModel(application) {
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-        initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+        initialViewpoint = Viewpoint(33.723271, -117.945753, 30452.0)
     }
 
     // Scale bar properties updated by the composable map view.
@@ -68,4 +69,8 @@ class ShowScaleBarViewModel(application: Application) : AndroidViewModel(applica
     fun updateSpacialReference(newSpacialReference: SpatialReference?) {
         spatialReference = newSpacialReference
     }
+}
+
+fun Duration.durationToSeconds(): String {
+    return if (this == Duration.INFINITE) "Infinite" else this.inWholeSeconds.toString()
 }
