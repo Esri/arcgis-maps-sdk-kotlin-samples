@@ -124,8 +124,8 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
      * Show the offline map of the given preplanned map area name.
      */
     private fun showOfflineMap(preplannedMapAreaInfo: PreplannedMapAreaInfo) {
-        downloadedMapAreas[preplannedMapAreaInfo.name]?.let {
-            currentMap = it
+        downloadedMapAreas[preplannedMapAreaInfo.name]?.let { selectedArcGISMap ->
+            currentMap = selectedArcGISMap
         }
     }
 
