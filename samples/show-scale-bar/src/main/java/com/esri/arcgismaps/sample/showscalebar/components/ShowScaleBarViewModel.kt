@@ -36,7 +36,7 @@ class ShowScaleBarViewModel(application: Application) : AndroidViewModel(applica
     val messageDialogVM = MessageDialogViewModel()
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-        initialViewpoint = Viewpoint(33.723271, -117.945753, 30452.0)
+        initialViewpoint = Viewpoint(33.723271, -117.945793, 30452.0)
     }
 
     // Scale bar properties updated by the composable map view.

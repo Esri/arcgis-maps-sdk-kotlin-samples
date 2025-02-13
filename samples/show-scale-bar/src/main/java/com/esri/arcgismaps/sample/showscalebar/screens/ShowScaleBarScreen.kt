@@ -106,7 +106,7 @@ fun ShowScaleBarScreen(sampleName: String) {
                 )
                 Scalebar(
                     modifier = Modifier
-                        .padding(25.dp)
+                        .padding(horizontal = 25.dp, vertical = 50.dp)
                         .align(Alignment.BottomStart),
                     maxWidth = 300.dp,
                     unitsPerDip = mapViewModel.unitsPerDip,
