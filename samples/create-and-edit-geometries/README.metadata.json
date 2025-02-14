@@ -1,19 +1,40 @@
 {
     "category": "Edit and Manage Data",
-    "description": "TODO",
+    "description": "Use the Geometry Editor to create new point, multipoint, polyline, or polygon geometries or to edit existing geometries by interacting with a map view.",
     "formal_name": "CreateAndEditGeometries",
     "ignore": false,
     "images": [
         "create-and-edit-geometries.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "draw",
+        "edit",
+        "freehand",
+        "geometry editor",
+        "geoview-compose",
+        "sketch",
+        "toolkit",
+        "vertex",
+        "Geometry",
+        "GeometryEditor",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEditor",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/CreateAndEditGeometriesViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/CreateAndEditGeometriesScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/components/CreateAndEditGeometriesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/screens/ButtonMenu.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createandeditgeometries/screens/CreateAndEditGeometriesScreen.kt"
     ],
     "title": "Create and edit geometries"
 }
