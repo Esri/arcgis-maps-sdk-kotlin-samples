@@ -99,6 +99,9 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     private val _selectedTool = MutableStateFlow<ToolType>(ToolType.Vertex)
     val selectedTool = _selectedTool.asStateFlow()
 
+    private val _currentGeometryType = MutableStateFlow<GeometryType>(GeometryType.Unknown)
+    val currentGeometryType = _currentGeometryType.asStateFlow()
+
     init {
         viewModelScope.launch {
             // load the map
@@ -117,6 +120,10 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     fun startEditor(selectedGeometry: GeometryType) {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(selectedGeometry)
+            _currentGeometryType.value = selectedGeometry
+            if (selectedGeometry == GeometryType.Point || selectedGeometry == GeometryType.Multipoint) {
+                changeTool(ToolType.Vertex)
+            }
         }
     }
 
@@ -134,6 +141,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
             // create a graphic from the geometry that was being edited
             createGraphic()
         }
+        _currentGeometryType.value = GeometryType.Unknown
     }
 
     /**

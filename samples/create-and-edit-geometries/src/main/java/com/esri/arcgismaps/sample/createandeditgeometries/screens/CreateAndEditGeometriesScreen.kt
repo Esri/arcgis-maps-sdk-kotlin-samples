@@ -68,7 +68,8 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     onUndoButtonClick = mapViewModel::undoEdit,
                     onRedoButtonClick = mapViewModel::redoEdit,
                     onToolChange = mapViewModel::changeTool,
-                    selectedTool = mapViewModel.selectedTool.collectAsStateWithLifecycle().value
+                    selectedTool = mapViewModel.selectedTool.collectAsStateWithLifecycle().value,
+                    currentGeometryType = mapViewModel.currentGeometryType.collectAsStateWithLifecycle().value
                 )
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {

@@ -63,7 +63,8 @@ fun ButtonMenu(
     onUndoButtonClick: () -> Unit,
     onRedoButtonClick: () -> Unit,
     onToolChange: (CreateAndEditGeometriesViewModel.ToolType) -> Unit,
-    selectedTool: CreateAndEditGeometriesViewModel.ToolType
+    selectedTool: CreateAndEditGeometriesViewModel.ToolType,
+    currentGeometryType: GeometryType
 ) {
     val rowModifier = Modifier
         .padding(12.dp)
@@ -76,6 +77,7 @@ fun ButtonMenu(
         var drawMenuExpanded by remember { mutableStateOf(false) }
         var deleteMenuExpanded by remember { mutableStateOf(false) }
         var toolMenuExpanded by remember { mutableStateOf(false) }
+        var canChangeTool = (currentGeometryType == GeometryType.Polyline || currentGeometryType == GeometryType.Polygon)
         Box(
             modifier = Modifier
         ) {
@@ -166,6 +168,7 @@ fun ButtonMenu(
         ) {
             val toolTypeItems = remember { CreateAndEditGeometriesViewModel.ToolType.entries }
             IconButton(
+                enabled = canChangeTool,
                 onClick = { toolMenuExpanded = !toolMenuExpanded }
             ) {
                 Icon(imageVector = Icons.Filled.Build, contentDescription = "Change Tool Type")
