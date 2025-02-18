@@ -129,7 +129,12 @@ fun NavigationRouteInfo(
             .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = stringResource(R.string.distance_remaining),
                 style = MaterialTheme.typography.bodyMedium,
@@ -142,7 +147,12 @@ fun NavigationRouteInfo(
             )
         }
 
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = stringResource(R.string.time_remaining),
                 style = MaterialTheme.typography.bodyMedium,
@@ -155,7 +165,12 @@ fun NavigationRouteInfo(
             )
         }
 
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = stringResource(R.string.next_direction),
                 style = MaterialTheme.typography.bodyMedium,
