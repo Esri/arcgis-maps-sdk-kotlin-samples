@@ -29,9 +29,9 @@
         "GeoprocessingTask"
     ],
     "snippets": [
-        "rc/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/components/ShowViewshedFromPointOnMapViewModel.kt",
-        "rc/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/MainActivity.kt",
-        "rc/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/screens/ShowViewshedFromPointOnMapScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/components/ShowViewshedFromPointOnMapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/screens/ShowViewshedFromPointOnMapScreen.kt"
     ],
     "title": "Show viewshed from point on map"
 }

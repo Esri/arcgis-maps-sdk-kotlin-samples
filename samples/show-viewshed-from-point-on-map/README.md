@@ -2,7 +2,7 @@
 
 Calculate a viewshed using a geoprocessing service, in this case showing what parts of a landscape are visible from points on mountainous terrain.
 
-![Image of show viewshed from point on map](ShowViewshedFromPointOnMap.jpg)
+![Image of show viewshed from point on map](show-viewshed-from-point-on-map.png)
 
 ## Use case
 
