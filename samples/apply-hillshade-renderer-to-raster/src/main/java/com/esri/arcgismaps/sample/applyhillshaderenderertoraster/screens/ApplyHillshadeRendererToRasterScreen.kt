@@ -47,8 +47,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,6 +62,10 @@ import com.esri.arcgismaps.sample.applyhillshaderenderertoraster.components.Appl
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import kotlin.math.roundToInt
+
+val slopeTypes = listOf(
+    SlopeType.None, SlopeType.Degree, SlopeType.PercentRise, SlopeType.Scaled
+)
 
 /**
  * Main screen layout for the sample app
@@ -82,9 +84,9 @@ fun ApplyHillshadeRendererToRasterScreen(sampleName: String) {
     }
 
     // Collect latest UI states
-    val altitude by remember { mutableDoubleStateOf(mapViewModel.currentAltitude) }
-    val azimuth by remember { mutableDoubleStateOf(mapViewModel.currentAzimuth) }
-    val slopeType by remember { mutableStateOf(mapViewModel.currentSlopeType) }
+    val altitude by remember { mapViewModel::currentAltitude }
+    val azimuth by remember { mapViewModel::currentAzimuth }
+    val slopeType by remember { mapViewModel::currentSlopeType }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -108,7 +110,9 @@ fun ApplyHillshadeRendererToRasterScreen(sampleName: String) {
                             currentAltitude = altitude,
                             currentAzimuth = azimuth,
                             currentSlopeType = slopeType,
-                            onApplyRenderer = mapViewModel::updateRenderer
+                            updateAltitude = mapViewModel::updateAltitude,
+                            updateAzimuth = mapViewModel::updateAzimuth,
+                            updateSlopeType = mapViewModel::updateSlopeType
                         )
                     }
                 }
@@ -130,20 +134,10 @@ fun HillshadeRendererOptions(
     currentAltitude: Double,
     currentAzimuth: Double,
     currentSlopeType: SlopeType,
-    onApplyRenderer: (Double, Double, SlopeType) -> Unit
+    updateAltitude: (Double) -> Unit,
+    updateAzimuth: (Double) -> Unit,
+    updateSlopeType: (SlopeType) -> Unit,
 ) {
-    var altitude by remember { mutableIntStateOf(currentAltitude.roundToInt()) }
-    var azimuth by remember { mutableIntStateOf(currentAzimuth.roundToInt()) }
-    var selectedSlopeType by remember { mutableStateOf(currentSlopeType) }
-    val slopeTypes = listOf(
-        SlopeType.None, SlopeType.Degree, SlopeType.PercentRise, SlopeType.Scaled
-    )
-
-    // Apply renderer when any one of these values are updated
-    LaunchedEffect(altitude, azimuth, selectedSlopeType) {
-        onApplyRenderer(altitude.toDouble(), azimuth.toDouble(), selectedSlopeType)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,7 +149,7 @@ fun HillshadeRendererOptions(
             modifier = Modifier
                 .fillMaxWidth(),
             text = "Hillshade Renderer Settings",
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
         )
         HorizontalDivider()
@@ -164,15 +158,15 @@ fun HillshadeRendererOptions(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Altitude:", style = MaterialTheme.typography.labelLarge)
-            Text(text = altitude.toString(), style = MaterialTheme.typography.labelLarge)
+            Text(text = currentAltitude.toString(), style = MaterialTheme.typography.labelLarge)
         }
         // Altitude Slider
         Slider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            value = altitude.toFloat(),
-            onValueChange = { altitude = it.roundToInt() },
+            value = currentAltitude.toFloat(),
+            onValueChange = { updateAltitude(it.roundToInt().toDouble()) },
             valueRange = 0f..90f
         )
         Row(
@@ -180,15 +174,15 @@ fun HillshadeRendererOptions(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Azimuth:", style = MaterialTheme.typography.labelLarge)
-            Text(text = azimuth.toString(), style = MaterialTheme.typography.labelLarge)
+            Text(text = currentAzimuth.toString(), style = MaterialTheme.typography.labelLarge)
         }
         // Azimuth Slider
         Slider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            value = azimuth.toFloat(),
-            onValueChange = { azimuth = it.roundToInt() },
+            value = currentAzimuth.toFloat(),
+            onValueChange = { updateAzimuth(it.roundToInt().toDouble()) },
             valueRange = 0f..360f
         )
         // SlopeType dropdown
@@ -207,7 +201,7 @@ fun HillshadeRendererOptions(
             ) {
                 TextField(
                     label = { Text("SlopeType") },
-                    value = selectedSlopeType.javaClass.simpleName,
+                    value = currentSlopeType.javaClass.simpleName,
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -223,7 +217,7 @@ fun HillshadeRendererOptions(
                         DropdownMenuItem(
                             text = { Text(slopeType.javaClass.simpleName) },
                             onClick = {
-                                selectedSlopeType = slopeType
+                                updateSlopeType(slopeType)
                                 expanded = false
                             })
                         // Show a divider between dropdown menu options
@@ -244,10 +238,12 @@ fun HillshadeRendererOptionsPreview() {
     SampleAppTheme {
         Surface {
             HillshadeRendererOptions(
-                onApplyRenderer = { _, _, _ -> },
                 currentAltitude = 45.0,
                 currentAzimuth = 0.0,
-                currentSlopeType = SlopeType.None
+                currentSlopeType = SlopeType.None,
+                updateAltitude = { },
+                updateAzimuth = { },
+                updateSlopeType = { }
             )
         }
     }

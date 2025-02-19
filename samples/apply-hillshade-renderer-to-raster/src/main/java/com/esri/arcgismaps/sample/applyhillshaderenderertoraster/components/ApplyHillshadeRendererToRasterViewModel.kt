@@ -51,42 +51,49 @@ class ApplyHillshadeRendererToRasterViewModel(application: Application) :
 
     // Track UI values to be applied by the update renderer
     var currentAltitude by mutableDoubleStateOf(45.0)
+        private set
     var currentAzimuth by mutableDoubleStateOf(0.0)
+        private set
     var currentSlopeType by mutableStateOf<SlopeType>(SlopeType.None)
-
+        private set
 
     init {
         // Apply the renderer values
-        updateRenderer(
-            altitude = currentAltitude,
-            azimuth = currentAzimuth,
-            slopeType = currentSlopeType
-        )
+        updateRenderer()
     }
 
     /**
-     * Updates the current raster layer with a new [HillshadeRenderer] using the provided parameters.
+     * Updates the current raster layer with a new [HillshadeRenderer]
+     * using the current viewmodel parameters.
      */
-    fun updateRenderer(
-        altitude: Double,
-        azimuth: Double,
-        slopeType: SlopeType
-    ) {
+    private fun updateRenderer() {
         // Create blend renderer
         val hillshadeRenderer = HillshadeRenderer.create(
-            altitude = altitude,
-            azimuth = azimuth,
-            zFactor = Z_FACTOR,
-            slopeType = slopeType,
+            altitude = currentAltitude,
+            azimuth = currentAzimuth,
+            slopeType = currentSlopeType,
             pixelSizeFactor = PIXEL_SIZE_FACTOR,
             pixelSizePower = PIXEL_SIZE_POWER,
-            outputBitDepth = OUTPUT_BIT_DEPTH
+            outputBitDepth = OUTPUT_BIT_DEPTH,
+            zFactor = Z_FACTOR,
         )
+        // Set the renderer used by the layer
         rasterLayer.renderer = hillshadeRenderer
+    }
 
-        currentAzimuth = azimuth
+    fun updateAltitude(altitude: Double) {
         currentAltitude = altitude
+        updateRenderer()
+    }
+
+    fun updateAzimuth(azimuth: Double) {
+        currentAzimuth = azimuth
+        updateRenderer()
+    }
+
+    fun updateSlopeType(slopeType: SlopeType) {
         currentSlopeType = slopeType
+        updateRenderer()
     }
 
     companion object {
