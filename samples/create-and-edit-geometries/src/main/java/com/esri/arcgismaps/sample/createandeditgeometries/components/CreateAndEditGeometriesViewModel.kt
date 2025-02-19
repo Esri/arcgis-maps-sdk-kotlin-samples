@@ -122,6 +122,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
             geometryEditor.start(selectedGeometry)
             _currentGeometryType.value = selectedGeometry
             if (selectedGeometry == GeometryType.Point || selectedGeometry == GeometryType.Multipoint) {
+                // default to vertex tool for point or multipoint
                 changeTool(ToolType.Vertex)
             }
         }
