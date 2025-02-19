@@ -167,7 +167,7 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     title = "Failed to load map",
-                    description = error.message.toString()
+                    description = error.message ?: "No description"
                 )
             }
         }
