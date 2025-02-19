@@ -20,7 +20,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
-import com.arcgismaps.data.Feature
 import com.arcgismaps.data.FeatureCollectionTable
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Point
@@ -42,6 +41,7 @@ import com.arcgismaps.tasks.geoprocessing.GeoprocessingTask
 import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingFeatures
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import com.esri.arcgismaps.sample.showviewshedfrompointonmap.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 class ShowViewshedFromPointOnMapViewModel(application: Application) :
     AndroidViewModel(application) {
 
-    // The ArcGISMap with a topographic basemap.
+    // ArcGISMap with a topographic basemap
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
         initialViewpoint = Viewpoint(
             latitude = 45.379,
@@ -58,9 +58,10 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         )
     }
 
+    // Used by the composable MapView for viewpoint changes
     val mapviewProxy = MapViewProxy()
 
-    // Graphics overlay for the red marker at the tapped location.
+    // Graphics overlay for the red marker at the tapped location
     val inputGraphicsOverlay = GraphicsOverlay().apply {
         renderer = SimpleRenderer(
             symbol = SimpleMarkerSymbol(
@@ -71,7 +72,7 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         )
     }
 
-    // Graphics overlay for displaying the resulting viewshed polygons.
+    // Graphics overlay for displaying the resulting viewshed polygons
     val resultGraphicsOverlay = GraphicsOverlay().apply {
         renderer = SimpleRenderer(
             symbol = SimpleFillSymbol(
@@ -81,18 +82,19 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         )
     }
 
-    // GeoprocessingTask pointing to the Viewshed service URL.
-    private val geoprocessingTask =
-        GeoprocessingTask(url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Elevation/ESRI_Elevation_World/GPServer/Viewshed")
+    // GeoprocessingTask pointing to the Viewshed service URL
+    private val geoprocessingTask = GeoprocessingTask(
+        url = application.getString(R.string.Elevation_World_GPServer_URL)
+    )
 
-    // Potentially running GeoprocessingJob for cancellation/cleanup.
+    // Running GeoprocessingJob for cancellation/cleanup
     private var geoprocessingJob: GeoprocessingJob? = null
 
-    // Simple state flows for controlling UI.
+    // State flows for controlling UI
     private val _isGeoprocessingInProgress = MutableStateFlow(false)
     val isGeoprocessingInProgress = _isGeoprocessingInProgress.asStateFlow()
 
-    // Create a message dialog view model for handling error messages
+    // Message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
@@ -102,17 +104,18 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
     }
 
     /**
-     *
+     * Handles the [singleTapConfirmedEvent] by retrieving the tapped [Point] to
+     * cancel and run a new viewshed geoprocessing job.
      */
     fun onMapTapped(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         val tapPoint = singleTapConfirmedEvent.mapPoint ?: return
         viewModelScope.launch {
-            // Clear existing overlays and cancel any running job.
+            // Clear existing overlays and cancel any running job
             clearOverlays()
             geoprocessingJob?.cancel()
-            // Add a new red marker to the map at the tapped point.
+            // Add a new red marker to the map at the tapped point
             addTapMarker(tapPoint)
-            // Start the geoprocessing job to obtain the viewshed polygons.
+            // Start the geoprocessing job to obtain the viewshed polygons
             _isGeoprocessingInProgress.value = true
             calculateViewshed(tapPoint)
             _isGeoprocessingInProgress.value = false
@@ -124,15 +127,15 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
      * for the given [tapPoint].
      */
     private suspend fun calculateViewshed(tapPoint: Point) {
-        // Create an empty FeatureCollectionTable for the tapped location.
+        // Create an empty FeatureCollectionTable for the tapped location
         val table = FeatureCollectionTable(
             fields = emptyList(),
             geometryType = GeometryType.Point,
             spatialReference = tapPoint.spatialReference
         )
 
-        // Create a new feature with the tapped geometry and add to the table.
-        val newFeature: Feature = table.createFeature().also { it.geometry = tapPoint }
+        // Create a new feature with the tapped geometry and add to the table
+        val newFeature = table.createFeature().also { it.geometry = tapPoint }
         table.addFeature(newFeature)
 
         // Create geoprocessing parameters for a synchronous execution
@@ -144,19 +147,17 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         }
 
         // Create a new job
-        val job = geoprocessingTask.createJob(params)
-        geoprocessingJob = job
+        geoprocessingJob = geoprocessingTask.createJob(params)
 
         // Start and await the result
-        job.start()
+        geoprocessingJob?.start()
 
-        val gpResult = job.result().getOrElse {
+        val gpResult = geoprocessingJob?.result()?.getOrElse {
             return messageDialogVM.showMessageDialog(it)
         }
 
         // Get the output features for the viewshed polygon
-        val viewshedFeatureSet = gpResult.outputs["Viewshed_Result"] as? GeoprocessingFeatures
-            ?: return
+        val viewshedFeatureSet = gpResult?.outputs?.get("Viewshed_Result") as? GeoprocessingFeatures ?: return
         val featureSet = viewshedFeatureSet.features ?: return
 
         // Add each resulting feature geometry as a graphic to resultGraphicsOverlay
@@ -164,8 +165,9 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
             feat.geometry?.let { Graphic(it) }
         }
 
+        // Add the graphics to the overlay and set the map's viewpoint to its extent
         resultGraphicsOverlay.graphics.addAll(resultGraphics)
-        mapviewProxy.setViewpointGeometry(resultGraphicsOverlay.extent!!, 20.0)
+        resultGraphicsOverlay.extent?.let { mapviewProxy.setViewpointGeometry(it, 20.0) }
     }
 
     /**

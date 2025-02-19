@@ -38,7 +38,7 @@ import com.esri.arcgismaps.sample.showviewshedfrompointonmap.components.ShowView
 fun ShowViewshedFromPointOnMapScreen(sampleName: String) {
     val mapViewModel: ShowViewshedFromPointOnMapViewModel = viewModel()
 
-    // Observe relevant states from the view model
+    // Observe geoprocessing state from the view model
     val isGeoprocessingInProgress by mapViewModel.isGeoprocessingInProgress.collectAsState()
 
     Scaffold(
@@ -73,7 +73,7 @@ fun ShowViewshedFromPointOnMapScreen(sampleName: String) {
                 }
             }
 
-            // If geoprocessing is running, show a progress overlay
+            // If geoprocessing is running, show a loading dialog
             if (isGeoprocessingInProgress) {
                 LoadingDialog(loadingMessage = "Calculating viewshed…")
             }
