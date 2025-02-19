@@ -1,0 +1,19 @@
+{
+    "category": "Analysis",
+    "description": "TODO",
+    "formal_name": "ShowViewshedFromPointOnMap",
+    "ignore": false,
+    "images": [
+        "show-viewshed-from-point-on-map.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/ShowViewshedFromPointOnMapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/ShowViewshedFromPointOnMapScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/MainActivity.kt"
+    ],
+    "title": "Show viewshed from point on map"
+}
