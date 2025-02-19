@@ -23,7 +23,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeometryEngine
-import com.arcgismaps.geometry.LinearUnit
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.PolygonBuilder
@@ -201,7 +200,6 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
         // calculate the distances to the nearest vertex and nearest coordinate then convert to kilometers
         val vertexDistance = nearestVertexResult?.distance?.metersToKilometers()?.toInt()
-        LinearUnit
         val coordinateDistance = nearestCoordinateResult?.distance?.metersToKilometers()?.toInt()
         if (vertexDistance != null && coordinateDistance != null) {
             // update the distance information so the UI can display it
