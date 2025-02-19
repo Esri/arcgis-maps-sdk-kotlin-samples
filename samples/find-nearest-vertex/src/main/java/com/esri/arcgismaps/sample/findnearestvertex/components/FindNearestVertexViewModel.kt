@@ -23,6 +23,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.LinearUnit
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.PolygonBuilder
@@ -178,29 +179,30 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
      */
     fun onMapViewTapped(event: SingleTapConfirmedEvent) {
         event.mapPoint?.let { point ->
-            findNearestVertex(mapPoint = point, polygon = polygon)
+            findNearestVertex(tapPoint = point, polygon = polygon)
         }
     }
 
     /**
-     * Finds the nearest vertex from [mapPoint] from the [polygon].
+     * Finds the nearest vertex to the [tapPoint] on the [polygon].
      */
-    private fun findNearestVertex(mapPoint: Point, polygon: Polygon) {
+    private fun findNearestVertex(tapPoint: Point, polygon: Polygon) {
         // show where the user clicked
-        tappedLocationGraphic.geometry = mapPoint
+        tappedLocationGraphic.geometry = tapPoint
         // use the geometry engine to get the nearest vertex
         val nearestVertexResult =
-            GeometryEngine.nearestVertex(geometry = polygon, point = mapPoint)
+            GeometryEngine.nearestVertex(geometry = polygon, point = tapPoint)
         // set the nearest vertex graphic's geometry to the nearest vertex
         nearestVertexGraphic.geometry = nearestVertexResult?.coordinate
         // use the geometry engine to get the nearest coordinate
         val nearestCoordinateResult =
-            GeometryEngine.nearestCoordinate(geometry = polygon, point = mapPoint)
+            GeometryEngine.nearestCoordinate(geometry = polygon, point = tapPoint)
         // set the nearest coordinate graphic's geometry to the nearest coordinate
         nearestCoordinateGraphic.geometry = nearestCoordinateResult?.coordinate
-        // calculate the distances to the nearest vertex and nearest coordinate then convert to miles
-        val vertexDistance = nearestVertexResult?.distance?.feetToMiles()?.toInt()
-        val coordinateDistance = nearestCoordinateResult?.distance?.feetToMiles()?.toInt()
+        // calculate the distances to the nearest vertex and nearest coordinate then convert to kilometers
+        val vertexDistance = nearestVertexResult?.distance?.metersToKilometers()?.toInt()
+        LinearUnit
+        val coordinateDistance = nearestCoordinateResult?.distance?.metersToKilometers()?.toInt()
         if (vertexDistance != null && coordinateDistance != null) {
             // update the distance information so the UI can display it
             _distanceInformationFlow.value = DistanceInformation(
@@ -227,10 +229,10 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         }
 
     /**
-     * Converts a quantity in feet to miles.
+     * Converts a quantity in meters to kilometers.
      */
-    private fun Double.feetToMiles(): Double {
-        return this/5280.0
+    private fun Double.metersToKilometers(): Double {
+        return this / 1000.0
     }
 
     /**
