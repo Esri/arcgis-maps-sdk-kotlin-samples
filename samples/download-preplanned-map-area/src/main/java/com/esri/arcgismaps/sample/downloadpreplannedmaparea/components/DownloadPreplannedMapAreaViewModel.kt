@@ -161,7 +161,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
     ) {
         with(viewModelScope) {
             // Create a flow-collection for the job's progress
-            launch(Dispatchers.Main) {
+            val progressCoroutine = launch(Dispatchers.IO) {
                 downloadPreplannedOfflineMapJob.progress.collect { progress ->
                     // Update the UI to show the map as downloaded by replacing entry in the flow's list
                     _preplannedMapAreaInfoFlow.value = _preplannedMapAreaInfoFlow.value.map { mapAreaInfoInFlow ->
@@ -191,6 +191,8 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                     // Show user where map was locally saved
                     snackbarHostState.showSnackbar(message = "Map saved at: " + downloadPreplannedOfflineMapJob.downloadDirectoryPath)
                 }.onFailure { messageDialogVM.showMessageDialog(it) }
+                // Cancel the coroutine handling progress reporting
+                progressCoroutine.cancel()
             }
         }
     }

@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2025 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.findnearestvertex
+package com.esri.arcgismaps.sample.generateofflinemapwithcustomparameters
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.findnearestvertex.screens.FindNearestVertexScreen
+import com.esri.arcgismaps.sample.generateofflinemapwithcustomparameters.screens.GenerateOfflineMapWithCustomParametersScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                FindNearestVertexApp()
+                GenerateOfflineMapWithCustomParametersApp()
             }
         }
     }
 
     @Composable
-    private fun FindNearestVertexApp() {
+    private fun GenerateOfflineMapWithCustomParametersApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            FindNearestVertexScreen(
-                sampleName = getString(R.string.find_nearest_vertex_app_name)
+            GenerateOfflineMapWithCustomParametersScreen(
+                sampleName = getString(R.string.generate_offline_map_with_custom_parameters_app_name)
             )
         }
     }
