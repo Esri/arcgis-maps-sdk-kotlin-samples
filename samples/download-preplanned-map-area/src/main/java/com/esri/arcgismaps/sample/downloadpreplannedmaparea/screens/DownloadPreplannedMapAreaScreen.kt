@@ -43,15 +43,14 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -61,7 +60,6 @@ import com.esri.arcgismaps.sample.downloadpreplannedmaparea.components.DownloadP
 import com.esri.arcgismaps.sample.downloadpreplannedmaparea.components.PreplannedMapAreaInfo
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Main screen layout for the sample app
@@ -99,7 +97,7 @@ fun DownloadPreplannedMapAreaScreen(sampleName: String) {
                         DownloadPreplannedMap(
                             mapViewModel::showOnlineMap,
                             mapViewModel::downloadOrShowOfflineMap,
-                            mapViewModel.preplannedMapAreaInfoFlow
+                            mapViewModel.preplannedMapAreaInfoList
                         )
                     }
                 }
@@ -128,7 +126,7 @@ fun DownloadPreplannedMapAreaScreen(sampleName: String) {
 fun DownloadPreplannedMap(
     showOnlineMap: () -> Unit,
     downloadOrShowMap: (PreplannedMapAreaInfo) -> Unit,
-    preplannedMapAreaInfoFlow: StateFlow<List<PreplannedMapAreaInfo>>
+    preplannedMapAreaInfoFlow: SnapshotStateList<PreplannedMapAreaInfo>
 ) {
     Column(
         modifier = Modifier
@@ -159,7 +157,7 @@ fun DownloadPreplannedMap(
         }
         Text(text = "Preplanned map areas", modifier = Modifier.padding(top = 16.dp, start = 8.dp, bottom = 4.dp))
         Card(modifier = Modifier.wrapContentSize()) {
-            preplannedMapAreaInfoFlow.collectAsState().value.forEach {
+            preplannedMapAreaInfoFlow.forEach {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

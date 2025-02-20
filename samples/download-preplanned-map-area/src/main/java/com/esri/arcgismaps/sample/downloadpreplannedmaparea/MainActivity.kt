@@ -30,8 +30,11 @@ import java.io.File
 
 class MainActivity : ComponentActivity() {
 
-    private val offlineMapDirectory by lazy {
-        File(application.externalCacheDir?.path + application.getString(R.string.download_preplanned_map_area_app_name))
+    // The directory where the offline map will be saved
+    private val offlineMapPath by lazy {
+        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
+            R.string.download_preplanned_map_area_app_name
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +44,7 @@ class MainActivity : ComponentActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
         // Delete any existing offline maps, to reset sample state
-        offlineMapDirectory.deleteRecursively()
+        File(offlineMapPath).deleteRecursively()
 
         setContent {
             SampleAppTheme {

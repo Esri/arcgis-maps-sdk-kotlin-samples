@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.downloadpreplannedmaparea.components
 import android.app.Application
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
@@ -34,8 +35,6 @@ import com.arcgismaps.tasks.offlinemaptask.PreplannedUpdateMode
 import com.esri.arcgismaps.sample.downloadpreplannedmaparea.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -68,9 +67,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
     // The current map shown in the map view
     var currentMap by mutableStateOf(onlineMap)
 
-    // A flow of preplanned map areas and their download status
-    private var _preplannedMapAreaInfoFlow = MutableStateFlow<List<PreplannedMapAreaInfo>>(listOf())
-    var preplannedMapAreaInfoFlow = _preplannedMapAreaInfoFlow.asStateFlow()
+    val preplannedMapAreaInfoList = mutableStateListOf<PreplannedMapAreaInfo>()
 
     // Defined to send messages related to offlineMapJob
     val snackbarHostState = SnackbarHostState()
@@ -86,9 +83,14 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                     preplannedMapAreas.addAll(it)
 
                     // Add all of the preplanned map areas name and download status to a list
-                    it.forEach { preplannedMapArea ->
-                        _preplannedMapAreaInfoFlow.value += PreplannedMapAreaInfo(
-                            name = preplannedMapArea.portalItem.title, progress = 0f, isDownloaded = false
+                    it.forEachIndexed { index, preplannedMapArea ->
+                        preplannedMapAreaInfoList.add(
+                            PreplannedMapAreaInfo(
+                                index = index,
+                                name = preplannedMapArea.portalItem.title,
+                                progress = 0f,
+                                isDownloaded = false
+                            )
                         )
                     }
                 }
@@ -163,13 +165,9 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
             // Create a flow-collection for the job's progress
             val progressCoroutine = launch(Dispatchers.IO) {
                 downloadPreplannedOfflineMapJob.progress.collect { progress ->
-                    // Update the UI to show the map as downloaded by replacing entry in the flow's list
-                    _preplannedMapAreaInfoFlow.value = _preplannedMapAreaInfoFlow.value.map { mapAreaInfoInFlow ->
-                        when (mapAreaInfoInFlow.name) {
-                            preplannedMapAreaInfo.name -> mapAreaInfoInFlow.copy(progress = progress.toFloat() / 100)
-                            else -> mapAreaInfoInFlow
-                        }
-                    }
+                    // Update the UI to this preplanned map area's downloads progress
+                    preplannedMapAreaInfoList[preplannedMapAreaInfo.index] =
+                        preplannedMapAreaInfo.copy(progress = progress.toFloat() / 100)
                 }
             }
             // Start the job and handle the result
@@ -179,13 +177,10 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                 downloadPreplannedOfflineMapJob.result().onSuccess { downloadedMap ->
                     // Set the offline map result as the displayed
                     currentMap = downloadedMap.offlineMap
-                    // Update the UI to show the map as downloaded by replacing entry in the flow's list
-                    _preplannedMapAreaInfoFlow.value = _preplannedMapAreaInfoFlow.value.map {
-                        when (it.name) {
-                            preplannedMapAreaInfo.name -> it.copy(isDownloaded = true)
-                            else -> it
-                        }
-                    }
+                    // Update the UI to show the map as downloaded
+                    val index = preplannedMapAreaInfoList.indexOf(preplannedMapAreaInfo)
+                    preplannedMapAreaInfoList[preplannedMapAreaInfo.index] =
+                        preplannedMapAreaInfo.copy(isDownloaded = true)
                     // Add the downloaded map to the list of downloaded maps
                     downloadedMapAreas[preplannedMapAreaInfo.name] = downloadedMap.offlineMap
                     // Show user where map was locally saved
@@ -198,4 +193,4 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
     }
 }
 
-data class PreplannedMapAreaInfo(val name: String, val progress: Float, val isDownloaded: Boolean)
+data class PreplannedMapAreaInfo(val index: Int, val name: String, val progress: Float, val isDownloaded: Boolean)
