@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRealisticLightAndShadowsViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -35,6 +36,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
+    val lightingOptionsState = mapViewModel.lightingOptionsState
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -43,13 +45,17 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
             ) {
-                MapView(
+                SceneView(
+                    mapViewModel.arcGISScene,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                        //.padding(innerPadding)
+                        .fillMaxSize(),
+                    sunTime = lightingOptionsState.sunTime.value,
+                    sunLighting = lightingOptionsState.sunLighting.value,
+                    ambientLightColor = lightingOptionsState.ambientLightColor.value,
+                    atmosphereEffect = lightingOptionsState.atmosphereEffect.value,
+                    spaceEffect = lightingOptionsState.spaceEffect.value
                 )
-                // TODO: Add UI components in this Column ...
             }
 
             mapViewModel.messageDialogVM.apply {
