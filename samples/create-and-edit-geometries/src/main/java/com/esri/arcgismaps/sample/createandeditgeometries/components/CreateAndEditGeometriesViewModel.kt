@@ -194,33 +194,19 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
      */
     fun changeTool(toolType: ToolType) {
         when (toolType) {
-            ToolType.Vertex -> {
-                geometryEditor.tool = vertexTool
-            }
+            ToolType.Vertex -> geometryEditor.tool = vertexTool
 
-            ToolType.ReticleVertex -> {
-                geometryEditor.tool = reticleVertexTool
-            }
+            ToolType.ReticleVertex -> geometryEditor.tool = reticleVertexTool
 
-            ToolType.Freehand -> {
-                geometryEditor.tool = freehandTool
-            }
+            ToolType.Freehand -> geometryEditor.tool = freehandTool
 
-            ToolType.Arrow -> {
-                geometryEditor.tool = arrowTool
-            }
+            ToolType.Arrow -> geometryEditor.tool = arrowTool
 
-            ToolType.Ellipse -> {
-                geometryEditor.tool = ellipseTool
-            }
+            ToolType.Ellipse -> geometryEditor.tool = ellipseTool
 
-            ToolType.Rectangle -> {
-                geometryEditor.tool = rectangleTool
-            }
+            ToolType.Rectangle -> geometryEditor.tool = rectangleTool
 
-            ToolType.Triangle -> {
-                geometryEditor.tool = triangleTool
-            }
+            ToolType.Triangle -> geometryEditor.tool = triangleTool
         }
         _selectedTool.value = toolType
     }
