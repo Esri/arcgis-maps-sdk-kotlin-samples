@@ -16,21 +16,14 @@
 
 package com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.components
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Application
-import android.content.pm.PackageManager
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.location.CustomLocationDataSource
+import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
@@ -39,82 +32,69 @@ import kotlinx.coroutines.launch
 class DisplayDeviceLocationWithFusedLocationDataSourceViewModel(application: Application) :
     AndroidViewModel(application) {
 
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
-
-    var locationDisplay: LocationDisplay = LocationDisplay()
-
-    val fusedLocationProvider = FusedLocationProvider(getApplication())
+    // Create an ArcGIS map
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigation)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
+    // Create a fused location provider to get location updates from the fused location API
+    private val fusedLocationProvider = FusedLocationOrientationProvider(getApplication())
+
     init {
-
-
-
-
-
-
-        //requestPermissions()
-
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
+                    "Failed to load map", error.message.toString()
                 )
             }
         }
     }
 
     /**
-     * Request fine and coarse location permissions for API level 23+.
+     * Pass changes in priority to the fused location provider.
      */
-    private fun requestPermissions() {
-        // coarse location permission
-        val permissionCheckCoarseLocation =
-            ContextCompat.checkSelfPermission(getApplication(), ACCESS_COARSE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED
-        // fine location permission
-        val permissionCheckFineLocation =
-            ContextCompat.checkSelfPermission(getApplication(), ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED
-
-        // if permissions are not already granted, request permission from the user
-        if (!(permissionCheckCoarseLocation && permissionCheckFineLocation)) {
-            ActivityCompat.requestPermissions(
-                getApplication(),
-                arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION),
-                2
-            )
-        } else {
-            // permission already granted, so start the location display
-            viewModelScope.launch {
-
-            }
-        }
+    fun onPriorityChanged(priority: Int) {
+        fusedLocationProvider.onPriorityChanged(priority)
     }
 
-    fun onSetLocationDisplay(locationDisplay: LocationDisplay) {
-        this.locationDisplay = locationDisplay.apply {
-            dataSource = CustomLocationDataSource { fusedLocationProvider }
-            showLocation = true
+    /**
+     * Pass changes in interval to the fused location provider.
+     */
+    fun onIntervalChanged(interval: Long) {
+        fusedLocationProvider.onIntervalChanged(interval)
+    }
 
-            viewModelScope.launch {
+    /**
+     * Initialize the location display with a custom location data source using the fused location provider.
+     */
+    fun initialize(locationDisplay: LocationDisplay) {
 
-                dataSource.start()
-
-                fusedLocationProvider.startFusedLocationProvider()
-
-               dataSource.locationChanged.collect { location ->
-
-                    Log.d("location", location.position.x.toString())
+        // Set the location display to be used by this view model
+        locationDisplay.apply {
+            // Set the location display's data source to a Custom Location DataSource which implements a location
+            // provider interface on the Fused Location API
+            dataSource = CustomLocationDataSource { fusedLocationProvider }.also {
+                viewModelScope.launch {
+                    it.locationChanged.collect { location ->
+                        Log.d("Location", "Location: ${location.position.x}, ${location.position.y}")
+                    }
+                }
+                viewModelScope.launch {
+                    it.headingChanged.collect { heading ->
+                        Log.d("Heading", "Heading: $heading")
+                    }
                 }
             }
+            // Keep track of the job so it can be canceled elsewhere
+            viewModelScope.launch {
+                // Start the data source
+                dataSource.start()
+                // Start emitting fused locations into the data source
+                fusedLocationProvider.start()
+            }
+            // Set the AutoPan mode to recenter around the location display
+            setAutoPanMode(LocationDisplayAutoPanMode.CompassNavigation)
         }
     }
 }

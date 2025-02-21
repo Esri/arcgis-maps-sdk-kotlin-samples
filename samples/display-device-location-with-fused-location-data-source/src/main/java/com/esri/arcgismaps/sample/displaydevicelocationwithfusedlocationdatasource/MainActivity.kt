@@ -16,9 +16,11 @@
 
 package com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -29,6 +31,22 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted, show the UI
+            setContent {
+                SampleAppTheme {
+                    DisplayDeviceLocationWithFusedLocationDataSourceApp()
+                }
+            }
+        } else {
+            // Request permission again
+            requestLocationPermission()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // authentication with an API key or named user is
@@ -36,12 +54,13 @@ class MainActivity : ComponentActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         ArcGISEnvironment.applicationContext = applicationContext
 
-        setContent {
-            SampleAppTheme {
-                DisplayDeviceLocationWithFusedLocationDataSourceApp()
-            }
-        }
+        requestLocationPermission()
     }
+
+    private fun requestLocationPermission() {
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
 
     @Composable
     private fun DisplayDeviceLocationWithFusedLocationDataSourceApp() {
