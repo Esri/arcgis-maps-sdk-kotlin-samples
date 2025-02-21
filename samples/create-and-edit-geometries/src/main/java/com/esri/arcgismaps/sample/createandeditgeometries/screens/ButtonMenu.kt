@@ -59,7 +59,7 @@ fun ButtonMenu(
     onStopEditingButtonClick: () -> Unit,
     onDiscardEditsButtonClick: () -> Unit,
     onDeleteSelectedElementButtonClick: () -> Unit,
-    onDeleteAllGeometriesButtonClick:() -> Unit,
+    onDeleteAllGeometriesButtonClick: () -> Unit,
     onUndoButtonClick: () -> Unit,
     onRedoButtonClick: () -> Unit,
     onToolChange: (CreateAndEditGeometriesViewModel.ToolType) -> Unit,
@@ -77,10 +77,9 @@ fun ButtonMenu(
         var drawMenuExpanded by remember { mutableStateOf(false) }
         var deleteMenuExpanded by remember { mutableStateOf(false) }
         var toolMenuExpanded by remember { mutableStateOf(false) }
-        var canChangeTool = (currentGeometryType == GeometryType.Polyline || currentGeometryType == GeometryType.Polygon)
-        Box(
-            modifier = Modifier
-        ) {
+        var canChangeTool =
+            (currentGeometryType == GeometryType.Polyline || currentGeometryType == GeometryType.Polygon)
+        Box {
             IconButton(
                 enabled = !isGeometryEditorStarted,
                 onClick = { drawMenuExpanded = !drawMenuExpanded }
@@ -125,17 +124,21 @@ fun ButtonMenu(
             enabled = canGeometryEditorUndo,
             onClick = { onUndoButtonClick() }
         ) {
-            Icon(imageVector = vector.vectorResource(R.drawable.undo_24), contentDescription = "Undo")
+            Icon(
+                imageVector = vector.vectorResource(R.drawable.undo_24),
+                contentDescription = "Undo"
+            )
         }
         IconButton(
             enabled = canGeometryEditorRedo,
             onClick = { onRedoButtonClick() }
         ) {
-            Icon(imageVector = vector.vectorResource(R.drawable.redo_24), contentDescription = "Redo")
+            Icon(
+                imageVector = vector.vectorResource(R.drawable.redo_24),
+                contentDescription = "Redo"
+            )
         }
-        Box(
-            modifier = Modifier
-        ) {
+        Box {
             IconButton(
                 onClick = { deleteMenuExpanded = !deleteMenuExpanded }
             ) {
@@ -163,9 +166,7 @@ fun ButtonMenu(
                 )
             }
         }
-        Box(
-            modifier = Modifier
-        ) {
+        Box {
             val toolTypeItems = remember { CreateAndEditGeometriesViewModel.ToolType.entries }
             IconButton(
                 enabled = canChangeTool,
