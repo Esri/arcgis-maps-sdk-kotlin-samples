@@ -8,7 +8,7 @@
     ],
     "keywords": [
         "GPS",
-        "Wi-Fi",
+        "Wifi",
         "cell",
         "fused",
         "headings",
@@ -21,7 +21,7 @@
         "LocationProvider"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": "",
     "relevant_apis": [
         "CustomLocationDataSource",
         "Location",

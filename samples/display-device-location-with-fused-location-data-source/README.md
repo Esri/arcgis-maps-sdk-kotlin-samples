@@ -26,8 +26,8 @@ Start the sample and allow the app to access your device's location. The sample 
 
 * CustomLocationDataSource
 * Location
-* LocationDisplay
 * LocationDataSource
+* LocationDisplay
 * LocationProvider
 
 ## Additional information
@@ -36,4 +36,4 @@ The fused location and orientation APIs are part of Google Play Services. The fu
 
 ## Tags
 
-cell, fused, GPS, headings, locations, orientation,  Wi-Fi
+cell, fused, GPS, headings, locations, orientation,  Wifi
