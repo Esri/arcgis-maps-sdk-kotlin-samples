@@ -39,7 +39,7 @@ class ShowScaleBarViewModel(application: Application) : AndroidViewModel(applica
         initialViewpoint = Viewpoint(33.723271, -117.945793, 30452.0)
     }
 
-    // Scale bar properties updated by the composable map view.
+    // Scale bar properties updated by the composable mapview.
     var viewpoint by mutableStateOf<Viewpoint?>(null)
         private set
     var unitsPerDip by mutableDoubleStateOf(Double.NaN)
