@@ -172,7 +172,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
-     * Undoes the last event on the geometry editor.
+     * Undoes the last event on the geometry editor if possible.
      */
     fun undoEdit() {
         if (geometryEditor.canUndo.value) {
@@ -181,7 +181,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
-     * Redoes the last event on the geometry editor.
+     * Redoes the last event on the geometry editor if possible.
      */
     fun redoEdit() {
         if (geometryEditor.canRedo.value) {
