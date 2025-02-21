@@ -1,29 +1,33 @@
 {
-    "category": "Analysis",
-    "description": "Find the closest vertex and coordinate of a geometry to a point.",
-    "formal_name": "FindNearestVertex",
-    "ignore": false,
-    "images": [
-        "find-nearest-vertex.png"
-    ],
-    "keywords": [
-        "analysis",
-        "coordinate",
-        "geometry",
-        "nearest",
-        "proximity",
-        "vertex",
-        "GeometryEngine",
-        "ProximityResult"
-    ],
-    "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [
-        "GeometryEngine",
-        "ProximityResult"
-    ],
-    "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/findnearestvertex/MainActivity.kt"
-    ],
-    "title": "Find nearest vertex"
+  "category": "Analysis",
+  "description": "Find the closest vertex and coordinate of a geometry to a point.",
+  "formal_name": "FindNearestVertex",
+  "ignore": false,
+  "images": [
+      "find-nearest-vertex.png"
+  ],
+  "keywords": [
+      "analysis",
+      "coordinate",
+      "geometry",
+      "geoview-compose",
+      "nearest",
+      "proximity",
+      "toolkit",
+      "vertex",
+      "GeometryEngine",
+      "ProximityResult"
+  ],
+  "language": "kotlin",
+  "redirect_from": "",
+  "relevant_apis": [
+      "GeometryEngine",
+      "ProximityResult"
+  ],
+  "snippets": [
+      "src/main/java/com/esri/arcgismaps/sample/findnearestvertex/components/FindNearestVertexViewModel.kt",
+      "src/main/java/com/esri/arcgismaps/sample/findnearestvertex/MainActivity.kt",
+      "src/main/java/com/esri/arcgismaps/sample/findnearestvertex/screens/FindNearestVertexScreen.kt"
+  ],
+  "title": "Find nearest vertex"
 }

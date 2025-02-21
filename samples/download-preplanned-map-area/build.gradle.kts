@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.findnearestvertex"
+    namespace = "com.esri.arcgismaps.sample.downloadpreplannedmaparea"
     buildFeatures {
         buildConfig = true
     }
