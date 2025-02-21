@@ -16,7 +16,7 @@ Click the map to see all areas visible from that point within a 15km radius. Cli
 
 1. Create a `GeoprocessingTask` object with the URL set to a geoprocessing service endpoint.
 2. Create a `FeatureCollectionTable` object and add a new `Feature` object whose geometry is the viewshed's observer `Point`.
-3. Make a `GeoprocessingParameters` object passing in the observer point.
+3. Make a `GeoprocessingParameters` and pass in the `GeoprocessingFeatures` table which contains the observation point as an `input` parameter.
 4. Use the geoprocessing task to create a `GeoprocessingJob` object with the parameters.
 5. Start the job and wait for it to complete and return a `GeoprocessingResult` object.
 6. Get the resulting `GeoprocessingFeatures` object.
