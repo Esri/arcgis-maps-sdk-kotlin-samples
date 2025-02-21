@@ -16,7 +16,7 @@ Zoom in or out of the map. The scale bar will automatically display the appropri
 
 1. Create an `ArcGISMap` and add it to a `MapView` composable.
 2. Listen and track callback changes from `onUnitsPerDipChanged`, `onViewpointChangedForCenterAndScale`, `onSpatialReferenceChanged` using the composable `MapView`.
-3. Add the `ScaleBar` composable positioned on top of the `MapView`
+3. Add the `Scalebar` composable positioned on top of the `MapView`
 4. Pass in the latest values of `unitsPerDip`, `viewpoint`, `spatialReference` & use a preferred `maxWidth` into the `ScaleBar`.
 
 ## Relevant API
