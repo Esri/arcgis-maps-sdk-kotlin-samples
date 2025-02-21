@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "ShowRealisticLightAndShadows",
+    "ignore": false,
+    "images": [
+        "show-realistic-light-and-shadows.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/ShowRealisticLightAndShadowsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/ShowRealisticLightAndShadowsScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/MainActivity.kt"
+    ],
+    "title": "Show realistic light and shadows"
+}
