@@ -30,29 +30,22 @@ import java.util.concurrent.Executors
 class FusedLocationOrientationProvider(applicationContext: Context) : CustomLocationDataSource.LocationProvider {
 
     private val _headings = MutableSharedFlow<Double>()
-
     // Note the override property here, required to implement the LocationProvider interface
     override val headings: Flow<Double> = _headings.asSharedFlow()
 
     private val _locations = MutableSharedFlow<Location>()
-
     // Note the override property here, required to implement the LocationProvider interface
     override val locations: Flow<Location> = _locations.asSharedFlow()
 
     private var fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
-
     private var locationCallback: LocationCallback? = null
-
     private var emitLocationsJob: Job? = null
-
     private var priority: Int = Priority.PRIORITY_HIGH_ACCURACY
-
     private var intervalInSeconds: Long = 1L
 
     private var fusedOrientationProviderClient: FusedOrientationProviderClient =
         LocationServices.getFusedOrientationProviderClient(applicationContext)
-
-
+    private var orientationListener: DeviceOrientationListener? = null
     private var emitHeadingsJob: Job? = null
 
     /**
@@ -71,12 +64,25 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
         startNewFusedLocationProvider(priority, interval)
     }
 
+    /**
+     * Start the fused location and orientation providers.
+     */
     fun start() {
-
         startNewFusedLocationProvider(priority, intervalInSeconds)
-
         startNewFusedOrientationProvider()
 
+    }
+
+    /**
+     * Stop the fused location and orientation providers.
+     */
+    fun stop() {
+        // Stop emitting locations into the locations flow
+        emitLocationsJob?.cancel()
+        locationCallback?.let { fusedLocationProviderClient.removeLocationUpdates(it) }
+        // Stop emitting headings into the headings flow
+        emitHeadingsJob?.cancel()
+        orientationListener?.let { fusedOrientationProviderClient.removeOrientationUpdates(it) }
     }
 
     /**
@@ -84,7 +90,7 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
      * and then request location updates with the location request and callback. In the callback, emit the location and
      * heading updates into the override flows in the LocationProvider interface.
      */
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission") // Permission requests are handled in MainActivity
     private fun startNewFusedLocationProvider(
         priority: Int = Priority.PRIORITY_HIGH_ACCURACY,
         intervalInSeconds: Long = 1L
@@ -125,13 +131,17 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
         }
     }
 
+    /**
+     * Create a new fused orientation provider and request orientation updates. Emit the heading updates into the
+     * override flow in the LocationProvider interface.
+     */
     private fun startNewFusedOrientationProvider() {
 
         // Cancel any current jobs emitting into locations
         emitHeadingsJob?.cancel()
 
         // Create an FOP listener
-        val orientationListener = DeviceOrientationListener { orientation: DeviceOrientation ->
+        orientationListener = DeviceOrientationListener { orientation: DeviceOrientation ->
             emitHeadingsJob = CoroutineScope(Dispatchers.IO).launch {
                 // Emit the fused orientation's heading into the Location Provider's overridden headings
                 // flow
@@ -139,15 +149,28 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
             }
         }
 
-        // Create a new orientation request with the default request period
+        // Create a new orientation request with the default request period. Other DeviceOrientationRequest than
+        // OUTPUT_PERIOD_DEFAULT can be defined here.
         val orientationRequest =
             DeviceOrientationRequest.Builder(DeviceOrientationRequest.OUTPUT_PERIOD_DEFAULT).build()
 
         // Register the request and listener
-        fusedOrientationProviderClient
-            .requestOrientationUpdates(orientationRequest, Executors.newSingleThreadExecutor(), orientationListener)
-            .addOnSuccessListener { Log.i(FusedLocationOrientationProvider::class.simpleName, "Registration Success") }
-            .addOnFailureListener { Log.e(FusedLocationOrientationProvider::class.simpleName, "Registration Failure") }
+        orientationListener?.let {
+            fusedOrientationProviderClient
+                .requestOrientationUpdates(orientationRequest, Executors.newSingleThreadExecutor(), it)
+                .addOnSuccessListener {
+                    Log.i(
+                        FusedLocationOrientationProvider::class.simpleName,
+                        "Registration Success"
+                    )
+                }
+                .addOnFailureListener { error ->
+                    Log.e(
+                        FusedLocationOrientationProvider::class.simpleName,
+                        "Registration Failure: " + error.message
+                    )
+                }
+        }
     }
 }
 

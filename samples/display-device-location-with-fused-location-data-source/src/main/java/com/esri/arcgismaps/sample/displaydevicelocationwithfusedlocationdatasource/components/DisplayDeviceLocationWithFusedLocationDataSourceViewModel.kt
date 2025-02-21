@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.components
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.location.CustomLocationDataSource
@@ -74,18 +73,7 @@ class DisplayDeviceLocationWithFusedLocationDataSourceViewModel(application: App
         locationDisplay.apply {
             // Set the location display's data source to a Custom Location DataSource which implements a location
             // provider interface on the Fused Location API
-            dataSource = CustomLocationDataSource { fusedLocationProvider }.also {
-                viewModelScope.launch {
-                    it.locationChanged.collect { location ->
-                        Log.d("Location", "Location: ${location.position.x}, ${location.position.y}")
-                    }
-                }
-                viewModelScope.launch {
-                    it.headingChanged.collect { heading ->
-                        Log.d("Heading", "Heading: $heading")
-                    }
-                }
-            }
+            dataSource = CustomLocationDataSource { fusedLocationProvider }
             // Keep track of the job so it can be canceled elsewhere
             viewModelScope.launch {
                 // Start the data source
@@ -96,5 +84,10 @@ class DisplayDeviceLocationWithFusedLocationDataSourceViewModel(application: App
             // Set the AutoPan mode to recenter around the location display
             setAutoPanMode(LocationDisplayAutoPanMode.CompassNavigation)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        fusedLocationProvider.stop()
     }
 }

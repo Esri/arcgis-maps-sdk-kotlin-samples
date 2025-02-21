@@ -165,9 +165,9 @@ fun DisplayDeviceLocationWithFusedLocationDataSourceScreen(sampleName: String) {
                     }
                     Slider(
                         value = interval,
-                        onValueChange = {
-                            interval = it
-                            mapViewModel.onIntervalChanged(it.toLong())
+                        onValueChange = { valueChanged ->
+                            interval = valueChanged
+                            mapViewModel.onIntervalChanged(valueChanged.toLong())
                         }, valueRange = 0f..30f,
                         modifier = Modifier.padding(start = 12.dp, end = 12.dp),
                         steps = 29
