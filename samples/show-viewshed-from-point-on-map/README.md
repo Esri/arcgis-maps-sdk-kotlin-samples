@@ -10,7 +10,7 @@ A viewshed is used to highlight what is visible from a given point. A viewshed c
 
 ## How to use the sample
 
-Click the map to see all areas visible from that point within a 15km radius. Clicking on an elevated area will highlight a larger part of the surrounding landscape. It may take a few seconds for the task to run and send back the results.
+Click the map to see all areas visible from that point within a 15km radius. Clicking on an elevated and unobstructed area will highlight a larger part of the surrounding landscape. It may take a few seconds for the task to run and send back the results.
 
 ## How it works
 

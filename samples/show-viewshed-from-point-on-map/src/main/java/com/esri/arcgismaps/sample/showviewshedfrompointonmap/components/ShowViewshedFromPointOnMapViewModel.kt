@@ -41,7 +41,6 @@ import com.arcgismaps.tasks.geoprocessing.GeoprocessingTask
 import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingFeatures
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import com.esri.arcgismaps.sample.showviewshedfrompointonmap.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -84,7 +83,7 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
 
     // GeoprocessingTask pointing to the Viewshed service URL
     private val geoprocessingTask = GeoprocessingTask(
-        url = application.getString(R.string.Elevation_World_GPServer_URL)
+        url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Elevation/ESRI_Elevation_World/GPServer/Viewshed"
     )
 
     // Running GeoprocessingJob for cancellation/cleanup
@@ -108,7 +107,8 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
      * cancel and run a new viewshed geoprocessing job.
      */
     fun onMapTapped(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
-        val tapPoint = singleTapConfirmedEvent.mapPoint ?: return
+        val tapPoint = singleTapConfirmedEvent.mapPoint
+            ?: return messageDialogVM.showMessageDialog("Unable to retrieve tapped point")
         viewModelScope.launch {
             // Clear existing overlays and cancel any running job
             clearOverlays()
@@ -139,7 +139,9 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         table.addFeature(newFeature)
 
         // Create geoprocessing parameters for a synchronous execution
-        val params = GeoprocessingParameters(GeoprocessingExecutionType.SynchronousExecute).apply {
+        val geoprocessingParameters = GeoprocessingParameters(
+            geoprocessingExecutionType = GeoprocessingExecutionType.SynchronousExecute
+        ).apply {
             processSpatialReference = tapPoint.spatialReference
             outputSpatialReference = tapPoint.spatialReference
             // Provide the tapped point as "Input_Observation_Point"
@@ -147,7 +149,7 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         }
 
         // Create a new job
-        geoprocessingJob = geoprocessingTask.createJob(params)
+        geoprocessingJob = geoprocessingTask.createJob(geoprocessingParameters)
 
         // Start and await the result
         geoprocessingJob?.start()
@@ -157,17 +159,24 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         }
 
         // Get the output features for the viewshed polygon
-        val viewshedFeatureSet = gpResult?.outputs?.get("Viewshed_Result") as? GeoprocessingFeatures ?: return
-        val featureSet = viewshedFeatureSet.features ?: return
+        val viewshedFeatureSet = gpResult?.outputs?.get("Viewshed_Result") as? GeoprocessingFeatures
+            ?: return messageDialogVM.showMessageDialog("No viewshed result found in the geoprocessing job.")
+        val featureSet = viewshedFeatureSet.features
+            ?: return messageDialogVM.showMessageDialog("Geoprocessing feature set is null.")
 
         // Add each resulting feature geometry as a graphic to resultGraphicsOverlay
-        val resultGraphics = featureSet.mapNotNull { feat ->
-            feat.geometry?.let { Graphic(it) }
+        val resultGraphics = featureSet.mapNotNull { feature ->
+            feature.geometry?.let { Graphic(it) }
         }
 
         // Add the graphics to the overlay and set the map's viewpoint to its extent
         resultGraphicsOverlay.graphics.addAll(resultGraphics)
-        resultGraphicsOverlay.extent?.let { mapviewProxy.setViewpointGeometry(it, 20.0) }
+        resultGraphicsOverlay.extent?.let { resultExtent ->
+            mapviewProxy.setViewpointGeometry(
+                boundingGeometry = resultExtent,
+                paddingInDips = 20.0
+            )
+        }
     }
 
     /**

@@ -1,4 +1,3 @@
 <resources>
     <string name="show_viewshed_from_point_on_map_app_name">Show viewshed from point on map</string>
-    <string name="Elevation_World_GPServer_URL">https://sampleserver6.arcgisonline.com/arcgis/rest/services/Elevation/ESRI_Elevation_World/GPServer/Viewshed</string>
 </resources>
