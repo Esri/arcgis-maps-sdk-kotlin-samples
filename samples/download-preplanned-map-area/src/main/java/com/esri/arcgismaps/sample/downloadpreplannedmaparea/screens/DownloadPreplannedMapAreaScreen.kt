@@ -126,7 +126,7 @@ fun DownloadPreplannedMapAreaScreen(sampleName: String) {
 fun DownloadPreplannedMap(
     showOnlineMap: () -> Unit,
     downloadOrShowMap: (PreplannedMapAreaInfo) -> Unit,
-    preplannedMapAreaInfoFlow: SnapshotStateList<PreplannedMapAreaInfo>
+    preplannedMapAreaInfoList: SnapshotStateList<PreplannedMapAreaInfo>
 ) {
     Column(
         modifier = Modifier
@@ -157,7 +157,7 @@ fun DownloadPreplannedMap(
         }
         Text(text = "Preplanned map areas", modifier = Modifier.padding(top = 16.dp, start = 8.dp, bottom = 4.dp))
         Card(modifier = Modifier.wrapContentSize()) {
-            preplannedMapAreaInfoFlow.forEach {
+            preplannedMapAreaInfoList.forEach {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -162,7 +162,7 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
         preplannedMapAreaInfo: PreplannedMapAreaInfo
     ) {
         with(viewModelScope) {
-            // Create a flow-collection for the job's progress
+            // Collect the job's progress flow
             val progressCoroutine = launch(Dispatchers.IO) {
                 downloadPreplannedOfflineMapJob.progress.collect { progress ->
                     // Update the UI to this preplanned map area's downloads progress
