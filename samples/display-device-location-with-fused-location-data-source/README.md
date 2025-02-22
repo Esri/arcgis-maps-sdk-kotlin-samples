@@ -36,4 +36,4 @@ The fused location and orientation APIs are part of Google Play Services. The fu
 
 ## Tags
 
-cell, fused, GPS, headings, locations, orientation,  Wifi
+cell, fused, GPS, headings, locations, orientation, Wifi
