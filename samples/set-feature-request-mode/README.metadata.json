@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "SetFeatureRequestMode",
+    "ignore": false,
+    "images": [
+        "set-feature-request-mode.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/SetFeatureRequestModeViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/SetFeatureRequestModeScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/MainActivity.kt"
+    ],
+    "title": "Set feature request mode"
+}
