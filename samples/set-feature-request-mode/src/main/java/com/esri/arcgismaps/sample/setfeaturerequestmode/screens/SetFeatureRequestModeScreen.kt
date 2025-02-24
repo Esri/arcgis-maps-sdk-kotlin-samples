@@ -19,48 +19,91 @@ package com.esri.arcgismaps.sample.setfeaturerequestmode.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.setfeaturerequestmode.components.SetFeatureRequestModeViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.setfeaturerequestmode.components.SetFeatureRequestModeViewModel
 
 /**
  * Main screen layout for the sample app
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetFeatureRequestModeScreen(sampleName: String) {
+
     val mapViewModel: SetFeatureRequestModeViewModel = viewModel()
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
+
+    // Set up the bottom sheet controls
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(false) }
+
+    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+        ) {
+            MapView(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .weight(1f),
+                arcGISMap = mapViewModel.arcGISMap
+            )
+        }
+        // Show bottom sheet with override parameter options
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                modifier = Modifier.wrapContentSize(),
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState
             ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                SetFeatureRequestModeBottomSheet(
+                    sheetState = sheetState,
+                    isExpanded = isExpanded,
+                    onExpandChange = { isExpanded = it }
                 )
-                // TODO: Add UI components in this Column ...
             }
+        }
 
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
+        mapViewModel.messageDialogVM.apply {
+            if (dialogStatus) {
+                MessageDialog(
+                    title = messageTitle,
+                    description = messageDescription,
+                    onDismissRequest = ::dismissDialog
+                )
+            }
+        }
+    },
+        // Floating action button to show the parameter overrides bottom sheet
+        floatingActionButton = {
+            if (!showBottomSheet) {
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
+                    onClick = { showBottomSheet = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "Show feature request mode menu"
                     )
                 }
             }
-        }
-    )
+        })
 }
