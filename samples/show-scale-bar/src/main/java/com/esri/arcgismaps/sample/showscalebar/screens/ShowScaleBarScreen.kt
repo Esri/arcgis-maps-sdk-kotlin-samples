@@ -64,8 +64,7 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.showscalebar.components.ShowScaleBarViewModel
 import com.esri.arcgismaps.sample.showscalebar.components.durationToSeconds
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Main screen layout for the sample app
@@ -106,7 +105,7 @@ fun ShowScaleBarScreen(sampleName: String) {
                 )
                 Scalebar(
                     modifier = Modifier
-                        .padding(horizontal = 25.dp, vertical = 50.dp)
+                        .padding(horizontal = 24.dp, vertical = 48.dp)
                         .align(Alignment.BottomStart),
                     maxWidth = 300.dp,
                     unitsPerDip = mapViewModel.unitsPerDip,
@@ -164,9 +163,9 @@ fun ScalebarDialogOptions(
     val scalebarUnitSystems = listOf(UnitSystem.Metric, UnitSystem.Imperial)
     val autoHideDelays = listOf(
         Duration.INFINITE,
-        1.toDuration(DurationUnit.SECONDS),
-        3.toDuration(DurationUnit.SECONDS),
-        5.toDuration(DurationUnit.SECONDS)
+        1.seconds,
+        3.seconds,
+        5.seconds
     )
 
     BasicAlertDialog(onDismissRequest = onDismissRequest) {
@@ -196,19 +195,19 @@ fun ScalebarDialogOptions(
                 )
             }
             DropDownMenuBox(
-                textFieldLabel = "Scale bar style: ",
+                textFieldLabel = "Scale bar style:",
                 textFieldValue = currentScalebarStyle.name,
                 dropDownItemList = scalebarStyles.map { it.name },
                 onIndexSelected = { index -> onScalebarStyleSelected(scalebarStyles[index]) }
             )
             DropDownMenuBox(
-                textFieldLabel = "Scale bar unit system: ",
+                textFieldLabel = "Scale bar unit system:",
                 textFieldValue = currentScalebarUnitSystem.javaClass.simpleName,
                 dropDownItemList = scalebarUnitSystems.map { it.javaClass.simpleName },
                 onIndexSelected = { index -> onScalebarUnitSystemSelected(scalebarUnitSystems[index]) }
             )
             DropDownMenuBox(
-                textFieldLabel = "Scale bar auto-hide delay: ",
+                textFieldLabel = "Scale bar auto-hide delay:",
                 textFieldValue = currentAutoHideDelay.durationToSeconds(),
                 dropDownItemList = autoHideDelays.map { it.durationToSeconds() },
                 onIndexSelected = { index -> onAutoHideDelaySelected(autoHideDelays[index]) }

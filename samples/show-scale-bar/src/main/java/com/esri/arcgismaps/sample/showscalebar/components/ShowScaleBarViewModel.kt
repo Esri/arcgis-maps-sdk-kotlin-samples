@@ -71,6 +71,10 @@ class ShowScaleBarViewModel(application: Application) : AndroidViewModel(applica
     }
 }
 
+
+/**
+ * Convert a duration to a string representation of seconds.
+ */
 fun Duration.durationToSeconds(): String {
     return if (this == Duration.INFINITE) "Infinite" else this.inWholeSeconds.toString()
 }
