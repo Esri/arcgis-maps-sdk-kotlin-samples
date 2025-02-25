@@ -16,27 +16,25 @@
 
 package com.esri.arcgismaps.sample.setfeaturerequestmode.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.data.FeatureRequestMode
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.setfeaturerequestmode.components.SetFeatureRequestModeViewModel
@@ -44,16 +42,14 @@ import com.esri.arcgismaps.sample.setfeaturerequestmode.components.SetFeatureReq
 /**
  * Main screen layout for the sample app
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetFeatureRequestModeScreen(sampleName: String) {
 
     val mapViewModel: SetFeatureRequestModeViewModel = viewModel()
 
-    // Set up the bottom sheet controls
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showBottomSheet by remember { mutableStateOf(false) }
-    var isExpanded by remember { mutableStateOf(false) }
+    val featureRequestModes = listOf(
+        FeatureRequestMode.OnInteractionCache, FeatureRequestMode.OnInteractionNoCache, FeatureRequestMode.ManualCache
+    )
 
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
         Column(
@@ -65,45 +61,47 @@ fun SetFeatureRequestModeScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f),
-                arcGISMap = mapViewModel.arcGISMap
+                arcGISMap = mapViewModel.arcGISMap,
+                onViewpointChangedForBoundingGeometry = { boundingGeometry ->
+                    mapViewModel.onViewpointChange(boundingGeometry)
+                },
             )
-        }
-        // Show bottom sheet with override parameter options
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                modifier = Modifier.wrapContentSize(),
-                onDismissRequest = { showBottomSheet = false },
-                sheetState = sheetState
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                SetFeatureRequestModeBottomSheet(
-                    sheetState = sheetState,
-                    isExpanded = isExpanded,
-                    onExpandChange = { isExpanded = it }
-                )
+                DropDownMenuBox(modifier = Modifier.padding(4.dp),
+                    textFieldLabel = "Feature request mode:",
+                    textFieldValue = mapViewModel.currentFeatureRequestMode.javaClass.simpleName,
+                    dropDownItemList = featureRequestModes.map { it.javaClass.simpleName },
+                    onIndexSelected = { index -> mapViewModel.onCurrentFeatureRequestModeChanged(featureRequestModes[index]) })
+                Button(
+                    onClick = { mapViewModel.fetchCacheManually() },
+                    // Only enable the button when the feature request mode is set to manual cache
+                    enabled = mapViewModel.currentFeatureRequestMode == FeatureRequestMode.ManualCache
+                ) {
+                    if (mapViewModel.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.requiredSize(24.dp),
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier,
+                            text = "Populate",
+                        )
+                    }
+                }
             }
         }
 
         mapViewModel.messageDialogVM.apply {
             if (dialogStatus) {
                 MessageDialog(
-                    title = messageTitle,
-                    description = messageDescription,
-                    onDismissRequest = ::dismissDialog
+                    title = messageTitle, description = messageDescription, onDismissRequest = ::dismissDialog
                 )
             }
         }
-    },
-        // Floating action button to show the parameter overrides bottom sheet
-        floatingActionButton = {
-            if (!showBottomSheet) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
-                    onClick = { showBottomSheet = true }) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Show feature request mode menu"
-                    )
-                }
-            }
-        })
+    })
 }

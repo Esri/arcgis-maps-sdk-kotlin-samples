@@ -17,15 +17,23 @@
 package com.esri.arcgismaps.sample.setfeaturerequestmode.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.data.FeatureRequestMode
+import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.data.ServiceFeatureTable
+import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 class SetFeatureRequestModeViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -41,6 +49,15 @@ class SetFeatureRequestModeViewModel(application: Application) : AndroidViewMode
             operationalLayers.add(FeatureLayer.createWithFeatureTable(featureTable))
         }
 
+    var viewpoint: Viewpoint? = null
+        private set
+
+    var currentFeatureRequestMode by mutableStateOf<FeatureRequestMode>(FeatureRequestMode.OnInteractionCache)
+        private set
+
+    var isLoading by mutableStateOf(false)
+        private set
+
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
@@ -51,6 +68,52 @@ class SetFeatureRequestModeViewModel(application: Application) : AndroidViewMode
                     "Failed to load map",
                     error.message.toString()
                 )
+            }
+        }
+    }
+
+    /**
+     * Called when the viewpoint of the map changes.
+     */
+    fun onViewpointChange(viewpoint: Viewpoint) {
+        this.viewpoint = viewpoint
+    }
+
+    /**
+     * Called when the feature request mode is changed.
+     */
+    fun onCurrentFeatureRequestModeChanged(featureRequestMode: FeatureRequestMode) {
+        currentFeatureRequestMode = featureRequestMode
+        featureTable.featureRequestMode = featureRequestMode
+    }
+
+    /**
+     * Demonstrates how to manually fetch features from the service feature table using the current viewpoint.
+     */
+    fun fetchCacheManually() {
+
+        // Show the progress indicator
+        isLoading = true
+
+        // Create query to select all tree features
+        val queryParams = QueryParameters().apply {
+            // Query for all tree conditions except "dead" with coded value '4' within the visible extent
+            whereClause = "Condition < '4'"
+            geometry = viewpoint?.targetGeometry as Envelope
+        }
+
+        // Setting this to * means all features
+        val outfields: List<String> = Collections.singletonList("*")
+
+        viewModelScope.launch(Dispatchers.IO) {
+            // Get queried features from service feature table and clear previous cache
+            featureTable.populateFromService(
+                parameters = queryParams,
+                clearCache = true,
+                outFields = outfields
+            ).onSuccess {
+                // hide the loading ProgressBar
+                isLoading = false
             }
         }
     }
