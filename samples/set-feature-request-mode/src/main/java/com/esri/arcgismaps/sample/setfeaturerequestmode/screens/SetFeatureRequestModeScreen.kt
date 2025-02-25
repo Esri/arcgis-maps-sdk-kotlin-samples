@@ -67,11 +67,13 @@ fun SetFeatureRequestModeScreen(sampleName: String) {
                 },
             )
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                DropDownMenuBox(modifier = Modifier.padding(4.dp),
+                DropDownMenuBox(
                     textFieldLabel = "Feature request mode:",
                     textFieldValue = mapViewModel.currentFeatureRequestMode.javaClass.simpleName,
                     dropDownItemList = featureRequestModes.map { it.javaClass.simpleName },
