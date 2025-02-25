@@ -148,8 +148,8 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
             }
         }
 
-        // Create a new orientation request with the default request period. Other DeviceOrientationRequest than
-        // OUTPUT_PERIOD_DEFAULT can be defined here.
+        // Create a new orientation request with the default request period. 
+        // Other DeviceOrientationRequest than OUTPUT_PERIOD_DEFAULT can be defined here.
         val orientationRequest =
             DeviceOrientationRequest.Builder(DeviceOrientationRequest.OUTPUT_PERIOD_DEFAULT).build()
 
