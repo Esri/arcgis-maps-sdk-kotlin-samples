@@ -191,7 +191,7 @@ fun DisplayDeviceLocationWithFusedLocationDataSourceScreen(sampleName: String) {
                 FloatingActionButton(modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { showBottomSheet = true }) {
                     Icon(
-                        imageVector = Icons.Filled.Settings, contentDescription = "Show parameter overrides menu"
+                        imageVector = Icons.Filled.Settings, contentDescription = "Show fused location options"
                     )
                 }
             }
