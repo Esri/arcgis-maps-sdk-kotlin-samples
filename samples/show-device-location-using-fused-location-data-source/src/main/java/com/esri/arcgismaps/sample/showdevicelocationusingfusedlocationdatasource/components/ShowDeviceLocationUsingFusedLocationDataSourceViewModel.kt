@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.components
+package com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.components
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -28,7 +28,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 
-class DisplayDeviceLocationWithFusedLocationDataSourceViewModel(application: Application) :
+class ShowDeviceLocationUsingFusedLocationDataSourceViewModel(application: Application) :
     AndroidViewModel(application) {
 
     // Create an ArcGIS map

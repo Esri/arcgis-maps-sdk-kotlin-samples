@@ -1,10 +1,10 @@
 {
     "category": "Maps",
     "description": "This sample demonstrates how to use the [Fused Location Provider](https://developers.google.com/location-context/fused-location-provider) and [Fused Orientation Provider](https://android-developers.googleblog.com/2024/03/introducing-fused-orientation-provider-api.html) to implement an ArcGIS Maps SDK Custom Location Data Source Location Provider.",
-    "formal_name": "DisplayDeviceLocationWithFusedLocationDataSource",
+    "formal_name": "ShowDeviceLocationUsingFusedLocationDataSource",
     "ignore": false,
     "images": [
-        "display-device-location-with-fused-location-data-source.png"
+        "show-device-location-using-fused-location-data-source.png"
     ],
     "keywords": [
         "GPS",
@@ -30,10 +30,10 @@
         "LocationProvider"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithfusedlocationdatasource/components/DisplayDeviceLocationWithFusedLocationDataSourceViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithfusedlocationdatasource/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithfusedlocationdatasource/screens/DisplayDeviceLocationWithFusedLocationDataSourceScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithfusedlocationdatasource/components/FusedLocationOrientationProvider.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/ShowDeviceLocationUsingFusedLocationDataSourceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/screens/ShowDeviceLocationUsingFusedLocationDataSource.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/FusedLocationOrientationProvider.kt"
     ],
-    "title": "Display device location with fused location data source"
+    "title": "Show device location using fused location data source"
 }

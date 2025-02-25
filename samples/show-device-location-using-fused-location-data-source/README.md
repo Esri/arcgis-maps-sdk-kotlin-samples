@@ -1,8 +1,8 @@
-# Display device location with fused location data source
+# Show device location using fused location data source
 
 This sample demonstrates how to use the [Fused Location Provider](https://developers.google.com/location-context/fused-location-provider) and [Fused Orientation Provider](https://android-developers.googleblog.com/2024/03/introducing-fused-orientation-provider-api.html) to implement an ArcGIS Maps SDK Custom Location Data Source Location Provider.
 
-![Image of display device location with fused location data source](display-device-location-with-fused-location-data-source.png)
+![Image of show device location using fused location data source](display-device-location-with-fused-location-data-source.png)
 
 ## Use case
 

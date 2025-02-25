@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.components
+package com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.components
 
 import android.annotation.SuppressLint
 import android.content.Context

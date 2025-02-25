@@ -14,10 +14,11 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource
+package com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource
 
 import android.Manifest
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,24 +27,26 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.screens.DisplayDeviceLocationWithFusedLocationDataSourceScreen
+import com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.R
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.screens.ShowDeviceLocationUsingFusedLocationDataSource
 
 class MainActivity : ComponentActivity() {
+
+    private var isLocationPermissionGranted = false
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Permission granted, show the UI
-            setContent {
-                SampleAppTheme {
-                    DisplayDeviceLocationWithFusedLocationDataSourceApp()
-                }
-            }
+            isLocationPermissionGranted = true
         } else {
-            // Request permission again
-            requestLocationPermission()
+            Toast.makeText(this, "Location permission is required to run this sample!", Toast.LENGTH_SHORT).show()
+        }
+        setContent {
+            SampleAppTheme {
+                ShowDeviceLocationUsingFusedLocationDataSource()
+            }
         }
     }
 
@@ -63,10 +66,11 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    private fun DisplayDeviceLocationWithFusedLocationDataSourceApp() {
+    private fun ShowDeviceLocationUsingFusedLocationDataSource() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            DisplayDeviceLocationWithFusedLocationDataSourceScreen(
-                sampleName = getString(R.string.display_device_location_with_fused_location_data_source_app_name)
+            ShowDeviceLocationUsingFusedLocationDataSource(
+                sampleName = getString(R.string.show_device_location_using_fused_location_data_source),
+                locationPermissionGranted = isLocationPermissionGranted
             )
         }
     }

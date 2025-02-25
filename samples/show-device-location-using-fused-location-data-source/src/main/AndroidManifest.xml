@@ -8,7 +8,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/display_device_location_with_fused_location_data_source_app_name">
+            android:label="@string/show_device_location_using_fused_location_data_source">
             
         </activity>
     </application>

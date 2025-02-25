@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.screens
+package com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,25 +26,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,9 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
-import com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.components.DisplayDeviceLocationWithFusedLocationDataSourceViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.components.ShowDeviceLocationUsingFusedLocationDataSourceViewModel
 import com.google.android.gms.location.Priority
 import kotlin.math.roundToInt
 
@@ -66,13 +62,13 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DisplayDeviceLocationWithFusedLocationDataSourceScreen(sampleName: String) {
+fun ShowDeviceLocationUsingFusedLocationDataSource(sampleName: String, locationPermissionGranted: Boolean) {
     val locationDisplay = rememberLocationDisplay()
-    val mapViewModel: DisplayDeviceLocationWithFusedLocationDataSourceViewModel = viewModel()
+    val mapViewModel: ShowDeviceLocationUsingFusedLocationDataSourceViewModel = viewModel()
     // On first composition, initialize the sample.
     var isViewmodelInitialized by remember { mutableStateOf(false) }
     LaunchedEffect(isViewmodelInitialized) {
-        if (!isViewmodelInitialized) {
+        if (!isViewmodelInitialized && locationPermissionGranted) {
             mapViewModel.initialize(locationDisplay)
             isViewmodelInitialized = true
         }
@@ -80,9 +76,17 @@ fun DisplayDeviceLocationWithFusedLocationDataSourceScreen(sampleName: String) {
     // Set up the bottom sheet controls
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember { mutableStateOf(false) }
-    var isExpanded by remember { mutableStateOf(false) }
-    var priority by remember { mutableStateOf("High accuracy") }
-    var interval by remember { mutableFloatStateOf(1F) }
+
+    // list of configurable location priority modes
+    val priorityModes = mapOf(
+        Priority.PRIORITY_HIGH_ACCURACY to "High accuracy",
+        Priority.PRIORITY_BALANCED_POWER_ACCURACY to "Balanced power accuracy",
+        Priority.PRIORITY_LOW_POWER to "Low power",
+        Priority.PRIORITY_PASSIVE to "Passive"
+    )
+    var currentPriority by remember { mutableIntStateOf(priorityModes.keys.first()) }
+    var currentInterval by remember { mutableFloatStateOf(1F) }
+
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) }, content = {
         Column(
             modifier = Modifier
@@ -104,69 +108,28 @@ fun DisplayDeviceLocationWithFusedLocationDataSourceScreen(sampleName: String) {
                     onDismissRequest = { showBottomSheet = false },
                     sheetState = sheetState
                 ) {
-
-                    ExposedDropdownMenuBox(
+                    DropDownMenuBox(
                         modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 12.dp),
-                        expanded = isExpanded,
-                        onExpandedChange = { isExpanded = !isExpanded }
-                    ) {
-                        TextField(
-                            label = { Text("Priority") },
-                            value = priority,
-                            onValueChange = {},
-                            readOnly = true,
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-                            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
-                        )
-                        ExposedDropdownMenu(
-                            expanded = isExpanded,
-                            onDismissRequest = { isExpanded = false }
-                        ) {
-
-                            DropdownMenuItem(text = { Text("High accuracy") }, onClick = {
-                                isExpanded = false
-                                priority = "High accuracy"
-                                mapViewModel.onPriorityChanged(Priority.PRIORITY_HIGH_ACCURACY)
-                            })
-
-                            HorizontalDivider()
-
-                            DropdownMenuItem(text = { Text("Balanced power accuracy") }, onClick = {
-                                isExpanded = false
-                                priority = "Balanced power accuracy"
-                                mapViewModel.onPriorityChanged(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-                            })
-
-                            HorizontalDivider()
-
-                            DropdownMenuItem(text = { Text("Low power") }, onClick = {
-                                isExpanded = false
-                                priority = "Low power"
-                                mapViewModel.onPriorityChanged(Priority.PRIORITY_LOW_POWER)
-                            })
-
-                            HorizontalDivider()
-
-                            DropdownMenuItem(text = { Text("Passive") }, onClick = {
-                                isExpanded = false
-                                priority = "Passive"
-                                mapViewModel.onPriorityChanged(Priority.PRIORITY_PASSIVE)
-                            })
+                        textFieldLabel = "Priority",
+                        textFieldValue = priorityModes[currentPriority].toString(),
+                        dropDownItemList = priorityModes.values.toList(),
+                        onIndexSelected = { index ->
+                            currentPriority = priorityModes.keys.toList()[index]
+                            mapViewModel.onPriorityChanged(currentPriority)
                         }
-
-                    }
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = CenterVertically
                     ) {
                         Text(text = "Set desired interval for location updates:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(start = 12.dp))
-                        Text(text = interval.roundToInt().toString() + " sec", modifier = Modifier.padding(end = 12.dp))
+                        Text(text = currentInterval.roundToInt().toString() + " sec", modifier = Modifier.padding(end = 12.dp))
                     }
                     Slider(
-                        value = interval,
+                        value = currentInterval,
                         onValueChange = { valueChanged ->
-                            interval = valueChanged
+                            currentInterval = valueChanged
                             mapViewModel.onIntervalChanged(valueChanged.toLong())
                         }, valueRange = 0f..30f,
                         modifier = Modifier.padding(start = 12.dp, end = 12.dp),
@@ -175,7 +138,6 @@ fun DisplayDeviceLocationWithFusedLocationDataSourceScreen(sampleName: String) {
                 }
             }
         }
-
 
         mapViewModel.messageDialogVM.apply {
             if (dialogStatus) {
