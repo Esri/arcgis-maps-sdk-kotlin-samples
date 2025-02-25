@@ -88,6 +88,7 @@ arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-m
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version = "3.0.0-rc01" }
 coil-network-http = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version = "3.0.0-rc01" }
 ar-core = { group = "com.google.ar", name = "core", version.ref = "arcore" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 ### Testing libs
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -99,7 +100,6 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

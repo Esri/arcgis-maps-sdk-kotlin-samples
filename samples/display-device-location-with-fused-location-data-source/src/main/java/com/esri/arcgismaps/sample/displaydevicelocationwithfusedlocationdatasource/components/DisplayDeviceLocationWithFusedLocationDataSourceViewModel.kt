@@ -40,16 +40,6 @@ class DisplayDeviceLocationWithFusedLocationDataSourceViewModel(application: App
     // Create a fused location provider to get location updates from the fused location API
     private val fusedLocationProvider = FusedLocationOrientationProvider(getApplication())
 
-    init {
-        viewModelScope.launch {
-            arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    "Failed to load map", error.message.toString()
-                )
-            }
-        }
-    }
-
     /**
      * Pass changes in priority to the fused location provider.
      */
@@ -68,6 +58,14 @@ class DisplayDeviceLocationWithFusedLocationDataSourceViewModel(application: App
      * Initialize the location display with a custom location data source using the fused location provider.
      */
     fun initialize(locationDisplay: LocationDisplay) {
+
+        viewModelScope.launch {
+            arcGISMap.load().onFailure { error ->
+                messageDialogVM.showMessageDialog(
+                    "Failed to load map", error.message.toString()
+                )
+            }
+        }
 
         // Set the location display to be used by this view model
         locationDisplay.apply {
