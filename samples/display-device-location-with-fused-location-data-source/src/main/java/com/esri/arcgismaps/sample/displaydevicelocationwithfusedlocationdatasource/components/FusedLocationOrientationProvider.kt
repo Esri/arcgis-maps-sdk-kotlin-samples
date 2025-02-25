@@ -143,8 +143,7 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
         // Create an FOP listener
         orientationListener = DeviceOrientationListener { orientation: DeviceOrientation ->
             emitHeadingsJob = CoroutineScope(Dispatchers.IO).launch {
-                // Emit the fused orientation's heading into the Location Provider's overridden headings
-                // flow
+                // Emit the fused orientation's heading into the Location Provider's overridden headings flow
                 _headings.emit(orientation.headingDegrees.toDouble())
             }
         }
