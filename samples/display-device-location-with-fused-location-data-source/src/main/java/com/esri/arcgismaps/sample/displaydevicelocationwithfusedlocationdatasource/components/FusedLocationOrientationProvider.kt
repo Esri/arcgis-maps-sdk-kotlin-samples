@@ -37,12 +37,14 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
     // Note the override property here, required to implement the LocationProvider interface
     override val locations: Flow<Location> = _locations.asSharedFlow()
 
+    // Set up fused location provider states
     private var fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
     private var locationCallback: LocationCallback? = null
     private var emitLocationsJob: Job? = null
     private var priority: Int = Priority.PRIORITY_HIGH_ACCURACY
     private var intervalInSeconds: Long = 1L
 
+    // Set up fused orientation provider states
     private var fusedOrientationProviderClient: FusedOrientationProviderClient =
         LocationServices.getFusedOrientationProviderClient(applicationContext)
     private var orientationListener: DeviceOrientationListener? = null
