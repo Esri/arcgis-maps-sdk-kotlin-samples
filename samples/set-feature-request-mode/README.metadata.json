@@ -1,19 +1,32 @@
 {
     "category": "Edit and Manage Data",
-    "description": "TODO",
+    "description": "Use different feature request modes to populate the map from a service feature table.",
     "formal_name": "SetFeatureRequestMode",
     "ignore": false,
     "images": [
         "set-feature-request-mode.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "cache",
+        "data",
+        "feature",
+        "feature request mode",
+        "performance",
+        "FeatureLayer",
+        "ServiceFeatureTable",
+        "ServiceFeatureTable.FeatureRequestMode"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "FeatureLayer",
+        "ServiceFeatureTable",
+        "ServiceFeatureTable.FeatureRequestMode"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/SetFeatureRequestModeViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/SetFeatureRequestModeScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/components/SetFeatureRequestModeViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturerequestmode/screens/SetFeatureRequestModeScreen.kt"
     ],
     "title": "Set feature request mode"
 }
