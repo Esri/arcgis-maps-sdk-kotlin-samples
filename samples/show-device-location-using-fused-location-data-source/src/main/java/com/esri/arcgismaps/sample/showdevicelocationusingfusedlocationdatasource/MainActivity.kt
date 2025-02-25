@@ -27,7 +27,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource.R
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.screens.ShowDeviceLocationUsingFusedLocationDataSource
 

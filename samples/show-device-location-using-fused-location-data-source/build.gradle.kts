@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.displaydevicelocationwithfusedlocationdatasource"
+    namespace = "com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource"
     buildFeatures {
         buildConfig = true
     }
