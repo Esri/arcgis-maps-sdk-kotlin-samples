@@ -97,7 +97,6 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
         priority: Int = Priority.PRIORITY_HIGH_ACCURACY,
         intervalInSeconds: Long = 1L
     ) {
-
         // Cancel any current jobs emitting into locations
         emitLocationsJob?.cancel()
 
