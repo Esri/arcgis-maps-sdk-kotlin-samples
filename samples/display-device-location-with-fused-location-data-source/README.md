@@ -16,7 +16,7 @@ Start the sample and allow the app to access your device's location. The sample 
 
 1. Implement the `CustomLocationDataSource.LocationProvider` interface overriding the `headings` and `locations` flows.
 2. Create a `FusedLocationProviderClient` and `FusedOrientationProviderClient` to get the device's location and orientation.
-3. Using the clients, request location updates and orientation updates and emit their values into the `locations` and `headings` flows. The function `createArcGISLocationFromFusedLocation(...)` is used to convert a fused `Location` object to an `ArcGISLocation` object.
+3. Request location and orientation updates from the clients, then emit these values into the `locations` and `headings` flows. Utilize the function `createArcGISLocationFromFusedLocation(...)` to convert a fused `Location` object into an `ArcGISLocation` object.
 4. Create a `LocationDisplay` with `rememberLocationDisplay()` and set it to the composable `MapView`.
 5. Set the `LocationDisplay` data source to a `CustomLocationDataSource` which implements the `LocationProvider` interface.
 
