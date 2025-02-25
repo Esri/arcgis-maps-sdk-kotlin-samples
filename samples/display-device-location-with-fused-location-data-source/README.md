@@ -10,7 +10,7 @@ The fused location provider can provide more accurate location information than 
 
 ## How to use the sample
 
-Start the sample and allow the app to access your device's location. The sample will display your location on the map. Use the priority and interval settings to change the location provider's behavior. Note the change in the location display when changing these settings--namely the change in rate at which the expanding blue ring animation triggers (which signifies an updated location).
+Start the sample and allow the app to access your device's location. The sample will display your location on the map. Use the priority and interval settings to change the location provider's behavior. Note the change in the location display when changing these settings--namely the change in the rate at which the expanding blue ring animation triggers (which signifies an updated location).
 
 ## How it works
 
