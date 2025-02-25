@@ -18,6 +18,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.play.services.location)
     // Only module specific dependencies needed here
+    implementation(libs.play.services.location)
 }
