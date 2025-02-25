@@ -32,8 +32,8 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/ShowDeviceLocationUsingFusedLocationDataSourceViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/screens/ShowDeviceLocationUsingFusedLocationDataSource.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/FusedLocationOrientationProvider.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/FusedLocationOrientationProvider.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/screens/ShowDeviceLocationUsingFusedLocationDataSource.kt"
     ],
     "title": "Show device location using fused location data source"
 }
