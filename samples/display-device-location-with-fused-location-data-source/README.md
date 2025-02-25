@@ -6,7 +6,7 @@ This sample demonstrates how to use the [Fused Location Provider](https://develo
 
 ## Use case
 
-The fused location provider can provide more accurate location information than a single location provider using GPS, Wi-Fi, and cell network data to determine the device's location. It can also use 3D building data in urban areas to improve GPS accuracy.
+The fused location provider can provide more accurate location information than a single location provider. It uses GPS, Wi-Fi, and cell network data to determine the device's location. In urban areas, it can also use 3D building data in urban areas to improve GPS accuracy.
 
 ## How to use the sample
 
