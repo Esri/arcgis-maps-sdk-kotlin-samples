@@ -30,7 +30,7 @@ Start the sample and allow the app to access your device's location. The sample 
 
 ## Additional information
 
-The fused location and orientation APIs are part of Google Play Services. The fused location provider intelligently combines different signals like GPS and Wi-Fi to provide the location information. The fused orientation provider is a new API that provides a way to access orientation information on Android devices.
+The fused location and orientation APIs are part of Google Play Services. The fused location provider intelligently combines different signals, such as GPS and Wi-Fi, to provide location information. The fused orientation provider is a new API that allows users to access orientation information on Android devices.
 
 ## Tags
 
