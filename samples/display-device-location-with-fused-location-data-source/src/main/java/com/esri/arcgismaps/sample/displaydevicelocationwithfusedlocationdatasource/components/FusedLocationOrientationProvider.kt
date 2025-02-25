@@ -137,7 +137,6 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
      * override flow in the LocationProvider interface.
      */
     private fun startNewFusedOrientationProvider() {
-
         // Cancel any current jobs emitting into locations
         emitHeadingsJob?.cancel()
 
