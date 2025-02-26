@@ -55,6 +55,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.components.ShowDeviceLocationUsingFusedLocationDataSourceViewModel
 import com.google.android.gms.location.Priority
+import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
 /**
@@ -92,8 +93,16 @@ fun ShowDeviceLocationUsingFusedLocationDataSource(sampleName: String, locationP
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box {
+            Text(
+                text = "Location Accuracy <${DecimalFormat("#.##").format(mapViewModel.accuracy)} meters",
+                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.labelLarge
+            )
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)) {
                 MapView(
                     modifier = Modifier
                         .fillMaxSize(),

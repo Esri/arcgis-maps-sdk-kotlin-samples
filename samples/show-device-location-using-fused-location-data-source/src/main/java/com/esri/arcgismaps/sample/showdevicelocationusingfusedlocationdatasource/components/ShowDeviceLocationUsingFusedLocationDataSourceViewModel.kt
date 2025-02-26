@@ -17,6 +17,9 @@
 package com.esri.arcgismaps.sample.showdevicelocationusingfusedlocationdatasource.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.location.CustomLocationDataSource
@@ -25,6 +28,7 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -39,6 +43,9 @@ class ShowDeviceLocationUsingFusedLocationDataSourceViewModel(application: Appli
 
     // Create a fused location provider to get location updates from the fused location API
     private val fusedLocationProvider = FusedLocationOrientationProvider(getApplication())
+
+    // Track the maximum possible radius of location in meters
+    var accuracy by mutableDoubleStateOf(0.0)
 
     /**
      * Pass changes in priority to the fused location provider.
@@ -78,6 +85,12 @@ class ShowDeviceLocationUsingFusedLocationDataSourceViewModel(application: Appli
                 dataSource.start()
                 // Start emitting fused locations into the data source
                 fusedLocationProvider.start()
+            }
+            viewModelScope.launch {
+                dataSource.locationChanged.collectLatest {
+                    // Set the accuracy to the largest measurement
+                    accuracy = if (it.verticalAccuracy > it.horizontalAccuracy) it.verticalAccuracy else it.horizontalAccuracy
+                }
             }
             // Set the AutoPan mode to recenter around the location display
             setAutoPanMode(LocationDisplayAutoPanMode.CompassNavigation)
