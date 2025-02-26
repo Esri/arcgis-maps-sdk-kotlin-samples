@@ -16,14 +16,26 @@
 
 package com.esri.arcgismaps.sample.showrealisticlightandshadows.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.mapping.view.LightingMode
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRealisticLightAndShadowsViewModel
@@ -37,25 +49,50 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
     val lightingOptionsState = mapViewModel.lightingOptionsState
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
+                    .fillMaxWidth()
+                    .padding(it)
             ) {
                 SceneView(
                     mapViewModel.arcGISScene,
                     modifier = Modifier
-                        //.padding(innerPadding)
-                        .fillMaxSize(),
+                        //.padding(innerPadding) // TODO: fix padding?
+                        .fillMaxSize()
+                        .weight(1f),
                     sunTime = lightingOptionsState.sunTime.value,
                     sunLighting = lightingOptionsState.sunLighting.value,
                     ambientLightColor = lightingOptionsState.ambientLightColor.value,
                     atmosphereEffect = lightingOptionsState.atmosphereEffect.value,
                     spaceEffect = lightingOptionsState.spaceEffect.value
                 )
+                Row {
+
+                        Text(
+                            text = "AM",
+                            modifier = Modifier.padding(12.dp)
+                        )
+                        Slider(
+                            modifier = Modifier.weight(1f),
+                            value = sliderPosition,
+                            onValueChange = {
+                                sliderPosition = it
+                                mapViewModel.setSunTime(it.toInt())
+                            },
+                            // the range is 0 to 86,340 seconds ((60 seconds * 60 minutes * 24 hours)  - 60 seconds),
+                            // which means 12 am to 11:59 pm.
+                            valueRange = 0f..86340f,
+                        )
+                        Text(
+                            text = "PM",
+                            modifier = Modifier.padding(12.dp)
+                        )
+
+                }
             }
 
             mapViewModel.messageDialogVM.apply {

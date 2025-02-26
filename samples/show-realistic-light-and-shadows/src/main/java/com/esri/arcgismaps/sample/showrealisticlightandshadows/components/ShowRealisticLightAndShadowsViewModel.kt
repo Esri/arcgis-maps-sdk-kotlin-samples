@@ -31,6 +31,7 @@ import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Surface
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AtmosphereEffect
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.LightingMode
@@ -38,24 +39,31 @@ import com.arcgismaps.mapping.view.SpaceEffect
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
-class ShowRealisticLightAndShadowsViewModel(application: Application) : AndroidViewModel(application) {
+class ShowRealisticLightAndShadowsViewModel(application: Application) :
+    AndroidViewModel(application) {
 
     val arcGISScene =
-        ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+        ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
             // add base surface for elevation data
             val surface = Surface()
             surface.elevationSources.add(
                 ArcGISTiledElevationSource(
-                    "https://elevation3d.arcgis" +
-                            ".com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
+                    "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
                 )
             )
             baseSurface = surface
+            operationalLayers.add(
+                ArcGISSceneLayer(
+                    "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/DevA_BuildingShells/SceneServer"
+                )
+            )
             val point = Point(
-                -73.0815,
-                -49.3272,
-                4059.0,
+                -122.69033,
+                45.54605,
+                500.0,
                 SpatialReference.wgs84()
             )
             initialViewpoint = Viewpoint(
@@ -63,8 +71,8 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) : AndroidV
                 scale = 17000.0,
                 camera = Camera(
                     locationPoint = point,
-                    heading = 11.0,
-                    pitch = 82.0,
+                    heading = 162.58544,
+                    pitch = 72.0,
                     roll = 0.0
                 )
             )
@@ -100,7 +108,20 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) : AndroidV
             }
         }
     }
+
+    fun setSunTime(sunTime: Int) {
+        val hours = (sunTime / (60 * 60)) % 24
+        val minutes = (sunTime / 60) % 60
+        val seconds = sunTime % 60
+        lightingOptionsState.sunTime.value = OffsetDateTime.now(ZoneId.of("UTC"))
+            .withHour(hours)
+            .withMinute(minutes)
+            .withSecond(seconds)
+            .toInstant()
+    }
 }
+
+
 
 /**
  * Represents various lighting options that can be used to configure a composable [SceneView]
