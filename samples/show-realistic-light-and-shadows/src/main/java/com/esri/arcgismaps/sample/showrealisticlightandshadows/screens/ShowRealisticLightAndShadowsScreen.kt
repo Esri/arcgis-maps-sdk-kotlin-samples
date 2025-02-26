@@ -23,6 +23,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -51,7 +59,47 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val lightingOptionsState = mapViewModel.lightingOptionsState
     var sliderPosition by remember { mutableFloatStateOf(0f) }
     Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
+        topBar = {
+            SampleTopAppBar(title = sampleName, actions =
+            {
+                var expanded = remember { mutableStateOf(false) }
+                IconButton(
+                    onClick = { expanded.value = !expanded.value }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Lighting Settings"
+                    )
+                    DropdownMenu(
+                        expanded = expanded.value,
+                        onDismissRequest = { expanded.value = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Lighting and Shadows") },
+                            onClick = {
+                                lightingOptionsState.sunLighting.value = LightingMode.LightAndShadows
+                                expanded.value = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Lighting Only") },
+                            onClick = {
+                                lightingOptionsState.sunLighting.value = LightingMode.Light
+                                expanded.value = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("No Lighting") },
+                            onClick = {
+                                lightingOptionsState.sunLighting.value = LightingMode.NoLight
+                                expanded.value = false
+                            }
+                        )
+                    }
+                }
+            }
+            )
+        },
         content = {
             Column(
                 modifier = Modifier
@@ -62,7 +110,6 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                     mapViewModel.arcGISScene,
                     modifier = Modifier
                         //.padding(innerPadding) // TODO: fix padding?
-                        .fillMaxSize()
                         .weight(1f),
                     sunTime = lightingOptionsState.sunTime.value,
                     sunLighting = lightingOptionsState.sunLighting.value,
@@ -72,25 +119,25 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                 )
                 Row {
 
-                        Text(
-                            text = "AM",
-                            modifier = Modifier.padding(12.dp)
-                        )
-                        Slider(
-                            modifier = Modifier.weight(1f),
-                            value = sliderPosition,
-                            onValueChange = {
-                                sliderPosition = it
-                                mapViewModel.setSunTime(it.toInt())
-                            },
-                            // the range is 0 to 86,340 seconds ((60 seconds * 60 minutes * 24 hours)  - 60 seconds),
-                            // which means 12 am to 11:59 pm.
-                            valueRange = 0f..86340f,
-                        )
-                        Text(
-                            text = "PM",
-                            modifier = Modifier.padding(12.dp)
-                        )
+                    Text(
+                        text = "AM",
+                        modifier = Modifier.padding(12.dp)
+                    )
+                    Slider(
+                        modifier = Modifier.weight(1f),
+                        value = sliderPosition,
+                        onValueChange = {
+                            sliderPosition = it
+                            mapViewModel.setSunTime(it.toInt())
+                        },
+                        // the range is 0 to 86,340 seconds ((60 seconds * 60 minutes * 24 hours)  - 60 seconds),
+                        // which means 12 am to 11:59 pm.
+                        valueRange = 0f..86340f,
+                    )
+                    Text(
+                        text = "PM",
+                        modifier = Modifier.padding(12.dp)
+                    )
 
                 }
             }
