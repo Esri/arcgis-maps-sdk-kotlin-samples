@@ -37,8 +37,9 @@ class ShowDeviceLocationUsingFusedLocationDataSourceViewModel(application: Appli
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // Create a fused location provider to get location updates from the fused location API
-    private val fusedLocationProvider = FusedLocationOrientationProvider(getApplication())
+    // Create a fused location and fused orientation provider to get location and orientation updates from the fused
+    // location and fused orientation APIs
+    private val fusedLocationProvider = FusedLocationAndOrientationProvider(getApplication())
 
     /**
      * Pass changes in priority to the fused location provider.

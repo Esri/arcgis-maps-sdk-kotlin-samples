@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.concurrent.Executors
 
-class FusedLocationOrientationProvider(applicationContext: Context) : CustomLocationDataSource.LocationProvider {
+class FusedLocationAndOrientationProvider(applicationContext: Context) : CustomLocationDataSource.LocationProvider {
 
     private val _headings = MutableSharedFlow<Double>()
     // Note the override property here, required to implement the LocationProvider interface
@@ -88,7 +88,6 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
     fun start() {
         startNewFusedLocationProvider(priority, intervalInSeconds)
         startNewFusedOrientationProvider()
-
     }
 
     /**
@@ -175,13 +174,13 @@ class FusedLocationOrientationProvider(applicationContext: Context) : CustomLoca
                 .requestOrientationUpdates(orientationRequest, Executors.newSingleThreadExecutor(), it)
                 .addOnSuccessListener {
                     Log.i(
-                        FusedLocationOrientationProvider::class.simpleName,
+                        FusedLocationAndOrientationProvider::class.simpleName,
                         "Registration Success"
                     )
                 }
                 .addOnFailureListener { error ->
                     Log.e(
-                        FusedLocationOrientationProvider::class.simpleName,
+                        FusedLocationAndOrientationProvider::class.simpleName,
                         "Registration Failure: " + error.message
                     )
                 }

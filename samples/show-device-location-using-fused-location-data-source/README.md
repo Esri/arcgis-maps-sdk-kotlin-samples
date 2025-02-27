@@ -1,12 +1,12 @@
 # Show device location using fused location data source
 
-This sample demonstrates how to use the [Fused Location Provider](https://developers.google.com/location-context/fused-location-provider) and [Fused Orientation Provider](https://android-developers.googleblog.com/2024/03/introducing-fused-orientation-provider-api.html) to implement an ArcGIS Maps SDK Custom Location Data Source Location Provider.
+This sample demonstrates how to use the Fused Location Provider and Fused Orientation Provider to implement an ArcGIS Maps SDK Custom Location Data Source Location Provider.
 
-![Image of show device location using fused location data source](display-device-location-with-fused-location-data-source.png)
+![Image of show device location using fused location data source](show-device-location-using-fused-location-data-source.png)
 
 ## Use case
 
-The fused location provider can provide more accurate location information than a single location provider. It uses GPS, Wi-Fi, and cell network data to determine the device's location. In urban areas, it can also use 3D building data in urban areas to improve GPS accuracy.
+The [Fused Location Provider](https://developers.google.com/location-context/fused-location-provider) can provide more accurate location information than a single location provider. It uses GPS, Wi-Fi, and cell network data to determine the device's location. In urban areas, it can also use 3D building data in urban areas to improve GPS accuracy. Similarly, the [Fused Orientation Provider](https://android-developers.googleblog.com/2024/03/introducing-fused-orientation-provider-api.html) uses a fusion of magnetometer, accelerometer, and gyroscope data to provide a more accurate device orientation.
 
 ## How to use the sample
 

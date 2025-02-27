@@ -63,7 +63,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowDeviceLocationUsingFusedLocationDataSource(sampleName: String, locationPermissionGranted: Boolean) {
-    val locationDisplay = rememberLocationDisplay()
+
     val mapViewModel: ShowDeviceLocationUsingFusedLocationDataSourceViewModel = viewModel()
     // On first composition, initialize the sample.
     var isViewmodelInitialized by remember { mutableStateOf(false) }
