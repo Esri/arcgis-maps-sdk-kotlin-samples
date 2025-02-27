@@ -82,6 +82,7 @@ arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis
 arcgis-maps-kotlin-toolkit-ar = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-ar" }
 arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geoview-compose" }
 arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-featureforms" }
+arcgis-maps-kotlin-toolkit-popup = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-popup" }
 arcgis-maps-kotlin-toolkit-scalebar = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-scalebar" }
 
 ### Third party libraries
