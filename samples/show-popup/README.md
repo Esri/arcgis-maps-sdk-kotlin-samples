@@ -25,7 +25,7 @@ Tap on the features to prompt a popup that displays information about the featur
 * ArcGISMap
 * IdentifyLayerResult
 * Popup
-* 
+
 ## Additional information
 
 This sample uses the Popup Toolkit module to offer an out of the box solution for displaying pop up information in the UI.
