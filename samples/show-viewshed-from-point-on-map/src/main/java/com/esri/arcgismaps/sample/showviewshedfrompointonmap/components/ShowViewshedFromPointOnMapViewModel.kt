@@ -39,6 +39,7 @@ import com.arcgismaps.tasks.geoprocessing.GeoprocessingJob
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingParameters
 import com.arcgismaps.tasks.geoprocessing.GeoprocessingTask
 import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingFeatures
+import com.arcgismaps.tasks.geoprocessing.geoprocessingparameters.GeoprocessingLinearUnit
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -145,7 +146,8 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
             processSpatialReference = tapPoint.spatialReference
             outputSpatialReference = tapPoint.spatialReference
             // Provide the tapped point as "Input_Observation_Point"
-            inputs["Input_Observation_Point"] = GeoprocessingFeatures(table)
+            inputs["Input_Observation_Point"] = GeoprocessingFeatures(featureSet = table)
+            inputs["Viewshed_Distance"] = GeoprocessingLinearUnit(distance = 15000.0)
         }
 
         // Create a new job

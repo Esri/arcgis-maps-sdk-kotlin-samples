@@ -20,7 +20,7 @@ Click the map to see all areas visible from that point within a 15km radius. Cli
 4. Use the geoprocessing task to create a `GeoprocessingJob` object with the parameters.
 5. Start the job and wait for it to complete and return a `GeoprocessingResult` object.
 6. Get the resulting `GeoprocessingFeatures` object.
-7. Iterate through the viewshed features to use their geometry or display the geometry in a new `Graphic` object.
+7. Iterate through the viewshed `GeoprocessingFeatures` to use their geometry or display the geometry in a new `Graphic` object.
 
 ## Relevant API
 
