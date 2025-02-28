@@ -41,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.LightingMode
@@ -58,11 +59,16 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
     val lightingOptionsState = mapViewModel.lightingOptionsState
     var sliderPosition by remember { mutableFloatStateOf(0f) }
+    val lightingModes = listOf(
+        LightingMode.LightAndShadows,
+        LightingMode.Light,
+        LightingMode.NoLight
+    )
     Scaffold(
         topBar = {
             SampleTopAppBar(title = sampleName, actions =
             {
-                var expanded = remember { mutableStateOf(false) }
+                val expanded = remember { mutableStateOf(false) }
                 IconButton(
                     onClick = { expanded.value = !expanded.value }
                 ) {
@@ -70,31 +76,32 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = "Lighting Settings"
                     )
+
                     DropdownMenu(
                         expanded = expanded.value,
                         onDismissRequest = { expanded.value = false }
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("Lighting and Shadows") },
-                            onClick = {
-                                lightingOptionsState.sunLighting.value = LightingMode.LightAndShadows
-                                expanded.value = false
+                        lightingModes.forEach {
+
+                            val text = when (it) {
+                                LightingMode.Light -> "Light"
+                                LightingMode.LightAndShadows -> "Light and Shadows"
+                                LightingMode.NoLight -> "No Light"
                             }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Lighting Only") },
-                            onClick = {
-                                lightingOptionsState.sunLighting.value = LightingMode.Light
-                                expanded.value = false
+
+                            val fontWeight = when (it) {
+                                lightingOptionsState.sunLighting.value -> FontWeight.Bold
+                                else -> FontWeight.Normal
                             }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("No Lighting") },
-                            onClick = {
-                                lightingOptionsState.sunLighting.value = LightingMode.NoLight
-                                expanded.value = false
-                            }
-                        )
+
+                            DropdownMenuItem(
+                                text = { Text(text = text, fontWeight = fontWeight) },
+                                onClick = {
+                                    lightingOptionsState.sunLighting.value = it
+                                    expanded.value = false
+                                }
+                            )
+                        }
                     }
                 }
             }
