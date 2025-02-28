@@ -28,9 +28,9 @@
       "SceneView.SunLighting"
   ],
   "snippets": [
-      "rc/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/components/ShowRealisticLightAndShadowsViewModel.kt",
-      "rc/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/MainActivity.kt",
-      "rc/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/screens/ShowRealisticLightAndShadowsScreen.kt"
+      "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/components/ShowRealisticLightAndShadowsViewModel.kt",
+      "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/MainActivity.kt",
+      "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/screens/ShowRealisticLightAndShadowsScreen.kt"
   ],
   "title": "Show realistic light and shadows"
 }
