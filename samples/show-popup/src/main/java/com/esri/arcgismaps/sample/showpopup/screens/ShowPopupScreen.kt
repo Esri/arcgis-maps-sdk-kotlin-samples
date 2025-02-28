@@ -41,7 +41,6 @@ import com.esri.arcgismaps.sample.showpopup.components.ShowPopupViewModel
 fun ShowPopupScreen(sampleName: String) {
     val mapViewModel: ShowPopupViewModel = viewModel()
 
-    // Set up the bottom sheet controls
     val sheetState = rememberModalBottomSheetState()
 
     Scaffold(

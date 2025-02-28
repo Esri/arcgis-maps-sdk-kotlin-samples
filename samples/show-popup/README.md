@@ -28,11 +28,11 @@ Tap on the features to prompt a popup that displays information about the featur
 
 ## About the data
 
-This sample uses a [feature layer](https://sampleserver6.arcgisonline.com/arcgis/rest/services/SF311/FeatureServer/0) that displays reported incidents in San Francisco.
+This sample uses a [feature layer](https://www.arcgis.com/apps/mapviewer/index.html?webmap=9f3a674e998f461580006e626611f9ad) that displays reported information about mountains in the Sierra Nevada.
 
 ## Additional information
 
-This sample uses the Popup Toolkit module to offer an out of the box solution for displaying pop up information in the UI.
+This sample uses the [Popup Toolkit module](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/popup) to offer an out of the box solution for displaying pop up information in the UI.
 
 ## Tags
 

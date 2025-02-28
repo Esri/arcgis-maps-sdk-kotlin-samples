@@ -39,10 +39,12 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
 
     val mapViewProxy = MapViewProxy()
 
-    val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
-    val portalItem = PortalItem(portal, "fb788308ea2e4d8682b9c05ef641f273")
+    // Create a portal and load a map with information about mountains in the Sierra Nevada
+    val portal = Portal("https://arcgis.com/")
+    val portalItem = PortalItem(portal, "9f3a674e998f461580006e626611f9ad")
     val arcGISMap = ArcGISMap(portalItem)
 
+    // Get the first visible feature layer with a popup definition
     private val featureLayer: FeatureLayer
         get() {
             return arcGISMap.operationalLayers.filterIsInstance<FeatureLayer>().first { featureLayer ->
@@ -53,9 +55,11 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
 
+    // Popup that gets passed to the main screen composable
     var popup: Popup? by mutableStateOf(null)
         private set
 
+    // Keep track of the identified feature
     private var identifiedFeature: Feature? = null
 
     // Create a message dialog view model for handling error messages
