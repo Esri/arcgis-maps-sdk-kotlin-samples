@@ -1,0 +1,39 @@
+{
+    "category": "Maps",
+    "description": "This sample demonstrates how to use the Fused Location Provider and Fused Orientation Provider to implement an ArcGIS Maps SDK Custom Location Data Source Location Provider.",
+    "formal_name": "ShowDeviceLocationUsingFusedLocationDataSource",
+    "ignore": false,
+    "images": [
+        "show-device-location-using-fused-location-data-source.png"
+    ],
+    "keywords": [
+        "GPS",
+        "Wifi",
+        "cell",
+        "fused",
+        "headings",
+        "locations",
+        "orientation",
+        "CustomLocationDataSource",
+        "Location",
+        "LocationDataSource",
+        "LocationDisplay",
+        "LocationProvider"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "CustomLocationDataSource",
+        "Location",
+        "LocationDataSource",
+        "LocationDisplay",
+        "LocationProvider"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/ShowDeviceLocationUsingFusedLocationDataSourceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/FusedLocationAndOrientationProvider.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/screens/ShowDeviceLocationUsingFusedLocationDataSource.kt"
+    ],
+    "title": "Show device location using fused location data source"
+}
