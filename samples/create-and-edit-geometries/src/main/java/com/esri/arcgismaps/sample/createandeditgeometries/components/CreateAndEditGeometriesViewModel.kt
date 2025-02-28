@@ -36,14 +36,12 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.FreehandTool
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorStyle
-import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorTool
 import com.arcgismaps.mapping.view.geometryeditor.ReticleVertexTool
 import com.arcgismaps.mapping.view.geometryeditor.ShapeTool
 import com.arcgismaps.mapping.view.geometryeditor.ShapeToolType
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -96,7 +94,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     private val rectangleTool = ShapeTool(ShapeToolType.Rectangle)
     private val triangleTool = ShapeTool(ShapeToolType.Triangle)
 
-    private val _selectedTool = MutableStateFlow<ToolType>(ToolType.Vertex)
+    private val _selectedTool = MutableStateFlow(ToolType.Vertex)
     val selectedTool = _selectedTool.asStateFlow()
 
     private val _currentGeometryType = MutableStateFlow<GeometryType>(GeometryType.Unknown)
@@ -195,17 +193,11 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     fun changeTool(toolType: ToolType) {
         when (toolType) {
             ToolType.Vertex -> geometryEditor.tool = vertexTool
-
             ToolType.ReticleVertex -> geometryEditor.tool = reticleVertexTool
-
             ToolType.Freehand -> geometryEditor.tool = freehandTool
-
             ToolType.Arrow -> geometryEditor.tool = arrowTool
-
             ToolType.Ellipse -> geometryEditor.tool = ellipseTool
-
             ToolType.Rectangle -> geometryEditor.tool = rectangleTool
-
             ToolType.Triangle -> geometryEditor.tool = triangleTool
         }
         _selectedTool.value = toolType

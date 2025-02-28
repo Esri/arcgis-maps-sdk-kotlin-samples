@@ -42,7 +42,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
-import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorTool
 import com.esri.arcgismaps.sample.createandeditgeometries.R
 import com.esri.arcgismaps.sample.createandeditgeometries.components.CreateAndEditGeometriesViewModel
 
@@ -77,7 +76,7 @@ fun ButtonMenu(
         var drawMenuExpanded by remember { mutableStateOf(false) }
         var deleteMenuExpanded by remember { mutableStateOf(false) }
         var toolMenuExpanded by remember { mutableStateOf(false) }
-        var canChangeTool =
+        val canChangeTool =
             (currentGeometryType == GeometryType.Polyline || currentGeometryType == GeometryType.Polygon)
         Box {
             IconButton(
