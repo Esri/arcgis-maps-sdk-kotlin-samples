@@ -1,6 +1,6 @@
 {
     "category": "Maps",
-    "description": "This sample demonstrates how to use the [Fused Location Provider](https://developers.google.com/location-context/fused-location-provider) and [Fused Orientation Provider](https://android-developers.googleblog.com/2024/03/introducing-fused-orientation-provider-api.html) to implement an ArcGIS Maps SDK Custom Location Data Source Location Provider.",
+    "description": "This sample demonstrates how to use the Fused Location Provider and Fused Orientation Provider to implement an ArcGIS Maps SDK Custom Location Data Source Location Provider.",
     "formal_name": "ShowDeviceLocationUsingFusedLocationDataSource",
     "ignore": false,
     "images": [
@@ -32,8 +32,8 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/ShowDeviceLocationUsingFusedLocationDataSourceViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/screens/ShowDeviceLocationUsingFusedLocationDataSource.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/FusedLocationOrientationProvider.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/components/FusedLocationAndOrientationProvider.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationusingfusedlocationdatasource/screens/ShowDeviceLocationUsingFusedLocationDataSource.kt"
     ],
     "title": "Show device location using fused location data source"
 }
