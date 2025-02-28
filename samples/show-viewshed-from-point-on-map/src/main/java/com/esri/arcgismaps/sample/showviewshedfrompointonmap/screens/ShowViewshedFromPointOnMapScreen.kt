@@ -58,6 +58,7 @@ fun ShowViewshedFromPointOnMapScreen(sampleName: String) {
                     mapViewProxy = mapViewModel.mapviewProxy,
                     graphicsOverlays = listOf(
                         mapViewModel.inputGraphicsOverlay,
+                        mapViewModel.bufferGraphicsOverlay,
                         mapViewModel.resultGraphicsOverlay
                     )
                 )

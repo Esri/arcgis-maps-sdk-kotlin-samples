@@ -21,7 +21,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.data.FeatureCollectionTable
+import com.arcgismaps.geometry.GeodeticCurveType
+import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.GeometryType
+import com.arcgismaps.geometry.LinearUnit
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -82,6 +85,16 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
         )
     }
 
+    // Graphics overlay for displaying the 15 km buffer range
+    val bufferGraphicsOverlay = GraphicsOverlay().apply {
+        renderer = SimpleRenderer(
+            symbol = SimpleFillSymbol(
+                style = SimpleFillSymbolStyle.Solid,
+                color = Color.fromRgba(r = 0, g = 0, b = 255, a = 50)
+            )
+        )
+    }
+
     // GeoprocessingTask pointing to the Viewshed service URL
     private val geoprocessingTask = GeoprocessingTask(
         url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Elevation/ESRI_Elevation_World/GPServer/Viewshed"
@@ -116,6 +129,8 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
             geoprocessingJob?.cancel()
             // Add a new red marker to the map at the tapped point
             addTapMarker(tapPoint)
+            // Show a 15 km buffer to visualize the visibility range
+            addBufferGraphic(tapPoint)
             // Start the geoprocessing job to obtain the viewshed polygons
             _isGeoprocessingInProgress.value = true
             calculateViewshed(tapPoint)
@@ -190,10 +205,29 @@ class ShowViewshedFromPointOnMapViewModel(application: Application) :
     }
 
     /**
+     * Add a 15 km buffer graphic around [tapPoint].
+     */
+    private fun addBufferGraphic(tapPoint: Point, radiusMeters: Double = 15000.0) {
+        // Use the geometry engine to build a geodesic planar buffer
+        val bufferGeometry = GeometryEngine.bufferGeodeticOrNull(
+            geometry = tapPoint,
+            distance = radiusMeters,
+            distanceUnit = LinearUnit.meters,
+            maxDeviation = Double.NaN,
+            curveType = GeodeticCurveType.Geodesic
+        )
+        // Create a graphic from the buffered geometry
+        val bufferGraphic = Graphic(bufferGeometry)
+        // Add it to the buffer graphics overlay
+        bufferGraphicsOverlay.graphics.add(bufferGraphic)
+    }
+
+    /**
      * Clear any previous marker or result polygons from the map.
      */
     private fun clearOverlays() {
         inputGraphicsOverlay.graphics.clear()
         resultGraphicsOverlay.graphics.clear()
+        bufferGraphicsOverlay.graphics.clear()
     }
 }
