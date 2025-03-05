@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
@@ -30,6 +31,8 @@ import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.SimpleFillSymbol
+import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
@@ -221,7 +224,12 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
         when (geometry) {
             is Point, is Multipoint -> graphic.symbol = geometryEditorStyle.vertexSymbol
             is Polyline -> graphic.symbol = geometryEditorStyle.lineSymbol
-            is Polygon -> graphic.symbol = geometryEditorStyle.fillSymbol
+            // give polygons a translucent fill to avoid obscuring geometries or features underneath
+            is Polygon -> graphic.symbol =
+                SimpleFillSymbol(
+                style = SimpleFillSymbolStyle.Solid,
+                color = Color(1694433280) // r = 255, g = 0, b = 0, a = 100
+            )
             else -> {}
         }
         // add the graphic to the graphics overlay
