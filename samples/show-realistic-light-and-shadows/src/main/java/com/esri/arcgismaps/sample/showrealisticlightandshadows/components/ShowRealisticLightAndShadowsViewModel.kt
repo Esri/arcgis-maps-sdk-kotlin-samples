@@ -49,22 +49,25 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
         ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
             // add base surface for elevation data
             val surface = Surface()
+            // create an elevation source from Terrain3D REST service
             surface.elevationSources.add(
                 ArcGISTiledElevationSource(
                     "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
                 )
             )
             baseSurface = surface
+            // create a scene layer from buildings REST service
             operationalLayers.add(
                 ArcGISSceneLayer(
                     "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/DevA_BuildingShells/SceneServer"
                 )
             )
+            // create a point to centre on
             val point = Point(
-                -122.69033,
-                45.54605,
-                500.0,
-                SpatialReference.wgs84()
+                x = -122.69033,
+                y = 45.54605,
+                z = 500.0,
+                spatialReference = SpatialReference.wgs84()
             )
             initialViewpoint = Viewpoint(
                 center = point,
@@ -78,37 +81,23 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
             )
         }
 
-
+     // create a LightingOptionsState with default values that will be used by the scene view
     val lightingOptionsState =
         LightingOptionsState(
             mutableStateOf(Instant.parse("2000-09-22T15:00:00Z")),
             mutableStateOf(LightingMode.LightAndShadows),
-            mutableStateOf(Color(220, 220, 220, 255)),
+            mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
             mutableStateOf(AtmosphereEffect.HorizonOnly),
             mutableStateOf(SpaceEffect.Stars)
         )
 
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
-
-    // Create a message dialog view model for handling error messages
+    // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    init {
-        viewModelScope.launch {
-            arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
-                )
-            }
-        }
-    }
-
+    /**
+     * Update the sun time of the lighting options state used by the scene view.
+     * Uses the range 0 seconds (12 am) to 86,340 seconds (11:59 pm).
+     */
     fun setSunTime(sunTime: Int) {
         val hours = (sunTime / (60 * 60)) % 24
         val minutes = (sunTime / 60) % 60
@@ -122,17 +111,8 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
 
 }
 
-
-
 /**
- * Represents various lighting options that can be used to configure a composable [SceneView]
- *
- * @property sunTime defines the position of the sun in the scene
- * @property sunLighting configures how light and shadows are displayed in the scene
- * @property ambientLightColor defines the color of the ambient light when the scene uses lighting
- * @property atmosphereEffect configures how the atmosphere in the scene is displayed
- * @property spaceEffect configures how outer space is displayed in the scene
- * @since 200.4.0
+ * Represents various lighting options that can be used to configure a composable [SceneView].
  */
 data class LightingOptionsState(
     val sunTime: MutableState<Instant>,

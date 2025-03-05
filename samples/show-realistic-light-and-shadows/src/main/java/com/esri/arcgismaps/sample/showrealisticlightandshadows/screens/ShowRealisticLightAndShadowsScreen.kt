@@ -16,19 +16,14 @@
 
 package com.esri.arcgismaps.sample.showrealisticlightandshadows.screens
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -45,14 +40,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.LightingMode
-import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRealisticLightAndShadowsViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRealisticLightAndShadowsViewModel
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
@@ -89,6 +83,7 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                                 LightingMode.NoLight -> "No Light"
                             }
 
+                            // bold the currently selected lighting option
                             val fontWeight = when (it) {
                                 lightingOptionsState.sunLighting.value -> FontWeight.Bold
                                 else -> FontWeight.Normal
@@ -115,15 +110,14 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
             ) {
                 SceneView(
                     mapViewModel.arcGISScene,
-                    modifier = Modifier
-                        //.padding(innerPadding) // TODO: fix padding?
-                        .weight(1f),
+                    modifier = Modifier.weight(1f),
                     sunTime = lightingOptionsState.sunTime.value,
                     sunLighting = lightingOptionsState.sunLighting.value,
                     ambientLightColor = lightingOptionsState.ambientLightColor.value,
                     atmosphereEffect = lightingOptionsState.atmosphereEffect.value,
                     spaceEffect = lightingOptionsState.spaceEffect.value
                 )
+                // create a slider with AM and PM labels to control the sun time
                 Row {
 
                     Text(
