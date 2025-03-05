@@ -2,7 +2,7 @@
 
 Use the Geometry Editor to create new point, multipoint, polyline, or polygon geometries or to edit existing geometries by interacting with a map view.
 
-[insert kotlin screenshot here]
+![CreateAndEditGeometries](create-and-edit-geometries.png)
 
 ## Use case
 
