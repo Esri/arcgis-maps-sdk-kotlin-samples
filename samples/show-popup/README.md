@@ -32,7 +32,7 @@ This sample uses a [feature layer](https://www.arcgis.com/apps/mapviewer/index.h
 
 ## Additional information
 
-This sample uses the [Popup Toolkit module](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/popup) to offer an out of the box solution for displaying popup information in the UI.
+This sample uses the [Popup Toolkit module](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/popup) to offer an out of the box solution for displaying popup information in the UI. This sample also uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

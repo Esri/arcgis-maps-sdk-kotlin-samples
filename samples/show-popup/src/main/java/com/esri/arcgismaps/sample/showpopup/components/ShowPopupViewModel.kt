@@ -69,8 +69,8 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
+                    title = "Failed to load map",
+                    description = error.message.toString()
                 )
             }
         }
@@ -94,8 +94,8 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
-                    "Failed to identify: ${error.message}",
-                    error.message.toString()
+                    title = "Failed to identify: ${error.message}",
+                    description = error.message.toString()
                 )
             }
         }
