@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "DevSummitTestSample",
+    "ignore": false,
+    "images": [
+        "devsummit-test-sample.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/devsummittestsample/DevSummitTestSampleViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/devsummittestsample/DevSummitTestSampleScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/devsummittestsample/MainActivity.kt"
+    ],
+    "title": "DevSummit Test Sample"
+}
