@@ -58,8 +58,8 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
         ArcGISMap(BasemapStyle.ArcGISImagery).apply {
             // a viewpoint centered at the island of Inis Meáin (Aran Islands) in Ireland
             initialViewpoint = Viewpoint(
-                latitude = 53.08230,
-                longitude = -9.5920,
+                latitude = 53.08275,
+                longitude = -9.5933,
                 scale = 5000.0
             )
         }
