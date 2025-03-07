@@ -80,7 +80,7 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
     // create a LightingOptionsState with default values that will be used by the scene view
     val lightingOptionsState =
         LightingOptionsState(
-            mutableStateOf(Instant.parse("2000-09-22T15:00:00Z")),
+            mutableStateOf(Instant.parse("2000-09-22T23:00:00Z")), // 15:00 in PST = 23:00 in UTC
             mutableStateOf(LightingMode.LightAndShadows),
             mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
             mutableStateOf(AtmosphereEffect.HorizonOnly),
@@ -98,7 +98,7 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
         val hours = (sunTime / (60 * 60)) % 24
         val minutes = (sunTime / 60) % 60
         val seconds = sunTime % 60
-        lightingOptionsState.sunTime.value = OffsetDateTime.now(ZoneId.of("UTC"))
+        lightingOptionsState.sunTime.value = OffsetDateTime.now(ZoneId.of("PST"))
             .withHour(hours)
             .withMinute(minutes)
             .withSecond(seconds)
