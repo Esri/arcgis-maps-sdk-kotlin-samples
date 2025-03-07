@@ -105,7 +105,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     private val _currentGeometryType = MutableStateFlow<GeometryType>(GeometryType.Unknown)
     val currentGeometryType = _currentGeometryType.asStateFlow()
 
-    // fill styles to be used for graphics
+    // create symbols for displaying new geometries
     private val pointSymbol = SimpleMarkerSymbol(
         style = SimpleMarkerSymbolStyle.Square,
         color = Color.red,
