@@ -105,7 +105,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     private val _currentGeometryType = MutableStateFlow<GeometryType>(GeometryType.Unknown)
     val currentGeometryType = _currentGeometryType.asStateFlow()
 
-    // fill styles to be used for graphics
+    // create symbols for displaying new geometries
     private val pointSymbol = SimpleMarkerSymbol(
         style = SimpleMarkerSymbolStyle.Square,
         color = Color.red,
@@ -142,34 +142,28 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
                 )
             }.onSuccess {
                 // create graphics for the initial geometries and add them to the graphics overlay
-                graphicsOverlay.graphics.add(
-                    Graphic(
-                        geometry = Geometry.fromJsonOrNull(houseCoordinatesJson),
-                        symbol = pointSymbol
-                    )
-                )
-                graphicsOverlay.graphics.add(
-                    Graphic(
-                        geometry = Geometry.fromJsonOrNull(outbuildingCoordinatesJson),
-                        symbol = multiPointSymbol
-                    )
-                )
-                graphicsOverlay.graphics.add(
-                    Graphic(
-                        geometry = Geometry.fromJsonOrNull(road1CoordinatesJson),
-                        symbol = polylineSymbol
-                    )
-                )
-                graphicsOverlay.graphics.add(
-                    Graphic(
-                        geometry = Geometry.fromJsonOrNull(road2CoordinatesJson),
-                        symbol = polylineSymbol
-                    )
-                )
-                graphicsOverlay.graphics.add(
-                    Graphic(
-                        geometry = Geometry.fromJsonOrNull(boundaryCoordinatesJson),
-                        symbol = polygonSymbol
+                graphicsOverlay.graphics.addAll(
+                    listOf(
+                        Graphic(
+                            geometry = Geometry.fromJsonOrNull(houseCoordinatesJson),
+                            symbol = pointSymbol
+                        ),
+                        Graphic(
+                            geometry = Geometry.fromJsonOrNull(outbuildingCoordinatesJson),
+                            symbol = multiPointSymbol
+                        ),
+                        Graphic(
+                            geometry = Geometry.fromJsonOrNull(road1CoordinatesJson),
+                            symbol = polylineSymbol
+                        ),
+                        Graphic(
+                            geometry = Geometry.fromJsonOrNull(road2CoordinatesJson),
+                            symbol = polylineSymbol
+                        ),
+                        Graphic(
+                            geometry = Geometry.fromJsonOrNull(boundaryCoordinatesJson),
+                            symbol = polygonSymbol
+                        )
                     )
                 )
             }
