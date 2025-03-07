@@ -31,4 +31,4 @@ This sample uses the GeoView-Compose Toolkit module to be able to implement a co
 
 ## Tags
 
-3D, lighting, realism, realistic, rendering, sceneview-compose shadows, sun, time, toolkit
+3D, lighting, realism, realistic, rendering, sceneview-compose, shadows, sun, time, toolkit
