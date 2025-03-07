@@ -83,7 +83,7 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                                 LightingMode.NoLight -> "No Light"
                             }
 
-                            // bold the currently selected lighting option
+                            // make the currently selected lighting option bold
                             val fontWeight = when (it) {
                                 lightingOptionsState.sunLighting.value -> FontWeight.Bold
                                 else -> FontWeight.Normal
