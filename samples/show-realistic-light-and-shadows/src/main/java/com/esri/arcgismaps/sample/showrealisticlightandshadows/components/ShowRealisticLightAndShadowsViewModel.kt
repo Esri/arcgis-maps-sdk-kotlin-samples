@@ -81,7 +81,7 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
             )
         }
 
-     // create a LightingOptionsState with default values that will be used by the scene view
+    // create a LightingOptionsState with default values that will be used by the scene view
     val lightingOptionsState =
         LightingOptionsState(
             mutableStateOf(Instant.parse("2000-09-22T15:00:00Z")),
