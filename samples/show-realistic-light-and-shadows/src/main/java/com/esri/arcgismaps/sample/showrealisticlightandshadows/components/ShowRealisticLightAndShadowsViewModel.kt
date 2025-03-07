@@ -18,14 +18,11 @@ package com.esri.arcgismaps.sample.showrealisticlightandshadows.components
 
 import android.app.Application
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
-import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
@@ -37,7 +34,6 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.LightingMode
 import com.arcgismaps.mapping.view.SpaceEffect
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
