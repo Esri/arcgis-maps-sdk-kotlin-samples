@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
@@ -38,9 +39,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
 import com.esri.arcgismaps.sample.createandeditgeometries.R
+import com.esri.arcgismaps.sample.createandeditgeometries.components.CreateAndEditGeometriesViewModel
 
 /**
  * Composable component to display the menu buttons.
@@ -55,9 +58,12 @@ fun ButtonMenu(
     onStopEditingButtonClick: () -> Unit,
     onDiscardEditsButtonClick: () -> Unit,
     onDeleteSelectedElementButtonClick: () -> Unit,
-    onDeleteAllGeometriesButtonClick:() -> Unit,
+    onDeleteAllGeometriesButtonClick: () -> Unit,
     onUndoButtonClick: () -> Unit,
-    onRedoButtonClick: () -> Unit
+    onRedoButtonClick: () -> Unit,
+    onToolChange: (CreateAndEditGeometriesViewModel.ToolType) -> Unit,
+    selectedTool: CreateAndEditGeometriesViewModel.ToolType,
+    currentGeometryType: GeometryType
 ) {
     val rowModifier = Modifier
         .padding(12.dp)
@@ -69,9 +75,10 @@ fun ButtonMenu(
         val vector = ImageVector
         var drawMenuExpanded by remember { mutableStateOf(false) }
         var deleteMenuExpanded by remember { mutableStateOf(false) }
-        Box(
-            modifier = Modifier
-        ) {
+        var toolMenuExpanded by remember { mutableStateOf(false) }
+        val canChangeTool =
+            (currentGeometryType == GeometryType.Polyline || currentGeometryType == GeometryType.Polygon)
+        Box {
             IconButton(
                 enabled = !isGeometryEditorStarted,
                 onClick = { drawMenuExpanded = !drawMenuExpanded }
@@ -116,17 +123,21 @@ fun ButtonMenu(
             enabled = canGeometryEditorUndo,
             onClick = { onUndoButtonClick() }
         ) {
-            Icon(imageVector = vector.vectorResource(R.drawable.undo_24), contentDescription = "Undo")
+            Icon(
+                imageVector = vector.vectorResource(R.drawable.undo_24),
+                contentDescription = "Undo"
+            )
         }
         IconButton(
             enabled = canGeometryEditorRedo,
             onClick = { onRedoButtonClick() }
         ) {
-            Icon(imageVector = vector.vectorResource(R.drawable.redo_24), contentDescription = "Redo")
+            Icon(
+                imageVector = vector.vectorResource(R.drawable.redo_24),
+                contentDescription = "Redo"
+            )
         }
-        Box(
-            modifier = Modifier
-        ) {
+        Box {
             IconButton(
                 onClick = { deleteMenuExpanded = !deleteMenuExpanded }
             ) {
@@ -152,6 +163,40 @@ fun ButtonMenu(
                         deleteMenuExpanded = false
                     }
                 )
+            }
+        }
+        Box {
+            val toolTypeItems = remember { CreateAndEditGeometriesViewModel.ToolType.entries }
+            IconButton(
+                enabled = canChangeTool,
+                onClick = { toolMenuExpanded = !toolMenuExpanded }
+            ) {
+                Icon(imageVector = Icons.Filled.Build, contentDescription = "Change Tool Type")
+            }
+            DropdownMenu(
+                expanded = toolMenuExpanded,
+                onDismissRequest = { toolMenuExpanded = false }
+            ) {
+                toolTypeItems.forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            onToolChange(it)
+                            // dismiss the dropdown when any item is selected
+                            toolMenuExpanded = false
+                        },
+                        text = {
+                            Text(
+                                text = it.name,
+                                fontWeight =
+                                if (selectedTool == it) {
+                                    FontWeight.Bold
+                                } else {
+                                    FontWeight.Normal
+                                }
+                            )
+                        }
+                    )
+                }
             }
         }
         IconButton(
