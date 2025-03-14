@@ -54,6 +54,8 @@ Use the control panel to undo or redo changes made to the geometry, delete a sel
 
 The sample opens with the ArcGIS Imagery basemap centered on the island of Inis Meáin (Aran Islands) in Ireland. Inis Meáin comprises a landscape of interlinked stone walls, roads, buildings, archaeological sites, and geological features, producing complex geometrical relationships.
 
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+
 ## Tags
 
 draw, edit, freehand, geometry editor, geoview-compose, sketch, toolkit, vertex
