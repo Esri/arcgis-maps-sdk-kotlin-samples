@@ -52,9 +52,7 @@ import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRe
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
     val lightingOptionsState = mapViewModel.lightingOptionsState
-    val defaultTime = 15f * 60f * 60f // 15:00 in seconds since midnight
-    var sliderPosition by remember { mutableFloatStateOf(defaultTime) }
-    mapViewModel.setSunTime(defaultTime.toInt())
+    var sliderPosition by remember { mutableFloatStateOf(mapViewModel.defaultTime) }
     val lightingModes = listOf(
         LightingMode.LightAndShadows,
         LightingMode.Light,

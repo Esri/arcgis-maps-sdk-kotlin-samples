@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.showrealisticlightandshadows.components
 
 import android.app.Application
+import android.icu.util.TimeZone
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -35,57 +36,56 @@ import com.arcgismaps.mapping.view.LightingMode
 import com.arcgismaps.mapping.view.SpaceEffect
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 
 class ShowRealisticLightAndShadowsViewModel(application: Application) :
     AndroidViewModel(application) {
 
-    val arcGISScene =
-        ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
-            // add base surface for elevation data
-            val surface = Surface()
-            // create an elevation source from Terrain3D REST service
-            surface.elevationSources.add(
-                ArcGISTiledElevationSource(
-                    "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
-                )
+    val arcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
+        // add base surface for elevation data
+        val surface = Surface()
+        // create an elevation source from Terrain3D REST service
+        surface.elevationSources.add(
+            ArcGISTiledElevationSource(
+                "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
             )
-            baseSurface = surface
-            // create a scene layer from buildings REST service
-            operationalLayers.add(
-                ArcGISSceneLayer(
-                    "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/DevA_BuildingShells/SceneServer"
-                )
+        )
+        baseSurface = surface
+        // create a scene layer from buildings REST service
+        operationalLayers.add(
+            ArcGISSceneLayer(
+                "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/DevA_BuildingShells/SceneServer"
             )
-            // create a point to centre on
-            val point = Point(
-                x = -122.69033,
-                y = 45.54605,
-                z = 500.0,
-                spatialReference = SpatialReference.wgs84()
+        )
+        // create a point to centre on
+        val point = Point(
+            x = -122.69033, y = 45.54605, z = 500.0, spatialReference = SpatialReference.wgs84()
+        )
+        initialViewpoint = Viewpoint(
+            center = point, scale = 17000.0, camera = Camera(
+                locationPoint = point, heading = 162.58544, pitch = 72.0, roll = 0.0
             )
-            initialViewpoint = Viewpoint(
-                center = point,
-                scale = 17000.0,
-                camera = Camera(
-                    locationPoint = point,
-                    heading = 162.58544,
-                    pitch = 72.0,
-                    roll = 0.0
-                )
-            )
-        }
+        )
+    }
+
+    // default time for sun position and the slider
+    val defaultTime = 15f * 60f * 60f // 15:00 in seconds since midnight
 
     // create a LightingOptionsState with default values that will be used by the scene view
-    val lightingOptionsState =
-        LightingOptionsState(
-            mutableStateOf(Instant.parse("2000-09-22T23:00:00Z")), // 15:00 in PST = 23:00 in UTC
-            mutableStateOf(LightingMode.LightAndShadows),
-            mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
-            mutableStateOf(AtmosphereEffect.HorizonOnly),
-            mutableStateOf(SpaceEffect.Stars)
-        )
+    val lightingOptionsState = LightingOptionsState(
+        mutableStateOf(
+            LocalDateTime.parse("2000-09-22T00:00:00").atZone(
+                ZoneId.of("US/Pacific")
+            ).plusSeconds(defaultTime.toLong()).toInstant()
+        ),
+        mutableStateOf(LightingMode.LightAndShadows),
+        mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
+        mutableStateOf(AtmosphereEffect.HorizonOnly),
+        mutableStateOf(SpaceEffect.Stars)
+    )
 
     // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -95,16 +95,10 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
      * Uses the range 0 seconds (12 am) to 86,340 seconds (11:59 pm).
      */
     fun setSunTime(sunTime: Int) {
-        val hours = (sunTime / (60 * 60)) % 24
-        val minutes = (sunTime / 60) % 60
-        val seconds = sunTime % 60
-        lightingOptionsState.sunTime.value = OffsetDateTime.now(ZoneId.of("PST"))
-            .withHour(hours)
-            .withMinute(minutes)
-            .withSecond(seconds)
-            .toInstant()
+        lightingOptionsState.sunTime.value = LocalDateTime.parse("2000-09-22T00:00:00").atZone(
+            ZoneId.of("US/Pacific")
+        ).plusSeconds(sunTime.toLong()).toInstant()
     }
-
 }
 
 /**
