@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.showrealisticlightandshadows.components
 
 import android.app.Application
-import android.icu.util.TimeZone
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -37,9 +36,7 @@ import com.arcgismaps.mapping.view.SpaceEffect
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 
 class ShowRealisticLightAndShadowsViewModel(application: Application) :
     AndroidViewModel(application) {
