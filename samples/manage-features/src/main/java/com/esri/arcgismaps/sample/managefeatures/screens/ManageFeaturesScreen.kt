@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.managefeatures.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,8 +58,14 @@ fun ManageFeaturesScreen(sampleName: String) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(topBar = { SampleTopAppBar(title = sampleName) },
-        snackbarHost = { SnackbarHost(modifier = Modifier.padding(bottom = 192.dp), hostState = snackbarHostState) },
+    Scaffold(
+        topBar = { SampleTopAppBar(title = sampleName) },
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier.padding(bottom = 128.dp),
+                hostState = snackbarHostState
+            )
+        },
         content = {
             Column(
                 modifier = Modifier
@@ -67,11 +74,43 @@ fun ManageFeaturesScreen(sampleName: String) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 MapView(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f),
                     mapViewProxy = mapViewModel.mapViewProxy,
                     arcGISMap = mapViewModel.arcGISMap,
                     onSingleTapConfirmed = mapViewModel::onTap,
-                )
+                ) {
+                    mapViewModel.selectedFeature?.let { selectedFeature ->
+                        // Only show the delete button when on the delete feature operation and a feature is selected.
+                        if (mapViewModel.currentFeatureOperation == mapViewModel.manageFeaturesList[1]) {
+                            Callout(geoElement = selectedFeature) {
+                                Button(onClick = mapViewModel::deleteSelectedFeature) {
+                                    Text(text = "Delete")
+                                }
+                            }
+                        }
+                        // Only show the dropdown for damage type when on the update feature operation.
+                        if (mapViewModel.currentFeatureOperation == mapViewModel.manageFeaturesList[2]) {
+                            Callout(geoElement = selectedFeature) {
+                                DropDownMenuBox(
+                                    modifier = Modifier
+                                        .padding(8.dp),
+                                    textFieldLabel = "Select damage type",
+                                    textFieldValue = mapViewModel.currentDamageType,
+                                    dropDownItemList = mapViewModel.damageTypeList,
+                                    onIndexSelected = { index ->
+                                        if (mapViewModel.selectedFeature != null) {
+                                            mapViewModel.onDamageTypeSelected(index)
+                                        } else {
+                                            coroutineScope.launch {
+                                                snackbarHostState.showSnackbar("Please select a feature to update")
+                                            }
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                }
                 // Start of drop down and instruction UI.
                 Row(
                     modifier = Modifier
@@ -88,12 +127,6 @@ fun ManageFeaturesScreen(sampleName: String) {
                             mapViewModel.onFeatureOperationSelected(index)
                             featureManagementDropdownIndex = index
                         })
-                    // Only show the delete button when on the delete feature operation and a feature is selected.
-                    if (mapViewModel.currentFeatureOperation == mapViewModel.manageFeaturesList[1] && mapViewModel.selectedFeature != null) {
-                        Button(onClick = mapViewModel::deleteSelectedFeature) {
-                            Text(text = "Delete")
-                        }
-                    }
                 }
                 // Show instructions for the current feature operation.
                 Text(
@@ -103,24 +136,8 @@ fun ManageFeaturesScreen(sampleName: String) {
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(8.dp)
+                        .animateContentSize()
                 )
-                // Only show the dropdown for damage type when on the update feature operation.
-                if (mapViewModel.currentFeatureOperation == mapViewModel.manageFeaturesList[2]) {
-                    DropDownMenuBox(modifier = Modifier
-                        .padding(8.dp),
-                        textFieldLabel = "Select damage type",
-                        textFieldValue = mapViewModel.currentDamageType,
-                        dropDownItemList = mapViewModel.damageTypeList,
-                        onIndexSelected = { index ->
-                            if (mapViewModel.selectedFeature != null) {
-                                mapViewModel.onDamageTypeSelected(index)
-                            } else {
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar("Please select a feature to update")
-                                }
-                            }
-                        })
-                }
             }
             // Show snack bar messages with information about feature operations.
             if (mapViewModel.snackBarMessage != "") {
@@ -132,7 +149,9 @@ fun ManageFeaturesScreen(sampleName: String) {
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
-                        title = messageTitle, description = messageDescription, onDismissRequest = ::dismissDialog
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
                     )
                 }
             }
