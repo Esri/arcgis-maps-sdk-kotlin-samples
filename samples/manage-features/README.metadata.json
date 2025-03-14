@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "ManageFeatures",
+    "ignore": false,
+    "images": [
+        "manage-features.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/managefeatures/ManageFeaturesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/managefeatures/ManageFeaturesScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/managefeatures/MainActivity.kt"
+    ],
+    "title": "Manage features"
+}
