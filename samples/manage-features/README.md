@@ -23,8 +23,7 @@ Pick an operation, then tap on the map to perform the operation at that location
     - Update attribute: update the attribute of the selected `Feature`.
     - Update geometry: update the geometry of the selected `Feature`.
 5. Update the `FeatureTable` locally.
-6. Update the `ServiceGeodatabase` of the `ServiceFeatureTable` by calling `applyEdits()`.
-    - This pushes the changes to the server.
+6. Update the `ServiceGeodatabase` of the `ServiceFeatureTable` by calling `applyEdits()`. This pushes the changes to the server.
 
 ## Relevant API
 
@@ -36,7 +35,7 @@ Pick an operation, then tap on the map to perform the operation at that location
 
 ## Additional information
 
-When editing feature tables that are subject to database behavior (operations on one table affecting another table), it's now recommended to call these methods (apply or undo edits) on the `ServiceGeodatabase` object rather than on the `ServiceFeatureTable` object. Using the `ServiceGeodatabase` object to call these operations will prevent possible data inconsistencies and ensure transactional integrity so that all changes can be committed or rolled back.
+When editing feature tables that are subject to database behavior (operations on one table affecting another table), it's recommended to call these methods (apply or undo edits) on the `ServiceGeodatabase` object rather than on the `ServiceFeatureTable` object. Using the `ServiceGeodatabase` object to call these operations will prevent possible data inconsistencies and ensure transactional integrity so that all changes can be committed or rolled back.
 
 ## Tags
 

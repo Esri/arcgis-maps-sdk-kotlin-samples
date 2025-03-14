@@ -225,7 +225,7 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
                     snackBarMessage = "Failed to delete feature $featureId"
                 }
                 // Apply the edits to the service geodatabase.
-                damageFeatureTable?.applyEdits()
+                damageFeatureTable?.serviceGeodatabase?.applyEdits()
                 selectedFeature = null
             }
         }
