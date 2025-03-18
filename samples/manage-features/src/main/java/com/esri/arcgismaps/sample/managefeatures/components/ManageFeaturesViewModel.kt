@@ -55,19 +55,8 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
     // Hold a reference to the selected feature.
     var selectedFeature: ArcGISFeature? by mutableStateOf(null)
 
-    // The list of feature operations shown in this sample.
-    val manageFeaturesList = listOf("Create feature", "Delete feature", "Update attribute", "Update geometry")
-
     // The current feature operation to perform.
-    var currentFeatureOperation by mutableStateOf(manageFeaturesList[0])
-
-    // Instructions associated with each feature operation.
-    val instructionsList = listOf(
-        "Tap on the map to create a new feature.",
-        "Select an existing feature to delete it.",
-        "Select an existing feature to edit its attribute.",
-        "Select an existing feature and tap the map to move it to a new position."
-    )
+    var currentFeatureOperation by mutableStateOf(FeatureOperationType.CREATE)
 
     // The list of damage types to update the feature attribute.
     var damageTypeList: List<String> = mutableListOf()
@@ -145,10 +134,10 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
             return
         }
         when (currentFeatureOperation) {
-            manageFeaturesList[0] -> createFeatureAt(singleTapConfirmedEvent.screenCoordinate)
-            manageFeaturesList[1] -> deleteFeatureAt(singleTapConfirmedEvent.screenCoordinate)
-            manageFeaturesList[2] -> selectFeatureForAttributeEditAt(singleTapConfirmedEvent.screenCoordinate)
-            manageFeaturesList[3] -> updateFeatureGeometryAt(singleTapConfirmedEvent.screenCoordinate)
+            FeatureOperationType.CREATE -> createFeatureAt(singleTapConfirmedEvent.screenCoordinate)
+            FeatureOperationType.DELETE -> deleteFeatureAt(singleTapConfirmedEvent.screenCoordinate)
+            FeatureOperationType.UPDATE_ATTRIBUTE -> selectFeatureForAttributeEditAt(singleTapConfirmedEvent.screenCoordinate)
+            FeatureOperationType.UPDATE_GEOMETRY -> updateFeatureGeometryAt(singleTapConfirmedEvent.screenCoordinate)
         }
     }
 
@@ -157,7 +146,7 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
      * selection.
      */
     fun onFeatureOperationSelected(index: Int) {
-        currentFeatureOperation = manageFeaturesList[index]
+        currentFeatureOperation = FeatureOperationType.entries[index]
         // Reset the selected feature when the operation changes.
         damageLayer?.clearSelection()
         selectedFeature = null
@@ -202,7 +191,7 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
             viewModelScope.launch {
                 // Determine if a user tapped on a feature.
                 mapViewProxy.identify(damageLayer, screenCoordinate, 10.dp).onSuccess { identifyResult ->
-                    selectedFeature = (identifyResult.geoElements.firstOrNull() as ArcGISFeature).also {
+                    selectedFeature = (identifyResult.geoElements.firstOrNull() as? ArcGISFeature)?.also {
                         damageLayer.selectFeature(it)
                     }
                 }
@@ -335,4 +324,11 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
             }
         }
     }
+}
+
+enum class FeatureOperationType(val operationName: String, val instruction: String) {
+    CREATE("Create feature", "Tap on the map to create a new feature."),
+    DELETE("Delete feature", "Select an existing feature to delete it."),
+    UPDATE_ATTRIBUTE("Update attribute", "Select an existing feature to edit its attribute."),
+    UPDATE_GEOMETRY("Update geometry", "Select an existing feature and tap the map to move it to a new position.")
 }

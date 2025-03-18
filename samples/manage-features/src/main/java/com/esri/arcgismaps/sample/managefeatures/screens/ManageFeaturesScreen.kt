@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.managefeatures.components.FeatureOperationType
 import com.esri.arcgismaps.sample.managefeatures.components.ManageFeaturesViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -82,7 +83,7 @@ fun ManageFeaturesScreen(sampleName: String) {
                 ) {
                     mapViewModel.selectedFeature?.let { selectedFeature ->
                         // Only show the delete button when on the delete feature operation and a feature is selected.
-                        if (mapViewModel.currentFeatureOperation == mapViewModel.manageFeaturesList[1]) {
+                        if (mapViewModel.currentFeatureOperation == FeatureOperationType.DELETE) {
                             Callout(geoElement = selectedFeature) {
                                 Button(onClick = mapViewModel::deleteSelectedFeature) {
                                     Text(text = "Delete")
@@ -90,7 +91,7 @@ fun ManageFeaturesScreen(sampleName: String) {
                             }
                         }
                         // Only show the dropdown for damage type when on the update feature operation.
-                        if (mapViewModel.currentFeatureOperation == mapViewModel.manageFeaturesList[2]) {
+                        if (mapViewModel.currentFeatureOperation == FeatureOperationType.UPDATE_ATTRIBUTE) {
                             Callout(geoElement = selectedFeature) {
                                 DropDownMenuBox(
                                     modifier = Modifier
@@ -121,8 +122,8 @@ fun ManageFeaturesScreen(sampleName: String) {
                     DropDownMenuBox(
                         modifier = Modifier.padding(end = 8.dp),
                         textFieldLabel = "Feature management operation",
-                        textFieldValue = mapViewModel.currentFeatureOperation,
-                        dropDownItemList = mapViewModel.manageFeaturesList,
+                        textFieldValue = mapViewModel.currentFeatureOperation.operationName,
+                        dropDownItemList = FeatureOperationType.entries.map { entry -> entry.operationName },
                         onIndexSelected = { index ->
                             mapViewModel.onFeatureOperationSelected(index)
                             featureManagementDropdownIndex = index
@@ -130,7 +131,7 @@ fun ManageFeaturesScreen(sampleName: String) {
                 }
                 // Show instructions for the current feature operation.
                 Text(
-                    text = mapViewModel.instructionsList[featureManagementDropdownIndex],
+                    text = FeatureOperationType.entries[featureManagementDropdownIndex].instruction,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
