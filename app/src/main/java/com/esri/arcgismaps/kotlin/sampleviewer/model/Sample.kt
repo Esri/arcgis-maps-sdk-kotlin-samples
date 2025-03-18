@@ -78,7 +78,8 @@ data class Sample(
          * Returns the readme for a given sample [fileMap].
          */
         fun loadReadMe(fileMap: Map<String, String>): String {
-            val readMeString = fileMap["README.md"] ?: return ""
+            val readMeString = fileMap["README.md"]
+                ?: throw Exception("README.md not found in sample.")
             // Remove screenshot markdown text from the README
             return readMeString.lines().filterNot { it.contains("![") }.joinToString("\n")
         }

@@ -66,7 +66,8 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
 
             // Build each Sample using the metadata from "README.metadata.json"
             allSamplesData.forEach { (sampleFolderName, fileMap) ->
-                val metadataJsonString = fileMap["README.metadata.json"] ?: return@forEach
+                val metadataJsonString = fileMap["README.metadata.json"]
+                    ?: throw Exception("README.metadata.json not found in sample: $sampleFolderName")
                 try {
                     val metadata = json.decodeFromString<SampleMetadata>(metadataJsonString)
 
