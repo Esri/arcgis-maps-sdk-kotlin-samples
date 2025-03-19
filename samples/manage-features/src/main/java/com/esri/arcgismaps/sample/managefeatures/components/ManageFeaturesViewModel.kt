@@ -210,12 +210,12 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
                 // Delete the feature from the feature table.
                 damageFeatureTable?.deleteFeature(it)?.onSuccess {
                     snackBarMessage = "Deleted feature $featureId"
+                    // Apply the edits to the service geodatabase.
+                    damageFeatureTable?.serviceGeodatabase?.applyEdits()
+                    selectedFeature = null
                 }?.onFailure {
                     snackBarMessage = "Failed to delete feature $featureId"
                 }
-                // Apply the edits to the service geodatabase.
-                damageFeatureTable?.serviceGeodatabase?.applyEdits()
-                selectedFeature = null
             }
         }
     }
@@ -240,9 +240,7 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
                             damageLayer.selectFeature(it)
                         }
                     } ?: run {
-                        // Clear the selected feature if no feature is found.
-                        damageLayer.clearSelection()
-                        selectedFeature = null
+                        // Reset damage type if no feature identified.
                         currentDamageType = ""
                     }
                 }

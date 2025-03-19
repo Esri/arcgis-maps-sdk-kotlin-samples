@@ -107,7 +107,8 @@ fun ManageFeaturesScreen(sampleName: String) {
                                                 snackbarHostState.showSnackbar("Please select a feature to update")
                                             }
                                         }
-                                    })
+                                    }
+                                )
                             }
                         }
                     }
