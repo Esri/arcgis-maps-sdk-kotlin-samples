@@ -2,8 +2,6 @@
 
 Use the Geometry Editor to edit geometries using utility network connectivity rules.
 
-TODO - update for Kotlin sample
-
 ![Image of snapping](SnapGeometryEditsWithUtilityNetworkRules.jpg)
 
 ## Use case
@@ -12,11 +10,11 @@ A field worker can create new features in a utility network by editing and snapp
 
 ## How to use the sample
 
-To edit a geometry, tap a point geometry to be edited in the map to select it. Then edit the geometry by clicking the button to start the geometry editor.
+To edit a geometry, tap a point geometry to be edited in the map to select it. Then edit the geometry by tapping the button to start the geometry edito with the reticle tool.
 
 Snap sources can be enabled and disabled. Snapping will not occur when `SnapRuleBehavior.RulesPreventSnapping` even when the source is enabled.
 
-To interactively snap a vertex to a feature or graphic, ensure that snapping is enabled for the relevant snap source, then move the mouse pointer or drag a vertex to nearby an existing feature or graphic. If the existing feature or graphic has valid utility network connectivity rules for the asset type that is being created or edited, the edit position will be adjusted to coincide with (or snap to) edges and vertices of its geometry. Click or release the touch pointer to place the vertex at the snapped location.
+To interactively snap a vertex to a feature or graphic, ensure that snapping is enabled for the relevant snap source, tap the reticle to pick up the point geometry, then move the map to position the reticle nearby an existing feature or graphic. If the existing feature or graphic has valid utility network connectivity rules for the asset type that is being created or edited, the edit position will be adjusted to coincide with (or snap to) edges and vertices of its geometry. Tap again to place the vertex at the snapped location.
 
 To discard changes and stop the geometry editor, press the discard button.
 
@@ -27,7 +25,7 @@ To save your edits, press the save button.
 1. Create a map with `LoadSettings.FeatureTilingMode` set to `EnabledWithFullResolutionWhenSupported`.
 2. Create a `Geodatabase` using the mobile geodatabase file location.
 3. Display `Geodatabase.featureTables` on the map using subtype feature layers.
-4. Create a `GeometryEditor` and connect it to the map view.
+4. Create a `GeometryEditor`, set `GeometryEditor.tool` to a `ReticleVertexTool`, and connect the editor to the map view.
 5. When editing a feature:
 
     a. Call `SnapRules.CreateAsync(UtilityNetwork, UtilityAssetType)` to get the snap rules associated with a given `UtilityAssetType`.
@@ -40,6 +38,7 @@ To save your edits, press the save button.
 
 * FeatureLayer
 * Geometry
+* ReticleVertexTool
 * GeometryEditor
 * GeometryEditorStyle
 * GraphicsOverlay
@@ -58,4 +57,4 @@ The [Naperville gas network](https://www.arcgis.com/home/item.html?id=0fd3a39660
 
 ## Tags
 
-edit, feature, geometry editor, graphics, layers, map, snapping, utility network
+edit, feature, geometry editor, reticle, graphics, layers, map, snapping, utility network

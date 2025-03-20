@@ -18,6 +18,7 @@
         "FeatureLayer",
         "Geometry",
         "GeometryEditor",
+        "ReticleVertexTool",
         "GeometryEditorStyle",
         "GraphicsOverlay",
         "MapView",
@@ -30,7 +31,7 @@
         "UtilityNetwork"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": "",
     "relevant_apis": [
         "FeatureLayer",
         "Geometry",
@@ -51,6 +52,7 @@
         "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/screens/SnapGeometryEditsWithUtilityNetworkRulesScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/screens/SnapSourcesPanel.kt"
     ],
     "title": "Snap geometry edits with utility network rules"
 }
