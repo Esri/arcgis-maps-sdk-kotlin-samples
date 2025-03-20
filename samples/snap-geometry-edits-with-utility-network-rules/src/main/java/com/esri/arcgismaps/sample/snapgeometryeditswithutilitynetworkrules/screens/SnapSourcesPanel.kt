@@ -40,25 +40,31 @@ fun SnapSourcesPanel(
     onSnapSourcePropertyChanged: (Boolean, Int) -> Unit = { _: Boolean, _: Int -> }
 ) {
     Box(
-        modifier = Modifier.padding(horizontal = 8.dp).defaultMinSize(minHeight = 185.dp)
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .defaultMinSize(minHeight = 185.dp)
     ) {
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
             Row {
-                Text(text = "Snap sources and their SnapRuleBehavior", fontWeight = FontWeight.ExtraBold)
+                Text(
+                    text = "Snap sources and their SnapRuleBehavior",
+                    fontWeight = FontWeight.ExtraBold
+                )
             }
             if (snapSourcePropertyList.value.isEmpty()) {
                 Text(text = "Tap a point feature to edit")
             }
-            for(index in snapSourcePropertyList.value.indices)  {
+            for (index in snapSourcePropertyList.value.indices) {
                 val ssp = snapSourcePropertyList.value[index]
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        bitmap = ssp.swatch.bitmap.asImageBitmap(), contentDescription = "Symbol image"
+                        bitmap = ssp.swatch.bitmap.asImageBitmap(),
+                        contentDescription = "Symbol image"
                     )
                     Switch(
                         modifier = Modifier.padding(start = 8.dp),
