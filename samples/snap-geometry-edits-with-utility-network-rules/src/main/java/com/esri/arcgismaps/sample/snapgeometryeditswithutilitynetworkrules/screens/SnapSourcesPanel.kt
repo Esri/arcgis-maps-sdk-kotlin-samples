@@ -19,6 +19,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
 import com.esri.arcgismaps.sample.snapgeometryeditswithutilitynetworkrules.components.SnapGeometryEditsWithUtilityNetworkRulesViewModel
 
 @Composable
@@ -38,10 +40,7 @@ fun SnapSourcesPanel(
     onSnapSourcePropertyChanged: (Boolean, Int) -> Unit = { _: Boolean, _: Int -> }
 ) {
     Box(
-        //TODO - potentially keep a constant size here to avoid map extent moving
-        // around. Would then need to ensure the box is big enough, potentially
-        // make it scrollable?
-        modifier = Modifier.padding(horizontal = 8.dp)
+        modifier = Modifier.padding(horizontal = 8.dp).defaultMinSize(minHeight = 185.dp)
     ) {
         Column(
             modifier = Modifier.padding(8.dp)
@@ -70,6 +69,7 @@ fun SnapSourcesPanel(
                     )
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
+                        style = SampleTypography.bodyMedium,
                         text = "${ssp.name} (${ssp.snapSourceSettings.ruleBehavior})"
                     )
                 }
