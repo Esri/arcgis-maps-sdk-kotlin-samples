@@ -51,7 +51,7 @@
         "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/components/SnapGeometryEditsWithUtilityNetworkRulesViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/screens/SnapGeometryEditsWithUtilityNetworkRulesScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/screens/SnapGeometryEditsWithUtilityNetworkRulesScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/screens/SnapSourcesPanel.kt"
     ],
     "title": "Snap geometry edits with utility network rules"
