@@ -219,7 +219,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                     mapViewProxy.setViewpointCenter(initialGeometry.extent.center)
                 }
                 geometryEditor.start(initialGeometry)
-                geometryEditor.selectGeometry()
+                geometryEditor.selectVertex(0,0)
             }
         }
     }
