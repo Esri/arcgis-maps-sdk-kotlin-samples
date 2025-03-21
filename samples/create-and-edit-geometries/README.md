@@ -24,18 +24,20 @@ Use the control panel to undo or redo changes made to the geometry, delete a sel
 
 ## How it works
 
-1. Create a `GeometryEditor` and set it to the MapView using `mapView.setGeometryEditor(GeometryEditor)`.
-2. Start the `GeometryEditor` using `GeometryEditor.start(GeometryType)` to create a new geometry or `GeometryEditor.start(Geometry)` to edit an existing geometry.
+1. Create a `MapViewProxy` for interacting with the composable `MapView`.
+2. Create a `GeometryEditor` for creating and editing `Geometry`s.
+3. Create a `MapView` with MapView using `MapView(mapViewProxy = MapViewProxy, geometryEditor = GeometryEditor, ...).
+4. Start the `GeometryEditor` using `GeometryEditor.start(GeometryType)` to create a new geometry or `GeometryEditor.start(Geometry)` to edit an existing geometry.
     * If using the Geometry Editor to edit an existing geometry, the geometry must be retrieved from the graphics overlay being used to visualize the geometry prior to calling the start method. To do this:
-        * Use `MapView.identifyGraphicsOverlay(...)` to identify graphics at the location of a tap.
-        * Access the `MapView.identifyGraphicsOverlay(...)` results using `MapView.identifyGraphicsOverlayResult`.
+        * Use `MapViewProxy.identifyGraphicsOverlays(...)` to identify graphics at the location of a tap.
+        * Find the desired `IdentifyGraphicsOverlayResult` in the list returned by `MapViewProxy.identifyGraphicsOverlays(...)`.
         * Find the desired graphic in the `IdentifyGraphicsOverlayResult.graphics` list.
         * Access the geometry associated with the `Graphic` using `Graphic.geometry()` - this will be used in the `GeometryEditor.start(Geometry)` method.
-3. Create `VertexTool`, `ReticleVertexTool`, `FreehandTool`, or `ShapeTool` objects to define how the user interacts with the view to create or edit geometries, and set the geometry editor tool using `geometryEditor.setTool(geometryEditorTool)`.
-4. Edit a tool's `InteractionConfiguration` to set the `GeometryEditorScaleMode` to allow either uniform or stretch scale mode.
-5. Check to see if undo and redo are possible during an editing session using `GeometryEditor.canUndo()` and `GeometryEditor.canRedo()`. If it's possible, use `GeometryEditor.undo()` and `GeometryEditor.redo()`.
-6. Check whether the currently selected `GeometryEditorElement` can be deleted (`GeometryEditor.selectedElement.canDelete`). If the element can be deleted, delete using `GeometryEditor.deleteSelectedElement`.
-7. Call `GeometryEditor.stop()` to finish the editing session. The `GeometryEditor` does not automatically handle the visualization of a geometry output from an editing session. This must be done manually by propagating the geometry returned by `GeometryEditor.stop()` into a `Graphic` added to a `GraphicsOverlay`.
+5. Create `VertexTool`, `ReticleVertexTool`, `FreehandTool`, or `ShapeTool` objects to define how the user interacts with the view to create or edit geometries, and set the geometry editor tool using `geometryEditor.setTool(geometryEditorTool)`.
+6. Edit a tool's `InteractionConfiguration` to set the `GeometryEditorScaleMode` to allow either uniform or stretch scale mode.
+7. Check to see if undo and redo are possible during an editing session using `GeometryEditor.canUndo()` and `GeometryEditor.canRedo()`. If it's possible, use `GeometryEditor.undo()` and `GeometryEditor.redo()`.
+8. Check whether the currently selected `GeometryEditorElement` can be deleted (`GeometryEditor.selectedElement.canDelete`). If the element can be deleted, delete using `GeometryEditor.deleteSelectedElement`.
+9. Call `GeometryEditor.stop()` to finish the editing session. The `GeometryEditor` does not automatically handle the visualization of a geometry output from an editing session. This must be done manually by propagating the geometry returned by `GeometryEditor.stop()` into a `Graphic` added to a `GraphicsOverlay`.
     * To create a new `Graphic` in the `GraphicsOverlay`:
         * Using `Graphic(Geometry)`, create a new Graphic with the geometry returned by the `GeometryEditor.stop()` method.
         * Add the `Graphic` to the `GraphicsOverlay`'s list of `Graphic`s (i.e. `GraphicsOverlay.graphics.add(Graphic)`).
