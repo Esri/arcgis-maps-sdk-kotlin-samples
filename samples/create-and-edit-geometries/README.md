@@ -37,7 +37,7 @@ Use the control panel to undo or redo changes made to the geometry, delete a sel
 6. Check whether the currently selected `GeometryEditorElement` can be deleted (`GeometryEditor.selectedElement.canDelete`). If the element can be deleted, delete using `GeometryEditor.deleteSelectedElement`.
 7. Call `GeometryEditor.stop()` to finish the editing session. The `GeometryEditor` does not automatically handle the visualization of a geometry output from an editing session. This must be done manually by propagating the geometry returned by `GeometryEditor.stop()` into a `Graphic` added to a `GraphicsOverlay`.
     * To create a new `Graphic` in the `GraphicsOverlay`:
-        * Using `Graphic.Graphic(Geometry)`, create a new Graphic with the geometry returned by the `GeometryEditor.stop()` method.
+        * Using `Graphic(Geometry)`, create a new Graphic with the geometry returned by the `GeometryEditor.stop()` method.
         * Append the `Graphic` to the `GraphicsOverlay`'s `GraphicListModel` (i.e. `GraphicsOverlay.graphics.append(Graphic)`).
     * To update the geometry underlying an existing `Graphic` in the `GraphicsOverlay`:
         * Replace the existing `Graphic`'s `Geometry` property with the geometry returned by the `GeometryEditor.stop()` method using `Graphic.setGeometry(Geometry)`.
