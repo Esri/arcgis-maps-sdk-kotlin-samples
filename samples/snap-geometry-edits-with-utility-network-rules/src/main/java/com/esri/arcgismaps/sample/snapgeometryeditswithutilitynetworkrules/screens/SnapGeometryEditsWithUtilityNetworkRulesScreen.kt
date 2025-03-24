@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.snapgeometryeditswithutilitynetworkrules.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,9 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.snapgeometryeditswithutilitynetworkrules.components.SnapGeometryEditsWithUtilityNetworkRulesViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.snapgeometryeditswithutilitynetworkrules.components.SnapGeometryEditsWithUtilityNetworkRulesViewModel
 
 /**
  * Main screen layout for the sample app
@@ -57,27 +58,32 @@ fun SnapGeometryEditsWithUtilityNetworkRulesScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
             ) {
-                HorizontalDivider()
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.Absolute.Left
-                ) {
-                    Text(text = "Feature selected:", fontWeight = FontWeight.Bold)
+                if (mapViewModel.isEditButtonEnabled.collectAsState().value) {
+                    Column(
+                        modifier = Modifier.animateContentSize()
+                    ) {
+                        HorizontalDivider()
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.Absolute.Left
+                        ) {
+                            Text(text = "Feature selected:", fontWeight = FontWeight.Bold)
+                        }
+                        HorizontalDivider()
+                        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            Text(text = "AssetGroup: ")
+                            Text(text = mapViewModel.assetGroupNameState.collectAsState().value)
+                        }
+                        HorizontalDivider()
+                        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            Text(text = "AssetType: ")
+                            Text(text = mapViewModel.assetTypeNameState.collectAsState().value)
+                        }
+                    }
                 }
-                HorizontalDivider()
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(text = "AssetGroup: ")
-                    Text(text = mapViewModel.assetGroupNameState.collectAsState().value)
-                }
-                HorizontalDivider()
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(text = "AssetType: ")
-                    Text(text = mapViewModel.assetTypeNameState.collectAsState().value)
-                }
-
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
@@ -90,7 +96,7 @@ fun SnapGeometryEditsWithUtilityNetworkRulesScreen(sampleName: String) {
                 )
                 SnapSourcesPanel(
                     snapSourcePropertyList = mapViewModel.snapSourcePropertyList.collectAsState(),
-                    onSnapSourcePropertyChanged = mapViewModel::updateSnapSourceProperty,
+                    onSnapSourcePropertyChanged = mapViewModel::setSnapSourceCheckedValue,
                 )
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     IconButton(

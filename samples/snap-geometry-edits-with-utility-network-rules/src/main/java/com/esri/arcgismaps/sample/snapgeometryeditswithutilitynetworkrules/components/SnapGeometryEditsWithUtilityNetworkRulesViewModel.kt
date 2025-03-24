@@ -209,9 +209,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
             }
 
             // Hide the selected feature
-            if (feature.featureTable?.layer is FeatureLayer) {
-                (feature.featureTable!!.layer as FeatureLayer).setFeatureVisible(feature, false)
-            }
+            (feature.featureTable!!.layer as? FeatureLayer)?.setFeatureVisible(feature, false)
 
             // Start the geometry editor and center the map underneath the reticle
             feature.geometry?.let { initialGeometry ->
@@ -316,6 +314,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                         messageDialogVM.showMessageDialog("Error creating UtilityElement")
                         return@launch
                     }
+                }
             }
         }
     }
@@ -396,7 +395,6 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                                 }
                             }
                         }
-                        }
                     }
                 }
             }
@@ -470,7 +468,12 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                 application.getString(R.string.device_layer_name)
             ) as ArcGISFeatureTable
         )
-        deviceLayer.load().getOrThrow()
+        deviceLayer.load().getOrElse {
+            messageDialogVM.showMessageDialog(
+                "Error loading pipeline layer",
+                it.message.toString()
+            )
+        }
         val excessFlowValveName = application.getString(R.string.excess_flow_valve_name)
         val controllableTeeName = application.getString(R.string.controllable_tee_name)
         deviceLayer.subtypeSublayers.filter { sublayer ->

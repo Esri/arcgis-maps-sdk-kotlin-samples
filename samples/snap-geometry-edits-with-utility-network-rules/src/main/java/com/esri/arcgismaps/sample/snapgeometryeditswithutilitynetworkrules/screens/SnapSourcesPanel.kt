@@ -63,7 +63,7 @@ fun SnapSourcesPanel(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        bitmap = ssp.swatch.bitmap.asImageBitmap(),
+                        bitmap = snapSourceProperty.swatch.bitmap.asImageBitmap(),
                         contentDescription = "Symbol image"
                     )
                     Switch(
@@ -76,7 +76,7 @@ fun SnapSourcesPanel(
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
                         style = SampleTypography.bodyMedium,
-                        text = "${ssp.name} (${ssp.snapSourceSettings.ruleBehavior})"
+                        text = "${snapSourceProperty.name} (${snapSourceProperty.snapSourceSettings.ruleBehavior})"
                     )
                 }
             }
