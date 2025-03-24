@@ -171,7 +171,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
 
                 // Set the utility network on the map and load it
                 arcGISMap.utilityNetworks.add(geodatabase.utilityNetworks.first())
-                arcGISMap.utilityNetworks[0].load().onFailure {
+                arcGISMap.utilityNetworks.first().load().onFailure {
                     messageDialogVM.showMessageDialog(
                         "Error loading utility network", it.message.toString()
                     )
@@ -201,7 +201,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                 (feature.featureTable as GeodatabaseFeatureTable).layerInfo?.drawingInfo?.renderer?.getSymbol(
                     feature
                 )
-            with(geometryEditor.tool.style) {
+            geometryEditor.tool.style.apply {
                 vertexSymbol = symbol
                 feedbackVertexSymbol = symbol
                 selectedVertexSymbol = symbol
@@ -306,20 +306,16 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                     (feature.featureTable?.layer as FeatureLayer).selectFeature(feature)
 
                     // Create a utility element for the selected feature using the utility network
-                    val element = arcGISMap.utilityNetworks[0].createElementOrNull(feature)
-                    if (element == null) {
-                        messageDialogVM.showMessageDialog(
-                            "Error creating UtilityElement"
-                        )
+                    arcGISMap.utilityNetworks.first().createElementOrNull(feature)?.let { element ->
+                        // Update values for UI based on the selected feature
+                        _assetGroupNameState.value = element.assetGroup.name
+                        _assetTypeNameState.value = element.assetType.name
+                        _isEditButtonEnabled.value = true
+                        setSnapSettings(element.assetType)
+                    } ?: run {
+                        messageDialogVM.showMessageDialog("Error creating UtilityElement")
                         return@launch
                     }
-
-                    // Update values for UI based on the selected feature
-                    _assetGroupNameState.value = element.assetGroup.name
-                    _assetTypeNameState.value = element.assetType.name
-                    _isEditButtonEnabled.value = true
-                    setSnapSettings(element.assetType)
-                }
             }
         }
     }
@@ -332,15 +328,16 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         // Get the snap rules associated with the asset type
         val snapRules = SnapRules.create(arcGISMap.utilityNetworks.first(), assetType).getOrThrow()
 
-        // Synchronize the snap source collection with the map's operational layers using the snap
-        // rules. Setting SnapSourceEnablingBehavior.SetFromRules will enable snapping for the
-        // layers and sublayers specified in the snap rules.
-        geometryEditor.snapSettings.syncSourceSettings(snapRules, SnapSourceEnablingBehavior.SetFromRules)
+        geometryEditor.snapSettings.apply {
+            // Synchronize the snap source collection with the map's operational layers using the snap
+            // rules. Setting SnapSourceEnablingBehavior.SetFromRules will enable snapping for the
+            // layers and sublayers specified in the snap rules.
+            syncSourceSettings(snapRules, SnapSourceEnablingBehavior.SetFromRules)
 
-        // Enable snapping for the graphics overlay as this will not be affected by the given
-        // SnapSourceEnablingBehavior.setFromRules
-        geometryEditor.snapSettings.sourceSettings.first { sss -> sss.source == graphicsOverlay }
-            .isEnabled = true
+            // Enable snapping for the graphics overlay as this will not be affected by the given
+            // SnapSourceEnablingBehavior.setFromRules
+            sourceSettings.first { sss -> sss.source == graphicsOverlay }.isEnabled = true
+        }
 
         updateSnapSourceList()
     }
@@ -350,7 +347,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
      * Updates the enabled value of the SnapSourceSettings object at the given index and rebuilds
      * the snap source list.
      */
-    fun updateSnapSourceProperty(checkedValue: Boolean, index: Int) {
+    fun setSnapSourceCheckedValue(checkedValue: Boolean, index: Int) {
         // Set new value into appropriate property via index
         _snapSourcePropertyList.value[index].snapSourceSettings.isEnabled = checkedValue
 
@@ -376,32 +373,29 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
             geometryEditor.snapSettings.sourceSettings.forEach { sourceSettings ->
                 when (sourceSettings.source) {
                     is GraphicsOverlay -> {
-                        val prop = SnapSourceProperty(
-                            (sourceSettings.source as GraphicsOverlay).id,
-                            symbolSwatches[sourceSettings.ruleBehavior]!!,
-                            sourceSettings)
-                        add(prop)
+                        symbolSwatches[sourceSettings.ruleBehavior]?.let { swatch ->
+                            add(SnapSourceProperty((sourceSettings.source as GraphicsOverlay).id, swatch, sourceSettings))
+                        }
 
                         // Set the appropriate symbol for the layer based on the SnapRuleBehavior.
                         graphicsOverlay.renderer = SimpleRenderer(symbols[sourceSettings.ruleBehavior])
                     }
                     is SubtypeFeatureLayer -> {
                         sourceSettings.childSourceSettings.forEach { childSourceSettings ->
-                            when ((childSourceSettings.source as SubtypeSublayer).name) {
-                                distributionPipeName, servicePipeLayerName -> {
-                                    add(
-                                        SnapSourceProperty(
-                                            (childSourceSettings.source as SubtypeSublayer).name,
-                                            symbolSwatches[childSourceSettings.ruleBehavior]!!,
-                                            childSourceSettings
-                                        )
-                                    )
+(childSourceSettings.source as? SubtypeSublayer)?.let { childSource ->
+                                when (childSource.name) {
+                                    distributionPipeName, servicePipeLayerName -> {
+                                        symbolSwatches[childSourceSettings.ruleBehavior]?.let { swatch ->
+                                            add(SnapSourceProperty(childSource.name, swatch, childSourceSettings))
+                                        }
 
-                                    // Set the appropriate symbol for the sublayer based on the SnapRuleBehavior.
-                                    (childSourceSettings.source as SubtypeSublayer).renderer =
-                                        SimpleRenderer(symbols[childSourceSettings.ruleBehavior])
+                                        // Set the appropriate symbol for the sublayer based on the SnapRuleBehavior.
+                                        childSource.renderer =
+                                            SimpleRenderer(symbols[childSourceSettings.ruleBehavior])
+                                    }
                                 }
                             }
+                        }
                         }
                     }
                 }
@@ -414,14 +408,9 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
      * feature and layer and any UI backing variables.
      */
     private fun resetSelections() {
-        selectedFeature?.let { feature ->
-            if (feature.featureTable?.layer is FeatureLayer)
-            {
-                // Clear the existing selection and show the selected feature
-                (feature.featureTable?.layer as FeatureLayer).clearSelection()
-                (feature.featureTable?.layer as FeatureLayer).setFeatureVisible(feature, true)
-            }
-        }
+        // Clear the existing selection and show the selected feature                                      
+        (selectedFeature?.featureTable?.layer as? FeatureLayer)?.clearSelection()                          
+        (selectedFeature?.featureTable?.layer as? FeatureLayer)?.setFeatureVisible(selectedFeature!!, true)
 
         // Reset the selected feature and layer
         selectedFeature = null
@@ -449,7 +438,12 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         val pipeLayer = SubtypeFeatureLayer(
             geodatabase.getFeatureTable(pipelineLayerName) as ArcGISFeatureTable
         )
-        pipeLayer.load().getOrThrow()
+        pipeLayer.load().getOrElse {
+            messageDialogVM.showMessageDialog(
+                "Error loading pipeline layer",
+                it.message.toString()
+            )
+        }
         val distributionPipeName = application.getString(R.string.distribution_pipe_name)
         val servicePipeLayerName = application.getString(R.string.service_pipe_layer_name)
         pipeLayer.subtypeSublayers.forEach { sublayer ->

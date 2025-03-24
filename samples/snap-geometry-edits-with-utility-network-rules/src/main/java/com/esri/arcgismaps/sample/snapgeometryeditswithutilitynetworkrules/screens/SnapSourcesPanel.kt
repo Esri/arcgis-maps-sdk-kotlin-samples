@@ -57,7 +57,7 @@ fun SnapSourcesPanel(
                 Text(text = "Tap a point feature to edit")
             }
             for (index in snapSourcePropertyList.value.indices) {
-                val ssp = snapSourcePropertyList.value[index]
+                val snapSourceProperty = snapSourcePropertyList.value[index]
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
