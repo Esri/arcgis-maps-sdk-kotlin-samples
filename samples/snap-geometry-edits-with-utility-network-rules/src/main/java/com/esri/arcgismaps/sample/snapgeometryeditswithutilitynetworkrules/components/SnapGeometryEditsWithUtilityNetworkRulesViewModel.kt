@@ -314,6 +314,9 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                         messageDialogVM.showMessageDialog("Error creating UtilityElement")
                         return@launch
                     }
+
+                    // Start the editing session once feature is selected.
+                    editFeatureGeometry()
                 }
             }
         }
