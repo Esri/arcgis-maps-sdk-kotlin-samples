@@ -15,6 +15,7 @@ build/
 *.classpath
 .settings/
 .vscode
+*.salive
 
 # OS generated files #
 .DS_Store
@@ -25,3 +26,4 @@ build/
 Icon?
 ehthumbs.db
 Thumbs.db
+*.salive

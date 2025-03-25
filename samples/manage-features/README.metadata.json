@@ -1,0 +1,50 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Create, update, and delete features to manage a feature layer.",
+    "formal_name": "ManageFeatures",
+    "ignore": false,
+    "images": [
+        "manage-features.png"
+    ],
+    "keywords": [
+        "amend",
+        "attribute",
+        "create",
+        "delete",
+        "deletion",
+        "details",
+        "edit",
+        "editing",
+        "feature",
+        "feature layer",
+        "feature table",
+        "geodatabase",
+        "information",
+        "moving",
+        "online service",
+        "service",
+        "update",
+        "updating",
+        "value",
+        "Feature",
+        "FeatureEditResult",
+        "FeatureLayer",
+        "ServiceFeatureTable",
+        "ServiceGeodatabase"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Feature",
+        "FeatureEditResult",
+        "FeatureLayer",
+        "ServiceFeatureTable",
+        "ServiceGeodatabase"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/managefeatures/components/ManageFeaturesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/managefeatures/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/managefeatures/screens/ManageFeaturesScreen.kt"
+    ],
+    "title": "Manage features"
+}
