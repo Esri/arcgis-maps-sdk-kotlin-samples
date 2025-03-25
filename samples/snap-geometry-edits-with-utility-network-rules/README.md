@@ -57,4 +57,4 @@ The [Naperville gas network](https://www.arcgis.com/home/item.html?id=0fd3a39660
 
 ## Tags
 
-edit, feature, geometry editor, reticle, graphics, layers, map, snapping, utility network
+edit, feature, geometry editor, graphics, layers, map, reticle, snapping, utility network
