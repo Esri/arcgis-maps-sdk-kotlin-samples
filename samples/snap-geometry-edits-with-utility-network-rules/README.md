@@ -38,11 +38,11 @@ To save your edits, press the save button.
 
 * FeatureLayer
 * Geometry
-* ReticleVertexTool
 * GeometryEditor
 * GeometryEditorStyle
 * GraphicsOverlay
 * MapView
+* ReticleVertexTool
 * SnapRuleBehavior
 * SnapRules
 * SnapSettings
