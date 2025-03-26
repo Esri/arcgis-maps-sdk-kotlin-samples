@@ -44,6 +44,9 @@ import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRealisticLightAndShadowsViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Main screen layout for the sample app.
@@ -52,7 +55,7 @@ import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRe
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
     val lightingOptionsState = mapViewModel.lightingOptionsState
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+    val noonOffset by mapViewModel.noonOffset.collectAsStateWithLifecycle()
     val lightingModes = listOf(
         LightingMode.LightAndShadows,
         LightingMode.Light,
@@ -126,10 +129,9 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                     )
                     Slider(
                         modifier = Modifier.weight(1f),
-                        value = sliderPosition,
+                        value = noonOffset,
                         onValueChange = {
-                            sliderPosition = it
-                            mapViewModel.setSunTime(it.toInt())
+                            mapViewModel.setSunTime(it)
                         },
                         // the range is -43200 (60 seconds * 60 minutes * 12 hours)
                         // to 43140 ((60 seconds * 60 minutes * 12 hours)  - 60 seconds),
