@@ -37,6 +37,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class ShowRealisticLightAndShadowsViewModel(application: Application) :
     AndroidViewModel(application) {
@@ -68,15 +69,14 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
         )
     }
 
-    // default time for sun position and the slider
-    val defaultTime = 15f * 60f * 60f // 15:00 in seconds since midnight
+    // noon in the timezone our center point is located with an arbitrary date
+    private val noon: ZonedDateTime = LocalDateTime.parse("2000-09-22T12:00:00").atZone(
+        ZoneId.of("US/Pacific"))
 
     // create a LightingOptionsState with default values that will be used by the scene view
     val lightingOptionsState = LightingOptionsState(
         mutableStateOf(
-            LocalDateTime.parse("2000-09-22T00:00:00").atZone(
-                ZoneId.of("US/Pacific")
-            ).plusSeconds(defaultTime.toLong()).toInstant()
+            noon.toInstant() // use noon as the default time
         ),
         mutableStateOf(LightingMode.LightAndShadows),
         mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
@@ -89,12 +89,10 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
 
     /**
      * Update the sun time of the lighting options state used by the scene view.
-     * Uses the range 0 seconds (12 am) to 86,340 seconds (11:59 pm).
+     * Uses offset in seconds since noon, which is a range from -43200 (12 am) to 43140 seconds (11:59 pm).
      */
     fun setSunTime(sunTime: Int) {
-        lightingOptionsState.sunTime.value = LocalDateTime.parse("2000-09-22T00:00:00").atZone(
-            ZoneId.of("US/Pacific")
-        ).plusSeconds(sunTime.toLong()).toInstant()
+        lightingOptionsState.sunTime.value = noon.plusSeconds(sunTime.toLong()).toInstant()
     }
 }
 

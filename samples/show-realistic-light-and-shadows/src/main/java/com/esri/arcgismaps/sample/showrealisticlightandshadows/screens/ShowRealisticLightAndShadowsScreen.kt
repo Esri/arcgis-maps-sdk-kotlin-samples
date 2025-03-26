@@ -52,7 +52,7 @@ import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRe
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
     val lightingOptionsState = mapViewModel.lightingOptionsState
-    var sliderPosition by remember { mutableFloatStateOf(mapViewModel.defaultTime) }
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
     val lightingModes = listOf(
         LightingMode.LightAndShadows,
         LightingMode.Light,
@@ -131,9 +131,10 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                             sliderPosition = it
                             mapViewModel.setSunTime(it.toInt())
                         },
-                        // the range is 0 to 86,340 seconds ((60 seconds * 60 minutes * 24 hours)  - 60 seconds),
-                        // which means 12 am to 11:59 pm.
-                        valueRange = 0f..86340f,
+                        // the range is -43200 (60 seconds * 60 minutes * 12 hours)
+                        // to 43140 ((60 seconds * 60 minutes * 12 hours)  - 60 seconds),
+                        // which means 12 am to 11:59 pm in offset from noon.
+                        valueRange = -43200f..43140f
                     )
                     Text(
                         text = "PM",
