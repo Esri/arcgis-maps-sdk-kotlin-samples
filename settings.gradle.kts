@@ -13,13 +13,45 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+val localProperties = java.util.Properties().apply {
+    val localPropertiesFile = file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
+}
+
+// The Artifactory credentials for the ArcGIS Maps SDK for Kotlin repository.
+// First look for the credentials provided via command line (for CI builds), if not found,
+// take the one defined in local.properties.
+// CI builds pass -PartifactoryURL=${ARTIFACTORY_URL} -PartifactoryUser=${ARTIFACTORY_USER} -PartifactoryPassword=${ARTIFACTORY_PASSWORD}
+val artifactoryUrl: String =
+    providers.gradleProperty("artifactoryUrl").orNull
+        ?: localProperties.getProperty("artifactoryUrl")
+        ?: throw IllegalStateException("artifactoryUrl must be set either via command line or in local.properties")
+
+val artifactoryUsername: String =
+    providers.gradleProperty("artifactoryUsername").orNull
+        ?: localProperties.getProperty("artifactoryUsername")
+        ?: throw IllegalStateException("artifactoryUsername must be set either via command line or in local.properties")
+
+val artifactoryPassword: String =
+    providers.gradleProperty("artifactoryPassword").orNull
+        ?: localProperties.getProperty("artifactoryPassword")
+        ?: throw IllegalStateException("artifactoryPassword must be set either via command line or in local.properties")
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
         maven { url = uri("https://esri.jfrog.io/artifactory/arcgis") }
-        maven { url = uri("https://olympus.esri.com/artifactory/arcgisruntime-repo/") }
+        maven {
+            url = java.net.URI(artifactoryUrl)
+            credentials {
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+        }
         maven(url = "https://jitpack.io")
     }
 }
