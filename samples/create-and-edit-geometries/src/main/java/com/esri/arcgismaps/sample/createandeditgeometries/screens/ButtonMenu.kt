@@ -63,6 +63,8 @@ fun ButtonMenu(
     onRedoButtonClick: () -> Unit,
     onToolChange: (CreateAndEditGeometriesViewModel.ToolType) -> Unit,
     selectedTool: CreateAndEditGeometriesViewModel.ToolType,
+    onScaleOptionChange: (CreateAndEditGeometriesViewModel.ScaleOption) -> Unit,
+    selectedScaleOption: CreateAndEditGeometriesViewModel.ScaleOption,
     currentGeometryType: GeometryType
 ) {
     val rowModifier = Modifier
@@ -76,6 +78,7 @@ fun ButtonMenu(
         var drawMenuExpanded by remember { mutableStateOf(false) }
         var deleteMenuExpanded by remember { mutableStateOf(false) }
         var toolMenuExpanded by remember { mutableStateOf(false) }
+        var scaleOptionsMenuExpanded by remember { mutableStateOf(false) }
         val canChangeTool =
             (currentGeometryType == GeometryType.Polyline || currentGeometryType == GeometryType.Polygon)
         Box {
@@ -189,6 +192,39 @@ fun ButtonMenu(
                                 text = it.name,
                                 fontWeight =
                                 if (selectedTool == it) {
+                                    FontWeight.Bold
+                                } else {
+                                    FontWeight.Normal
+                                }
+                            )
+                        }
+                    )
+                }
+            }
+        }
+        Box {
+            val scaleOptionItems = remember { CreateAndEditGeometriesViewModel.ScaleOption.entries }
+            IconButton(
+                onClick = { scaleOptionsMenuExpanded = !scaleOptionsMenuExpanded }
+            ) {
+                Icon(imageVector = vector.vectorResource(R.drawable.vertex_move_24), contentDescription = "Change Scale Options")
+            }
+            DropdownMenu(
+                expanded = scaleOptionsMenuExpanded,
+                onDismissRequest = { scaleOptionsMenuExpanded = false }
+            ) {
+                scaleOptionItems.forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            onScaleOptionChange(it)
+                            // dismiss the dropdown when any item is selected
+                            scaleOptionsMenuExpanded = false
+                        },
+                        text = {
+                            Text(
+                                text = it.name,
+                                fontWeight =
+                                if (selectedScaleOption == it) {
                                     FontWeight.Bold
                                 } else {
                                     FontWeight.Normal

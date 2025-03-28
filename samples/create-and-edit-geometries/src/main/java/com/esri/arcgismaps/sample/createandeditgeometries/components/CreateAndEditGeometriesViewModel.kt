@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
+import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
@@ -43,9 +44,11 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.FreehandTool
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorScaleMode
 import com.arcgismaps.mapping.view.geometryeditor.ReticleVertexTool
 import com.arcgismaps.mapping.view.geometryeditor.ShapeTool
 import com.arcgismaps.mapping.view.geometryeditor.ShapeToolType
+import com.arcgismaps.mapping.view.geometryeditor.VertexTool
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,7 +82,7 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     val geometryEditor = GeometryEditor()
 
     /**
-     * Enum of GeometryEditorTool types
+     * Enum of GeometryEditorTool types.
      */
     enum class ToolType {
         Vertex,
@@ -91,7 +94,15 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
         Triangle
     }
 
-    private val vertexTool = geometryEditor.tool // use the default tool, which is vertex
+    /**
+     * Enum of GeometryEditorScaleMode types.
+     */
+    enum class ScaleOption {
+        Stretch,
+        Uniform
+    }
+
+    private val vertexTool = VertexTool()
     private val reticleVertexTool = ReticleVertexTool()
     private val freehandTool = FreehandTool()
     private val arrowTool = ShapeTool(ShapeToolType.Arrow)
@@ -104,6 +115,9 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
 
     private val _currentGeometryType = MutableStateFlow<GeometryType>(GeometryType.Unknown)
     val currentGeometryType = _currentGeometryType.asStateFlow()
+
+    private val _currentScaleOption = MutableStateFlow(ScaleOption.Stretch)
+    val currentScaleOption = _currentScaleOption.asStateFlow()
 
     // create symbols for displaying new geometries
     private val pointSymbol = SimpleMarkerSymbol(
@@ -262,6 +276,27 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
     }
 
     /**
+     * Changes the scale option of the current geometry editor tool to the specified scale option.
+     */
+    fun changeScaleOption(scaleOption: ScaleOption) {
+        val newScaleOption =
+            when (scaleOption) {
+                ScaleOption.Stretch -> GeometryEditorScaleMode.Stretch
+                ScaleOption.Uniform -> GeometryEditorScaleMode.Uniform
+            }
+
+        // update the scale option setting in the configurations of the tools that support it
+        vertexTool.configuration.scaleMode = newScaleOption
+        freehandTool.configuration.scaleMode = newScaleOption
+        arrowTool.configuration.scaleMode = newScaleOption
+        ellipseTool.configuration.scaleMode = newScaleOption
+        rectangleTool.configuration.scaleMode = newScaleOption
+        triangleTool.configuration.scaleMode = newScaleOption
+
+        _currentScaleOption.value = scaleOption
+    }
+
+    /**
      * Creates a graphic from the geometry and adds it to the GraphicsOverlay.
      */
     private fun createGraphic() {
@@ -313,6 +348,13 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
                         // start the geometry editor with the identified graphic
                         identifiedGraphic.geometry?.let {
                             geometryEditor.start(it)
+                            when (it) {
+                                is Envelope -> _currentGeometryType.value = GeometryType.Envelope
+                                is Polygon -> _currentGeometryType.value = GeometryType.Polygon
+                                is Polyline -> _currentGeometryType.value = GeometryType.Polyline
+                                is Multipoint -> _currentGeometryType.value = GeometryType.Multipoint
+                                is Point -> _currentGeometryType.value = GeometryType.Point
+                            }
                         }
                     }
                 }

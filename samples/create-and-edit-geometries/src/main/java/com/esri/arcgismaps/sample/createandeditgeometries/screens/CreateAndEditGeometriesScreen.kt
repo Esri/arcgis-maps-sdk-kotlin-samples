@@ -69,6 +69,8 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     onRedoButtonClick = mapViewModel::redoEdit,
                     onToolChange = mapViewModel::changeTool,
                     selectedTool = mapViewModel.selectedTool.collectAsStateWithLifecycle().value,
+                    onScaleOptionChange = mapViewModel::changeScaleOption,
+                    selectedScaleOption = mapViewModel.currentScaleOption.collectAsStateWithLifecycle().value,
                     currentGeometryType = mapViewModel.currentGeometryType.collectAsStateWithLifecycle().value
                 )
                 mapViewModel.messageDialogVM.apply {
