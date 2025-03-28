@@ -22,7 +22,7 @@
       "MapView"
   ],
   "language": "kotlin",
-  "redirect_from": "",
+  "redirect_from": ["/kotlin/sample-code/sketch-on-map/"],
   "relevant_apis": [
       "Geometry",
       "GeometryEditor",
