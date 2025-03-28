@@ -44,9 +44,6 @@ import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showrealisticlightandshadows.components.ShowRealisticLightAndShadowsViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Main screen layout for the sample app.
@@ -54,8 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
-    val lightingOptionsState by mapViewModel.lightingOptionsState
-    val noonOffset by mapViewModel.noonOffset.collectAsStateWithLifecycle()
+    val lightingOptionsState = mapViewModel.lightingOptionsState
+    var noonOffset by remember { mutableFloatStateOf(0f) }
     val lightingModes = listOf(
         LightingMode.LightAndShadows,
         LightingMode.Light,
@@ -114,7 +111,7 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                 SceneView(
                     mapViewModel.arcGISScene,
                     modifier = Modifier.weight(1f),
-                    sunTime = lightingOptionsState.sunTime.value,
+                    sunTime = mapViewModel.noon.plusSeconds(noonOffset.toLong()).toInstant(),
                     sunLighting = lightingOptionsState.sunLighting.value,
                     ambientLightColor = lightingOptionsState.ambientLightColor.value,
                     atmosphereEffect = lightingOptionsState.atmosphereEffect.value,
@@ -131,8 +128,7 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                         modifier = Modifier.weight(1f),
                         value = noonOffset,
                         onValueChange = {
-                            mapViewModel.setSunTime(it)
-                            //lightingOptionsState.sunTime.value = mapViewModel.noon.plusSeconds(noonOffset.toLong()).toInstant()
+                            noonOffset = it
                         },
                         // the range is -43200 (60 seconds * 60 minutes * 12 hours)
                         // to 43140 ((60 seconds * 60 minutes * 12 hours)  - 60 seconds),

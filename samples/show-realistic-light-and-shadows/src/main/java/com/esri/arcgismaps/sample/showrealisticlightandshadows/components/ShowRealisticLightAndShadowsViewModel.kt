@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.showrealisticlightandshadows.components
 
 import android.app.Application
-import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -35,9 +34,6 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.LightingMode
 import com.arcgismaps.mapping.view.SpaceEffect
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -76,40 +72,24 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
     val noon: ZonedDateTime = LocalDateTime.parse("2000-09-22T12:00:00").atZone(
         ZoneId.of("US/Pacific"))
 
-    private val _noonOffset = MutableStateFlow<Float>(0f)
-    var noonOffset = _noonOffset.asStateFlow()
-
     // create a LightingOptionsState with default values that will be used by the scene view
-    val lightingOptionsState = mutableStateOf(LightingOptionsState(
-        mutableStateOf(
-            //noon.plusSeconds(_noonOffset.value.toLong()).toInstant() // use noon as the default time
-            noon.toInstant()
-        ),
+    val lightingOptionsState = LightingOptionsState(
         mutableStateOf(LightingMode.LightAndShadows),
         mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
         mutableStateOf(AtmosphereEffect.HorizonOnly),
         mutableStateOf(SpaceEffect.Stars)
     )
-    )
+
 
     // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    /**
-     * Update the sun time of the lighting options state used by the scene view.
-     * Uses offset in seconds since noon, which is a range from -43200 (12 am) to 43140 seconds (11:59 pm).
-     */
-    fun setSunTime(sunTime: Float) {
-        _noonOffset.value = sunTime
-        //lightingOptionsState.sunTime.value = noon.plusSeconds(sunTime.toLong()).toInstant()
-    }
 }
 
 /**
  * Represents various lighting options that can be used to configure a composable [SceneView].
  */
 data class LightingOptionsState(
-    val sunTime: MutableState<Instant>,
     val sunLighting: MutableState<LightingMode>,
     val ambientLightColor: MutableState<Color>,
     val atmosphereEffect: MutableState<AtmosphereEffect>,
