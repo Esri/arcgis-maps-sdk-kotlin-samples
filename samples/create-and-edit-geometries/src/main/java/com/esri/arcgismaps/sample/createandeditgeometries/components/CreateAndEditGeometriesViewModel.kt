@@ -272,6 +272,15 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
             ToolType.Rectangle -> geometryEditor.tool = rectangleTool
             ToolType.Triangle -> geometryEditor.tool = triangleTool
         }
+
+        // enable snapping and haptic feedback on snapping for reticle tool only
+        val enableSnappingAndHaptics = (toolType == ToolType.ReticleVertex)
+        geometryEditor.snapSettings.isEnabled = enableSnappingAndHaptics
+        geometryEditor.snapSettings.isHapticFeedbackEnabled = enableSnappingAndHaptics
+        geometryEditor.snapSettings.sourceSettings.forEach {
+            it.isEnabled = enableSnappingAndHaptics
+        }
+
         _selectedTool.value = toolType
     }
 
