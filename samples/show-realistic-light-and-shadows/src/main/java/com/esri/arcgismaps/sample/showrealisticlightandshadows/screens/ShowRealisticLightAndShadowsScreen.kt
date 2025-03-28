@@ -54,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
-    val lightingOptionsState = mapViewModel.lightingOptionsState
+    val lightingOptionsState by mapViewModel.lightingOptionsState
     val noonOffset by mapViewModel.noonOffset.collectAsStateWithLifecycle()
     val lightingModes = listOf(
         LightingMode.LightAndShadows,
@@ -132,6 +132,7 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                         value = noonOffset,
                         onValueChange = {
                             mapViewModel.setSunTime(it)
+                            //lightingOptionsState.sunTime.value = mapViewModel.noon.plusSeconds(noonOffset.toLong()).toInstant()
                         },
                         // the range is -43200 (60 seconds * 60 minutes * 12 hours)
                         // to 43140 ((60 seconds * 60 minutes * 12 hours)  - 60 seconds),

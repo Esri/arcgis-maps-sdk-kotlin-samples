@@ -73,20 +73,23 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
     }
 
     // noon in the timezone our center point is located with an arbitrary date
-    private val noon: ZonedDateTime = LocalDateTime.parse("2000-09-22T12:00:00").atZone(
+    val noon: ZonedDateTime = LocalDateTime.parse("2000-09-22T12:00:00").atZone(
         ZoneId.of("US/Pacific"))
+
     private val _noonOffset = MutableStateFlow<Float>(0f)
     var noonOffset = _noonOffset.asStateFlow()
 
     // create a LightingOptionsState with default values that will be used by the scene view
-    val lightingOptionsState = LightingOptionsState(
+    val lightingOptionsState = mutableStateOf(LightingOptionsState(
         mutableStateOf(
-            noon.toInstant() // use noon as the default time
+            //noon.plusSeconds(_noonOffset.value.toLong()).toInstant() // use noon as the default time
+            noon.toInstant()
         ),
         mutableStateOf(LightingMode.LightAndShadows),
         mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
         mutableStateOf(AtmosphereEffect.HorizonOnly),
         mutableStateOf(SpaceEffect.Stars)
+    )
     )
 
     // create a message dialog view model for handling error messages
@@ -98,7 +101,7 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
      */
     fun setSunTime(sunTime: Float) {
         _noonOffset.value = sunTime
-        lightingOptionsState.sunTime.value = noon.plusSeconds(sunTime.toLong()).toInstant()
+        //lightingOptionsState.sunTime.value = noon.plusSeconds(sunTime.toLong()).toInstant()
     }
 }
 
