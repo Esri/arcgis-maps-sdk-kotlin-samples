@@ -28,9 +28,9 @@ To save your edits, press the save button.
 4. Create a `GeometryEditor`, set `GeometryEditor.tool` to a `ReticleVertexTool`, and connect the editor to the map view.
 5. When editing a feature:
 
-    a. Call `SnapRules.CreateAsync(UtilityNetwork, UtilityAssetType)` to get the snap rules associated with a given `UtilityAssetType`.
+    a. Call `SnapRules.create(UtilityNetwork, UtilityAssetType)` to get the snap rules associated with a given `UtilityAssetType`.
 
-    b. Use `SyncSourceSettings(SnapRules, SnapSourceEnablingBehavior.setFromRules)` to populate the `SnapSettings.SourceSettings` with `SnapSourceSettings` enabling the sources with rules.
+    b. Use `syncSourceSettings(SnapRules, SnapSourceEnablingBehavior.setFromRules)` to populate the `snapSettings.sourceSettings` with `SnapSourceSettings` enabling the sources with rules.
 
 6. Start the geometry editor with an existing geometry or `GeometryType.Point`.
 

@@ -81,8 +81,7 @@ fun SnapSourcesPanel(
             }
         }
 
-        for (index in snapSourcePropertyList.indices) {
-            val snapSourceProperty = snapSourcePropertyList[index]
+        snapSourcePropertyList.forEachIndexed { index, snapSourceProperty ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

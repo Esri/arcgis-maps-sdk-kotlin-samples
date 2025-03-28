@@ -209,7 +209,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
             }
 
             // Hide the selected feature
-            (feature.featureTable!!.layer as? FeatureLayer)?.setFeatureVisible(feature, false)
+            (feature.featureTable?.layer as? FeatureLayer)?.setFeatureVisible(feature, false)
 
             // Start the geometry editor and center the map underneath the reticle
             feature.geometry?.let { initialGeometry ->
@@ -323,8 +323,8 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
     }
 
     /**
-     * Creates SnapRules based on the given asset type, synchronizes the snap sources using these
-     * rules, then updates the snap sources list used by the UI
+     * Creates [SnapRules] based on the given asset type, synchronizes the snap sources using these
+     * rules, then updates the snap sources list used by the UI.
      */
     private suspend fun setSnapSettings(assetType: UtilityAssetType) {
         // Get the snap rules associated with the asset type
@@ -338,7 +338,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
 
             // Enable snapping for the graphics overlay as this will not be affected by the given
             // SnapSourceEnablingBehavior.setFromRules
-            sourceSettings.first { sss -> sss.source == graphicsOverlay }.isEnabled = true
+            sourceSettings.first { it.source == graphicsOverlay }.isEnabled = true
         }
 
         updateSnapSourceList()
@@ -346,7 +346,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
 
 
     /**
-     * Updates the enabled value of the SnapSourceSettings object at the given index and rebuilds
+     * Updates the enabled value of the [SnapSourceSettings] object at the given index and rebuilds
      * the snap source list.
      */
     fun setSnapSourceCheckedValue(checkedValue: Boolean, index: Int) {
@@ -356,19 +356,16 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         updateSnapSourceList()
     }
 
-    /*
+    /**
      * Updates the lists used by the UI to show SnapSourceSettings information.
     */
     private fun updateSnapSourceList() {
-        // Get a new list of current properties from snapSettings
-        val newSnapSourceList = currentSnapSourcePropertyList()
-
-        // Update the backing list
-        _snapSourcePropertyList.value = newSnapSourceList
+        // Update the backing list with a new list of current properties from snapSettings
+        _snapSourcePropertyList.value = currentSnapSourcePropertyList()
     }
 
     /**
-     * Returns a list of SnapSourceProperty objects based on the current snap sources.
+     * Returns a list of [SnapSourceProperty] objects based on the current snap sources.
      */
     private fun currentSnapSourcePropertyList(): List<SnapSourceProperty> {
         return buildList {
@@ -410,8 +407,10 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
      */
     private fun resetSelections() {
         // Clear the existing selection and show the selected feature                                      
-        (selectedFeature?.featureTable?.layer as? FeatureLayer)?.clearSelection()                          
-        (selectedFeature?.featureTable?.layer as? FeatureLayer)?.setFeatureVisible(selectedFeature!!, true)
+        (selectedFeature?.featureTable?.layer as? FeatureLayer)?.let { 
+            it.clearSelection()
+            it.setFeatureVisible(selectedFeature!!, true)
+        }
 
         // Reset the selected feature and layer
         selectedFeature = null
@@ -479,6 +478,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         }
         val excessFlowValveName = application.getString(R.string.excess_flow_valve_name)
         val controllableTeeName = application.getString(R.string.controllable_tee_name)
+        // Hide all sublayers that aren't excess flow valves or controllable tees
         deviceLayer.subtypeSublayers.filter { sublayer ->
             sublayer.name != excessFlowValveName && sublayer.name != controllableTeeName
         }.forEach { sublayerToHide ->
