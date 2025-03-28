@@ -36,7 +36,12 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun CreateAndEditGeometriesScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: CreateAndEditGeometriesViewModel = viewModel()
-
+    val selectedElement = mapViewModel.geometryEditor.selectedElement.collectAsStateWithLifecycle().value
+    val canDeleteSelectedElement =
+        when (selectedElement) {
+            null -> false
+            else -> selectedElement.canDelete
+        }
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -59,7 +64,7 @@ fun CreateAndEditGeometriesScreen(sampleName: String) {
                     isGeometryEditorStarted = mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle().value,
                     canGeometryEditorUndo = mapViewModel.geometryEditor.canUndo.collectAsStateWithLifecycle().value,
                     canGeometryEditorRedo = mapViewModel.geometryEditor.canRedo.collectAsStateWithLifecycle().value,
-                    canDeleteSelectedGeometry = mapViewModel.geometryEditor.selectedElement.collectAsStateWithLifecycle().value != null,
+                    canDeleteSelectedElement = canDeleteSelectedElement,
                     onStartEditingButtonClick = mapViewModel::startEditor,
                     onStopEditingButtonClick = mapViewModel::stopEditor,
                     onDiscardEditsButtonClick = mapViewModel::discardEdits,

@@ -53,7 +53,7 @@ fun ButtonMenu(
     isGeometryEditorStarted: Boolean,
     canGeometryEditorUndo: Boolean,
     canGeometryEditorRedo: Boolean,
-    canDeleteSelectedGeometry: Boolean,
+    canDeleteSelectedElement: Boolean,
     onStartEditingButtonClick: (GeometryType) -> Unit,
     onStopEditingButtonClick: () -> Unit,
     onDiscardEditsButtonClick: () -> Unit,
@@ -152,7 +152,7 @@ fun ButtonMenu(
             ) {
                 DropdownMenuItem(
                     text = { Text("Delete Selected Element") },
-                    enabled = canDeleteSelectedGeometry,
+                    enabled = canDeleteSelectedElement,
                     onClick = {
                         onDeleteSelectedElementButtonClick()
                         deleteMenuExpanded = false
