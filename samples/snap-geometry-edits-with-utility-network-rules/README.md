@@ -25,7 +25,7 @@ To save your edits, press the save button.
 1. Create a map with `LoadSettings.FeatureTilingMode` set to `EnabledWithFullResolutionWhenSupported`.
 2. Create a `Geodatabase` using the mobile geodatabase file location.
 3. Display `Geodatabase.featureTables` on the map using subtype feature layers.
-4. Create a `GeometryEditor`, set `GeometryEditor.tool` to a `ReticleVertexTool`, and connect the editor to the map view.
+4. Create a `GeometryEditor`, create a `ReticleVertexTool` and set this onto `GeometryEditor.tool`, and connect the editor to the map view.
 5. When editing a feature:
 
     a. Call `SnapRules.create(UtilityNetwork, UtilityAssetType)` to get the snap rules associated with a given `UtilityAssetType`.

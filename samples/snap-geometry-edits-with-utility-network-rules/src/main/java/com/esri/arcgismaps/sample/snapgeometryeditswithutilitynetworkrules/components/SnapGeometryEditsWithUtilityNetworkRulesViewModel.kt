@@ -446,6 +446,8 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         }
         val distributionPipeName = application.getString(R.string.distribution_pipe_name)
         val servicePipeLayerName = application.getString(R.string.service_pipe_layer_name)
+        //  Set the visibility of the sublayers and store the default renderer for the distribution
+        //  and service pipe layers.
         pipeLayer.subtypeSublayers.forEach { sublayer ->
             when (sublayer.name) {
                 distributionPipeName -> {
