@@ -6,21 +6,13 @@
     <application><activity
             android:name=".DownloadActivity"
             android:exported="true"
-<<<<<<<< HEAD:samples/add-feature-layers/src/main/AndroidManifest.xml
             android:label="@string/add_feature_layers_app_name">
-========
-            android:label="@string/display_dimensions_app_name">
->>>>>>>> main:samples/display-dimensions/src/main/AndroidManifest.xml
             
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
-<<<<<<<< HEAD:samples/add-feature-layers/src/main/AndroidManifest.xml
             android:label="@string/add_feature_layers_app_name">
-========
-            android:label="@string/display_dimensions_app_name">
->>>>>>>> main:samples/display-dimensions/src/main/AndroidManifest.xml
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
