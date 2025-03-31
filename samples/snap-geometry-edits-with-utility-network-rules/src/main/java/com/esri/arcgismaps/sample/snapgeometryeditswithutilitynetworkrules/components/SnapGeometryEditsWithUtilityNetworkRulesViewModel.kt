@@ -56,7 +56,6 @@ import com.arcgismaps.utilitynetworks.UtilityAssetType
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.snapgeometryeditswithutilitynetworkrules.R
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
@@ -108,7 +107,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         SnapRuleBehavior.RulesLimitSnapping to rulesLimitSymbol,
         SnapRuleBehavior.None to noneSymbol
     )
-    private val symbolSwatches = mutableMapOf<SnapRuleBehavior, BitmapDrawable>()
+    private val symbolSwatches = mutableMapOf<SnapRuleBehavior, BitmapDrawable?>()
 
     // Save default renderers to reset the layers when a feature selection is cleared
     private var defaultDistributionRenderer: Renderer? = null
@@ -238,6 +237,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
             viewModelScope.launch {
                 (feature.featureTable as? GeodatabaseFeatureTable)?.updateFeature(feature)
                     ?.onFailure { error -> messageDialogVM.showMessageDialog(error) }
+            }
         }
 
         // Reset the selection
