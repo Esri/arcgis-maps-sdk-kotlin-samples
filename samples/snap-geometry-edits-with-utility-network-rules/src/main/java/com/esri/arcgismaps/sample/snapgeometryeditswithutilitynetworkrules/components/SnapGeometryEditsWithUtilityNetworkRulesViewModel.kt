@@ -89,9 +89,9 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
     // Hold references to the subtype sublayers for the distribution and service pipe layers
     private var distributionPipeLayer: SubtypeSublayer? = null
     private var servicePipeLayer: SubtypeSublayer? = null
-    private var pipelineLayerName = application.getString(R.string.pipeline_layer_name)
-    private var distributionPipeName = application.getString(R.string.distribution_pipe_name)
-    private var servicePipeLayerName = application.getString(R.string.service_pipe_layer_name)
+    private val pipelineLayerName = application.getString(R.string.pipeline_layer_name)
+    private val distributionPipeName = application.getString(R.string.distribution_pipe_name)
+    private val servicePipeLayerName = application.getString(R.string.service_pipe_layer_name)
 
     // Message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -135,10 +135,10 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
     private var selectedFeature: ArcGISFeature? = null
 
     private val _assetGroupNameState = MutableStateFlow("<Nothing selected>")
-    var assetGroupNameState: StateFlow<String> = _assetGroupNameState
+    val assetGroupNameState = _assetGroupNameState.asStateFlow()
 
     private val _assetTypeNameState = MutableStateFlow("<Nothing selected>")
-    val assetTypeNameState: StateFlow<String> = _assetTypeNameState
+    val assetTypeNameState = _assetTypeNameState.asStateFlow()
 
     // Represents the snap source settings object (for enabling and disabling), along with a name
     // to use in the UI, and a symbol swatch
@@ -148,8 +148,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         val snapSourceSettings: SnapSourceSettings
     )
     private val _snapSourcePropertyList = MutableStateFlow(listOf<SnapSourceProperty>())
-    internal val snapSourcePropertyList: StateFlow<List<SnapSourceProperty>> =
-        _snapSourcePropertyList
+    val snapSourcePropertyList = _snapSourcePropertyList.asStateFlow()
 
     // Create boolean flags to track the state of UI components
     private val _isEditButtonEnabled = MutableStateFlow(false)
@@ -158,10 +157,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
-                )
+                messageDialogVM.showMessageDialog(error)
             }
 
             // Load the mobile map package
@@ -172,9 +168,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                 // Set the utility network on the map and load it
                 arcGISMap.utilityNetworks.add(geodatabase.utilityNetworks.first())
                 arcGISMap.utilityNetworks.first().load().onFailure {
-                    messageDialogVM.showMessageDialog(
-                        "Error loading utility network", it.message.toString()
-                    )
+                    messageDialogVM.showMessageDialog(it)
                 }
 
                 // Set up symbol swatches
@@ -182,9 +176,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                 symbolSwatches[SnapRuleBehavior.RulesLimitSnapping] = createSwatch(rulesLimitSymbol)
                 symbolSwatches[SnapRuleBehavior.None] = createSwatch(noneSymbol)
             }.onFailure {
-                messageDialogVM.showMessageDialog(
-                    "Error loading geodatabase", it.message.toString()
-                )
+                messageDialogVM.showMessageDialog(it)
             }
         }
     }
@@ -196,11 +188,10 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         // Get the symbol for the selected feature
         selectedFeature?.let { feature ->
 
+            // Get the geodatabase feature table of the selected feature
+            val featureTable = (feature.featureTable as? GeodatabaseFeatureTable) ?: return
             // Use the symbol from the selected feature in the style of the geometry editor tool
-            val symbol =
-                (feature.featureTable as GeodatabaseFeatureTable).layerInfo?.drawingInfo?.renderer?.getSymbol(
-                    feature
-                )
+            val symbol = featureTable.layerInfo?.drawingInfo?.renderer?.getSymbol(feature)
             geometryEditor.tool.style.apply {
                 vertexSymbol = symbol
                 feedbackVertexSymbol = symbol
@@ -209,7 +200,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
             }
 
             // Hide the selected feature
-            (feature.featureTable?.layer as? FeatureLayer)?.setFeatureVisible(feature, false)
+            (featureTable.layer as? FeatureLayer)?.setFeatureVisible(feature, false)
 
             // Start the geometry editor and center the map underneath the reticle
             feature.geometry?.let { initialGeometry ->
@@ -245,14 +236,8 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
             feature.geometry = finalGeometry
 
             viewModelScope.launch {
-                (feature.featureTable as GeodatabaseFeatureTable).updateFeature(feature)
-                    .onFailure { error ->
-                        messageDialogVM.showMessageDialog(
-                            "Error updating feature",
-                            error.message.toString()
-                        )
-                    }
-            }
+                (feature.featureTable as? GeodatabaseFeatureTable)?.updateFeature(feature)
+                    ?.onFailure { error -> messageDialogVM.showMessageDialog(error) }
         }
 
         // Reset the selection
@@ -279,15 +264,13 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                 // contained in the sublayer results
                 val identifiedFeature = identifyResultList.firstOrNull()?.sublayerResults?.firstOrNull()?.geoElements?.firstOrNull()
                 if (identifiedFeature !is ArcGISFeature) {
-                    resetSelections()
-                    return@launch
+                    return@launch resetSelections()
                 }
 
                 // In this sample we only allow selection of point features. If the identified
                 // feature is null or the feature is not a point feature then reset and return.
                 if (identifiedFeature.featureTable?.geometryType != GeometryType.Point) {
-                    resetSelections()
-                    return@launch
+                    return@launch resetSelections()
                 } else if (
                     selectedFeature != null
                     && identifiedFeature != selectedFeature
@@ -295,13 +278,13 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                 ) {
                     // If a feature is already selected and the tapped feature is not the selected
                     // feature then clear the previous selection
-                    (selectedFeature?.featureTable?.layer as FeatureLayer).clearSelection()
+                    (selectedFeature?.featureTable?.layer as? FeatureLayer)?.clearSelection()
                 }
 
                 // Update the selected feature and select it on the layer
                 selectedFeature = identifiedFeature
                 selectedFeature?.let { feature ->
-                    (feature.featureTable?.layer as FeatureLayer).selectFeature(feature)
+                    (feature.featureTable?.layer as? FeatureLayer)?.selectFeature(feature)
 
                     // Create a utility element for the selected feature using the utility network
                     arcGISMap.utilityNetworks.first().createElementOrNull(feature)?.let { element ->
@@ -310,10 +293,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                         _assetTypeNameState.value = element.assetType.name
                         _isEditButtonEnabled.value = true
                         setSnapSettings(element.assetType)
-                    } ?: run {
-                        messageDialogVM.showMessageDialog("Error creating UtilityElement")
-                        return@launch
-                    }
+                    } ?: return@launch messageDialogVM.showMessageDialog("Error creating UtilityElement")
 
                     // Start the editing session once feature is selected.
                     editFeatureGeometry()
@@ -328,7 +308,9 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
      */
     private suspend fun setSnapSettings(assetType: UtilityAssetType) {
         // Get the snap rules associated with the asset type
-        val snapRules = SnapRules.create(arcGISMap.utilityNetworks.first(), assetType).getOrThrow()
+        val snapRules = SnapRules.create(arcGISMap.utilityNetworks.first(), assetType).getOrElse {
+            return messageDialogVM.showMessageDialog(it)
+        }
 
         geometryEditor.snapSettings.apply {
             // Synchronize the snap source collection with the map's operational layers using the snap
@@ -381,7 +363,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
                     }
                     is SubtypeFeatureLayer -> {
                         sourceSettings.childSourceSettings.forEach { childSourceSettings ->
-(childSourceSettings.source as? SubtypeSublayer)?.let { childSource ->
+                            (childSourceSettings.source as? SubtypeSublayer)?.let { childSource ->
                                 when (childSource.name) {
                                     distributionPipeName, servicePipeLayerName -> {
                                         symbolSwatches[childSourceSettings.ruleBehavior]?.let { swatch ->
@@ -407,9 +389,11 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
      */
     private fun resetSelections() {
         // Clear the existing selection and show the selected feature                                      
-        (selectedFeature?.featureTable?.layer as? FeatureLayer)?.let { 
-            it.clearSelection()
-            it.setFeatureVisible(selectedFeature!!, true)
+        selectedFeature?.let { feature ->
+            (feature.featureTable?.layer as? FeatureLayer)?.let {
+                it.clearSelection()
+                it.setFeatureVisible(feature = feature, visible = true)
+            }
         }
 
         // Reset the selected feature and layer
@@ -486,28 +470,29 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
         }.forEach { sublayerToHide ->
             sublayerToHide.isVisible = false
         }
+        // Add the device layer to the map
         arcGISMap.operationalLayers.add(deviceLayer)
 
+        val junctionLayer = (geodatabase.getFeatureTable(
+            tableName = application.getString(R.string.junction_layer_name)
+        ) as? ArcGISFeatureTable)?.let { junctionFeatureTable ->
+            SubtypeFeatureLayer(featureTable = junctionFeatureTable)
+        } ?: return messageDialogVM.showMessageDialog("Error retrieving junction layer")
+
         // Add the junction layer to the map
-        arcGISMap.operationalLayers.add(
-            SubtypeFeatureLayer(
-                geodatabase.getFeatureTable(
-                    application.getString(R.string.junction_layer_name)
-                ) as ArcGISFeatureTable
-            )
-        )
+        arcGISMap.operationalLayers.add(junctionLayer)
     }
 
     /**
      * Create a swatch from the given symbol.
      */
-    private suspend fun createSwatch(symbol: Symbol): BitmapDrawable {
+    private suspend fun createSwatch(symbol: Symbol): BitmapDrawable? {
         // Create a swatch from the symbol
         val swatch = symbol.createSwatch(
             screenScale = 30.0f,
             width = 4.0f,
-            height = 4.0f//,
-        ).getOrThrow()
+            height = 4.0f
+        ).getOrNull()
 
         return swatch
     }
