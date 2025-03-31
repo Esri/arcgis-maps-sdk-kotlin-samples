@@ -1,0 +1,13 @@
+<resources>
+    <string name="snap_geometry_edits_with_utility_network_rules_app_name">Snap geometry edits with utility network rules</string>
+    <string name="naperville_geodatabase">/NapervilleGasUtilities.geodatabase</string>
+    <string name="pipeline_layer_name">PipelineLine</string>
+    <string name="service_pipe_layer_name">Service Pipe</string>
+    <string name="distribution_pipe_name">Distribution Pipe</string>
+    <string name="device_layer_name">PipelineDevice</string>
+    <string name="excess_flow_valve_name">Excess Flow Valve</string>
+    <string name="junction_layer_name">PipelineJunction</string>
+    <string name="controllable_tee_name">Controllable Tee</string>
+    <string name="graphics_overlay_id">Graphics</string>
+    <string name="graphic_geometry_json">{\"paths\":[[[-9811826.6810284462,5132074.7700250093],[-9811786.4643617794,5132440.9533583419],[-9811384.2976951133,5132354.1700250087],[-9810372.5310284477,5132360.5200250093],[-9810353.4810284469,5132066.3033583425]]],\"spatialReference\":{\"wkid\":102100,\"latestWkid\":3857}}</string>
+</resources>
