@@ -6,11 +6,7 @@
     <application><activity
             android:name=".DownloadActivity"
             android:exported="true"
-<<<<<<<< HEAD:samples/display-device-location-with-nmea-data-sources/src/main/AndroidManifest.xml
             android:label="@string/display_device_location_with_nmea_data_sources_app_name">
-========
-            android:label="@string/apply_dictionary_renderer_to_feature_layer_app_name">
->>>>>>>> main:samples/apply-dictionary-renderer-to-feature-layer/src/main/AndroidManifest.xml
             
 
             <meta-data
@@ -18,14 +14,9 @@
                 android:value="" />
         </activity>
         <activity
-            android:exported="true"
             android:name=".MainActivity"
-<<<<<<<< HEAD:samples/display-device-location-with-nmea-data-sources/src/main/AndroidManifest.xml
             android:exported="true"
             android:label="@string/display_device_location_with_nmea_data_sources_app_name">
-========
-            android:label="@string/apply_dictionary_renderer_to_feature_layer_app_name">
->>>>>>>> main:samples/apply-dictionary-renderer-to-feature-layer/src/main/AndroidManifest.xml
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
