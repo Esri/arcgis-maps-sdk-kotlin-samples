@@ -52,6 +52,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import androidx.core.graphics.drawable.toDrawable
 
 class MainActivity : AppCompatActivity() {
 
@@ -205,10 +206,7 @@ class MainActivity : AppCompatActivity() {
         // fetch the attachment data
         attachment.fetchData().onSuccess {
             // create a drawable from InputStream, then create the Bitmap
-            val bitmapDrawable = BitmapDrawable(
-                resources,
-                BitmapFactory.decodeByteArray(it, 0, it.size)
-            )
+            val bitmapDrawable = BitmapFactory.decodeByteArray(it, 0, it.size).toDrawable(resources)
             // create a file output stream using the attachment file
             FileOutputStream(file).use { imageOutputStream ->
                 // compress the bitmap to PNG format

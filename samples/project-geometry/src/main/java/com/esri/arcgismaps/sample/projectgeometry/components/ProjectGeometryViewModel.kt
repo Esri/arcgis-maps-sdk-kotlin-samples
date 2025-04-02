@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.projectgeometry.components
 import android.app.Application
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.GeometryEngine
@@ -38,7 +39,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
+class ProjectGeometryViewModel(app: Application) : AndroidViewModel(app) {
     // create a map with a navigation night basemap style
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight).apply {
         // set the default viewpoint to Redlands,CA
@@ -62,7 +63,7 @@ class ProjectGeometryViewModel(val app: Application) : AndroidViewModel(app) {
     private val markerDrawable: BitmapDrawable by lazy {
         // load the bitmap from resources and create a drawable
         val bitmap = BitmapFactory.decodeResource(app.resources, R.drawable.pin_symbol)
-        BitmapDrawable(app.resources, bitmap)
+        bitmap.toDrawable(app.resources)
     }
 
     // setup the red pin marker as a Graphic

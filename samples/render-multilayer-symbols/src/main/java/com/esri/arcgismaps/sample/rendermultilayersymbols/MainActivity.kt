@@ -57,6 +57,7 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.rendermultilayersymbols.databinding.RenderMultilayerSymbolsActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import androidx.core.graphics.drawable.toDrawable
 
 private val Color.Companion.blue: Color
     get() {
@@ -228,7 +229,9 @@ class MainActivity : AppCompatActivity() {
         // load blue pin from as a bitmap
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.blue_pin)
         // load the PictureMarkerSymbolLayer using the bitmap drawable
-        val pictureMarkerFromCache = PictureMarkerSymbolLayer.createWithImage(BitmapDrawable(resources, bitmap))
+        val pictureMarkerFromCache = PictureMarkerSymbolLayer.createWithImage(
+            image = bitmap.toDrawable(resources)
+        )
         // add loaded layer to the map
         addGraphicFromPictureMarkerSymbolLayer(pictureMarkerFromCache, 40.0)
     }

@@ -7,11 +7,6 @@
             android:name=".DownloadActivity"
             android:exported="true"
             android:label="@string/display_device_location_with_nmea_data_sources_app_name">
-            
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
         </activity>
         <activity
             android:name=".MainActivity"

@@ -40,8 +40,8 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
     val mapViewProxy = MapViewProxy()
 
     // Create a portal and load a map with information about mountains in the Sierra Nevada
-    val portal = Portal("https://arcgis.com/")
-    val portalItem = PortalItem(portal, "9f3a674e998f461580006e626611f9ad")
+    private val portal = Portal("https://arcgis.com/")
+    private val portalItem = PortalItem(portal, "9f3a674e998f461580006e626611f9ad")
     val arcGISMap = ArcGISMap(portalItem)
 
     // Get the first visible feature layer with a popup definition

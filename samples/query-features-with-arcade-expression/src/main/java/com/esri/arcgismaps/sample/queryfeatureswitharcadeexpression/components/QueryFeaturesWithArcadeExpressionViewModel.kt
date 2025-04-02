@@ -20,6 +20,7 @@ import android.app.Application
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.arcade.ArcadeEvaluator
@@ -38,9 +39,9 @@ import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.queryfeatureswitharcadeexpression.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
     AndroidViewModel(application) {
@@ -48,7 +49,7 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
     // setup the red pin marker image as a bitmap drawable
     private val markerDrawable: BitmapDrawable by lazy {
         val bitmap = BitmapFactory.decodeResource(application.resources, R.drawable.map_pin_symbol)
-        BitmapDrawable(application.resources, bitmap)
+        bitmap.toDrawable(application.resources)
     }
 
     // setup the red pin marker as a Graphic

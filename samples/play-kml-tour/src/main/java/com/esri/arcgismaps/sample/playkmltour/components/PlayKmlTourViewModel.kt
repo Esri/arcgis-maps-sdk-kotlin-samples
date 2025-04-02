@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.collections.forEach
 
 class PlayKmlTourViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -50,11 +49,11 @@ class PlayKmlTourViewModel(application: Application) : AndroidViewModel(applicat
 
     // add elevation data
     private val surface = Surface().apply {
-        elevationSources.add(ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"))
+        elevationSources.add(ArcGISTiledElevationSource(application.getString(R.string.world_terrain_service)))
     }
 
     // create a KML layer from a KML dataset with a KML tour
-    private val kmlDataSet = KmlDataset(provisionPath + File.separator + "Esri_tour.kmz")
+    private val kmlDataSet = KmlDataset(provisionPath + application.getString(R.string.kml_tour_path))
     private val kmlLayer = KmlLayer(kmlDataSet)
 
     // create a scene with the surface and KML layer
