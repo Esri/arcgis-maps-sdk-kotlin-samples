@@ -49,7 +49,7 @@ class SetFeatureRequestModeViewModel(application: Application) : AndroidViewMode
             operationalLayers.add(FeatureLayer.createWithFeatureTable(featureTable))
         }
 
-    var viewpoint: Viewpoint? = null
+    private var viewpoint: Viewpoint? = null
         private set
 
     var currentFeatureRequestMode by mutableStateOf<FeatureRequestMode>(FeatureRequestMode.OnInteractionCache)

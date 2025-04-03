@@ -602,7 +602,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
     /**
      * Resets the trace, removing graphics and clearing selections.
      */
-    fun reset() {
+    private fun reset() {
         arcGISMap.operationalLayers
             .filterIsInstance<FeatureLayer>()
             .forEach { it.clearSelection() }

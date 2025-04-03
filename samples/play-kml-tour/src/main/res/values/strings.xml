@@ -1,7 +1,5 @@
 <resources>
     <string name="play_kml_tour_app_name">Play KML tour</string>
-    <string name="world_terrain_service">https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer</string>
-    <string name="kml_tour_path">/Esri_tour.kmz</string>
     <string name="tour_status">Tour status:</string>
     <string name="reset">Reset tour</string>
     <string name="play">Play tour</string>

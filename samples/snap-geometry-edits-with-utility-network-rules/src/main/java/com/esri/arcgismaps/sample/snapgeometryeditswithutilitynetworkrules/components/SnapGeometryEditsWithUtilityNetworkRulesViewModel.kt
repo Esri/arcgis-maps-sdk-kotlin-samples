@@ -183,7 +183,7 @@ class SnapGeometryEditsWithUtilityNetworkRulesViewModel(application: Application
     /**
      * Start the geometry editor to edit the geometry of the selected feature.
      */
-    fun editFeatureGeometry() {
+    private fun editFeatureGeometry() {
         // Get the symbol for the selected feature
         selectedFeature?.let { feature ->
 

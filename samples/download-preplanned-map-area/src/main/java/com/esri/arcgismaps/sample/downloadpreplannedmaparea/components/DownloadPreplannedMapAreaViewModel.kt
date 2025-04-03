@@ -48,10 +48,10 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
     }
 
     // Create a portal to ArcGIS Online
-    val portal = Portal("https://www.arcgis.com")
+    private val portal = Portal("https://www.arcgis.com")
 
     // create a portal item using the portal and the item id of a map service
-    val portalItem = PortalItem(portal, "acc027394bc84c2fb04d1ed317aac674")
+    private val portalItem = PortalItem(portal, "acc027394bc84c2fb04d1ed317aac674")
 
     private val offlineMapTask = OfflineMapTask(portalItem)
 

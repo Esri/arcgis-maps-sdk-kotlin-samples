@@ -116,7 +116,7 @@ class MessageDialogViewModel : ViewModel() {
     fun showMessageDialog(exception: ArcGISException) {
         showMessageDialog(
             title = exception.message,
-            description = exception.additionalMessage.toString() + "\n" + exception.cause
+            description = exception.additionalInformation.toString() + "\n" + exception.cause.toString()
         )
     }
 

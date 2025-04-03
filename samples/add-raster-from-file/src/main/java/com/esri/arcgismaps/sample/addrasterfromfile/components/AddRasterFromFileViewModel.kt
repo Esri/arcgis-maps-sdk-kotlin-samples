@@ -39,11 +39,11 @@ class AddRasterFromFileViewModel(application: Application) : AndroidViewModel(ap
     val mapViewProxy = MapViewProxy()
 
     // create a raster
-    val raster = Raster.createWithPath(provisionPath +
+    private val raster = Raster.createWithPath(provisionPath +
             File.separator + "raster-file" + File.separator + "Shasta.tif")
 
     // create a raster layer
-    val rasterLayer = RasterLayer(raster)
+    private val rasterLayer = RasterLayer(raster)
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
         operationalLayers.add(rasterLayer)

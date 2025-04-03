@@ -62,6 +62,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import androidx.core.net.toUri
 
 /**
  * Showcase information about the application.
@@ -213,7 +214,7 @@ private fun PoweredBySection() {
                     .clickable {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://github.com/Esri/arcgis-runtime-toolkit-android")
+                            "https://github.com/Esri/arcgis-runtime-toolkit-android".toUri()
                         )
                         context.startActivity(intent)
                     },
@@ -242,7 +243,7 @@ private fun PoweredBySection() {
                     .clickable {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://developers.arcgis.com/kotlin/")
+                            "https://developers.arcgis.com/kotlin/".toUri()
                         )
                         context.startActivity(intent)
                     },
@@ -308,7 +309,7 @@ private fun EsriCommunitySection() {
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://community.esri.com/t5/kotlin-maps-sdk-questions/bd-p/kotlin-maps-sdk-questions")
+                    "https://community.esri.com/t5/kotlin-maps-sdk-questions/bd-p/kotlin-maps-sdk-questions".toUri()
                 )
                 context.startActivity(intent)
             }
@@ -376,7 +377,7 @@ fun AcknowledgementsDialog(onDismissRequest: () -> Unit) {
             OutlinedButton(onClick = {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/showdownjs/showdown/blob/master/LICENSE")
+                    "https://github.com/showdownjs/showdown/blob/master/LICENSE".toUri()
                 )
                 context.startActivity(intent)
             }) {
@@ -385,7 +386,7 @@ fun AcknowledgementsDialog(onDismissRequest: () -> Unit) {
             OutlinedButton(onClick = {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/highlightjs/highlight.js/blob/main/LICENSE")
+                    "https://github.com/highlightjs/highlight.js/blob/main/LICENSE".toUri()
                 )
                 context.startActivity(intent)
             }) {
@@ -406,7 +407,7 @@ private fun GithubSection() {
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/Esri/arcgis-maps-sdk-kotlin-samples")
+                    "https://github.com/Esri/arcgis-maps-sdk-kotlin-samples".toUri()
                 )
                 context.startActivity(intent)
             }
@@ -460,7 +461,7 @@ private fun ApiDetailsSection() {
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://developers.arcgis.com/kotlin/api-reference/")
+                    "https://developers.arcgis.com/kotlin/api-reference/".toUri()
                 )
                 context.startActivity(intent)
             }

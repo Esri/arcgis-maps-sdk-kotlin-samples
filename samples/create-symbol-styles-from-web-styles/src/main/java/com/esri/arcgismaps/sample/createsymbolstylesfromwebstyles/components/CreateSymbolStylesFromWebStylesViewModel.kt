@@ -42,7 +42,7 @@ class CreateSymbolStylesFromWebStylesViewModel(application: Application) : Andro
     }
 
     // Create a feature layer from a service
-    val featureLayer =
+    private val featureLayer =
         FeatureLayer.createWithFeatureTable(ServiceFeatureTable("http://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/LA_County_Points_of_Interest/FeatureServer/0"))
             .apply {
                 // Set the unique value renderer on the feature layer
