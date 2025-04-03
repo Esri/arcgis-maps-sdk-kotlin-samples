@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.collections.forEach
 
 class PlayKmlTourViewModel(application: Application) : AndroidViewModel(application) {
 
