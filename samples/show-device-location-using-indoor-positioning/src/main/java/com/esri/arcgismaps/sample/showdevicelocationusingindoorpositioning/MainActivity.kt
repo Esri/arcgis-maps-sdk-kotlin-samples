@@ -29,22 +29,15 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.Guid
-import com.arcgismaps.data.ArcGISFeatureTable
-import com.arcgismaps.data.FeatureTable
-import com.arcgismaps.data.Field
-import com.arcgismaps.data.OrderBy
-import com.arcgismaps.data.QueryParameters
-import com.arcgismaps.data.ServiceFeatureTable
-import com.arcgismaps.data.SortOrder
+import com.arcgismaps.location.IndoorPositioningDefinition
 import com.arcgismaps.location.IndoorsLocationDataSource
 import com.arcgismaps.location.Location
 import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.mapping.PortalItem
 import com.esri.arcgismaps.sample.showdevicelocationusingindoorpositioning.databinding.ShowDeviceLocationUsingIndoorPositioningActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -54,7 +47,10 @@ class MainActivity : AppCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowDeviceLocationUsingIndoorPositioningActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.show_device_location_using_indoor_positioning_activity_main)
+        DataBindingUtil.setContentView(
+            this,
+            R.layout.show_device_location_using_indoor_positioning_activity_main
+        )
     }
 
     private val mapView by lazy {
@@ -91,11 +87,24 @@ class MainActivity : AppCompatActivity() {
      */
     private fun checkPermissions() {
         val requestCode = 1
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)) {
-            val requestPermissions = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.BLUETOOTH_SCAN
+                    ) != PackageManager.PERMISSION_GRANTED)
+        ) {
+            val requestPermissions = mutableListOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
             // Android 12 required permission
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 requestPermissions.add(Manifest.permission.BLUETOOTH_SCAN)
@@ -120,13 +129,12 @@ class MainActivity : AppCompatActivity() {
         mapView.map = map
         lifecycleScope.launch {
             map.load().onSuccess {
-                val featureTables = map.tables
-                // check if the portalItem contains featureTables
-                if (featureTables.isNotEmpty()) {
-                    setUpLoadTables(featureTables)
-                } else {
-                    showError("Map does not contain feature tables")
-                }
+                // gets indoor positioning definition from the IPS-aware map
+                // and uses it to set the IndoorsLocationDataSource.
+                map.indoorPositioningDefinition?.let { indoorPositioningDefinition ->
+                    setupIndoorsLocationDataSource(indoorPositioningDefinition)
+                } ?: showError("Map does not contain an IndoorPositioningDefinition")
+
             }.onFailure {
                 // if map load failed, show the error
                 showError("Error Loading Map: {it.message}")
@@ -135,110 +143,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Load each feature table and setup the IndoorsLocationDataSource for each loaded table
+     * Sets up the [indoorsLocationDataSource] using the [indoorPositioningDefinition]
      */
-    private suspend fun setUpLoadTables(featureTables: MutableList<FeatureTable>) {
-        featureTables.forEach { featureTable ->
-            // load each FeatureTable
-            featureTable.load().onFailure {
-                showError("Error loading FeatureTable: ${it.message}")
-            }
-        }
-        // retrieve the loaded feature tables
-        featureTables.forEach{ featureTable ->
-            // ips_positioning table needs to be present
-            if (featureTable.tableName == "ips_positioning") {
-                 return setupIndoorsLocationDataSource(featureTable)
-            }
-        }
-        // ips_positioning table not found
-        showError("Positioning Table not found in FeatureTables")
-    }
-
-    /**
-     * Sets up the [indoorsLocationDataSource] using the IPS_Positioning [featureTable]
-     */
-    private fun setupIndoorsLocationDataSource(featureTable: FeatureTable) {
-        // cast the featureTable to a ServiceFeatureTable to get the globalIdField which identifies a row in the positioning table
-        // and used as a parameter to setup IndoorsLocationDataSource
-        val positioningFeatureTable = featureTable as ServiceFeatureTable
-        // when multiple entries are available, IndoorsLocationDataSource constructor function
-        // looks up the entry with the most recent date and takes this positioning data
-        // set up queryParameters to grab one result.
-        val dateCreatedFieldName = getDateCreatedFieldName(positioningFeatureTable.fields)
-            ?: return showError("The service table does not contain \"DateCreated\" fields.")
-        val queryParameters = QueryParameters().apply {
-            // set a limit of 1 on the number of returned features per request
-            maxFeatures = 1
-            // 1=1 is a true where clause which will result in all matching records being returned
-            whereClause = "1 = 1"
-            // find and sort out the orderByFields by most recent first
-            orderByFields.add(
-                OrderBy(
-                    dateCreatedFieldName,
-                    sortOrder = SortOrder.Descending
-                )
-            )
-        }
+    private fun setupIndoorsLocationDataSource(indoorPositioningDefinition: IndoorPositioningDefinition) {
         lifecycleScope.launch {
-            positioningFeatureTable.queryFeatures(queryParameters)
-                .onSuccess { queryResults ->
-                    val featureResult = queryResults.first()
-                    // perform search query using the queryParameters
-                    // check if serviceFeatureTable contains positioning data
-                    // The ID that identifies a row in the positioning table.
-                    val globalID =
-                        featureResult.attributes[positioningFeatureTable.globalIdField].toString()
-                    val positioningId = Guid(globalID)
-                    // Setting up IndoorsLocationDataSource with positioning, pathways tables and positioning ID.
-                    // positioningTable - the "ips_positioning" feature table from an IPS-enabled map.
-                    // pathwaysTable - An ArcGISFeatureTable that contains pathways as per the ArcGIS Indoors Information Model.
-                    // Setting this property enables path snapping of locations provided by the IndoorsLocationDataSource.
-                    // levelsTable - An ArcGISFeatureTable that contains floor levels in accordance with the ArcGIS Indoors Information Model.
-                    // Providing this table enables the retrieval of a location's floor level ID.
-                    // positioningID - an ID which identifies a specific row in the positioningTable that should be used for setting up IPS.
-                    indoorsLocationDataSource = IndoorsLocationDataSource(
-                        positioningFeatureTable,
-                        getFeatureTable("Pathways"),
-                        getFeatureTable("Levels"),
-                        positioningId
-                    )
-                    // start the location display (blue dot)
-                    startLocationDisplay()
-                }.onFailure {
-                    showError("The positioning table contain no data")
-                }
-        }
-    }
-
-    /**
-     * Find the exact formatting of the name "DateCreated" in the list of ServiceFeatureTable [fields].
-     */
-    private fun getDateCreatedFieldName(fields: List<Field>): String? {
-        val field = fields.find {
-            it.name.equals(
-                "DateCreated",
-                ignoreCase = true
-            ) || it.name.equals("Date_Created", ignoreCase = true)
-        }
-        return field?.name
-    }
-
-    /**
-     * Retrieves the "Pathways" or the "levels" table depending on the string passed.
-     */
-    private fun getFeatureTable(name: String): ArcGISFeatureTable? {
-        return mapView.map?.operationalLayers?.firstOrNull { operationalLayer ->
-            operationalLayer.name == name
-        }?.let { layer ->
-            if (layer is FeatureLayer) {
-                layer.featureTable as ArcGISFeatureTable
-            } else {
-                null
+            indoorPositioningDefinition.load().onSuccess {
+                indoorsLocationDataSource = IndoorsLocationDataSource(indoorPositioningDefinition)
+                startLocationDisplay()
+            }.onFailure {
+                showError("Failed to load the indoorPositioningDefinition")
             }
-        } ?: run {
-            showError("$name table not found")
-            null
         }
     }
 
