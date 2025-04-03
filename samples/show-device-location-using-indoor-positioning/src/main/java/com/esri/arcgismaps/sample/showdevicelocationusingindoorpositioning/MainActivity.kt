@@ -47,10 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowDeviceLocationUsingIndoorPositioningActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(
-            this,
-            R.layout.show_device_location_using_indoor_positioning_activity_main
-        )
+        DataBindingUtil.setContentView(this, R.layout.show_device_location_using_indoor_positioning_activity_main)
     }
 
     private val mapView by lazy {
@@ -87,24 +84,11 @@ class MainActivity : AppCompatActivity() {
      */
     private fun checkPermissions() {
         val requestCode = 1
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED ||
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.BLUETOOTH_SCAN
-                    ) != PackageManager.PERMISSION_GRANTED)
-        ) {
-            val requestPermissions = mutableListOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)) {
+            val requestPermissions = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
             // Android 12 required permission
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 requestPermissions.add(Manifest.permission.BLUETOOTH_SCAN)
