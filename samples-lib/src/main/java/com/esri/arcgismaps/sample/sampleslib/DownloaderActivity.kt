@@ -126,7 +126,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                         // dismiss provision dialog question dialog
                         dialog.dismiss()
                         // set to should download
-                        downloadRequiredContinuation.resume(true){ _, _, _ -> }
+                        downloadRequiredContinuation.resume(true) { _, _, _ -> }
                     }
                     // if user taps "Continue" with existing folder
                     provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
