@@ -126,14 +126,14 @@ abstract class DownloaderActivity : AppCompatActivity() {
                         // dismiss provision dialog question dialog
                         dialog.dismiss()
                         // set to should download
-                        downloadRequiredContinuation.resume(true, null)
+                        downloadRequiredContinuation.resume(true){ _, _, _ -> }
                     }
                     // if user taps "Continue" with existing folder
                     provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
                         // dismiss the provision question dialog
                         dialog.dismiss()
                         // set to should not download
-                        downloadRequiredContinuation.resume(false, null)
+                        downloadRequiredContinuation.resume(false) { _, _, _ -> }
                     }
                 }
                 // if folder does not exist, ask for download permission
@@ -145,7 +145,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                         // dismiss provision dialog
                         dialog.dismiss()
                         // set to should download
-                        downloadRequiredContinuation.resume(true, null)
+                        downloadRequiredContinuation.resume(true) { _, _, _ -> }
                     }
                     provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
                         dialog.dismiss()
