@@ -85,6 +85,7 @@ class CopySampleFilesTask : Plugin<Project> {
         // List subdirectories in outputDir (i.e., each sample folder)
         outputDir.listFiles()
             ?.filter { it.isDirectory }
+            ?.sortedBy { it.name }
             ?.forEach { sampleDir ->
                 val filesMap = mutableMapOf<String, String>()
                 sampleDir.listFiles()?.forEach { file ->
