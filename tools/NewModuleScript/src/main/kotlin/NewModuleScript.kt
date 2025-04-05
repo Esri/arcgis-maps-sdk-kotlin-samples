@@ -158,7 +158,7 @@ private fun createFilesAndFolders() {
     val mainScreenTemplate = when(sampleTemplateType){
         SampleTemplateTypes.Basic -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
         SampleTemplateTypes.FAB_DialogOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenDialogTemplate.kt")
-        SampleTemplateTypes.FAB_SheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
+        SampleTemplateTypes.FAB_SheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenSheetTemplate.kt")
     }
 
     // Perform copy
