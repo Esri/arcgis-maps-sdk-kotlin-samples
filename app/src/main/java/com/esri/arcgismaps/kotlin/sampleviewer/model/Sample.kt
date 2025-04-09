@@ -62,41 +62,26 @@ data class Sample(
         )
 
         /**
-         * Returns a list of [CodeFile] objects for the given sample name.
+         * Returns a list of [CodeFile] objects for the given sample [fileMap].
          */
-        fun loadCodeFiles(context: Context, sampleName: String): List<CodeFile> {
-            // List of code files to be populated
+        fun loadCodeFiles(fileMap: Map<String, String>): List<CodeFile> {
             val codeFiles = mutableListOf<CodeFile>()
-            // Code file folders stored in assets directory as kebab case
-            val sampleNameKebabCase = sampleName.replace(" ", "-").lowercase()
-            val sampleAssetFiles = context.assets.list("samples/$sampleNameKebabCase/")
-            // Get the code files from sub-directories (components/, screens/)
-            sampleAssetFiles?.forEach { sampleAssetFile ->
-                if (sampleAssetFile.contains(".kt")) {
-                    val codeString = context.assets.open(
-                        /* fileName = */ "samples/$sampleNameKebabCase/$sampleAssetFile"
-                    ).bufferedReader().use { it.readText() }
-                    codeFiles.add(
-                        CodeFile(
-                            name = sampleAssetFile,
-                            code = codeString
-                        )
-                    )
+            fileMap.forEach { (fileName, fileContent) ->
+                if (fileName.endsWith(".kt", ignoreCase = true)) {
+                    codeFiles.add(CodeFile(name = fileName, code = fileContent))
                 }
             }
             return codeFiles
         }
 
         /**
-         * Returns the readme for a given sample name.
+         * Returns the readme for a given sample [fileMap].
          */
-        fun loadReadMe(context: Context, sampleName: String): String {
-            // Get this metadata files as a string
-            context.assets.open("samples/$sampleName/README.md").use { inputStream ->
-                val readMeString = inputStream.bufferedReader().use { it.readText() }
-                // Remove screenshot markdown text from the README
-                return readMeString.lines().filterNot { it.contains("![") }.joinToString("\n")
-            }
+        fun loadReadMe(fileMap: Map<String, String>): String {
+            val readMeString = fileMap["README.md"]
+                ?: throw Exception("README.md not found in sample.")
+            // Remove screenshot markdown text from the README
+            return readMeString.lines().filterNot { it.contains("![") }.joinToString("\n")
         }
 
         /**

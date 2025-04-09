@@ -31,7 +31,9 @@ include(":samples-lib")
 
 // dynamically include all sample libraries
 File("samples/").listFiles()?.filter { !it.name.contains(".DS_Store") }?.forEach { sampleFolder ->
-    // include all of the samples, which have been changed into libs of the sample viewer app
-    include(":samples:" + sampleFolder.name)
-    project(":samples:" + sampleFolder.name).projectDir = file("samples/" + sampleFolder.name)
+    if (sampleFolder.listFiles()?.find { it.name.equals("build.gradle.kts") } != null){
+        // include all of the samples, which have been changed into libs of the sample viewer app
+        include(":samples:" + sampleFolder.name)
+        project(":samples:" + sampleFolder.name).projectDir = file("samples/" + sampleFolder.name)
+    }
 }

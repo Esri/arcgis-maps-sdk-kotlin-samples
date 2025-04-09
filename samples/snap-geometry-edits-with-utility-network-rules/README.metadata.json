@@ -1,0 +1,60 @@
+{
+    "category": "Utility Networks",
+    "description": "Use the Geometry Editor to edit geometries using utility network connectivity rules.",
+    "formal_name": "SnapGeometryEditsWithUtilityNetworkRules",
+    "ignore": false,
+    "images": [
+        "snap-geometry-edits-with-utility-network-rules.png"
+    ],
+    "keywords": [
+        "edit",
+        "feature",
+        "geometry editor",
+        "graphics",
+        "layers",
+        "map",
+        "reticle",
+        "snapping",
+        "utility network",
+        "FeatureLayer",
+        "Geometry",
+        "GeometryEditor",
+        "GeometryEditorStyle",
+        "GraphicsOverlay",
+        "MapView",
+        "ReticleVertexTool",
+        "SnapRuleBehavior",
+        "SnapRules",
+        "SnapSettings",
+        "SnapSource",
+        "SnapSourceEnablingBehavior",
+        "SnapSourceSettings",
+        "UtilityNetwork"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "Geometry",
+        "GeometryEditor",
+        "GeometryEditorStyle",
+        "GraphicsOverlay",
+        "MapView",
+        "ReticleVertexTool",
+        "SnapRuleBehavior",
+        "SnapRules",
+        "SnapSettings",
+        "SnapSource",
+        "SnapSourceEnablingBehavior",
+        "SnapSourceSettings",
+        "UtilityNetwork"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/components/SnapGeometryEditsWithUtilityNetworkRulesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/screens/SnapGeometryEditsWithUtilityNetworkRulesScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/snapgeometryeditswithutilitynetworkrules/screens/SnapSourcesPanel.kt"
+    ],
+    "title": "Snap geometry edits with utility network rules"
+}

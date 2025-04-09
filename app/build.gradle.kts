@@ -7,12 +7,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gradle.secrets)
     alias(libs.plugins.sample.files.copy)
-    alias(libs.plugins.screenshots.copy)
     alias(libs.plugins.ksp)
 }
 
 tasks.named("preBuild").configure { dependsOn("copyCodeFiles") }
-tasks.named("preBuild").configure { dependsOn("copyScreenshots") }
 
 secrets {
     // this file doesn't contain secrets, it just provides defaults which can be committed into git.
@@ -28,7 +26,7 @@ android {
     }
 
     // Optional input to apply the external signing configuration for the sample viewer
-    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=200.6.0
+    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=200.7.0
     val signingPropsFilePath = project.findProperty("signingPropsFilePath").toString()
     val signingPropsFile = rootProject.file(signingPropsFilePath)
 
@@ -71,7 +69,9 @@ android {
 
 dependencies {
     for (sampleFile in file("../samples").listFiles()!!) {
-        if (sampleFile.isDirectory) {
+        if (sampleFile.isDirectory &&
+            sampleFile.listFiles()?.find { it.name.equals("build.gradle.kts") } != null
+        ) {
             implementation(project(":samples:" + sampleFile.name))
         }
     }

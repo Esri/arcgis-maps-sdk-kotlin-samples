@@ -7,11 +7,6 @@
             android:name=".DownloadActivity"
             android:exported="true"
             android:label="@string/find_route_in_transport_network_app_name">
-
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
         </activity>
         <activity
             android:name=".MainActivity"

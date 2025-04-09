@@ -1,0 +1,30 @@
+{
+    "category": "Scenes",
+    "description": "Open a web scene from a portal item.",
+    "formal_name": "DisplayWebSceneFromPortalItem",
+    "ignore": false,
+    "images": [
+        "display-web-scene-from-portal-item.png"
+    ],
+    "keywords": [
+        "portal",
+        "scene",
+        "web scene",
+        "ArcGISScene",
+        "PortalItem",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISScene",
+        "PortalItem",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaywebscenefromportalitem/components/DisplayWebSceneFromPortalItemViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaywebscenefromportalitem/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaywebscenefromportalitem/screens/DisplayWebSceneFromPortalItemScreen.kt"
+    ],
+    "title": "Display web scene from portal item"
+}

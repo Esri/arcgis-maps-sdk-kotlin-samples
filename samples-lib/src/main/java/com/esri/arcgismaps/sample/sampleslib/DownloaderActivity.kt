@@ -40,12 +40,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.apache.commons.io.FileUtils
-import java.io.BufferedInputStream
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
+import java.util.zip.ZipFile
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -129,14 +126,14 @@ abstract class DownloaderActivity : AppCompatActivity() {
                         // dismiss provision dialog question dialog
                         dialog.dismiss()
                         // set to should download
-                        downloadRequiredContinuation.resume(true, null)
+                        downloadRequiredContinuation.resume(true) { _, _, _ -> }
                     }
                     // if user taps "Continue" with existing folder
                     provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
                         // dismiss the provision question dialog
                         dialog.dismiss()
                         // set to should not download
-                        downloadRequiredContinuation.resume(false, null)
+                        downloadRequiredContinuation.resume(false) { _, _, _ -> }
                     }
                 }
                 // if folder does not exist, ask for download permission
@@ -148,7 +145,7 @@ abstract class DownloaderActivity : AppCompatActivity() {
                         // dismiss provision dialog
                         dialog.dismiss()
                         // set to should download
-                        downloadRequiredContinuation.resume(true, null)
+                        downloadRequiredContinuation.resume(true) { _, _, _ -> }
                     }
                     provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
                         dialog.dismiss()
@@ -269,31 +266,24 @@ abstract class DownloaderActivity : AppCompatActivity() {
             }.onSuccess {
                 // unzip the file if it is a .zip
                 if (portalItem.name.contains(".zip")) {
-                    // set up the input streams
-                    FileInputStream(destinationFile).use { fileInputStream ->
-                        ZipInputStream(BufferedInputStream(fileInputStream)).use { zipInputStream ->
-                            var zipEntry: ZipEntry? = zipInputStream.nextEntry
-                            val buffer = ByteArray(1024)
-                            while (zipEntry != null) {
-                                if (zipEntry.isDirectory) {
-                                    File(provisionLocation.path, zipEntry.name).mkdirs()
-                                } else {
-                                    val file = File(provisionLocation.path, zipEntry.name)
-                                    FileOutputStream(file).use { fileOutputStream ->
-                                        var count = zipInputStream.read(buffer)
-                                        while (count != -1) {
-                                            fileOutputStream.write(buffer, 0, count)
-                                            count = zipInputStream.read(buffer)
-                                        }
+                    if (!provisionLocation.exists()) {
+                        provisionLocation.mkdirs()
+                    }
+                    ZipFile(destinationFile).use { zip ->
+                        zip.entries().asSequence().forEach { entry ->
+                            val outputFile = File(provisionLocation, entry.name)
+                            if (entry.isDirectory) {
+                                outputFile.mkdirs()
+                            } else {
+                                outputFile.parentFile?.mkdirs()
+                                zip.getInputStream(entry).use { input ->
+                                    FileOutputStream(outputFile).use { output ->
+                                        input.copyTo(output)
                                     }
                                 }
-                                // close this entry, and move to the next zipped file
-                                zipInputStream.closeEntry()
-                                zipEntry = zipInputStream.nextEntry
                             }
-                            // delete the .zip file, since unzipping is complete
-                            FileUtils.delete(destinationFile)
                         }
+                        FileUtils.delete(destinationFile)
                     }
                 }
 

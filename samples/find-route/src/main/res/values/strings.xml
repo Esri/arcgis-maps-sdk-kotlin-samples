@@ -2,5 +2,4 @@
     <string name="find_route_app_name">Find route</string>
     <string name="directions">Directions</string>
     <string name="collapse_directions">Collapse directions</string>
-    <string name="display_directions_button">Display Directions button</string>
 </resources>
