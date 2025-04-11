@@ -27,7 +27,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
+class MapViewModel(app: Application) : AndroidViewModel(app) {
     //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
@@ -40,12 +40,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    "Failed to load map",
-                    error.message.toString()
-                )
-            }
+            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 }
