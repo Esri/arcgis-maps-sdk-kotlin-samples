@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,12 +29,12 @@ import com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene.components.A
 import com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene.screens.DisplaySceneInTabletopARScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.google.ar.core.ArCoreApk
+import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
+import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
 
 class MainActivity : ComponentActivity() {
 
-    private var userRequestedInstall = true
-
-    private var isGooglePlayServicesArInstalled = false
+    private val sceneViewModel: AugmentRealityToShowTabletopSceneViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,31 +51,67 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        checkGooglePlayServicesArInstalled()
+        checkARCoreAvailability()
     }
 
     /**
-     *  Check if Google Play Services for AR is installed on the device. If it's not installed, this method should get
-     *  called twice: once to request the installation and once to ensure it was installed when the activity resumes.
+     * Checks if ARCore is supported and handles install/update flow if required.
      */
-    private fun checkGooglePlayServicesArInstalled() {
+    private fun checkARCoreAvailability() {
+        val context = this
         try {
-            when (ArCoreApk.getInstance().requestInstall(this, userRequestedInstall)) {
-                ArCoreApk.InstallStatus.INSTALL_REQUESTED -> {
-                    userRequestedInstall = false
-                    return
-                }
+            ArCoreApk.getInstance().checkAvailabilityAsync(context) { availability ->
+                when (availability) {
+                    ArCoreApk.Availability.UNSUPPORTED_DEVICE_NOT_CAPABLE -> {
+                        sceneViewModel.messageDialogVM.showMessageDialog(
+                            title = "AR Not Supported",
+                            description = "This device does not support AR."
+                        )
+                    }
 
-                ArCoreApk.InstallStatus.INSTALLED -> {
-                    isGooglePlayServicesArInstalled = true
-                    return
+                    ArCoreApk.Availability.SUPPORTED_NOT_INSTALLED,
+                    ArCoreApk.Availability.SUPPORTED_APK_TOO_OLD -> {
+                        try {
+                            val installStatus = ArCoreApk.getInstance().requestInstall(this, true)
+                            if (installStatus == ArCoreApk.InstallStatus.INSTALL_REQUESTED) {
+                                // Installation requested, wait for next resume
+                            }
+                        } catch (e: UnavailableUserDeclinedInstallationException) {
+                            sceneViewModel.messageDialogVM.showMessageDialog(
+                                title = "AR Installation Declined",
+                                description = "User declined to install ARCore."
+                            )
+                        } catch (e: UnavailableDeviceNotCompatibleException) {
+                            sceneViewModel.messageDialogVM.showMessageDialog(
+                                title = "AR Not Compatible",
+                                description = "This device is not compatible with ARCore."
+                            )
+                        } catch (e: Exception) {
+                            sceneViewModel.messageDialogVM.showMessageDialog(
+                                title = "Installation Error",
+                                description = e.localizedMessage ?: "An unknown error occurred."
+                            )
+                        }
+                    }
+
+                    ArCoreApk.Availability.SUPPORTED_INSTALLED -> {
+                        // ARCore is ready, proceed to use AR features.
+                    }
+
+                    ArCoreApk.Availability.UNKNOWN_CHECKING,
+                    ArCoreApk.Availability.UNKNOWN_ERROR,
+                    ArCoreApk.Availability.UNKNOWN_TIMED_OUT -> {
+                        sceneViewModel.messageDialogVM.showMessageDialog(
+                            title = "AR Check Error",
+                            description = "Unable to determine ARCore availability. Please try again."
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {
-            val sceneViewModel: AugmentRealityToShowTabletopSceneViewModel by viewModels()
             sceneViewModel.messageDialogVM.showMessageDialog(
-                "Error checking Google Play Services for AR",
-                e.message.toString()
+                "Error checking AR availability",
+                e.localizedMessage ?: "An error occurred."
             )
         }
     }
