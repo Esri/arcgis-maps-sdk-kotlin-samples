@@ -290,6 +290,12 @@ class MainActivity : AppCompatActivity() {
         setMapView()
     }
 
+    override fun onDestroy() {
+        // close the mobile geodatabase before destroy
+        geodatabase?.close()
+        super.onDestroy()
+    }
+
     private fun showError(message: String) {
         Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
