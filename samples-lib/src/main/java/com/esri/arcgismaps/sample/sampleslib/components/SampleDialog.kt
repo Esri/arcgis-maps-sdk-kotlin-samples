@@ -41,8 +41,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 /**
- * A simplified implementation of the [Dialog] with layout all the dialog UI
- * style configurations to display the [content] using the default [properties].
+ * Composable component to display a dialog of the [content], which provides an [onDismissRequest].
+ * The [modifier] applies common dialog layout configurations using the default [properties].
  */
 @Composable
 fun SampleDialog(
