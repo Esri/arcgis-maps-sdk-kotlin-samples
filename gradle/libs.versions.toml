@@ -6,28 +6,26 @@ arcgisMapsKotlinVersion = "200.8.0-4564"
 ### Android versions
 androidGradlePlugin = "8.7.3"
 lifecycle = "2.8.7"
-androidTools = "31.7.3"
+androidTools = "31.9.1"
 appcompat = "1.7.0"
-constraintLayoutVersion = "2.2.0"
-kotlinxSerializationJson = "1.6.0"
+constraintLayoutVersion = "2.2.1"
+kotlinxSerializationJson = "1.8.1"
 accompanistSystemuicontroller = "0.32.0"
 workVersion = "2.10.0"
-datastorePreferences = "1.1.1"
-roomVersion = "2.6.1"
+datastorePreferences = "1.1.4"
+roomVersion = "2.7.0"
 
 ### Kotlin versions
-kotlinVersion = "2.0.0"
-coreKtx = "1.15.0"
-ktxActivity = "1.9.1"
-ksp = "2.0.0-1.0.21"
-kotlinCompilerExt = "1.5.12"
-commonsIoVersion = "2.15.1"
+kotlinVersion = "2.1.20"
+coreKtx = "1.16.0"
+ksp = "2.1.20-1.0.32"
+commonsIoVersion = "2.18.0"
 
 ### Compose versions
-composeBom = "2024.12.01"
-activityCompose = "1.9.3"
+composeBom = "2025.04.00"
+activityCompose = "1.10.1"
 material = "1.12.0"
-navigationCompose = "2.8.5"
+navigationCompose = "2.8.9"
 
 ### Testing versions
 junit = "4.13.2"
@@ -41,7 +39,7 @@ minSdk = "26"
 targetSdk = "35"
 
 ### Third party libraries
-arcore = "1.47.0"
+arcore = "1.48.0"
 playServicesLocation = "21.3.0"
 
 [libraries]
