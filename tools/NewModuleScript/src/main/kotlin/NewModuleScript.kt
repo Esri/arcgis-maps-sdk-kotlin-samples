@@ -33,7 +33,7 @@ fun main() {
     run()
 }
 
-private enum class SampleTemplateTypes { Basic, FAB_DialogOptions, FAB_SheetOptions }
+private enum class SampleTemplateTypes { Basic, FAB_DialogOptions, FAB_BottomSheetOptions }
 
 private var sampleName: String = ""
 private var sampleWithHyphen: String = ""
@@ -63,7 +63,7 @@ fun run() {
     sampleCategory = getSampleCategory(scanner.nextLine().trim().toIntOrNull())
 
     // Get the sample template type
-    println("Choose the sample template type: \n1: Basic \n2: FAB with DialogOptions \n3: FAB with SheetOptions")
+    println("Choose the sample template type: \n1: Basic \n2: FAB with DialogOptions \n3: FAB with BottomSheetOptions")
     print("Enter a number (1-3) to sample template type: ")
     sampleTemplateType = getSampleTemplate(scanner.nextLine().trim().toIntOrNull())
 
@@ -109,7 +109,7 @@ private fun getSampleTemplate(i: Int?): SampleTemplateTypes {
     when (i) {
         1 -> return SampleTemplateTypes.Basic
         2 -> return SampleTemplateTypes.FAB_DialogOptions
-        3 -> return SampleTemplateTypes.FAB_SheetOptions
+        3 -> return SampleTemplateTypes.FAB_BottomSheetOptions
     }
     return SampleTemplateTypes.Basic
 }
@@ -158,7 +158,7 @@ private fun createFilesAndFolders() {
     val mainScreenTemplate = when(sampleTemplateType){
         SampleTemplateTypes.Basic -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
         SampleTemplateTypes.FAB_DialogOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenDialogTemplate.kt")
-        SampleTemplateTypes.FAB_SheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenSheetTemplate.kt")
+        SampleTemplateTypes.FAB_BottomSheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenBottomSheetTemplate.kt")
     }
 
     // Perform copy
