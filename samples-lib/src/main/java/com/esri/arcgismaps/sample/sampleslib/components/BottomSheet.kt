@@ -105,15 +105,16 @@ fun BottomSheet(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun BottomSheetPreview() {
+    val dropDownItems = listOf("Option #1", "Option #2", "Option #3")
     SamplePreviewSurface {
         BottomSheet(
             sheetTitle = "Bottom sheet options:",
             isVisible = true
         ) {
             DropDownMenuBox(
-                textFieldValue = "<selected-option>",
+                textFieldValue = dropDownItems[0],
                 textFieldLabel = "Select an option",
-                dropDownItemList = emptyList(),
+                dropDownItemList = dropDownItems,
                 onIndexSelected = { }
             )
         }
