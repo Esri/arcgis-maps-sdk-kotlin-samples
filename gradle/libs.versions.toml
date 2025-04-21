@@ -35,7 +35,7 @@ espressoCore = "3.6.1"
 ### Application Verions
 versionCode = "2008000"
 versionName = "200.8.0"
-minSdk = "26"
+minSdk = "28"
 targetSdk = "35"
 
 ### Third party libraries
