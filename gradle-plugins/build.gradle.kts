@@ -25,10 +25,3 @@ dependencies {
     // Sample modules do not use kotlin-dsl, instead uses latest kotlin serialization from libs versions.
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }
-
-configurations.all {
-    resolutionStrategy {
-        force("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3")
-        force("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-    }
-}
