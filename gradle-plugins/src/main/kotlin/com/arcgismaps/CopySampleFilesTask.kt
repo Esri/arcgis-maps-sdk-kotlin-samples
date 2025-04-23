@@ -1,6 +1,6 @@
 package com.arcgismaps
 
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,12 +16,7 @@ import java.io.File
  */
 class CopySampleFilesTask : Plugin<Project> {
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private val json = Json {
-        prettyPrint = true
-        @Suppress("JsonIgnoreUnknownKeys")
-        explicitNulls = false
-    }
+    private val json = Json { prettyPrint = true }
 
     override fun apply(project: Project) {
         project.tasks.register<Copy>("copyCodeFiles") {
