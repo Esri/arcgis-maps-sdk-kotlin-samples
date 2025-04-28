@@ -1,0 +1,53 @@
+{
+    "category": "Augmented Reality",
+    "description": "Use a route displayed in the real world to navigate.",
+    "formal_name": "AugmentRealityToNavigateRoute",
+    "ignore": false,
+    "images": [
+        "augment-reality-to-navigate-route.png"
+    ],
+    "keywords": [
+        "augmented reality",
+        "directions",
+        "full-scale",
+        "guidance",
+        "mixed reality",
+        "navigate",
+        "navigation",
+        "real-scale",
+        "route",
+        "routing",
+        "world-scale",
+        "LocationDataSource",
+        "ModelSceneSymbol",
+        "RouteResult",
+        "RouteTask",
+        "RouteTracker",
+        "Surface",
+        "WorldScaleSceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "TODO"
+    ],
+    "relevant_apis": [
+        "LocationDataSource",
+        "ModelSceneSymbol",
+        "RouteResult",
+        "RouteTask",
+        "RouteTracker",
+        "Surface",
+        "WorldScaleSceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/RouteViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/AugmentedRealityViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/navigation/AugmentRealityToNavigateRouteNavGraph.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/screens/AugmentedRealityScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/screens/RouteScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/SharedRepository.kt"
+    ],
+    "title": "Augment reality to navigate route"
+}
