@@ -23,7 +23,7 @@ val localProperties = java.util.Properties().apply {
 // The Artifactory credentials for the ArcGIS Maps SDK for Kotlin repository.
 // First look for the credentials provided via command line (for CI builds), if not found,
 // take the one defined in local.properties.
-// CI builds pass -PartifactoryURL=${ARTIFACTORY_URL} -PartifactoryUser=${ARTIFACTORY_USER} -PartifactoryPassword=${ARTIFACTORY_PASSWORD}
+// CI builds pass -PartifactoryUrl=${ARTIFACTORY_URL} -PartifactoryUser=${ARTIFACTORY_USER} -PartifactoryPassword=${ARTIFACTORY_PASSWORD}
 val artifactoryUrl: String =
     providers.gradleProperty("artifactoryUrl").orNull
         ?: localProperties.getProperty("artifactoryUrl")
@@ -45,7 +45,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://esri.jfrog.io/artifactory/arcgis") }
-        if (artifactoryUrl != "") {
+        if (!artifactoryUrl.isBlank()) {
             maven {
                 url = java.net.URI(artifactoryUrl)
                 credentials {
