@@ -4,7 +4,7 @@
 arcgisMapsKotlinVersion = "200.8.0-4564"
 
 ### Android versions
-androidGradlePlugin = "8.7.3"
+androidGradlePlugin = "8.9.2"
 lifecycle = "2.8.7"
 androidTools = "31.9.1"
 appcompat = "1.7.0"

@@ -18,10 +18,5 @@ gradlePlugin {
 }
 
 dependencies {
-    // `kotlin-dsl` applied here uses embedded Kotlin version 1.9.23 for gradle wrapper 8.9
-    // https://docs.gradle.org/current/userguide/compatibility.html#kotlin
-    // This is needed as newer versions of kotlinx-serialization has been compiled using Kotlin 2.0+
-    // https://github.com/Kotlin/kotlinx.serialization/releases
-    // Sample modules do not use kotlin-dsl, instead uses latest kotlin serialization from libs versions.
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation(libs.kotlinx.serialization.json)
 }
