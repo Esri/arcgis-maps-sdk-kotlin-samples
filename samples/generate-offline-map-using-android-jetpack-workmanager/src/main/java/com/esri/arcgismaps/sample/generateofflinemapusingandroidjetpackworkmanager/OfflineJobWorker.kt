@@ -22,15 +22,15 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.os.Build
 import android.util.Log
 import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
 import androidx.work.ForegroundInfo
+import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arcgismaps.tasks.JobStatus
-import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import com.arcgismaps.tasks.offlinemaptask.DownloadPreplannedOfflineMapJob
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 import java.io.File
 
 /**
@@ -85,7 +85,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             return Result.failure()
         }
         // create the GenerateOfflineMapJob from the json file
-        val generateOfflineMapJob = GenerateOfflineMapJob.fromJsonOrNull(offlineJobJsonFile.readText())
+        val downloadPreplannedOfflineMapJob = DownloadPreplannedOfflineMapJob.fromJsonOrNull(offlineJobJsonFile.readText())
             // return failure if the created job is null
                 ?: return Result.failure()
 
@@ -97,21 +97,21 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             // check and delete if the offline map package file already exists
             // this check is needed, if the download has failed midway and is restarted later
             // by WorkManager
-            File(generateOfflineMapJob.downloadDirectoryPath).deleteRecursively()
+            File(downloadPreplannedOfflineMapJob.downloadDirectoryPath).deleteRecursively()
 
             // start the generateOfflineMapJob
             // this job internally runs on a Dispatchers.IO context, hence this CoroutineWorker
             // can be run on the default Dispatchers.Default context
-            generateOfflineMapJob.start()
+            downloadPreplannedOfflineMapJob.start()
 
             // collect job progress, wait for the job to finish and get the result
             val jobResult = coroutineScope {
                 // launch the progress collector in a new coroutine
                 val progressCollectorJob = launch {
                     // collect on progress until the job has completed in a success/failure
-                    generateOfflineMapJob.progress.takeWhile {
-                        generateOfflineMapJob.status.value != JobStatus.Failed
-                            && generateOfflineMapJob.status.value != JobStatus.Succeeded
+                    downloadPreplannedOfflineMapJob.progress.takeWhile {
+                        downloadPreplannedOfflineMapJob.status.value != JobStatus.Failed
+                            && downloadPreplannedOfflineMapJob.status.value != JobStatus.Succeeded
                     }.collect { progress ->
                         // update the worker progress
                         setProgress(workDataOf("Progress" to progress))
@@ -120,7 +120,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
                     }
                 }
                 // suspends until the generateOfflineMapJob has completed
-                val result = generateOfflineMapJob.result()
+                val result = downloadPreplannedOfflineMapJob.result()
                 // cancel the progress collection coroutine if it is still running
                 progressCollectorJob.cancel()
                 // return the result
@@ -150,7 +150,7 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
             Result.failure()
         } finally {
             // cancel the job to free up any resources
-            generateOfflineMapJob.cancel()
+            downloadPreplannedOfflineMapJob.cancel()
         }
     }
 }
