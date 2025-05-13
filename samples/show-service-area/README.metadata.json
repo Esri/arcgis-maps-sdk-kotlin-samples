@@ -1,0 +1,19 @@
+{
+    "category": "Analysis",
+    "description": "TODO",
+    "formal_name": "ShowServiceArea",
+    "ignore": false,
+    "images": [
+        "show-service-area.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showservicearea/components/ShowServiceAreaViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showservicearea/screens/ShowServiceAreaScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showservicearea/MainActivity.kt"
+    ],
+    "title": "Show service area"
+}
