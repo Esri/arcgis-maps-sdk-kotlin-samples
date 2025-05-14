@@ -20,18 +20,15 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -39,11 +36,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,9 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showservicearea.components.ShowServiceAreaViewModel
@@ -64,7 +62,6 @@ import com.esri.arcgismaps.sample.showservicearea.components.ShowServiceAreaView
 
 /**
  * Main screen layout for the Show Service Area sample app.
- * Displays a MapView and a bottom sheet with controls for adding facilities/barriers, setting time breaks, and solving the service area.
  */
 @Composable
 fun ShowServiceAreaScreen(sampleName: String) {
@@ -75,29 +72,16 @@ fun ShowServiceAreaScreen(sampleName: String) {
     val firstTimeBreak by viewModel.firstTimeBreak.collectAsStateWithLifecycle()
     val secondTimeBreak by viewModel.secondTimeBreak.collectAsStateWithLifecycle()
     val isSolvingServiceArea by viewModel.isSolvingServiceArea.collectAsStateWithLifecycle()
-    val isBottomSheetVisible by viewModel.isBottomSheetVisible.collectAsStateWithLifecycle()
 
-    // Used to show/hide the bottom sheet
-    var showBottomSheet by remember { mutableStateOf(false) }
+    // Dialog state for showing the time break dialog
+    var showTimeBreakDialog by remember { mutableStateOf(false) }
 
-    // Ensure bottom sheet state is synced with ViewModel
-    LaunchedEffect(isBottomSheetVisible) {
-        showBottomSheet = isBottomSheetVisible
-    }
+    // Local state for the dialog's sliders
+    var dialogFirstBreak by remember { mutableIntStateOf(firstTimeBreak) }
+    var dialogSecondBreak by remember { mutableIntStateOf(secondTimeBreak) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        floatingActionButton = {
-            // Show FAB to open the bottom sheet if not visible
-            if (!showBottomSheet) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
-                    onClick = { viewModel.setBottomSheetVisible(true) }
-                ) {
-                    Icon(Icons.Filled.Settings, contentDescription = "Show Options")
-                }
-            }
-        },
         content = { padding ->
             Column(
                 modifier = Modifier
@@ -117,34 +101,69 @@ fun ShowServiceAreaScreen(sampleName: String) {
                             // Add facility/barrier depending on selected mode
                             viewModel.handleMapTap(mapPoint)
                         }
-                        // Dismiss bottom sheet on map interaction
-                        viewModel.setBottomSheetVisible(false)
                     }
                 )
-                // The controls are in a bottom sheet, not in the column directly
-            }
-
-            // Show the bottom sheet for options
-            BottomSheet(
-                isVisible = showBottomSheet,
-                sheetTitle = "Service Area Options",
-                onDismissRequest = { viewModel.setBottomSheetVisible(false) }
-            ) { columnScope ->
-                ServiceAreaOptions(
+                // Controls area at the bottom
+                ServiceAreaControls(
                     selectedGraphicType = selectedGraphicType,
+                    onGraphicTypeSelected = viewModel::setSelectedGraphicType,
                     firstTimeBreak = firstTimeBreak,
                     secondTimeBreak = secondTimeBreak,
-                    onGraphicTypeSelected = viewModel::setSelectedGraphicType,
-                    onTimeBreaksChanged = viewModel::updateTimeBreaks,
-                    onSolveServiceArea = {
-                        viewModel.showServiceArea()
-                        viewModel.setBottomSheetVisible(false)
+                    onShowTimeBreakDialog = {
+                        // Open the dialog and sync local state
+                        dialogFirstBreak = firstTimeBreak
+                        dialogSecondBreak = secondTimeBreak
+                        showTimeBreakDialog = true
                     },
-                    onClearAll = {
-                        viewModel.removeAllGraphics()
-                        viewModel.setBottomSheetVisible(false)
-                    }
+                    onSolveServiceArea = viewModel::showServiceArea,
+                    onClearAll = viewModel::removeAllGraphics
                 )
+            }
+
+            // Time breaks dialog
+            if (showTimeBreakDialog) {
+                SampleDialog(
+                    onDismissRequest = { showTimeBreakDialog = false }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(18.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Set Time Breaks", style = MaterialTheme.typography.titleMedium)
+                        // Slider for first time break
+                        TimeBreakSlider(
+                            label = "First time break",
+                            value = dialogFirstBreak,
+                            valueRange = 1..15,
+                            onValueChange = { dialogFirstBreak = it }
+                        )
+                        // Slider for second time break
+                        TimeBreakSlider(
+                            label = "Second time break",
+                            value = dialogSecondBreak,
+                            valueRange = 1..15,
+                            onValueChange = { dialogSecondBreak = it }
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            OutlinedButton(onClick = { showTimeBreakDialog = false }) {
+                                Text("Cancel")
+                            }
+                            Spacer(Modifier.padding(4.dp))
+                            Button(onClick = {
+                                viewModel.updateTimeBreaks(dialogFirstBreak, dialogSecondBreak)
+                                showTimeBreakDialog = false
+                            }) {
+                                Text("Apply")
+                            }
+                        }
+                    }
+                }
             }
 
             // Show a loading dialog while the service area is being solved
@@ -167,112 +186,98 @@ fun ShowServiceAreaScreen(sampleName: String) {
 }
 
 /**
- * UI controls for service area options: select mode, set time breaks, solve, and clear.
- * This is displayed inside the bottom sheet.
+ * Controls for the service area workflow, shown at the bottom of the screen.
+ * Includes: segmented button for mode, row of action buttons.
  */
 @Composable
-fun ServiceAreaOptions(
+fun ServiceAreaControls(
     selectedGraphicType: GraphicType,
+    onGraphicTypeSelected: (GraphicType) -> Unit,
     firstTimeBreak: Int,
     secondTimeBreak: Int,
-    onGraphicTypeSelected: (GraphicType) -> Unit,
-    onTimeBreaksChanged: (Int, Int) -> Unit,
+    onShowTimeBreakDialog: () -> Unit,
     onSolveServiceArea: () -> Unit,
     onClearAll: () -> Unit
 ) {
-    // Local state for time break steppers
-    var firstBreak by remember { mutableStateOf(firstTimeBreak) }
-    var secondBreak by remember { mutableStateOf(secondTimeBreak) }
-
     Column(
         modifier = Modifier
-            .wrapContentSize()
-            .verticalScroll(rememberScrollState())
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(vertical = 10.dp, horizontal = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Segmented control for Facility/Barrier mode
-        Text("Add graphic type:", style = MaterialTheme.typography.titleMedium)
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            GraphicType.values().forEachIndexed { index, type ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(index, GraphicType.values().size),
-                    onClick = { onGraphicTypeSelected(type) },
-                    selected = selectedGraphicType == type
-                ) {
-                    Text(type.label)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                GraphicType.entries.forEachIndexed { index, type ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index, GraphicType.entries.size),
+                        onClick = { onGraphicTypeSelected(type) },
+                        selected = selectedGraphicType == type
+                    ) {
+                        Text(type.label)
+                    }
                 }
             }
         }
-        // Time break steppers (as OutlinedButtons)
-        Text("Time breaks (minutes):", style = MaterialTheme.typography.titleMedium)
+        // Row of action buttons: Set time breaks, Clear
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(onClick = {
-                if (firstBreak > 1) {
-                    firstBreak--
-                    onTimeBreaksChanged(firstBreak, secondBreak)
-                }
-            }) { Text("-") }
-            Text("First: $firstBreak", modifier = Modifier.padding(horizontal = 8.dp))
-            OutlinedButton(onClick = {
-                if (firstBreak < 15) {
-                    firstBreak++
-                    onTimeBreaksChanged(firstBreak, secondBreak)
-                }
-            }) { Text("+") }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedButton(onClick = {
-                if (secondBreak > 1) {
-                    secondBreak--
-                    onTimeBreaksChanged(firstBreak, secondBreak)
-                }
-            }) { Text("-") }
-            Text("Second: $secondBreak", modifier = Modifier.padding(horizontal = 8.dp))
-            OutlinedButton(onClick = {
-                if (secondBreak < 15) {
-                    secondBreak++
-                    onTimeBreaksChanged(firstBreak, secondBreak)
-                }
-            }) { Text("+") }
-        }
-        // Row of action buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            FilledTonalButton(onClick = onSolveServiceArea) {
-                Text("Service Area")
+            OutlinedButton(onClick = onShowTimeBreakDialog) {
+                Text("Set time breaks: $firstTimeBreak, $secondTimeBreak")
             }
-            Button(onClick = onClearAll) {
+            OutlinedButton(onClick = onClearAll) {
                 Icon(Icons.Filled.Delete, contentDescription = "Clear")
                 Text("Clear")
             }
         }
+        Button(onClick = onSolveServiceArea) { Text("Solve Service Area") }
+    }
+}
+
+/**
+ * Slider row for setting a time break value, with label and value display.
+ */
+@Composable
+fun TimeBreakSlider(
+    label: String,
+    value: Int,
+    valueRange: IntRange,
+    onValueChange: (Int) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("$label: $value min", style = MaterialTheme.typography.labelLarge)
+        Slider(
+            value = value.toFloat(),
+            onValueChange = { onValueChange(it.toInt()) },
+            valueRange = valueRange.first.toFloat()..valueRange.last.toFloat(),
+            steps = valueRange.last - valueRange.first - 1
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun PreviewServiceAreaOptions() {
+fun PreviewServiceAreaControls() {
     SamplePreviewSurface {
         Surface {
-            ServiceAreaOptions(
+            ServiceAreaControls(
                 selectedGraphicType = GraphicType.Facility,
+                onGraphicTypeSelected = {},
                 firstTimeBreak = 3,
                 secondTimeBreak = 8,
-                onGraphicTypeSelected = {},
-                onTimeBreaksChanged = { _, _ -> },
+                onShowTimeBreakDialog = {},
                 onSolveServiceArea = {},
                 onClearAll = {}
             )

@@ -55,8 +55,8 @@ import kotlinx.coroutines.launch
  * Handles all ArcGIS Maps SDK logic, state, and exposes flows for Compose UI.
  */
 class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
-    // ArcGISMap centered over San Diego, matching the Swift sample viewpoint
-    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTerrain).apply {
+    // ArcGISMap centered over San Diego
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTerrain).apply {
         initialViewpoint = Viewpoint(
             center = Point(
                 x = -13041154.0,
@@ -72,13 +72,13 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
 
     // Graphics overlays for facilities, barriers, and service areas
     val facilitiesOverlay = GraphicsOverlay().apply {
-        // Use a blue star pin for facilities, matching Swift sample
-        val facilitySymbol = PictureMarkerSymbol("https://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png")
-        // Offset to align image properly
-        facilitySymbol.apply {
-            offsetY = 21f
-            renderer = SimpleRenderer(this)
-        }
+        renderer = SimpleRenderer(
+            symbol = PictureMarkerSymbol( // Use a blue star pin for facilities
+                url = "https://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png"
+            ).apply {
+                // Offset to align image properly
+                offsetY = 21f
+            })
     }
     val barriersOverlay = GraphicsOverlay().apply {
         // Red diagonal cross fill for barriers
@@ -92,19 +92,21 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     val serviceAreaOverlay = GraphicsOverlay()
 
     // Expose overlays as a list for MapView
-    val graphicsOverlays: List<GraphicsOverlay> = listOf(facilitiesOverlay, barriersOverlay, serviceAreaOverlay)
+    val graphicsOverlays = listOf(facilitiesOverlay, barriersOverlay, serviceAreaOverlay)
 
     // Service area task for the San Diego network analysis service
-    private val serviceAreaTask = ServiceAreaTask("https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/ServiceArea")
+    private val serviceAreaTask = ServiceAreaTask(
+        url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/ServiceArea"
+    )
 
-    // Service area parameters (created on first use)
+    // Service area parameters
     private var serviceAreaParameters: ServiceAreaParameters? = null
 
     // StateFlow for the currently selected graphic type (facility or barrier)
     private val _selectedGraphicType = MutableStateFlow(GraphicType.Facility)
     val selectedGraphicType: StateFlow<GraphicType> = _selectedGraphicType.asStateFlow()
 
-    // StateFlows for time break values (default 3 and 8, as in Swift sample)
+    // StateFlows for time break values
     private val _firstTimeBreak = MutableStateFlow(3)
     val firstTimeBreak: StateFlow<Int> = _firstTimeBreak.asStateFlow()
     private val _secondTimeBreak = MutableStateFlow(8)
@@ -146,8 +148,8 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
      * @param point The map point where the barrier is added.
      */
     private fun addBarrierGraphic(point: Point) {
-        // Create a 500 meter buffer polygon around the point (matching Swift sample)
-        val bufferedGeometry = GeometryEngine.bufferOrNull(point, 500.0)
+        // Create a 500 meter buffer polygon around the point
+        val bufferedGeometry = GeometryEngine.bufferOrNull(geometry = point, distance = 500.0)
         val graphic = Graphic(geometry = bufferedGeometry)
         barriersOverlay.graphics.add(graphic)
     }
@@ -197,45 +199,47 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
                 if (serviceAreaParameters == null) {
                     serviceAreaParameters = serviceAreaTask.createDefaultParameters().getOrElse {
                         _isSolvingServiceArea.value = false
-                        messageDialogVM.showMessageDialog(it)
-                        return@launch
+                        return@launch messageDialogVM.showMessageDialog(it)
                     }
-                    // Dissolve overlapping polygons (matches Swift sample)
+                    // Dissolve overlapping polygons
                     serviceAreaParameters?.geometryAtOverlap = ServiceAreaOverlapGeometry.Dissolve
                 }
-                // Clear previous service area graphics
-                serviceAreaOverlay.graphics.clear()
-                // Set facilities from facility graphics
-                val facilities = facilitiesOverlay.graphics.mapNotNull { graphic ->
-                    (graphic.geometry as? Point)?.let { ServiceAreaFacility(it) }
-                }
-                serviceAreaParameters?.setFacilities(facilities)
-                // Set polygon barriers from barrier graphics
-                val barriers = barriersOverlay.graphics.mapNotNull { graphic ->
-                    (graphic.geometry as? Polygon)?.let { PolygonBarrier(it) }
-                }
-                serviceAreaParameters?.setPolygonBarriers(barriers)
-                // Set the time breaks (impedance cutoffs)
-                serviceAreaParameters?.defaultImpedanceCutoffs?.clear()
-                serviceAreaParameters?.defaultImpedanceCutoffs?.addAll(
-                    listOf(_firstTimeBreak.value.toDouble(), _secondTimeBreak.value.toDouble())
-                )
-                // Solve the service area
-                val result: ServiceAreaResult = serviceAreaTask.solveServiceArea(serviceAreaParameters!!)
-                    .getOrElse {
-                        _isSolvingServiceArea.value = false
-                        messageDialogVM.showMessageDialog(it)
-                        return@launch
+
+                serviceAreaParameters?.let { params ->
+                    // Clear previous service area graphics
+                    serviceAreaOverlay.graphics.clear()
+                    // Set facilities from facility graphics
+                    val facilities = facilitiesOverlay.graphics.mapNotNull { graphic ->
+                        (graphic.geometry as? Point)?.let { ServiceAreaFacility(it) }
                     }
-                // Display polygons for the first facility (if any)
-                val polygons: List<ServiceAreaPolygon> = result.getResultPolygons(0)
-                polygons.forEachIndexed { index, polygon ->
-                    val fillSymbol = makeServiceAreaSymbol(isFirst = index == 0)
-                    val graphic = Graphic(
-                        geometry = polygon.geometry,
-                        symbol = fillSymbol
+                    params.setFacilities(facilities)
+                    // Set polygon barriers from barrier graphics
+                    val barriers = barriersOverlay.graphics.mapNotNull { graphic ->
+                        (graphic.geometry as? Polygon)?.let { PolygonBarrier(it) }
+                    }
+                    params.setPolygonBarriers(barriers)
+                    // Set the time breaks (impedance cutoffs)
+                    params.defaultImpedanceCutoffs.clear()
+                    params.defaultImpedanceCutoffs.addAll(
+                        listOf(_firstTimeBreak.value.toDouble(), _secondTimeBreak.value.toDouble())
                     )
-                    serviceAreaOverlay.graphics.add(graphic)
+                    // Solve the service area
+                    val result: ServiceAreaResult = serviceAreaTask.solveServiceArea(params)
+                        .getOrElse {
+                            _isSolvingServiceArea.value = false
+                            messageDialogVM.showMessageDialog(it)
+                            return@launch
+                        }
+                    // Display polygons for the first facility (if any)
+                    val polygons: List<ServiceAreaPolygon> = result.getResultPolygons(0)
+                    polygons.forEachIndexed { index, polygon ->
+                        val fillSymbol = makeServiceAreaSymbol(isFirst = index == 0)
+                        val graphic = Graphic(
+                            geometry = polygon.geometry,
+                            symbol = fillSymbol
+                        )
+                        serviceAreaOverlay.graphics.add(graphic)
+                    }
                 }
             } finally {
                 _isSolvingServiceArea.value = false
@@ -244,13 +248,22 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Creates a fill symbol for the service area polygons, matching the Swift sample colors.
+     * Creates a fill symbol for the service area polygons.
      * @param isFirst Whether this is the first polygon (yellow) or second (green).
      */
     private fun makeServiceAreaSymbol(isFirst: Boolean): Symbol {
-        // Colors are semi-transparent, matching Swift sample
-        val lineSymbolColor = if (isFirst) Color.fromRgba(102, 102, 0, 77) else Color.fromRgba(0, 102, 0, 77)
-        val fillSymbolColor = if (isFirst) Color.fromRgba(204, 204, 0, 77) else Color.fromRgba(0, 204, 0, 77)
+        // Colors are semi-transparent
+        val lineSymbolColor = if (isFirst) {
+            Color.fromRgba(102, 102, 0, 77)
+        } else {
+            Color.fromRgba(0, 102, 0, 77)
+        }
+        val fillSymbolColor = if (isFirst) {
+            Color.fromRgba(204, 204, 0, 77)
+        } else {
+            Color.fromRgba(0, 204, 0, 77)
+        }
+
         val outline = SimpleLineSymbol(
             style = SimpleLineSymbolStyle.Solid,
             color = lineSymbolColor,
@@ -261,14 +274,6 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
             color = fillSymbolColor,
             outline = outline
         )
-    }
-
-    /**
-     * Companion object to provide Color.blue for ArcGIS SDK usage.
-     */
-    companion object {
-        val Color.Companion.blue: Color
-            get() = Color.fromRgba(0, 0, 255, 255)
     }
 
     /**
