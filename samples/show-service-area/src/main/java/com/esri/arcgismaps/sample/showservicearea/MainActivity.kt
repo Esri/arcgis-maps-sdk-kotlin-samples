@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
-
+        ArcGISEnvironment.applicationContext = this
         setContent {
             SampleAppTheme {
                 ShowServiceAreaApp()

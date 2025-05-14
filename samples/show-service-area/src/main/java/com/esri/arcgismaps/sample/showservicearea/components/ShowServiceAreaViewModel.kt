@@ -17,17 +17,9 @@
 package com.esri.arcgismaps.sample.showservicearea.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
-import com.arcgismaps.data.ServiceAreaFacility
-import com.arcgismaps.data.ServiceAreaParameters
-import com.arcgismaps.data.ServiceAreaPolygon
-import com.arcgismaps.data.ServiceAreaResult
-import com.arcgismaps.data.ServiceAreaTask
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
@@ -44,7 +36,13 @@ import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.symbology.Symbol
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.ScreenCoordinate
+import com.arcgismaps.tasks.networkanalysis.PolygonBarrier
+import com.arcgismaps.tasks.networkanalysis.ServiceAreaFacility
+import com.arcgismaps.tasks.networkanalysis.ServiceAreaOverlapGeometry
+import com.arcgismaps.tasks.networkanalysis.ServiceAreaParameters
+import com.arcgismaps.tasks.networkanalysis.ServiceAreaPolygon
+import com.arcgismaps.tasks.networkanalysis.ServiceAreaResult
+import com.arcgismaps.tasks.networkanalysis.ServiceAreaTask
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,11 +73,11 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     // Graphics overlays for facilities, barriers, and service areas
     val facilitiesOverlay = GraphicsOverlay().apply {
         // Use a blue star pin for facilities, matching Swift sample
-        val facilitySymbol = PictureMarkerSymbol.createAsync("https://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png")
+        val facilitySymbol = PictureMarkerSymbol("https://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png")
         // Offset to align image properly
-        facilitySymbol.onSuccess { symbol ->
-            symbol.offsetY = 21f
-            renderer = SimpleRenderer(symbol)
+        facilitySymbol.apply {
+            offsetY = 21f
+            renderer = SimpleRenderer(this)
         }
     }
     val barriersOverlay = GraphicsOverlay().apply {
@@ -149,7 +147,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
      */
     private fun addBarrierGraphic(point: Point) {
         // Create a 500 meter buffer polygon around the point (matching Swift sample)
-        val bufferedGeometry = GeometryEngine.buffer(point, 500.0)
+        val bufferedGeometry = GeometryEngine.bufferOrNull(point, 500.0)
         val graphic = Graphic(geometry = bufferedGeometry)
         barriersOverlay.graphics.add(graphic)
     }
@@ -203,7 +201,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
                         return@launch
                     }
                     // Dissolve overlapping polygons (matches Swift sample)
-                    serviceAreaParameters?.geometryAtOverlap = com.arcgismaps.data.ServiceAreaOverlapGeometry.Dissolve
+                    serviceAreaParameters?.geometryAtOverlap = ServiceAreaOverlapGeometry.Dissolve
                 }
                 // Clear previous service area graphics
                 serviceAreaOverlay.graphics.clear()
@@ -214,12 +212,12 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
                 serviceAreaParameters?.setFacilities(facilities)
                 // Set polygon barriers from barrier graphics
                 val barriers = barriersOverlay.graphics.mapNotNull { graphic ->
-                    (graphic.geometry as? Polygon)?.let { com.arcgismaps.data.PolygonBarrier(it) }
+                    (graphic.geometry as? Polygon)?.let { PolygonBarrier(it) }
                 }
                 serviceAreaParameters?.setPolygonBarriers(barriers)
                 // Set the time breaks (impedance cutoffs)
-                serviceAreaParameters?.removeAllDefaultImpedanceCutoffs()
-                serviceAreaParameters?.addDefaultImpedanceCutoffs(
+                serviceAreaParameters?.defaultImpedanceCutoffs?.clear()
+                serviceAreaParameters?.defaultImpedanceCutoffs?.addAll(
                     listOf(_firstTimeBreak.value.toDouble(), _secondTimeBreak.value.toDouble())
                 )
                 // Solve the service area
@@ -230,7 +228,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
                         return@launch
                     }
                 // Display polygons for the first facility (if any)
-                val polygons: List<ServiceAreaPolygon> = result.resultPolygons(0)
+                val polygons: List<ServiceAreaPolygon> = result.getResultPolygons(0)
                 polygons.forEachIndexed { index, polygon ->
                     val fillSymbol = makeServiceAreaSymbol(isFirst = index == 0)
                     val graphic = Graphic(
