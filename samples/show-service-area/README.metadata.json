@@ -1,19 +1,40 @@
 {
     "category": "Analysis",
-    "description": "TODO",
+    "description": "Find the service area within a network from a given point.",
     "formal_name": "ShowServiceArea",
     "ignore": false,
     "images": [
         "show-service-area.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "barriers",
+        "facilities",
+        "impedance",
+        "logistics",
+        "network analysis",
+        "routing",
+        "service area",
+        "PolygonBarrier",
+        "ServiceAreaFacility",
+        "ServiceAreaParameters",
+        "ServiceAreaPolygon",
+        "ServiceAreaResult",
+        "ServiceAreaTask"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "PolygonBarrier",
+        "ServiceAreaFacility",
+        "ServiceAreaParameters",
+        "ServiceAreaPolygon",
+        "ServiceAreaResult",
+        "ServiceAreaTask"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showservicearea/components/ShowServiceAreaViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showservicearea/screens/ShowServiceAreaScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showservicearea/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showservicearea/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showservicearea/screens/ShowServiceAreaScreen.kt"
     ],
     "title": "Show service area"
 }
