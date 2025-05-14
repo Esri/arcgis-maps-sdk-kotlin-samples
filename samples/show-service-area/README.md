@@ -12,11 +12,11 @@ For example, you might calculate the region around a hospital in which ambulance
 
 ## How to use the sample
 
-- To add a facility, select the "Facilities" mode and tap anywhere on the map.
-- To add a barrier, select the "Barriers" mode and tap on the map to add barrier polygons.
-- Use the "Set time breaks" button to adjust the time break values for the service area calculation.
-- Tap the "Solve Service Area" button to calculate and display the service area polygons around the facilities, considering any barriers.
-- Use the "Clear" button to remove all facilities, barriers, and service area polygons from the map.
+* To add a facility, select the "Facilities" mode and tap anywhere on the map.
+* To add a barrier, select the "Barriers" mode and tap on the map to add barrier polygons.
+* Use the "Set time breaks" button to adjust the time break values for the service area calculation.
+* Tap the "Solve Service Area" button to calculate and display the service area polygons around the facilities, considering any barriers.
+* Use the "Clear" button to remove all facilities, barriers, and service area polygons from the map.
 
 ## How it works
 
@@ -31,12 +31,12 @@ For example, you might calculate the region around a hospital in which ambulance
 
 ## Relevant API
 
-- ServiceAreaTask
-- ServiceAreaParameters
-- ServiceAreaFacility
-- PolygonBarrier
-- ServiceAreaResult
-- ServiceAreaPolygon
+* PolygonBarrier
+* ServiceAreaFacility
+* ServiceAreaParameters
+* ServiceAreaPolygon
+* ServiceAreaResult
+* ServiceAreaTask
 
 ## Tags
 
