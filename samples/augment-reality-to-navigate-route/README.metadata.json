@@ -27,6 +27,7 @@
         "WorldScaleSceneView"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "LocationDataSource",
         "ModelSceneSymbol",
