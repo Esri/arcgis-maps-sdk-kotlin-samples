@@ -27,9 +27,6 @@
         "WorldScaleSceneView"
     ],
     "language": "kotlin",
-    "redirect_from": [
-        "TODO"
-    ],
     "relevant_apis": [
         "LocationDataSource",
         "ModelSceneSymbol",
@@ -42,8 +39,8 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/RouteViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/AugmentedRealityViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/navigation/AugmentRealityToNavigateRouteNavGraph.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/screens/AugmentedRealityScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/screens/RouteScreen.kt",
