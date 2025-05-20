@@ -39,9 +39,7 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.tasks.networkanalysis.PolygonBarrier
 import com.arcgismaps.tasks.networkanalysis.ServiceAreaFacility
 import com.arcgismaps.tasks.networkanalysis.ServiceAreaOverlapGeometry
-import com.arcgismaps.tasks.networkanalysis.ServiceAreaParameters
 import com.arcgismaps.tasks.networkanalysis.ServiceAreaPolygon
-import com.arcgismaps.tasks.networkanalysis.ServiceAreaResult
 import com.arcgismaps.tasks.networkanalysis.ServiceAreaTask
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
@@ -99,26 +97,17 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
         url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/ServiceArea"
     )
 
-    // Service area parameters
-    private var serviceAreaParameters: ServiceAreaParameters? = null
-
     // StateFlow for the currently selected graphic type (facility or barrier)
     private val _selectedGraphicType = MutableStateFlow(GraphicType.Facility)
     val selectedGraphicType: StateFlow<GraphicType> = _selectedGraphicType.asStateFlow()
 
-    // StateFlows for time break values
-    private val _firstTimeBreak = MutableStateFlow(3)
-    val firstTimeBreak: StateFlow<Int> = _firstTimeBreak.asStateFlow()
-    private val _secondTimeBreak = MutableStateFlow(8)
-    val secondTimeBreak: StateFlow<Int> = _secondTimeBreak.asStateFlow()
+    // StateFlow for time break values (combined in a data class)
+    private val _timeBreaks = MutableStateFlow(TimeBreaks(3, 8))
+    val timeBreaks: StateFlow<TimeBreaks> = _timeBreaks.asStateFlow()
 
     // StateFlow for loading status (used to show loading dialog)
     private val _isSolvingServiceArea = MutableStateFlow(false)
     val isSolvingServiceArea: StateFlow<Boolean> = _isSolvingServiceArea.asStateFlow()
-
-    // StateFlow for showing/hiding the bottom sheet
-    private val _isBottomSheetVisible = MutableStateFlow(false)
-    val isBottomSheetVisible: StateFlow<Boolean> = _isBottomSheetVisible.asStateFlow()
 
     // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()
@@ -148,7 +137,6 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
      * @param point The map point where the barrier is added.
      */
     private fun addBarrierGraphic(point: Point) {
-        // Create a 500 meter buffer polygon around the point
         val bufferedGeometry = GeometryEngine.bufferOrNull(geometry = point, distance = 500.0)
         val graphic = Graphic(geometry = bufferedGeometry)
         barriersOverlay.graphics.add(graphic)
@@ -174,15 +162,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
      * Updates the time break values for service area calculation.
      */
     fun updateTimeBreaks(first: Int, second: Int) {
-        _firstTimeBreak.value = first
-        _secondTimeBreak.value = second
-    }
-
-    /**
-     * Shows or hides the bottom sheet.
-     */
-    fun setBottomSheetVisible(visible: Boolean) {
-        _isBottomSheetVisible.value = visible
+        _timeBreaks.value = TimeBreaks(first, second)
     }
 
     /**
@@ -195,51 +175,40 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
         _isSolvingServiceArea.value = true
         viewModelScope.launch {
             try {
-                // Create parameters if not already created
-                if (serviceAreaParameters == null) {
-                    serviceAreaParameters = serviceAreaTask.createDefaultParameters().getOrElse {
-                        _isSolvingServiceArea.value = false
-                        return@launch messageDialogVM.showMessageDialog(it)
-                    }
-                    // Dissolve overlapping polygons
-                    serviceAreaParameters?.geometryAtOverlap = ServiceAreaOverlapGeometry.Dissolve
+                // Always create new parameters for each solve (no need to cache)
+                val serviceAreaParameters = serviceAreaTask.createDefaultParameters().getOrElse {
+                    return@launch messageDialogVM.showMessageDialog(it)
                 }
-
-                serviceAreaParameters?.let { params ->
-                    // Clear previous service area graphics
-                    serviceAreaOverlay.graphics.clear()
-                    // Set facilities from facility graphics
-                    val facilities = facilitiesOverlay.graphics.mapNotNull { graphic ->
-                        (graphic.geometry as? Point)?.let { ServiceAreaFacility(it) }
-                    }
-                    params.setFacilities(facilities)
-                    // Set polygon barriers from barrier graphics
-                    val barriers = barriersOverlay.graphics.mapNotNull { graphic ->
-                        (graphic.geometry as? Polygon)?.let { PolygonBarrier(it) }
-                    }
-                    params.setPolygonBarriers(barriers)
-                    // Set the time breaks (impedance cutoffs)
-                    params.defaultImpedanceCutoffs.clear()
-                    params.defaultImpedanceCutoffs.addAll(
-                        listOf(_firstTimeBreak.value.toDouble(), _secondTimeBreak.value.toDouble())
+                serviceAreaParameters.geometryAtOverlap = ServiceAreaOverlapGeometry.Dissolve
+                // Clear previous service area graphics
+                serviceAreaOverlay.graphics.clear()
+                // Set facilities from facility graphics
+                val facilities = facilitiesOverlay.graphics.mapNotNull { graphic ->
+                    (graphic.geometry as? Point)?.let { ServiceAreaFacility(it) }
+                }
+                serviceAreaParameters.setFacilities(facilities)
+                // Set polygon barriers from barrier graphics
+                val barriers = barriersOverlay.graphics.mapNotNull { graphic ->
+                    (graphic.geometry as? Polygon)?.let { PolygonBarrier(it) }
+                }
+                serviceAreaParameters.setPolygonBarriers(barriers)
+                // Set the time breaks (impedance cutoffs)
+                serviceAreaParameters.defaultImpedanceCutoffs.clear()
+                serviceAreaParameters.defaultImpedanceCutoffs.addAll(
+                    listOf(_timeBreaks.value.first.toDouble(), _timeBreaks.value.second.toDouble())
+                )
+                // Solve the service area
+                val result = serviceAreaTask.solveServiceArea(serviceAreaParameters)
+                    .getOrElse { return@launch messageDialogVM.showMessageDialog(it) }
+                // Display polygons for the first facility (if any)
+                val polygons: List<ServiceAreaPolygon> = result.getResultPolygons(0)
+                polygons.forEachIndexed { index, polygon ->
+                    val fillSymbol = makeServiceAreaSymbol(index == 0)
+                    val graphic = Graphic(
+                        geometry = polygon.geometry,
+                        symbol = fillSymbol
                     )
-                    // Solve the service area
-                    val result: ServiceAreaResult = serviceAreaTask.solveServiceArea(params)
-                        .getOrElse {
-                            _isSolvingServiceArea.value = false
-                            messageDialogVM.showMessageDialog(it)
-                            return@launch
-                        }
-                    // Display polygons for the first facility (if any)
-                    val polygons: List<ServiceAreaPolygon> = result.getResultPolygons(0)
-                    polygons.forEachIndexed { index, polygon ->
-                        val fillSymbol = makeServiceAreaSymbol(isFirst = index == 0)
-                        val graphic = Graphic(
-                            geometry = polygon.geometry,
-                            symbol = fillSymbol
-                        )
-                        serviceAreaOverlay.graphics.add(graphic)
-                    }
+                    serviceAreaOverlay.graphics.add(graphic)
                 }
             } finally {
                 _isSolvingServiceArea.value = false
@@ -283,4 +252,9 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
         Facility("Facilities"),
         Barrier("Barriers")
     }
+
+    /**
+     * Data class for holding both time break values together.
+     */
+    data class TimeBreaks(val first: Int, val second: Int)
 }

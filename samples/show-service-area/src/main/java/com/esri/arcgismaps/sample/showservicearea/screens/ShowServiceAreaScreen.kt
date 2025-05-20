@@ -41,7 +41,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,6 +58,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showservicearea.components.ShowServiceAreaViewModel
 import com.esri.arcgismaps.sample.showservicearea.components.ShowServiceAreaViewModel.GraphicType
+import com.esri.arcgismaps.sample.showservicearea.components.ShowServiceAreaViewModel.TimeBreaks
 
 /**
  * Main screen layout for the Show Service Area sample app.
@@ -69,16 +69,11 @@ fun ShowServiceAreaScreen(sampleName: String) {
 
     // Collect state flows from the ViewModel for Compose UI
     val selectedGraphicType by viewModel.selectedGraphicType.collectAsStateWithLifecycle()
-    val firstTimeBreak by viewModel.firstTimeBreak.collectAsStateWithLifecycle()
-    val secondTimeBreak by viewModel.secondTimeBreak.collectAsStateWithLifecycle()
+    val timeBreaks by viewModel.timeBreaks.collectAsStateWithLifecycle()
     val isSolvingServiceArea by viewModel.isSolvingServiceArea.collectAsStateWithLifecycle()
 
     // Dialog state for showing the time break dialog
     var showTimeBreakDialog by remember { mutableStateOf(false) }
-
-    // Local state for the dialog's sliders
-    var dialogFirstBreak by remember { mutableIntStateOf(firstTimeBreak) }
-    var dialogSecondBreak by remember { mutableIntStateOf(secondTimeBreak) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -107,14 +102,8 @@ fun ShowServiceAreaScreen(sampleName: String) {
                 ServiceAreaControls(
                     selectedGraphicType = selectedGraphicType,
                     onGraphicTypeSelected = viewModel::setSelectedGraphicType,
-                    firstTimeBreak = firstTimeBreak,
-                    secondTimeBreak = secondTimeBreak,
-                    onShowTimeBreakDialog = {
-                        // Open the dialog and sync local state
-                        dialogFirstBreak = firstTimeBreak
-                        dialogSecondBreak = secondTimeBreak
-                        showTimeBreakDialog = true
-                    },
+                    timeBreaks = timeBreaks,
+                    onShowTimeBreakDialog = { showTimeBreakDialog = true },
                     onSolveServiceArea = viewModel::showServiceArea,
                     onClearAll = viewModel::removeAllGraphics
                 )
@@ -122,48 +111,14 @@ fun ShowServiceAreaScreen(sampleName: String) {
 
             // Time breaks dialog
             if (showTimeBreakDialog) {
-                SampleDialog(
-                    onDismissRequest = { showTimeBreakDialog = false }
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .padding(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(18.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Set Time Breaks", style = MaterialTheme.typography.titleMedium)
-                        // Slider for first time break
-                        TimeBreakSlider(
-                            label = "First time break",
-                            value = dialogFirstBreak,
-                            valueRange = 1..15,
-                            onValueChange = { dialogFirstBreak = it }
-                        )
-                        // Slider for second time break
-                        TimeBreakSlider(
-                            label = "Second time break",
-                            value = dialogSecondBreak,
-                            valueRange = 1..15,
-                            onValueChange = { dialogSecondBreak = it }
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            OutlinedButton(onClick = { showTimeBreakDialog = false }) {
-                                Text("Cancel")
-                            }
-                            Spacer(Modifier.padding(4.dp))
-                            Button(onClick = {
-                                viewModel.updateTimeBreaks(dialogFirstBreak, dialogSecondBreak)
-                                showTimeBreakDialog = false
-                            }) {
-                                Text("Apply")
-                            }
-                        }
-                    }
-                }
+                TimeBreakDialog(
+                    initialTimeBreaks = timeBreaks,
+                    onApply = { first, second ->
+                        viewModel.updateTimeBreaks(first, second)
+                        showTimeBreakDialog = false
+                    },
+                    onCancel = { showTimeBreakDialog = false }
+                )
             }
 
             // Show a loading dialog while the service area is being solved
@@ -193,8 +148,7 @@ fun ShowServiceAreaScreen(sampleName: String) {
 fun ServiceAreaControls(
     selectedGraphicType: GraphicType,
     onGraphicTypeSelected: (GraphicType) -> Unit,
-    firstTimeBreak: Int,
-    secondTimeBreak: Int,
+    timeBreaks: TimeBreaks,
     onShowTimeBreakDialog: () -> Unit,
     onSolveServiceArea: () -> Unit,
     onClearAll: () -> Unit
@@ -231,7 +185,7 @@ fun ServiceAreaControls(
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedButton(onClick = onShowTimeBreakDialog) {
-                Text("Set time breaks: $firstTimeBreak, $secondTimeBreak")
+                Text("Set time breaks: ${timeBreaks.first}, ${timeBreaks.second}")
             }
             OutlinedButton(onClick = onClearAll) {
                 Icon(Icons.Filled.Delete, contentDescription = "Clear")
@@ -239,6 +193,54 @@ fun ServiceAreaControls(
             }
         }
         Button(onClick = onSolveServiceArea) { Text("Solve Service Area") }
+    }
+}
+
+/**
+ * Dialog for setting time break values with sliders.
+ */
+@Composable
+fun TimeBreakDialog(
+    initialTimeBreaks: TimeBreaks,
+    onApply: (first: Int, second: Int) -> Unit,
+    onCancel: () -> Unit
+) {
+    var firstBreak by remember { mutableStateOf(initialTimeBreaks.first) }
+    var secondBreak by remember { mutableStateOf(initialTimeBreaks.second) }
+    SampleDialog(onDismissRequest = onCancel) {
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Set Time Breaks", style = MaterialTheme.typography.titleMedium)
+            TimeBreakSlider(
+                label = "First time break",
+                value = firstBreak,
+                valueRange = 1..15,
+                onValueChange = { firstBreak = it }
+            )
+            TimeBreakSlider(
+                label = "Second time break",
+                value = secondBreak,
+                valueRange = 1..15,
+                onValueChange = { secondBreak = it }
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                OutlinedButton(onClick = onCancel) {
+                    Text("Cancel")
+                }
+                Spacer(Modifier.padding(4.dp))
+                Button(onClick = { onApply(firstBreak, secondBreak) }) {
+                    Text("Apply")
+                }
+            }
+        }
     }
 }
 
@@ -275,8 +277,7 @@ fun PreviewServiceAreaControls() {
             ServiceAreaControls(
                 selectedGraphicType = GraphicType.Facility,
                 onGraphicTypeSelected = {},
-                firstTimeBreak = 3,
-                secondTimeBreak = 8,
+                timeBreaks = TimeBreaks(3, 8),
                 onShowTimeBreakDialog = {},
                 onSolveServiceArea = {},
                 onClearAll = {}
