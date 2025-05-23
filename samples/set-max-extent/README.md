@@ -30,4 +30,8 @@ by the max extent. Use the toggle switch to disable the max extent to freely pan
 
 ## Tags
 
-extent, limit panning, map, mapview, max extent, zoom
+extent, limit panning, map, mapview, max extent, zoom, geoview-compose, toolkit
+
+## Additional information section
+
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
