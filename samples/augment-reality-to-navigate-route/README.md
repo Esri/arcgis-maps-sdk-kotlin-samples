@@ -48,6 +48,8 @@ Unlike other scene samples, there's no need for a basemap while navigating, beca
 
 **World-scale AR** is one of two main patterns for working with geographic information in augmented reality currently available in the [toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main).
 
+Note that apps using ARCore must comply with ARCore's user privacy requirements. See [this page](https://developers.google.com/ar/develop/privacy-requirements) for more information.
+
 ## Tags
 
 augmented reality, directions, full-scale, guidance, mixed reality, navigate, navigation, real-scale, route, routing, world-scale
