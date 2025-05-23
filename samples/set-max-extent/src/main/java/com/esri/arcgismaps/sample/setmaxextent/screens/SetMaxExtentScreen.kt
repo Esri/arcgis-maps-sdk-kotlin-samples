@@ -16,12 +16,19 @@
 
 package com.esri.arcgismaps.sample.setmaxextent.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.setmaxextent.components.SetMaxExtentViewModel
@@ -47,8 +54,24 @@ fun SetMaxExtentScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
+                    arcGISMap = mapViewModel.coloradoMap,
+                    graphicsOverlays = mapViewModel.graphicsOverlays
                 )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        mapViewModel.extentText.value,
+                        modifier = Modifier.align(Alignment.CenterVertically),)
+                    Switch (
+                        checked = mapViewModel.maxExtentEnabled.value,
+                        onCheckedChange = mapViewModel::onSwitch,
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                    )
+                }
             }
 
             mapViewModel.messageDialogVM.apply {
