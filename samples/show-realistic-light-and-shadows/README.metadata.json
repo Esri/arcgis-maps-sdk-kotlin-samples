@@ -1,0 +1,37 @@
+{
+  "category": "Visualization",
+  "description": "Show realistic lighting and shadows for a given time of day.",
+  "formal_name": "ShowRealisticLightAndShadows",
+  "ignore": false,
+  "images": [
+      "show-realistic-light-and-shadows.png"
+  ],
+  "keywords": [
+      "3D",
+      "lighting",
+      "realism",
+      "realistic",
+      "rendering",
+      "sceneview-compose",
+      "shadows",
+      "sun",
+      "time",
+      "toolkit",
+      "Scene",
+      "SceneView",
+      "SceneView.SunLighting"
+  ],
+  "language": "kotlin",
+  "redirect_from": "",
+  "relevant_apis": [
+      "Scene",
+      "SceneView",
+      "SceneView.SunLighting"
+  ],
+  "snippets": [
+      "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/components/ShowRealisticLightAndShadowsViewModel.kt",
+      "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/MainActivity.kt",
+      "src/main/java/com/esri/arcgismaps/sample/showrealisticlightandshadows/screens/ShowRealisticLightAndShadowsScreen.kt"
+  ],
+  "title": "Show realistic light and shadows"
+}
