@@ -34,23 +34,20 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.LightingMode
 import com.arcgismaps.mapping.view.SpaceEffect
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
 
 class ShowRealisticLightAndShadowsViewModel(application: Application) :
     AndroidViewModel(application) {
 
     val arcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
-        // add base surface for elevation data
-        val surface = Surface()
-        // create an elevation source from Terrain3D REST service
-        surface.elevationSources.add(
-            ArcGISTiledElevationSource(
-                "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
+        // add a base surface with elevation source
+        baseSurface = Surface().apply {
+            // create an elevation source from Terrain3D REST service
+            elevationSources.add(
+                ArcGISTiledElevationSource(
+                    "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
+                )
             )
-        )
-        baseSurface = surface
+        }
         // create a scene layer from buildings REST service
         operationalLayers.add(
             ArcGISSceneLayer(
@@ -68,10 +65,6 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
         )
     }
 
-    // noon in the timezone our center point is located with an arbitrary date
-    val noon: ZonedDateTime = LocalDateTime.parse("2000-09-22T12:00:00").atZone(
-        ZoneId.of("US/Pacific"))
-
     // create a LightingOptionsState with default values that will be used by the scene view
     val lightingOptionsState = LightingOptionsState(
         mutableStateOf(LightingMode.LightAndShadows),
@@ -80,10 +73,8 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
         mutableStateOf(SpaceEffect.Stars)
     )
 
-
     // create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
-
 }
 
 /**
