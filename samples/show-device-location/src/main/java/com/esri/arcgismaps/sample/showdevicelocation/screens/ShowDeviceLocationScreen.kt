@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -75,7 +76,6 @@ fun ShowDeviceLocationScreen(sampleName: String) {
     val mapViewModel: ShowDeviceLocationViewModel = viewModel()
 
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
 
     // some parts of the API require an Android Context to properly interact with Android system
     // features, such as LocationProvider and application resources
@@ -88,16 +88,12 @@ fun ShowDeviceLocationScreen(sampleName: String) {
 
     if (checkPermissions(context)) {
         // Permissions are already granted.
-        LaunchedEffect(Unit) {
-            mapViewModel.onItemSelected(mapViewModel.selectedItem.value.text, locationDisplay)
-        }
+        mapViewModel.onItemSelected(mapViewModel.selectedItem.value.text, locationDisplay)
     } else {
         RequestPermissions(
             context = context,
             onPermissionsGranted = {
-                coroutineScope.launch {
-                    mapViewModel.onItemSelected(mapViewModel.selectedItem.value.text, locationDisplay)
-                }
+                mapViewModel.onItemSelected(mapViewModel.selectedItem.value.text, locationDisplay)
             }
         )
     }
@@ -117,47 +113,56 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                     locationDisplay = locationDisplay,
                 )
 
-                Card(
+                Column (
                     modifier = Modifier
-                        .clickable { mapViewModel.expanded.value = true }
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(5.dp)),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 4.dp
-                    ),
+                        .align(Alignment.BottomEnd)
+                        .padding(horizontal = 20.dp, vertical = 70.dp)
                 ) {
-                    Row(
+                    DropdownMenu(
+                        expanded = mapViewModel.expanded.value,
+                        onDismissRequest = { mapViewModel.expanded.value = false },
                         modifier = Modifier
-                            .padding(5.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                            .border(2.dp, MaterialTheme.colorScheme.primary),
                     ) {
-                        Text(text = mapViewModel.selectedItem.value.text)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        NinePatchImage(
-                            imageId = mapViewModel.selectedItem.value.imageId,
-                            modifier = Modifier.size(25.dp),
-                        )
+                        mapViewModel.dropDownMenuOptions.forEach { option ->
+                            DropdownMenuItem(
+                                text = @Composable{ Text(option.text) },
+                                trailingIcon = @Composable{ NinePatchImage(
+                                    imageId = option.imageId,
+                                    modifier = Modifier.size(25.dp),
+                                )},
+                                onClick = {
+                                    mapViewModel.expanded.value = false
+                                    mapViewModel.selectedItem.value = option
+                                    mapViewModel.onItemSelected(option.text, locationDisplay)
+                                },
+                            )
+                        }
                     }
-                }
 
-                DropdownMenu(
-                    expanded = mapViewModel.expanded.value,
-                    onDismissRequest = { mapViewModel.expanded.value = false },
-                    modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
-                ) {
-                    mapViewModel.dropDownMenuOptions.forEach { option ->
-                        DropdownMenuItem(
-                            text = @Composable{ Text(option.text) },
-                            trailingIcon = @Composable{ NinePatchImage(
-                                imageId = option.imageId,
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Card(
+                        modifier = Modifier
+                            .clickable { mapViewModel.expanded.value = true }
+                            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp)),
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        ),
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = mapViewModel.selectedItem.value.text)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            NinePatchImage(
+                                imageId = mapViewModel.selectedItem.value.imageId,
                                 modifier = Modifier.size(25.dp),
-                            )},
-                            onClick = {
-                                mapViewModel.expanded.value = false
-                                mapViewModel.selectedItem.value = option
-                                mapViewModel.onItemSelected(option.text, locationDisplay)
-                            },
-                        )
+                            )
+                        }
                     }
                 }
             }
