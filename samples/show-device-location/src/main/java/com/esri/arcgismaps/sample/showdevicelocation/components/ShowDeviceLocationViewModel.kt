@@ -18,25 +18,20 @@ package com.esri.arcgismaps.sample.showdevicelocation.components
 
 import android.app.Application
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showdevicelocation.R
 import kotlinx.coroutines.launch
 
 class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
+
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -47,21 +42,30 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    val dropDownMenuOptions = arrayListOf(
-        ItemData("Stop", R.drawable.locationdisplaydisabled),
+    private val dropDownMenuOptionsWhenOn = arrayListOf(
+        ItemData("Off", R.drawable.locationdisplaydisabled),
         ItemData("On", R.drawable.locationdisplayon),
         ItemData("Re-center", R.drawable.locationdisplayrecenter),
         ItemData("Navigation", R.drawable.locationdisplaynavigation),
         ItemData("Compass", R.drawable.locationdisplayheading)
     )
 
-    var selectedItem = mutableStateOf(dropDownMenuOptions[1])
+    private val dropDownMenuOptionsWhenOff = arrayListOf(
+        ItemData("Off", R.drawable.locationdisplaydisabled),
+        ItemData("On", R.drawable.locationdisplayon),
+    )
 
-    var expanded = mutableStateOf(false)
+    var showDropDownMenu = mutableStateOf(false)
 
-    fun onItemSelected(chosenText: String, locationDisplay: LocationDisplay){
-        when (chosenText) {
-            "Stop" ->  // stop location display
+    var selectedItem = mutableStateOf(dropDownMenuOptionsWhenOn[1])
+
+    val dropDownMenuOptions
+        get() = if (selectedItem.value.text == "Off")
+            dropDownMenuOptionsWhenOff else dropDownMenuOptionsWhenOn
+
+    fun onItemSelected(itemText: String, locationDisplay: LocationDisplay){
+        when (itemText) {
+            "Off" ->  // stop location display
                 viewModelScope.launch {
                     locationDisplay.dataSource.stop()
                 }

@@ -23,8 +23,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,7 +30,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,7 +37,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -48,25 +44,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.arcgismaps.ArcGISEnvironment
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.Color
-import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.showdevicelocation.components.ShowDeviceLocationViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
-import com.esri.arcgismaps.sample.showdevicelocation.R
 
 /**
  * Main screen layout for the sample app
@@ -82,9 +72,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
     ArcGISEnvironment.applicationContext = context.applicationContext
 
     // Create and remember a location display with a recenter auto pan mode.
-    val locationDisplay = rememberLocationDisplay().apply {
-        setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
-    }
+    val locationDisplay = rememberLocationDisplay()
 
     if (checkPermissions(context)) {
         // Permissions are already granted.
@@ -119,8 +107,8 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                         .padding(horizontal = 20.dp, vertical = 70.dp)
                 ) {
                     DropdownMenu(
-                        expanded = mapViewModel.expanded.value,
-                        onDismissRequest = { mapViewModel.expanded.value = false },
+                        expanded = mapViewModel.showDropDownMenu.value,
+                        onDismissRequest = { mapViewModel.showDropDownMenu.value = false },
                         modifier = Modifier
                             .border(2.dp, MaterialTheme.colorScheme.primary),
                     ) {
@@ -132,7 +120,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                                     modifier = Modifier.size(25.dp),
                                 )},
                                 onClick = {
-                                    mapViewModel.expanded.value = false
+                                    mapViewModel.showDropDownMenu.value = false
                                     mapViewModel.selectedItem.value = option
                                     mapViewModel.onItemSelected(option.text, locationDisplay)
                                 },
@@ -144,7 +132,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
 
                     Card(
                         modifier = Modifier
-                            .clickable { mapViewModel.expanded.value = true }
+                            .clickable { mapViewModel.showDropDownMenu.value = true }
                             .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp)),
                         shape = RoundedCornerShape(20.dp),
                         elevation = CardDefaults.cardElevation(
@@ -208,7 +196,7 @@ fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit) {
 }
 
 @Composable
-fun NinePatchImage(imageId: Int, modifier: Modifier,) {
+fun NinePatchImage(imageId: Int, modifier: Modifier) {
     AndroidView(
         factory = { context ->
             ImageView(context).apply {
