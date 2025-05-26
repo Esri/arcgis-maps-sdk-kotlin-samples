@@ -17,18 +17,22 @@
 package com.esri.arcgismaps.sample.showdevicelocation.components
 
 import android.app.Application
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.LocationDisplay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import com.esri.arcgismaps.sample.showdevicelocation.R
 import kotlinx.coroutines.launch
 
 class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
@@ -43,4 +47,45 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
+
+    val dropDownMenuOptions = arrayListOf(
+        ItemData("Stop", R.drawable.locationdisplaydisabled),
+        ItemData("On", R.drawable.locationdisplayon),
+        ItemData("Re-center", R.drawable.locationdisplayrecenter),
+        ItemData("Navigation", R.drawable.locationdisplaynavigation),
+        ItemData("Compass", R.drawable.locationdisplayheading)
+    )
+
+    var selectedItem = mutableStateOf(dropDownMenuOptions[1])
+
+    var expanded = mutableStateOf(false)
+
+    fun onItemSelected(chosenText: String, locationDisplay: LocationDisplay){
+        when (chosenText) {
+            "Stop" ->  // stop location display
+                viewModelScope.launch {
+                    locationDisplay.dataSource.stop()
+                }
+            "On" ->  // start location display
+                viewModelScope.launch {
+                    locationDisplay.dataSource.start()
+                }
+            "Re-center" -> {
+                // re-center MapView on location
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
+            }
+            "Navigation" -> {
+                // start navigation mode
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+            }
+            "Compass" -> {
+                // start compass navigation mode
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.CompassNavigation)
+            }
+        }
+    }
 }
+
+
+@Stable
+data class ItemData(val text: String, val imageId: Int)
