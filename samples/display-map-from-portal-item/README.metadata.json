@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "DisplayMapFromPortalItem",
+    "ignore": false,
+    "images": [
+        "display-map-from-portal-item.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/components/DisplayMapFromPortalItemViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/screens/DisplayMapFromPortalItemScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/MainActivity.kt"
+    ],
+    "title": "Display map from portal item"
+}
