@@ -75,10 +75,13 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
                 viewModelScope.launch {
                     locationDisplay.dataSource.stop()
                 }
-            "On" ->  // start location display
+            "On" -> { // start location display
                 viewModelScope.launch {
                     locationDisplay.dataSource.start()
                 }
+                // display location without any changes to MapView
+                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
+            }
             "Re-center" -> {
                 // re-center MapView on location
                 locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
