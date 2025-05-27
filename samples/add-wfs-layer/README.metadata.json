@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "AddWFSLayer",
+    "ignore": false,
+    "images": [
+        "add-wfs-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addwfslayer/components/AddWFSLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addwfslayer/screens/AddWFSLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addwfslayer/MainActivity.kt"
+    ],
+    "title": "Add WFS layer"
+}
