@@ -42,6 +42,7 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // available options in dropdown menu when the location tracking is on
     private val dropDownMenuOptionsWhenOn = arrayListOf(
         ItemData("Off", R.drawable.locationdisplaydisabled),
         ItemData("On", R.drawable.locationdisplayon),
@@ -50,19 +51,24 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
         ItemData("Compass", R.drawable.locationdisplayheading)
     )
 
+    // available options in dropdown menu when the location tracking is off
     private val dropDownMenuOptionsWhenOff = arrayListOf(
         ItemData("Off", R.drawable.locationdisplaydisabled),
         ItemData("On", R.drawable.locationdisplayon),
     )
 
-    var showDropDownMenu = mutableStateOf(false)
+    // this variable controls the visibility of the dropdown menu
+    val showDropDownMenu = mutableStateOf(false)
 
-    var selectedItem = mutableStateOf(dropDownMenuOptionsWhenOn[1])
+    // This variable holds the currently selected item from the dropdown menu
+    val selectedItem = mutableStateOf(dropDownMenuOptionsWhenOn[1])
 
+    // This property returns the appropriate dropdown menu options based on the selected item
     val dropDownMenuOptions
         get() = if (selectedItem.value.text == "Off")
             dropDownMenuOptionsWhenOff else dropDownMenuOptionsWhenOn
 
+    // This function handles the selection of an item from the dropdown menu
     fun onItemSelected(itemText: String, locationDisplay: LocationDisplay){
         when (itemText) {
             "Off" ->  // stop location display

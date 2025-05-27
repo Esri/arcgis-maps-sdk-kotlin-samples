@@ -195,6 +195,10 @@ fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit) {
     }
 }
 
+
+/**
+ * A Composable function for displaying images of 9-patch type (simple Image dose not work)
+ */
 @Composable
 fun NinePatchImage(imageId: Int, modifier: Modifier) {
     AndroidView(
