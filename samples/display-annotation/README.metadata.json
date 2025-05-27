@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "DisplayAnnotation",
+    "ignore": false,
+    "images": [
+        "display-annotation.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displayannotation/components/DisplayAnnotationViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayannotation/screens/DisplayAnnotationScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayannotation/MainActivity.kt"
+    ],
+    "title": "Display annotation"
+}
