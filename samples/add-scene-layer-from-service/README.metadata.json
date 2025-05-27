@@ -1,19 +1,37 @@
 {
     "category": "Layers",
-    "description": "TODO",
+    "description": "Display an ArcGIS scene layer from a URL.",
     "formal_name": "AddSceneLayerFromService",
     "ignore": false,
     "images": [
         "add-scene-layer-from-service.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "3D",
+        "URL",
+        "buildings",
+        "model",
+        "scene",
+        "service",
+        "ArcGISScene",
+        "ArcGISSceneLayer",
+        "ArcGISTiledElevationSource",
+        "SceneView",
+        "Surface"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ArcGISScene",
+        "ArcGISSceneLayer",
+        "ArcGISTiledElevationSource",
+        "SceneView",
+        "Surface"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/components/AddSceneLayerFromServiceViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/screens/AddSceneLayerFromServiceScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/screens/AddSceneLayerFromServiceScreen.kt"
     ],
     "title": "Add scene layer from service"
 }
