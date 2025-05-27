@@ -30,6 +30,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -69,7 +70,6 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     var dateTime by remember { mutableStateOf(ZonedDateTime.now(ZoneId.of("US/Pacific"))) }
     var timeOfDay by remember { mutableFloatStateOf(dateTime.toLocalTime().toSecondOfDay().toFloat()) }
 
-
     val lightingOptionsState = mapViewModel.lightingOptionsState
     val lightingModes = listOf(
         LightingMode.LightAndShadows,
@@ -97,10 +97,10 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                                 lightingModes.forEach {
                                     val text = when (it) {
                                         LightingMode.Light -> "Light"
-                                        LightingMode.LightAndShadows -> "Light and Shadows"
-                                        LightingMode.NoLight -> "No Light"
+                                        LightingMode.LightAndShadows -> "Light and shadows"
+                                        LightingMode.NoLight -> "No light"
                                     }
-                                    // make the currently selected lighting option bold
+                                    // Make the currently selected lighting option bold
                                     val fontWeight = when (it) {
                                         lightingOptionsState.sunLighting.value -> FontWeight.Bold
                                         else -> FontWeight.Normal
@@ -127,6 +127,7 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                 SceneView(
                     mapViewModel.arcGISScene,
                     modifier = Modifier.weight(1f),
+                    // Set the sun time to the selected date, plus the seconds chosen for timeOfDay
                     sunTime = dateTime.withHour(0).withMinute(0).withSecond(0)
                         .plusSeconds(timeOfDay.toLong()).toInstant(),
                     sunLighting = lightingOptionsState.sunLighting.value,
@@ -134,24 +135,26 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                     atmosphereEffect = lightingOptionsState.atmosphereEffect.value,
                     spaceEffect = lightingOptionsState.spaceEffect.value
                 )
-                // create a slider with AM and PM labels to control the sun time
+                // Create a slider with AM and PM labels to control the sun time
                 Row {
                     Text(
+                        modifier = Modifier.padding(12.dp),
                         text = "AM",
-                        modifier = Modifier.padding(12.dp)
+                        style = MaterialTheme.typography.titleMedium
                     )
                     Slider(
                         modifier = Modifier.weight(1f),
                         value = timeOfDay,
-                        onValueChange = {
-                            timeOfDay = it
+                        onValueChange = { value ->
+                            timeOfDay = value
                         },
-                        // the range is 0 (start of the day) to 86400 (end of the day in seconds)
-                        valueRange = 0f..86400f
+                        // The range is 0 (start of the day) to 86399 (end of the day in seconds)
+                        valueRange = 0f..86399f
                     )
                     Text(
+                        modifier = Modifier.padding(12.dp),
                         text = "PM",
-                        modifier = Modifier.padding(12.dp)
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
                 if (showDatePicker) {
@@ -161,8 +164,10 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                             TextButton(onClick = {
                                 showDatePicker = false
                                 datePickerState.selectedDateMillis?.let { millis ->
-                                    val instant = Instant.ofEpochMilli(millis)
-                                    dateTime = ZonedDateTime.ofInstant(instant, ZoneId.of("US/Pacific"))
+                                    // Convert the selected date in milliseconds to a LocalDate
+                                    val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate()
+                                    // Set the dateTime to the start of the day in Pacific Time
+                                    dateTime = localDate.atStartOfDay(ZoneId.of("US/Pacific"))
                                 }
                             }) {
                                 Text("Confirm")
@@ -179,12 +184,29 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text(
+                        text = "Date:",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                     TextButton(onClick = { showDatePicker = true }) {
-                        Text("Pick date: ${dateTime.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy"))}")
+                        // Display the selected date in a human-readable format
+                        Text(
+                            text = "Date: ${dateTime.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy"))}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
+                    // Display the time in a human-readable format
+                    Text(
+                        text = "Time: ${
+                            dateTime.withHour(0).withMinute(0).withSecond(0)
+                                .plusSeconds(timeOfDay.toLong())
+                                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"))
+                        }",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
 

@@ -35,37 +35,44 @@ import com.arcgismaps.mapping.view.LightingMode
 import com.arcgismaps.mapping.view.SpaceEffect
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
-class ShowRealisticLightAndShadowsViewModel(application: Application) :
-    AndroidViewModel(application) {
+class ShowRealisticLightAndShadowsViewModel(application: Application) : AndroidViewModel(application) {
 
     val arcGISScene = ArcGISScene(BasemapStyle.ArcGISTopographic).apply {
-        // add a base surface with elevation source
+        // Add a base surface with elevation source
         baseSurface = Surface().apply {
-            // create an elevation source from Terrain3D REST service
+            // Create an elevation source from Terrain3D REST service
             elevationSources.add(
                 ArcGISTiledElevationSource(
                     "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
                 )
             )
         }
-        // create a scene layer from buildings REST service
+        // Create a scene layer from buildings REST service
         operationalLayers.add(
             ArcGISSceneLayer(
                 "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/DevA_BuildingShells/SceneServer"
             )
         )
-        // create a point to centre on
+        // Create a point to centre on
         val point = Point(
-            x = -122.69033, y = 45.54605, z = 500.0, spatialReference = SpatialReference.wgs84()
+            x = -122.69033,
+            y = 45.54605,
+            z = 500.0,
+            spatialReference = SpatialReference.wgs84()
         )
         initialViewpoint = Viewpoint(
-            center = point, scale = 17000.0, camera = Camera(
-                locationPoint = point, heading = 162.58544, pitch = 72.0, roll = 0.0
+            center = point,
+            scale = 17000.0,
+            camera = Camera(
+                locationPoint = point,
+                heading = 162.58544,
+                pitch = 72.0,
+                roll = 0.0
             )
         )
     }
 
-    // create a LightingOptionsState with default values that will be used by the scene view
+    // Create a LightingOptionsState with default values that will be used by the scene view
     val lightingOptionsState = LightingOptionsState(
         mutableStateOf(LightingMode.LightAndShadows),
         mutableStateOf(Color(red = 220, green = 220, blue = 220, alpha = 255)),
@@ -73,12 +80,12 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) :
         mutableStateOf(SpaceEffect.Stars)
     )
 
-    // create a message dialog view model for handling error messages
+    // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 }
 
 /**
- * Represents various lighting options that can be used to configure a composable [SceneView].
+ * Represents various lighting options that can be used to configure a composable scene view.
  */
 data class LightingOptionsState(
     val sunLighting: MutableState<LightingMode>,

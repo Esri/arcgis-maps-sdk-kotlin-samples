@@ -10,14 +10,14 @@ You can use realistic lighting to evaluate the shadow impact of buildings and ut
 
 ## How to use the sample
 
-Select one of the three lighting options to show that lighting effect on the `SceneView`. Select a time of day from the slider (based on a 24hr clock) to show the lighting for that time of day in the `SceneView`.
+Select one of the three lighting options to show that lighting effect on the `SceneView`. Select a time of day from the slider (based on a 24hr clock), and a date from the date picker, to show the lighting for that time of day in the `SceneView`.
 
 ## How it works
 
-1. Create a `Scene` and display it in a `SceneView`.
-2. Create a `Calendar` to define the time of day.
-3. Set the sun time to the scene view using the `sunDate(_:)` modifier.
-4. Set the sun lighting of the scene view to `off`, `light`, or `lightAndShadows` using the `sunLighting(_:)` modifier.
+1. Create a `Scene` and display it in a composable `SceneView`.
+2. Create a `ZonedDateTime` to define the day and time of day.
+3. Set the sun time to the scene view using zoned date time and a time offset in milliseconds.
+4. Set the sun lighting of the scene view to a `LightingMode` of `NoLight`, `Light`, or `LightAndShadows`.
 
 ## Relevant API
 
