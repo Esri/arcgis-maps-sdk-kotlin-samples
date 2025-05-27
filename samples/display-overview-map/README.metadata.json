@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "DisplayOverviewMap",
+    "ignore": false,
+    "images": [
+        "display-overview-map.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/DisplayOverviewMapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/DisplayOverviewMapScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/MainActivity.kt"
+    ],
+    "title": "Display Overview Map"
+}
