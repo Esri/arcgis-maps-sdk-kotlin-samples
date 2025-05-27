@@ -9,18 +9,21 @@
     "keywords": [
         "GPS",
         "compass",
+        "geoview-compose",
         "location",
         "map",
         "mobile",
         "navigation",
+        "toolkit",
         "ArcGISMap",
         "LocationDisplay",
-        "MapView",
-        "geoview-compose",
-        "toolkit"
+        "LocationDisplay.AutoPanMode",
+        "MapView"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": [
+        "/android/latest/sample-code/display-device-location.htm"
+    ],
     "relevant_apis": [
         "ArcGISMap",
         "LocationDisplay",
@@ -28,9 +31,9 @@
         "MapView"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/ShowDeviceLocationViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/ShowDeviceLocationScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/components/ShowDeviceLocationViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocation/screens/ShowDeviceLocationScreen.kt"
     ],
-    "title": "Show Device Location"
+    "title": "Show device location"
 }
