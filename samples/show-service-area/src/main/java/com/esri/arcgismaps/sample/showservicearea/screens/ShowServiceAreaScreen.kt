@@ -41,6 +41,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -94,7 +95,7 @@ fun ShowServiceAreaScreen(sampleName: String) {
                     onSingleTapConfirmed = { tapEvent ->
                         tapEvent.mapPoint?.let { mapPoint ->
                             // Add facility/barrier depending on selected mode
-                            viewModel.handleMapTap(mapPoint)
+                            viewModel.onSingleTap(mapPoint)
                         }
                     }
                 )
@@ -205,8 +206,8 @@ fun TimeBreakDialog(
     onApply: (first: Int, second: Int) -> Unit,
     onCancel: () -> Unit
 ) {
-    var firstBreak by remember { mutableStateOf(initialTimeBreaks.first) }
-    var secondBreak by remember { mutableStateOf(initialTimeBreaks.second) }
+    var firstBreak by remember { mutableIntStateOf(initialTimeBreaks.first) }
+    var secondBreak by remember { mutableIntStateOf(initialTimeBreaks.second) }
     SampleDialog(onDismissRequest = onCancel) {
         Column(
             modifier = Modifier

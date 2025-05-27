@@ -69,7 +69,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     val mapViewProxy = MapViewProxy()
 
     // Graphics overlays for facilities, barriers, and service areas
-    val facilitiesOverlay = GraphicsOverlay().apply {
+    private val facilitiesOverlay = GraphicsOverlay().apply {
         renderer = SimpleRenderer(
             symbol = PictureMarkerSymbol( // Use a blue star pin for facilities
                 url = "https://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png"
@@ -78,7 +78,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
                 offsetY = 21f
             })
     }
-    val barriersOverlay = GraphicsOverlay().apply {
+    private val barriersOverlay = GraphicsOverlay().apply {
         // Red diagonal cross fill for barriers
         val barrierSymbol = SimpleFillSymbol(
             style = SimpleFillSymbolStyle.DiagonalCross,
@@ -87,7 +87,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
         )
         renderer = SimpleRenderer(barrierSymbol)
     }
-    val serviceAreaOverlay = GraphicsOverlay()
+    private val serviceAreaOverlay = GraphicsOverlay()
 
     // Expose overlays as a list for MapView
     val graphicsOverlays = listOf(facilitiesOverlay, barriersOverlay, serviceAreaOverlay)
@@ -116,7 +116,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
      * Called when the user taps the map to add a facility or barrier.
      * @param mapPoint The tapped location in map coordinates.
      */
-    fun handleMapTap(mapPoint: Point) {
+    fun onSingleTap(mapPoint: Point) {
         when (_selectedGraphicType.value) {
             GraphicType.Facility -> addFacilityGraphic(mapPoint)
             GraphicType.Barrier -> addBarrierGraphic(mapPoint)
@@ -124,8 +124,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Adds a facility graphic to the facilities overlay at the given point.
-     * @param point The map point where the facility is added.
+     * Adds a facility graphic to the facilities overlay at the given [point].
      */
     private fun addFacilityGraphic(point: Point) {
         val graphic = Graphic(geometry = point)
@@ -133,8 +132,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Adds a barrier graphic (buffered polygon) to the barriers overlay at the given point.
-     * @param point The map point where the barrier is added.
+     * Adds a barrier graphic (buffered polygon) to the barriers overlay at the given [point].
      */
     private fun addBarrierGraphic(point: Point) {
         val bufferedGeometry = GeometryEngine.bufferOrNull(geometry = point, distance = 500.0)
@@ -163,6 +161,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
      */
     fun updateTimeBreaks(first: Int, second: Int) {
         _timeBreaks.value = TimeBreaks(first, second)
+        showServiceArea()
     }
 
     /**
@@ -175,7 +174,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
         _isSolvingServiceArea.value = true
         viewModelScope.launch {
             try {
-                // Always create new parameters for each solve (no need to cache)
+                // Always create new parameters for each solve
                 val serviceAreaParameters = serviceAreaTask.createDefaultParameters().getOrElse {
                     return@launch messageDialogVM.showMessageDialog(it)
                 }
@@ -218,19 +217,19 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
 
     /**
      * Creates a fill symbol for the service area polygons.
-     * @param isFirst Whether this is the first polygon (yellow) or second (green).
+     * If [isFirst] use, polygon (yellow) else, second (green).
      */
     private fun makeServiceAreaSymbol(isFirst: Boolean): Symbol {
         // Colors are semi-transparent
         val lineSymbolColor = if (isFirst) {
-            Color.fromRgba(102, 102, 0, 77)
+            Color.fromRgba(r = 100, g = 100, b = 0, a = 70) // Yellow outline
         } else {
-            Color.fromRgba(0, 102, 0, 77)
+            Color.fromRgba(r = 0, g = 100, b = 0, a = 70) // Green outline
         }
         val fillSymbolColor = if (isFirst) {
-            Color.fromRgba(204, 204, 0, 77)
+            Color.fromRgba(r = 200, g = 200, b = 0, a = 70) // Yellow fill
         } else {
-            Color.fromRgba(0, 204, 0, 77)
+            Color.fromRgba(r = 0, g = 200, b = 0, a = 70) // Green fill
         }
 
         val outline = SimpleLineSymbol(
