@@ -24,8 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.addwfslayer.screens.AddWfsLayerScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.addwfslayer.screens.AddWFSLayerScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,15 +37,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                AddWFSLayerApp()
+                AddWfsLayerApp()
             }
         }
     }
 
     @Composable
-    private fun AddWFSLayerApp() {
+    private fun AddWfsLayerApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            AddWFSLayerScreen(
+            AddWfsLayerScreen(
                 sampleName = getString(R.string.add_wfs_layer_app_name)
             )
         }
