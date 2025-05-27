@@ -64,19 +64,20 @@ class DisplayMapFromPortalItemViewModel(app: Application) : AndroidViewModel(app
             }
         }
     }
-}
 
-/**
- * Data class representing a portal item map option.
- */
-data class PortalItemMap(
-    val title: String,
-    val itemId: String
-) {
-    val portalItem: PortalItem by lazy {
-        PortalItem(
-            portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
-            itemId = itemId
-        )
+
+    /**
+     * Data class representing a portal item map option.
+     */
+    data class PortalItemMap(
+        val title: String,
+        val itemId: String
+    ) {
+        val portalItem: PortalItem by lazy {
+            PortalItem(
+                portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
+                itemId = itemId
+            )
+        }
     }
 }
