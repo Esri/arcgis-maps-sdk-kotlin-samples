@@ -1,19 +1,31 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Display a web map from an ArcGIS Online portal item.",
     "formal_name": "DisplayMapFromPortalItem",
     "ignore": false,
     "images": [
         "display-map-from-portal-item.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "portal item",
+        "web map",
+        "ArcGISMap",
+        "MapView",
+        "Portal",
+        "PortalItem"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ArcGISMap",
+        "MapView",
+        "Portal",
+        "PortalItem"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/components/DisplayMapFromPortalItemViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/screens/DisplayMapFromPortalItemScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaymapfromportalitem/screens/DisplayMapFromPortalItemScreen.kt"
     ],
     "title": "Display map from portal item"
 }
