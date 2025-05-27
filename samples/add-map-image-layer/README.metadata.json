@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "AddMapImageLayer",
+    "ignore": false,
+    "images": [
+        "add-map-image-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addmapimagelayer/AddMapImageLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addmapimagelayer/AddMapImageLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addmapimagelayer/MainActivity.kt"
+    ],
+    "title": "Add map image layer"
+}
