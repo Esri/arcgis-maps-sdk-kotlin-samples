@@ -22,25 +22,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class AddMapImageLayerViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
+    // The ArcGISMap containing the map image layer
+    val arcGISMap by mutableStateOf(createArcGISMap())
 
-    // Create a message dialog view model for handling error messages
+    // Message dialog view model for error handling
     val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
+    }
+
+    private fun createArcGISMap(): ArcGISMap {
+        // Create the map image layer using the URL
+        val mapImageLayer = ArcGISMapImageLayer(
+            "https://sampleserver5.arcgisonline.com/arcgis/rest/services/Elevation/WorldElevations/MapServer"
+        )
+        // Create a blank map
+        val map = ArcGISMap()
+        // Add the map image layer to the operational layers
+        map.operationalLayers.add(mapImageLayer)
+        return map
     }
 }

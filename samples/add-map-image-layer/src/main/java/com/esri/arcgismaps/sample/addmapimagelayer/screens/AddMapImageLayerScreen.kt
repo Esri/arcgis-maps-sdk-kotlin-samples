@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,18 +29,18 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the AddMapImageLayer sample app.
  */
 @Composable
 fun AddMapImageLayerScreen(sampleName: String) {
     val mapViewModel: AddMapImageLayerViewModel = viewModel()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(padding)
             ) {
                 MapView(
                     modifier = Modifier
@@ -49,9 +48,7 @@ fun AddMapImageLayerScreen(sampleName: String) {
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap
                 )
-                // TODO: Add UI components in this Column ...
             }
-
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
