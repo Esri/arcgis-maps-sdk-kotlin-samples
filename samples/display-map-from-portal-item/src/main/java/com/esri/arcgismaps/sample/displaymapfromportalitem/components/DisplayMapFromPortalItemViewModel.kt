@@ -16,22 +16,8 @@ import kotlinx.coroutines.launch
  * ViewModel for displaying a map from a portal item.
  */
 class DisplayMapFromPortalItemViewModel(app: Application) : AndroidViewModel(app) {
-    /**
-     * Data class representing a portal item map option.
-     */
-    data class PortalItemMap(
-        val title: String,
-        val itemId: String
-    ) {
-        val portalItem: PortalItem by lazy {
-            PortalItem(
-                portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
-                itemId = itemId
-            )
-        }
-    }
 
-    // List of available portal item map options (matching Swift sample)
+    // List of available portal item map options
     val mapOptions = listOf(
         PortalItemMap(
             title = "Terrestrial Ecosystems of the World",
@@ -69,13 +55,28 @@ class DisplayMapFromPortalItemViewModel(app: Application) : AndroidViewModel(app
     /**
      * Updates the map to display the selected portal item map option.
      */
-    fun selectMapOption(option: PortalItemMap) {
-        if (option != currentMapOption) {
-            currentMapOption = option
-            arcGISMap = ArcGISMap(item = option.portalItem)
+    fun onMapOptionSelected(portalItemOption: PortalItemMap) {
+        if (portalItemOption != currentMapOption) {
+            currentMapOption = portalItemOption
+            arcGISMap = ArcGISMap(item = portalItemOption.portalItem)
             viewModelScope.launch {
                 arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
             }
         }
+    }
+}
+
+/**
+ * Data class representing a portal item map option.
+ */
+data class PortalItemMap(
+    val title: String,
+    val itemId: String
+) {
+    val portalItem: PortalItem by lazy {
+        PortalItem(
+            portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
+            itemId = itemId
+        )
     }
 }

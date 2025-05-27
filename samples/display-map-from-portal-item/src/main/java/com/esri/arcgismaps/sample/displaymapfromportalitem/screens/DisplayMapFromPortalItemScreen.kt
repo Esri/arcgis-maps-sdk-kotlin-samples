@@ -43,7 +43,7 @@ fun DisplayMapFromPortalItemScreen(sampleName: String) {
                 MapSelectionDropDown(
                     mapOptions = mapOptions,
                     selectedOption = currentMapOption,
-                    onOptionSelected = mapViewModel::selectMapOption
+                    onOptionSelected = mapViewModel::onMapOptionSelected
                 )
             }
 
