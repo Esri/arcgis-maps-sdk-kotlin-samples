@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "AddSceneLayerFromService",
+    "ignore": false,
+    "images": [
+        "add-scene-layer-from-service.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/components/AddSceneLayerFromServiceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/screens/AddSceneLayerFromServiceScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addscenelayerfromservice/MainActivity.kt"
+    ],
+    "title": "Add scene layer from service"
+}
