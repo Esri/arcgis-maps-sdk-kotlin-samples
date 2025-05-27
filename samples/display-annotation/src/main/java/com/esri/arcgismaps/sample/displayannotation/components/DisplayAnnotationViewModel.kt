@@ -24,23 +24,51 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.AnnotationLayer
+import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.data.ServiceFeatureTable
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class DisplayAnnotationViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
+    private val riversFeatureUrl =
+        "https://services1.arcgis.com/6677msI40mnLuuLr/arcgis/rest/services/East_Lothian_Rivers/FeatureServer/0"
+    private val riversAnnotationUrl =
+        "https://sampleserver6.arcgisonline.com/arcgis/rest/services/RiversAnnotation/FeatureServer/0"
+
+    // ArcGISMap with light gray canvas basemap and initial viewpoint (East Lothian, Scotland)
     val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+        ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
+            initialViewpoint = Viewpoint(
+                latitude = 55.882436,
+                longitude = -2.725610,
+                scale = 72223.819286
+            )
         }
     )
 
-    // Create a message dialog view model for handling error messages
+    // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            // Load the feature layer
+            val featureTable = ServiceFeatureTable(riversFeatureUrl)
+            featureTable.load().onFailure {
+                messageDialogVM.showMessageDialog(it)
+                return@launch
+            }
+            val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
+
+            // Load the annotation layer
+            val annotationLayer = AnnotationLayer(riversAnnotationUrl)
+            annotationLayer.load().onFailure {
+                messageDialogVM.showMessageDialog(it)
+                return@launch
+            }
+
+            // Add both layers to the map's operational layers
+            arcGISMap.operationalLayers.addAll(listOf(featureLayer, annotationLayer))
         }
     }
 }
