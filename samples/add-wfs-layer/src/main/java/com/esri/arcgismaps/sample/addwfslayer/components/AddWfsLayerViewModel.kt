@@ -41,6 +41,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.arcgismaps.mapping.layers.OgcAxisOrder.NoSwap
+import com.arcgismaps.data.FeatureRequestMode.ManualCache
+import com.arcgismaps.data.SpatialRelationship.Intersects
 
 class AddWfsLayerViewModel(app: Application) : AndroidViewModel(app) {
     // MapViewProxy for identify and viewpoint operations
@@ -104,7 +107,7 @@ class AddWfsLayerViewModel(app: Application) : AndroidViewModel(app) {
             _isPopulating.value = true
             val query = QueryParameters().apply {
                 geometry = extent
-                spatialRelationship = com.arcgismaps.data.SpatialRelationship.Intersects
+                spatialRelationship = Intersects
             }
             wfsFeatureTable.populateFromService(
                 parameters = query,
@@ -131,8 +134,8 @@ class AddWfsLayerViewModel(app: Application) : AndroidViewModel(app) {
             val wfsUrl = "https://dservices2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/services/Seattle_Downtown_Features/WFSServer?service=wfs&request=getcapabilities"
             val tableName = "Seattle_Downtown_Features:Buildings"
             val wfsFeatureTable = WfsFeatureTable(wfsUrl, tableName).apply {
-                featureRequestMode = com.arcgismaps.data.FeatureRequestMode.ManualCache
-                axisOrder = com.arcgismaps.mapping.layers.OgcAxisOrder.NoSwap
+                featureRequestMode = ManualCache
+                axisOrder = NoSwap
             }
             val featureLayer = FeatureLayer.createWithFeatureTable(wfsFeatureTable).apply {
                 renderer = SimpleRenderer(

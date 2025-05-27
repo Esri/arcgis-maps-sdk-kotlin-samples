@@ -2,6 +2,8 @@
 
 Display a layer from a WFS service, requesting only features for the current extent.
 
+![Image of add WFS layer](add-wfs-layer.png)
+
 ## Use case
 
 WFS is an open standard with functionality similar to ArcGIS feature services. ArcGIS Maps SDK support for WFS allows you to interoperate with open systems, which are often used in inter-agency efforts, like those for disaster relief.
