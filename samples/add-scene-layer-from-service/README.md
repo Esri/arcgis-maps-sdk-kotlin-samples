@@ -29,9 +29,9 @@ Pan and zoom to explore the scene.
 
 ## Relevant API
 
+* ArcGISScene
 * ArcGISSceneLayer
 * ArcGISTiledElevationSource
-* ArcGISScene
 * SceneView
 * Surface
 
