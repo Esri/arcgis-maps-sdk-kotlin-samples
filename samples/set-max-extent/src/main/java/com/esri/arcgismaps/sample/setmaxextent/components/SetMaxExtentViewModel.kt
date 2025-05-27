@@ -71,12 +71,10 @@ class SetMaxExtentViewModel(app: Application) : AndroidViewModel(app) {
     val graphicsOverlays = listOf(coloradoGraphicsOverlay)
 
     // the text that indicates whether the max extent is enabled
-    var extentText = mutableStateOf(MAX_EXTENT_ENABLED_TEXT)
-        private set
+    val extentText = mutableStateOf(MAX_EXTENT_ENABLED_TEXT)
 
     // tracks whether the max extent feature is currently enabled.
-    var maxExtentEnabled = mutableStateOf(true)
-        private set
+    val maxExtentEnabled = mutableStateOf(true)
 
     // this function is called when the switch is toggled.
     fun onSwitch(isChecked: Boolean){
