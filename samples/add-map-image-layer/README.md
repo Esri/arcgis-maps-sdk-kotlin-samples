@@ -21,8 +21,8 @@ Open the sample and view the map image layer. As you navigate the map, the layer
 
 ## Relevant API
 
-* ArcGISMapImageLayer
 * ArcGISMap
+* ArcGISMapImageLayer
 * MapView (Compose Toolkit)
 
 ## Tags
