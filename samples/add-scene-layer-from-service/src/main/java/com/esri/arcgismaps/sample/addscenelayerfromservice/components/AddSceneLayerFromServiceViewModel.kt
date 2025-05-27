@@ -21,17 +21,51 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Surface
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.ArcGISSceneLayer
+import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class AddSceneLayerFromServiceViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+    // URL of the Portland buildings scene layer
+    private val portlandBuildingsSceneLayerUrl =
+        "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Portland/SceneServer"
+    // URL of the world elevation tiled elevation source
+    private val worldElevationServiceUrl =
+        "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
+
+    // Create the ArcGISScene with imagery basemap
+    val arcGISScene by mutableStateOf(
+        ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+            // Add the Portland buildings scene layer
+            operationalLayers.add(
+                ArcGISSceneLayer(portlandBuildingsSceneLayerUrl)
+            )
+            // Add the elevation source to the base surface
+            baseSurface = Surface().apply {
+                elevationSources.add(ArcGISTiledElevationSource(worldElevationServiceUrl))
+            }
+            // Set the initial viewpoint to match the Swift sample
+            val cameraLocation = Point(
+                x = -122.66949,
+                y = 45.51869,
+                z = 227.0,
+                spatialReference = SpatialReference.wgs84()
+            )
+            val camera = Camera(
+                locationPoint = cameraLocation,
+                heading = 219.0,
+                pitch = 82.0,
+                roll = 0.0
+            )
+            initialViewpoint = Viewpoint(cameraLocation, camera)
         }
     )
 
@@ -40,7 +74,7 @@ class AddSceneLayerFromServiceViewModel(app: Application) : AndroidViewModel(app
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 }
