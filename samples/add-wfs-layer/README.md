@@ -23,11 +23,11 @@ Pan and zoom the map to see features within the current map extent. The WFS laye
 
 ## Relevant API
 
-- FeatureLayer
-- MapView.onNavigationChanged
-- MapView.onVisibleAreaChanged
-- WfsFeatureTable
-- WfsFeatureTable.populateFromService
+* FeatureLayer
+* MapView.onNavigationChanged
+* MapView.onVisibleAreaChanged
+* WfsFeatureTable
+* WfsFeatureTable.populateFromService
 
 ## About the data
 
