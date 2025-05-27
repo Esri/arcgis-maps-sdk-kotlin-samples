@@ -113,8 +113,8 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     val messageDialogVM = MessageDialogViewModel()
 
     /**
-     * Called when the user taps the map to add a facility or barrier.
-     * @param mapPoint The tapped location in map coordinates.
+     * Called when the user taps the map to add a facility or barrier
+     * at the given [mapPoint] coordinates.
      */
     fun onSingleTap(mapPoint: Point) {
         when (_selectedGraphicType.value) {
@@ -150,9 +150,9 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Sets the selected graphic type (facility or barrier) for adding graphics.
+     * Update the selected graphic type (facility or barrier) for adding graphics.
      */
-    fun setSelectedGraphicType(type: GraphicType) {
+    fun updateSelectedGraphicType(type: GraphicType) {
         _selectedGraphicType.value = type
     }
 
@@ -202,7 +202,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
                 // Display polygons for the first facility (if any)
                 val polygons: List<ServiceAreaPolygon> = result.getResultPolygons(0)
                 polygons.forEachIndexed { index, polygon ->
-                    val fillSymbol = makeServiceAreaSymbol(index == 0)
+                    val fillSymbol = createServiceAreaSymbol(index == 0)
                     val graphic = Graphic(
                         geometry = polygon.geometry,
                         symbol = fillSymbol
@@ -219,7 +219,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
      * Creates a fill symbol for the service area polygons.
      * If [isFirst] use, polygon (yellow) else, second (green).
      */
-    private fun makeServiceAreaSymbol(isFirst: Boolean): Symbol {
+    private fun createServiceAreaSymbol(isFirst: Boolean): Symbol {
         // Colors are semi-transparent
         val lineSymbolColor = if (isFirst) {
             Color.fromRgba(r = 100, g = 100, b = 0, a = 70) // Yellow outline

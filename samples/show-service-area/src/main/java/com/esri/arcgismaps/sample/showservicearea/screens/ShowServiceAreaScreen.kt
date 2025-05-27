@@ -102,7 +102,7 @@ fun ShowServiceAreaScreen(sampleName: String) {
                 // Controls area at the bottom
                 ServiceAreaControls(
                     selectedGraphicType = selectedGraphicType,
-                    onGraphicTypeSelected = viewModel::setSelectedGraphicType,
+                    onGraphicTypeSelected = viewModel::updateSelectedGraphicType,
                     timeBreaks = timeBreaks,
                     onShowTimeBreakDialog = { showTimeBreakDialog = true },
                     onSolveServiceArea = viewModel::showServiceArea,
