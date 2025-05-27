@@ -52,10 +52,10 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
     private val statePlaneCaliforniaZone5SpatialReference = SpatialReference(2229)
 
     // create a portal
-    val portal = Portal("https://arcgisruntime.maps.arcgis.com")
+    private val portal = Portal("https://arcgisruntime.maps.arcgis.com")
 
     // get the USA States Generalized Boundaries layer from the portal using its ID
-    val portalItem =
+    private val portalItem =
         PortalItem(
             portal = portal,
             itemId = "8c2d6d7df8fa4142b0a1211c8dd66903"
@@ -102,7 +102,7 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
         )
 
     // create a polygon geometry
-    val polygon = PolygonBuilder(statePlaneCaliforniaZone5SpatialReference) {
+    private val polygon = PolygonBuilder(statePlaneCaliforniaZone5SpatialReference) {
         addPoint(Point(x = 6627416.41469281, y = 1804532.53233782))
         addPoint(Point(x = 6669147.89779046, y = 2479145.16609522))
         addPoint(Point(x = 7265673.02678292, y = 2484254.50442408))

@@ -33,6 +33,8 @@ fun main() {
     run()
 }
 
+private enum class SampleTemplateTypes { Basic, FAB_DialogOptions, FAB_BottomSheetOptions }
+
 private var sampleName: String = ""
 private var sampleWithHyphen: String = ""
 private var sampleWithoutSpaces: String = ""
@@ -40,6 +42,8 @@ private var samplesRepoPath: String = ""
 private var sampleNameUnderscore: String = ""
 private var sampleNameCamelCase: String = ""
 private var sampleCategory: String = "Maps"
+private var sampleTemplateType = SampleTemplateTypes.Basic
+
 
 fun run() {
     val scanner = Scanner(System.`in`)
@@ -57,6 +61,11 @@ fun run() {
     println("Choose the sample category: \n1:  Analysis \n2:  Augmented Reality \n3:  Cloud and Portal \n4:  Layers \n5:  Edit and Manage Data \n6:  Maps \n7:  Scenes \n8:  Routing and Logistics \n9:  Utility Networks \n10: Search and Query \n11: Visualization")
     print("Enter a number (1-11) to sample category: ")
     sampleCategory = getSampleCategory(scanner.nextLine().trim().toIntOrNull())
+
+    // Get the sample template type
+    println("Choose the sample template type: \n1: Basic \n2: FAB with DialogOptions \n3: FAB with BottomSheetOptions")
+    print("Enter a number (1-3) to sample template type: ")
+    sampleTemplateType = getSampleTemplate(scanner.nextLine().trim().toIntOrNull())
 
     // Handles either if JAR file or source code is executed.
     samplesRepoPath = Paths.get("").toAbsolutePath().toString().replace("/NewModuleScript", "")
@@ -91,6 +100,18 @@ private fun getSampleCategory(i: Int?): String {
         11 -> return "Visualization"
     }
     return ""
+}
+
+private fun getSampleTemplate(i: Int?): SampleTemplateTypes {
+    if (i == null || i > 3 || i < 1) {
+        exitProgram(Exception("Invalid category input"))
+    }
+    when (i) {
+        1 -> return SampleTemplateTypes.Basic
+        2 -> return SampleTemplateTypes.FAB_DialogOptions
+        3 -> return SampleTemplateTypes.FAB_BottomSheetOptions
+    }
+    return SampleTemplateTypes.Basic
 }
 
 /**
@@ -134,7 +155,11 @@ private fun createFilesAndFolders() {
     // Copy Kotlin template files to new sample
     val mainActivityTemplate = File("$samplesRepoPath/tools/NewModuleScript/MainActivityTemplate.kt")
     val mapViewModelTemplate = File("$samplesRepoPath/tools/NewModuleScript/MapViewModelTemplate.kt")
-    val mainScreenTemplate = File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
+    val mainScreenTemplate = when (sampleTemplateType) {
+        SampleTemplateTypes.Basic -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
+        SampleTemplateTypes.FAB_DialogOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenDialogTemplate.kt")
+        SampleTemplateTypes.FAB_BottomSheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenBottomSheetTemplate.kt")
+    }
 
     // Perform copy
     FileUtils.copyFileToDirectory(mainActivityTemplate, packageDirectory)
@@ -156,7 +181,7 @@ private fun createFilesAndFolders() {
     componentsDir = File("$packageDirectory/screens")
     componentsDir.mkdirs()
     FileUtils.copyFileToDirectory(mainScreenTemplate, componentsDir)
-    source = Paths.get("$componentsDir/MainScreenTemplate.kt")
+    source = Paths.get("$componentsDir/${mainScreenTemplate.name}")
     Files.move(source, source.resolveSibling("${sampleNameCamelCase}Screen.kt"))
 }
 
@@ -198,8 +223,8 @@ private fun updateSampleContent() {
                     "redirect_from": "",
                     "relevant_apis": [ ],
                     "snippets": [
-                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/${sampleNameCamelCase}ViewModel.kt",
-                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/${sampleNameCamelCase}Screen.kt",
+                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/components/${sampleNameCamelCase}ViewModel.kt",
+                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/screens/${sampleNameCamelCase}Screen.kt",
                         "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/MainActivity.kt"
                     ],
                     "title": "$sampleName"
@@ -252,8 +277,13 @@ private fun updateSampleContent() {
     fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
     fileContent = fileContent.replace("MapViewModel", "${sampleNameCamelCase}ViewModel")
     fileContent = fileContent.replace("MainScreen(", "${sampleNameCamelCase}Screen(")
-    fileContent =
-        fileContent.replace("display_composable_map_view_app_name", "${sampleNameUnderscore}_app_name")
+    fileContent = fileContent.replace("display_composable_map_view_app_name", "${sampleNameUnderscore}_app_name")
+    FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
+
+    //Update AndroidManifest.xml
+    file = File("$samplesRepoPath/samples/$sampleWithHyphen/src/main/AndroidManifest.xml")
+    fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
+    fileContent = fileContent.replace("display_composable_map_view_app_name", "${sampleNameUnderscore}_app_name")
     FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
 }
 

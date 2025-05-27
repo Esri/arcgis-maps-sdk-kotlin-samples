@@ -16,7 +16,7 @@ internal fun Project.configureAndroidCompose(
         }
 
         composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("kotlinCompilerExt").get().toString()
+            kotlinCompilerExtensionVersion = libs.findVersion("kotlinVersion").get().toString()
         }
 
         dependencies {

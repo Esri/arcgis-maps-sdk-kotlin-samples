@@ -1,0 +1,32 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Show a predefined popup from a web map.",
+    "formal_name": "ShowPopup",
+    "ignore": false,
+    "images": [
+        "show-popup.png"
+    ],
+    "keywords": [
+        "feature",
+        "feature layer",
+        "popup",
+        "toolkit",
+        "web map",
+        "ArcGISMap",
+        "IdentifyLayerResult",
+        "Popup"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "IdentifyLayerResult",
+        "Popup"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showpopup/components/ShowPopupViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showpopup/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showpopup/screens/ShowPopupScreen.kt"
+    ],
+    "title": "Show popup"
+}
