@@ -29,11 +29,11 @@ Pan and zoom to explore the scene.
 
 ## Relevant API
 
-- ArcGISSceneLayer
-- ArcGISTiledElevationSource
-- ArcGISScene
-- SceneView
-- Surface
+* ArcGISSceneLayer
+* ArcGISTiledElevationSource
+* ArcGISScene
+* SceneView
+* Surface
 
 ## About the data
 
