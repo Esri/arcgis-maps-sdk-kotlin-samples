@@ -155,7 +155,7 @@ private fun createFilesAndFolders() {
     // Copy Kotlin template files to new sample
     val mainActivityTemplate = File("$samplesRepoPath/tools/NewModuleScript/MainActivityTemplate.kt")
     val mapViewModelTemplate = File("$samplesRepoPath/tools/NewModuleScript/MapViewModelTemplate.kt")
-    val mainScreenTemplate = when(sampleTemplateType){
+    val mainScreenTemplate = when (sampleTemplateType) {
         SampleTemplateTypes.Basic -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
         SampleTemplateTypes.FAB_DialogOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenDialogTemplate.kt")
         SampleTemplateTypes.FAB_BottomSheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenBottomSheetTemplate.kt")
@@ -223,8 +223,8 @@ private fun updateSampleContent() {
                     "redirect_from": "",
                     "relevant_apis": [ ],
                     "snippets": [
-                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/${sampleNameCamelCase}ViewModel.kt",
-                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/${sampleNameCamelCase}Screen.kt",
+                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/components/${sampleNameCamelCase}ViewModel.kt",
+                        "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/screens/${sampleNameCamelCase}Screen.kt",
                         "src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/MainActivity.kt"
                     ],
                     "title": "$sampleName"
