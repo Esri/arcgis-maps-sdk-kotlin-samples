@@ -85,7 +85,7 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) : AndroidV
 }
 
 /**
- * Represents various lighting options that can be used to configure a composable scene view.
+ * Represents various lighting options used by the composable scene view.
  */
 data class LightingOptionsState(
     val sunLighting: MutableState<LightingMode>,
