@@ -17,13 +17,12 @@
 package com.esri.arcgismaps.sample.addwfslayer.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
+import com.arcgismaps.data.FeatureRequestMode.ManualCache
 import com.arcgismaps.data.QueryParameters
+import com.arcgismaps.data.SpatialRelationship.Intersects
 import com.arcgismaps.data.WfsFeatureTable
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Polygon
@@ -32,6 +31,7 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.layers.OgcAxisOrder.NoSwap
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleRenderer
@@ -41,9 +41,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import com.arcgismaps.mapping.layers.OgcAxisOrder.NoSwap
-import com.arcgismaps.data.FeatureRequestMode.ManualCache
-import com.arcgismaps.data.SpatialRelationship.Intersects
 
 class AddWfsLayerViewModel(app: Application) : AndroidViewModel(app) {
     // MapViewProxy for identify and viewpoint operations
@@ -53,8 +50,7 @@ class AddWfsLayerViewModel(app: Application) : AndroidViewModel(app) {
     val messageDialogVM = MessageDialogViewModel()
 
     // The ArcGISMap with the Seattle downtown initial viewpoint
-    var arcGISMap by mutableStateOf(createMapWithWfsLayer())
-        private set
+    val arcGISMap = createMapWithWfsLayer()
 
     // Track if the WFS table is currently populating
     private val _isPopulating = MutableStateFlow(false)
