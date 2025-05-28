@@ -53,7 +53,7 @@ class ShowRealisticLightAndShadowsViewModel(application: Application) : AndroidV
                 "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/DevA_BuildingShells/SceneServer"
             )
         )
-        // Create a point to centre on
+        // Create a point to center on
         val point = Point(
             x = -122.69033,
             y = 45.54605,
