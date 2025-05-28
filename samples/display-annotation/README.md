@@ -30,8 +30,8 @@ Data derived from the [OS Open Rivers](https://www.ordnancesurvey.co.uk/business
 
 The annotation layer contains two sublayers of rivers in East Lothian, Scotland, which were set by the author to only be visible within the following scale ranges:
 
-* Burn (1:25,000 - 1:75,000) - A brook or small stream, as defined in the Scots language
-* Water (1:50,000 - 1:100,000) - A large stream, as defined in the Scots language
+    * Burn (1:25,000 - 1:75,000) - A brook or small stream, as defined in the Scots language
+    * Water (1:50,000 - 1:100,000) - A large stream, as defined in the Scots language
 
 ## Additional information
 
