@@ -15,6 +15,7 @@
         "ArcGISMapImageLayer"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "ArcGISMap",
         "ArcGISMapImageLayer"
