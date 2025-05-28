@@ -142,7 +142,7 @@ fun LightingOptionsPanel(
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .padding(8.dp)
         ) {
             lightingModes.forEachIndexed { index, mode ->
                 val text = when (mode) {
