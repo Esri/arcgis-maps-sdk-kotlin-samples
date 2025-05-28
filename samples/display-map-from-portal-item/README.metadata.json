@@ -15,7 +15,6 @@
         "PortalItem"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
     "relevant_apis": [
         "ArcGISMap",
         "MapView",

@@ -2,7 +2,7 @@
 
 Display a web map from an ArcGIS Online portal item.
 
-![Screenshot of display map from portal item](display-scene.png)
+![Screenshot of display map from portal item](display-map-from-portal-item.png)
 
 ## Use case
 
