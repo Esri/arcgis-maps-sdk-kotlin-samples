@@ -31,8 +31,10 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class DisplayAnnotationViewModel(app: Application) : AndroidViewModel(app) {
-    private val riversFeatureUrl =
+    // A URL to a feature layer for the rivers in East Lothian.
+    private val eastLothianRiversUrl =
         "https://services1.arcgis.com/6677msI40mnLuuLr/arcgis/rest/services/East_Lothian_Rivers/FeatureServer/0"
+    // A URL to an annotation layer for the rivers in East Lothian.
     private val riversAnnotationUrl =
         "https://sampleserver6.arcgisonline.com/arcgis/rest/services/RiversAnnotation/FeatureServer/0"
 
@@ -52,15 +54,15 @@ class DisplayAnnotationViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         viewModelScope.launch {
-            // Load the feature layer
-            val featureTable = ServiceFeatureTable(riversFeatureUrl)
+            // Create and load the feature layer
+            val featureTable = ServiceFeatureTable(eastLothianRiversUrl)
             featureTable.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
                 return@launch
             }
             val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
 
-            // Load the annotation layer
+            // Create and load the annotation layer
             val annotationLayer = AnnotationLayer(riversAnnotationUrl)
             annotationLayer.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
