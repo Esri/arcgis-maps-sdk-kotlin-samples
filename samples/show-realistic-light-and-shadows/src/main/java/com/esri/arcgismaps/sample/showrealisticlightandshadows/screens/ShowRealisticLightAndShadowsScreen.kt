@@ -203,7 +203,7 @@ fun LightingOptionsPanel(
             Text(
                 text = "Time: " + dateTime.withHour(0).withMinute(0).withSecond(0)
                     .plusSeconds(timeOfDay.toLong())
-                    .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
+                    .format(DateTimeFormatter.ofPattern("hh:mm a")),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(start = 12.dp)
             )
