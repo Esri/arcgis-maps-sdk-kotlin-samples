@@ -133,7 +133,7 @@ fun LightingOptionsPanel(
     onShowDatePickerChanged: (Boolean) -> Unit,
     dateTime: ZonedDateTime,
     onDateTimeChanged: (ZonedDateTime) -> Unit,
-    datePickerState: androidx.compose.material3.DatePickerState
+    datePickerState: DatePickerState
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
