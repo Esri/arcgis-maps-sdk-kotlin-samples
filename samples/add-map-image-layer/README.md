@@ -23,7 +23,6 @@ Open the sample and view the map image layer. As you navigate the map, the layer
 
 * ArcGISMap
 * ArcGISMapImageLayer
-* MapView (Compose Toolkit)
 
 ## Tags
 
