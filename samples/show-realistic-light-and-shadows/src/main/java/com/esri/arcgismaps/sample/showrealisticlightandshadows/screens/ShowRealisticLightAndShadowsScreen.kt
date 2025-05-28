@@ -194,7 +194,10 @@ fun LightingOptionsPanel(
                 text = "Date:",
                 style = MaterialTheme.typography.titleMedium
             )
-            TextButton(onClick = { onShowDatePickerChanged(true) }) {
+            TextButton(
+                modifier = Modifier.padding(horizontal = 4.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                onClick = { onShowDatePickerChanged(true) }) {
                 Text(
                     text = dateTime.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")),
                     style = MaterialTheme.typography.titleMedium
