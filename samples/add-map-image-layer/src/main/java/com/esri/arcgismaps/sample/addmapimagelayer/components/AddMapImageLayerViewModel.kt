@@ -17,6 +17,8 @@
 package com.esri.arcgismaps.sample.addmapimagelayer.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
@@ -25,15 +27,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class AddMapImageLayerViewModel(app: Application) : AndroidViewModel(app) {
-    // Create a map image layer using the World Elevation map server
-    private val mapImageLayer = ArcGISMapImageLayer(
-        url = "https://sampleserver5.arcgisonline.com/arcgis/rest/services/Elevation/WorldElevations/MapServer"
-    )
     // The ArcGISMap containing the map image layer
-    val arcGISMap = ArcGISMap().apply {
-        // Add the map image layer to the operational layers
-        operationalLayers.add(mapImageLayer)
-    }
+    val arcGISMap by mutableStateOf(createArcGISMap())
 
     // Message dialog view model for error handling
     val messageDialogVM = MessageDialogViewModel()
@@ -44,4 +39,15 @@ class AddMapImageLayerViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    private fun createArcGISMap(): ArcGISMap {
+        // Create the map image layer using the URL
+        val mapImageLayer = ArcGISMapImageLayer(
+            "https://sampleserver5.arcgisonline.com/arcgis/rest/services/Elevation/WorldElevations/MapServer"
+        )
+        // Create a blank map
+        val map = ArcGISMap()
+        // Add the map image layer to the operational layers
+        map.operationalLayers.add(mapImageLayer)
+        return map
+    }
 }

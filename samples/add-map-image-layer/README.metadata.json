@@ -12,9 +12,11 @@
         "layer",
         "map",
         "ArcGISMap",
-        "ArcGISMapImageLayer"
+        "ArcGISMapImageLayer",
+        "MapView (Compose Toolkit)"
     ],
     "language": "kotlin",
+    "redirect_from": "TODO",
     "relevant_apis": [
         "ArcGISMap",
         "ArcGISMapImageLayer",
