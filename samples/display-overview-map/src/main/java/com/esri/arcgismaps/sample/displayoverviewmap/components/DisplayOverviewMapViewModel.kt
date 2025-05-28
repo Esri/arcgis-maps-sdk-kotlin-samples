@@ -34,16 +34,21 @@ class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
 
     private val initialViewpoint = Viewpoint(latitude = -41.44, longitude = 173.52, scale = 10e6)
 
+    // the current viewpoint of the map
     val viewpoint = mutableStateOf(initialViewpoint)
+    // the current visible area of the map
     val visibleArea: MutableState<Polygon?> = mutableStateOf(null)
 
+    // set up feature layer
     private val touristAttractionsUrl =
         "https://services1.arcgis.com/ligOmcZkuYGDjlNm/arcgis/rest/services/Tourism_Attractions/FeatureServer/2"
     private val touristAttractionTable = ServiceFeatureTable(touristAttractionsUrl)
     private val featureLayerTouristAttractions = FeatureLayer.createWithFeatureTable(touristAttractionTable)
 
+    // the map used by MapView
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
         initialViewpoint = viewpoint.value
+        // add tourist attraction feature layer to the map
         operationalLayers.add(featureLayerTouristAttractions)
     }
 
