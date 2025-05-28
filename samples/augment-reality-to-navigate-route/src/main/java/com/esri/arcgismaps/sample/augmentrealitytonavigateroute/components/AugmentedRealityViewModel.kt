@@ -91,7 +91,7 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
         baseSurface.opacity = 0.0f // hide the background
     }
 
-    // Route result from passed from the route view model via the repository
+    // Route result passed from the route view model via the repository
     val routeResult = SharedRepository.route
 
     // Graphics overlay for the route ahead
@@ -107,6 +107,7 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
 
     // List of all graphics, used to find the closest graphic on location changes
     val routeAllGraphics: MutableList<Graphic> = mutableListOf()
+
     // The current closest graphic
     var currentClosestGraphic: Graphic? = null
 
@@ -120,29 +121,37 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Draws route graphics in augmented reality.
+     * Draws route graphics in augmented reality with turn arrows stood up like a billboard and other arrows lying flat.
      */
     suspend fun drawRoute(route: Route) {
         // Loop through all the direction maneuvers and draw the route
         route.directionManeuvers.forEachIndexed { i, maneuver ->
+            // If the maneuver is a stop
             if (maneuver.geometry is Point && maneuver.maneuverType == DirectionManeuverType.Stop) {
                 val thisPoint = addZValuesGeometry(maneuver.geometry as Point) as Point
-                // Get the second to last point of the previous maneuver. The last point is coincident with the stop.
-                val previousPoint =
-                    (route.directionManeuvers[i - 1].geometry as? Polyline)?.parts?.last()?.points?.toList()
-                        ?.takeLast(2)?.first()
-                previousPoint?.let { previousPoint ->
-                    val distanceInformation = GeometryEngine.distanceGeodeticOrNull(
-                        point1 = thisPoint,
-                        point2 = previousPoint,
-                        distanceUnit = LinearUnit.meters,
-                        azimuthUnit = AngularUnit.degrees,
-                        curveType = GeodeticCurveType.Geodesic
-                    )
-                    val headingToPreviousPoint = calculateHeading(distanceInformation)
-                    drawArrow(
-                        position = thisPoint, heading = headingToPreviousPoint, pitch = -90f, roll = 90f, animate = true
-                    )
+                // Check there are enough direction maneuvers to get the previous point
+                if (route.directionManeuvers.size > 1) {
+                    // Get the second to last point of the previous maneuver. The last point is coincident with the stop.
+                    val previousPoint =
+                        (route.directionManeuvers[i - 1].geometry as? Polyline)?.parts?.last()?.points?.toList()
+                            ?.takeLast(2)?.first()
+                    previousPoint?.let { previousPoint ->
+                        val distanceInformation = GeometryEngine.distanceGeodeticOrNull(
+                            point1 = thisPoint,
+                            point2 = previousPoint,
+                            distanceUnit = LinearUnit.meters,
+                            azimuthUnit = AngularUnit.degrees,
+                            curveType = GeodeticCurveType.Geodesic
+                        )
+                        val headingToPreviousPoint = calculateHeading(distanceInformation)
+                        drawArrow(
+                            position = thisPoint,
+                            heading = headingToPreviousPoint,
+                            pitch = -90f,
+                            roll = 90f,
+                            animate = true
+                        )
+                    }
                 }
             } else if (maneuver.geometry is Polyline) {
                 val densifiedPolyline = GeometryEngine.densifyGeodeticOrNull(
@@ -231,7 +240,12 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
                         arcGISScene.baseSurface.getElevation(point).let { elevationResult ->
                             elevationResult.getOrNull()?.let { elevation ->
                                 polylineBuilder.addPoint(
-                                    Point(x = point.x, y = point.y, z = elevation, spatialReference = SpatialReference.wgs84())
+                                    Point(
+                                        x = point.x,
+                                        y = point.y,
+                                        z = elevation,
+                                        spatialReference = SpatialReference.wgs84()
+                                    )
                                 )
                             }
                         }
@@ -280,25 +294,16 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
      * closest one.
      */
     suspend fun getClosestGraphic(location: Point): Graphic? {
-        var closestGraphic: Graphic? = null
-        // Initialize shortest distance to max value
-        var shortestDistance = Double.MAX_VALUE
         val locationWithZ = addZValuesGeometry(location) as Point
-        routeAllGraphics.forEach { graphic ->
-            val distance = GeometryEngine.distanceGeodeticOrNull(
+        return routeAllGraphics.minByOrNull { graphic ->
+            GeometryEngine.distanceGeodeticOrNull(
                 locationWithZ,
                 graphic.geometry as Point,
                 LinearUnit.meters,
                 AngularUnit.degrees,
                 GeodeticCurveType.Geodesic
             )?.distance ?: Double.MAX_VALUE
-            if (distance < shortestDistance) {
-                shortestDistance = distance
-                closestGraphic = graphic
-            }
-
         }
-        return closestGraphic
     }
 
     /**

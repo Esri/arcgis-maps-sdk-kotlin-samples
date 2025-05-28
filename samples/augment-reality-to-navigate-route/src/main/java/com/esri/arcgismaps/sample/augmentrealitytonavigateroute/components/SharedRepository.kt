@@ -21,13 +21,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arcgismaps.tasks.networkanalysis.RouteResult
 
+/**
+ * Shared repository to hold the route result generated in the route view model and passed to the augmented reality view
+ * model.
+ */
 object SharedRepository {
 
-    private var _Route by mutableStateOf<RouteResult?>(null)
+    private var _route by mutableStateOf<RouteResult?>(null)
     val route
-        get() = _Route
+        get() = _route
 
     fun updateRoute(route: RouteResult?) {
-        _Route = route
+        _route = route
     }
 }
