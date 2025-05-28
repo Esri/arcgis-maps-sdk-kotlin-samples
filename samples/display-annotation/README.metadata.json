@@ -14,14 +14,16 @@
         "reference scale",
         "text",
         "utility",
-        "`AnnotationLayer`",
-        "`FeatureLayer`"
+        "AnnotationLayer",
+        "FeatureLayer"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": [
+        "TODO"
+    ],
     "relevant_apis": [
-        "`AnnotationLayer`",
-        "`FeatureLayer`"
+        "AnnotationLayer",
+        "FeatureLayer"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displayannotation/components/DisplayAnnotationViewModel.kt",
