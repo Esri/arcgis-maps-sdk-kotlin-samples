@@ -12,15 +12,12 @@
         "layer",
         "map",
         "ArcGISMap",
-        "ArcGISMapImageLayer",
-        "MapView (Compose Toolkit)"
+        "ArcGISMapImageLayer"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
     "relevant_apis": [
         "ArcGISMap",
-        "ArcGISMapImageLayer",
-        "MapView (Compose Toolkit)"
+        "ArcGISMapImageLayer"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addmapimagelayer/components/AddMapImageLayerViewModel.kt",
