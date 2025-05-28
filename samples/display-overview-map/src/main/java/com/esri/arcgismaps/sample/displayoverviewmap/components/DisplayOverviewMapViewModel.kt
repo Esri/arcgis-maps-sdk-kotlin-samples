@@ -17,23 +17,35 @@
 package com.esri.arcgismaps.sample.displayoverviewmap.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.data.ServiceFeatureTable
+import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.FeatureLayer
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
+
+    private val initialViewpoint = Viewpoint(latitude = -41.44, longitude = 173.52, scale = 10e6)
+
+    val viewpoint = mutableStateOf(initialViewpoint)
+    val visibleArea: MutableState<Polygon?> = mutableStateOf(null)
+
+    private val touristAttractionsUrl =
+        "https://services1.arcgis.com/ligOmcZkuYGDjlNm/arcgis/rest/services/Tourism_Attractions/FeatureServer/2"
+    private val touristAttractionTable = ServiceFeatureTable(touristAttractionsUrl)
+    private val featureLayerTouristAttractions = FeatureLayer.createWithFeatureTable(touristAttractionTable)
+
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        initialViewpoint = viewpoint.value
+        operationalLayers.add(featureLayerTouristAttractions)
+    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()

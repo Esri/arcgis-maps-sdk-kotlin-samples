@@ -16,15 +16,20 @@
 
 package com.esri.arcgismaps.sample.displayoverviewmap.screens
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.OverviewMap
 import com.esri.arcgismaps.sample.displayoverviewmap.components.DisplayOverviewMapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -35,21 +40,34 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun DisplayOverviewMapScreen(sampleName: String) {
     val mapViewModel: DisplayOverviewMapViewModel = viewModel()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
+            Box (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
             ) {
                 MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    modifier = Modifier.fillMaxSize(),
+                    arcGISMap = mapViewModel.arcGISMap,
+                    onViewpointChangedForCenterAndScale = {
+                        mapViewModel.viewpoint.value = it
+                    },
+                    onVisibleAreaChanged = {
+                        mapViewModel.visibleArea.value = it
+                    }
                 )
-                // TODO: Add UI components in this Column ...
+                OverviewMap(
+                    viewpoint = mapViewModel.viewpoint.value,
+                    visibleArea = mapViewModel.visibleArea.value,
+                    modifier = Modifier
+                        .size(250.dp, 200.dp)
+                        .padding(20.dp)
+                        .border(width = 2.dp, color = MaterialTheme.colorScheme.primary)
+                        .align(Alignment.TopEnd)
+                )
             }
 
             mapViewModel.messageDialogVM.apply {
