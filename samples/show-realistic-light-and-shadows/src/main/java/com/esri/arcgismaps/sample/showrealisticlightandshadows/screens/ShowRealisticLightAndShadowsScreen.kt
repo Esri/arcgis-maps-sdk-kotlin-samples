@@ -196,7 +196,7 @@ fun LightingOptionsPanel(
             )
             TextButton(onClick = { onShowDatePickerChanged(true) }) {
                 Text(
-                    text = dateTime.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy")),
+                    text = dateTime.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
