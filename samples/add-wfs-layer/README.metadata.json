@@ -23,7 +23,6 @@
         "WfsFeatureTable.populateFromService"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
     "relevant_apis": [
         "FeatureLayer",
         "MapView.onNavigationChanged",
