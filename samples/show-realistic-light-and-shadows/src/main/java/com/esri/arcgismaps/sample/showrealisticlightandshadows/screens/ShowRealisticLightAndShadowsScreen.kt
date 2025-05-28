@@ -21,17 +21,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -62,7 +59,6 @@ import java.time.ZonedDateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
-
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
 
     var showDatePicker by remember { mutableStateOf(false) }
@@ -79,44 +75,7 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
 
     Scaffold(
         topBar = {
-            SampleTopAppBar(
-                title = sampleName, actions =
-                    {
-                        val expanded = remember { mutableStateOf(false) }
-                        IconButton(
-                            onClick = { expanded.value = !expanded.value }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Lighting Settings"
-                            )
-                            DropdownMenu(
-                                expanded = expanded.value,
-                                onDismissRequest = { expanded.value = false }
-                            ) {
-                                lightingModes.forEach {
-                                    val text = when (it) {
-                                        LightingMode.Light -> "Light"
-                                        LightingMode.LightAndShadows -> "Light and shadows"
-                                        LightingMode.NoLight -> "No light"
-                                    }
-                                    // Make the currently selected lighting option bold
-                                    val fontWeight = when (it) {
-                                        lightingOptionsState.sunLighting.value -> FontWeight.Bold
-                                        else -> FontWeight.Normal
-                                    }
-                                    DropdownMenuItem(
-                                        text = { Text(text = text, fontWeight = fontWeight) },
-                                        onClick = {
-                                            lightingOptionsState.sunLighting.value = it
-                                            expanded.value = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-            )
+            SampleTopAppBar(title = sampleName)
         },
         content = {
             Column(
@@ -135,79 +94,18 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
                     atmosphereEffect = lightingOptionsState.atmosphereEffect.value,
                     spaceEffect = lightingOptionsState.spaceEffect.value
                 )
-                // Create a slider with AM and PM labels to control the sun time
-                Row {
-                    Text(
-                        modifier = Modifier.padding(12.dp),
-                        text = "AM",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Slider(
-                        modifier = Modifier.weight(1f),
-                        value = timeOfDay,
-                        onValueChange = { value ->
-                            timeOfDay = value
-                        },
-                        // The range is 0 (start of the day) to 86399 (end of the day in seconds)
-                        valueRange = 0f..86399f
-                    )
-                    Text(
-                        modifier = Modifier.padding(12.dp),
-                        text = "PM",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-                if (showDatePicker) {
-                    DatePickerDialog(
-                        onDismissRequest = { showDatePicker = false },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                showDatePicker = false
-                                datePickerState.selectedDateMillis?.let { millis ->
-                                    // Convert the selected date in milliseconds to a LocalDate
-                                    val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate()
-                                    // Set the dateTime to the start of the day in Pacific Time
-                                    dateTime = localDate.atStartOfDay(ZoneId.of("US/Pacific"))
-                                }
-                            }) {
-                                Text("Confirm")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showDatePicker = false }) {
-                                Text("Cancel")
-                            }
-                        }
-                    ) {
-                        DatePicker(state = datePickerState)
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Date:",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    TextButton(onClick = { showDatePicker = true }) {
-                        // Display the selected date in a human-readable format
-                        Text(
-                            text = "Date: ${dateTime.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy"))}",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                    // Display the time in a human-readable format
-                    Text(
-                        text = "Time: ${
-                            dateTime.withHour(0).withMinute(0).withSecond(0)
-                                .plusSeconds(timeOfDay.toLong())
-                                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"))
-                        }",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
+                LightingOptionsPanel(
+                    lightingModes = lightingModes,
+                    selectedLightingMode = lightingOptionsState.sunLighting.value,
+                    onLightingModeSelected = { lightingOptionsState.sunLighting.value = it },
+                    timeOfDay = timeOfDay,
+                    onTimeOfDayChanged = { timeOfDay = it },
+                    showDatePicker = showDatePicker,
+                    onShowDatePickerChanged = { showDatePicker = it },
+                    dateTime = dateTime,
+                    onDateTimeChanged = { dateTime = it },
+                    datePickerState = datePickerState
+                )
             }
 
             mapViewModel.messageDialogVM.apply {
@@ -221,4 +119,119 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LightingOptionsPanel(
+    lightingModes: List<LightingMode>,
+    selectedLightingMode: LightingMode,
+    onLightingModeSelected: (LightingMode) -> Unit,
+    timeOfDay: Float,
+    onTimeOfDayChanged: (Float) -> Unit,
+    showDatePicker: Boolean,
+    onShowDatePickerChanged: (Boolean) -> Unit,
+    dateTime: ZonedDateTime,
+    onDateTimeChanged: (ZonedDateTime) -> Unit,
+    datePickerState: androidx.compose.material3.DatePickerState
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Lighting mode segmented button row
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+        ) {
+            lightingModes.forEachIndexed { index, mode ->
+                val text = when (mode) {
+                    LightingMode.Light -> "Light"
+                    LightingMode.LightAndShadows -> "Light & shadows"
+                    LightingMode.NoLight -> "No light"
+                }
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index, lightingModes.size),
+                    selected = (mode == selectedLightingMode),
+                    onClick = { onLightingModeSelected(mode) },
+                ) {
+                    Text(
+                        text = text,
+                        fontWeight = if (mode == selectedLightingMode) FontWeight.Bold else FontWeight.Normal
+                    )
+                }
+            }
+        }
+        // Create a slider with AM and PM labels to control the sun time
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.padding(start = 12.dp, end = 8.dp),
+                text = "AM",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Slider(
+                modifier = Modifier.weight(1f),
+                value = timeOfDay,
+                onValueChange = { onTimeOfDayChanged(it) },
+                // The range is 0 (start of the day) to 86399 (end of the day in seconds)
+                valueRange = 0f..86399f
+            )
+            Text(
+                modifier = Modifier.padding(start = 8.dp, end = 12.dp),
+                text = "PM",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+        // Date picker and time display
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Date:",
+                style = MaterialTheme.typography.titleMedium
+            )
+            TextButton(onClick = { onShowDatePickerChanged(true) }) {
+                Text(
+                    text = dateTime.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy")),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+            Text(
+                text = "Time: " + dateTime.withHour(0).withMinute(0).withSecond(0)
+                    .plusSeconds(timeOfDay.toLong())
+                    .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 12.dp)
+            )
+        }
+        if (showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { onShowDatePickerChanged(false) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        onShowDatePickerChanged(false)
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            // Convert the selected date in milliseconds to a LocalDate
+                            val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate()
+                            // Set the dateTime to the start of the day in Pacific Time
+                            onDateTimeChanged(localDate.atStartOfDay(ZoneId.of("US/Pacific")))
+                        }
+                    }) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onShowDatePickerChanged(false) }) {
+                        Text("Cancel")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
+    }
 }
