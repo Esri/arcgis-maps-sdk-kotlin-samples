@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <application><activity
+        android:name=".DownloadActivity"
+        android:exported="true"
+        android:label="@string/augment_reality_to_navigate_route_app_name">
+
+    </activity>
+        <activity
+            android:exported="true"
+            android:name=".MainActivity"
+            android:label="@string/augment_reality_to_navigate_route_app_name">
+            
+        </activity>
+        <!-- Insert your Google API key in order to use Geospatial tracking. -->
+        <meta-data
+            android:name="com.google.android.ar.API_KEY"
+            android:value="Insert Google API Key here"/>
+    </application>
+
+</manifest>
