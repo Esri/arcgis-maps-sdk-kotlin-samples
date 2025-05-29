@@ -1,19 +1,36 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Include an overview or inset map as an additional map view",
     "formal_name": "DisplayOverviewMap",
     "ignore": false,
     "images": [
         "display-overview-map.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "context",
+        "inset",
+        "map",
+        "minimap",
+        "overview",
+        "preview",
+        "small scale",
+        "toolkit",
+        "view",
+        "ArcGISMap",
+        "MapView",
+        "OverviewMap"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "ArcGISMap",
+        "MapView",
+        "OverviewMap"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/DisplayOverviewMapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/DisplayOverviewMapScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/components/DisplayOverviewMapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayoverviewmap/screens/DisplayOverviewMapScreen.kt"
     ],
     "title": "Display Overview Map"
 }
