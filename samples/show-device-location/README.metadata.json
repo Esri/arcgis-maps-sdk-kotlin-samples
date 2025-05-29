@@ -21,9 +21,7 @@
         "MapView"
     ],
     "language": "kotlin",
-    "redirect_from": [
-        "/android/latest/sample-code/display-device-location.htm"
-    ],
+    "redirect_from": "",
     "relevant_apis": [
         "ArcGISMap",
         "LocationDisplay",
