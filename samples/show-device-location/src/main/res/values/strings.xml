@@ -1,4 +1,3 @@
 <resources>
-    <string name="show_device_location_app_name">Show device location</string>
-    <string name="locationPoint_image">Location point image</string>
+    <string name="show_device_location_app_name">Show Device Location</string>
 </resources>

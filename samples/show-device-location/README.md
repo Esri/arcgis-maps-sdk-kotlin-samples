@@ -10,10 +10,10 @@ When using a map within a GIS, it may be helpful for a user to know their own lo
 
 ## How to use the sample
 
-Tap the button in the lower right (which starts in Stop mode). A menu will appear with the following options:
+Tap the button in the lower right (which starts in On mode). A menu will appear with the following options:
 
-* Stop - Stops the location display.
-* On - Starts the location display with no `LocationDisplayAutoPanMode` mode set.
+* Off - Stops the location display.
+* On - Starts the location display with `LocationDisplayAutoPanMode` set to `Off`.
 * Re-Center - Starts the location display with `LocationDisplayAutoPanMode` set to `Recenter`.
 * Navigation - Starts the location display with `LocationDisplayAutoPanMode` set to `Navigation`.
 * Compass - Starts the location display with `LocationDisplayAutoPanMode` set to `CompassNavigation`.
@@ -21,13 +21,14 @@ Tap the button in the lower right (which starts in Stop mode). A menu will appea
 ## How it works
 
 1. Create a `MapView`.
-2. Get the `LocationDisplay.dataSource` from the `MapView` with `mapView.locationDisplay.dataSource`.
-3. Use `start()` and `stop()` on the `LocationDataSource` as necessary.
+2. Get the `LocationDisplay` object by calling `rememberLocationDisplay()` on the map view.
+3. Use `start()` and `stop()` on the `LocationDisplay.dataSource` as necessary.
 
 ## Relevant API
 
 * ArcGISMap
 * LocationDisplay
+* LocationDisplay.AutoPanMode
 * MapView
 
 ## Additional information
@@ -42,6 +43,8 @@ This sample demonstrates the following `AutoPanMode` options:
 
 * CompassNavigation: This mode is better suited for waypoint navigation when the user is walking.
 
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+
 ## Tags
 
-compass, GPS, location, map, mobile, navigation
+compass, geoview-compose, GPS, location, map, mobile, navigation, toolkit
