@@ -17,6 +17,8 @@
 package com.esri.arcgismaps.sample.takescreenshot.components
 
 import android.app.Application
+import android.graphics.drawable.BitmapDrawable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -24,16 +26,15 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
+
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
+        initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -43,4 +44,15 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
+
+    val screenshotImage: MutableState<BitmapDrawable?> = mutableStateOf(null)
+
+    val mapViewProxy = MapViewProxy()
+
+    fun takeScreenshot(){
+        viewModelScope.launch {
+            screenshotImage.value = mapViewProxy.exportImage().getOrNull()
+        }
+    }
+
 }
