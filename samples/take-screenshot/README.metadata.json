@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "TakeScreenshot",
+    "ignore": false,
+    "images": [
+        "take-screenshot.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/takescreenshot/components/TakeScreenshotViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/takescreenshot/screens/TakeScreenshotScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/takescreenshot/MainActivity.kt"
+    ],
+    "title": "Take screenshot"
+}
