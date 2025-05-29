@@ -47,4 +47,4 @@ This sample uses the GeoView-Compose Toolkit module to be able to implement a co
 
 ## Tags
 
-GPS, compass, geoview-compose, location, map, mobile, navigation, toolkit
+compass, geoview-compose, GPS, location, map, mobile, navigation, toolkit
