@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.takescreenshot.components
 import android.app.Application
 import android.graphics.drawable.BitmapDrawable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,10 +44,13 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // screenshot image for display
     val screenshotImage: MutableState<BitmapDrawable?> = mutableStateOf(null)
 
+    // class to interact with MapView
     val mapViewProxy = MapViewProxy()
 
+    // function to take screenshot of MapView
     fun takeScreenshot(){
         viewModelScope.launch {
             screenshotImage.value = mapViewProxy.exportImage().getOrNull()

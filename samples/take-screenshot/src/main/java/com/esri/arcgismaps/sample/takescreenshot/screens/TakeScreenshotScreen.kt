@@ -86,7 +86,7 @@ fun TakeScreenshotScreen(sampleName: String) {
                     onConfirmation = { mapViewModel.screenshotImage.value = null },
                     onDismissRequest = { mapViewModel.screenshotImage.value = null },
                     imageBitmap = screenshotImage.bitmap.asImageBitmap(),
-                    imageDescription = "",
+                    imageDescription = "Screenshot",
                 )
             }
 
@@ -103,6 +103,10 @@ fun TakeScreenshotScreen(sampleName: String) {
     )
 }
 
+
+/**
+ * Displays a dialog with an image and a confirmation button.
+ */
 @Composable
 fun DialogWithImage(
     onDismissRequest: () -> Unit,
