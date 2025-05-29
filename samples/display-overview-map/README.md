@@ -1,4 +1,4 @@
-# Display Overview Map
+# Display overview map
 
 Include an overview or inset map as an additional map view
 to show the wider context of the primary view.
