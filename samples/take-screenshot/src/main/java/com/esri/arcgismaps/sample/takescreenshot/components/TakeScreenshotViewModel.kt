@@ -17,9 +17,13 @@
 package com.esri.arcgismaps.sample.takescreenshot.components
 
 import android.app.Application
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
@@ -28,6 +32,8 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -55,6 +61,20 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             screenshotImage.value = mapViewProxy.exportImage().getOrNull()
         }
+    }
+
+    fun saveBitmapToFile(context: Context, bitmap: Bitmap): Uri? {
+        // Create a file in the cache directory
+        val file = File(context.cacheDir, "screenshot.png")
+        val outputStream = FileOutputStream(file)
+
+        // Compress the bitmap and save it to the file
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.flush()
+        outputStream.close()
+
+        // Return the URI for the file
+        return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     }
 
 }

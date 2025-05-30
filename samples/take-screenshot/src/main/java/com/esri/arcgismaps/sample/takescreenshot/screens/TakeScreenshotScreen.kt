@@ -16,7 +16,10 @@
 
 package com.esri.arcgismaps.sample.takescreenshot.screens
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +42,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -54,6 +58,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun TakeScreenshotScreen(sampleName: String) {
     val mapViewModel: TakeScreenshotViewModel = viewModel()
+
+    val context = LocalContext.current
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -83,7 +90,12 @@ fun TakeScreenshotScreen(sampleName: String) {
 
             mapViewModel.screenshotImage.value?.let { screenshotImage ->
                 DialogWithImage(
-                    onConfirmation = { mapViewModel.screenshotImage.value = null },
+                    onConfirmation = {
+                        mapViewModel.screenshotImage.value = null
+                        mapViewModel.saveBitmapToFile(context, screenshotImage.bitmap)?.let { uri ->
+                            shareImage(context, uri)
+                        }
+                    },
                     onDismissRequest = { mapViewModel.screenshotImage.value = null },
                     imageBitmap = screenshotImage.bitmap.asImageBitmap(),
                     imageDescription = "Screenshot",
@@ -139,9 +151,18 @@ fun DialogWithImage(
                     onClick = { onConfirmation() },
                     modifier = Modifier.padding(8.dp),
                 ) {
-                    Text("Confirm")
+                    Text("Share")
                 }
             }
         }
     }
+}
+
+fun shareImage(context: Context, imageUri: Uri) {
+    val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_STREAM, imageUri)
+        type = "image/png"
+    }
+    context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
 }
