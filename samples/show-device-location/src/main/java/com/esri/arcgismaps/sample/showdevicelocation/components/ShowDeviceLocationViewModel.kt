@@ -56,9 +56,6 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
         "On",
     )
 
-    // this variable controls the visibility of the dropdown menu
-    val showDropDownMenu = mutableStateOf(false)
-
     // This variable holds the currently selected item from the dropdown menu
     val selectedItem = mutableStateOf(dropDownMenuOptionsWhenOn[1])
 
@@ -69,6 +66,7 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
 
     // This function handles the selection of an item from the dropdown menu
     fun onItemSelected(itemText: String, locationDisplay: LocationDisplay){
+        selectedItem.value = itemText
         when (itemText) {
             "Off" ->  // stop location display
                 viewModelScope.launch {
@@ -96,7 +94,3 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 }
-
-
-@Stable
-data class ItemData(val text: String, val imageId: Int)

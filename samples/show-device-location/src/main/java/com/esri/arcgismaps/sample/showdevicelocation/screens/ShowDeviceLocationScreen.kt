@@ -39,6 +39,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -66,6 +70,9 @@ fun ShowDeviceLocationScreen(sampleName: String) {
 
     // Create and remember a location display with a recenter auto pan mode.
     val locationDisplay = rememberLocationDisplay()
+
+    // this variable controls the visibility of the dropdown menu
+    var showDropDownMenu by remember { mutableStateOf(false) }
 
     RequestPermissions(
         context = context,
@@ -95,8 +102,8 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                         .padding(horizontal = 20.dp, vertical = 70.dp)
                 ) {
                     DropdownMenu(
-                        expanded = mapViewModel.showDropDownMenu.value,
-                        onDismissRequest = { mapViewModel.showDropDownMenu.value = false },
+                        expanded = showDropDownMenu,
+                        onDismissRequest = { showDropDownMenu = false },
                         modifier = Modifier
                             .border(2.dp, MaterialTheme.colorScheme.primary),
                     ) {
@@ -104,8 +111,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                             DropdownMenuItem(
                                 text = @Composable{ Text(option) },
                                 onClick = {
-                                    mapViewModel.showDropDownMenu.value = false
-                                    mapViewModel.selectedItem.value = option
+                                    showDropDownMenu = false
                                     mapViewModel.onItemSelected(option, locationDisplay)
                                 },
                             )
@@ -116,7 +122,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
 
                     Card(
                         modifier = Modifier
-                            .clickable { mapViewModel.showDropDownMenu.value = true }
+                            .clickable { showDropDownMenu = true }
                             .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp)),
                         shape = RoundedCornerShape(20.dp),
                         elevation = CardDefaults.cardElevation(
