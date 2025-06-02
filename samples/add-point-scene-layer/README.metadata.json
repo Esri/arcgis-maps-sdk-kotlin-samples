@@ -16,7 +16,7 @@
         "SceneView"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": "",
     "relevant_apis": [
         "ArcGISScene",
         "ArcGISSceneLayer",
@@ -24,9 +24,9 @@
         "SceneView"
     ],
     "snippets": [
-        "rc/main/java/com/esri/arcgismaps/sample/addpointscenelayer/components/AddPointSceneLayerViewModel.kt",
-        "rc/main/java/com/esri/arcgismaps/sample/addpointscenelayer/MainActivity.kt",
-        "rc/main/java/com/esri/arcgismaps/sample/addpointscenelayer/screens/AddPointSceneLayerScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addpointscenelayer/components/AddPointSceneLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addpointscenelayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addpointscenelayer/screens/AddPointSceneLayerScreen.kt"
     ],
     "title": "Add point scene layer"
 }
