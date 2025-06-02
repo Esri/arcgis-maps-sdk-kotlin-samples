@@ -46,7 +46,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.arcgismaps.ArcGISEnvironment
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -109,7 +112,8 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                     ) {
                         mapViewModel.dropDownMenuOptions.forEach { option ->
                             DropdownMenuItem(
-                                text = @Composable{ Text(option) },
+                                text = @Composable{
+                                    Text(option, style = TextStyle(fontSize = 22.sp)) },
                                 onClick = {
                                     showDropDownMenu = false
                                     mapViewModel.onItemSelected(option, locationDisplay)
@@ -131,7 +135,8 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                     ) {
                         Text(
                             text = mapViewModel.selectedItem.value,
-                            modifier = Modifier.padding(10.dp)
+                            modifier = Modifier.padding(15.dp),
+                            style = TextStyle(fontSize = 22.sp)
                         )
                     }
                 }
