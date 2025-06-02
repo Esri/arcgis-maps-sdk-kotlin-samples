@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.showdevicelocation.screens
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import com.arcgismaps.ArcGISEnvironment
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -69,17 +67,12 @@ fun ShowDeviceLocationScreen(sampleName: String) {
     // Create and remember a location display with a recenter auto pan mode.
     val locationDisplay = rememberLocationDisplay()
 
-    if (checkPermissions(context)) {
-        // Permissions are already granted.
-        mapViewModel.onItemSelected(mapViewModel.selectedItem.value, locationDisplay)
-    } else {
-        RequestPermissions(
-            context = context,
-            onPermissionsGranted = {
-                mapViewModel.onItemSelected(mapViewModel.selectedItem.value, locationDisplay)
-            }
-        )
-    }
+    RequestPermissions(
+        context = context,
+        onPermissionsGranted = {
+            mapViewModel.onItemSelected(mapViewModel.selectedItem.value, locationDisplay)
+        }
+    )
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -176,23 +169,6 @@ fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit) {
             )
         )
     }
-}
-
-
-fun checkPermissions(context: Context): Boolean {
-    // Check permissions to see if both permissions are granted.
-    // Coarse location permission.
-    val permissionCheckCoarseLocation = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    // Fine location permission.
-    val permissionCheckFineLocation = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-
-    return permissionCheckCoarseLocation && permissionCheckFineLocation
 }
 
 
