@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.showdevicelocation.components
 
 import android.app.Application
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
