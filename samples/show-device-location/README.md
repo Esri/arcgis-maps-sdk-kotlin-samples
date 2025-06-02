@@ -21,7 +21,7 @@ Tap the button in the lower right (which starts in On mode). A menu will appear 
 ## How it works
 
 1. Create a `MapView`.
-2. Get the `LocationDisplay` object by calling `rememberLocationDisplay()` on the map view.
+2. Get a `LocationDisplay` object by calling `rememberLocationDisplay()` and set it to the composable `MapView`.
 3. Use `start()` and `stop()` on the `LocationDisplay.dataSource` as necessary.
 
 ## Relevant API
