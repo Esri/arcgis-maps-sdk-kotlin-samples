@@ -20,7 +20,7 @@ Tap the button in the lower right (which starts in On mode). A menu will appear 
 
 ## How it works
 
-1. Create a `MapView`.
+1. Add the composable `MapView` to your UI.
 2. Get a `LocationDisplay` object by calling `rememberLocationDisplay()` and set it to the composable `MapView`.
 3. Use `start()` and `stop()` on the `LocationDisplay.dataSource` as necessary.
 
