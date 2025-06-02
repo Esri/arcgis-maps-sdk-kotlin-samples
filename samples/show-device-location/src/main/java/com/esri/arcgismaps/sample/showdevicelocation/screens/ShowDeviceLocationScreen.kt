@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.showdevicelocation.screens
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,13 +26,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -48,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.arcgismaps.ArcGISEnvironment
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -76,12 +71,12 @@ fun ShowDeviceLocationScreen(sampleName: String) {
 
     if (checkPermissions(context)) {
         // Permissions are already granted.
-        mapViewModel.onItemSelected(mapViewModel.selectedItem.value.text, locationDisplay)
+        mapViewModel.onItemSelected(mapViewModel.selectedItem.value, locationDisplay)
     } else {
         RequestPermissions(
             context = context,
             onPermissionsGranted = {
-                mapViewModel.onItemSelected(mapViewModel.selectedItem.value.text, locationDisplay)
+                mapViewModel.onItemSelected(mapViewModel.selectedItem.value, locationDisplay)
             }
         )
     }
@@ -114,15 +109,11 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                     ) {
                         mapViewModel.dropDownMenuOptions.forEach { option ->
                             DropdownMenuItem(
-                                text = @Composable{ Text(option.text) },
-                                trailingIcon = @Composable{ NinePatchImage(
-                                    imageId = option.imageId,
-                                    modifier = Modifier.size(25.dp),
-                                )},
+                                text = @Composable{ Text(option) },
                                 onClick = {
                                     mapViewModel.showDropDownMenu.value = false
                                     mapViewModel.selectedItem.value = option
-                                    mapViewModel.onItemSelected(option.text, locationDisplay)
+                                    mapViewModel.onItemSelected(option, locationDisplay)
                                 },
                             )
                         }
@@ -139,18 +130,10 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                             defaultElevation = 4.dp
                         ),
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = mapViewModel.selectedItem.value.text)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            NinePatchImage(
-                                imageId = mapViewModel.selectedItem.value.imageId,
-                                modifier = Modifier.size(25.dp),
-                            )
-                        }
+                        Text(
+                            text = mapViewModel.selectedItem.value,
+                            modifier = Modifier.padding(10.dp)
+                        )
                     }
                 }
             }
@@ -193,25 +176,6 @@ fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit) {
             )
         )
     }
-}
-
-
-/**
- * A Composable function for displaying images of 9-patch type (simple Image dose not work)
- */
-@Composable
-fun NinePatchImage(imageId: Int, modifier: Modifier) {
-    AndroidView(
-        factory = { context ->
-            ImageView(context).apply {
-                setImageResource(imageId)
-            }
-        },
-        modifier = modifier,
-        update = {
-            it.setImageResource(imageId)
-        }
-    )
 }
 
 

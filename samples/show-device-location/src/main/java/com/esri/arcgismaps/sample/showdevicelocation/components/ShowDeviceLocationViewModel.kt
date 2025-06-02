@@ -26,7 +26,6 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import com.esri.arcgismaps.sample.showdevicelocation.R
 import kotlinx.coroutines.launch
 
 class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
@@ -44,17 +43,17 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
 
     // available options in dropdown menu when the location tracking is on
     private val dropDownMenuOptionsWhenOn = arrayListOf(
-        ItemData("Off", R.drawable.locationdisplaydisabled),
-        ItemData("On", R.drawable.locationdisplayon),
-        ItemData("Re-center", R.drawable.locationdisplayrecenter),
-        ItemData("Navigation", R.drawable.locationdisplaynavigation),
-        ItemData("Compass", R.drawable.locationdisplayheading)
+        "Off",
+        "On",
+        "Re-center",
+        "Navigation",
+        "Compass",
     )
 
     // available options in dropdown menu when the location tracking is off
     private val dropDownMenuOptionsWhenOff = arrayListOf(
-        ItemData("Off", R.drawable.locationdisplaydisabled),
-        ItemData("On", R.drawable.locationdisplayon),
+        "Off",
+        "On",
     )
 
     // this variable controls the visibility of the dropdown menu
@@ -65,7 +64,7 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
 
     // This property returns the appropriate dropdown menu options based on the selected item
     val dropDownMenuOptions
-        get() = if (selectedItem.value.text == "Off")
+        get() = if (selectedItem.value == "Off")
             dropDownMenuOptionsWhenOff else dropDownMenuOptionsWhenOn
 
     // This function handles the selection of an item from the dropdown menu
