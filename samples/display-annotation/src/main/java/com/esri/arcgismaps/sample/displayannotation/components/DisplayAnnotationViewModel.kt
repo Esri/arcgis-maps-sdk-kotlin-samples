@@ -21,24 +21,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.AnnotationLayer
 import com.arcgismaps.mapping.layers.FeatureLayer
-import com.arcgismaps.data.ServiceFeatureTable
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class DisplayAnnotationViewModel(app: Application) : AndroidViewModel(app) {
-    // A URL to a feature layer for the rivers in East Lothian.
+    // URL to the feature service for rivers in East Lothian
     private val eastLothianRiversUrl =
         "https://services1.arcgis.com/6677msI40mnLuuLr/arcgis/rest/services/East_Lothian_Rivers/FeatureServer/0"
-    // A URL to an annotation layer for the rivers in East Lothian.
+    // URL to the annotation feature service for rivers in East Lothian
     private val riversAnnotationUrl =
         "https://sampleserver6.arcgisonline.com/arcgis/rest/services/RiversAnnotation/FeatureServer/0"
 
-    // ArcGISMap with light gray canvas basemap and initial viewpoint (East Lothian, Scotland)
+    // ServiceFeatureTable for the rivers feature service
+    private val featureTable: ServiceFeatureTable = ServiceFeatureTable(eastLothianRiversUrl)
+
+    // FeatureLayer created from the ServiceFeatureTable
+    private val featureLayer: FeatureLayer = FeatureLayer.createWithFeatureTable(featureTable)
+
+    // AnnotationLayer created from the annotation service URL
+    private val annotationLayer: AnnotationLayer = AnnotationLayer(riversAnnotationUrl)
+
+    // ArcGISMap with a light gray canvas basemap and initial viewpoint (East Lothian, Scotland)
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
             initialViewpoint = Viewpoint(
@@ -46,6 +55,8 @@ class DisplayAnnotationViewModel(app: Application) : AndroidViewModel(app) {
                 longitude = -2.725610,
                 scale = 72223.819286
             )
+            // Add both layers to the operational layers before loading
+            operationalLayers.addAll(listOf(featureLayer, annotationLayer))
         }
     )
 
@@ -54,23 +65,14 @@ class DisplayAnnotationViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         viewModelScope.launch {
-            // Create and load the feature layer
-            val featureTable = ServiceFeatureTable(eastLothianRiversUrl)
-            featureTable.load().onFailure {
+            // Listen for load failures on the feature layer
+            featureLayer.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
-                return@launch
             }
-            val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
-
-            // Create and load the annotation layer
-            val annotationLayer = AnnotationLayer(riversAnnotationUrl)
+            // Listen for load failures on the annotation layer
             annotationLayer.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
-                return@launch
             }
-
-            // Add both layers to the map's operational layers
-            arcGISMap.operationalLayers.addAll(listOf(featureLayer, annotationLayer))
         }
     }
 }
