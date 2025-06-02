@@ -28,12 +28,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.setmaxextent.components.SetMaxExtentViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.setmaxextent.R
 
 /**
  * Main screen layout for the sample app
@@ -64,10 +66,13 @@ fun SetMaxExtentScreen(sampleName: String) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        mapViewModel.extentText.value,
+                        if (mapViewModel.maxExtentEnabled)
+                            stringResource(R.string.max_extent_enabled)
+                        else
+                            stringResource(R.string.max_extent_disabled),
                         modifier = Modifier.align(Alignment.CenterVertically),)
                     Switch (
-                        checked = mapViewModel.maxExtentEnabled.value,
+                        checked = mapViewModel.maxExtentEnabled,
                         onCheckedChange = mapViewModel::onSwitch,
                         modifier = Modifier.align(Alignment.CenterVertically),
                     )

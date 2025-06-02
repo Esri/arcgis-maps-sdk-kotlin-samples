@@ -1,3 +1,5 @@
 <resources>
     <string name="set_max_extent_app_name">Set max extent</string>
+    <string name="max_extent_enabled">Maximum extent enabled</string>
+    <string name="max_extent_disabled">Maximum extent disabled</string>
 </resources>

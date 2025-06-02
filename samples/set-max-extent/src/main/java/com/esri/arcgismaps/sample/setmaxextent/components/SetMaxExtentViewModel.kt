@@ -17,7 +17,9 @@
 package com.esri.arcgismaps.sample.setmaxextent.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
@@ -32,9 +34,6 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
-
-private const val MAX_EXTENT_ENABLED_TEXT = "Maximum extent enabled"
-private const val MAX_EXTENT_DISABLED_TEXT = "Maximum extent disabled"
 
 class SetMaxExtentViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -70,25 +69,20 @@ class SetMaxExtentViewModel(app: Application) : AndroidViewModel(app) {
     // graphics overlays that are applied to the map
     val graphicsOverlays = listOf(coloradoGraphicsOverlay)
 
-    // the text that indicates whether the max extent is enabled
-    val extentText = mutableStateOf(MAX_EXTENT_ENABLED_TEXT)
-
     // tracks whether the max extent feature is currently enabled.
-    val maxExtentEnabled = mutableStateOf(true)
+    var maxExtentEnabled by mutableStateOf(true)
 
     // this function is called when the switch is toggled.
     fun onSwitch(isChecked: Boolean){
         // set max extent to the state of Colorado
         if(isChecked) {
-            extentText.value = MAX_EXTENT_ENABLED_TEXT
             coloradoMap.maxExtent = extentEnvelope
         }
         // disable the max extent of the map, map is free to pan around
         else {
-            extentText.value = MAX_EXTENT_DISABLED_TEXT
             coloradoMap.maxExtent = null
         }
 
-        maxExtentEnabled.value = isChecked
+        maxExtentEnabled = isChecked
     }
 }
