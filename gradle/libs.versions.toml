@@ -1,7 +1,7 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.8.0-4564"
+arcgisMapsKotlinVersion = "200.8.0-4613"
 
 ### Android versions
 androidGradlePlugin = "8.9.2"
@@ -41,6 +41,8 @@ targetSdk = "35"
 ### Third party libraries
 arcore = "1.48.0"
 playServicesLocation = "21.3.0"
+navigationFragmentKtx = "2.8.9"
+navigationUiKtx = "2.8.9"
 
 [libraries]
 
@@ -100,6 +102,8 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

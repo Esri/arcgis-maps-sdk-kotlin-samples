@@ -269,21 +269,25 @@ abstract class DownloaderActivity : AppCompatActivity() {
                     if (!provisionLocation.exists()) {
                         provisionLocation.mkdirs()
                     }
-                    ZipFile(destinationFile).use { zip ->
-                        zip.entries().asSequence().forEach { entry ->
-                            val outputFile = File(provisionLocation, entry.name)
-                            if (entry.isDirectory) {
-                                outputFile.mkdirs()
-                            } else {
-                                outputFile.parentFile?.mkdirs()
-                                zip.getInputStream(entry).use { input ->
-                                    FileOutputStream(outputFile).use { output ->
-                                        input.copyTo(output)
+                    try {
+                        ZipFile(destinationFile).use { zip ->
+                            zip.entries().asSequence().forEach { entry ->
+                                val outputFile = File(provisionLocation, entry.name)
+                                if (entry.isDirectory) {
+                                    outputFile.mkdirs()
+                                } else {
+                                    outputFile.parentFile?.mkdirs()
+                                    zip.getInputStream(entry).use { input ->
+                                        FileOutputStream(outputFile).use { output ->
+                                            input.copyTo(output)
+                                        }
                                     }
                                 }
                             }
+                            FileUtils.delete(destinationFile)
                         }
-                        FileUtils.delete(destinationFile)
+                    } catch (e: Exception) {
+                       Log.d("DownloaderActivity", "Error unzipping file: ${e.message}")
                     }
                 }
 

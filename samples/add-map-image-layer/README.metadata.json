@@ -1,0 +1,29 @@
+{
+    "category": "Layers",
+    "description": "Display a layer from an ArcGIS map image layer service.",
+    "formal_name": "AddMapImageLayer",
+    "ignore": false,
+    "images": [
+        "add-map-image-layer.png"
+    ],
+    "keywords": [
+        "display",
+        "image",
+        "layer",
+        "map",
+        "ArcGISMap",
+        "ArcGISMapImageLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "ArcGISMapImageLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addmapimagelayer/components/AddMapImageLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addmapimagelayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addmapimagelayer/screens/AddMapImageLayerScreen.kt"
+    ],
+    "title": "Add map image layer"
+}
