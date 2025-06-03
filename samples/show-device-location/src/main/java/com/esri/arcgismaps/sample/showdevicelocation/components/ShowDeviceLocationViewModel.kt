@@ -17,7 +17,9 @@
 package com.esri.arcgismaps.sample.showdevicelocation.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.location.LocationDisplayAutoPanMode
@@ -56,16 +58,16 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     // This variable holds the currently selected item from the dropdown menu
-    val selectedItem = mutableStateOf(dropDownMenuOptionsWhenOn[1])
+    var selectedItem by mutableStateOf(dropDownMenuOptionsWhenOn[1])
 
     // This property returns the appropriate dropdown menu options based on the selected item
     val dropDownMenuOptions
-        get() = if (selectedItem.value == "Off")
+        get() = if (selectedItem == "Off")
             dropDownMenuOptionsWhenOff else dropDownMenuOptionsWhenOn
 
     // This function handles the selection of an item from the dropdown menu
     fun onItemSelected(itemText: String, locationDisplay: LocationDisplay){
-        selectedItem.value = itemText
+        selectedItem = itemText
         when (itemText) {
             "Off" ->  // stop location display
                 viewModelScope.launch {

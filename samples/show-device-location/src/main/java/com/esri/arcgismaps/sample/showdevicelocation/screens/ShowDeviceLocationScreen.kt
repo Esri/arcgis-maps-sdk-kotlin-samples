@@ -79,7 +79,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
     RequestPermissions(
         context = context,
         onPermissionsGranted = {
-            mapViewModel.onItemSelected(mapViewModel.selectedItem.value, locationDisplay)
+            mapViewModel.onItemSelected(mapViewModel.selectedItem, locationDisplay)
         }
     )
 
@@ -133,7 +133,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                         ),
                     ) {
                         Text(
-                            text = mapViewModel.selectedItem.value,
+                            text = mapViewModel.selectedItem,
                             modifier = Modifier.padding(15.dp),
                             style = TextStyle(fontSize = 22.sp)
                         )
