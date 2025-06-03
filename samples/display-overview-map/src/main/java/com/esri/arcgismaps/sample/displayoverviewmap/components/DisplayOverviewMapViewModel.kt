@@ -43,7 +43,7 @@ class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
     private val touristAttractionsUrl =
         "https://services1.arcgis.com/ligOmcZkuYGDjlNm/arcgis/rest/services/Tourism_Attractions/FeatureServer/2"
     private val touristAttractionsTable = ServiceFeatureTable(touristAttractionsUrl)
-    private val featureLayerTouristAttractions = FeatureLayer.createWithFeatureTable(touristAttractionTable)
+    private val featureLayerTouristAttractions = FeatureLayer.createWithFeatureTable(touristAttractionsTable)
 
     // the map used by MapView
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
