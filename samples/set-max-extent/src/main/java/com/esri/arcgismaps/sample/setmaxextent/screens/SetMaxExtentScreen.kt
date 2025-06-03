@@ -50,7 +50,7 @@ fun SetMaxExtentScreen(sampleName: String) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(it)
             ) {
                 MapView(
                     modifier = Modifier
@@ -63,18 +63,18 @@ fun SetMaxExtentScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(5.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         if (mapViewModel.maxExtentEnabled)
                             stringResource(R.string.max_extent_enabled)
                         else
                             stringResource(R.string.max_extent_disabled),
-                        modifier = Modifier.align(Alignment.CenterVertically),)
+                        modifier = Modifier.align(Alignment.CenterVertically))
                     Switch (
                         checked = mapViewModel.maxExtentEnabled,
                         onCheckedChange = mapViewModel::onSwitch,
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
             }
