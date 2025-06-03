@@ -24,7 +24,6 @@ notice the viewpoint and scale of the linked overview map update automatically.
 4. In the user-interface, declare a `MapView` to display the `ArcGISMap`. Use `onViewpointChangedForCenterAndScale` and `onVisibleAreaChanged` to keep the viewpoint and visible area States up to date.
 5. In the user-interface, declare an `OverviewMap` object from the ArcGIS Maps SDK Toolkit. Set its `viewpoint` and `visibleArea` to the previously created States.
 
-
 ## Relevant API
 
 * ArcGISMap
