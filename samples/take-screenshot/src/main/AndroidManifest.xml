@@ -14,7 +14,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/provider_authority"
+            android:authorities="@string/take_screenshot_provider_authority"
             tools:replace="android:authorities"
             android:exported="false"
             android:grantUriPermissions="true">

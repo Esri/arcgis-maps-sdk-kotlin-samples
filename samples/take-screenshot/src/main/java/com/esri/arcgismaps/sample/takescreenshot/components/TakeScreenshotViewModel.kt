@@ -85,7 +85,7 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
         outputStream.close()
 
         // Return the URI for the file
-        return FileProvider.getUriForFile(context, getString(context, R.string.provider_authority), file)
+        return FileProvider.getUriForFile(context, getString(context, R.string.take_screenshot_provider_authority), file)
     }
 
 }
