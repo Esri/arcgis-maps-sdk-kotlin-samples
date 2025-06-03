@@ -53,15 +53,15 @@ fun DisplayOverviewMapScreen(sampleName: String) {
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = mapViewModel.arcGISMap,
                     onViewpointChangedForCenterAndScale = {
-                        mapViewModel.viewpoint.value = it
+                        mapViewModel.viewpoint = it
                     },
                     onVisibleAreaChanged = {
-                        mapViewModel.visibleArea.value = it
+                        mapViewModel.visibleArea = it
                     }
                 )
                 OverviewMap(
-                    viewpoint = mapViewModel.viewpoint.value,
-                    visibleArea = mapViewModel.visibleArea.value,
+                    viewpoint = mapViewModel.viewpoint,
+                    visibleArea = mapViewModel.visibleArea,
                     modifier = Modifier
                         .size(250.dp, 200.dp)
                         .padding(20.dp)

@@ -18,7 +18,9 @@ package com.esri.arcgismaps.sample.displayoverviewmap.components
 
 import android.app.Application
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.data.ServiceFeatureTable
@@ -35,9 +37,9 @@ class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
     private val initialViewpoint = Viewpoint(latitude = -41.44, longitude = 173.52, scale = 10e6)
 
     // the current viewpoint of the map
-    val viewpoint = mutableStateOf(initialViewpoint)
+    var viewpoint by mutableStateOf(initialViewpoint)
     // the current visible area of the map
-    val visibleArea: MutableState<Polygon?> = mutableStateOf(null)
+    var visibleArea: Polygon? by mutableStateOf(null)
 
     // set up feature layer
     private val touristAttractionsUrl =
@@ -47,7 +49,7 @@ class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
 
     // the map used by MapView
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-        initialViewpoint = viewpoint.value
+        initialViewpoint = viewpoint
         // add tourist attractions feature layer to the map
         operationalLayers.add(featureLayerTouristAttractions)
     }
