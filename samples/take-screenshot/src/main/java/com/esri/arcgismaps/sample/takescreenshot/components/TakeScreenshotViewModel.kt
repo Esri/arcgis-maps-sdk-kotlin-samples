@@ -89,3 +89,5 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
     }
 
 }
+
+class TakeScreenshotFileProvider : FileProvider()

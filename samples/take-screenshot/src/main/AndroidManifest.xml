@@ -13,7 +13,7 @@
         </activity>
 
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name="com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotFileProvider"
             android:authorities="@string/take_screenshot_provider_authority"
             tools:replace="android:authorities"
             android:exported="false"
