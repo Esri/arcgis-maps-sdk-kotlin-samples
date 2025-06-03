@@ -18,11 +18,12 @@ notice the viewpoint and scale of the linked overview map update automatically.
 
 ## How it works
 
-1. Create a `Viewpoint` and `Polygon`.
-2. Instantiate a `FeatureLayer` from a `ServiceFeatureTable`.
-3. Create an `ArcGISMap` object and pass `Viewpoint` to initialViewpoint and add `FeatureLayer` into operationalLayers.
-4. In the user-interface, declare `MapView` and set the map to previously created `ArcGISMap`, set `onViewpointChangedForCenterAndScale` to update previously created `Viewpoint` and set `onVisibleAreaChanged` to update previously created `Polygon`.
-5. In the user-interface, declare an `OverviewMap` object from the ArcGIS Maps SDK Toolkit and set `viewpoint` to previously created `Viewpoint` and `visibleArea`to previously created `Polygon`
+1. Create States to hold the current viewpoint and current visible area of the map.
+2. Instantiate a `FeatureLayer` to display the tourist attraction features.
+3. Create an `ArcGISMap` object, set its `initialViewpoint` to the initial value of the viewpoint State, and add the `FeatureLayer` into its `operationalLayers`.
+4. In the user-interface, declare a `MapView` to display the `ArcGISMap`. Use `onViewpointChangedForCenterAndScale` and `onVisibleAreaChanged` to keep the viewpoint and visible area States up to date.
+5. In the user-interface, declare an `OverviewMap` object from the ArcGIS Maps SDK Toolkit. Set its `viewpoint` and `visibleArea` to the previously created States.
+
 
 ## Relevant API
 
