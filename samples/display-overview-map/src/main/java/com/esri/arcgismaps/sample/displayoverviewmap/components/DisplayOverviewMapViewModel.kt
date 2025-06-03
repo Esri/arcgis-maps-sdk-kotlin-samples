@@ -42,13 +42,13 @@ class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
     // set up feature layer
     private val touristAttractionsUrl =
         "https://services1.arcgis.com/ligOmcZkuYGDjlNm/arcgis/rest/services/Tourism_Attractions/FeatureServer/2"
-    private val touristAttractionTable = ServiceFeatureTable(touristAttractionsUrl)
+    private val touristAttractionsTable = ServiceFeatureTable(touristAttractionsUrl)
     private val featureLayerTouristAttractions = FeatureLayer.createWithFeatureTable(touristAttractionTable)
 
     // the map used by MapView
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
         initialViewpoint = viewpoint.value
-        // add tourist attraction feature layer to the map
+        // add tourist attractions feature layer to the map
         operationalLayers.add(featureLayerTouristAttractions)
     }
 
