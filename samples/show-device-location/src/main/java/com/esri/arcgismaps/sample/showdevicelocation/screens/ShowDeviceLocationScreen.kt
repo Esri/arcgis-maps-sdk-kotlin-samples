@@ -21,6 +21,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -50,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -142,7 +145,12 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                         mapViewModel.dropDownMenuOptions.forEach { option ->
                             DropdownMenuItem(
                                 text = @Composable{
-                                    Text(option, style = TextStyle(fontSize = 22.sp)) },
+                                    Text(option.text, style = TextStyle(fontSize = 22.sp)) },
+                                trailingIcon = @Composable{ Image(
+                                    painter = painterResource(option.imageId),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(25.dp),
+                                )},
                                 onClick = {
                                     showDropDownMenu = false
                                     mapViewModel.onItemSelected(option, locationDisplay)
@@ -164,11 +172,17 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                             defaultElevation = 4.dp
                         ),
                     ) {
-                        Box(
+                        Row(
                             modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Text(text = mapViewModel.selectedItem, fontSize = 22.sp)
+                            Text(text = mapViewModel.selectedItem.text, fontSize = 22.sp)
+                            Image(
+                                painter = painterResource(mapViewModel.selectedItem.imageId),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp),
+                            )
                         }
                     }
                 }

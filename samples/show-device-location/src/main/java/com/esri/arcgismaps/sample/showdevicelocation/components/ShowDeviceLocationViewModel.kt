@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.showdevicelocation.components
 
 import android.app.Application
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,6 +28,7 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.view.LocationDisplay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import com.esri.arcgismaps.sample.showdevicelocation.R
 import kotlinx.coroutines.launch
 
 class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
@@ -44,9 +46,9 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
 
     // available options in dropdown menu
     val dropDownMenuOptions = arrayListOf(
-        "Re-center",
-        "Navigation",
-        "Compass",
+        ItemData("Re-center", R.drawable.locationdisplayrecenter),
+        ItemData("Navigation", R.drawable.locationdisplaynavigation),
+        ItemData("Compass", R.drawable.locationdisplayheading)
     )
 
     // This variable holds the currently selected item from the dropdown menu
@@ -54,9 +56,9 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
 
 
     // This function handles the selection of an item from the dropdown menu
-    fun onItemSelected(itemText: String, locationDisplay: LocationDisplay){
-        selectedItem = itemText
-        when (itemText) {
+    fun onItemSelected(item: ItemData, locationDisplay: LocationDisplay){
+        selectedItem = item
+        when (item.text) {
             "Re-center" -> {
                 // re-center MapView on location
                 locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
@@ -90,3 +92,7 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 }
+
+/** Represents an option from dropdown menu */
+@Stable
+data class ItemData(val text: String, val imageId: Int)
