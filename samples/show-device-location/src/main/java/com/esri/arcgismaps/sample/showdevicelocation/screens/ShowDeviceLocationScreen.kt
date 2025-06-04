@@ -23,12 +23,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,6 +39,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,7 +83,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
     RequestPermissions(
         context = context,
         onPermissionsGranted = {
-            mapViewModel.onItemSelected(mapViewModel.selectedItem, locationDisplay)
+            mapViewModel.toggleLocationTracking(true, locationDisplay)
         }
     )
 
@@ -97,6 +101,32 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     locationDisplay = locationDisplay,
                 )
+
+                Card (
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(horizontal = 20.dp, vertical = 70.dp)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
+                        .width(150.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 4.dp
+                    ),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Text(text = "Off", fontSize = 22.sp)
+                        Switch(
+                            checked = mapViewModel.isLocationTrackingEnabled,
+                            onCheckedChange = {mapViewModel.toggleLocationTracking(it, locationDisplay)}
+                        )
+                        Text(text = "On", fontSize = 22.sp)
+                    }
+                }
 
                 Column (
                     modifier = Modifier
@@ -126,17 +156,20 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                     Card(
                         modifier = Modifier
                             .clickable { showDropDownMenu = true }
-                            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp)),
+                            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
+                            .width(150.dp)
+                            .height(50.dp),
                         shape = RoundedCornerShape(20.dp),
                         elevation = CardDefaults.cardElevation(
                             defaultElevation = 4.dp
                         ),
                     ) {
-                        Text(
-                            text = mapViewModel.selectedItem,
-                            modifier = Modifier.padding(15.dp),
-                            style = TextStyle(fontSize = 22.sp)
-                        )
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(text = mapViewModel.selectedItem, fontSize = 22.sp)
+                        }
                     }
                 }
             }

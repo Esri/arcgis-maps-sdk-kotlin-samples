@@ -42,44 +42,21 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    // available options in dropdown menu when the location tracking is on
-    private val dropDownMenuOptionsWhenOn = arrayListOf(
-        "Off",
-        "On",
+    // available options in dropdown menu
+    val dropDownMenuOptions = arrayListOf(
         "Re-center",
         "Navigation",
         "Compass",
     )
 
-    // available options in dropdown menu when the location tracking is off
-    private val dropDownMenuOptionsWhenOff = arrayListOf(
-        "Off",
-        "On",
-    )
-
     // This variable holds the currently selected item from the dropdown menu
-    var selectedItem by mutableStateOf(dropDownMenuOptionsWhenOn[1])
+    var selectedItem by mutableStateOf(dropDownMenuOptions[0])
 
-    // This property returns the appropriate dropdown menu options based on the selected item
-    val dropDownMenuOptions
-        get() = if (selectedItem == "Off")
-            dropDownMenuOptionsWhenOff else dropDownMenuOptionsWhenOn
 
     // This function handles the selection of an item from the dropdown menu
     fun onItemSelected(itemText: String, locationDisplay: LocationDisplay){
         selectedItem = itemText
         when (itemText) {
-            "Off" ->  // stop location display
-                viewModelScope.launch {
-                    locationDisplay.dataSource.stop()
-                }
-            "On" -> { // start location display
-                viewModelScope.launch {
-                    locationDisplay.dataSource.start()
-                }
-                // display location without any changes to MapView
-                locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Off)
-            }
             "Re-center" -> {
                 // re-center MapView on location
                 locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
@@ -91,6 +68,24 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
             "Compass" -> {
                 // start compass navigation mode
                 locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.CompassNavigation)
+            }
+        }
+    }
+
+    // variable to track if location tracking is enabled
+    var isLocationTrackingEnabled by mutableStateOf(true)
+        private set
+
+    // function to toggle location tracking based on the switch state
+    fun toggleLocationTracking(newValue: Boolean, locationDisplay: LocationDisplay){
+        isLocationTrackingEnabled = newValue
+        if(isLocationTrackingEnabled) {
+            viewModelScope.launch {
+                locationDisplay.dataSource.start()
+            }
+        } else {
+            viewModelScope.launch {
+                locationDisplay.dataSource.stop()
             }
         }
     }
