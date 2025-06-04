@@ -21,8 +21,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat.getString
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
@@ -54,7 +55,7 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // screenshot image for display
-    val screenshotImage: MutableState<BitmapDrawable?> = mutableStateOf(null)
+    var screenshotImage: BitmapDrawable? by mutableStateOf(null)
 
     // class to interact with MapView
     val mapViewProxy = MapViewProxy()
@@ -62,7 +63,7 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
     // function to take screenshot of MapView
     fun takeScreenshot(){
         viewModelScope.launch {
-            screenshotImage.value = mapViewProxy.exportImage().getOrNull()
+            screenshotImage = mapViewProxy.exportImage().getOrNull()
         }
     }
 

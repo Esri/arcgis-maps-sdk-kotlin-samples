@@ -85,15 +85,15 @@ fun TakeScreenshotScreen(sampleName: String) {
                 }
             }
 
-            mapViewModel.screenshotImage.value?.let { screenshotImage ->
+            mapViewModel.screenshotImage?.let { screenshotImage ->
                 DialogWithImage(
                     onConfirmation = {
-                        mapViewModel.screenshotImage.value = null
+                        mapViewModel.screenshotImage = null
                         mapViewModel.saveBitmapToFile(context, screenshotImage.bitmap)?.let { uri ->
                             shareImage(context, uri)
                         }
                     },
-                    onDismissRequest = { mapViewModel.screenshotImage.value = null },
+                    onDismissRequest = { mapViewModel.screenshotImage = null },
                     imageBitmap = screenshotImage.bitmap.asImageBitmap(),
                     imageDescription = "Screenshot",
                 )
