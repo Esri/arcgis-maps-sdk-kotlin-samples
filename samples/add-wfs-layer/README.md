@@ -18,7 +18,7 @@ Pan and zoom the map to see features within the current map extent. The WFS laye
 2. Set the feature request mode to `ManualCache` and axis order to `NoSwap`.
 3. Create a `FeatureLayer` from the WFS feature table and add it to the map's operational layers.
 4. Listen for the `onVisibleAreaChanged` event to detect the visible map area, and for the `onNavigationChanged` event to detect when the user has stopped navigating.
-5. When navigation ends, call `populateFromService()` on the WFS feature table, passing a query for the current visible extent.
+5. When navigation ends, call `populateFromService(...)` on the WFS feature table, passing a query for the current visible extent.
 6. Display a loading indicator while the WFS table is being populated.
 
 ## Relevant API
