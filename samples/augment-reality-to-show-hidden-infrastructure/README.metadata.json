@@ -1,0 +1,19 @@
+{
+    "category": "Augmented Reality",
+    "description": "TODO",
+    "formal_name": "AugmentRealityToShowHiddenInfrastructure",
+    "ignore": false,
+    "images": [
+        "augment-reality-to-show-hidden-infrastructure.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/AugmentRealityToShowHiddenInfrastructureViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/screens/AugmentRealityToShowHiddenInfrastructureScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/MainActivity.kt"
+    ],
+    "title": "Augment reality to show hidden infrastructure"
+}
