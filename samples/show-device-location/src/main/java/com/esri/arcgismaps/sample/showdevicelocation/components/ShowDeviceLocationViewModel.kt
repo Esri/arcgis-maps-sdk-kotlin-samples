@@ -53,6 +53,7 @@ class ShowDeviceLocationViewModel(app: Application) : AndroidViewModel(app) {
 
     // This variable holds the currently selected item from the dropdown menu
     var selectedItem by mutableStateOf(dropDownMenuOptions[0])
+        private set
 
 
     // This function handles the selection of an item from the dropdown menu
