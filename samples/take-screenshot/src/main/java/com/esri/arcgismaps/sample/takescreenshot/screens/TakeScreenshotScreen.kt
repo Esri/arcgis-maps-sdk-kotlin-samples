@@ -114,7 +114,7 @@ fun TakeScreenshotScreen(sampleName: String) {
 
 
 /**
- * Displays a dialog with an image and a confirmation button.
+ * Displays a dialog with an image and a share button.
  */
 @Composable
 fun DialogWithImage(
@@ -155,11 +155,14 @@ fun DialogWithImage(
     }
 }
 
+// Function to display a pop-up for sharing an image file
 fun shareImage(context: Context, imageUri: Uri) {
+    // Create an intent to share the image
     val shareIntent = Intent().apply {
         action = Intent.ACTION_SEND
         putExtra(Intent.EXTRA_STREAM, imageUri)
         type = "image/png"
     }
+    // Start the sharing activity with a chooser
     context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
 }

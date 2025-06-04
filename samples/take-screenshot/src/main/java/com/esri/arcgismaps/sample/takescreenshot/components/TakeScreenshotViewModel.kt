@@ -66,6 +66,7 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // Function to save a bitmap image to a file and return its URI
     fun saveBitmapToFile(context: Context, bitmap: Bitmap): Uri? {
         // Create a file in the cache directory
         val file = File(context.cacheDir, "take-screenshot-sample-screenshot.png")
@@ -89,4 +90,5 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
 
 }
 
+// Custom FileProvider for handling file sharing of screenshots
 class TakeScreenshotFileProvider : FileProvider()
