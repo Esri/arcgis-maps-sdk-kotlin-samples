@@ -20,7 +20,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
-import com.arcgismaps.data.FeatureRequestMode.ManualCache
+import com.arcgismaps.data.FeatureRequestMode
 import com.arcgismaps.data.QueryParameters
 import com.arcgismaps.data.SpatialRelationship.Intersects
 import com.arcgismaps.data.WfsFeatureTable
@@ -31,11 +31,10 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
-import com.arcgismaps.mapping.layers.OgcAxisOrder.NoSwap
+import com.arcgismaps.mapping.layers.OgcAxisOrder
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleRenderer
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,29 +42,56 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AddWfsLayerViewModel(app: Application) : AndroidViewModel(app) {
-    // MapViewProxy for identify and viewpoint operations
-    val mapViewProxy = MapViewProxy()
 
     // Message dialog for error reporting
     val messageDialogVM = MessageDialogViewModel()
 
+    // WFS service URL and table name
+    private val wfsUrl = "https://dservices2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/services/Seattle_Downtown_Features/WFSServer?service=wfs&request=getcapabilities"
+    private val wfsTableName = "Seattle_Downtown_Features:Buildings"
+
+    // Hold a reference to the WFS feature table for population
+    private val wfsFeatureTable = WfsFeatureTable(url = wfsUrl, tableName = wfsTableName).apply {
+        // Set manual cache mode so features are only requested when we call populateFromService
+        featureRequestMode = FeatureRequestMode.ManualCache
+        // Set axis order to NoSwap as required by the service
+        axisOrder = OgcAxisOrder.NoSwap
+    }
     // The ArcGISMap with the Seattle downtown initial viewpoint
-    val arcGISMap = createMapWithWfsLayer()
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        // Envelope for Seattle downtown area (used for initial viewpoint)
+        val seattleEnvelope = Envelope(
+            xMin = -122.341581, yMin = 47.613758, xMax = -122.332662, yMax = 47.617207,
+            spatialReference = SpatialReference.wgs84()
+        )
+
+        // FeatureLayer for displaying the WFS features
+        val wfsFeatureLayer = FeatureLayer.createWithFeatureTable(wfsFeatureTable).apply {
+            // Apply a simple red line renderer to building features
+            renderer = SimpleRenderer(
+                SimpleLineSymbol(
+                    style = SimpleLineSymbolStyle.Solid,
+                    color = Color.red,
+                    width = 3f
+                )
+            )
+        }
+        initialViewpoint = Viewpoint(boundingGeometry = seattleEnvelope)
+        operationalLayers.add(wfsFeatureLayer)
+    }
 
     // Track if the WFS table is currently populating
     private val _isPopulating = MutableStateFlow(false)
     val isPopulating: StateFlow<Boolean> = _isPopulating.asStateFlow()
 
-    // Hold the WFS feature table for population
-    private val wfsFeatureTable: WfsFeatureTable
 
     // Used to track the latest visible area (Polygon)
     private var visibleArea: Polygon? = null
 
     init {
-        // The FeatureLayer is always the first operational layer
+        // The FeatureLayer is the only operational layer
         val featureLayer = arcGISMap.operationalLayers.first() as FeatureLayer
-        wfsFeatureTable = featureLayer.featureTable as WfsFeatureTable
+
         // Load the map and layer
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
@@ -116,34 +142,4 @@ class AddWfsLayerViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    companion object {
-        private fun createMapWithWfsLayer(): ArcGISMap {
-            // Seattle downtown envelope
-            val envelope = Envelope(
-                -122.341581, 47.613758, -122.332662, 47.617207,
-                spatialReference = SpatialReference.wgs84()
-            )
-            val map = ArcGISMap(BasemapStyle.ArcGISTopographic)
-            map.initialViewpoint = Viewpoint(boundingGeometry = envelope)
-
-            // WFS table and layer setup
-            val wfsUrl = "https://dservices2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/services/Seattle_Downtown_Features/WFSServer?service=wfs&request=getcapabilities"
-            val tableName = "Seattle_Downtown_Features:Buildings"
-            val wfsFeatureTable = WfsFeatureTable(wfsUrl, tableName).apply {
-                featureRequestMode = ManualCache
-                axisOrder = NoSwap
-            }
-            val featureLayer = FeatureLayer.createWithFeatureTable(wfsFeatureTable).apply {
-                renderer = SimpleRenderer(
-                    SimpleLineSymbol(
-                        style = SimpleLineSymbolStyle.Solid,
-                        color = Color.red,
-                        width = 3f
-                    )
-                )
-            }
-            map.operationalLayers.add(featureLayer)
-            return map
-        }
-    }
 }

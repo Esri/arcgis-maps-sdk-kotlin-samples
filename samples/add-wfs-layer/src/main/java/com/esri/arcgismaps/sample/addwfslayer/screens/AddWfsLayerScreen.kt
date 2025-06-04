@@ -52,7 +52,6 @@ fun AddWfsLayerScreen(sampleName: String) {
                             .fillMaxSize()
                             .weight(1f),
                         arcGISMap = mapViewModel.arcGISMap,
-                        mapViewProxy = mapViewModel.mapViewProxy,
                         onVisibleAreaChanged = { polygon: Polygon ->
                             mapViewModel.onVisibleAreaChanged(polygon)
                         },
