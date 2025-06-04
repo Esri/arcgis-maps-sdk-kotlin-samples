@@ -10,10 +10,10 @@ When using a map within a GIS, it may be helpful for a user to know their own lo
 
 ## How to use the sample
 
-Tap the button in the lower right (which starts in On mode). A menu will appear with the following options:
+On the lower left, there is a switch that allows you to turn location tracking On and Off.
 
-* Off - Stops the location display.
-* On - Starts the location display with `LocationDisplayAutoPanMode` set to `Off`.
+Tap the button in the lower right (which starts in Re-Center mode). A menu will appear with the following options:
+
 * Re-Center - Starts the location display with `LocationDisplayAutoPanMode` set to `Recenter`.
 * Navigation - Starts the location display with `LocationDisplayAutoPanMode` set to `Navigation`.
 * Compass - Starts the location display with `LocationDisplayAutoPanMode` set to `CompassNavigation`.
