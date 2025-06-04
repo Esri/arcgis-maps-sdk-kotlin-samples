@@ -1,4 +1,4 @@
-/* Copyright 2022 Esri
+/* Copyright 2025 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,87 +17,37 @@
 package com.esri.arcgismaps.sample.setmaxextent
 
 import android.os.Bundle
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
-import androidx.databinding.DataBindingUtil
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.Color
-import com.arcgismaps.geometry.Envelope
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.symbology.SimpleLineSymbol
-import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
-import com.arcgismaps.mapping.symbology.SimpleRenderer
-import com.arcgismaps.mapping.view.Graphic
-import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.esri.arcgismaps.sample.setmaxextent.databinding.SetMaxExtentActivityMainBinding
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.setmaxextent.screens.SetMaxExtentScreen
 
-class MainActivity : AppCompatActivity() {
-
-    // set up data binding for the activity
-    private val activityMainBinding: SetMaxExtentActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.set_max_extent_activity_main)
-    }
-
-    private val mapView by lazy {
-        activityMainBinding.mapView
-    }
-
-    private val extentSwitch: SwitchCompat by lazy {
-        activityMainBinding.extentSwitch
-    }
-
-    private val extentTextView: TextView by lazy {
-        activityMainBinding.extentText
-    }
-
-    private val extentEnvelope = Envelope(
-        Point(-12139393.2109, 5012444.0468),
-        Point(-11359277.5124, 4438148.7816)
-    )
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
-        lifecycle.addObserver(mapView)
 
-        // create a map with the BasemapStyle streets focused on Colorado
-        val coloradoMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-            // set the map's max extent to an envelope of Colorado's northwest and southeast corners
-            maxExtent = extentEnvelope
-        }
-
-        // create a graphics overlay of the map's max extent
-        val coloradoGraphicsOverlay = GraphicsOverlay().apply {
-            // set the graphic's geometry to the max extent of the map
-            graphics.add(Graphic(coloradoMap.maxExtent))
-            // create a simple red dashed line renderer
-            renderer = SimpleRenderer(SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.red, 5f))
-        }
-
-        extentSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                // set max extent to the state of Colorado
-                coloradoMap.maxExtent = extentEnvelope
-                extentTextView.text = getString(R.string.extentEnable)
-            } else {
-                // disable the max extent of the map, map is free to pan around
-                coloradoMap.maxExtent = null
-                extentTextView.text = getString(R.string.extentDisable)
+        setContent {
+            SampleAppTheme {
+                SetMaxExtentApp()
             }
         }
+    }
 
-        mapView.apply {
-            // set the map to the map view
-            map = coloradoMap
-            // set the graphics overlay to the map view
-            graphicsOverlays.add(coloradoGraphicsOverlay)
+    @Composable
+    private fun SetMaxExtentApp() {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            SetMaxExtentScreen(
+                sampleName = getString(R.string.set_max_extent_app_name)
+            )
         }
     }
 }
