@@ -86,7 +86,7 @@ fun ShowDeviceLocationScreen(sampleName: String) {
     RequestPermissions(
         context = context,
         onPermissionsGranted = {
-            mapViewModel.toggleLocationTracking(true, locationDisplay)
+            mapViewModel.toggleLocationTracking(mapViewModel.isLocationTrackingEnabled, locationDisplay)
         }
     )
 
