@@ -125,7 +125,12 @@ fun ShowDeviceLocationScreen(sampleName: String) {
                         Text(text = "Off", fontSize = 22.sp)
                         Switch(
                             checked = mapViewModel.isLocationTrackingEnabled,
-                            onCheckedChange = {mapViewModel.toggleLocationTracking(it, locationDisplay)}
+                            onCheckedChange = { isChecked ->
+                                mapViewModel.toggleLocationTracking(
+                                    isChecked,
+                                    locationDisplay
+                                )
+                            }
                         )
                         Text(text = "On", fontSize = 22.sp)
                     }
