@@ -85,6 +85,7 @@ fun TakeScreenshotScreen(sampleName: String) {
                 }
             }
 
+            // Show DialogWithImage if screenshotImage is not null
             mapViewModel.screenshotImage?.let { screenshotImage ->
                 DialogWithImage(
                     onConfirmation = {
