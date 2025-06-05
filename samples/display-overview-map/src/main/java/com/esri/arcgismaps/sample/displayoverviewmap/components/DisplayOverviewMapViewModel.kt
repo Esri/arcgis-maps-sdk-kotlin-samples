@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val initialViewpoint = Viewpoint(latitude = -41.44, longitude = 173.52, scale = 10e6)
+    private val initialViewpoint = Viewpoint(latitude = 50.431999, longitude = -104.607293, scale = 10e3)
 
     // the current viewpoint of the map
     var viewpoint by mutableStateOf(initialViewpoint)
@@ -42,7 +42,7 @@ class DisplayOverviewMapViewModel(app: Application) : AndroidViewModel(app) {
 
     // set up feature layer
     private val touristAttractionsUrl =
-        "https://services1.arcgis.com/ligOmcZkuYGDjlNm/arcgis/rest/services/Tourism_Attractions/FeatureServer/2"
+        "https://services6.arcgis.com/Do88DoK2xjTUCXd1/arcgis/rest/services/OSM_NA_Tourism/FeatureServer/0"
     private val touristAttractionsTable = ServiceFeatureTable(touristAttractionsUrl)
     private val featureLayerTouristAttractions = FeatureLayer.createWithFeatureTable(touristAttractionsTable)
 
