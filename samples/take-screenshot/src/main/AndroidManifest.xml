@@ -3,21 +3,24 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application><activity
+    <application>
+
+        <activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/create_mobile_geodatabase_app_name">
-            
+            android:label="@string/take_screenshot_app_name">
         </activity>
+
         <provider
-            android:name="com.esri.arcgismaps.sample.createmobilegeodatabase.CreateMobileGeodatabaseFileProvider"
-            android:authorities="@string/provider_authority"
+            android:name="com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotFileProvider"
+            android:authorities="@string/take_screenshot_provider_authority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider"/>
+                android:resource="@xml/file_paths"/>
         </provider>
+
     </application>
 
 </manifest>
