@@ -337,3 +337,6 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+// Custom FileProvider for fetching attachments
+class EditFeatureAttachments : FileProvider()
