@@ -56,6 +56,12 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
 
     // screenshot image for display
     var screenshotImage: BitmapDrawable? by mutableStateOf(null)
+        private set
+
+    // clears the current screenshot image by setting it to null
+    fun clearScreenshotImage(){
+        screenshotImage = null
+    }
 
     // class to interact with MapView
     val mapViewProxy = MapViewProxy()
