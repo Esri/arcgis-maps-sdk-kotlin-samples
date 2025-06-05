@@ -301,3 +301,6 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+// Custom FileProvider for handling file sharing
+class CreateMobileGeodatabaseFileProvider : FileProvider()
