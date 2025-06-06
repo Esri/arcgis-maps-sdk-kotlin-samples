@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.showdevicelocation"
+    namespace = "com.esri.arcgismaps.sample.addwfslayer"
     buildFeatures {
         buildConfig = true
     }

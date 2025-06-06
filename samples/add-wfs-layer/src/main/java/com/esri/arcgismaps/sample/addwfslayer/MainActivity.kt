@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showdevicelocation
+package com.esri.arcgismaps.sample.addwfslayer
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,8 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.addwfslayer.screens.AddWfsLayerScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.showdevicelocation.screens.ShowDeviceLocationScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                ShowDeviceLocationApp()
+                AddWfsLayerApp()
             }
         }
     }
 
     @Composable
-    private fun ShowDeviceLocationApp() {
+    private fun AddWfsLayerApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            ShowDeviceLocationScreen(
-                sampleName = getString(R.string.show_device_location_app_name)
+            AddWfsLayerScreen(
+                sampleName = getString(R.string.add_wfs_layer_app_name)
             )
         }
     }
