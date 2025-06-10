@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.applyscenepropertyexpressions.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
@@ -68,13 +69,10 @@ class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewMode
     private val coneGraphic: Graphic
 
     // UI state for heading and pitch sliders
-    var heading by mutableStateOf(180.0)
+    var heading by mutableDoubleStateOf(180.0)
         private set
-    var pitch by mutableStateOf(45.0)
+    var pitch by mutableDoubleStateOf(45.0)
         private set
-
-    // State for showing/hiding the settings bottom sheet
-    var isSettingsVisible by mutableStateOf(false)
 
     // SceneViewProxy for advanced operations (not strictly needed here, but provided for completeness)
     val sceneViewProxy = SceneViewProxy()
@@ -94,11 +92,13 @@ class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewMode
         // Create the cone graphic at a fixed location
         coneGraphic = Graphic(
             geometry = Point(x = 83.9, y = 28.42, z = 200.0, spatialReference = SpatialReference.wgs84()),
+            attributes = mapOf(
+                "HEADING" to heading,
+                "PITCH" to pitch
+            ),
             symbol = coneSymbol
         )
         // Set initial heading and pitch attributes
-        coneGraphic.attributes["HEADING"] = heading
-        coneGraphic.attributes["PITCH"] = pitch
         graphicsOverlay.graphics.add(coneGraphic)
 
         // Load the scene and handle errors
@@ -118,9 +118,4 @@ class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewMode
         pitch = newPitch
         coneGraphic.attributes["PITCH"] = pitch
     }
-
-    // Show or hide the settings bottom sheet
-//    fun setSettingsVisible(visible: Boolean) {
-//        isSettingsVisible = visible
-//    }
 }
