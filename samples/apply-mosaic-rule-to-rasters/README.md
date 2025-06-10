@@ -1,6 +1,6 @@
 # Apply mosaic rule to rasters
 
-Apply mosaic rules to a mosaic dataset of rasters using the ArcGIS Maps SDK for Kotlin.
+Apply mosaic rules to a mosaic dataset of rasters.
 
 ![Image of Apply mosaic rule to rasters sample](apply-mosaic-rule-to-rasters.png)
 
