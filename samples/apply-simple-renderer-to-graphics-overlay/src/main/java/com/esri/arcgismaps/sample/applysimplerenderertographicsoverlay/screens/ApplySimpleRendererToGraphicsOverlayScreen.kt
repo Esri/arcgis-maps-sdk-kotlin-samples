@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,7 +29,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun ApplySimpleRendererToGraphicsOverlayScreen(sampleName: String) {
@@ -47,11 +46,11 @@ fun ApplySimpleRendererToGraphicsOverlayScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay)
                 )
-                // TODO: Add UI components in this Column ...
             }
-
+            // Show error dialog if needed
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(

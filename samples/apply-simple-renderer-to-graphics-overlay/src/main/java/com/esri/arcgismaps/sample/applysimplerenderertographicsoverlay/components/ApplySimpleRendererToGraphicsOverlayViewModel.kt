@@ -21,21 +21,53 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.Color
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleRenderer
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class ApplySimpleRendererToGraphicsOverlayViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
+    // ArcGISMap centered on Yellowstone National Park
     val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+        ArcGISMap(BasemapStyle.ArcGISImagery).apply {
+            initialViewpoint = Viewpoint(latitude = 44.462, longitude = -110.829, scale = 1e4)
         }
     )
 
-    // Create a message dialog view model for handling error messages
+    // GraphicsOverlay with a simple renderer (red cross marker)
+    val graphicsOverlay by mutableStateOf(GraphicsOverlay().apply {
+        // Create points for geysers in Yellowstone
+        val oldFaithful = Point(-110.828140, 44.460458, SpatialReference.wgs84())
+        val cascadeGeyser = Point(-110.829004, 44.462438, SpatialReference.wgs84())
+        val plumeGeyser = Point(-110.829381, 44.462735, SpatialReference.wgs84())
+        // Add graphics for each point
+        graphics.addAll(
+            listOf(
+                Graphic(oldFaithful),
+                Graphic(cascadeGeyser),
+                Graphic(plumeGeyser)
+            )
+        )
+        // Create a simple renderer with a red cross symbol
+        renderer = SimpleRenderer(
+            symbol = SimpleMarkerSymbol(
+                style = SimpleMarkerSymbolStyle.Cross,
+                color = Color.red,
+                size = 12f
+            )
+        )
+    })
+
+    // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()
 
     init {
