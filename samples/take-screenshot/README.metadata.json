@@ -22,7 +22,6 @@
     "redirect_from": "",
     "relevant_apis": [
         "MapView",
-        "MapViewProxy.exportImage()"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/takescreenshot/components/TakeScreenshotViewModel.kt",
