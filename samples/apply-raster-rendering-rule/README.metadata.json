@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "ApplyRasterRenderingRule",
+    "ignore": false,
+    "images": [
+        "apply-raster-rendering-rule.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/components/ApplyRasterRenderingRuleViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/screens/ApplyRasterRenderingRuleScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/MainActivity.kt"
+    ],
+    "title": "Apply raster rendering rule"
+}
