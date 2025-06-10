@@ -18,76 +18,66 @@ package com.esri.arcgismaps.sample.applymosaicruletorasters.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applymosaicruletorasters.components.ApplyMosaicRuleToRastersViewModel
+import com.esri.arcgismaps.sample.applymosaicruletorasters.components.MosaicRuleType
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
-import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
-/**
- * Main screen layout for the sample app
- */
 @Composable
 fun ApplyMosaicRuleToRastersScreen(sampleName: String) {
     val mapViewModel: ApplyMosaicRuleToRastersViewModel = viewModel()
-    var isDialogOptionsVisible by remember { mutableStateOf(false) }
+    val selectedRuleType by mapViewModel.selectedRuleType.collectAsStateWithLifecycle()
+    val isLoading = mapViewModel.isLoading
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        floatingActionButton = {
-            if (!isDialogOptionsVisible) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
-                    onClick = { isDialogOptionsVisible = true }
-                ) { Icon(Icons.Filled.Settings, contentDescription = "Show options") }
-            }
-        },
-        content = {
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(padding),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                Box(modifier = Modifier.weight(1f)) {
+                    MapView(
+                        modifier = Modifier.fillMaxSize(),
+                        arcGISMap = mapViewModel.arcGISMap
+                    )
+                    if (isLoading) {
+                        LoadingDialog(loadingMessage = "Loading...")
+                    }
+                }
+                MosaicRuleOptionsBar(
+                    ruleTypes = mapViewModel.mosaicRuleTypes,
+                    selectedRuleType = selectedRuleType,
+                    onRuleTypeSelected = mapViewModel::updateMosaicRule
                 )
             }
-
-            if (isDialogOptionsVisible) {
-                DialogOptions(
-                    // isCurrentOptionEnabled = ...,
-                    // onOptionToggled = { ... }
-                    onDismissRequest = { isDialogOptionsVisible = false }
-                )
-            }
-
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
@@ -102,19 +92,39 @@ fun ApplyMosaicRuleToRastersScreen(sampleName: String) {
 }
 
 @Composable
-fun DialogOptions(
-    onDismissRequest: () -> Unit
+fun MosaicRuleOptionsBar(
+    ruleTypes: List<MosaicRuleType>,
+    selectedRuleType: MosaicRuleType,
+    onRuleTypeSelected: (MosaicRuleType) -> Unit
 ) {
-    SampleDialog(onDismissRequest = onDismissRequest) {
-        Text("Sample options: ", style = MaterialTheme.typography.titleMedium)
-        DropDownMenuBox(
-            textFieldValue = "<selected-option>",
-            textFieldLabel = "Select an option",
-            dropDownItemList = emptyList(),
-            onIndexSelected = { }
-        )
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            OutlinedButton(onClick = onDismissRequest) { Text("Dismiss") }
+    var selectedIndex by remember(selectedRuleType) {
+        mutableIntStateOf(ruleTypes.indexOf(selectedRuleType))
+    }
+    Surface(
+        tonalElevation = 2.dp,
+        shadowElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Mosaic Rule:",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(end = 12.dp)
+            )
+            DropDownMenuBox(
+                textFieldValue = ruleTypes[selectedIndex].label,
+                textFieldLabel = "Select a mosaic rule",
+                dropDownItemList = ruleTypes.map { it.label },
+                onIndexSelected = {
+                    selectedIndex = it
+                    onRuleTypeSelected(ruleTypes[it])
+                }
+            )
         }
     }
 }
@@ -122,8 +132,13 @@ fun DialogOptions(
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun DialogOptionsPreview() {
+fun MosaicRuleOptionsBarPreview() {
+    val ruleTypes = MosaicRuleType.entries
     SamplePreviewSurface {
-        DialogOptions { }
+        MosaicRuleOptionsBar(
+            ruleTypes = ruleTypes,
+            selectedRuleType = ruleTypes[0],
+            onRuleTypeSelected = {}
+        )
     }
 }
