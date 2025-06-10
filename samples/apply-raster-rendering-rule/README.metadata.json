@@ -1,19 +1,30 @@
 {
     "category": "Visualization",
-    "description": "TODO",
+    "description": "Display a raster on a map and apply different rendering rules to that raster.",
     "formal_name": "ApplyRasterRenderingRule",
     "ignore": false,
     "images": [
         "apply-raster-rendering-rule.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "raster",
+        "rendering rules",
+        "visualization",
+        "ImageServiceRaster",
+        "RasterLayer",
+        "RenderingRule"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "ImageServiceRaster",
+        "RasterLayer",
+        "RenderingRule"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/components/ApplyRasterRenderingRuleViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/screens/ApplyRasterRenderingRuleScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrasterrenderingrule/screens/ApplyRasterRenderingRuleScreen.kt"
     ],
     "title": "Apply raster rendering rule"
 }

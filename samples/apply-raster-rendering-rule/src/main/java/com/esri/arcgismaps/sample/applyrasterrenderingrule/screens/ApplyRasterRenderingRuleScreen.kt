@@ -16,16 +16,25 @@
 
 package com.esri.arcgismaps.sample.applyrasterrenderingrule.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applyrasterrenderingrule.components.ApplyRasterRenderingRuleViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -35,21 +44,48 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun ApplyRasterRenderingRuleScreen(sampleName: String) {
     val mapViewModel: ApplyRasterRenderingRuleViewModel = viewModel()
+    val renderingRuleNames by mapViewModel.renderingRuleNames.collectAsState()
+    val selectedRenderingRuleName by mapViewModel.selectedRenderingRuleName.collectAsState()
+
+    // Used to trigger dropdown selection
+    var selectedIndex by remember(selectedRenderingRuleName, renderingRuleNames) {
+        mutableIntStateOf(renderingRuleNames.indexOf(selectedRenderingRuleName).coerceAtLeast(0))
+    }
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(padding),
             ) {
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    mapViewProxy = mapViewModel.mapViewProxy
                 )
-                // TODO: Add UI components in this Column ...
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    if (renderingRuleNames.isNotEmpty()) {
+                        DropDownMenuBox(
+                            textFieldValue = renderingRuleNames.getOrElse(selectedIndex) { "" },
+                            textFieldLabel = "Rendering Rule",
+                            dropDownItemList = renderingRuleNames,
+                            onIndexSelected = { index ->
+                                selectedIndex = index
+                                val ruleName = renderingRuleNames.getOrNull(index) ?: return@DropDownMenuBox
+                                mapViewModel.setRasterLayer(ruleName)
+                            }
+                        )
+                    }
+                }
             }
 
             mapViewModel.messageDialogVM.apply {
