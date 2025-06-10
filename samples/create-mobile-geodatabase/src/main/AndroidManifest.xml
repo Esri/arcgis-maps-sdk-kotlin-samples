@@ -11,12 +11,12 @@
         </activity>
         <provider
             android:name="com.esri.arcgismaps.sample.createmobilegeodatabase.CreateMobileGeodatabaseFileProvider"
-            android:authorities="@string/provider_authority"
+            android:authorities="@string/create_mobile_geodatabase_provider_authority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider"/>
+                android:resource="@xml/create_mobile_geodatabase_provider"/>
         </provider>
     </application>
 

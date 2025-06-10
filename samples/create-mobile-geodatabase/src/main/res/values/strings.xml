@@ -6,5 +6,5 @@
     <string name="attribute_table_hint">Attribute table loaded from the mobile geodatabase file. File can be loaded on ArcGIS Pro or ArcGIS Runtime</string>
     <string name="oid">OID</string>
     <string name="collection_timestamp">Collection Timestamp</string>
-    <string name="provider_authority">com.esri.arcgismaps.sample.createmobilegeodatabase.provider</string>
+    <string name="create_mobile_geodatabase_provider_authority">com.esri.arcgismaps.sample.createmobilegeodatabase.provider</string>
 </resources>

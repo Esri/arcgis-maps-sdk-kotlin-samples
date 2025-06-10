@@ -11,12 +11,12 @@
         </activity>
         <provider
             android:name="com.esri.arcgismaps.sample.editfeatureattachments.EditFeatureAttachments"
-            android:authorities="@string/provider_authority"
+            android:authorities="@string/edit_feature_attachments_provider_authority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/edit_feature_attachments_provider_paths"/>
         </provider>
     </application>
 
