@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "ApplyScenePropertyExpressions",
+    "ignore": false,
+    "images": [
+        "apply-scene-property-expressions.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyscenepropertyexpressions/components/ApplyScenePropertyExpressionsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyscenepropertyexpressions/screens/ApplyScenePropertyExpressionsScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyscenepropertyexpressions/MainActivity.kt"
+    ],
+    "title": "Apply scene property expressions"
+}
