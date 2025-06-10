@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -43,7 +44,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,9 +69,11 @@ fun ApplyScenePropertyExpressionsScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { padding ->
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
                 SceneView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISScene = sceneViewModel.arcGISScene,
@@ -82,17 +84,6 @@ fun ApplyScenePropertyExpressionsScreen(sampleName: String) {
                         isSheetOpen = false
                     }
                 )
-                // Settings FAB
-                FilledTonalButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 32.dp),
-                    onClick = { isSheetOpen = true }
-                ) {
-                    Icon(Icons.Filled.Settings, contentDescription = "Settings")
-                    Spacer(Modifier.size(8.dp))
-                    Text("Settings")
-                }
                 // Settings bottom sheet
                 if (isSheetOpen) {
                     ModalBottomSheet(
@@ -117,6 +108,18 @@ fun ApplyScenePropertyExpressionsScreen(sampleName: String) {
                         description = messageDescription,
                         onDismissRequest = ::dismissDialog
                     )
+                }
+            }
+        },
+        floatingActionButton = {
+            if (!isSheetOpen) {
+                // Floating action button to open settings
+                FloatingActionButton(
+                    modifier = Modifier.padding(16.dp),
+                    onClick = { isSheetOpen = true }
+                ) {
+                    Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                    Spacer(Modifier.size(8.dp))
                 }
             }
         }
@@ -146,7 +149,6 @@ fun ScenePropertyExpressionsSettings(
             value = heading.toFloat(),
             onValueChange = { onHeadingChanged(it.toDouble()) },
             valueRange = 0f..360f,
-            steps = 359
         )
         // Pitch slider
         Text("Pitch: ${pitch.toInt()}°", style = MaterialTheme.typography.labelLarge)
@@ -154,7 +156,6 @@ fun ScenePropertyExpressionsSettings(
             value = pitch.toFloat(),
             onValueChange = { onPitchChanged(it.toDouble()) },
             valueRange = 0f..180f,
-            steps = 179
         )
         Spacer(Modifier.size(8.dp))
         Row(

@@ -44,12 +44,12 @@ class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewMode
     var arcGISScene by mutableStateOf(
         ArcGISScene(BasemapStyle.ArcGISImageryStandard).apply {
             // Set initial viewpoint with a camera looking at the cone
-            val lookAtPoint = Point(x = 83.9, y = 28.4, z = 1000.0, spatialReference = SpatialReference.wgs84())
+            val point = Point(x = 83.9, y = 28.4, z = 1000.0, spatialReference = SpatialReference.wgs84())
             initialViewpoint = Viewpoint(
-                latitude = 28.4,
-                longitude = 83.9,
-                scale = 1e5,
-                camera = Camera(locationPoint = lookAtPoint, heading = 0.0, pitch = 50.0, roll = 0.0)
+                latitude = 0.0,
+                longitude = 0.0,
+                scale = 1.0,
+                camera = Camera(lookAtPoint = point, distance = 1000.0, heading = 0.0, pitch = 50.0, roll = 0.0)
             )
         }
     )
