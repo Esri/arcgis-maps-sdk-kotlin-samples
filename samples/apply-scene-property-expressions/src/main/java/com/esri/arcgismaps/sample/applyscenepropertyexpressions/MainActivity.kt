@@ -26,6 +26,7 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.applyscenepropertyexpressions.screens.ApplyScenePropertyExpressionsScreen
+import com.esri.arcgismaps.sample.sampleslib.BuildConfig
 
 class MainActivity : ComponentActivity() {
 
