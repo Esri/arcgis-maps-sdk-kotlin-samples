@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "ApplySimpleRendererToGraphicsOverlay",
+    "ignore": false,
+    "images": [
+        "apply-simple-renderer-to-graphics-overlay.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertographicsoverlay/components/ApplySimpleRendererToGraphicsOverlayViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertographicsoverlay/screens/ApplySimpleRendererToGraphicsOverlayScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertographicsoverlay/MainActivity.kt"
+    ],
+    "title": "Apply Simple Renderer To Graphics Overlay"
+}
