@@ -22,7 +22,6 @@ Pan and zoom to find an interesting location, then use the button to take a scre
 ## Relevant API
 
 * MapView
-* MapViewProxy.exportImage()
 
 ## Tags
 

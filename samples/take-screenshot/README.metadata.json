@@ -15,13 +15,12 @@
         "screenshot",
         "share",
         "shot",
-        "MapView",
-        "MapViewProxy.exportImage()"
+        "MapView"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
-        "MapView",
+        "MapView"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/takescreenshot/components/TakeScreenshotViewModel.kt",
