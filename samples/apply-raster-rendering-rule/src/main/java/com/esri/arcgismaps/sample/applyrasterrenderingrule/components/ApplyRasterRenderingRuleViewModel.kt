@@ -75,12 +75,12 @@ class ApplyRasterRenderingRuleViewModel(app: Application) : AndroidViewModel(app
             return
         }
         val serviceInfo = imageServiceRaster.serviceInfo
+        // Check availability of rendering rule infos
         val renderingRuleInfos = serviceInfo?.renderingRuleInfos ?: emptyList()
         if (renderingRuleInfos.isEmpty()) {
             messageDialogVM.showMessageDialog("No rendering rules found for this image service.")
             return
         }
-        // Always add a 'None' option (no rendering rule)
         val rasterLayers = mutableListOf<RasterLayer>()
         val ruleNames = mutableListOf<String>()
         // 'None' option: no rendering rule
