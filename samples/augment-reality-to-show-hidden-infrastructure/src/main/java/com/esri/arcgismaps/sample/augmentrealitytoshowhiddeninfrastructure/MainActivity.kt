@@ -16,38 +16,63 @@
 
 package com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure
 
+import android.Manifest
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.navigation.compose.rememberNavController
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.SharedRepository
+import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.navigation.AugmentRealityToShowHiddenInfrastructureNavGraph
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.screens.AugmentRealityToShowHiddenInfrastructureScreen
 
 class MainActivity : ComponentActivity() {
+
+    private var isLocationPermissionGranted = false
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            isLocationPermissionGranted = true
+        } else {
+            Toast.makeText(this, "Location permission is required to run this sample!", Toast.LENGTH_SHORT).show()
+        }
+
+        setContent {
+            SampleAppTheme {
+                AugmentRealityToNavigateRoute(isLocationPermissionGranted)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+        ArcGISEnvironment.applicationContext = applicationContext
 
-        setContent {
-            SampleAppTheme {
-                AugmentRealityToShowHiddenInfrastructureApp()
-            }
-        }
+        requestLocationPermission()
+
+        SharedRepository.pipeInfoList.clear()
     }
 
-    @Composable
-    private fun AugmentRealityToShowHiddenInfrastructureApp() {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            AugmentRealityToShowHiddenInfrastructureScreen(
-                sampleName = getString(R.string.augment_reality_to_show_hidden_infrastructure_app_name)
-            )
-        }
+    private fun requestLocationPermission() {
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
+
+}
+
+@Composable
+fun AugmentRealityToNavigateRoute(isLocationPermissionGranted: Boolean) {
+    val navController = rememberNavController()
+    AugmentRealityToShowHiddenInfrastructureNavGraph(
+        navController = navController,
+        isLocationPermissionGranted = isLocationPermissionGranted,
+    )
 }

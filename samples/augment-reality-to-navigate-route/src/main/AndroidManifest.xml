@@ -7,22 +7,15 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
-    <application><activity
-        android:name=".DownloadActivity"
-        android:exported="true"
-        android:label="@string/augment_reality_to_navigate_route_app_name">
-
-    </activity>
+    <application>
         <activity
+            android:name=".DownloadActivity"
             android:exported="true"
+            android:label="@string/augment_reality_to_navigate_route_app_name"/>
+        <activity
             android:name=".MainActivity"
-            android:label="@string/augment_reality_to_navigate_route_app_name">
-            
-        </activity>
-        <!-- Insert your Google API key in order to use Geospatial tracking. -->
-        <meta-data
-            android:name="com.google.android.ar.API_KEY"
-            android:value="Insert Google API Key here"/>
+            android:exported="true"
+            android:label="@string/augment_reality_to_navigate_route_app_name" />
     </application>
 
 </manifest>

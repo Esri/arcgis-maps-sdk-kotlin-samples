@@ -18,5 +18,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     // Only module specific dependencies needed here
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.ar.core)
+    implementation(libs.arcgis.maps.kotlin.toolkit.ar)
 }
