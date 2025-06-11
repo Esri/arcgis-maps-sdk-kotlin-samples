@@ -27,7 +27,6 @@ import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.geometry.PolylineBuilder
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISScene
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.ElevationSource
 import com.arcgismaps.mapping.NavigationConstraint
 import com.arcgismaps.mapping.symbology.MultilayerPolylineSymbol
@@ -42,53 +41,54 @@ import kotlinx.coroutines.launch
 
 class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
 
+    // Graphics overlay for the 3D pipes
     val pipeGraphicsOverlay = GraphicsOverlay().apply {
         sceneProperties.surfacePlacement = SurfacePlacement.Absolute
     }
 
+    // Graphics overlay for the shadow of pipes underground
     val pipeShadowGraphicsOverlay = GraphicsOverlay().apply {
-        opacity = 0.5f
+        opacity = 0.6f
     }
 
     // Create a scene with an elevation source and grid and surface hidden
-    val arcGISScene = ArcGISScene(BasemapStyle.ArcGISHumanGeography).apply {
-        baseSurface.elevationSources.add(ElevationSource.fromTerrain3dService())
-        baseSurface.backgroundGrid.isVisible = false
-        baseSurface.opacity = 0.0f
-        baseSurface.navigationConstraint = NavigationConstraint.None
+    val arcGISScene = ArcGISScene().apply {
+        baseSurface.apply {
+            elevationSources.add(ElevationSource.fromTerrain3dService())
+            backgroundGrid.isVisible = false
+            opacity = 0.0f
+            navigationConstraint = NavigationConstraint.None
+        }
     }
 
+    // Define a red 3D stroke symbol to show the pipe
+    private val pipeStrokeSymbol = SolidStrokeSymbolLayer(
+        width = 0.3,
+        color = Color.red,
+        lineStyle3D = StrokeSymbolLayerLineStyle3D.Tube
+    )
+    val pipeSymbol = MultilayerPolylineSymbol(listOf(pipeStrokeSymbol))
+
+    // Define a red 2D stroke symbol to show the pipe shadow
+    private val pipeShadowSymbol = SimpleLineSymbol(
+        style = SimpleLineSymbolStyle.Solid,
+        color = Color.red,
+        width = 0.3f
+    )
+
     init {
+        // For each pipe in the shared repository
         SharedRepository.pipeInfoList.forEach {
-
-            val strokeSymbolLayer = SolidStrokeSymbolLayer(
-                width = 0.3,
-                color = Color.yellow,
-                lineStyle3D = StrokeSymbolLayerLineStyle3D.Tube
-            )
-
-            val pipeSymbol = MultilayerPolylineSymbol(listOf(strokeSymbolLayer))
-
             viewModelScope.launch {
-
-                pipeShadowGraphicsOverlay.graphics.add(
-                    Graphic(
-                        it.polyline,
-                        SimpleLineSymbol(
-                            style = SimpleLineSymbolStyle.Solid,
-                            color = Color.red,
-                            width = 0.3f
-                        )
-                    )
-                )
-
-
+                // Add Z values to the polyline using the base surface elevation
                 val polylineWithZ = densifyAndAddZValues(it)
-                pipeGraphicsOverlay.graphics.add(
-                    Graphic(
-                        polylineWithZ, pipeSymbol
-                    )
-                )
+                // Add the 3D pipe to the pipe graphics overlay
+                pipeGraphicsOverlay.graphics.add(Graphic(polylineWithZ, pipeSymbol))
+                // Only add the shadow if the pipe is underground
+                if (it.elevationOffset < 0) {
+                    // Add the 2D pipe shadow to the shadow graphics overlay
+                    pipeShadowGraphicsOverlay.graphics.add(Graphic(it.polyline, pipeShadowSymbol))
+                }
             }
         }
     }
@@ -97,26 +97,33 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
      * Adds Z values to the geometry by getting the elevation from the base surface.
      */
     private suspend fun densifyAndAddZValues(pipeInfo: PipeInfo): Polyline {
+        // Densify the polyline to ensure it has enough points for elevation sampling
         val densifiedPolyline = GeometryEngine.densifyGeodeticOrNull(
             geometry = pipeInfo.polyline,
             maxSegmentLength = 1.0,
             lengthUnit = LinearUnit.meters,
             curveType = GeodeticCurveType.Geodesic
         ) as Polyline
+        // Create a new polyline builder to construct the polyline with Z values
         val polylineBuilder = PolylineBuilder(SpatialReference(3857))
+        // For each point in each part of the densified polyline
         densifiedPolyline.parts.forEach { part ->
             part.points.forEach { point ->
                 arcGISScene.baseSurface.elevationSources.first().load().onSuccess {
                     arcGISScene.baseSurface.getElevation(point).let { elevationResult ->
+                        // Get the elevation at the point
                         elevationResult.getOrNull()?.let { elevation ->
+                            // Add the point with the elevation offset to the polyline builder
                             polylineBuilder.addPoint(
-                                GeometryEngine.createWithZ(point, elevation + pipeInfo.offset)
+                                GeometryEngine.createWithZ(
+                                    point,
+                                    elevation + pipeInfo.elevationOffset
+                                )
                             )
                         }
                     }
                 }
             }
-
         }
         return polylineBuilder.toGeometry()
     }

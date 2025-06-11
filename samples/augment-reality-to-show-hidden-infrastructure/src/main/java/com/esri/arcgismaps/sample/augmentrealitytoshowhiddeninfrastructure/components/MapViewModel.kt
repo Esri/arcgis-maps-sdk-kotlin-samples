@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 class MapViewModel(app: Application) : AndroidViewModel(app) {
 
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery)
     val graphicsOverlay = GraphicsOverlay()
     val geometryEditor = GeometryEditor()
 
@@ -74,7 +74,8 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
                 geometryEditor.geometry.collect {
                     (it as? Polyline)?.let { polyline ->
                         _isGeometryBeingEdited.value =
-                            polyline.parts.isNotEmpty() && (polyline.parts.firstOrNull()?.points?.toList()?.size!! > 1)
+                            geometryEditor.isStarted.value && (polyline.parts.firstOrNull()?.points?.toList()?.size
+                                ?: 0) > 1
                     }
                 }
             }
@@ -96,33 +97,31 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
         polyline = geometryEditor.stop() as? Polyline
         if (polyline != null) {
             graphic = Graphic(
-                polyline,
-                symbol = SimpleLineSymbol(style = SimpleLineSymbolStyle.Solid, color = Color.red, width = 2f)
+                polyline, symbol = SimpleLineSymbol(style = SimpleLineSymbolStyle.Solid, color = Color.red, width = 2f)
             )
             _showElevationDialog.value = true
             graphicsOverlay.graphics.add(graphic)
 
             _statusText.value =
-                "Polyline completed. Tap again to continue adding polylines or proceed to rendering in Augmented Reality."
+                "Polyline completed. Tap again to continue adding polylines or proceed to rendering in AR."
         } else {
             _statusText.value = "No geometry created. Try again."
         }
     }
 
+    /**
+     * Adds the pipe information to the shared repository and resets the UI state.
+     */
     fun onElevationConfirmed(elevation: Float) {
-        _elevationInput.floatValue = elevation
-        _showElevationDialog.value = false
         polyline?.let { pipelineGeometry ->
+            _elevationInput.floatValue = elevation
+            _showElevationDialog.value = false
+            _isGeometryBeingEdited.value = false
             SharedRepository.pipeInfoList.add(PipeInfo(pipelineGeometry, _elevationInput.floatValue))
         }
-    }
-
-    fun onElevationDialogDismissed() {
-        _showElevationDialog.value = false
     }
 }
 
 data class PipeInfo(
-    val polyline: Polyline,
-    val offset: Float
+    val polyline: Polyline, val elevationOffset: Float
 )

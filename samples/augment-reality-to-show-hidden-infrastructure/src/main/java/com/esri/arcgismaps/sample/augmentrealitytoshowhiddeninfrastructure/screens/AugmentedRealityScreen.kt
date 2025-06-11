@@ -27,25 +27,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +47,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -78,16 +71,11 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 private const val KEY_PREF_ACCEPTED_PRIVACY_INFO = "ACCEPTED_PRIVACY_INFO"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AugmentedRealityScreen(
     sampleName: String
 ) {
     val augmentedRealityViewModel: AugmentedRealityViewModel = viewModel()
-
-    // Set up the bottom sheet controls
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showBottomSheet by remember { mutableStateOf(false) }
 
     var displayCalibrationView by remember { mutableStateOf(false) }
     var initializationStatus by rememberWorldScaleSceneViewStatus()
@@ -172,28 +160,6 @@ fun AugmentedRealityScreen(
                         }
                     }
                 }
-                // Show bottom sheet with controls to change number of graphics drawn ahead
-                if (showBottomSheet) {
-                    ModalBottomSheet(
-                        modifier = Modifier.wrapContentSize(),
-                        onDismissRequest = { showBottomSheet = false },
-                        sheetState = sheetState
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = CenterVertically
-                        ) {
-                            Text(
-                                text = "Number of graphics drawn:",
-                                style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier.padding(start = 12.dp)
-                            )
-
-                        }
-
-                    }
-                }
 
                 when (val status = initializationStatus) {
                     is WorldScaleSceneViewStatus.Initializing -> {
@@ -245,16 +211,6 @@ fun AugmentedRealityScreen(
                             painter = painterResource(R.drawable.baseline_straighten_24), "Show calibration view"
                         )
                     }
-                }
-                FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 32.dp), onClick = {
-                        showBottomSheet = !showBottomSheet
-                    }) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings, "Change settings"
-                    )
                 }
             }
         }

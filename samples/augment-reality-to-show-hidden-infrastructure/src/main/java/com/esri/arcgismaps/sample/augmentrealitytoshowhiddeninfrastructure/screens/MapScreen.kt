@@ -47,18 +47,20 @@ import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.MapViewModel
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.SharedRepository
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlin.math.roundToInt
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun MapScreen(
-    sampleName: String, locationPermissionGranted: Boolean, onNavigateToARScreen: () -> Unit
-) {
+fun MapScreen(sampleName: String, locationPermissionGranted: Boolean, onNavigateToARScreen: () -> Unit) {
+
+    val mapViewModel: MapViewModel = viewModel()
+
+    // Initialize the location display with auto pan mode set to recenter
     val locationDisplay = rememberLocationDisplay().apply {
         setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
     }
-    val mapViewModel: MapViewModel = viewModel()
     var isViewmodelInitialized by remember { mutableStateOf(false) }
     LaunchedEffect(isViewmodelInitialized) {
         if (!isViewmodelInitialized && locationPermissionGranted) {
@@ -68,9 +70,8 @@ fun MapScreen(
     }
 
     val isGeometryBeingEdited by remember { mutableStateOf(mapViewModel.isGeometryBeingEdited) }
-
     val showElevationDialog by mapViewModel.showElevationDialog
-    val pipeInfoList = remember { SharedRepository.pipeInfoList }
+    val pipeInfoList = SharedRepository.pipeInfoList
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) }, content = {
@@ -111,15 +112,21 @@ fun MapScreen(
                         .padding(bottom = 24.dp),
                     contentAlignment = Alignment.BottomCenter
                 ) {
-                    if (isGeometryBeingEdited.value) {
-                        Button(onClick = { mapViewModel.completePolyline() }) {
-                            Text("Complete Polyline")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (isGeometryBeingEdited.value) {
+                            Button(onClick = { mapViewModel.completePolyline() }) {
+                                Text("Complete polyline")
+                            }
                         }
-                    } else if (pipeInfoList.isNotEmpty()) {
-                        Button(
-                            onClick = onNavigateToARScreen
-                        ) {
-                            Text("Show hidden infrastructure in augmented reality")
+                        if (pipeInfoList.isNotEmpty()) {
+                            Button(
+                                onClick = onNavigateToARScreen,
+                                modifier = Modifier.padding(top = 8.dp)
+                            ) {
+                                Text("Show hidden infrastructure in AR")
+                            }
                         }
                     }
                 }
@@ -131,32 +138,26 @@ fun MapScreen(
         var elevationInput by remember { mutableFloatStateOf(mapViewModel.elevationInput.floatValue) }
 
         AlertDialog(
-            onDismissRequest = { mapViewModel.onElevationDialogDismissed() },
-            title = { Text("Enter an elevation") },
+            onDismissRequest = { },
+            title = { Text("Enter an elevation offset") },
             text = {
                 Column {
-                    Text("Enter a pipe elevation offset in meters between -10 and 10.")
-                    Text(text = "Selected Elevation: $elevationInput m")
                     Slider(
                         value = elevationInput,
                         onValueChange = { elevationInput = it },
                         valueRange = -10f..10f,
-                        steps = 19 // Adds discrete steps for each integer value
+                        steps = 19
                     )
+                    Text(modifier = Modifier.align(Alignment.End), text = "${elevationInput.roundToInt()} m")
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
                     mapViewModel.onElevationConfirmed(elevationInput)
                 }) {
-                    Text("OK")
+                    Text("Confirm")
                 }
             },
-            dismissButton = {
-                TextButton(onClick = { mapViewModel.onElevationDialogDismissed() }) {
-                    Text("Cancel")
-                }
-            }
         )
     }
 }

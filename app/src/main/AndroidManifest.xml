@@ -30,6 +30,6 @@
         <!-- Insert your Google API key in order to use Geospatial tracking. -->
         <meta-data
             android:name="com.google.android.ar.API_KEY"
-            android:value="AIzaSyCbo3Pk-pOgrOvCeYUV0YcLxO5XfUW-_Y0"/>
+            android:value="YOUR_GOOGLE_API_KEY_HERE"/>
     </application>
 </manifest>
