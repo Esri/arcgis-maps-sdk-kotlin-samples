@@ -38,69 +38,45 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * Enum representing the available preset mosaic rule types for the sample.
- */
-enum class MosaicRuleType(val label: String) {
-    ObjectID("Object ID"),
-    NorthWest("North West"),
-    Center("Center"),
-    ByAttribute("By Attribute"),
-    LockRaster("Lock Raster")
-}
-
-/**
  * ViewModel for the Apply Mosaic Rule to Rasters sample.
  */
 class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app) {
-    /**
-     * The ArcGISMap used in the sample, with a topographic basemap.
-     */
-    var arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISTopographic)
+
+    // The map used in the sample, with a topographic basemap.
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
+
+    // The ImageServiceRaster from the raster image service (Amberg, Germany).
+    private val imageServiceRaster = ImageServiceRaster(
+        url = "https://sampleserver7.arcgisonline.com/server/rest/services/amberg_germany/ImageServer"
     )
 
-    /**
-     * The ImageServiceRaster from the online raster image service.
-     */
-    private val imageServiceRaster = ImageServiceRaster(IMAGE_SERVICE_URL)
-
-    /**
-     * The RasterLayer that displays the ImageServiceRaster on the map.
-     */
+    // The RasterLayer that displays the ImageServiceRaster on the map.
     private val rasterLayer = RasterLayer(imageServiceRaster)
 
-    /**
-     * The list of available mosaic rule types for the dropdown menu.
-     */
+    // The list of available mosaic rule types for the dropdown menu.
     val mosaicRuleTypes = MosaicRuleType.entries
 
-    /**
-     * The currently selected mosaic rule type.
-     */
+    // The currently selected mosaic rule type.
     private val _selectedRuleType = MutableStateFlow(MosaicRuleType.ObjectID)
     val selectedRuleType = _selectedRuleType.asStateFlow()
 
-    /**
-     * Loading state for the UI, true while the raster layer is loading.
-     */
+    // Loading state for the UI, true while the raster layer is loading.
     var isLoading by mutableStateOf(true)
         private set
 
-    /**
-     * Message dialog for error handling.
-     */
+    // Message dialog for error handling.
     val messageDialogVM = MessageDialogViewModel()
 
-    /**
-     * Center point of the raster service (Amberg, Germany), used for recentering the map.
-     */
-    private val imageServiceRasterCenter: Point get() {
-        return imageServiceRaster.serviceInfo?.fullExtent?.extent?.center ?: Point(x = 0.0, y = 0.0)
-    }
+    // Center point of the raster service (Amberg, Germany), used for recentering the map.
+    private val imageServiceRasterCenter: Point
+        get() {
+            return imageServiceRaster.serviceInfo?.fullExtent?.extent?.center ?: Point(
+                x = 0.0,
+                y = 0.0
+            )
+        }
 
-    /**
-     * MapViewProxy for controlling the viewpoint after raster is loaded.
-     */
+    // MapViewProxy for controlling the viewpoint after raster is loaded.
     val mapViewProxy = MapViewProxy()
 
     init {
@@ -108,19 +84,7 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
         arcGISMap.operationalLayers.add(rasterLayer)
         // Set the initial mosaic rule (ObjectID/None).
         imageServiceRaster.mosaicRule = createMosaicRule(MosaicRuleType.ObjectID)
-        // Load the raster layer and retrieve the center point for future recentering.
-        viewModelScope.launch {
-            rasterLayer.load().onSuccess {
-                // Set the viewpoint to the raster center
-                mapViewProxy.setViewpointAnimated(
-                    Viewpoint(center = imageServiceRasterCenter, scale = 25000.0)
-                )
-                isLoading = false
-            }.onFailure {
-                isLoading = false
-                messageDialogVM.showMessageDialog(it)
-            }
-        }
+        updateMosaicRule(_selectedRuleType.value)
     }
 
     /**
@@ -146,35 +110,34 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
     }
 
     /**
-     * Returns the center point of the raster service, used for recentering the map.
+     * Helper function to create a [MosaicRule] instance for the given [mosaicRuleType].
      */
-    fun getRasterCenter(): Point = imageServiceRasterCenter
-
-    /**
-     * Helper function to create a [MosaicRule] instance for the given [type].
-     */
-    private fun createMosaicRule(type: MosaicRuleType): MosaicRule {
+    private fun createMosaicRule(mosaicRuleType: MosaicRuleType): MosaicRule {
         return MosaicRule().apply {
-            when (type) {
+            when (mosaicRuleType) {
                 MosaicRuleType.ObjectID -> {
                     // Default mosaic method.
                     mosaicMethod = MosaicMethod.None
                 }
+
                 MosaicRuleType.NorthWest -> {
                     // Sorts rasters by northwest location, uses 'first' operation.
                     mosaicMethod = MosaicMethod.Northwest
                     mosaicOperation = MosaicOperation.First
                 }
+
                 MosaicRuleType.Center -> {
                     // Sorts rasters by proximity to center, uses 'blend' operation.
                     mosaicMethod = MosaicMethod.Center
                     mosaicOperation = MosaicOperation.Blend
                 }
+
                 MosaicRuleType.ByAttribute -> {
                     // Sorts rasters by the OBJECTID attribute.
                     mosaicMethod = MosaicMethod.Attribute
                     sortField = "OBJECTID"
                 }
+
                 MosaicRuleType.LockRaster -> {
                     // Locks the mosaic to specific raster IDs.
                     mosaicMethod = MosaicMethod.LockRaster
@@ -183,10 +146,15 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
             }
         }
     }
+}
 
-    companion object {
-        // The sample raster image service URL (Amberg, Germany)
-        private const val IMAGE_SERVICE_URL =
-            "https://sampleserver7.arcgisonline.com/server/rest/services/amberg_germany/ImageServer"
-    }
+/**
+ * Enum representing the available preset mosaic rule types for the sample.
+ */
+enum class MosaicRuleType(val label: String) {
+    ObjectID("Object ID"),
+    NorthWest("North West"),
+    Center("Center"),
+    ByAttribute("By Attribute"),
+    LockRaster("Lock Raster")
 }
