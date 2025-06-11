@@ -66,7 +66,8 @@ fun ApplyMosaicRuleToRastersScreen(sampleName: String) {
                 Box(modifier = Modifier.weight(1f)) {
                     MapView(
                         modifier = Modifier.fillMaxSize(),
-                        arcGISMap = mapViewModel.arcGISMap
+                        arcGISMap = mapViewModel.arcGISMap,
+                        mapViewProxy = mapViewModel.mapViewProxy
                     )
                     if (isLoading) {
                         LoadingDialog(loadingMessage = "Loading...")

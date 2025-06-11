@@ -31,6 +31,7 @@ import com.arcgismaps.raster.ImageServiceRaster
 import com.arcgismaps.raster.MosaicMethod
 import com.arcgismaps.raster.MosaicOperation
 import com.arcgismaps.raster.MosaicRule
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,23 +50,13 @@ enum class MosaicRuleType(val label: String) {
 
 /**
  * ViewModel for the Apply Mosaic Rule to Rasters sample.
- *
- * Handles loading the raster service, exposing the available mosaic rules,
- * and updating the raster layer when a new rule is selected.
  */
 class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app) {
     /**
-     * The ArcGISMap used in the sample, with a topographic basemap and initial viewpoint over Amberg, Germany.
+     * The ArcGISMap used in the sample, with a topographic basemap.
      */
     var arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            initialViewpoint = Viewpoint(
-                center = Point(
-                    4482515.0,
-                    5411935.0
-                ), scale = 25000.0
-            )
-        }
+        ArcGISMap(BasemapStyle.ArcGISTopographic)
     )
 
     /**
@@ -103,7 +94,14 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
     /**
      * Center point of the raster service (Amberg, Germany), used for recentering the map.
      */
-    private var imageServiceRasterCenter: Point = Point(x = 0.0, y = 0.0)
+    private val imageServiceRasterCenter: Point get() {
+        return imageServiceRaster.serviceInfo?.fullExtent?.extent?.center ?: Point(x = 0.0, y = 0.0)
+    }
+
+    /**
+     * MapViewProxy for controlling the viewpoint after raster is loaded.
+     */
+    val mapViewProxy = MapViewProxy()
 
     init {
         // Add the raster layer to the map's operational layers.
@@ -113,9 +111,10 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
         // Load the raster layer and retrieve the center point for future recentering.
         viewModelScope.launch {
             rasterLayer.load().onSuccess {
-                imageServiceRaster.serviceInfo?.fullExtent?.center?.let { center ->
-                    imageServiceRasterCenter = center
-                }
+                // Set the viewpoint to the raster center
+                mapViewProxy.setViewpointAnimated(
+                    Viewpoint(center = imageServiceRasterCenter, scale = 25000.0)
+                )
                 isLoading = false
             }.onFailure {
                 isLoading = false
@@ -125,21 +124,19 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
     }
 
     /**
-     * Updates the mosaic rule on the raster layer to the selected type.
-     *
-     * @param type The new mosaic rule type to apply.
+     * Updates the mosaic rule on the raster layer to the selected [type].
      */
     fun updateMosaicRule(type: MosaicRuleType) {
         _selectedRuleType.value = type
         isLoading = true
         // Set the new mosaic rule on the image service raster.
         imageServiceRaster.mosaicRule = createMosaicRule(type)
-        // Optionally reload the raster layer and update the center point.
+        // Reload the raster layer and update the center point and viewpoint.
         viewModelScope.launch {
             rasterLayer.load().onSuccess {
-                imageServiceRaster.serviceInfo?.fullExtent?.center?.let { center ->
-                    imageServiceRasterCenter = center
-                }
+                mapViewProxy.setViewpointAnimated(
+                    Viewpoint(center = imageServiceRasterCenter, scale = 25000.0)
+                )
                 isLoading = false
             }.onFailure {
                 isLoading = false
@@ -154,16 +151,13 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
     fun getRasterCenter(): Point = imageServiceRasterCenter
 
     /**
-     * Helper function to create a MosaicRule instance for the given type.
-     *
-     * @param type The mosaic rule type to create.
-     * @return The configured MosaicRule.
+     * Helper function to create a [MosaicRule] instance for the given [type].
      */
     private fun createMosaicRule(type: MosaicRuleType): MosaicRule {
         return MosaicRule().apply {
             when (type) {
                 MosaicRuleType.ObjectID -> {
-                    // Default mosaic method, no sorting or operation.
+                    // Default mosaic method.
                     mosaicMethod = MosaicMethod.None
                 }
                 MosaicRuleType.NorthWest -> {
