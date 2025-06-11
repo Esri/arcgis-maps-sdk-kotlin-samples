@@ -19,7 +19,7 @@ When you open the sample, you'll see a map centered on your current location. Ta
 3. Pass a `SceneView` into the world scale scene view and set the base surface background grid to not be visible and the base surface opacity to 0.0.
 4. Create an `ArcGISTiledElevationSource` and add it to the scene's base surface. Set the navigation constraint to unconstrained to allow going underground if needed.
 5. Configure a graphics overlay and renderer for showing the drawn pipes. This sample uses a `SolidStrokeSymbolLayer` with a `MultilayerPolylineSymbol` to draw the pipes.
-6. 
+
 ## Relevant API
 
 * GeometryEditor

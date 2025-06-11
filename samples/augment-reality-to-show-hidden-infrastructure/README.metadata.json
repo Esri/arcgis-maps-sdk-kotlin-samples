@@ -40,9 +40,9 @@
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/MapViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/navigation/AugmentRealityToShowHiddenInfrastructureRouteNavGraph.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/screens/AugmentedRealityScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/SharedRepository.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/screens/MapScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/SharedRepository.kt"
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/screens/AugmentedRealityScreen.kt"
     ],
     "title": "Augment reality to show hidden infrastructure"
 }
