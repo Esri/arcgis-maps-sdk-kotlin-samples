@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -101,32 +100,27 @@ fun MosaicRuleOptionsBar(
     var selectedIndex by remember(selectedRuleType) {
         mutableIntStateOf(ruleTypes.indexOf(selectedRuleType))
     }
-    Surface(
-        tonalElevation = 2.dp,
-        shadowElevation = 2.dp
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Mosaic Rule:",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(end = 12.dp)
-            )
-            DropDownMenuBox(
-                textFieldValue = ruleTypes[selectedIndex].label,
-                textFieldLabel = "Select a mosaic rule",
-                dropDownItemList = ruleTypes.map { it.label },
-                onIndexSelected = {
-                    selectedIndex = it
-                    onRuleTypeSelected(ruleTypes[it])
-                }
-            )
-        }
+        Text(
+            text = "Mosaic Rule:",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(end = 12.dp)
+        )
+        DropDownMenuBox(
+            textFieldValue = ruleTypes[selectedIndex].label,
+            textFieldLabel = "Select a mosaic rule",
+            dropDownItemList = ruleTypes.map { it.label },
+            onIndexSelected = {
+                selectedIndex = it
+                onRuleTypeSelected(ruleTypes[it])
+            }
+        )
     }
 }
 

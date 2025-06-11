@@ -25,11 +25,11 @@ When the rasters are loaded, choose from a list of preset mosaic rules to apply 
 
 ## Relevant API
 
-- ImageServiceRaster
-- MosaicRule
-- MosaicMethod
-- MosaicOperation
-- RasterLayer
+* ImageServiceRaster
+* MosaicMethod
+* MosaicOperation
+* MosaicRule
+* RasterLayer
 
 ## About the data
 
