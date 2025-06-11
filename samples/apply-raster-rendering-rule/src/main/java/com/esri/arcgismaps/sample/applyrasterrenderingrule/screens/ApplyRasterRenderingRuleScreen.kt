@@ -44,6 +44,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun ApplyRasterRenderingRuleScreen(sampleName: String) {
     val mapViewModel: ApplyRasterRenderingRuleViewModel = viewModel()
+
     val renderingRuleNames by mapViewModel.renderingRuleNames.collectAsState()
     val selectedRenderingRuleName by mapViewModel.selectedRenderingRuleName.collectAsState()
 

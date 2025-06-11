@@ -41,8 +41,7 @@ class ApplyRasterRenderingRuleViewModel(app: Application) : AndroidViewModel(app
     var arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets)
 
     // List of raster layers, each with a different rendering rule
-    private val _rasterLayers = MutableStateFlow<List<RasterLayer>>(emptyList())
-    val rasterLayers = _rasterLayers.asStateFlow()
+    private val rasterLayers: MutableList<RasterLayer> = mutableListOf()
 
     // List of rendering rule names for the dropdown
     private val _renderingRuleNames = MutableStateFlow<List<String>>(emptyList())
@@ -81,7 +80,6 @@ class ApplyRasterRenderingRuleViewModel(app: Application) : AndroidViewModel(app
             messageDialogVM.showMessageDialog("No rendering rules found for this image service.")
             return
         }
-        val rasterLayers = mutableListOf<RasterLayer>()
         val ruleNames = mutableListOf<String>()
         // 'None' option: no rendering rule
         val baseRaster = ImageServiceRaster(IMAGE_SERVICE_URL)
@@ -104,7 +102,6 @@ class ApplyRasterRenderingRuleViewModel(app: Application) : AndroidViewModel(app
                 )
             }
         }
-        _rasterLayers.value = rasterLayers
         _renderingRuleNames.value = ruleNames
         // Set initial selection to 'None'
         _selectedRenderingRuleName.value = "None"
@@ -117,7 +114,7 @@ class ApplyRasterRenderingRuleViewModel(app: Application) : AndroidViewModel(app
      * Zooms to the layer's extent if available.
      */
     fun setRasterLayer(ruleName: String) {
-        val rasterLayer = _rasterLayers.value.firstOrNull { it.name == ruleName }
+        val rasterLayer = rasterLayers.firstOrNull { it.name == ruleName }
         if (rasterLayer != null) {
             arcGISMap.operationalLayers.clear()
             arcGISMap.operationalLayers.add(rasterLayer)
