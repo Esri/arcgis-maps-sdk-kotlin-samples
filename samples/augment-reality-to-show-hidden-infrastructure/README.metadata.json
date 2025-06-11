@@ -1,19 +1,48 @@
 {
     "category": "Augmented Reality",
-    "description": "TODO",
+    "description": "Visualize hidden infrastructure in its real-world location using augmented reality.",
     "formal_name": "AugmentRealityToShowHiddenInfrastructure",
     "ignore": false,
     "images": [
         "augment-reality-to-show-hidden-infrastructure.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "augmented reality",
+        "full-scale",
+        "infrastructure",
+        "lines",
+        "mixed reality",
+        "pipes",
+        "real-scale",
+        "underground",
+        "visualization",
+        "visualize",
+        "world-scale",
+        "GeometryEditor",
+        "GraphicsOverlay",
+        "MultilayerPolylineSymbol",
+        "SolidStrokeSymbolLayer",
+        "Surface",
+        "WorldScaleSceneView"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "GeometryEditor",
+        "GraphicsOverlay",
+        "MultilayerPolylineSymbol",
+        "SolidStrokeSymbolLayer",
+        "Surface",
+        "WorldScaleSceneView"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/AugmentRealityToShowHiddenInfrastructureViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/screens/AugmentRealityToShowHiddenInfrastructureScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/AugmentedRealityViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/navigation/AugmentRealityToShowHiddenInfrastructureRouteNavGraph.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/screens/AugmentedRealityScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/screens/MapScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowhiddeninfrastructure/components/SharedRepository.kt"
     ],
     "title": "Augment reality to show hidden infrastructure"
 }

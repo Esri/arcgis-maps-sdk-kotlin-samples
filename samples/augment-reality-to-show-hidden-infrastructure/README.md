@@ -2,6 +2,8 @@
 
 Visualize hidden infrastructure in its real-world location using augmented reality.
 
+![Image of augment reality to show hidden infrastructure](augment-reality-to-show-hidden-infrastructure.png)
+
 ## Use case
 
 You can use AR to "x-ray" the ground to see pipes, wiring, or other infrastructure that isn't otherwise visible. For example, you could use this feature to trace the flow of water through a building to help identify the source of a leak.
