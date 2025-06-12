@@ -19,7 +19,6 @@ package com.esri.arcgismaps.sample.applyscenepropertyexpressions.components
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,24 +35,21 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.Graphic
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewModel(app) {
     // The ArcGISScene shown in the SceneView
-    var arcGISScene by mutableStateOf(
-        ArcGISScene(BasemapStyle.ArcGISImageryStandard).apply {
-            // Set initial viewpoint with a camera looking at the cone
-            val point = Point(x = 83.9, y = 28.4, z = 1000.0, spatialReference = SpatialReference.wgs84())
-            initialViewpoint = Viewpoint(
-                latitude = 0.0,
-                longitude = 0.0,
-                scale = 1.0,
-                camera = Camera(lookAtPoint = point, distance = 1000.0, heading = 0.0, pitch = 50.0, roll = 0.0)
-            )
-        }
-    )
+    val arcGISScene = ArcGISScene(BasemapStyle.ArcGISImageryStandard).apply {
+        // Set initial viewpoint with a camera looking at the cone
+        val point = Point(x = 83.9, y = 28.4, z = 1000.0, spatialReference = SpatialReference.wgs84())
+        initialViewpoint = Viewpoint(
+            latitude = 0.0,
+            longitude = 0.0,
+            scale = 1.0,
+            camera = Camera(lookAtPoint = point, distance = 1000.0, heading = 0.0, pitch = 65.0, roll = 0.0)
+        )
+    }
 
     // GraphicsOverlay with heading and pitch expressions
     val graphicsOverlay: GraphicsOverlay = GraphicsOverlay().apply {
@@ -65,39 +61,31 @@ class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewMode
         }
     }
 
-    // The cone graphic, with mutable heading and pitch attributes
-    private val coneGraphic: Graphic
-
     // UI state for heading and pitch sliders
     var heading by mutableDoubleStateOf(180.0)
         private set
     var pitch by mutableDoubleStateOf(45.0)
         private set
 
-    // SceneViewProxy for advanced operations (not strictly needed here, but provided for completeness)
-    val sceneViewProxy = SceneViewProxy()
+
+    // Create the cone symbol
+    private val coneSymbol = SimpleMarkerSceneSymbol(
+        style = SimpleMarkerSceneSymbolStyle.Cone, color = Color.red, height = 100.0, width = 100.0, depth = 100.0
+    )
+
+    // The cone graphic, with mutable heading and pitch attributes
+    private val coneGraphic = Graphic(
+            geometry = Point(x = 83.9, y = 28.42, z = 200.0, spatialReference = SpatialReference.wgs84()),
+            attributes = mapOf(
+                "HEADING" to heading, "PITCH" to pitch
+            ),
+            symbol = coneSymbol
+        )
 
     // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // Create the cone symbol
-        val coneSymbol = SimpleMarkerSceneSymbol(
-            style = SimpleMarkerSceneSymbolStyle.Cone,
-            color = Color.red,
-            height = 100.0,
-            width = 100.0,
-            depth = 100.0
-        )
-        // Create the cone graphic at a fixed location
-        coneGraphic = Graphic(
-            geometry = Point(x = 83.9, y = 28.42, z = 200.0, spatialReference = SpatialReference.wgs84()),
-            attributes = mapOf(
-                "HEADING" to heading,
-                "PITCH" to pitch
-            ),
-            symbol = coneSymbol
-        )
         // Set initial heading and pitch attributes
         graphicsOverlay.graphics.add(coneGraphic)
 

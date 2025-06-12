@@ -77,11 +77,6 @@ fun ApplyScenePropertyExpressionsScreen(sampleName: String) {
                     modifier = Modifier.fillMaxSize(),
                     arcGISScene = sceneViewModel.arcGISScene,
                     graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
-                    sceneViewProxy = sceneViewModel.sceneViewProxy,
-                    onDown = {
-                        // Dismiss sheet when user interacts with the scene
-                        isSheetOpen = false
-                    }
                 )
                 // Settings bottom sheet
                 if (isSheetOpen) {

@@ -17,17 +17,18 @@ Adjust the heading and pitch sliders to rotate the cone.
 1. Create a new graphics overlay.
 2. Create a simple renderer and set its scene properties.
 3. Set the heading expression to `[HEADING]`.
-4. Apply the renderer to the graphics overlay.
-5. Create a graphic and add it to the overlay.
-6. To update the graphic's rotation, update the `HEADING` or `PITCH` property in the graphic's attributes.
+4. Set the pitch expression to `[PITCH]`.
+5. Apply the renderer to the graphics overlay.
+6. Create a graphic and add it to the overlay.
+7. To update the graphic's rotation, update the `HEADING` or `PITCH` property in the graphic's attributes.
 
 ## Relevant API
 
-* Graphic.Attributes
+* Graphic
 * GraphicsOverlay
 * SceneProperties
-* SceneProperties.HeadingExpression
-* SceneProperties.PitchExpression
+* SceneProperties.headingExpression
+* SceneProperties.pitchExpression
 * SimpleRenderer
 * SimpleRenderer.SceneProperties
 
