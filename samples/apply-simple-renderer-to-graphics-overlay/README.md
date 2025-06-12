@@ -1,4 +1,4 @@
-# Apply Simple Renderer To Graphics Overlay
+# Apply simple renderer to graphics overlay
 
 Display common symbols for all graphics in a graphics overlay with a renderer.
 

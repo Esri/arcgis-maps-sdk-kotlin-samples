@@ -33,5 +33,5 @@
         "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertographicsoverlay/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertographicsoverlay/screens/ApplySimpleRendererToGraphicsOverlayScreen.kt"
     ],
-    "title": "Apply Simple Renderer To Graphics Overlay"
+    "title": "Apply simple renderer to graphics overlay"
 }
