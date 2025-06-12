@@ -15,7 +15,7 @@ Use the button to change the renderer on the feature layer. The original rendere
 ## How it works
 
 1. Create a `FeatureLayer` from a portal item.
-2. Create a new renderer (in this case, a `SimpleRenderer`).
+2. Create a new `SimpleRenderer`.
 3. Change the feature layer's renderer.
 
 ## Relevant API
