@@ -20,7 +20,7 @@
         "SimpleRenderer"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": "",
     "relevant_apis": [
         "Graphic",
         "GraphicsOverlay",
