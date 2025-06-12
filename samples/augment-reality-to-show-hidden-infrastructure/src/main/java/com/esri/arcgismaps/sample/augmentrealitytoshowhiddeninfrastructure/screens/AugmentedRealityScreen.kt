@@ -28,7 +28,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -80,6 +82,10 @@ fun AugmentedRealityScreen(
     var displayCalibrationView by remember { mutableStateOf(false) }
     var initializationStatus by rememberWorldScaleSceneViewStatus()
     var trackingMode by remember { mutableStateOf<WorldScaleTrackingMode>(WorldScaleTrackingMode.Geospatial()) }
+
+    var showDropdownMenu by remember { mutableStateOf(false) }
+    var isPipeShadowVisible by remember { mutableStateOf(true) }
+    var isLeaderVisible by remember { mutableStateOf(true) }
 
     val sharedPreferences = LocalContext.current.getSharedPreferences("", Context.MODE_PRIVATE)
     var acceptedPrivacyInfo by rememberSaveable {
@@ -143,7 +149,8 @@ fun AugmentedRealityScreen(
                     arcGISScene = augmentedRealityViewModel.arcGISScene,
                     graphicsOverlays = listOf(
                         augmentedRealityViewModel.pipeGraphicsOverlay,
-                        augmentedRealityViewModel.pipeShadowGraphicsOverlay
+                        augmentedRealityViewModel.pipeShadowGraphicsOverlay,
+                        augmentedRealityViewModel.leaderGraphicsOverlay
                     ),
                     worldScaleTrackingMode = trackingMode,
                     onInitializationStatusChanged = { status ->
@@ -200,6 +207,46 @@ fun AugmentedRealityScreen(
     }, floatingActionButton = {
         if (!displayCalibrationView) {
             Column {
+                FloatingActionButton(modifier = Modifier.padding(bottom = 18.dp), onClick = { showDropdownMenu = !showDropdownMenu }) {
+                    Icon(Icons.Default.Settings, contentDescription = "Toggle visibility of shadows and leaders")
+                }
+                DropdownMenu(
+                    expanded = showDropdownMenu,
+                    onDismissRequest = { showDropdownMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Shadows") },
+                        leadingIcon = {
+                            if (isPipeShadowVisible) {
+                                Icon(
+                                    Icons.Default.Done,
+                                    contentDescription = "Visible"
+                                )
+                            }
+                        },
+                        onClick = {
+                            isPipeShadowVisible = !isPipeShadowVisible
+                            augmentedRealityViewModel.pipeShadowGraphicsOverlay.isVisible = isPipeShadowVisible
+                            showDropdownMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Leaders") },
+                        leadingIcon = {
+                            if (isLeaderVisible) {
+                                Icon(
+                                    Icons.Default.Done,
+                                    contentDescription = "Visible"
+                                )
+                            }
+                        },
+                        onClick = {
+                            isLeaderVisible = !isLeaderVisible
+                            augmentedRealityViewModel.leaderGraphicsOverlay.isVisible = isLeaderVisible
+                            showDropdownMenu = false
+                        }
+                    )
+                }
                 if (trackingMode is WorldScaleTrackingMode.World) {
 
                     FloatingActionButton(

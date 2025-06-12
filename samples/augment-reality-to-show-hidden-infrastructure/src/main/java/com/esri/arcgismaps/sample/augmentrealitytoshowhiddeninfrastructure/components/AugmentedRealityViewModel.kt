@@ -51,6 +51,11 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
         opacity = 0.6f
     }
 
+    // Graphics overlay for the leaders
+    val leaderGraphicsOverlay = GraphicsOverlay().apply {
+        sceneProperties.surfacePlacement = SurfacePlacement.Absolute
+    }
+
     // Create a scene with an elevation source and grid and surface hidden
     val arcGISScene = ArcGISScene().apply {
         baseSurface.apply {
@@ -76,6 +81,12 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
         width = 0.3f
     )
 
+    val leaderSymbol = SimpleLineSymbol(
+        style = SimpleLineSymbolStyle.Dash,
+        color = Color.red,
+        width = 0.1f
+    )
+
     init {
         // For each pipe in the shared repository
         SharedRepository.pipeInfoList.forEach {
@@ -88,6 +99,9 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
                 if (it.elevationOffset < 0) {
                     // Add the 2D pipe shadow to the shadow graphics overlay
                     pipeShadowGraphicsOverlay.graphics.add(Graphic(it.polyline, pipeShadowSymbol))
+
+                    // Add leader lines connecting pipe vertices to shadow vertices
+                    addLeaderLines(polylineWithZ, it.elevationOffset)
                 }
             }
         }
@@ -126,5 +140,23 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
         return polylineBuilder.toGeometry()
+    }
+
+    /**
+     * Adds leader lines from the pipe vertices to the shadow vertices.
+     */
+    private fun addLeaderLines(pipePolyline: Polyline, elevationOffset: Float) {
+        // For each point in each part of the densified polyline
+        pipePolyline.parts.forEach { part ->
+            part.points.forEach { point ->
+                // Create a line from the 3D pipe vertex to a pont offset by the elevation offset
+                val offsetPoint = GeometryEngine.createWithZ(
+                    point,
+                    point.z?.minus(elevationOffset)
+                )
+                val leaderLine = Polyline(listOf(point, offsetPoint))
+                leaderGraphicsOverlay.graphics.add(Graphic(leaderLine, leaderSymbol))
+            }
+        }
     }
 }
