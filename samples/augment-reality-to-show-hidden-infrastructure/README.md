@@ -15,7 +15,8 @@ When you open the sample, you'll see a map centered on your current location. Ta
 ## How it works
 
 1. Draw pipes on the map. See the "Create and edit geometries" sample to learn how to use the geometry editor for creating graphics.
-2. When you start the AR visualization experience, create and show the `WorldScaleSceneView`.
+2. Add a `WorldScaleSceneView` composable to the augmented reality screen, available in the [ArcGIS Maps SDK for Kotlin toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/microapps/ArWorldScaleApp).
+    * The component is available both in `World tracking` and `Geospatial tracking` modes. Geospatial tracking uses street view data to calibrate augmented reality positioning and is available with an [ARCORE API key](https://developers.google.com/ar/develop/authorization?platform=android#api-key-android).
 3. Pass a `SceneView` into the world scale scene view and set the base surface background grid to not be visible and the base surface opacity to 0.0.
 4. Create an `ArcGISTiledElevationSource` and add it to the scene's base surface. Set the navigation constraint to unconstrained to allow going underground if needed.
 5. Configure a graphics overlay and renderer for showing the drawn pipes. This sample uses a `SolidStrokeSymbolLayer` with a `MultilayerPolylineSymbol` to draw the pipes.

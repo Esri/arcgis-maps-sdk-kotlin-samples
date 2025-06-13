@@ -77,7 +77,7 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
     // Define a red 2D stroke symbol to show the pipe shadow
     private val pipeShadowSymbol = SimpleLineSymbol(
         style = SimpleLineSymbolStyle.Solid,
-        color = Color.red,
+        color = Color.yellow,
         width = 0.3f
     )
 

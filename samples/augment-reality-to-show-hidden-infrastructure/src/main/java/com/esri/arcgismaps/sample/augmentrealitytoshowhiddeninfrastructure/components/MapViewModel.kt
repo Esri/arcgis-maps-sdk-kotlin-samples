@@ -17,10 +17,11 @@
 package com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components
 
 import android.app.Application
-import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
@@ -42,14 +43,14 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
     val graphicsOverlay = GraphicsOverlay()
     val geometryEditor = GeometryEditor()
 
-    private val _statusText = mutableStateOf("Tap on map or use current location to create start point")
-    val statusText: MutableState<String> = _statusText
+    private var _statusText by mutableStateOf("Tap on map or use current location to create start point")
+    val statusText get() = _statusText
 
-    private val _showElevationDialog = mutableStateOf(false)
-    val showElevationDialog: MutableState<Boolean> = _showElevationDialog
+    private var _showElevationDialog by mutableStateOf(false)
+    val showElevationDialog get() = _showElevationDialog
 
-    private val _elevationInput = mutableFloatStateOf(0f)
-    val elevationInput: MutableFloatState = _elevationInput
+    private var _elevationInput by mutableFloatStateOf(0f)
+    val elevationInput get() = _elevationInput
 
     var graphic = Graphic()
 
@@ -87,7 +88,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
      */
     fun startPolylineEditing() {
         geometryEditor.start(GeometryType.Polyline)
-        _statusText.value = "Polyline editing started. Tap to add points."
+        _statusText = "Polyline editing started. Tap to add points."
     }
 
     /**
@@ -99,13 +100,12 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
             graphic = Graphic(
                 polyline, symbol = SimpleLineSymbol(style = SimpleLineSymbolStyle.Solid, color = Color.red, width = 2f)
             )
-            _showElevationDialog.value = true
+            _showElevationDialog = true
             graphicsOverlay.graphics.add(graphic)
 
-            _statusText.value =
-                "Polyline completed. Tap again to continue adding polylines or proceed to rendering in AR."
+            _statusText = "Polyline completed. Tap again to continue adding polylines or proceed to rendering in AR."
         } else {
-            _statusText.value = "No geometry created. Try again."
+            _statusText = "No geometry created. Try again."
         }
     }
 
@@ -114,10 +114,10 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
      */
     fun onElevationConfirmed(elevation: Float) {
         polyline?.let { pipelineGeometry ->
-            _elevationInput.floatValue = elevation
-            _showElevationDialog.value = false
+            _elevationInput = elevation
+            _showElevationDialog = false
             _isGeometryBeingEdited.value = false
-            SharedRepository.pipeInfoList.add(PipeInfo(pipelineGeometry, _elevationInput.floatValue))
+            SharedRepository.pipeInfoList.add(PipeInfo(pipelineGeometry, _elevationInput))
         }
     }
 }

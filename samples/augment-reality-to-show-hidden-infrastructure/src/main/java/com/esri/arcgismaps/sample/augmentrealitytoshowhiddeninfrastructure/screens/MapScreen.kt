@@ -17,19 +17,23 @@
 package com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,11 +43,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
+import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.R
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.MapViewModel
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.SharedRepository
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -70,7 +76,8 @@ fun MapScreen(sampleName: String, locationPermissionGranted: Boolean, onNavigate
     }
 
     val isGeometryBeingEdited by remember { mutableStateOf(mapViewModel.isGeometryBeingEdited) }
-    val showElevationDialog by mapViewModel.showElevationDialog
+    val canUndo by mapViewModel.geometryEditor.canUndo.collectAsState()
+    val showElevationDialog = mapViewModel.showElevationDialog
     val pipeInfoList = SharedRepository.pipeInfoList
 
     Scaffold(
@@ -92,7 +99,7 @@ fun MapScreen(sampleName: String, locationPermissionGranted: Boolean, onNavigate
                         }
                     }
                 )
-                if (mapViewModel.statusText.value != "") {
+                if (mapViewModel.statusText != "") {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -102,7 +109,7 @@ fun MapScreen(sampleName: String, locationPermissionGranted: Boolean, onNavigate
                             .padding(16.dp)
                     ) {
                         Text(
-                            text = mapViewModel.statusText.value, color = Color.White
+                            text = mapViewModel.statusText, color = Color.White
                         )
                     }
                 }
@@ -115,9 +122,33 @@ fun MapScreen(sampleName: String, locationPermissionGranted: Boolean, onNavigate
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (isGeometryBeingEdited.value) {
-                            Button(onClick = { mapViewModel.completePolyline() }) {
-                                Text("Complete polyline")
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Allow undoing of last vertex while editing geometry
+                            if (canUndo) {
+                                Button (onClick = { mapViewModel.geometryEditor.undo() }) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_undo_24),
+                                        contentDescription = "Close button"
+                                    )
+                                }
+                            }
+                            // Complete polyline once enough vertices have been added
+                            if (isGeometryBeingEdited.value) {
+                                Button(onClick = { mapViewModel.completePolyline() }) {
+                                    Text("Complete polyline")
+                                }
+                            }
+                            // Clear all polyline graphics and start over
+                            if (mapViewModel.graphicsOverlay.graphics.isNotEmpty()) {
+                                Button(onClick = {
+                                    mapViewModel.graphicsOverlay.graphics.clear()
+                                    mapViewModel.startPolylineEditing()
+                                    SharedRepository.pipeInfoList.clear()
+                                }) {
+                                    Text("Clear polylines")
+                                }
                             }
                         }
                         if (pipeInfoList.isNotEmpty()) {
@@ -135,13 +166,13 @@ fun MapScreen(sampleName: String, locationPermissionGranted: Boolean, onNavigate
     )
 
     if (showElevationDialog) {
-        var elevationInput by remember { mutableFloatStateOf(mapViewModel.elevationInput.floatValue) }
-
+        var elevationInput by remember { mutableFloatStateOf(mapViewModel.elevationInput) }
         AlertDialog(
             onDismissRequest = { },
-            title = { Text("Enter an elevation offset") },
+            title = { Text("Elevation offset") },
             text = {
                 Column {
+                    Text("Enter a pipe elevation offset in meters between -10 and 10.")
                     Slider(
                         value = elevationInput,
                         onValueChange = { elevationInput = it },
