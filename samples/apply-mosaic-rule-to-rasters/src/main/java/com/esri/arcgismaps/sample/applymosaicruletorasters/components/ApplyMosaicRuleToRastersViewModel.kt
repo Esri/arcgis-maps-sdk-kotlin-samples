@@ -33,8 +33,6 @@ import com.arcgismaps.raster.MosaicOperation
 import com.arcgismaps.raster.MosaicRule
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -57,8 +55,8 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
     val mosaicRuleTypes = MosaicRuleType.entries
 
     // The currently selected mosaic rule type.
-    private val _selectedRuleType = MutableStateFlow(MosaicRuleType.ObjectID)
-    val selectedRuleType = _selectedRuleType.asStateFlow()
+    private var _selectedRuleType by mutableStateOf(MosaicRuleType.ObjectID)
+    val selectedRuleType get() = _selectedRuleType
 
     // Loading state for the UI, true while the raster layer is loading.
     var isLoading by mutableStateOf(true)
@@ -84,14 +82,14 @@ class ApplyMosaicRuleToRastersViewModel(app: Application) : AndroidViewModel(app
         arcGISMap.operationalLayers.add(rasterLayer)
         // Set the initial mosaic rule (ObjectID/None).
         imageServiceRaster.mosaicRule = createMosaicRule(MosaicRuleType.ObjectID)
-        updateMosaicRule(_selectedRuleType.value)
+        updateMosaicRule(_selectedRuleType)
     }
 
     /**
      * Updates the mosaic rule on the raster layer to the selected [type].
      */
     fun updateMosaicRule(type: MosaicRuleType) {
-        _selectedRuleType.value = type
+        _selectedRuleType = type
         isLoading = true
         // Set the new mosaic rule on the image service raster.
         imageServiceRaster.mosaicRule = createMosaicRule(type)
