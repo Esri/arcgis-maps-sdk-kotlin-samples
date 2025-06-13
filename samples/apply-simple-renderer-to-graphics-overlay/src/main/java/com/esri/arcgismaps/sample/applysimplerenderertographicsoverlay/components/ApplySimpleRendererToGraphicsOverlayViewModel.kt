@@ -38,8 +38,8 @@ import kotlinx.coroutines.launch
 class ApplySimpleRendererToGraphicsOverlayViewModel(app: Application) : AndroidViewModel(app) {
     // ArcGISMap centered on Yellowstone National Park
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-            initialViewpoint = Viewpoint(latitude = 44.462, longitude = -110.829, scale = 1e4)
-        }
+        initialViewpoint = Viewpoint(latitude = 44.462, longitude = -110.829, scale = 1e4)
+    }
 
     // GraphicsOverlay with a simple renderer (red cross marker)
     val graphicsOverlay = GraphicsOverlay().apply {
