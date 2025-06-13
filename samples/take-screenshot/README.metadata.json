@@ -1,0 +1,31 @@
+{
+    "category": "Maps",
+    "description": "Take a screenshot of the map.",
+    "formal_name": "TakeScreenshot",
+    "ignore": false,
+    "images": [
+        "take-screenshot.png"
+    ],
+    "keywords": [
+        "capture",
+        "export",
+        "image",
+        "print",
+        "screen capture",
+        "screenshot",
+        "share",
+        "shot",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/takescreenshot/components/TakeScreenshotViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/takescreenshot/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/takescreenshot/screens/TakeScreenshotScreen.kt"
+    ],
+    "title": "Take screenshot"
+}
