@@ -1,0 +1,28 @@
+{
+    "category": "Visualization",
+    "description": "Change the appearance of a feature layer with a renderer.",
+    "formal_name": "ApplySimpleRendererToFeatureLayer",
+    "ignore": false,
+    "images": [
+        "apply-simple-renderer-to-feature-layer.png"
+    ],
+    "keywords": [
+        "feature layer",
+        "renderer",
+        "visualization",
+        "FeatureLayer",
+        "SimpleRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "SimpleRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertofeaturelayer/components/ApplySimpleRendererToFeatureLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertofeaturelayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertofeaturelayer/screens/ApplySimpleRendererToFeatureLayerScreen.kt"
+    ],
+    "title": "Apply simple renderer to feature layer"
+}
