@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "BrowseOGCAPIFeatureService",
+    "ignore": false,
+    "images": [
+        "browse-ogc-api-feature-service.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/components/BrowseOGCAPIFeatureServiceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/screens/BrowseOGCAPIFeatureServiceScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/MainActivity.kt"
+    ],
+    "title": "Browse OGC API feature service"
+}
