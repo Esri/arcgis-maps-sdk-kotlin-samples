@@ -37,14 +37,12 @@ import kotlinx.coroutines.launch
 
 class ApplySimpleRendererToGraphicsOverlayViewModel(app: Application) : AndroidViewModel(app) {
     // ArcGISMap centered on Yellowstone National Park
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISImagery).apply {
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
             initialViewpoint = Viewpoint(latitude = 44.462, longitude = -110.829, scale = 1e4)
         }
-    )
 
     // GraphicsOverlay with a simple renderer (red cross marker)
-    val graphicsOverlay by mutableStateOf(GraphicsOverlay().apply {
+    val graphicsOverlay = GraphicsOverlay().apply {
         // Create points for geysers in Yellowstone
         val oldFaithful = Point(-110.828140, 44.460458, SpatialReference.wgs84())
         val cascadeGeyser = Point(-110.829004, 44.462438, SpatialReference.wgs84())
@@ -65,7 +63,7 @@ class ApplySimpleRendererToGraphicsOverlayViewModel(app: Application) : AndroidV
                 size = 12f
             )
         )
-    })
+    }
 
     // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()
