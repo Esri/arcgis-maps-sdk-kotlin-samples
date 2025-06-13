@@ -51,16 +51,6 @@ class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewMode
         )
     }
 
-    // GraphicsOverlay with heading and pitch expressions
-    val graphicsOverlay: GraphicsOverlay = GraphicsOverlay().apply {
-        sceneProperties.surfacePlacement = SurfacePlacement.Relative
-        // Set up renderer with heading and pitch expressions
-        renderer = SimpleRenderer().apply {
-            sceneProperties.headingExpression = "[HEADING]"
-            sceneProperties.pitchExpression = "[PITCH]"
-        }
-    }
-
     // UI state for heading and pitch sliders
     var heading by mutableDoubleStateOf(180.0)
         private set
@@ -82,13 +72,21 @@ class ApplyScenePropertyExpressionsViewModel(app: Application) : AndroidViewMode
             symbol = coneSymbol
         )
 
+    // GraphicsOverlay with heading and pitch expressions
+    val graphicsOverlay: GraphicsOverlay = GraphicsOverlay().apply {
+        sceneProperties.surfacePlacement = SurfacePlacement.Relative
+        // Set up renderer with heading and pitch expressions
+        renderer = SimpleRenderer().apply {
+            sceneProperties.headingExpression = "[HEADING]"
+            sceneProperties.pitchExpression = "[PITCH]"
+        }
+        graphics.add(coneGraphic)
+    }
+
     // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // Set initial heading and pitch attributes
-        graphicsOverlay.graphics.add(coneGraphic)
-
         // Load the scene and handle errors
         viewModelScope.launch {
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }

@@ -20,7 +20,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +33,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -89,7 +87,6 @@ fun ApplyScenePropertyExpressionsScreen(sampleName: String) {
                             pitch = sceneViewModel.pitch,
                             onHeadingChanged = sceneViewModel::updateHeading,
                             onPitchChanged = sceneViewModel::updatePitch,
-                            onDone = { isSheetOpen = false }
                         )
                     }
                 }
@@ -126,7 +123,6 @@ fun ScenePropertyExpressionsSettings(
     pitch: Double,
     onHeadingChanged: (Double) -> Unit,
     onPitchChanged: (Double) -> Unit,
-    onDone: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -151,13 +147,6 @@ fun ScenePropertyExpressionsSettings(
             onValueChange = { onPitchChanged(it.toDouble()) },
             valueRange = 0f..180f,
         )
-        Spacer(Modifier.size(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            OutlinedButton(onClick = onDone) { Text("Done") }
-        }
     }
 }
 
@@ -171,7 +160,6 @@ fun PreviewScenePropertyExpressionsSettings() {
             pitch = 45.0,
             onHeadingChanged = {},
             onPitchChanged = {},
-            onDone = {}
         )
     }
 }
