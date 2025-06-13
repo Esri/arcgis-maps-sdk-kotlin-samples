@@ -26,6 +26,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -48,18 +49,18 @@ fun ApplyClassBreaksRendererToSublayerScreen(sampleName: String) {
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             Column(
-                modifier = androidx.compose.ui.Modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
             ) {
                 MapView(
-                    modifier = androidx.compose.ui.Modifier
+                    modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap
                 )
                 Row(
-                    modifier = androidx.compose.ui.Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.Center
@@ -69,7 +70,11 @@ fun ApplyClassBreaksRendererToSublayerScreen(sampleName: String) {
                         enabled = isSublayerReady
                     ) {
                         Text(
-                            if (classBreaksRendererIsApplied) "Reset sublayer renderer" else "Change sublayer renderer"
+                            if (classBreaksRendererIsApplied) {
+                                "Reset sublayer renderer"
+                            } else {
+                                "Change sublayer renderer"
+                            }
                         )
                     }
                 }

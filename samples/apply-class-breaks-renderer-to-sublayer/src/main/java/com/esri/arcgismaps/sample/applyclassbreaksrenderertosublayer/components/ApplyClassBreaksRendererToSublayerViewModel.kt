@@ -66,7 +66,10 @@ class ApplyClassBreaksRendererToSublayerViewModel(app: Application) : AndroidVie
     // The original renderer of the counties sublayer
     private var originalRenderer: Renderer? = null
 
-    private var classBreaksRenderer = createPopulationClassBreaksRenderer()
+    private var classBreaksRenderer = ClassBreaksRenderer(
+        fieldName = "POP2007",
+        classBreaks = classBreaks
+    )
 
     // Whether the class breaks renderer is currently applied
     var classBreaksRendererIsApplied by mutableStateOf(false)
@@ -111,16 +114,6 @@ class ApplyClassBreaksRendererToSublayerViewModel(app: Application) : AndroidVie
         } else {
             originalRenderer
         }
-    }
-
-    /**
-     * Create a class breaks renderer for population ranges.
-     */
-    private fun createPopulationClassBreaksRenderer(): ClassBreaksRenderer {
-        return ClassBreaksRenderer(
-            fieldName = "POP2007",
-            classBreaks = classBreaks
-        )
     }
 
     /**
