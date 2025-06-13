@@ -74,9 +74,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 private const val KEY_PREF_ACCEPTED_PRIVACY_INFO = "ACCEPTED_PRIVACY_INFO"
 
 @Composable
-fun AugmentedRealityScreen(
-    sampleName: String
-) {
+fun AugmentedRealityScreen(sampleName: String) {
     val augmentedRealityViewModel: AugmentedRealityViewModel = viewModel()
 
     var displayCalibrationView by remember { mutableStateOf(false) }
@@ -98,176 +96,107 @@ fun AugmentedRealityScreen(
     }
     var showPrivacyInfo by rememberSaveable { mutableStateOf(!acceptedPrivacyInfo) }
 
-    Scaffold(topBar = {
-        SampleTopAppBar(title = sampleName, actions = {
-            var actionsExpanded by remember { mutableStateOf(false) }
-            IconButton(onClick = { actionsExpanded = !actionsExpanded }) {
-                Icon(Icons.Default.MoreVert, "More")
-            }
-            DropdownMenu(
-                expanded = actionsExpanded, onDismissRequest = { actionsExpanded = false }) {
-                DropdownMenuItem(text = { Text("World tracking") }, onClick = {
-                    trackingMode = WorldScaleTrackingMode.World()
-                    actionsExpanded = false
-                })
-                DropdownMenuItem(text = { Text("Geospatial tracking") }, onClick = {
-                    trackingMode = WorldScaleTrackingMode.Geospatial()
-                    actionsExpanded = false
-                })
-            }
-        })
-    }, content = {
-        if (showPrivacyInfo) {
-            PrivacyInfoDialog(
-                hasCurrentlyAccepted = acceptedPrivacyInfo,
-                onUserResponse = { accepted ->
-                    acceptedPrivacyInfo = accepted
-                    sharedPreferences.edit { putBoolean(KEY_PREF_ACCEPTED_PRIVACY_INFO, accepted) }
-                    showPrivacyInfo = false
-                }
-            )
-        }
-        if (!acceptedPrivacyInfo) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "Privacy Info not accepted")
-                Button(onClick = { showPrivacyInfo = true }) {
-                    Text(text = "Show Privacy Info")
-                }
-            }
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                WorldScaleSceneView(
-                    modifier = Modifier.fillMaxSize(),
-                    arcGISScene = augmentedRealityViewModel.arcGISScene,
-                    graphicsOverlays = listOf(
-                        augmentedRealityViewModel.pipeGraphicsOverlay,
-                        augmentedRealityViewModel.pipeShadowGraphicsOverlay,
-                        augmentedRealityViewModel.leaderGraphicsOverlay
-                    ),
-                    worldScaleTrackingMode = trackingMode,
-                    onInitializationStatusChanged = { status ->
-                        initializationStatus = status
-                    }) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        if (trackingMode is WorldScaleTrackingMode.World) {
-                            if (displayCalibrationView) {
-                                CalibrationView(
-                                    onDismiss = { displayCalibrationView = false },
-                                    modifier = Modifier.align(Alignment.BottomCenter),
-                                )
-                            }
-                        }
-                    }
-                }
-
-                when (val status = initializationStatus) {
-                    is WorldScaleSceneViewStatus.Initializing -> {
-                        TextWithScrim(
-                            if (trackingMode is WorldScaleTrackingMode.Geospatial) {
-                                "Initializing AR in geospatial mode..."
-                            } else {
-                                "Initializing AR in world mode..."
-                            }
-                        )
-                    }
-
-                    is WorldScaleSceneViewStatus.Initialized -> {
-                        val sceneLoadStatus =
-                            augmentedRealityViewModel.arcGISScene.loadStatus.collectAsStateWithLifecycle().value
-                        when (sceneLoadStatus) {
-                            is LoadStatus.Loading, LoadStatus.NotLoaded -> {
-                                // The scene may take a while to load, so show a progress indicator
-                                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                            }
-
-                            is LoadStatus.FailedToLoad -> {
-                                TextWithScrim("Failed to load world scale AR scene: " + sceneLoadStatus.error)
-                            }
-
-                            else -> {}
-                        }
-                    }
-
-                    is WorldScaleSceneViewStatus.FailedToInitialize -> {
-                        TextWithScrim(
-                            text = "World scale AR failed to initialize: " + (status.error.message ?: status.error)
-                        )
-                    }
-                }
-            }
-        }
-    }, floatingActionButton = {
-        if (!displayCalibrationView) {
-            Column {
-                FloatingActionButton(modifier = Modifier.padding(bottom = 18.dp), onClick = { showDropdownMenu = !showDropdownMenu }) {
-                    Icon(Icons.Default.Settings, contentDescription = "Toggle visibility of shadows and leaders")
+    Scaffold(
+        topBar = {
+            SampleTopAppBar(title = sampleName, actions = {
+                var actionsExpanded by remember { mutableStateOf(false) }
+                IconButton(onClick = { actionsExpanded = !actionsExpanded }) {
+                    Icon(Icons.Default.MoreVert, "More")
                 }
                 DropdownMenu(
-                    expanded = showDropdownMenu,
-                    onDismissRequest = { showDropdownMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Shadows") },
-                        leadingIcon = {
-                            if (isPipeShadowVisible) {
-                                Icon(
-                                    Icons.Default.Done,
-                                    contentDescription = "Visible"
-                                )
-                            }
-                        },
-                        onClick = {
-                            isPipeShadowVisible = !isPipeShadowVisible
-                            augmentedRealityViewModel.pipeShadowGraphicsOverlay.isVisible = isPipeShadowVisible
-                            showDropdownMenu = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Leaders") },
-                        leadingIcon = {
-                            if (isLeaderVisible) {
-                                Icon(
-                                    Icons.Default.Done,
-                                    contentDescription = "Visible"
-                                )
-                            }
-                        },
-                        onClick = {
-                            isLeaderVisible = !isLeaderVisible
-                            augmentedRealityViewModel.leaderGraphicsOverlay.isVisible = isLeaderVisible
-                            showDropdownMenu = false
-                        }
-                    )
+                    expanded = actionsExpanded, onDismissRequest = { actionsExpanded = false }) {
+                    DropdownMenuItem(text = { Text("World tracking") }, onClick = {
+                        trackingMode = WorldScaleTrackingMode.World()
+                        actionsExpanded = false
+                    })
+                    DropdownMenuItem(text = { Text("Geospatial tracking") }, onClick = {
+                        trackingMode = WorldScaleTrackingMode.Geospatial()
+                        actionsExpanded = false
+                    })
                 }
-                if (trackingMode is WorldScaleTrackingMode.World) {
-
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(bottom = 16.dp),
-                        onClick = { displayCalibrationView = true }) {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_straighten_24), "Show calibration view"
-                        )
+            })
+        },
+        content = {
+            if (showPrivacyInfo) {
+                PrivacyInfoDialog(
+                    hasCurrentlyAccepted = acceptedPrivacyInfo,
+                    onUserResponse = { accepted ->
+                        acceptedPrivacyInfo = accepted
+                        sharedPreferences.edit { putBoolean(KEY_PREF_ACCEPTED_PRIVACY_INFO, accepted) }
+                        showPrivacyInfo = false
+                    }
+                )
+            } else if (!acceptedPrivacyInfo) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Privacy Info not accepted")
+                    Button(onClick = { showPrivacyInfo = true }) {
+                        Text(text = "Show Privacy Info")
                     }
                 }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
+                ) {
+                    WorldScaleSceneView(
+                        modifier = Modifier.fillMaxSize(),
+                        arcGISScene = augmentedRealityViewModel.arcGISScene,
+                        graphicsOverlays = listOf(
+                            augmentedRealityViewModel.pipeGraphicsOverlay,
+                            augmentedRealityViewModel.pipeShadowGraphicsOverlay,
+                            augmentedRealityViewModel.leaderGraphicsOverlay
+                        ),
+                        worldScaleTrackingMode = trackingMode,
+                        onInitializationStatusChanged = { status ->
+                            initializationStatus = status
+                        }) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            if (trackingMode is WorldScaleTrackingMode.World) {
+                                if (displayCalibrationView) {
+                                    CalibrationView(
+                                        onDismiss = { displayCalibrationView = false },
+                                        modifier = Modifier.align(Alignment.BottomCenter),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    WorldScaleSceneViewStatusHandler(
+                        initializationStatus = initializationStatus,
+                        trackingMode = trackingMode,
+                        arcGISSceneLoadStatus = augmentedRealityViewModel.arcGISScene.loadStatus.collectAsStateWithLifecycle().value
+                    )
+                }
+            }
+        },
+        floatingActionButton = {
+            if (!displayCalibrationView) {
+                FloatingActionButtonOptions(
+                    showDropdownMenu = showDropdownMenu,
+                    isPipeShadowVisible = isPipeShadowVisible,
+                    isLeaderVisible = isLeaderVisible,
+                    trackingMode = trackingMode,
+                    onToggleDropdownMenu = { showDropdownMenu = !showDropdownMenu },
+                    onTogglePipeShadowVisibility = {
+                        isPipeShadowVisible = !isPipeShadowVisible
+                        augmentedRealityViewModel.pipeShadowGraphicsOverlay.isVisible = isPipeShadowVisible
+                    },
+                    onToggleLeaderVisibility = {
+                        isLeaderVisible = !isLeaderVisible
+                        augmentedRealityViewModel.leaderGraphicsOverlay.isVisible = isLeaderVisible
+                    },
+                    onShowCalibrationView = { displayCalibrationView = true }
+                )
             }
         }
-    })
+    )
 }
 
-/**
- * An alert dialog that asks the user to accept or deny
- * [ARCore's privacy requirements](https://developers.google.com/ar/develop/privacy-requirements).
- */
 @Composable
 private fun PrivacyInfoDialog(
     hasCurrentlyAccepted: Boolean,
@@ -299,6 +228,108 @@ private fun PrivacyInfoDialog(
                         Text(text = "Accept")
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WorldScaleSceneViewStatusHandler(
+    initializationStatus: WorldScaleSceneViewStatus,
+    trackingMode: WorldScaleTrackingMode,
+    arcGISSceneLoadStatus: LoadStatus
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (initializationStatus) {
+            is WorldScaleSceneViewStatus.Initializing -> {
+                TextWithScrim(
+                    if (trackingMode is WorldScaleTrackingMode.Geospatial) {
+                        "Initializing AR in geospatial mode..."
+                    } else {
+                        "Initializing AR in world mode..."
+                    }
+                )
+            }
+
+            is WorldScaleSceneViewStatus.Initialized -> {
+                when (arcGISSceneLoadStatus) {
+                    is LoadStatus.Loading, LoadStatus.NotLoaded -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+
+                    is LoadStatus.FailedToLoad -> {
+                        TextWithScrim("Failed to load world scale AR scene: " + arcGISSceneLoadStatus.error)
+                    }
+
+                    else -> {}
+                }
+            }
+
+            is WorldScaleSceneViewStatus.FailedToInitialize -> {
+                TextWithScrim(
+                    text = "World scale AR failed to initialize: " + (initializationStatus.error.message
+                        ?: initializationStatus.error)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FloatingActionButtonOptions(
+    showDropdownMenu: Boolean,
+    isPipeShadowVisible: Boolean,
+    isLeaderVisible: Boolean,
+    trackingMode: WorldScaleTrackingMode,
+    onToggleDropdownMenu: () -> Unit,
+    onTogglePipeShadowVisibility: () -> Unit,
+    onToggleLeaderVisibility: () -> Unit,
+    onShowCalibrationView: () -> Unit
+) {
+    Column {
+        FloatingActionButton(
+            modifier = Modifier.padding(bottom = 18.dp),
+            onClick = onToggleDropdownMenu
+        ) {
+            Icon(Icons.Default.Settings, contentDescription = "Toggle visibility of shadows and leaders")
+        }
+        DropdownMenu(
+            expanded = showDropdownMenu,
+            onDismissRequest = onToggleDropdownMenu
+        ) {
+            DropdownMenuItem(
+                text = { Text("Shadows") },
+                leadingIcon = {
+                    if (isPipeShadowVisible) {
+                        Icon(Icons.Default.Done, contentDescription = "Visible")
+                    }
+                },
+                onClick = onTogglePipeShadowVisibility
+            )
+            DropdownMenuItem(
+                text = { Text("Leaders") },
+                leadingIcon = {
+                    if (isLeaderVisible) {
+                        Icon(Icons.Default.Done, contentDescription = "Visible")
+                    }
+                },
+                onClick = onToggleLeaderVisibility
+            )
+        }
+        if (trackingMode is WorldScaleTrackingMode.World) {
+            FloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(bottom = 16.dp),
+                onClick = onShowCalibrationView
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_straighten_24),
+                    contentDescription = "Show calibration view"
+                )
             }
         }
     }
