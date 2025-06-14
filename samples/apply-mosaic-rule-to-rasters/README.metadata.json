@@ -1,0 +1,35 @@
+{
+    "category": "Layers",
+    "description": "Apply mosaic rules to a mosaic dataset of rasters.",
+    "formal_name": "ApplyMosaicRuleToRasters",
+    "ignore": false,
+    "images": [
+        "apply-mosaic-rule-to-rasters.png"
+    ],
+    "keywords": [
+        "image service",
+        "mosaic method",
+        "mosaic rule",
+        "raster",
+        "ImageServiceRaster",
+        "MosaicMethod",
+        "MosaicOperation",
+        "MosaicRule",
+        "RasterLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ImageServiceRaster",
+        "MosaicMethod",
+        "MosaicOperation",
+        "MosaicRule",
+        "RasterLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applymosaicruletorasters/components/ApplyMosaicRuleToRastersViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applymosaicruletorasters/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applymosaicruletorasters/screens/ApplyMosaicRuleToRastersScreen.kt"
+    ],
+    "title": "Apply mosaic rule to rasters"
+}
