@@ -91,37 +91,38 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
         // For each pipe in the shared repository
         SharedRepository.pipeInfoList.forEach {
             viewModelScope.launch {
-                // Add Z values to the polyline using the base surface elevation
-                val polylineWithZ = densifyAndAddZValues(it)
+                // Densify the polyline to ensure it has enough points for elevation sampling
+                val densifiedPolyline = GeometryEngine.densifyGeodeticOrNull(
+                    geometry = it.polyline,
+                    maxSegmentLength = 1.0,
+                    lengthUnit = LinearUnit.meters,
+                    curveType = GeodeticCurveType.Geodesic
+                ) as Polyline
+                // Add Z values to the polyline using the base surface elevation and elevation offset
+                val densifiedPolylineWithZ = addZValues(densifiedPolyline, it.elevationOffset)
                 // Add the 3D pipe to the pipe graphics overlay
-                pipeGraphicsOverlay.graphics.add(Graphic(polylineWithZ, pipeSymbol))
+                pipeGraphicsOverlay.graphics.add(Graphic(densifiedPolylineWithZ, pipeSymbol))
                 // Only add the shadow if the pipe is underground
                 if (it.elevationOffset < 0) {
                     // Add the 2D pipe shadow to the shadow graphics overlay
                     pipeShadowGraphicsOverlay.graphics.add(Graphic(it.polyline, pipeShadowSymbol))
-
+                    // Get the original polyline with Z values
+                    val originalPolylineWithZ = addZValues(it.polyline, it.elevationOffset)
                     // Add leader lines connecting pipe vertices to shadow vertices
-                    addLeaderLines(polylineWithZ, it.elevationOffset)
+                    addLeaderLines(originalPolylineWithZ, it.elevationOffset)
                 }
             }
         }
     }
 
     /**
-     * Adds Z values to the geometry by getting the elevation from the base surface.
+     * Adds Z values to the polyline by getting the elevation from the base surface.
      */
-    private suspend fun densifyAndAddZValues(pipeInfo: PipeInfo): Polyline {
-        // Densify the polyline to ensure it has enough points for elevation sampling
-        val densifiedPolyline = GeometryEngine.densifyGeodeticOrNull(
-            geometry = pipeInfo.polyline,
-            maxSegmentLength = 1.0,
-            lengthUnit = LinearUnit.meters,
-            curveType = GeodeticCurveType.Geodesic
-        ) as Polyline
+    private suspend fun addZValues(polyline: Polyline, elevationOffset: Float): Polyline {
         // Create a new polyline builder to construct the polyline with Z values
         val polylineBuilder = PolylineBuilder(SpatialReference(3857))
         // For each point in each part of the densified polyline
-        densifiedPolyline.parts.forEach { part ->
+        polyline.parts.forEach { part ->
             part.points.forEach { point ->
                 arcGISScene.baseSurface.elevationSources.first().load().onSuccess {
                     arcGISScene.baseSurface.getElevation(point).let { elevationResult ->
@@ -131,7 +132,7 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
                             polylineBuilder.addPoint(
                                 GeometryEngine.createWithZ(
                                     point,
-                                    elevation + pipeInfo.elevationOffset
+                                    elevation + elevationOffset
                                 )
                             )
                         }
