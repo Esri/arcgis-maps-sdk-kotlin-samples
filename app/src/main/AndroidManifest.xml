@@ -26,8 +26,10 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
+        <!-- Insert your Google API key in order to use Geospatial tracking. -->
+        <meta-data
+            android:name="com.google.android.ar.API_KEY"
+            android:value="${GOOGLE_API_KEY}"/>
     </application>
-
 </manifest>
