@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Envelope
+import com.arcgismaps.geometry.SpatialReferenceBuilder
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.symbology.SimpleLineSymbol
@@ -39,6 +40,7 @@ import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.generateofflinemap.R
+import com.esri.arcgismaps.sample.sampleslib.components.CustomSrUtils.Companion.createCustomPrecisionGeometry
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -149,9 +151,11 @@ class MapViewModel(private val application: Application) : AndroidViewModel(appl
             title = "Could not get geometry of the downloadArea"
         )
 
+
         // Set the offline map parameters
         val generateOfflineMapParameters = GenerateOfflineMapParameters(
-            areaOfInterest = geometry,
+            //areaOfInterest = geometry,
+            areaOfInterest = createCustomPrecisionGeometry(geometry),
             minScale = minScale,
             maxScale = maxScale
         ).apply {
