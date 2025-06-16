@@ -1,0 +1,43 @@
+{
+    "category": "Visualization",
+    "description": "Update the orientation of a graphic using expressions based on its attributes.",
+    "formal_name": "ApplyScenePropertyExpressions",
+    "ignore": false,
+    "images": [
+        "apply-scene-property-expressions.png"
+    ],
+    "keywords": [
+        "3D",
+        "expression",
+        "graphics",
+        "heading",
+        "pitch",
+        "rotation",
+        "scene",
+        "symbology",
+        "Graphic.Attributes",
+        "GraphicsOverlay",
+        "SceneProperties",
+        "SceneProperties.headingExpression",
+        "SceneProperties.pitchExpression",
+        "SimpleRenderer",
+        "SimpleRenderer.SceneProperties"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Graphic.Attributes",
+        "GraphicsOverlay",
+        "SceneProperties",
+        "SceneProperties.headingExpression",
+        "SceneProperties.pitchExpression",
+        "SimpleRenderer",
+        "SimpleRenderer.SceneProperties"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyscenepropertyexpressions/components/ApplyScenePropertyExpressionsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyscenepropertyexpressions/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyscenepropertyexpressions/screens/ApplyScenePropertyExpressionsScreen.kt"
+    ],
+    "title": "Apply scene property expressions"
+}
