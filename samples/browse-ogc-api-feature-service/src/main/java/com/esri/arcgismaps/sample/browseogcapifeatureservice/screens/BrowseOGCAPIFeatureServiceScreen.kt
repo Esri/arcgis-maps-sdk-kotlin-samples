@@ -54,7 +54,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 @Composable
 fun BrowseOgcApiFeatureServiceScreen(sampleName: String) {
+
     val mapViewModel: BrowseOgcApiFeatureServiceViewModel = viewModel()
+
     val featureCollectionTitles by mapViewModel.featureCollectionTitles.collectAsStateWithLifecycle()
     val selectedTitle = mapViewModel.selectedTitle
     val isUrlDialogVisible = mapViewModel.isUrlDialogVisible
@@ -124,7 +126,10 @@ private fun LayerPickerBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = onOpenUrlDialog) {
+            Button(
+                modifier = Modifier.padding(end = 8.dp),
+                onClick = onOpenUrlDialog
+            ) {
                 Text("Load Service")
             }
             if (featureCollectionTitles.isNotEmpty()) {

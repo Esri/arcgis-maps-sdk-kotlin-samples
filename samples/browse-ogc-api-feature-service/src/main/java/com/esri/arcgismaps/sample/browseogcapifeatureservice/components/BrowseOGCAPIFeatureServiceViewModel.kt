@@ -26,7 +26,6 @@ import com.arcgismaps.Color
 import com.arcgismaps.data.FeatureRequestMode
 import com.arcgismaps.data.OgcFeatureCollectionTable
 import com.arcgismaps.data.QueryParameters
-import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
@@ -51,15 +50,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class BrowseOgcApiFeatureServiceViewModel(app: Application) : AndroidViewModel(app) {
-    // The ArcGISMap displayed in the MapView
+
+    val mapViewProxy = MapViewProxy()
+
+    // Message dialog for error handling
+    val messageDialogVM = MessageDialogViewModel()
+
     var arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
             initialViewpoint = Viewpoint(
                 center = Point(x = 36.10, y = 32.62, spatialReference = SpatialReference.wgs84()),
                 scale = 200000.0
             )
         }
-
-    val mapViewProxy = MapViewProxy()
 
     // The current OGC API feature service URL
     var ogcServiceUrl by mutableStateOf("https://demo.ldproxy.net/daraa")
@@ -83,13 +85,6 @@ class BrowseOgcApiFeatureServiceViewModel(app: Application) : AndroidViewModel(a
     // The text input for the OGC API URL dialog
     var urlInputText by mutableStateOf("https://demo.ldproxy.net/daraa")
         private set
-
-    // The extent of the selected feature collection (for zooming)
-    var selectedExtent: Envelope? = null
-        private set
-
-    // Message dialog for error handling
-    val messageDialogVM = MessageDialogViewModel()
 
     // The OGC API feature service instance
     private var ogcFeatureService: OgcFeatureService? = null
@@ -135,18 +130,16 @@ class BrowseOgcApiFeatureServiceViewModel(app: Application) : AndroidViewModel(a
             // Remove all operational layers
             arcGISMap.operationalLayers.clear()
             // Create the OGC feature collection table
-            val ogcTable = OgcFeatureCollectionTable(info)
-            ogcTable.featureRequestMode = FeatureRequestMode.ManualCache
+            val ogcFeatureCollectionTable = OgcFeatureCollectionTable(info)
+            ogcFeatureCollectionTable.featureRequestMode = FeatureRequestMode.ManualCache
             // Populate the table with up to 1000 features
             val queryParams = QueryParameters().apply { maxFeatures = 1000 }
-            ogcTable.populateFromService(queryParams, clearCache = false).onSuccess {
+            ogcFeatureCollectionTable.populateFromService(queryParams, clearCache = false).onSuccess {
                 // Create the feature layer
-                val featureLayer = FeatureLayer.createWithFeatureTable(ogcTable)
+                val featureLayer = FeatureLayer.createWithFeatureTable(ogcFeatureCollectionTable)
                 // Set a renderer based on geometry type
-                featureLayer.renderer = createRendererForGeometryType(ogcTable.geometryType)
+                featureLayer.renderer = createRendererForGeometryType(ogcFeatureCollectionTable.geometryType)
                 arcGISMap.operationalLayers.add(featureLayer)
-                // Zoom to the extent if available
-                selectedExtent = info.extent
                 info.extent?.let { envelope ->
                     mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = envelope))
                 }

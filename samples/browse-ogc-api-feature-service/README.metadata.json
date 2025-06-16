@@ -1,19 +1,37 @@
 {
     "category": "Layers",
-    "description": "TODO",
-    "formal_name": "BrowseOGCAPIFeatureService",
+    "description": "Browse an OGC API feature service for layers and add them to the map.",
+    "formal_name": "BrowseOgcApiFeatureService",
     "ignore": false,
     "images": [
         "browse-ogc-api-feature-service.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "OGC",
+        "OGC API",
+        "browse",
+        "catalog",
+        "feature",
+        "layers",
+        "service",
+        "web",
+        "OgcFeatureCollectionInfo",
+        "OgcFeatureCollectionTable",
+        "OgcFeatureService",
+        "OgcFeatureServiceInfo"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "OgcFeatureCollectionInfo",
+        "OgcFeatureCollectionTable",
+        "OgcFeatureService",
+        "OgcFeatureServiceInfo"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/components/BrowseOGCAPIFeatureServiceViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/screens/BrowseOGCAPIFeatureServiceScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/browseogcapifeatureservice/screens/BrowseOGCAPIFeatureServiceScreen.kt"
     ],
     "title": "Browse OGC API feature service"
 }
