@@ -24,7 +24,7 @@ Adjust the heading and pitch sliders to rotate the cone.
 
 ## Relevant API
 
-* Graphic
+* Graphic.Attributes
 * GraphicsOverlay
 * SceneProperties
 * SceneProperties.headingExpression
