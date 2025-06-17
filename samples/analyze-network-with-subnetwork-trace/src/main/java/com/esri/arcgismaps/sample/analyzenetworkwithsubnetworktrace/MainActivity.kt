@@ -36,6 +36,7 @@ import com.arcgismaps.Guid
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.data.CodedValueDomain
+import com.arcgismaps.data.ServiceGeodatabase
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
 import com.arcgismaps.httpcore.authentication.TokenCredential
@@ -112,7 +113,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val utilityNetwork by lazy {
-        UtilityNetwork(getString(R.string.utility_network_url))
+        UtilityNetwork(ServiceGeodatabase(getString(R.string.utility_network_url)))
     }
 
     private var initialExpression: UtilityTraceConditionalExpression? = null
