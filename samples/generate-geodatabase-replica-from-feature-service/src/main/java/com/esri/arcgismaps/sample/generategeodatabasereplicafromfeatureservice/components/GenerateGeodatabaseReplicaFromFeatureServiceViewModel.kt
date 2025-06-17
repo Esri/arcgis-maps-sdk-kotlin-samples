@@ -35,6 +35,7 @@ import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.tasks.geodatabase.GenerateGeodatabaseJob
 import com.arcgismaps.tasks.geodatabase.GeodatabaseSyncTask
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.CustomSrUtils.Companion.createCustomPrecisionGeometry
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -197,8 +198,12 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
 
         viewModelScope.launch(Dispatchers.Main) {
             // create GenerateGeodatabaseParameters for the selected extent
+            //val parameters =
+            //    geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(geometry).getOrElse {
             val parameters =
-                geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(geometry).getOrElse {
+                geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(
+                    createCustomPrecisionGeometry(downloadArea.geometry!!)
+                ).getOrElse {
                     messageDialogVM.showMessageDialog(
                         title = "Error creating geodatabase parameters",
                         description = it.message.toString()
@@ -209,6 +214,7 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
                     layerOptions.removeIf { layerOptions ->
                         layerOptions.layerId != 0L
                     }
+
                 }
 
             // we don't need attachments

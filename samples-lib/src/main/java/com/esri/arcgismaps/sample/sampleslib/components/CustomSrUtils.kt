@@ -76,7 +76,7 @@ class CustomSrUtils {
             return retVal
         }
 
-        private fun createCustomPrecisionSpatialReference(spatialReference: SpatialReference, customVertical: Boolean): SpatialReference {
+        public fun createCustomPrecisionSpatialReference(spatialReference: SpatialReference, customVertical: Boolean): SpatialReference {
             val srBuilder = SpatialReferenceBuilder(spatialReference.wkid, spatialReference.verticalWkid)
             srBuilder.resolution = srBuilder.resolution / 5
             srBuilder.tolerance = srBuilder.tolerance / 4
