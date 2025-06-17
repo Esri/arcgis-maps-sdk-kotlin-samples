@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
@@ -38,16 +39,30 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.esri.arcgismaps.sample.sampleslib.components.CustomSrUtils.Companion.createCustomPrecisionSpatialReference
 
 class ProjectGeometryViewModel(app: Application) : AndroidViewModel(app) {
     // create a map with a navigation night basemap style
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreetsNight).apply {
         // set the default viewpoint to Redlands,CA
+//        initialViewpoint = Viewpoint(
+//            latitude = 34.058,
+//            longitude = -117.195,
+//            scale = 5e4
+//        )
+
+        // custom precision on initial viewpoint
         initialViewpoint = Viewpoint(
-            latitude = 34.058,
-            longitude = -117.195,
-            scale = 5e4
-        )
+            boundingGeometry = Envelope(
+                xMin = -13135699.913606282,
+                yMin = 3763310.627144653,
+                xMax = -12690421.950433187,
+                yMax = 4300621.372044271,
+                spatialReference = createCustomPrecisionSpatialReference(SpatialReference.webMercator(), true)
+                //spatialReference = SpatialReference.wgs84()
+            ))
+        
+
     }
     // create a MapViewProxy to interact with the MapView
     val mapViewProxy = MapViewProxy()
@@ -99,6 +114,7 @@ class ProjectGeometryViewModel(app: Application) : AndroidViewModel(app) {
         event.mapPoint?.let { point ->
             // update the marker location to where the user tapped on the map
             markerGraphic.geometry = point
+            println("Input point SR: ${point.spatialReference?.tolerance} (${point.spatialReference?.resolution})")
             // set mapview to recenter to the tapped location
             viewModelScope.launch {
                 // set mapview to recenter to the tapped location
