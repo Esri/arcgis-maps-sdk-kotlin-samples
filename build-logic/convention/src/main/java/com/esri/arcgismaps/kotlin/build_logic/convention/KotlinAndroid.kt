@@ -19,6 +19,7 @@ internal fun Project.configureKotlinAndroid(
 
         defaultConfig {
             buildConfigField("String", "ACCESS_TOKEN", project.properties["ACCESS_TOKEN"].toString())
+            manifestPlaceholders["GOOGLE_API_KEY"] = project.properties["GOOGLE_API_KEY"].toString()
             minSdk = libs.findVersion("minSdk").get().toString().toInt()
         }
 
