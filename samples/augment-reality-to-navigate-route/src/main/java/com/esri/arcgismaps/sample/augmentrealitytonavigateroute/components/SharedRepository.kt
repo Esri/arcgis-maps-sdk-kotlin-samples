@@ -31,7 +31,15 @@ object SharedRepository {
     val route
         get() = _route
 
+    private var _hasNonDefaultAPIKey by mutableStateOf(false)
+    val hasNonDefaultAPIKey: Boolean
+        get() = _hasNonDefaultAPIKey
+
     fun updateRoute(route: RouteResult?) {
         _route = route
+    }
+
+    fun updateHasNonDefaultAPIKey(hasNonDefaultAPIKey: Boolean) {
+        _hasNonDefaultAPIKey = hasNonDefaultAPIKey
     }
 }

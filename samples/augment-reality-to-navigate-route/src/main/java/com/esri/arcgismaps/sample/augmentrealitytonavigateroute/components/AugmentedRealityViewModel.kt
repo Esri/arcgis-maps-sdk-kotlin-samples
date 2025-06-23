@@ -48,6 +48,8 @@ import com.arcgismaps.navigation.RouteTracker
 import com.arcgismaps.tasks.networkanalysis.DirectionManeuverType
 import com.arcgismaps.tasks.networkanalysis.Route
 import com.arcgismaps.tasks.networkanalysis.RouteResult
+import com.arcgismaps.toolkit.ar.WorldScaleSceneViewProxy
+import com.arcgismaps.toolkit.ar.WorldScaleVpsAvailability
 import com.esri.arcgismaps.sample.augmentrealitytonavigateroute.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,6 +60,10 @@ import kotlin.math.abs
 import kotlin.math.atan2
 
 class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
+
+    val worldScaleSceneViewProxy = WorldScaleSceneViewProxy()
+
+    var isVpsAvailable by mutableStateOf(false)
 
     // Path to the model file
     val provisionPath: String by lazy {
@@ -421,6 +427,17 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
                     symbol.depth = 2 * scaleFactor
                     delay(frameDelay)
                 }
+            }
+        }
+    }
+
+    /**
+     * Checks if the current viewpoint camera location is within the VPS availability area.
+     */
+    fun onCurrentViewpointCameraChanged(location: Point) {
+        viewModelScope.launch {
+            worldScaleSceneViewProxy.checkVpsAvailability(location.y, location.x).onSuccess {
+                isVpsAvailable = it == WorldScaleVpsAvailability.Available
             }
         }
     }

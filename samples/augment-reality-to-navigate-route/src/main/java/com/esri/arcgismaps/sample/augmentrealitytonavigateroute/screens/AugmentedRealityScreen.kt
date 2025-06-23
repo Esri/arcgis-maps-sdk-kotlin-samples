@@ -58,6 +58,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -77,6 +78,7 @@ import com.arcgismaps.toolkit.ar.WorldScaleTrackingMode
 import com.arcgismaps.toolkit.ar.rememberWorldScaleSceneViewStatus
 import com.esri.arcgismaps.sample.augmentrealitytonavigateroute.R
 import com.esri.arcgismaps.sample.augmentrealitytonavigateroute.components.AugmentedRealityViewModel
+import com.esri.arcgismaps.sample.augmentrealitytonavigateroute.components.SharedRepository
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 private const val KEY_PREF_ACCEPTED_PRIVACY_INFO = "ACCEPTED_PRIVACY_INFO"
@@ -94,7 +96,19 @@ fun AugmentedRealityScreen(
 
     var displayCalibrationView by remember { mutableStateOf(false) }
     var initializationStatus by rememberWorldScaleSceneViewStatus()
-    var trackingMode by remember { mutableStateOf<WorldScaleTrackingMode>(WorldScaleTrackingMode.Geospatial()) }
+
+    // Initialize the world scale tracking mode based on whether a google API key is provided
+    val initialWorldScaleTrackingMode = when {
+        SharedRepository.hasNonDefaultAPIKey -> {
+            WorldScaleTrackingMode.Geospatial()
+        }
+
+        else -> {
+            WorldScaleTrackingMode.World()
+        }
+    }
+
+    var trackingMode by remember { mutableStateOf(initialWorldScaleTrackingMode) }
 
     val sharedPreferences = LocalContext.current.getSharedPreferences("", Context.MODE_PRIVATE)
     var acceptedPrivacyInfo by rememberSaveable {
@@ -160,6 +174,12 @@ fun AugmentedRealityScreen(
                         augmentedRealityViewModel.routeAheadGraphicsOverlay,
                         augmentedRealityViewModel.routeBehindGraphicsOverlay
                     ),
+                    onCurrentViewpointCameraChanged = { camera ->
+                        if (camera.location.x != 0.0 && camera.location.y != 0.0) {
+                            augmentedRealityViewModel.onCurrentViewpointCameraChanged(camera.location)
+                        }
+                    },
+                    worldScaleSceneViewProxy = augmentedRealityViewModel.worldScaleSceneViewProxy,
                     worldScaleTrackingMode = trackingMode,
                     onInitializationStatusChanged = { status ->
                         initializationStatus = status
@@ -175,21 +195,41 @@ fun AugmentedRealityScreen(
                         }
                     }
                 }
-                if (augmentedRealityViewModel.nextDirectionText != "") {
-                    // Add directions text box at the top of the screen
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(8.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.8f))
-                            .padding(16.dp)
-                    ) {
+                Column {
+                    if (trackingMode is WorldScaleTrackingMode.Geospatial) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.Gray.copy(alpha = 0.5f))
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (augmentedRealityViewModel.isVpsAvailable) {
+                                    "VPS available"
+                                } else {
+                                    "VPS unavailable"
+                                },
+                                color = Color.White
+                            )
+                        }
+                    }
+                    if (augmentedRealityViewModel.nextDirectionText != "") {
+                        // Add directions text box at the top of the screen
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(8.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.8f))
+                                .padding(16.dp)
+                        ) {
 
-                        Text(
-                            text = augmentedRealityViewModel.nextDirectionText,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
+                            Text(
+                                text = augmentedRealityViewModel.nextDirectionText,
+                                color = androidx.compose.ui.graphics.Color.White
+                            )
+                        }
                     }
                 }
                 // Show bottom sheet with controls to change number of graphics drawn ahead
