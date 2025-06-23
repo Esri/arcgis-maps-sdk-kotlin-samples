@@ -84,13 +84,8 @@ fun AugmentedRealityScreen(sampleName: String) {
 
     // Initialize the world scale tracking mode based on whether a google API key is provided
     val initialWorldScaleTrackingMode = when {
-        SharedRepository.hasNonDefaultAPIKey -> {
-            WorldScaleTrackingMode.Geospatial()
-        }
-
-        else -> {
-            WorldScaleTrackingMode.World()
-        }
+        SharedRepository.hasNonDefaultAPIKey -> { WorldScaleTrackingMode.Geospatial() }
+        else -> { WorldScaleTrackingMode.World() }
     }
 
     var trackingMode by remember { mutableStateOf(initialWorldScaleTrackingMode) }
