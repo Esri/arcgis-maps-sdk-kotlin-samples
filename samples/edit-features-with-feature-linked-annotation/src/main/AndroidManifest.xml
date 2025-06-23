@@ -6,7 +6,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/edit_features_with_feature-linked_annotation_app_name">
+            android:label="@string/edit_features_with_feature_linked_annotation_app_name">
             
         </activity>
     </application>

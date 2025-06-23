@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.editfeatureswithfeature-linkedannotation
+package com.esri.arcgismaps.sample.editfeatureswithfeaturelinkedannotation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.editfeatureswithfeature-linkedannotation.screens.EditFeaturesWithFeature-linkedAnnotationScreen
+import com.esri.arcgismaps.sample.editfeatureswithfeaturelinkedannotation.screens.EditFeaturesWithFeatureLinkedAnnotationScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                EditFeaturesWithFeature-linkedAnnotationApp()
+                EditFeaturesWithFeatureLinkedAnnotationApp()
             }
         }
     }
 
     @Composable
-    private fun EditFeaturesWithFeature-linkedAnnotationApp() {
+    private fun EditFeaturesWithFeatureLinkedAnnotationApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            EditFeaturesWithFeature-linkedAnnotationScreen(
-                sampleName = getString(R.string.edit_features_with_feature-linked_annotation_app_name)
+            EditFeaturesWithFeatureLinkedAnnotationScreen(
+                sampleName = getString(R.string.edit_features_with_feature_linked_annotation_app_name)
             )
         }
     }

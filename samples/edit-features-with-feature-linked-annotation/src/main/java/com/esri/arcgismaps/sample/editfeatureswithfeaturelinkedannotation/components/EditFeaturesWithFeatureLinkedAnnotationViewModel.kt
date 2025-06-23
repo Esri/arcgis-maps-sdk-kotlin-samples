@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.editfeatureswithfeature-linkedannotation.components
+package com.esri.arcgismaps.sample.editfeatureswithfeaturelinkedannotation.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -27,7 +27,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
-class EditFeaturesWithFeature-linkedAnnotationViewModel(app: Application) : AndroidViewModel(app) {
+class EditFeaturesWithFeatureLinkedAnnotationViewModel(app: Application) : AndroidViewModel(app) {
     //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {

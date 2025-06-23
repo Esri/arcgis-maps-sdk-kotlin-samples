@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.editfeatureswithfeature-linkedannotation"
+    namespace = "com.esri.arcgismaps.sample.editfeatureswithfeaturelinkedannotation"
     buildFeatures {
         buildConfig = true
     }

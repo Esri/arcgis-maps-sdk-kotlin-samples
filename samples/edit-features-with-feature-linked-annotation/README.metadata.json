@@ -1,7 +1,7 @@
 {
     "category": "Edit and Manage Data",
     "description": "TODO",
-    "formal_name": "EditFeaturesWithFeature-linkedAnnotation",
+    "formal_name": "EditFeaturesWithFeatureLinkedAnnotation",
     "ignore": false,
     "images": [
         "edit-features-with-feature-linked-annotation.png"
@@ -11,9 +11,9 @@
     "redirect_from": "",
     "relevant_apis": [ ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeature-linkedannotation/components/EditFeaturesWithFeature-linkedAnnotationViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeature-linkedannotation/screens/EditFeaturesWithFeature-linkedAnnotationScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeature-linkedannotation/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/components/EditFeaturesWithFeatureLinkedAnnotationViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/screens/EditFeaturesWithFeatureLinkedAnnotationScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/MainActivity.kt"
     ],
-    "title": "Edit features with feature-linked annotation"
+    "title": "Edit features with feature linked annotation"
 }
