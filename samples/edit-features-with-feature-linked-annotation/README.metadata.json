@@ -1,19 +1,37 @@
 {
     "category": "Edit and Manage Data",
-    "description": "TODO",
-    "formal_name": "EditFeaturesWithFeatureLinkedAnnotation",
+    "description": "Edit feature attributes which are linked to annotations through an expression.",
+    "formal_name": "EditFeaturesWithFeature-LinkedAnnotation",
     "ignore": false,
     "images": [
         "edit-features-with-feature-linked-annotation.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "annotation",
+        "attributes",
+        "feature-linked annotation",
+        "features",
+        "fields",
+        "AnnotationLayer",
+        "Feature",
+        "FeatureLayer",
+        "Geodatabase"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": [
+        "TODO"
+    ],
+    "relevant_apis": [
+        "AnnotationLayer",
+        "Feature",
+        "FeatureLayer",
+        "Geodatabase"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/components/EditFeaturesWithFeatureLinkedAnnotationViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/screens/EditFeaturesWithFeatureLinkedAnnotationScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/screens/EditFeaturesWithFeatureLinkedAnnotationScreen.kt"
     ],
-    "title": "Edit features with feature linked annotation"
+    "title": "Edit features with feature-linked annotation"
 }
