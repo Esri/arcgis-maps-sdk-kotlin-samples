@@ -1,7 +1,7 @@
 {
     "category": "Edit and Manage Data",
     "description": "Edit feature attributes which are linked to annotations through an expression.",
-    "formal_name": "EditFeaturesWithFeature-LinkedAnnotation",
+    "formal_name": "EditFeaturesWithFeatureLinkedAnnotation",
     "ignore": false,
     "images": [
         "edit-features-with-feature-linked-annotation.png"
@@ -18,9 +18,11 @@
         "Geodatabase"
     ],
     "language": "kotlin",
-    "redirect_from": [
-        "TODO"
+    "provision_from": [
+        "https://www.arcgis.com/home/item.html?id=74c0c9fa80f4498c9739cc42531e9948"
     ],
+    "provision_to": [],
+    "redirect_from": "",
     "relevant_apis": [
         "AnnotationLayer",
         "Feature",
