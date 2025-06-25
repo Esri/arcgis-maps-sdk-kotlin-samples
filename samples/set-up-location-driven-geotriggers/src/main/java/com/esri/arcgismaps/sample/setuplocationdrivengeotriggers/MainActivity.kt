@@ -31,6 +31,7 @@ import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Polyline
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.geotriggers.*
 import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
@@ -39,6 +40,7 @@ import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.mapping.PortalItem
+import com.esri.arcgismaps.sample.sampleslib.components.CustomSrUtils
 import com.esri.arcgismaps.sample.setuplocationdrivengeotriggers.databinding.SetUpLocationDrivenGeotriggersActivityMainBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -91,8 +93,28 @@ class MainActivity : AppCompatActivity() {
         // create a SimulatedLocationDataSource using the polyline from
         // ArcGIS Online GeoJSON to define the path. retrieved from
         // https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
+
+        //TODO - custom geom from JSON with custom precision JSON not working...
+        // JSON: {"wkid":4326,"wkt2":"GEOGCRS[\"GCS_WGS_1984\",DYNAMIC[FRAMEEPOCH[1990.5],MODEL[\"AM0-2\"]],DATUM[\"D_WGS_1984\",ELLIPSOID[\"WGS_1984\",6378137.0,298.257223563,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433],ID[\"EPSG\",\"4326\"]]","wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"}
+        // FROM JSON: null
+        // CUST JSON: {"wkid":4326,"wkt2":"GEOGCRS[\"GCS_WGS_1984\",DYNAMIC[FRAMEEPOCH[1990.5],MODEL[\"AM0-2\"]],DATUM[\"D_WGS_1984\",ELLIPSOID[\"WGS_1984\",6378137.0,298.257223563,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433],ID[\"EPSG\",\"4326\"]]","wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]","xyTolerance":2.2457882102988037e-09,"zTolerance":0.001,"mTolerance":0.001,"falseX":-400,"falseY":-400,"xyUnits":5000000000,"falseZ":-100000,"zUnits":10000,"falseM":-100000,"mUnits":10000}
+        // FROM JSON: null
+        val sr = SpatialReference(4326)
+        println("NOTC JSON: ${sr.toJson()}")
+
+        val srFromJson = SpatialReference.fromJsonOrNull(getString(R.string.non_cust_sr))
+        println("FROM JSON: ${srFromJson?.toJson()}")
+
+        val srCust = CustomSrUtils.createCustomPrecisionSpatialReference(sr, false)
+        println("CUST JSON: ${srCust.toJson()}")
+        val srCustFromJson = SpatialReference.fromJsonOrNull(getString(R.string.cust_sr))
+        println("FROM JSON: ${srCustFromJson?.toJson()}")
+
         SimulatedLocationDataSource(
-            Geometry.fromJsonOrNull(getString(R.string.polyline_json)) as Polyline,
+            //Geometry.fromJsonOrNull(getString(R.string.polyline_json)) as Polyline,
+            //{"wkid":4326,"wkt2":"GEOGCRS[\"GCS_WGS_1984\",DYNAMIC[FRAMEEPOCH[1990.5],MODEL[\"AM0-2\"]],DATUM[\"D_WGS_1984\",ELLIPSOID[\"WGS_1984\",6378137.0,298.257223563,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433],ID[\"EPSG\",\"4326\"]]","wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]","xyTolerance":2.2457882102988037e-09,"zTolerance":0.001,"mTolerance":0.001,"falseX":-400,"falseY":-400,"xyUnits":5000000000,"falseZ":-100000,"zUnits":10000,"falseM":-100000,"mUnits":10000}
+            //{"wkid":4326,"wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]","xyTolerance":2.2457882102988037e-09,"zTolerance":0.001,"mTolerance":0.001,"falseX":-400,"falseY":-400,"xyUnits":5000000000,"falseZ":-100000,"zUnits":10000,"falseM":-100000,"mUnits":10000}
+            Geometry.fromJsonOrNull(getString(R.string.polyline_json_customsr)) as Polyline,
             simulationParameters
         )
     }
