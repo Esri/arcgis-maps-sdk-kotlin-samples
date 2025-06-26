@@ -1,6 +1,6 @@
 # Edit features with feature-linked annotation
 
-Edit feature attributes which are linked to annotations through an expression.
+Edit feature attributes which are linked to annotation through an expression.
 
 ![Image of Edit features with feature linked annotation](edit-features-with-feature-linked-annotation.png)
 
