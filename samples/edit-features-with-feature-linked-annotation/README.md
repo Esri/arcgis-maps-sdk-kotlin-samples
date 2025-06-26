@@ -21,7 +21,7 @@ The feature-linked annotation will update accordingly.
 3. Create `AnnotationLayer`s from geodatabase annotation tables found in the geodatabase.
 4. Add the `FeatureLayer`s and `AnnotationLayer`s to the map's operational layers.
 5. Use a map tap gesture to select address points or parcel polyline features. **Note:** Selection is only enabled for points and straight (single segment) polylines.
-   * For the address points, an alert is opened to allow editing of the address number (`AD_ADDRESS`) and street name (`ST_STR_NAM`) attributes.
+   * For the address points, a dialog is opened to allow editing of the address number (`AD_ADDRESS`) and street name (`ST_STR_NAM`) attributes.
    * For the parcel lines, a second tap will change one of the polyline's vertices.
 
 Both expressions were defined by the data author in ArcGIS Pro using [the Arcade expression language](https://developers.arcgis.com/arcade/).
