@@ -134,6 +134,7 @@ class MainActivity : AppCompatActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(mapView)
 
+
         val portal = Portal("https://www.arcgis.com")
         // this sample uses a web map with a predefined tile basemap, feature styles, and labels
         val map = ArcGISMap(PortalItem(portal, "6ab0e91dc39e478cae4f408e1a36a308"))
@@ -146,6 +147,10 @@ class MainActivity : AppCompatActivity() {
             initialZoomScale = 1000.0
         }
 
+        // TODO - REPLACE THESE FEATURE SERVICE TABLES WITH CUSTOM PRECISION
+        // GEODATABASE TABLES...
+        // TODO - createReplica didnt result in an entry in st_aux_spatial_reference,
+        // but the values are in the GDB_Items XML...
         // instantiate the service feature tables to later create GeotriggerMonitors for
         val gardenSections =
             ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
