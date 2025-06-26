@@ -123,7 +123,7 @@ fun EditFeaturesWithFeatureLinkedAnnotationScreen(sampleName: String) {
 fun EditAddressDialog(
     buildingNumber: String,
     streetName: String,
-    onBuildingNumberChange: (String) -> Unit,
+    onBuildingNumberChange: (Int) -> Unit,
     onStreetNameChange: (String) -> Unit,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
