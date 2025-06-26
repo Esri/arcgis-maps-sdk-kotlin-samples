@@ -57,9 +57,12 @@ class MainActivity : ComponentActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         ArcGISEnvironment.applicationContext = applicationContext
 
-        requestLocationPermission()
+        val hasNonDefaultAPIKey = BuildConfig.GOOGLE_API_KEY != "DEFAULT_GOOGLE_API_KEY"
 
+        SharedRepository.updateHasNonDefaultAPIKey(hasNonDefaultAPIKey)
         SharedRepository.updateRoute(null)
+
+        requestLocationPermission()
     }
 
     private fun requestLocationPermission() {

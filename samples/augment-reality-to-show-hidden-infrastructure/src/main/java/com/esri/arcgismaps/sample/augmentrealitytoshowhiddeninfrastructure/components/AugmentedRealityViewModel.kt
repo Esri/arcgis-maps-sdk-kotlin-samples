@@ -17,12 +17,16 @@
 package com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.GeodeticCurveType
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.LinearUnit
+import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.geometry.PolylineBuilder
 import com.arcgismaps.geometry.SpatialReference
@@ -37,9 +41,15 @@ import com.arcgismaps.mapping.symbology.StrokeSymbolLayerLineStyle3D
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SurfacePlacement
+import com.arcgismaps.toolkit.ar.WorldScaleSceneViewProxy
+import com.arcgismaps.toolkit.ar.WorldScaleVpsAvailability
 import kotlinx.coroutines.launch
 
 class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
+
+    val worldScaleSceneViewProxy = WorldScaleSceneViewProxy()
+
+    var isVpsAvailable by mutableStateOf(false)
 
     // Graphics overlay for the 3D pipes
     val pipeGraphicsOverlay = GraphicsOverlay().apply {
@@ -157,6 +167,17 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
                 )
                 val leaderLine = Polyline(listOf(point, offsetPoint))
                 leaderGraphicsOverlay.graphics.add(Graphic(leaderLine, leaderSymbol))
+            }
+        }
+    }
+
+    /**
+     * Checks if the current viewpoint camera location is within the VPS availability area.
+     */
+    fun onCurrentViewpointCameraChanged(location: Point) {
+        viewModelScope.launch {
+            worldScaleSceneViewProxy.checkVpsAvailability(location.y, location.x).onSuccess {
+                isVpsAvailable = it == WorldScaleVpsAvailability.Available
             }
         }
     }

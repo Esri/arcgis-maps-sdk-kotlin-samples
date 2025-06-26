@@ -50,6 +50,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -69,6 +70,7 @@ import com.arcgismaps.toolkit.ar.WorldScaleTrackingMode
 import com.arcgismaps.toolkit.ar.rememberWorldScaleSceneViewStatus
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.R
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.AugmentedRealityViewModel
+import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.SharedRepository
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 private const val KEY_PREF_ACCEPTED_PRIVACY_INFO = "ACCEPTED_PRIVACY_INFO"
@@ -79,7 +81,14 @@ fun AugmentedRealityScreen(sampleName: String) {
 
     var displayCalibrationView by remember { mutableStateOf(false) }
     var initializationStatus by rememberWorldScaleSceneViewStatus()
-    var trackingMode by remember { mutableStateOf<WorldScaleTrackingMode>(WorldScaleTrackingMode.Geospatial()) }
+
+    // Initialize the world scale tracking mode based on whether a google API key is provided
+    val initialWorldScaleTrackingMode = when {
+        SharedRepository.hasNonDefaultAPIKey -> { WorldScaleTrackingMode.Geospatial() }
+        else -> { WorldScaleTrackingMode.World() }
+    }
+
+    var trackingMode by remember { mutableStateOf(initialWorldScaleTrackingMode) }
 
     var showDropdownMenu by remember { mutableStateOf(false) }
     var isPipeShadowVisible by remember { mutableStateOf(true) }
@@ -151,6 +160,12 @@ fun AugmentedRealityScreen(sampleName: String) {
                             augmentedRealityViewModel.pipeShadowGraphicsOverlay,
                             augmentedRealityViewModel.leaderGraphicsOverlay
                         ),
+                        onCurrentViewpointCameraChanged = { camera ->
+                            if (camera.location.x != 0.0 && camera.location.y != 0.0) {
+                                augmentedRealityViewModel.onCurrentViewpointCameraChanged(camera.location)
+                            }
+                        },
+                        worldScaleSceneViewProxy = augmentedRealityViewModel.worldScaleSceneViewProxy,
                         worldScaleTrackingMode = trackingMode,
                         onInitializationStatusChanged = { status ->
                             initializationStatus = status
@@ -171,6 +186,24 @@ fun AugmentedRealityScreen(sampleName: String) {
                         trackingMode = trackingMode,
                         arcGISSceneLoadStatus = augmentedRealityViewModel.arcGISScene.loadStatus.collectAsStateWithLifecycle().value
                     )
+                    if (trackingMode is WorldScaleTrackingMode.Geospatial) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.Gray.copy(alpha = 0.5f))
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (augmentedRealityViewModel.isVpsAvailable) {
+                                    "VPS available"
+                                } else {
+                                    "VPS unavailable"
+                                },
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
         },
