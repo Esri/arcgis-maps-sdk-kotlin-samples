@@ -28,7 +28,7 @@ class DownloadActivity : DownloaderActivity() {
             // get the app name of the sample
             getString(R.string.edit_features_with_feature_linked_annotation_app_name),
             listOf(
-                // ArcGIS Portal item containing the loudon annotation geodatabase.
+                // ArcGIS Portal item containing the Loudon annotation geodatabase.
                 "https://www.arcgis.com/home/item.html?id=74c0c9fa80f4498c9739cc42531e9948"
             )
         )
