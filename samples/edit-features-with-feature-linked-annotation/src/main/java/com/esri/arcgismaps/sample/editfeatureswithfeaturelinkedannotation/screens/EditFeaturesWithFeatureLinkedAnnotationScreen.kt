@@ -135,7 +135,7 @@ fun EditAddressDialog(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = buildingNumber,
-                    onValueChange = onBuildingNumberChange,
+                    onValueChange = { it.toIntOrNull()?.let(onBuildingNumberChange) },
                     label = { Text("Building Number") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true

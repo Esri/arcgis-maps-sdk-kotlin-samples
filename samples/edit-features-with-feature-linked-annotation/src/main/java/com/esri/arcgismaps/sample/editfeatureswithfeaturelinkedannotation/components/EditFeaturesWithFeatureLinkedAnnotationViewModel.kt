@@ -62,6 +62,9 @@ class EditFeaturesWithFeatureLinkedAnnotationViewModel(app: Application) : Andro
     private val parcelLinesTableName = "ParcelLines_1"
     private val parcelAnnoTableName = "ParcelLinesAnno_1"
 
+    private val addressNumberAttribute = "AD_ADDRESS"
+    private val streetNameAttribute = "ST_STR_NAM"
+
     // Map centered on Loudoun County, VA
     var arcGISMap = ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
         initialViewpoint = Viewpoint(39.0204, -77.4159, 2256.0)
@@ -189,8 +192,8 @@ class EditFeaturesWithFeatureLinkedAnnotationViewModel(app: Application) : Andro
             is Point -> {
                 showEditAddressDialog = true
                 // Prepare address editing
-                val adAddress = feature.attributes["AD_ADDRESS"] as Int
-                val stStrNam = feature.attributes["ST_STR_NAM"]?.toString() ?: ""
+                val adAddress = feature.attributes[addressNumberAttribute] as Int
+                val stStrNam = feature.attributes[streetNameAttribute]?.toString() ?: ""
                 buildingNumber = adAddress
                 streetName = stStrNam
                 selectedFeature = feature
@@ -220,8 +223,8 @@ class EditFeaturesWithFeatureLinkedAnnotationViewModel(app: Application) : Andro
         viewModelScope.launch {
             try {
                 feature?.let { feature ->
-                    feature.attributes["AD_ADDRESS"] = newBuildingNumber
-                    feature.attributes["ST_STR_NAM"] = newStreetName
+                    feature.attributes[addressNumberAttribute] = newBuildingNumber
+                    feature.attributes[streetNameAttribute] = newStreetName
                     feature.featureTable?.updateFeature(feature)?.onFailure { error ->
                         messageDialogVM.showMessageDialog(error)
                     }
