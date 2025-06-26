@@ -16,6 +16,10 @@
 
 package com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 /**
  * Shared repository to hold the route result generated in the route view model and passed to the augmented reality view
  * model.
@@ -25,6 +29,14 @@ object SharedRepository {
     private var _pipeInfoList: MutableList<PipeInfo> = mutableListOf()
     val pipeInfoList
         get() = _pipeInfoList
+
+    private var _hasNonDefaultAPIKey by mutableStateOf(false)
+    val hasNonDefaultAPIKey: Boolean
+        get() = _hasNonDefaultAPIKey
+
+    fun updateHasNonDefaultAPIKey(hasNonDefaultAPIKey: Boolean) {
+        _hasNonDefaultAPIKey = hasNonDefaultAPIKey
+    }
 }
 
 
