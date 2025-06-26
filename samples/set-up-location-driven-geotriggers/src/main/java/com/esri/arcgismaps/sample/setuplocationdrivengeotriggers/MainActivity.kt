@@ -94,26 +94,22 @@ class MainActivity : AppCompatActivity() {
         // ArcGIS Online GeoJSON to define the path. retrieved from
         // https://arcgisruntime.maps.arcgis.com/home/item.html?id=2a346cf1668d4564b8413382ae98a956
 
-        //TODO - custom geom from JSON with custom precision JSON not working...
-        // JSON: {"wkid":4326,"wkt2":"GEOGCRS[\"GCS_WGS_1984\",DYNAMIC[FRAMEEPOCH[1990.5],MODEL[\"AM0-2\"]],DATUM[\"D_WGS_1984\",ELLIPSOID[\"WGS_1984\",6378137.0,298.257223563,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433],ID[\"EPSG\",\"4326\"]]","wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"}
-        // FROM JSON: null
-        // CUST JSON: {"wkid":4326,"wkt2":"GEOGCRS[\"GCS_WGS_1984\",DYNAMIC[FRAMEEPOCH[1990.5],MODEL[\"AM0-2\"]],DATUM[\"D_WGS_1984\",ELLIPSOID[\"WGS_1984\",6378137.0,298.257223563,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433],ID[\"EPSG\",\"4326\"]]","wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]","xyTolerance":2.2457882102988037e-09,"zTolerance":0.001,"mTolerance":0.001,"falseX":-400,"falseY":-400,"xyUnits":5000000000,"falseZ":-100000,"zUnits":10000,"falseM":-100000,"mUnits":10000}
-        // FROM JSON: null
-        val sr = SpatialReference(4326)
-        println("NOTC JSON: ${sr.toJson()}")
-
-        val srFromJson = SpatialReference.fromJsonOrNull(getString(R.string.non_cust_sr))
-        println("FROM JSON: ${srFromJson?.toJson()}")
-
-        val srCust = CustomSrUtils.createCustomPrecisionSpatialReference(sr, false)
-        println("CUST JSON: ${srCust.toJson()}")
-        val srCustFromJson = SpatialReference.fromJsonOrNull(getString(R.string.cust_sr))
-        println("FROM JSON: ${srCustFromJson?.toJson()}")
+//        // Testing SR deserialization works OK
+//        val sr = SpatialReference(4326)
+//        println("NOTC JSON: ${sr.toJson()}")
+//        val notCustomSpatialReferenceJson = getString(R.string.non_cust_sr)
+//        val srFromJson = SpatialReference.fromJsonOrNull(notCustomSpatialReferenceJson)
+//        println("FROM JSON: ${srFromJson?.toJson()}")
+//
+//        val srCust = CustomSrUtils.createCustomPrecisionSpatialReference(sr, false)
+//        println("CUST JSON: ${srCust.toJson()}")
+//        val customSpatialReferenceJson = getString(R.string.cust_sr_no_resolution_wktonly)
+//        val srCustFromJson = SpatialReference.fromJsonOrNull(customSpatialReferenceJson)
+//        println("FROM JSON: ${srCustFromJson?.toJson()}")
 
         SimulatedLocationDataSource(
             //Geometry.fromJsonOrNull(getString(R.string.polyline_json)) as Polyline,
-            //{"wkid":4326,"wkt2":"GEOGCRS[\"GCS_WGS_1984\",DYNAMIC[FRAMEEPOCH[1990.5],MODEL[\"AM0-2\"]],DATUM[\"D_WGS_1984\",ELLIPSOID[\"WGS_1984\",6378137.0,298.257223563,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433],ID[\"EPSG\",\"4326\"]]","wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]","xyTolerance":2.2457882102988037e-09,"zTolerance":0.001,"mTolerance":0.001,"falseX":-400,"falseY":-400,"xyUnits":5000000000,"falseZ":-100000,"zUnits":10000,"falseM":-100000,"mUnits":10000}
-            //{"wkid":4326,"wkt":"GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]","xyTolerance":2.2457882102988037e-09,"zTolerance":0.001,"mTolerance":0.001,"falseX":-400,"falseY":-400,"xyUnits":5000000000,"falseZ":-100000,"zUnits":10000,"falseM":-100000,"mUnits":10000}
+            // Use a polyline with a custom precision
             Geometry.fromJsonOrNull(getString(R.string.polyline_json_customsr)) as Polyline,
             simulationParameters
         )
@@ -225,6 +221,11 @@ class MainActivity : AppCompatActivity() {
         // create a LocationGeotriggerFeed that uses the SimulatedLocationDataSource
         val geotriggerFeed = LocationGeotriggerFeed(simulatedLocationDataSource)
         // initialize FeatureFenceParameters to display the section the user has entered
+
+        //TODO - is there any way to set a custom spatial reference for the FeatureFenceParameters?
+        // these come from a feature service table, and AFAWK the SR doesnt contain a resolution
+        // although the underlying features in an enterprise geodatabase could have custom
+        // precision (sourceSpatialReference).
         val featureFenceParameters = FeatureFenceParameters(serviceFeatureTable, bufferSize)
         // create a fence geotrigger
         val fenceGeotrigger = FenceGeotrigger(
