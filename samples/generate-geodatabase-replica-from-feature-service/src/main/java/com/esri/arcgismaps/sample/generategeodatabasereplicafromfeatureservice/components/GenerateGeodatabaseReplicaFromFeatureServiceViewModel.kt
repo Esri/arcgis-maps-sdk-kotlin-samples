@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.generategeodatabasereplicafromfeatureservice.components
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -200,9 +201,10 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
             // create GenerateGeodatabaseParameters for the selected extent
             //val parameters =
             //    geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(geometry).getOrElse {
+            val customPrecisionGeom = createCustomPrecisionGeometry(downloadArea.geometry!!)
             val parameters =
                 geodatabaseSyncTask.createDefaultGenerateGeodatabaseParameters(
-                    createCustomPrecisionGeometry(downloadArea.geometry!!)
+                    customPrecisionGeom
                 ).getOrElse {
                     messageDialogVM.showMessageDialog(
                         title = "Error creating geodatabase parameters",
@@ -215,6 +217,22 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
                         layerOptions.layerId != 0L
                     }
 
+                    // Add custom precision spatial ref output
+                    outSpatialReference = customPrecisionGeom.spatialReference
+
+                    Log.i("SAMPLE", "GenerateGeodatabaseParameters.outSpatialReference.WKID: ${outSpatialReference!!.wkid}")
+                    Log.i("SAMPLE", " -WKTx: ${outSpatialReference!!.wkText}")
+                    Log.i("SAMPLE", " -Tolerance: ${outSpatialReference!!.tolerance}")
+                    Log.i("SAMPLE", " -Resolution: ${outSpatialReference!!.resolution}")
+                    Log.i("SAMPLE", " -JSON: ${outSpatialReference!!.toJson()}")
+
+                    // Expecting custom tol and res if geodatabase precision is working
+                    if (outSpatialReference!!.tolerance == 0.001) {
+                        Log.e("SAMPLE", "Expecting custom outSpatialReference tolerance, but found ${outSpatialReference!!.tolerance}")
+                    }
+                    if (outSpatialReference!!.resolution == 0.0001) {
+                        Log.e("SAMPLE", "Expecting custom outSpatialReference resolution, but found ${outSpatialReference!!.resolution}")
+                    }
                 }
 
             // we don't need attachments
@@ -278,9 +296,35 @@ class GenerateGeodatabaseReplicaFromFeatureServiceViewModel(
         // load the geodatabase
         replicaGeodatabase.load().onSuccess {
             // add all the geodatabase feature tables to the map as feature layers
-            arcGISMap.operationalLayers += replicaGeodatabase.featureTables.map { featureTable ->
-                FeatureLayer.createWithFeatureTable(featureTable)
+//            arcGISMap.operationalLayers += replicaGeodatabase.featureTables.map { featureTable ->
+//                FeatureLayer.createWithFeatureTable(featureTable)
+//            }
+
+            replicaGeodatabase.featureTables.forEach { featureTable ->
+                // create a feature layer with the feature table
+                val featureLayer = FeatureLayer.createWithFeatureTable(featureTable)
+
+                // add the feature layer to the map
+                arcGISMap.operationalLayers.add(featureLayer)
+
+                featureLayer.load().onSuccess {
+                    Log.i("SAMPLE", "FeatureLayer ${featureLayer.name} loaded, SR:")
+                    Log.i("SAMPLE", "-WKID: ${featureLayer.spatialReference?.wkid}")
+                    Log.i("SAMPLE", "-WKTx: ${featureLayer.spatialReference?.wkText}")
+                    Log.i("SAMPLE", "-Tolerance: ${featureLayer.spatialReference?.tolerance}")
+                    Log.i("SAMPLE", "-Resolution: ${featureLayer.spatialReference?.resolution}")
+                    Log.i("SAMPLE", "-JSON: ${featureLayer.spatialReference?.toJson()}")
+
+                    // Expecting custom tol and res if geodatabase precision is working
+                    if (featureLayer.spatialReference!!.tolerance == 0.001) {
+                        Log.e("SAMPLE", "Expecting custom geodatabase tolerance, but found ${featureLayer.spatialReference!!.tolerance}")
+                    }
+                    if (featureLayer.spatialReference!!.resolution == 0.0001) {
+                        Log.e("SAMPLE", "Expecting custom geodatabase resolution, but found ${featureLayer.spatialReference!!.resolution}")
+                    }
+                }
             }
+
             // keep track of the geodatabase to close it before generating a new replica
             geodatabase = replicaGeodatabase
             _uiStateFlow.value = UiState(appStatus = AppStatus.REPLICA_DISPLAYED)
