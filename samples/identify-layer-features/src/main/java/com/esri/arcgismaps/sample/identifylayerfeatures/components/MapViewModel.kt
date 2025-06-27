@@ -17,14 +17,19 @@
 package com.esri.arcgismaps.sample.identifylayerfeatures.components
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import com.arcgismaps.data.Geodatabase
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISMapImageLayer
+import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.layers.FeatureLayer.Companion.createWithFeatureTable
 import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
@@ -33,6 +38,7 @@ import com.esri.arcgismaps.sample.identifylayerfeatures.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MapViewModel(
     application: Application,
@@ -54,12 +60,57 @@ class MapViewModel(
 
     init {
         // create a feature layer of damaged property data
-        val featureTable = ServiceFeatureTable(application.getString(R.string.damage_assessment))
-        val featureLayer = createWithFeatureTable(featureTable)
+//        val featureTable = ServiceFeatureTable(application.getString(R.string.damage_assessment))
+//        val featureLayer = createWithFeatureTable(featureTable)
 
-        // create a layer with world cities data
-        val mapImageLayer = ArcGISMapImageLayer(application.getString(R.string.world_cities))
-        sampleCoroutineScope.launch {
+
+        //       sampleCoroutineScope.launch {
+        //
+        //        }
+        viewModelScope.launch {
+            // wait for gdb load // locate the .geodatabase file in the device
+            //val provisionPath = getExternalFilesDir(null)?.path.toString() + File.separator
+            val provisionPath = "/storage/emulated/0/Android/data/com.esri.arcgismaps.kotlin.sampleviewer/files" + File.separator
+            val geodatabaseFile = File(
+                provisionPath,
+                "Santa_Barbara_Botanic_Garden_Points_of_Interest_4440690790436384955.geodatabase"
+            )
+            // instantiate the geodatabase with the file path
+            val geodatabase = Geodatabase(geodatabaseFile.path)
+            // load the geodatabase
+            geodatabase.load().onFailure {
+                Log.e("SAMPLE", "Error loading geodatabase: ${it.message}")
+            }
+
+            // get the feature table with the name
+            //val geodatabaseFeatureTable =
+            val geodatabaseFeatureTable = geodatabase.getFeatureTable("Point_layer")!!
+            if (geodatabaseFeatureTable == null) {
+                Log.e("SAMPLE", "Feature table name not found in geodatabase")
+                return@launch
+            }
+            // create a feature layer with the feature table
+            val featureLayer = FeatureLayer.createWithFeatureTable(geodatabaseFeatureTable)
+            featureLayer.load().onSuccess {
+                Log.i("SAMPLE", "FeatureLayer ${featureLayer.name} loaded, SR:")
+                Log.i("SAMPLE", "-WKID: ${featureLayer.spatialReference?.wkid}")
+                Log.i("SAMPLE", "-WKTx: ${featureLayer.spatialReference?.wkText}")
+                Log.i("SAMPLE", "-Tolerance: ${featureLayer.spatialReference?.tolerance}")
+                Log.i("SAMPLE", "-Resolution: ${featureLayer.spatialReference?.resolution}")
+                Log.i("SAMPLE", "-JSON: ${featureLayer.spatialReference?.toJson()}")
+
+                // Expecting custom tol and res if geodatabase precision is working
+                if (featureLayer.spatialReference!!.tolerance == 0.001) {
+                    Log.e("SAMPLE", "Expecting custom geodatabase tolerance, but found ${featureLayer.spatialReference!!.tolerance}")
+                }
+                if (featureLayer.spatialReference!!.resolution == 0.0001) {
+                    Log.e("SAMPLE", "Expecting custom geodatabase resolution, but found ${featureLayer.spatialReference!!.resolution}")
+                }
+            }
+
+
+            // create a layer with world cities data
+            val mapImageLayer = ArcGISMapImageLayer(application.getString(R.string.world_cities))
             mapImageLayer.load().onSuccess {
                 mapImageLayer.apply {
                     subLayerContents.value[1].isVisible = false
@@ -69,14 +120,16 @@ class MapViewModel(
                 // show the message dialog and pass the error message to be displayed in the dialog
                 messageDialogVM.showMessageDialog(error.message.toString(), error.cause.toString())
             }
+
+            // add the world cities layer with and the damaged properties feature layer
+            map.apply {
+                // set initial Viewpoint to North America
+                initialViewpoint = Viewpoint(39.8, -98.6, 5e7)
+                operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
+            }
         }
 
-        // add the world cities layer with and the damaged properties feature layer
-        map.apply {
-            // set initial Viewpoint to North America
-            initialViewpoint = Viewpoint(39.8, -98.6, 5e7)
-            operationalLayers.addAll(listOf(mapImageLayer, featureLayer))
-        }
+
 
     }
 
