@@ -28,6 +28,10 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.arcade.ArcadeExpression
 import com.arcgismaps.data.ArcGISFeature
+import com.arcgismaps.data.ArcGISFeatureTable
+import com.arcgismaps.data.FeatureTable
+import com.arcgismaps.data.Geodatabase
+import com.arcgismaps.data.GeodatabaseFeatureTable
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Polyline
@@ -40,12 +44,15 @@ import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.FeatureLayer
 import com.esri.arcgismaps.sample.sampleslib.components.CustomSrUtils
 import com.esri.arcgismaps.sample.setuplocationdrivengeotriggers.databinding.SetUpLocationDrivenGeotriggersActivityMainBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.Instant
 
 class MainActivity : AppCompatActivity() {
@@ -123,8 +130,11 @@ class MainActivity : AppCompatActivity() {
     private val poiGeotrigger = "POI Geotrigger"
 
     // make monitors properties to prevent garbage collection
+    private lateinit var geodatabaseFeatureTable: GeodatabaseFeatureTable
     private lateinit var sectionGeotriggerMonitor: GeotriggerMonitor
     private lateinit var poiGeotriggerMonitor: GeotriggerMonitor
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,16 +161,8 @@ class MainActivity : AppCompatActivity() {
         // GEODATABASE TABLES...
         // TODO - createReplica didnt result in an entry in st_aux_spatial_reference,
         // but the values are in the GDB_Items XML...
-        // instantiate the service feature tables to later create GeotriggerMonitors for
-        val gardenSections =
-            ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
-        val gardenPOIs =
-            ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
-        // create geotriggers for each of the service feature tables
-        sectionGeotriggerMonitor =
-            createGeotriggerMonitor(gardenSections, 0.0, sectionGeotrigger)
-        poiGeotriggerMonitor =
-            createGeotriggerMonitor(gardenPOIs, 10.0, poiGeotrigger)
+        // instantiate the service feature tables to later create GeotriggerMonitors from
+
 
         // play or pause the simulation data source when the FAB is clicked
         playPauseFAB.setOnClickListener {
@@ -187,6 +189,48 @@ class MainActivity : AppCompatActivity() {
         poiListView.adapter = poiListAdapter
 
         lifecycleScope.launch {
+            // wait for gdb load // locate the .geodatabase file in the device
+            val provisionPath = getExternalFilesDir(null)?.path.toString() + File.separator
+            val geodatabaseFile = File(provisionPath, "Santa_Barbara_Botanic_Garden_Points_of_Interest_4440690790436384955.geodatabase")
+            // instantiate the geodatabase with the file path
+            val geodatabase = Geodatabase(geodatabaseFile.path)
+            // load the geodatabase
+            geodatabase.load().onFailure {
+                showError("Error loading geodatabase: ${it.message}")
+            }
+
+            // get the feature table with the name
+            //val geodatabaseFeatureTable =
+            geodatabaseFeatureTable = geodatabase.getFeatureTable("Point_layer")!!
+            if (geodatabaseFeatureTable == null) {
+               showError("Feature table name not found in geodatabase")
+                return@launch
+            }
+            // DONT NEED THE LAYER SPECIFICALLY?
+            // create a feature layer with the feature table
+            val featureLayer = FeatureLayer.createWithFeatureTable(geodatabaseFeatureTable)
+            // set the feature layer on the map
+            activityMainBinding.mapView.apply {
+              map?.operationalLayers?.add(featureLayer) // no viewpoint change
+            }
+
+            val gardenSections =
+                ServiceFeatureTable(PortalItem(portal, "1ba816341ea04243832136379b8951d9"), 0)
+            //val gardenPOIs =
+            //    ServiceFeatureTable(PortalItem(portal, "7c6280c290c34ae8aeb6b5c4ec841167"), 0)
+            //TODO - need to have waited for the geodatabase to load
+            val gardenPOIs = geodatabaseFeatureTable
+
+            // create geotriggers for each of the feature tables
+            sectionGeotriggerMonitor =
+                createGeotriggerMonitor(gardenSections, 0.0, sectionGeotrigger)
+
+            //POI trigger is now based on a geodatabase feature table with custom precision
+            // (although only in the XML, no entry in the st_aux_spatial_reference_systems table)
+            poiGeotriggerMonitor =
+                createGeotriggerMonitor(gardenPOIs, 10.0, poiGeotrigger)
+
+
             // wait for the map load
             map.load().onFailure {
                 // if the map load fails, show the error and return
@@ -219,7 +263,7 @@ class MainActivity : AppCompatActivity() {
      * FeatureFenceParameters for the geotrigger
      */
     private fun createGeotriggerMonitor(
-        serviceFeatureTable: ServiceFeatureTable,
+        serviceFeatureTable: ArcGISFeatureTable,
         bufferSize: Double,
         geotriggerName: String
     ): GeotriggerMonitor {
