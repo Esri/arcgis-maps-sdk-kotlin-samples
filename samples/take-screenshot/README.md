@@ -6,11 +6,11 @@ Take a screenshot of the map.
 
 ## Use case
 
-GIS users may want to export a screenshot of a map to enable sharing as an image or printing.
+GIS users may want to export or save a screenshot of a map to enable sharing as an image or printing.
 
 ## How to use the sample
 
-Pan and zoom to find an interesting location, then use the button to take a screenshot. The screenshot will be displayed. You can share the screenshot by tapping the share button.
+Pan and zoom to find an interesting location, then use the button to take a screenshot. The screenshot will be displayed. You can share the screenshot by tapping the share button. Or save it by tapping the save button.
 
 ## How it works
 
@@ -18,6 +18,7 @@ Pan and zoom to find an interesting location, then use the button to take a scre
 2. Call `exportImage()` to get a `BitmapDrawable`.
 3. Save screenshot into a File using `FileOutputStream`.
 4. Share the file using `context.startActivity`.
+5. Save the file using `context.contentResolver`.
 
 ## Relevant API
 
