@@ -10,7 +10,7 @@
             
         </activity>
         <provider
-            android:name="com.esri.arcgismaps.sample.editfeatureattachments.EditFeatureAttachments"
+            android:name="com.esri.arcgismaps.sample.editfeatureattachments.EditFeatureAttachmentsProvider"
             android:authorities="@string/edit_feature_attachments_provider_authority"
             android:exported="false"
             android:grantUriPermissions="true">

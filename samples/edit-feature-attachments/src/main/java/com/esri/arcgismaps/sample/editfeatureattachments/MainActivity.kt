@@ -339,4 +339,4 @@ class MainActivity : AppCompatActivity() {
 }
 
 // Custom FileProvider for fetching attachments
-class EditFeatureAttachments : FileProvider()
+class EditFeatureAttachmentsProvider : FileProvider()
