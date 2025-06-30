@@ -42,8 +42,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -62,6 +64,7 @@ fun TakeScreenshotScreen(sampleName: String) {
     val mapViewModel: TakeScreenshotViewModel = viewModel()
 
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -80,7 +83,10 @@ fun TakeScreenshotScreen(sampleName: String) {
                 )
 
                 Button(
-                    onClick = mapViewModel::takeScreenshot,
+                    onClick = {
+                        mapViewModel.takeScreenshot()
+                        haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
