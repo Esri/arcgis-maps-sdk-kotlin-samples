@@ -27,8 +27,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,6 +51,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -124,33 +129,23 @@ fun DialogWithImage(
     imageBitmap: ImageBitmap,
     imageDescription: String,
 ) {
-    Dialog(onDismissRequest = { onDismissRequest() }) {
-        Card(
+    SampleDialog(onDismissRequest = onDismissRequest) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(375.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
+            Image(
+                bitmap = imageBitmap,
+                contentDescription = imageDescription,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Image(
-                    bitmap = imageBitmap,
-                    contentDescription = imageDescription,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .height(220.dp)
-                )
-                TextButton(
-                    onClick = { onConfirmation() },
-                    modifier = Modifier.padding(8.dp),
-                ) {
-                    Text("Share", fontSize = 20.sp)
-                }
+                    .fillMaxSize()
+            )
+            TextButton(onClick = onConfirmation) {
+                Icon(Icons.Default.Share, "Share icon", Modifier.padding(horizontal = 4.dp))
+                Text("Share", style = MaterialTheme.typography.labelLarge)
             }
         }
     }
