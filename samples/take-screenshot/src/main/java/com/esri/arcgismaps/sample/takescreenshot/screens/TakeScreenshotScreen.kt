@@ -16,12 +16,20 @@
 
 package com.esri.arcgismaps.sample.takescreenshot.screens
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,20 +49,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.takescreenshot.R
 
 /**
  * Main screen layout for the sample app
@@ -99,12 +111,14 @@ fun TakeScreenshotScreen(sampleName: String) {
             // Show DialogWithImage if screenshotImage is not null
             mapViewModel.screenshotImage?.let { screenshotImage ->
                 DialogWithImage(
+                    context = context,
                     onConfirmation = {
                         mapViewModel.clearScreenshotImage()
                         mapViewModel.saveBitmapToFile(context, screenshotImage.bitmap)?.let { uri ->
                             shareImage(context, uri)
                         }
                     },
+                    onSaveBitmapToGallery = mapViewModel::saveBitmapToGallery,
                     onDismissRequest = mapViewModel::clearScreenshotImage,
                     imageBitmap = screenshotImage.bitmap.asImageBitmap(),
                     imageDescription = "Screenshot",
@@ -130,8 +144,10 @@ fun TakeScreenshotScreen(sampleName: String) {
  */
 @Composable
 fun DialogWithImage(
+    context: Context,
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
+    onSaveBitmapToGallery: (Context, Bitmap) -> Uri?,
     imageBitmap: ImageBitmap,
     imageDescription: String,
 ) {
@@ -149,9 +165,15 @@ fun DialogWithImage(
                 modifier = Modifier
                     .fillMaxSize()
             )
-            TextButton(onClick = onConfirmation) {
-                Icon(Icons.Default.Share, "Share icon", Modifier.padding(horizontal = 4.dp))
-                Text("Share", style = MaterialTheme.typography.labelLarge)
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                TextButton(onClick = onConfirmation) {
+                    Icon(Icons.Default.Share, "Share icon", Modifier.padding(horizontal = 4.dp))
+                    Text("Share", style = MaterialTheme.typography.labelLarge)
+                }
+                SaveImageButton(context, imageBitmap.asAndroidBitmap(), onSaveBitmapToGallery)
             }
         }
     }
@@ -168,3 +190,39 @@ fun shareImage(context: Context, imageUri: Uri) {
     // Start the sharing activity with a chooser
     context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
 }
+
+@Composable
+fun SaveImageButton(context: Context, bitmap: Bitmap, saveBitmapToGallery: (Context, Bitmap) -> Uri?) {
+
+    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else null
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            saveBitmapToGallery(context, bitmap)
+            showToast(context, "Image saved!")
+        } else {
+            showToast(context, "Permission denied")
+        }
+    }
+
+    TextButton(onClick = {
+        if (permission == null) {
+            saveBitmapToGallery(context, bitmap)
+            showToast(context, "Image saved!")
+        } else {
+            permissionLauncher.launch(permission)
+        }
+    }) {
+        Icon(painter = painterResource(R.drawable.arrow_circle_down), "Share icon", Modifier.padding(horizontal = 4.dp))
+        Text("Save", style = MaterialTheme.typography.labelLarge)
+    }
+}
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+}
+

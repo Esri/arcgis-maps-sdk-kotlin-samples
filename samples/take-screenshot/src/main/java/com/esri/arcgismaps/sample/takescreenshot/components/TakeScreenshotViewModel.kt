@@ -17,10 +17,13 @@
 package com.esri.arcgismaps.sample.takescreenshot.components
 
 import android.app.Application
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -93,6 +96,27 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
 
         // Return the URI for the file
         return FileProvider.getUriForFile(context, getString(context, R.string.take_screenshot_provider_authority), file)
+    }
+
+    fun saveBitmapToGallery(context: Context, bitmap: Bitmap): Uri? {
+        val resolver = context.contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "screenshot.jpg")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+            put(MediaStore.Images.Media.IS_PENDING, 1)
+        }
+
+        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        uri?.let {
+            resolver.openOutputStream(it)?.use { stream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            }
+            contentValues.clear()
+            contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+            resolver.update(it, contentValues, null, null)
+        }
+        return uri
     }
 
 }
