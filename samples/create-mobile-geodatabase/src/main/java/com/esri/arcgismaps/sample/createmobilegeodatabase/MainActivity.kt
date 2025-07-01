@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
             // get the URI of the geodatabase file using FileProvider
             val geodatabaseURI = FileProvider.getUriForFile(
                 this,
-                getString(R.string.provider_authority),
+                getString(R.string.create_mobile_geodatabase_provider_authority),
                 File(geodatabase?.path.toString())
             )
 
@@ -301,3 +301,6 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+// Custom FileProvider for handling file sharing
+class CreateMobileGeodatabaseFileProvider : FileProvider()
