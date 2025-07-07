@@ -27,6 +27,7 @@ import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.ElevationSource
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
@@ -38,6 +39,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         // is calculated with elevation
         baseSurface.elevationSources.add(ElevationSource.fromTerrain3dService())
         baseSurface.backgroundGrid.isVisible = false
+        operationalLayers.add(ArcGISSceneLayer("https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/AR_Tree_Survey/FeatureServer/0"))
     }
 
     // Create a message dialog view model for handling error messages
