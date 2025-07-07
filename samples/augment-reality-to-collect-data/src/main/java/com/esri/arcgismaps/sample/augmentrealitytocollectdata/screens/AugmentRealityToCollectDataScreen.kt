@@ -90,7 +90,6 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                     onInitializationStatusChanged = { status ->
                         initializationStatus = status
                     },
-                    worldScaleTrackingMode = WorldScaleTrackingMode.Geospatial(),
                 )
             }
 
