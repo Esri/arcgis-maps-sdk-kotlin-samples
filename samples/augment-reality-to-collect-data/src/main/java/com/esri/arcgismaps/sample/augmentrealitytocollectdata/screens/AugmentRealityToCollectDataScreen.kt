@@ -17,7 +17,10 @@
 package com.esri.arcgismaps.sample.augmentrealitytocollectdata.screens
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,11 +40,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.LoadStatus
 import com.arcgismaps.toolkit.ar.WorldScaleSceneView
+import com.arcgismaps.toolkit.ar.WorldScaleSceneViewStatus
+import com.arcgismaps.toolkit.ar.WorldScaleTrackingMode
 import com.arcgismaps.toolkit.ar.rememberWorldScaleSceneViewStatus
 import com.esri.arcgismaps.sample.augmentrealitytocollectdata.components.AugmentRealityToCollectDataViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
@@ -81,6 +90,7 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                     onInitializationStatusChanged = { status ->
                         initializationStatus = status
                     },
+                    worldScaleTrackingMode = WorldScaleTrackingMode.Geospatial(),
                 )
             }
 
@@ -90,6 +100,41 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                     // onOptionToggled = { ... }
                     onDismissRequest = { isDialogOptionsVisible = false }
                 )
+            }
+
+            when (val status = initializationStatus) {
+                is WorldScaleSceneViewStatus.Initializing -> {
+                    TextWithScrim("Initializing AR...")
+                }
+
+                is WorldScaleSceneViewStatus.Initialized -> {
+                    val sceneLoadStatus =
+                        augmentedRealityViewModel.arcGISScene.loadStatus.collectAsStateWithLifecycle().value
+                    when (sceneLoadStatus) {
+                        is LoadStatus.Loading, LoadStatus.NotLoaded -> {
+                            // The scene may take a while to load, so show a progress indicator
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+
+                        is LoadStatus.FailedToLoad -> {
+                            TextWithScrim("Failed to load world scale AR scene: " + sceneLoadStatus.error)
+                        }
+
+                        else -> {}
+                    }
+                }
+
+                is WorldScaleSceneViewStatus.FailedToInitialize -> {
+                    TextWithScrim(
+                        text = "World scale AR failed to initialize: " + (status.error.message ?: status.error)
+                    )
+                }
             }
 
             augmentedRealityViewModel.messageDialogVM.apply {
@@ -103,6 +148,22 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
             }
         }
     )
+}
+
+/**
+ * Displays the provided [text] on top of a half-transparent gray background.
+ */
+@Composable
+private fun TextWithScrim(text: String) {
+    Column(
+        modifier = Modifier
+            .background(androidx.compose.ui.graphics.Color.Gray.copy(alpha = 0.5f))
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = text)
+    }
 }
 
 @Composable
