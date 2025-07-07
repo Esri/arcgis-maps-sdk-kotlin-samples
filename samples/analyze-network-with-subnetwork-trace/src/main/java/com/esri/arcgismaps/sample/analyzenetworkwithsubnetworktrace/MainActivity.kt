@@ -27,6 +27,7 @@ import android.widget.CheckBox
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -129,6 +130,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         ArcGISEnvironment.applicationContext = this
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =

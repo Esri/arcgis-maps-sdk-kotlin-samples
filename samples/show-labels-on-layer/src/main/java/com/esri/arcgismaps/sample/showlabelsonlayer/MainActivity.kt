@@ -19,12 +19,13 @@ package com.esri.arcgismaps.sample.showlabelsonlayer
 
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
-import com.arcgismaps.Color
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
 import com.arcgismaps.arcgisservices.LabelingPlacement
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.mapping.ArcGISMap
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
