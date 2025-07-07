@@ -22,25 +22,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.ElevationSource
 import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
+    val basemap = Basemap(BasemapStyle.ArcGISHumanGeography)
+    val arcGISScene = ArcGISScene(basemap).apply {
+        // an elevation source is required for the scene to be placed at the correct elevation
+        // if not used, the scene may appear far below the device position because the device position
+        // is calculated with elevation
+        baseSurface.elevationSources.add(ElevationSource.fromTerrain3dService())
+        baseSurface.backgroundGrid.isVisible = false
+    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+//            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 }

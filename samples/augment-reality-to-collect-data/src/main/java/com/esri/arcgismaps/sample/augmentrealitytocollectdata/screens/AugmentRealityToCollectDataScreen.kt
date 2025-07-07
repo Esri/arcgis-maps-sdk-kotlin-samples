@@ -40,7 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.ar.WorldScaleSceneView
+import com.arcgismaps.toolkit.ar.rememberWorldScaleSceneViewStatus
 import com.esri.arcgismaps.sample.augmentrealitytocollectdata.components.AugmentRealityToCollectDataViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -53,8 +54,10 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun AugmentRealityToCollectDataScreen(sampleName: String) {
-    val mapViewModel: AugmentRealityToCollectDataViewModel = viewModel()
+    val augmentedRealityViewModel: AugmentRealityToCollectDataViewModel = viewModel()
     var isDialogOptionsVisible by remember { mutableStateOf(false) }
+
+    var initializationStatus by rememberWorldScaleSceneViewStatus()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -72,11 +75,12 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
             ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                WorldScaleSceneView(
+                    arcGISScene = augmentedRealityViewModel.arcGISScene,
+                    modifier = Modifier.fillMaxSize(),
+                    onInitializationStatusChanged = { status ->
+                        initializationStatus = status
+                    },
                 )
             }
 
@@ -88,7 +92,7 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                 )
             }
 
-            mapViewModel.messageDialogVM.apply {
+            augmentedRealityViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
