@@ -39,6 +39,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         // is calculated with elevation
         baseSurface.elevationSources.add(ElevationSource.fromTerrain3dService())
         baseSurface.backgroundGrid.isVisible = false
+        // add the AR tree survey service feature table.
         operationalLayers.add(ArcGISSceneLayer("https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/AR_Tree_Survey/FeatureServer/0"))
     }
 
