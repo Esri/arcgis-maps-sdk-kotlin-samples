@@ -1,0 +1,19 @@
+{
+    "category": "Augmented Reality",
+    "description": "TODO",
+    "formal_name": "AugmentRealityToCollectData",
+    "ignore": false,
+    "images": [
+        "augment-reality-to-collect-data.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/components/AugmentRealityToCollectDataViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/screens/AugmentRealityToCollectDataScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/MainActivity.kt"
+    ],
+    "title": "Augment reality to collect data"
+}
