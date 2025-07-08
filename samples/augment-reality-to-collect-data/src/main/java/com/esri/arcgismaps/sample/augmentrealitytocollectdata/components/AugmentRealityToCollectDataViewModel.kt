@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.Color
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.Basemap
@@ -28,7 +29,11 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.ElevationSource
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
+import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.SurfacePlacement
 import com.arcgismaps.toolkit.ar.WorldScaleSceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
@@ -56,9 +61,32 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
+    private var marker : Graphic? = null
+
     init {
         viewModelScope.launch {
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
+
+    fun addMarker(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+        graphicsOverlay.graphics.removeFirstOrNull()
+        worldScaleSceneViewProxy
+            .screenToBaseSurface(singleTapConfirmedEvent.screenCoordinate)
+            ?.let { point ->
+                val newMarker = Graphic(
+                    point,
+                    SimpleMarkerSceneSymbol(
+                        SimpleMarkerSceneSymbolStyle.Diamond,
+                        Color.green,
+                        height = 1.0,
+                        width = 1.0,
+                        depth = 1.0
+                    )
+                )
+                marker = newMarker
+                graphicsOverlay.graphics.add(newMarker)
+            }
+    }
+
 }

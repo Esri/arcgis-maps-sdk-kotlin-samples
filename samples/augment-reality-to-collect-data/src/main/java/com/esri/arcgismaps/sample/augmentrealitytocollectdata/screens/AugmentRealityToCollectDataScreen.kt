@@ -96,23 +96,7 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                     worldScaleTrackingMode = WorldScaleTrackingMode.Geospatial(),
                     worldScaleSceneViewProxy = augmentedRealityViewModel.worldScaleSceneViewProxy,
                     graphicsOverlays = listOf(augmentedRealityViewModel.graphicsOverlay),
-                    onSingleTapConfirmed = { singleTapConfirmedEvent ->
-                        augmentedRealityViewModel.worldScaleSceneViewProxy
-                            .screenToBaseSurface(singleTapConfirmedEvent.screenCoordinate)
-                            ?.let { point -> augmentedRealityViewModel.graphicsOverlay.graphics.add(
-                                Graphic(
-                                    point,
-                                    SimpleMarkerSceneSymbol(
-                                        SimpleMarkerSceneSymbolStyle.Diamond,
-                                        Color.green,
-                                        height = 1.0,
-                                        width = 1.0,
-                                        depth = 1.0
-                                    )
-                                )
-                            )
-                            }
-                    },
+                    onSingleTapConfirmed = augmentedRealityViewModel::addMarker,
                 )
             }
 
