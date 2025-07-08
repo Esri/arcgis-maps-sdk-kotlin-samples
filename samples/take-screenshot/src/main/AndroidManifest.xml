@@ -2,22 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required for Android 13+ (reading images) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
-    <application><activity
+    <application>
+
+        <activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/create_mobile_geodatabase_app_name">
-            
+            android:label="@string/take_screenshot_app_name">
         </activity>
+
         <provider
-            android:name="com.esri.arcgismaps.sample.createmobilegeodatabase.CreateMobileGeodatabaseFileProvider"
-            android:authorities="@string/create_mobile_geodatabase_provider_authority"
+            android:name="com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotFileProvider"
+            android:authorities="@string/take_screenshot_provider_authority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/create_mobile_geodatabase_provider"/>
+                android:resource="@xml/take_screenshot_file_paths"/>
         </provider>
+
     </application>
 
 </manifest>

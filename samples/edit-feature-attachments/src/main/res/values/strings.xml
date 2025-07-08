@@ -13,5 +13,5 @@
     <string name="edit_attachments">Edit attachments</string>
     <string name="done">Done</string>
     <string name="add_attachment">Add attachment</string>
-    <string name="provider_authority">com.esri.arcgismaps.sample.editfeatureattachments.provider</string>
+    <string name="edit_feature_attachments_provider_authority">com.esri.arcgismaps.sample.editfeatureattachments.provider</string>
 </resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="take_screenshot_app_name">Take screenshot</string>
+    <string name="take_screenshot_provider_authority">com.esri.arcgismaps.sample.takescreenshot.provider</string>
+</resources>
