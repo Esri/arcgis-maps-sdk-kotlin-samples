@@ -20,7 +20,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,7 +45,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.Color
 import com.arcgismaps.LoadStatus
+import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.toolkit.ar.WorldScaleSceneView
 import com.arcgismaps.toolkit.ar.WorldScaleSceneViewStatus
 import com.arcgismaps.toolkit.ar.WorldScaleTrackingMode
@@ -89,6 +92,26 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                     modifier = Modifier.fillMaxSize(),
                     onInitializationStatusChanged = { status ->
                         initializationStatus = status
+                    },
+                    worldScaleTrackingMode = WorldScaleTrackingMode.Geospatial(),
+                    worldScaleSceneViewProxy = augmentedRealityViewModel.worldScaleSceneViewProxy,
+                    graphicsOverlays = listOf(augmentedRealityViewModel.graphicsOverlay),
+                    onSingleTapConfirmed = { singleTapConfirmedEvent ->
+                        augmentedRealityViewModel.worldScaleSceneViewProxy
+                            .screenToBaseSurface(singleTapConfirmedEvent.screenCoordinate)
+                            ?.let { point -> augmentedRealityViewModel.graphicsOverlay.graphics.add(
+                                Graphic(
+                                    point,
+                                    SimpleMarkerSceneSymbol(
+                                        SimpleMarkerSceneSymbolStyle.Diamond,
+                                        Color.green,
+                                        height = 1.0,
+                                        width = 1.0,
+                                        depth = 1.0
+                                    )
+                                )
+                            )
+                            }
                     },
                 )
             }

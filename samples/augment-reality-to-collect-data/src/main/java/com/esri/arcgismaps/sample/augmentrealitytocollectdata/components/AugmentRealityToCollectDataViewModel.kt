@@ -28,6 +28,9 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.ElevationSource
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.SurfacePlacement
+import com.arcgismaps.toolkit.ar.WorldScaleSceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
@@ -39,16 +42,23 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         // is calculated with elevation
         baseSurface.elevationSources.add(ElevationSource.fromTerrain3dService())
         baseSurface.backgroundGrid.isVisible = false
+        baseSurface.opacity = 0.0f
         // add the AR tree survey service feature table.
         operationalLayers.add(ArcGISSceneLayer("https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/AR_Tree_Survey/FeatureServer/0"))
     }
+
+    val graphicsOverlay = GraphicsOverlay().apply {
+        sceneProperties.surfacePlacement = SurfacePlacement.Absolute
+    }
+
+    val worldScaleSceneViewProxy = WorldScaleSceneViewProxy()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
-//            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 }
