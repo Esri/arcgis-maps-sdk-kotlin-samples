@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.sampleslib.components
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,28 +35,19 @@ fun SampleTopAppBar(
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
+    val containerColor =
+        if (isSystemInDarkTheme()) {
+            md_theme_dark_primaryContainer
+        } else {
+            md_theme_light_primaryContainer
+        }
 
-    if (Build.VERSION.SDK_INT >= 36) {
-        val containerColor =
-            if (isSystemInDarkTheme()) {
-                md_theme_dark_primaryContainer
-            } else {
-                md_theme_light_primaryContainer
-            }
-
-        TopAppBar(
-            title = { Text(text = title) },
-            actions = actions,
-            modifier = modifier,
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = containerColor
-            )
+    TopAppBar(
+        title = { Text(text = title) },
+        actions = actions,
+        modifier = modifier,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = containerColor
         )
-    } else {
-        TopAppBar(
-            title = { Text(text = title) },
-            actions = actions,
-            modifier = modifier
-        )
-    }
+    )
 }
