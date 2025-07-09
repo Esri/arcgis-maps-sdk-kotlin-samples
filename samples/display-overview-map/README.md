@@ -36,7 +36,7 @@ The data used in this sample is the [OpenStreetMap Tourist Attractions for North
 
 ## Additional information
 
-This sample uses the [overview map toolkit component](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/geoview-compose#display-an-overviewmap). For information about setting up the toolkit visit the [developer guide doc](https://developers.arcgis.com/kotlin/toolkit/#reference-the-library-from-jfrog).
+This sample uses the [overview map toolkit component](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/geoview-compose#display-an-overviewmap). For information about setting up the toolkit visit the [developer guide doc](https://developers.arcgis.com/kotlin/toolkit/).
 
 ## Tags
 
