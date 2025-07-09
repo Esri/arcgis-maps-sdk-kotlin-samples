@@ -32,7 +32,7 @@ This sample uses a [feature layer](https://www.arcgis.com/apps/mapviewer/index.h
 
 ## Additional information
 
-This sample uses the [PopUp](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/popup#popup) toolkit component. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit docs](https://developers.arcgis.com/kotlin/toolkit/).
+This sample uses the [Popup](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/popup#popup) toolkit component. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit docs](https://developers.arcgis.com/kotlin/toolkit/).
 
 ## Tags
 
