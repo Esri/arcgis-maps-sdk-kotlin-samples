@@ -24,6 +24,11 @@ import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.esri.arcgismaps.sample.displaymap.databinding.DisplayMapActivityMainBinding
+import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.geometry.SpatialReferenceBuilder
+import com.esri.arcgismaps.sample.sampleslib.components.CustomSrUtils
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,5 +47,10 @@ class MainActivity : AppCompatActivity() {
         // create and add a map with a navigation night basemap style
         val map = ArcGISMap(BasemapStyle.ArcGISNavigationNight)
         activityMainBinding.mapView.map = map
+
+        val geom1 = Point(100.0, 100.0, 10.0, SpatialReference(4326))
+        val geom2 = Point(100.0, 100.0, 10.0, CustomSrUtils.createCustomPrecisionSpatialReference(SpatialReference(4326), true))
+        val isEqual = GeometryEngine.equals(geom1, geom2)
+        println("IsEqual result: $isEqual")
     }
 }

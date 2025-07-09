@@ -78,11 +78,11 @@ class CustomSrUtils {
 
         public fun createCustomPrecisionSpatialReference(spatialReference: SpatialReference, customVertical: Boolean): SpatialReference {
             val srBuilder = SpatialReferenceBuilder(spatialReference.wkid, spatialReference.verticalWkid)
-            srBuilder.resolution = srBuilder.resolution / 5
-            srBuilder.tolerance = srBuilder.tolerance / 4
+            srBuilder.resolution(srBuilder.resolution / 5)
+            srBuilder.tolerance(srBuilder.tolerance / 4)
             if (customVertical) {
-                srBuilder.verticalResolution = srBuilder.verticalResolution / 3
-                srBuilder.verticalTolerance = srBuilder.verticalTolerance / 2
+                srBuilder.verticalResolution(srBuilder.verticalResolution / 3)
+                srBuilder.verticalTolerance(srBuilder.verticalTolerance / 2)
             }
             return srBuilder.toSpatialReference()
         }
