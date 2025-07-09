@@ -1,0 +1,19 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "TODO",
+    "formal_name": "EditGeometriesWithProgrammaticReticleTool",
+    "ignore": false,
+    "images": [
+        "edit-geometries-with-programmatic-reticle-tool.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/components/EditGeometriesWithProgrammaticReticleToolViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/screens/EditGeometriesWithProgrammaticReticleToolScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/MainActivity.kt"
+    ],
+    "title": "Edit geometries with programmatic reticle tool"
+}
