@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
 
         // file provider URI
         val contentUri = FileProvider.getUriForFile(
-            this, getString(R.string.provider_authority), file
+            this, getString(R.string.edit_feature_attachments_provider_authority), file
         )
         // open the file in gallery
         val imageIntent = Intent().apply {
@@ -339,3 +339,6 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+// Custom FileProvider for fetching attachments
+class EditFeatureAttachmentsProvider : FileProvider()
