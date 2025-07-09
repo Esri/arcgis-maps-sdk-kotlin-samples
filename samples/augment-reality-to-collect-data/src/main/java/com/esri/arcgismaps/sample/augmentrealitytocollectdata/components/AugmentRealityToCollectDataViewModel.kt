@@ -120,7 +120,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
 
     // Adds a feature to represent a tree to the tree survey service feature table.
     fun addTree(context: Context, health: TreeHealth){
-        treeMarker?.let { marker ->
+        treeMarker?.let { treeMarker ->
             // Set up the feature attributes
             val featureAttributes = mapOf<String, Any>(
                 "Health" to health.value,
@@ -129,7 +129,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
             )
 
             // Retrieve the marker's geometry as a Point
-            val point = (marker.geometry as? Point) ?: run {
+            val point = (treeMarker.geometry as? Point) ?: run {
                 showToast(context, "Something went wrong")
                 return@let
             }
@@ -148,6 +148,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
                     }.onFailure { e -> showError(context, e) }
             }
 
+            // Resets the feature's attributes and geometry to match the data source, discarding unsaved changes.
             feature.refresh()
         }
     }
