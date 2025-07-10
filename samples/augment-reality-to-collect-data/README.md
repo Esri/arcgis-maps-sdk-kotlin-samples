@@ -1,4 +1,3 @@
-
 # Augment reality to collect data
 
 Tap on real-world objects to collect data.
