@@ -1,19 +1,41 @@
 {
     "category": "Augmented Reality",
-    "description": "TODO",
+    "description": "Tap on real-world objects to collect data.",
     "formal_name": "AugmentRealityToCollectData",
     "ignore": false,
     "images": [
         "augment-reality-to-collect-data.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "attachment",
+        "augmented reality",
+        "capture",
+        "collection",
+        "collector",
+        "data",
+        "field",
+        "field worker",
+        "full-scale",
+        "mixed reality",
+        "survey",
+        "world-scale",
+        "GraphicsOverlay",
+        "SceneView",
+        "Surface",
+        "WorldScaleSceneView"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "GraphicsOverlay",
+        "SceneView",
+        "Surface",
+        "WorldScaleSceneView"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/components/AugmentRealityToCollectDataViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/screens/AugmentRealityToCollectDataScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytocollectdata/screens/AugmentRealityToCollectDataScreen.kt"
     ],
     "title": "Augment reality to collect data"
 }
