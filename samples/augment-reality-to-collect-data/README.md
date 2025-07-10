@@ -1,6 +1,8 @@
 # Augment reality to collect data
 Tap on real-world objects to collect data.
 
+![Image of augment reality to collect data](augment-reality-to-collect-data.png)
+
 ## Use case
 
 You can use AR to quickly photograph an object and automatically determine the object's real-world 
