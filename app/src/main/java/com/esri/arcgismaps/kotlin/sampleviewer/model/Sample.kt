@@ -21,7 +21,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.toolkit.authentication.signOut
+import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import kotlinx.serialization.Serializable
 
 /**
@@ -129,7 +129,7 @@ data class Sample(
  */
 suspend fun Sample.start(context: Context) {
     // Revoke previously configured ArcGISEnvironment settings like ApiKeys/OAuth tokens/Credentials
-    ArcGISEnvironment.authenticationManager.signOut()
+    AuthenticatorState().signOut()
     ArcGISEnvironment.apiKey = null
     // Obtain and launch the sample activity
     val className = Class.forName(mainActivity) as Class<*>
