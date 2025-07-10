@@ -18,11 +18,11 @@ When you run the sample, the app will load a web map which contains premium cont
 2. Call the toolkit's `DialogAuthenticator` composable at the top level of your view hierarchy and pass the `AuthenticatorState` object. Because the `AuthenticatorState` object has an `OAuthConfiguration` set, the `DialogAuthenticator` will prompt for OAuth credentials when the associated `Portal` is loaded.
 3. Load a `PortalItem(...)` with connection type `Portal.Connection.Authenticated` which will issue an authentication challenge.
 4. Configure the manifest.xml to handle the OAuth redirect URI.
-   * Define a second activity in the `manifest.xml` with the a name `OAuthUserSignInActivity` from the toolkit
+   * Define a second activity in the `manifest.xml` with the a name `AuthenticationActivity` from the toolkit
 
    ```xml
    <activity
-        android:name="com.arcgismaps.toolkit.authentication.OAuthUserSignInActivity"
+        android:name="com.arcgismaps.toolkit.authentication.AuthenticationActivity"
         android:launchMode="singleTop"> <!--keeps only one instance to the top of the stack-->
    ```
 
