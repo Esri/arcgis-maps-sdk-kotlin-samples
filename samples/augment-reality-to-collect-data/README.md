@@ -1,4 +1,6 @@
-# Augment reality to collect data 
+
+# Augment reality to collect data
+
 Tap on real-world objects to collect data.
 
 ![Image of augment reality to collect data](augment-reality-to-collect-data.png)
@@ -10,7 +12,7 @@ location, facilitating a more efficient data collection workflow. For example, y
 catalog trees in a park, while maintaining visual context of which trees have been
 recorded - no need for spray paint or tape.
 
-## How to use the sample 
+## How to use the sample
 
 Before you start, go through the on-screen calibration process to ensure accurate positioning
 of recorded features.
