@@ -110,7 +110,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
                     point,
                     SimpleMarkerSceneSymbol(
                         SimpleMarkerSceneSymbolStyle.Diamond,
-                        Color.green,
+                        Color.yellow,
                         height = 1.0,
                         width = 1.0,
                         depth = 1.0
