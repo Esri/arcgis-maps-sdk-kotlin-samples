@@ -21,10 +21,10 @@ satisfied, tap the '+' button to record the feature.
 
 ## How it works
 
-1. Create the `WorldScaleSceneView` and add it to the view.
-2. Load the feature service and display it with a feature layer.
+1. Create the `WorldScaleSceneView`.
+2. Load the feature service, create feature layer and add it to the scene.
 3. Create and add the elevation surface to the scene.
-4. Create a graphics overlay for planning the location of features to add and add it to the scene view.
+4. Create a graphics overlay for planning the location of features to add and add it to the scene.
 5. When the user taps the screen, use `WorldScaleSceneView.onSingleTapConfirmed()`
 to find the real-world location of the tapped object using ARKit plane detection.
 6. Add a graphic to the graphics overlay preview where the feature will be placed and 
