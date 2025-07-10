@@ -30,7 +30,7 @@ Zoom in or out of the map. The scale bar will automatically display the appropri
 
 The scale will be accurate for the center of the map, and in general more accurate at larger scales (zoomed in). This means at smaller scales (zoomed out), the reading may be inaccurate at the extremes of the visible extent.
 
-This sample uses the scale bar toolkit component, which requires the [toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit). For information about setting up the toolkit, as well as code for the underlying component, visit the the developer's [documentation page](https://developers.arcgis.com/kotlin/toolkit/).
+This sample uses the [Scalebar](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/scalebar#scalebar) toolkit component. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit docs](https://developers.arcgis.com/kotlin/toolkit/).
 
 ## Tags
 

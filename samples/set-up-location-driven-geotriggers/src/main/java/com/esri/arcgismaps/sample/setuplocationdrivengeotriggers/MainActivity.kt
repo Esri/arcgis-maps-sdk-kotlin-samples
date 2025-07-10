@@ -20,6 +20,7 @@ package com.esri.arcgismaps.sample.setuplocationdrivengeotriggers
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -31,14 +32,21 @@ import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geotriggers.*
+import com.arcgismaps.geotriggers.FeatureFenceParameters
+import com.arcgismaps.geotriggers.FenceGeotrigger
+import com.arcgismaps.geotriggers.FenceGeotriggerNotificationInfo
+import com.arcgismaps.geotriggers.FenceNotificationType
+import com.arcgismaps.geotriggers.FenceRuleType
+import com.arcgismaps.geotriggers.GeotriggerMonitor
+import com.arcgismaps.geotriggers.GeotriggerNotificationInfo
+import com.arcgismaps.geotriggers.LocationGeotriggerFeed
 import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
 import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.portal.Portal
 import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.portal.Portal
 import com.esri.arcgismaps.sample.setuplocationdrivengeotriggers.databinding.SetUpLocationDrivenGeotriggersActivityMainBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -110,6 +118,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
