@@ -28,7 +28,7 @@ When you run the sample, you will be challenged for an ArcGIS Online login. Ente
 
 ## Additional information
 
-This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+This sample uses the toolkit's [authentication](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/authentication#authenticator) module to handle authentication. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit docs](https://developers.arcgis.com/kotlin/toolkit/). This sample also uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
 
 ## Tags
 

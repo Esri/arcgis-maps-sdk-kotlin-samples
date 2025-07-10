@@ -19,19 +19,20 @@ package com.esri.arcgismaps.sample.showgeodesicpathbetweentwopoints
 
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
+import com.arcgismaps.geometry.GeodeticCurveType
+import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.LinearUnit
 import com.arcgismaps.geometry.LinearUnitId
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
-import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geometry.GeodeticCurveType
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -101,6 +102,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

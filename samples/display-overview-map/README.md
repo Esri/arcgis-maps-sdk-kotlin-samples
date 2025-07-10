@@ -30,6 +30,14 @@ notice the viewpoint and scale of the linked overview map update automatically.
 * MapView
 * OverviewMap
 
+## About the data
+
+The data used in this sample is the [OpenStreetMap Tourist Attractions for North America](https://www.arcgis.com/home/item.html?id=addaa517dde346d1898c614fa91fd032) feature layer, which is scale-dependent and displays at scales larger than 1:160,000.
+
+## Additional information
+
+This sample uses the [overview map toolkit component](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/geoview-compose#display-an-overviewmap). For information about setting up the toolkit visit the [developer guide doc](https://developers.arcgis.com/kotlin/toolkit/).
+
 ## Tags
 
 context, inset, map, minimap, overview, preview, small scale, toolkit, view
