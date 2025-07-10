@@ -40,6 +40,7 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.SurfacePlacement
 import com.arcgismaps.toolkit.ar.WorldScaleSceneViewProxy
+import com.arcgismaps.toolkit.ar.WorldScaleVpsAvailability
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
@@ -63,6 +64,8 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
     val graphicsOverlay = GraphicsOverlay().apply {
         sceneProperties.surfacePlacement = SurfacePlacement.Absolute
     }
+
+    var isVpsAvailable by mutableStateOf(false)
 
     val worldScaleSceneViewProxy = WorldScaleSceneViewProxy()
 
@@ -130,7 +133,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
 
             // Retrieve the marker's geometry as a Point
             val point = (treeMarker.geometry as? Point) ?: run {
-                showToast(context, "Something went wrong")
+                messageDialogVM.showMessageDialog("Something went wrong")
                 return@let
             }
 
@@ -144,12 +147,23 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
                         // Upload changes from the local feature table to the feature service
                         featureTable.applyEdits()
                             .onSuccess { showToast(context, "Successfully added tree data!")}
-                            .onFailure { e -> showError(context, e) }
-                    }.onFailure { e -> showError(context, e) }
+                            .onFailure { e -> messageDialogVM.showMessageDialog(e) }
+                    }.onFailure { e -> messageDialogVM.showMessageDialog(e) }
             }
 
             // Resets the feature's attributes and geometry to match the data source, discarding unsaved changes.
             feature.refresh()
+        }
+    }
+
+    /**
+     * Checks if the current viewpoint camera location is within the VPS availability area.
+     */
+    fun onCurrentViewpointCameraChanged(location: Point) {
+        viewModelScope.launch {
+            worldScaleSceneViewProxy.checkVpsAvailability(location.y, location.x).onSuccess {
+                isVpsAvailable = it == WorldScaleVpsAvailability.Available
+            }
         }
     }
 }
@@ -163,11 +177,6 @@ enum class TreeHealth(val value: Short){
     Dead(0),
     Distressed(5),
     Healthy(10),
-}
-
-private fun showError(context: Context, e: Throwable){
-    Log.d("AugmentRealityToCollectDataViewModel", e.message ?: e.toString())
-    showToast(context, e.message ?: "Unknown error")
 }
 
 private fun showToast(context: Context, message: String) {
