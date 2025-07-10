@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
@@ -42,8 +43,8 @@ import com.arcgismaps.mapping.view.LatitudeLongitudeGridLabelFormat
 import com.arcgismaps.mapping.view.MgrsGrid
 import com.arcgismaps.mapping.view.UsngGrid
 import com.arcgismaps.mapping.view.UtmGrid
-import com.esri.arcgismaps.sample.showgrid.databinding.ShowGridActivityMainBinding
 import com.esri.arcgismaps.sample.showgrid.databinding.PopupDialogBinding
+import com.esri.arcgismaps.sample.showgrid.databinding.ShowGridActivityMainBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -88,6 +89,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

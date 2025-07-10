@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.changecameracontroller
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -30,19 +31,19 @@ import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.symbology.ModelSceneSymbol
-import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.SurfacePlacement
-import com.arcgismaps.mapping.view.Graphic
-import com.arcgismaps.mapping.view.OrbitLocationCameraController
-import com.arcgismaps.mapping.view.OrbitGeoElementCameraController
-import com.arcgismaps.mapping.view.GlobeCameraController
 import com.arcgismaps.mapping.view.Camera
+import com.arcgismaps.mapping.view.GlobeCameraController
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.OrbitGeoElementCameraController
+import com.arcgismaps.mapping.view.OrbitLocationCameraController
+import com.arcgismaps.mapping.view.SurfacePlacement
 import com.esri.arcgismaps.sample.changecameracontroller.databinding.ChangeCameraControllerActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
@@ -122,6 +123,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
