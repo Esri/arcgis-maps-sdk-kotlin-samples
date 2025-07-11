@@ -40,10 +40,13 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorMidVertex
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorVertex
 import com.arcgismaps.mapping.view.geometryeditor.ProgrammaticReticleTool
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 private const val pinkneysGreenJson = """
@@ -84,6 +87,11 @@ private val geometryTypes = mapOf(
 )
 
 class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : AndroidViewModel(app) {
+
+    private var reticleState = ReticleState.Default
+    private var selectedGraphic: Graphic? = null
+    private val programmaticReticleTool = ProgrammaticReticleTool()
+
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
             initialViewpoint = Viewpoint(latitude = 51.523806, longitude = -0.775395, scale = 4e4)
         }
@@ -101,23 +109,32 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     val graphicsOverlays = listOf(graphicsOverlay)
 
     val geometryEditor = GeometryEditor().apply {
-        tool = ProgrammaticReticleTool()
+        tool = programmaticReticleTool
     }
 
     val messageDialogVM = MessageDialogViewModel()
 
     val mapViewProxy = MapViewProxy()
 
-    private var reticleState = ReticleState.Default
-    private var selectedGraphic: Graphic? = null
-
     init {
-        viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+        viewModelScope.run {
+            launch {
+                arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            }
+            launch {
+                geometryEditor.pickedUpElement.collect {
+                    updateReticleState()
+                }
+            }
+            launch {
+                geometryEditor.hoveredElement.collect {
+                    updateReticleState()
+                }
+            }
         }
 
         createInitialGraphics()
-        updateMultiButtonText()
+        updateMultiButtonText() // set initial 'start editor' button text
     }
 
     fun onMapViewTap(tapEvent: SingleTapConfirmedEvent) {
@@ -133,11 +150,17 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     fun onButtonClick() {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(geometryTypes.getOrDefault(startingGeometryType.value, GeometryType.Polygon))
-            updateMultiButtonText()
+            updateReticleState()
             return
         }
 
-        
+        when (reticleState) {
+            ReticleState.Default, ReticleState.PickedUp -> programmaticReticleTool.placeElementAtReticle()
+            ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> {
+                programmaticReticleTool.selectElementAtReticle()
+                programmaticReticleTool.pickUpSelectedElement()
+            }
+        }
     }
 
     fun setStartingGeometryType(newGeometryType: String) {
@@ -169,6 +192,22 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         graphicsOverlay.graphics.add(Graphic(geometry = pinkeysGreen, symbol = polygonSymbol))
     }
 
+    private fun updateReticleState() {
+        if (geometryEditor.pickedUpElement.value != null) {
+            reticleState = ReticleState.PickedUp
+            updateMultiButtonText()
+            return
+        }
+
+        reticleState = when (geometryEditor.hoveredElement.value) {
+            is GeometryEditorVertex -> ReticleState.HoveringVertex
+            is GeometryEditorMidVertex -> ReticleState.HoveringMidVertex
+            else -> ReticleState.Default
+        }
+
+        updateMultiButtonText()
+    }
+
     private fun updateMultiButtonText() {
         if (!geometryEditor.isStarted.value) {
             _multiButtonText.value = "Start Geometry Editor"
@@ -187,8 +226,8 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             it.isSelected = false
             it.isVisible = true
         }
-
         selectedGraphic = null
+        updateMultiButtonText()
     }
 
     private enum class ReticleState {
