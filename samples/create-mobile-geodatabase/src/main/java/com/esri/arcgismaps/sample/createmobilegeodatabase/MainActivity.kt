@@ -44,7 +44,6 @@ import com.arcgismaps.mapping.layers.FeatureLayer
 import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.CreateMobileGeodatabaseActivityMainBinding
 import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.TableLayoutBinding
 import com.esri.arcgismaps.sample.createmobilegeodatabase.databinding.TableRowBinding
-import com.esri.arcgismaps.sample.sampleslib.components.CustomSrUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -82,8 +81,6 @@ class MainActivity : AppCompatActivity() {
     private var geodatabase: Geodatabase? = null
 
 
-    private val customSr = CustomSrUtils.createCustomPrecisionSpatialReference(SpatialReference.webMercator(), false)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -110,11 +107,6 @@ class MainActivity : AppCompatActivity() {
 
         // opens a share-sheet with the "LocationHistory.geodatabase" file
         createButton.setOnClickListener {
-            // Already added features programmatically to the geodatabase feature table
-            // when you click on the map, so we can share it now.
-
-
-
             // close the mobile geodatabase before sharing
             geodatabase?.close()
 
@@ -144,23 +136,10 @@ class MainActivity : AppCompatActivity() {
         // define the path and name of the geodatabase file
         // note: the path defined must be non-empty, available,
         // allow read/write access, and end in ".geodatabase"
-        val file = File(getExternalFilesDir(null)?.path, "/Santa_Barbara_Botanic_Garden_POI_createdInRt.geodatabase")
+        val file = File(getExternalFilesDir(null)?.path, "/LocationHistory.geodatabase")
         if (file.exists()) {
             file.delete()
         }
-
-        println("geodatabase.HasLocalEdits: ${geodatabase?.hasLocalEdits()}")
-        //println("featureTable.HasLocalEdits: ${featureTable?.hasLocalEdits()}")
-        println("geodatabase.isInTransaction: ${geodatabase?.isInTransaction?.value}")
-        if (geodatabase?.isInTransaction?.value == true) {
-            // if the geodatabase is in transaction, commit it before closing
-            geodatabase?.commitTransaction()
-            println("committed transaction")
-            println("geodatabase.HasLocalEdits: ${geodatabase?.hasLocalEdits()}")
-            //println("featureTable.HasLocalEdits: ${featureTable?.hasLocalEdits()}")
-            println("geodatabase.isInTransaction: ${geodatabase?.isInTransaction?.value}")
-        }
-
         // close the existing geodatabase
         geodatabase?.close()
         lifecycleScope.launch {
@@ -184,8 +163,8 @@ class MainActivity : AppCompatActivity() {
         // construct a table description which stores features as points on map
         val tableDescription =
             TableDescription(
-                "Point_layer" , //""LocationHistory",
-                customSr, //SpatialReference.wgs84(),
+                "LocationHistory",
+                SpatialReference.wgs84(),
                 GeometryType.Point
             )
         // set up the fields to the table,
@@ -194,12 +173,8 @@ class MainActivity : AppCompatActivity() {
         // FieldDescriptions can be a SHORT, INTEGER, GUID, FLOAT, DOUBLE, DATE, TEXT, OID, GLOBALID, BLOB, GEOMETRY, RASTER, or XML.
         tableDescription.fieldDescriptions.addAll(
             listOf(
-
-                // Changed to fields from Santa Barbara 
-                FieldDescription("OBJECTID", FieldType.Oid),
-                FieldDescription("EditDate", FieldType.Date),
-                FieldDescription("name", FieldType.Text),
-                FieldDescription("description", FieldType.Text)
+                FieldDescription("oid", FieldType.Oid),
+                FieldDescription("collection_timestamp", FieldType.Date)
             )
         )
 
@@ -230,79 +205,25 @@ class MainActivity : AppCompatActivity() {
      * Also, updates the TotalFeatureCount on the screen
      */
     private fun addFeature(mapPoint: Point) {
-
-        // Hacked to recreated data for a different sample but with custom resolution + tolerance
-
-        geodatabase?.beginTransaction()?.onSuccess {
-            // begin a transaction to add features to the geodatabase
-            Log.i(localClassName, "Transaction started successfully")
-
-            addAllFeatures()
-        }?.onFailure {
-            showError("Error starting transaction: ${it.message}")
-            return
-        }
-
-    }
-
-    private fun addAllFeatures() {
         // set up the feature attributes
-        val featureAttributes1 = mutableMapOf<String, Any>()
-        featureAttributes1["EditDate"] = Instant.now()
-        featureAttributes1["name"] = "Information Kiosk"
-        featureAttributes1["description"] = "The Information Kiosk was constructed in 1937 to serve as the orientation and interpretation center for the Garden."
-        val geom1 = Point(x = -13326044.363549689, y = 4090389.990345818, customSr)
-
-        val featureAttributes2 = mutableMapOf<String, Any>()
-        featureAttributes2["EditDate"] = Instant.now()
-        featureAttributes2["name"] = "Information Kiosk"
-        featureAttributes2["description"] = "The Information Kiosk was constructed in 1937 to serve as the orientation and interpretation center for the Garden."
-        val geom2 = Point(x = -13326025.702165836, y = 4090384.7651583389, customSr)
-
-        val featureAttributes3 = mutableMapOf<String, Any>()
-        featureAttributes3["EditDate"] = Instant.now()
-        featureAttributes3["name"] = "Information Kiosk"
-        featureAttributes3["description"] = "The Information Kiosk was constructed in 1937 to serve as the orientation and interpretation center for the Garden."
-        val geom3 = Point(x = -13326035.256794369, y = 4090407.4574011038, customSr)
+        val featureAttributes = mutableMapOf<String, Any>()
+        featureAttributes["collection_timestamp"] = Instant.now()
 
         // create a new feature at the mapPoint
-        val feature1 = featureTable?.createFeature(featureAttributes1, geom1)
-            ?: return showError("Error creating feature 1 using attributes")
-        val feature2 = featureTable?.createFeature(featureAttributes2, geom2)
-            ?: return showError("Error creating feature 2 using attributes")
-        val feature3 = featureTable?.createFeature(featureAttributes3, geom3)
-            ?: return showError("Error creating feature 3 using attributes")
+        val feature = featureTable?.createFeature(featureAttributes, mapPoint)
+            ?: return showError("Error creating feature using attributes")
 
         lifecycleScope.launch {
             // add the feature to the feature table
-            featureTable?.addFeature(feature1)?.onSuccess {
+            featureTable?.addFeature(feature)?.onSuccess {
                 // feature added successfully, update count
                 featureCountTextView.text =
                     "Number of features added: ${featureTable?.numberOfFeatures}"
-
-                featureTable?.addFeature(feature2)?.onSuccess {
-                    // feature added successfully, update count
-                    featureCountTextView.text =
-                        "Number of features added: ${featureTable?.numberOfFeatures}"
-
-                    featureTable?.addFeature(feature3)?.onSuccess {
-                        // feature added successfully, update count
-                        featureCountTextView.text =
-                            "Number of features added: ${featureTable?.numberOfFeatures}"
-
-                        // enable table button since at least 1 feature loaded on the GeodatabaseFeatureTable
-                        viewTableButton.isEnabled = true
-                    }?.onFailure {
-                        showError(it.message.toString())
-                    }
-                }?.onFailure {
-                    showError(it.message.toString())
-                }
+                // enable table button since at least 1 feature loaded on the GeodatabaseFeatureTable
+                viewTableButton.isEnabled = true
             }?.onFailure {
                 showError(it.message.toString())
             }
-
-
         }
     }
 
@@ -325,9 +246,9 @@ class MainActivity : AppCompatActivity() {
                 queryResults.forEach { feature ->
                     // prepare the table row
                     val tableRowBinding = TableRowBinding.inflate(layoutInflater).apply {
-                        oid.text = feature.attributes["OBJECTID"].toString()
-//                        collectionTimestamp.text = (feature.attributes["EditDate"] as Instant).toString()
-                        collectionTimestamp.text = feature.attributes["name"].toString()
+                        oid.text = feature.attributes["oid"].toString()
+                        collectionTimestamp.text =
+                            (feature.attributes["collection_timestamp"] as Instant).toString()
                     }
                     // add the row to the TableLayout
                     table.addView(tableRowBinding.root)
@@ -344,8 +265,7 @@ class MainActivity : AppCompatActivity() {
     private fun setMapView() {
         // create and add a map with a navigation night basemap style
         mapView.map = ArcGISMap(BasemapStyle.ArcGISTopographic)
-        //34.465864°‎N, 119.707599°‎W
-        mapView.setViewpoint(Viewpoint(34.465864, -119.707599, 1_000_000.0))
+        mapView.setViewpoint(Viewpoint(41.5, -100.0, 100_000_000.0))
 
         lifecycleScope.launch {
             mapView.map?.loadStatus?.collect { loadStatus ->
