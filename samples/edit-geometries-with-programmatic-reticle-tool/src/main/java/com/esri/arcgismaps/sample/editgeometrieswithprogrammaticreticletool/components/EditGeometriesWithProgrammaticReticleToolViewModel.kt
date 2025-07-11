@@ -22,6 +22,7 @@ import com.arcgismaps.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.Polyline
@@ -42,6 +43,7 @@ import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.ProgrammaticReticleTool
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 private const val pinkneysGreenJson = """
@@ -74,10 +76,26 @@ private const val treeMarkersJson = """
         {"wkid":102100,"latestWkid":3857}}
 """
 
+private val geometryTypes = mapOf(
+    "Point" to GeometryType.Point,
+    "Multipoint" to GeometryType.Multipoint,
+    "Polyline" to GeometryType.Polyline,
+    "Polygon" to GeometryType.Polygon,
+)
+
 class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : AndroidViewModel(app) {
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
             initialViewpoint = Viewpoint(latitude = 51.523806, longitude = -0.775395, scale = 4e4)
         }
+
+    private val _currentGeometryType = MutableStateFlow("Polygon")
+    val startingGeometryType = _currentGeometryType
+
+    private val _multiButtonText = MutableStateFlow("")
+    val multiButtonText = _multiButtonText
+
+    private val _multiButtonEnabled = MutableStateFlow(true)
+    val multiButtonEnabled = _multiButtonEnabled
 
     private val graphicsOverlay = GraphicsOverlay()
     val graphicsOverlays = listOf(graphicsOverlay)
@@ -90,6 +108,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
 
     val mapViewProxy = MapViewProxy()
 
+    private var reticleState = ReticleState.Default
     private var selectedGraphic: Graphic? = null
 
     init {
@@ -98,6 +117,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
 
         createInitialGraphics()
+        updateMultiButtonText()
     }
 
     fun onMapViewTap(tapEvent: SingleTapConfirmedEvent) {
@@ -108,6 +128,20 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
                 startWithIdentifiedGeometry(tapEvent.screenCoordinate)
             }
         }
+    }
+
+    fun onButtonClick() {
+        if (!geometryEditor.isStarted.value) {
+            geometryEditor.start(geometryTypes.getOrDefault(startingGeometryType.value, GeometryType.Polygon))
+            updateMultiButtonText()
+            return
+        }
+
+        
+    }
+
+    fun setStartingGeometryType(newGeometryType: String) {
+        _currentGeometryType.value = newGeometryType
     }
 
     private suspend fun startWithIdentifiedGeometry(tapPosition: ScreenCoordinate) {
@@ -135,6 +169,19 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         graphicsOverlay.graphics.add(Graphic(geometry = pinkeysGreen, symbol = polygonSymbol))
     }
 
+    private fun updateMultiButtonText() {
+        if (!geometryEditor.isStarted.value) {
+            _multiButtonText.value = "Start Geometry Editor"
+            return
+        }
+
+        _multiButtonText.value = when (reticleState) {
+            ReticleState.Default -> "Insert Point"
+            ReticleState.PickedUp -> "Drop Point"
+            ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> "Pick Up Point"
+        }
+    }
+
     private fun resetExistingEditState() {
         selectedGraphic?.let {
             it.isSelected = false
@@ -142,6 +189,13 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
 
         selectedGraphic = null
+    }
+
+    private enum class ReticleState {
+        Default,
+        PickedUp,
+        HoveringVertex,
+        HoveringMidVertex,
     }
 }
 

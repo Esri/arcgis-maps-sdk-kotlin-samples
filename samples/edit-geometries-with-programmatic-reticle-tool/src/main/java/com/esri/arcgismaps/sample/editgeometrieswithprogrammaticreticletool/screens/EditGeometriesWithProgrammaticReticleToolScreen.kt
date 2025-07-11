@@ -18,10 +18,17 @@ package com.esri.arcgismaps.sample.editgeometrieswithprogrammaticreticletool.scr
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -38,11 +45,26 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
+            val buttonText by mapViewModel.multiButtonText.collectAsState()
+            var isSettingsVisible  by remember { mutableStateOf(false) }
+            val startingGeometryType by mapViewModel.startingGeometryType.collectAsState()
+
+            if (isSettingsVisible) {
+                SettingsScreen(
+                    currentGeometryType = startingGeometryType,
+                    onGeometryTypeSelected = { newGeometryType -> mapViewModel.setStartingGeometryType(newGeometryType) },
+                    onDismissRequest = { isSettingsVisible = false }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
             ) {
+                Button(modifier = Modifier.fillMaxWidth(), onClick = { isSettingsVisible = true }) {
+                    Text(text = "Settings")
+                }
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
@@ -53,7 +75,9 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
                     geometryEditor = mapViewModel.geometryEditor,
                     onSingleTapConfirmed = mapViewModel::onMapViewTap,
                 )
-                // TODO: Add UI components in this Column ...
+                Button(modifier = Modifier.fillMaxWidth(), onClick = mapViewModel::onButtonClick) {
+                    Text(text = buttonText)
+                }
             }
 
             mapViewModel.messageDialogVM.apply {
