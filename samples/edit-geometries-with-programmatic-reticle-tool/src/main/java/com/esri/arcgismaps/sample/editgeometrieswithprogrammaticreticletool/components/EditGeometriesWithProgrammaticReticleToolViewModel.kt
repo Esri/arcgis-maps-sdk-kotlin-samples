@@ -21,9 +21,11 @@ import androidx.compose.ui.unit.dp
 import com.arcgismaps.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Multipoint
+import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.mapping.ArcGISMap
@@ -35,6 +37,7 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.symbology.Symbol
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
@@ -46,7 +49,6 @@ import com.arcgismaps.mapping.view.geometryeditor.ProgrammaticReticleTool
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 private const val pinkneysGreenJson = """
@@ -85,6 +87,15 @@ private val geometryTypes = mapOf(
     "Polyline" to GeometryType.Polyline,
     "Polygon" to GeometryType.Polygon,
 )
+
+private val Color.Companion.blue
+    get() = fromRgba(0, 0, 255, 255)
+
+private val Color.Companion.orangeRed
+    get() = fromRgba(128, 128, 0, 255)
+
+private val Color.Companion.transparentRed
+    get() = fromRgba( 255, 0, 0, 70)
 
 class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -137,6 +148,24 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         updateMultiButtonText() // set initial 'start editor' button text
     }
 
+    fun onCancelButtonClick() {
+        geometryEditor.stop()
+        resetExistingEditState()
+    }
+
+    fun onDoneButtonClick() {
+        val geometry = geometryEditor.stop()
+        if (geometry != null) {
+            val selectedGraphic = selectedGraphic
+            if (selectedGraphic != null) {
+                selectedGraphic.geometry = geometry
+            } else {
+                graphicsOverlay.graphics.add(Graphic(geometry = geometry, symbol = geometry.defaultSymbol))
+            }
+        }
+        resetExistingEditState()
+    }
+
     fun onMapViewTap(tapEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
             if (geometryEditor.isStarted.value) {
@@ -147,7 +176,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
-    fun onButtonClick() {
+    fun onMultiButtonClick() {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(geometryTypes.getOrDefault(startingGeometryType.value, GeometryType.Polygon))
             updateReticleState()
@@ -168,28 +197,24 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     }
 
     private suspend fun startWithIdentifiedGeometry(tapPosition: ScreenCoordinate) {
-        resetExistingEditState()
-
         val identifyResult = mapViewProxy.identify(graphicsOverlay,tapPosition, tolerance = 15.dp).getOrNull() ?: return
         val graphic = identifyResult.graphics.firstOrNull() ?: return
         geometryEditor.start(graphic.geometry ?: return)
         graphic.isSelected = true
         graphic.isVisible = false
+        selectedGraphic = graphic
+        updateReticleState()
     }
 
     private fun createInitialGraphics() {
-        val multiPointSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.yellow, 5f)
         val treeMarkers = Geometry.fromJsonOrNull(treeMarkersJson) as Multipoint
-        graphicsOverlay.graphics.add(Graphic(geometry = treeMarkers, symbol = multiPointSymbol))
+        graphicsOverlay.graphics.add(Graphic(geometry = treeMarkers, symbol = treeMarkers.defaultSymbol))
 
-        val polylineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 2f)
         val beechLodgeBoundary = Geometry.fromJsonOrNull(beechLodgeBoundaryJson) as Polyline
-        graphicsOverlay.graphics.add(Graphic(geometry = beechLodgeBoundary, symbol = polylineSymbol))
+        graphicsOverlay.graphics.add(Graphic(geometry = beechLodgeBoundary, symbol = beechLodgeBoundary.defaultSymbol))
 
-        val polygonLineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.black, 1f)
-        val polygonSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.transparentRed, polygonLineSymbol)
         val pinkeysGreen = Geometry.fromJsonOrNull(pinkneysGreenJson) as Polygon
-        graphicsOverlay.graphics.add(Graphic(geometry = pinkeysGreen, symbol = polygonSymbol))
+        graphicsOverlay.graphics.add(Graphic(geometry = pinkeysGreen, symbol = pinkeysGreen.defaultSymbol))
     }
 
     private fun updateReticleState() {
@@ -238,11 +263,15 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     }
 }
 
-private val Color.Companion.blue
-    get() = fromRgba(0, 0, 255, 255)
-
-private val Color.Companion.orangeRed
-    get() = fromRgba(128, 128, 0, 255)
-
-private val Color.Companion.transparentRed
-    get() = fromRgba( 255, 0, 0, 70)
+private val Geometry.defaultSymbol: Symbol
+    get() = when (this) {
+        is Envelope -> throw IllegalStateException("Envelopes not supported by the geometry editor.")
+        is Polygon -> SimpleFillSymbol(
+            SimpleFillSymbolStyle.Solid,
+            Color.transparentRed,
+            outline = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.black, 1f)
+        )
+        is Polyline -> SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 2f)
+        is Multipoint -> SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.yellow, 5f)
+        is Point -> SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Square, Color.orangeRed, 10f)
+    }

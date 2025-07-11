@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.editgeometrieswithprogrammaticreticletool.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.editgeometrieswithprogrammaticreticletool.components.EditGeometriesWithProgrammaticReticleToolViewModel
@@ -48,6 +50,7 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
             val buttonText by mapViewModel.multiButtonText.collectAsState()
             var isSettingsVisible  by remember { mutableStateOf(false) }
             val startingGeometryType by mapViewModel.startingGeometryType.collectAsState()
+            val isEditorStarted by mapViewModel.geometryEditor.isStarted.collectAsState()
 
             if (isSettingsVisible) {
                 SettingsScreen(
@@ -57,25 +60,41 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
                 )
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                Button(modifier = Modifier.fillMaxWidth(), onClick = { isSettingsVisible = true }) {
-                    Text(text = "Settings")
+            Column(modifier = Modifier.fillMaxSize().padding(it)) {
+                Row {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(0.33f).padding(2.dp),
+                        onClick = mapViewModel::onCancelButtonClick,
+                        enabled = isEditorStarted,
+                    ) {
+                        Text(text = "Cancel")
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(0.5f).padding(2.dp),
+                        onClick = { isSettingsVisible = true },
+                    ) {
+                        Text(text = "Settings")
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth().padding(2.dp),
+                        onClick = mapViewModel::onDoneButtonClick,
+                        enabled = isEditorStarted,
+                    ) {
+                        Text(text = "Done")
+                    }
                 }
                 MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                    modifier = Modifier.fillMaxSize().weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
                     graphicsOverlays = mapViewModel.graphicsOverlays,
                     geometryEditor = mapViewModel.geometryEditor,
                     onSingleTapConfirmed = mapViewModel::onMapViewTap,
                 )
-                Button(modifier = Modifier.fillMaxWidth(), onClick = mapViewModel::onButtonClick) {
+                Button(
+                    modifier = Modifier.fillMaxWidth().padding(2.dp),
+                    onClick = mapViewModel::onMultiButtonClick,
+                ) {
                     Text(text = buttonText)
                 }
             }
