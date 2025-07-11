@@ -47,13 +47,11 @@ You can use AR to quickly record the location and health of a tree.
 
 This sample requires a device that is compatible with [ARCore](https://developers.google.com/ar/devices).
 
-There are two main approaches for identifying the physical location of tapped point:
+The `onSingleTapConfirmed` lambda parameter to the `WorldScaleSceneView` passes a `mapPoint` parameter when it is able to determine the real-world location of the tapped point. On devices that support [ARCore's Depth API](https://developers.google.com/ar/develop/depth#device_compatibility), this point is represents the closest visible object to the device at the tapped screen point in the camera feed. On devices that do not support the Depth API, ARCore will attempt to perform a [hit test](https://developers.google.com/ar/develop/hit-test) against any planes that were detected in the scene at that location. If no planes are detected, then `mapPoint` will be null.
 
-* **WorldScaleSceneView.onSingleTapGesture** - uses plane detection provided by ARCore to determine where _in the real world_ the tapped point is.
-* **SceneView.onSingleTapGesture** - determines where the tapped point is _in the virtual scene_. This is problematic when the opacity is set to 0 and you can't see where on the scene that is. Real-world objects aren't accounted for by the scene view's calculation to find the tapped location; for example tapping on a tree might result in a point on the basemap many meters away behind the tree.
+Note that the `WorldScaleSceneViewProxy` also supports converting screen coordinates to scene points using `WorldScaleSceneViewProxy.screenToBaseSurface()` and `WorldScaleSceneViewProxy.screenToLocation()`. However, these methods will test the screen coordinate against virtual objects in the scene, so real-world objects that do not have geometry (ie. a mesh) will not be used for the calculation. Therefore, `screenToBaseSurface()` and `screenToLocation()` should only be used where the developer is sure that the data contains geometry for the real-world object in the camera feed.
 
-This sample only uses the `WorldScaleSceneView.onSingleTapGesture` approach, as it is the only way to get accurate
-positions for features not directly on the ground in real-scale AR.
+This sample uses the `onSingleTapConfirmed` lambda, as it is the only way to get accurate positions for features present in the real-world but not present in the scene, such as trees.
 
 Note that unlike other scene samples, a basemap isn't shown most of the time, because the real
 world provides the context. Only while calibrating is the basemap displayed at 50% opacity, to
