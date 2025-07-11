@@ -100,24 +100,21 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
     fun addMarker(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         // Remove all graphics from the graphics overlay
         graphicsOverlay.graphics.clear()
-        // Convert the screen coordinate of the tap event to a point in the base surface
-        worldScaleSceneViewProxy
-            .screenToBaseSurface(singleTapConfirmedEvent.screenCoordinate)
-            ?.let { point ->
-                // Create a new marker graphic at the specified point with a diamond symbol
-                val newMarker = Graphic(
-                    point,
-                    SimpleMarkerSceneSymbol(
-                        SimpleMarkerSceneSymbolStyle.Diamond,
-                        Color.yellow,
-                        height = 1.0,
-                        width = 1.0,
-                        depth = 1.0
-                    )
+        singleTapConfirmedEvent.mapPoint.let { point ->
+            // Create a new marker graphic at the specified point with a diamond symbol
+            val newMarker = Graphic(
+                point,
+                SimpleMarkerSceneSymbol(
+                    SimpleMarkerSceneSymbolStyle.Diamond,
+                    Color.yellow,
+                    height = 1.0,
+                    width = 1.0,
+                    depth = 1.0
                 )
-                treeMarker = newMarker
-                graphicsOverlay.graphics.add(newMarker)
-            }
+            )
+            treeMarker = newMarker
+            graphicsOverlay.graphics.add(newMarker)
+        }
     }
 
     // Adds a feature to represent a tree to the tree survey service feature table.
