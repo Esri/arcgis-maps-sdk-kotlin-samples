@@ -57,7 +57,7 @@ Note that unlike other scene samples, a basemap isn't shown most of the time, be
 world provides the context. Only while calibrating is the basemap displayed at 50% opacity, to
 give the user a visual reference to compare to.
 
-**World-scale AR** is one of two main patterns for working with geographic information in augmented
+**World-scale AR** is one of three main patterns for working with geographic information in augmented
 reality currently available in the [toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main).
 
 Note that apps using ARCore must comply with ARCore's user privacy requirements.
