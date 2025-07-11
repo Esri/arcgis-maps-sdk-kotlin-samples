@@ -73,7 +73,7 @@ class MapViewModel(
             val provisionPath = "/storage/emulated/0/Android/data/com.esri.arcgismaps.kotlin.sampleviewer/files" + File.separator
             val geodatabaseFile = File(
                 provisionPath,
-                "Santa_Barbara_Botanic_Garden_Points_of_Interest_4440690790436384955.geodatabase"
+                "Santa_Barbara_Botanic_Garden_POI_createdInRt.geodatabase"
             )
             // instantiate the geodatabase with the file path
             val geodatabase = Geodatabase(geodatabaseFile.path)
@@ -178,10 +178,18 @@ class MapViewModel(
      * @return the total count of GeoElements.
      */
     private fun geoElementsCountFromResult(result: IdentifyLayerResult): Int {
+
+        Log.i("SAMPLE", "Result name: ${result.geoElements[0].attributes["name"]}")
+        Log.i("SAMPLE", "Result geom json: ${result.geoElements[0].geometry?.spatialReference?.toJson()}")
+
+
         var subLayerGeoElementCount = 0
         for (sublayerResult in result.sublayerResults) {
             // recursively call this function to accumulate elements from all sublayers
             subLayerGeoElementCount += geoElementsCountFromResult(sublayerResult)
+
+            Log.i("SAMPLE", "Sublayer Result name: ${sublayerResult.geoElements[0].attributes["name"]}")
+            Log.i("SAMPLE", "Sublayer Result geom json: ${sublayerResult.geoElements[0].geometry?.spatialReference?.toJson()}")
         }
         return subLayerGeoElementCount + result.geoElements.size
     }

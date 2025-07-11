@@ -113,7 +113,19 @@ class MainActivity : AppCompatActivity() {
             // Already added features programmatically to the geodatabase feature table
             // when you click on the map, so we can share it now.
 
+            val tbl = geodatabase?.getFeatureTable("Point_layer")
+            if (tbl == null) {
+                showError("No feature table found in the geodatabase.")
+                return@setOnClickListener
+            }
 
+            val params = QueryParameters().apply {
+                whereClause = "1=1" // query all features
+            }
+            lifecycleScope.launch {
+                val numOfFeatures = tbl?.queryFeatureCount(params)?.getOrNull()
+                println("Number of features in existing table: $numOfFeatures")
+            }
 
             // close the mobile geodatabase before sharing
             geodatabase?.close()
@@ -152,13 +164,24 @@ class MainActivity : AppCompatActivity() {
         println("geodatabase.HasLocalEdits: ${geodatabase?.hasLocalEdits()}")
         //println("featureTable.HasLocalEdits: ${featureTable?.hasLocalEdits()}")
         println("geodatabase.isInTransaction: ${geodatabase?.isInTransaction?.value}")
-        if (geodatabase?.isInTransaction?.value == true) {
-            // if the geodatabase is in transaction, commit it before closing
-            geodatabase?.commitTransaction()
-            println("committed transaction")
-            println("geodatabase.HasLocalEdits: ${geodatabase?.hasLocalEdits()}")
-            //println("featureTable.HasLocalEdits: ${featureTable?.hasLocalEdits()}")
-            println("geodatabase.isInTransaction: ${geodatabase?.isInTransaction?.value}")
+//        if (geodatabase?.isInTransaction?.value == true) {
+//            // if the geodatabase is in transaction, commit it before closing
+//            geodatabase?.commitTransaction()
+//            println("committed transaction")
+//            println("geodatabase.HasLocalEdits: ${geodatabase?.hasLocalEdits()}")
+//            //println("featureTable.HasLocalEdits: ${featureTable?.hasLocalEdits()}")
+//            println("geodatabase.isInTransaction: ${geodatabase?.isInTransaction?.value}")
+//        }
+
+        geodatabase?.getFeatureTable("Point_layer")?.let {
+            // if the feature table exists, remove it
+            val params = QueryParameters().apply {
+                whereClause = "1=1" // query all features
+            }
+            lifecycleScope.launch {
+                val numOfFeatures = it.queryFeatureCount(params).getOrNull()
+                println("Number of features in existing table: $numOfFeatures")
+            }
         }
 
         // close the existing geodatabase
@@ -220,6 +243,8 @@ class MainActivity : AppCompatActivity() {
             // display the current count of features in the FeatureTable
             featureCountTextView.text =
                 "Number of features added: ${featureTable.numberOfFeatures}"
+
+            addAllFeatures()
         }?.onFailure {
             showError(it.message.toString())
         }
@@ -233,15 +258,15 @@ class MainActivity : AppCompatActivity() {
 
         // Hacked to recreated data for a different sample but with custom resolution + tolerance
 
-        geodatabase?.beginTransaction()?.onSuccess {
-            // begin a transaction to add features to the geodatabase
-            Log.i(localClassName, "Transaction started successfully")
+        //geodatabase?.beginTransaction()?.onSuccess {
+        //    // begin a transaction to add features to the geodatabase
+        //    Log.i(localClassName, "Transaction started successfully")
 
             addAllFeatures()
-        }?.onFailure {
-            showError("Error starting transaction: ${it.message}")
-            return
-        }
+        //}?.onFailure {
+        //    showError("Error starting transaction: ${it.message}")
+        //    return
+        //}
 
     }
 
@@ -255,14 +280,14 @@ class MainActivity : AppCompatActivity() {
 
         val featureAttributes2 = mutableMapOf<String, Any>()
         featureAttributes2["EditDate"] = Instant.now()
-        featureAttributes2["name"] = "Information Kiosk"
-        featureAttributes2["description"] = "The Information Kiosk was constructed in 1937 to serve as the orientation and interpretation center for the Garden."
+        featureAttributes2["name"] = "Blaksley Boulder"
+        featureAttributes2["description"] = "The enormous Blaksley Boulder sits at the symbolic center of the Botanic Garden."
         val geom2 = Point(x = -13326025.702165836, y = 4090384.7651583389, customSr)
 
         val featureAttributes3 = mutableMapOf<String, Any>()
         featureAttributes3["EditDate"] = Instant.now()
-        featureAttributes3["name"] = "Information Kiosk"
-        featureAttributes3["description"] = "The Information Kiosk was constructed in 1937 to serve as the orientation and interpretation center for the Garden."
+        featureAttributes3["name"] = "The Bessie Bullard Pond and Brook"
+        featureAttributes3["description"] = "Turtle watching is a favorite pastime at the Bessie Bullard Pond and Brook where, besides the red-slider turtles, yellow pond-lily, native ferns, and many other water-loving plants can be viewed. ."
         val geom3 = Point(x = -13326035.256794369, y = 4090407.4574011038, customSr)
 
         // create a new feature at the mapPoint
