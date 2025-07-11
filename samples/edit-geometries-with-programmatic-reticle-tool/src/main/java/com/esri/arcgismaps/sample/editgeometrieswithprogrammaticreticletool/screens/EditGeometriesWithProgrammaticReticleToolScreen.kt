@@ -48,8 +48,10 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
+                    mapViewProxy = mapViewModel.mapViewProxy,
                     graphicsOverlays = mapViewModel.graphicsOverlays,
                     geometryEditor = mapViewModel.geometryEditor,
+                    onSingleTapConfirmed = mapViewModel::onMapViewTap,
                 )
                 // TODO: Add UI components in this Column ...
             }

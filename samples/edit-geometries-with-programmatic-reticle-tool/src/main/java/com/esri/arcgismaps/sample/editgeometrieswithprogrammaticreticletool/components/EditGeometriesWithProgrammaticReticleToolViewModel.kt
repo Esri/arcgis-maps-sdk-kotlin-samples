@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.editgeometrieswithprogrammaticreticletool.components
 
 import android.app.Application
+import androidx.compose.ui.unit.dp
 import com.arcgismaps.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,8 +36,11 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.ScreenCoordinate
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.ProgrammaticReticleTool
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
@@ -81,8 +85,12 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     val geometryEditor = GeometryEditor().apply {
         tool = ProgrammaticReticleTool()
     }
-    // Create a message dialog view model for handling error messages
+
     val messageDialogVM = MessageDialogViewModel()
+
+    val mapViewProxy = MapViewProxy()
+
+    private var selectedGraphic: Graphic? = null
 
     init {
         viewModelScope.launch {
@@ -90,6 +98,26 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
 
         createInitialGraphics()
+    }
+
+    fun onMapViewTap(tapEvent: SingleTapConfirmedEvent) {
+        viewModelScope.launch {
+            if (geometryEditor.isStarted.value) {
+                // TODO: identify editor and set viewpoint
+            } else {
+                startWithIdentifiedGeometry(tapEvent.screenCoordinate)
+            }
+        }
+    }
+
+    private suspend fun startWithIdentifiedGeometry(tapPosition: ScreenCoordinate) {
+        resetExistingEditState()
+
+        val identifyResult = mapViewProxy.identify(graphicsOverlay,tapPosition, tolerance = 15.dp).getOrNull() ?: return
+        val graphic = identifyResult.graphics.firstOrNull() ?: return
+        geometryEditor.start(graphic.geometry ?: return)
+        graphic.isSelected = true
+        graphic.isVisible = false
     }
 
     private fun createInitialGraphics() {
@@ -105,6 +133,15 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         val polygonSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.transparentRed, polygonLineSymbol)
         val pinkeysGreen = Geometry.fromJsonOrNull(pinkneysGreenJson) as Polygon
         graphicsOverlay.graphics.add(Graphic(geometry = pinkeysGreen, symbol = polygonSymbol))
+    }
+
+    private fun resetExistingEditState() {
+        selectedGraphic?.let {
+            it.isSelected = false
+            it.isVisible = true
+        }
+
+        selectedGraphic = null
     }
 }
 
