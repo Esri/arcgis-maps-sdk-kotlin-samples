@@ -410,15 +410,3 @@ private fun LegalTextGeospatial() {
         }
     })
 }
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun DialogOptionsPreview() {
-    SamplePreviewSurface {
-        TreeHealthDialog(
-            onOptionSelected = { _ -> },
-            onDismissRequest = {}
-        )
-    }
-}
