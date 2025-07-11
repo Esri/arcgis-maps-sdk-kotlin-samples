@@ -26,7 +26,7 @@ satisfied, tap the '+' button to record the feature.
 2. Load the feature service, create feature layer and add it to the scene.
 3. Create and add the elevation surface to the scene.
 4. Create a graphics overlay for planning the location of features to add and add it to the scene.
-5. When the user taps the screen, use `WorldScaleSceneView.onSingleTapConfirmed()` to find the real-world location of the tapped object using ARKit plane detection.
+5. Use the `onSingleTapConfirmed` lambda parameter on the `WorldScaleSceneView` to detect when the user taps and get the real-world location of the point they tapped using ARCore's Depth API.
 6. Add a graphic to the graphics overlay preview where the feature will be placed and allow the user to visually verify the placement.
 7. Prompt the user for a tree health value, then create the feature.
 
