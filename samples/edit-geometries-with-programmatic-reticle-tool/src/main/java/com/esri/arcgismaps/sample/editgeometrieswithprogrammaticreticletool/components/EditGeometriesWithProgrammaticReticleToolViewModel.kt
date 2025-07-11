@@ -17,24 +17,70 @@
 package com.esri.arcgismaps.sample.editgeometrieswithprogrammaticreticletool.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import com.arcgismaps.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.geometry.Geometry
+import com.arcgismaps.geometry.Multipoint
+import com.arcgismaps.geometry.Polygon
+import com.arcgismaps.geometry.Polyline
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.SimpleFillSymbol
+import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
+import com.arcgismaps.mapping.view.geometryeditor.ProgrammaticReticleTool
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
-class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
+private const val pinkneysGreenJson = """
+    {"rings":
+        [[[-84843.262719916485,6713749.9329888355],[-85833.376589175183,6714679.7122141244],
+        [-85406.822347959576,6715063.9827222107],[-85184.329997390232,6715219.6195847588],
+        [-85092.653857582554,6715119.5391713539],[-85090.446872787768,6714792.7656492386],
+        [-84915.369168906298,6714297.8798246197],[-84854.295522911285,6714080.907587287],
+        [-84843.262719916485,6713749.9329888355]]],
+    "spatialReference":
+        {"wkid":102100,"latestWkid":3857}}
+"""
 
+private const val beechLodgeBoundaryJson = """
+    {"paths":
+        [[[-87090.652708065536,6714158.9244240439],[-87247.362370337316,6714232.880689906],
+        [-87226.314032974493,6714605.4697726099],[-86910.499335316243,6714488.006312645],
+        [-86750.82198052686,6714401.1768307304],[-86749.846825938366,6714305.8450344801]]],
+    "spatialReference":
+        {"wkid":102100,"latestWkid":3857}}
+"""
+
+private const val treeMarkersJson = """
+    {"points":
+        [[-86750.751150056443,6713749.4529355941],[-86879.381793060631,6713437.3335486846],
+        [-87596.503104619667,6714381.7342108283],[-87553.257569537804,6714402.0910389507],
+        [-86831.019903597829,6714398.4128562529],[-86854.105933315877,6714396.1957954112],
+        [-86800.624094892439,6713992.3374453448]],
+    "spatialReference":
+        {"wkid":102100,"latestWkid":3857}}
+"""
+
+class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : AndroidViewModel(app) {
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
+            initialViewpoint = Viewpoint(latitude = 51.523806, longitude = -0.775395, scale = 4e4)
+        }
+
+    private val graphicsOverlay = GraphicsOverlay()
+    val graphicsOverlays = listOf(graphicsOverlay)
+
+    val geometryEditor = GeometryEditor().apply {
+        tool = ProgrammaticReticleTool()
+    }
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
@@ -42,5 +88,31 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
+
+        createInitialGraphics()
+    }
+
+    private fun createInitialGraphics() {
+        val multiPointSymbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.yellow, 5f)
+        val treeMarkers = Geometry.fromJsonOrNull(treeMarkersJson) as Multipoint
+        graphicsOverlay.graphics.add(Graphic(geometry = treeMarkers, symbol = multiPointSymbol))
+
+        val polylineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.blue, 2f)
+        val beechLodgeBoundary = Geometry.fromJsonOrNull(beechLodgeBoundaryJson) as Polyline
+        graphicsOverlay.graphics.add(Graphic(geometry = beechLodgeBoundary, symbol = polylineSymbol))
+
+        val polygonLineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.black, 1f)
+        val polygonSymbol = SimpleFillSymbol(SimpleFillSymbolStyle.Solid, Color.transparentRed, polygonLineSymbol)
+        val pinkeysGreen = Geometry.fromJsonOrNull(pinkneysGreenJson) as Polygon
+        graphicsOverlay.graphics.add(Graphic(geometry = pinkeysGreen, symbol = polygonSymbol))
     }
 }
+
+private val Color.Companion.blue
+    get() = fromRgba(0, 0, 255, 255)
+
+private val Color.Companion.orangeRed
+    get() = fromRgba(128, 128, 0, 255)
+
+private val Color.Companion.transparentRed
+    get() = fromRgba( 255, 0, 0, 70)
