@@ -55,7 +55,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         baseSurface.elevationSources.add(ElevationSource.fromTerrain3dService())
         baseSurface.backgroundGrid.isVisible = false
         baseSurface.opacity = 0.0f
-        // add the AR tree survey service feature table.
+        // add the AR tree survey feature layer.
         operationalLayers.add(featureLayer)
     }
 
