@@ -173,7 +173,7 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                         onSingleTapConfirmed = augmentedRealityViewModel::addMarker,
                         onCurrentViewpointCameraChanged = { camera ->
                             if (camera.location.x != 0.0 && camera.location.y != 0.0) {
-                                augmentedRealityViewModel.onCurrentViewpointCameraChanged(camera.location)
+                                augmentedRealityViewModel.viewpointCameraLocationFlow.tryEmit(camera.location)
                             }
                         },
                     ) {

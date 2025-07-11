@@ -41,6 +41,9 @@ import com.arcgismaps.mapping.view.SurfacePlacement
 import com.arcgismaps.toolkit.ar.WorldScaleSceneViewProxy
 import com.arcgismaps.toolkit.ar.WorldScaleVpsAvailability
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 
 class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(app) {
@@ -77,10 +80,17 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
     // The current marker graphic representing the user's selection
     private var treeMarker : Graphic? = null
 
+    // A MutableSharedFlow that emits Point locations of the viewpoint camera
+    val viewpointCameraLocationFlow = MutableSharedFlow<Point>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
     init {
         viewModelScope.launch {
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
+        collectViewpointCameraLocation()
     }
 
     // Displays a dialog for adding tree data if a marker exists
@@ -152,14 +162,16 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         }
     }
 
-    /**
-     * Checks if the current viewpoint camera location is within the VPS availability area.
-     */
-    fun onCurrentViewpointCameraChanged(location: Point) {
+    // Collects viewpoint camera locations once in 10 seconds and checks for VPS availability
+    private fun collectViewpointCameraLocation(){
         viewModelScope.launch {
-            worldScaleSceneViewProxy.checkVpsAvailability(location.y, location.x).onSuccess {
-                isVpsAvailable = it == WorldScaleVpsAvailability.Available
-            }
+            viewpointCameraLocationFlow
+                .sample(10_000)
+                .collect { location ->
+                    worldScaleSceneViewProxy.checkVpsAvailability(location.y, location.x).onSuccess {
+                        isVpsAvailable = it == WorldScaleVpsAvailability.Available
+                    }
+                }
         }
     }
 }
