@@ -191,7 +191,8 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // wait for gdb load // locate the .geodatabase file in the device
             val provisionPath = getExternalFilesDir(null)?.path.toString() + File.separator
-            val geodatabaseFile = File(provisionPath, "Santa_Barbara_Botanic_Garden_Points_of_Interest_4440690790436384955.geodatabase")
+            //val geodatabaseFile = File(provisionPath, "Santa_Barbara_Botanic_Garden_Points_of_Interest_4440690790436384955.geodatabase")
+            val geodatabaseFile = File(provisionPath, "Santa_Barbara_Botanic_Garden_POI_createdInRt.geodatabase")
             // instantiate the geodatabase with the file path
             val geodatabase = Geodatabase(geodatabaseFile.path)
             // load the geodatabase
