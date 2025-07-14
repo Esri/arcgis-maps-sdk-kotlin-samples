@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -95,6 +96,9 @@ fun SettingsScreen(
                     currentGeometryType,
                     onGeometryTypeSelected = onGeometryTypeSelected
                 )
+            }
+            Button(onClick = onDismissRequest, modifier = Modifier.padding(vertical = 4.dp)) {
+                Text(text = "Close", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, fontWeight = FontWeight.Light, fontStyle = FontStyle.Italic)
             }
         }
     }
