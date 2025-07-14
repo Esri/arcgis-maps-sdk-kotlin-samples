@@ -158,15 +158,27 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         updateMultiButtonState() // set initial 'start editor' button text
     }
 
+    /**
+     * Stop the editor, discarding the current edit geometry.
+     */
     fun onCancelButtonClick() {
         geometryEditor.stop()
         resetExistingEditState()
     }
 
+    /**
+     * Delete the currently selected element.
+     *
+     * Throws if there is no element or the current element can't be deleted.
+     */
     fun onDeleteButtonPressed() {
         geometryEditor.deleteSelectedElement()
     }
 
+    /**
+     * Stops the editor, saving the edit geometry into a graphics overlay (updating the existing
+     * graphic or adding a new one based on how the edit session was started).
+     */
     fun onDoneButtonClick() {
         val geometry = geometryEditor.stop()
         if (geometry != null) {
@@ -180,6 +192,12 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         resetExistingEditState()
     }
 
+    /**
+     * If the editor is not started, identifies a tapped graphic and starts the editor with its
+     * geometry.
+     *
+     * If the editor is started, sets the viewpoint to the identified (mid-)vertex.
+     */
     fun onMapViewTap(tapEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
             if (geometryEditor.isStarted.value) {
@@ -190,6 +208,14 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
+    /**
+     * Performs different actions based on the editor's current hovered and picked up element, as
+     * well as whether vertex creation is allowed. The behaviour is as follows:
+     * - If the editor is stopped, starts it with a new geometry with the currently-selected geometry type
+     * - Otherwise, if there is a picked up element, places it under the reticle
+     * - Otherwise, if a vertex or mid-vertex is hovered over, picks it up
+     * - Otherwise, inserts a new vertex at the reticle position
+     */
     fun onMultiButtonClick() {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(geometryTypes.getOrDefault(startingGeometryType.value, GeometryType.Polygon))
@@ -206,10 +232,17 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
+    /**
+     * Redoes the last undone geometry editor action, if any
+     */
     fun onRedoButtonPressed() {
         geometryEditor.redo()
     }
 
+    /**
+     * If there is a picked up element, places the element back in its original position.
+     * Otherwise, undoes the last geometry editor action, if any.
+     */
     fun onUndoButtonPressed() {
         if (geometryEditor.pickedUpElement.value != null) {
             geometryEditor.cancelCurrentAction()
@@ -218,6 +251,10 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
+    /**
+     * Enables or disables vertex creation, which affects the feedback lines and vertices, the
+     * allowed multi-button actions, and the presence of the grow effect for mid-vertices.
+     */
     fun setAllowVertexCreation(newValue: Boolean) {
         _allowVertexCreation.value = newValue
         programmaticReticleTool.vertexCreationPreviewEnabled = newValue
@@ -227,10 +264,17 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         updateMultiButtonState()
     }
 
+    /**
+     * Set the starting geometry type, used when not starting with an existing geometry.
+     */
     fun setStartingGeometryType(newGeometryType: String) {
         _startingGeometryType.value = newGeometryType
     }
 
+    /**
+     * Identifies for a geometry editor element at the given screen coordinates. If a vertex
+     * or mid-vertex is found, selects it and centers it in the view.
+     */
     private suspend fun selectAndSetViewpointAt(tapPosition: ScreenCoordinate) {
         val identifyResult = mapViewProxy.identifyGeometryEditor(tapPosition, tolerance = 15.dp).getOrNull() ?: return
         val topElement = identifyResult.elements.firstOrNull() ?: return
@@ -249,6 +293,12 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
+    /**
+     * Identifies for an existing graphic in the graphic overlay. If found, starts the geometry editor
+     * using the graphic's geometry. Hides the existing graphic for the duration of the edit session.
+     * Sets a new viewpoint center based on the graphic position (depending on what type of edits
+     * are allowed).
+     */
     private suspend fun startWithIdentifiedGeometry(tapPosition: ScreenCoordinate) {
         val identifyResult = mapViewProxy.identify(graphicsOverlay,tapPosition, tolerance = 15.dp).getOrNull() ?: return
         val graphic = identifyResult.graphics.firstOrNull() ?: return
@@ -270,6 +320,9 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         updateReticleState()
     }
 
+    /**
+     * Populates the graphics overlay with some starting graphics for editing.
+     */
     private fun createInitialGraphics() {
         val treeMarkers = Geometry.fromJsonOrNull(treeMarkersJson) as Multipoint
         graphicsOverlay.graphics.add(Graphic(geometry = treeMarkers, symbol = treeMarkers.defaultSymbol))
@@ -281,6 +334,13 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         graphicsOverlay.graphics.add(Graphic(geometry = pinkeysGreen, symbol = pinkeysGreen.defaultSymbol))
     }
 
+    /**
+     * Called whenever something happens that may change what the multi-functional button does
+     * (e.g. editor stopping/starting, hovered or picked-up element changing).
+     *
+     * The private [reticleState] property decides what happens when the multi-functional button
+     * is pressed, and is used to derive the text and enabled-ness of the button.
+     */
     private fun updateReticleState() {
         if (geometryEditor.pickedUpElement.value != null) {
             reticleState = ReticleState.PickedUp
@@ -297,6 +357,13 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         updateMultiButtonState()
     }
 
+    /**
+     * Sets the text and enabled-ness of the multi-functional button based on the current reticle
+     * state as well as whether vertex creation is allowed.
+     *
+     * Note that the enabled-ness of the button is used to prevent vertex insertion when vertex
+     * creation is disabled.
+     */
     private fun updateMultiButtonState() {
         if (!geometryEditor.isStarted.value) {
             _multiButtonText.value = "Start Geometry Editor"
@@ -320,10 +387,13 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
+    /**
+     * Clear the state for the currently selected graphic.
+     */
     private fun resetExistingEditState() {
-        selectedGraphic?.let {
-            it.isSelected = false
-            it.isVisible = true
+        selectedGraphic?.let { selectedGraphic ->
+            selectedGraphic.isSelected = false
+            selectedGraphic.isVisible = true
         }
         selectedGraphic = null
         updateMultiButtonState()
@@ -337,6 +407,9 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     }
 }
 
+/**
+ * A default symbol for the given geometry.
+ */
 private val Geometry.defaultSymbol: Symbol
     get() = when (this) {
         is Envelope -> throw IllegalStateException("Envelopes not supported by the geometry editor.")
@@ -350,6 +423,9 @@ private val Geometry.defaultSymbol: Symbol
         is Point -> SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Square, Color.orangeRed, 10f)
     }
 
+/**
+ * The last point of the first part of the given geometry (assumes there is at least one point).
+ */
 private val Geometry.lastPoint: Point?
     get() = when (this) {
         is Envelope -> throw IllegalStateException("Envelopes not supported by the geometry editor.")

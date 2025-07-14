@@ -38,9 +38,6 @@ import com.esri.arcgismaps.sample.editgeometrieswithprogrammaticreticletool.comp
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
-/**
- * Main screen layout for the sample app
- */
 @Composable
 fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
     val mapViewModel: EditGeometriesWithProgrammaticReticleToolViewModel = viewModel()
