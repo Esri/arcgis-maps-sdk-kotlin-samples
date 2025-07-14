@@ -34,6 +34,7 @@ import com.arcgismaps.mapping.ElevationSource
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbolStyle
+import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
@@ -90,7 +91,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         viewModelScope.launch {
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
-        collectViewpointCameraLocation()
+        periodicallyPollVpsAvailability()
     }
 
     // Displays a dialog for adding tree data if a marker exists
@@ -162,8 +163,15 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         }
     }
 
+    // Emits the camera location if it is not at (0.0, 0.0).
+    fun onCurrentViewpointCameraChanged(cameraLocation: Point){
+        if (cameraLocation.x != 0.0 && cameraLocation.y != 0.0) {
+            viewpointCameraLocationFlow.tryEmit(cameraLocation)
+        }
+    }
+
     // Collects viewpoint camera locations once in 10 seconds and checks for VPS availability
-    private fun collectViewpointCameraLocation(){
+    private fun periodicallyPollVpsAvailability(){
         viewModelScope.launch {
             viewpointCameraLocationFlow
                 .sample(10_000)

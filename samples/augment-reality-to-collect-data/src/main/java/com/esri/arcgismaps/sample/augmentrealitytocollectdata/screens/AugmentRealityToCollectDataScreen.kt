@@ -172,9 +172,8 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
                         graphicsOverlays = listOf(augmentedRealityViewModel.graphicsOverlay),
                         onSingleTapConfirmed = augmentedRealityViewModel::addMarker,
                         onCurrentViewpointCameraChanged = { camera ->
-                            if (camera.location.x != 0.0 && camera.location.y != 0.0) {
-                                augmentedRealityViewModel.viewpointCameraLocationFlow.tryEmit(camera.location)
-                            }
+                            augmentedRealityViewModel
+                                .onCurrentViewpointCameraChanged(camera.location)
                         },
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
