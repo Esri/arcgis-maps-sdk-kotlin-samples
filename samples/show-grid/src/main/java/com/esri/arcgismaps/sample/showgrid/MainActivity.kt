@@ -123,6 +123,9 @@ class MainActivity : AppCompatActivity() {
         // create drop-down list of different label positions
         setupLabelPositionDropdown(popUpDialogBinding)
 
+        // create slider to offset label positions
+        setupLabelOffset(popUpDialogBinding)
+
         // setup the checkbox to change the visibility of the labels
         setupLabelsCheckbox(popUpDialogBinding)
 
@@ -252,7 +255,26 @@ class MainActivity : AppCompatActivity() {
                     6 -> GridLabelPosition.TopRight
                     else -> return@OnItemClickListener showError("Unsupported option")
                 }
+                // only enable label offset slider if the label position is not Center or Geographic
+                popUpDialogBinding.labelOffsetSlider.isEnabled =
+                    !(labelPosition == GridLabelPosition.Center || labelPosition == GridLabelPosition.Geographic)
+
                 changeLabelPosition(labelPosition)
+            }
+        }
+    }
+
+    /**
+     * Sets up the [popupDialogBinding] for the label offset slider
+     * and handles behavior for when the slider value changes.
+     */
+    private fun setupLabelOffset(popupDialogBinding: PopupDialogBinding) {
+        popupDialogBinding.labelOffsetSlider.apply {
+            // set the label offset slider listener
+            addOnChangeListener { _, value, _ ->
+                val grid = mapView.grid ?: return@addOnChangeListener
+                // set the label offset based on the slider value
+                grid.labelOffset = value.toDouble()
             }
         }
     }

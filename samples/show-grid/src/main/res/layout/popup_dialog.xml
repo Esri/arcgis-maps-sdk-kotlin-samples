@@ -130,6 +130,38 @@
 
         </android.widget.RelativeLayout>
 
+        <android.widget.RelativeLayout
+            android:id="@+id/labelOffsetLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelPositionLayout">
+
+            <TextView
+                android:id="@+id/labelOffsetText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_offset"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/labelOffsetSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/labelOffsetText"
+                android:layout_centerVertical="true"
+                android:valueFrom="0"
+                android:valueTo="150"
+                android:stepSize="1" />
+
+        </android.widget.RelativeLayout>
+
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/labels_checkBox"
             android:layout_width="wrap_content"
@@ -142,8 +174,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/labelPositionLayout" />
-
+            app:layout_constraintTop_toBottomOf="@+id/labelOffsetLayout" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
