@@ -38,10 +38,6 @@ Tap 'Navigate Route' to simulate travelling and to receive directions from a pre
 * Stop
 * VoiceGuidance
 
-## Offline data
-
-None
-
 ## About the data
 
 The route taken in this sample goes from the San Diego Convention Center, site of the annual Esri User Conference, to the Fleet Science Center, San Diego.
