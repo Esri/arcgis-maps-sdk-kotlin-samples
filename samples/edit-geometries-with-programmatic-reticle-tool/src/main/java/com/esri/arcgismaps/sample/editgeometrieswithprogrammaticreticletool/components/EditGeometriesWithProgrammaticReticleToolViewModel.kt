@@ -169,7 +169,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     fun onMapViewTap(tapEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
             if (geometryEditor.isStarted.value) {
-                // TODO: identify editor and set viewpoint
+                selectAndSetViewpointAt(tapEvent.screenCoordinate)
             } else {
                 startWithIdentifiedGeometry(tapEvent.screenCoordinate)
             }
@@ -194,6 +194,22 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
 
     fun setStartingGeometryType(newGeometryType: String) {
         _currentGeometryType.value = newGeometryType
+    }
+
+    private suspend fun selectAndSetViewpointAt(tapPosition: ScreenCoordinate) {
+        val identifyResult = mapViewProxy.identifyGeometryEditor(tapPosition, tolerance = 15.dp).getOrNull() ?: return
+        val topElement = identifyResult.elements.firstOrNull() ?: return
+        when (topElement) {
+            is GeometryEditorVertex -> {
+                geometryEditor.selectVertex(topElement.partIndex, topElement.vertexIndex)
+                mapViewProxy.setViewpointCenter(topElement.point)
+            }
+            is GeometryEditorMidVertex -> {
+                geometryEditor.selectMidVertex(topElement.partIndex, topElement.segmentIndex)
+                mapViewProxy.setViewpointCenter(topElement.point)
+            }
+            else -> { /* Only zoom to vertices and mid-vertices. */ }
+        }
     }
 
     private suspend fun startWithIdentifiedGeometry(tapPosition: ScreenCoordinate) {
