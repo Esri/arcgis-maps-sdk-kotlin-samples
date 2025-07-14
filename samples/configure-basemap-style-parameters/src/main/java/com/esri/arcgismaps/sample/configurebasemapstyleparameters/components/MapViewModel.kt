@@ -33,7 +33,7 @@ import java.util.Locale
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    val map = ArcGISMap(BasemapStyle.OsmLightGrayBase).apply {
+    val map = ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
         //  Focus the viewpoint on an area where the different languages are best showcased:
         //  Bulgaria / Greece / Turkey, as they use three different alphabets: Cyrillic, Greek, and
         //  Latin, respectively.
