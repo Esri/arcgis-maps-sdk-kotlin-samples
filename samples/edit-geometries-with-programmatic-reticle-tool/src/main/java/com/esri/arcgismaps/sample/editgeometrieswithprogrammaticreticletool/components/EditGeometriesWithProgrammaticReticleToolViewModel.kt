@@ -51,6 +51,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 private const val pinkneysGreenJson = """
@@ -112,8 +113,8 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             initialViewpoint = Viewpoint(latitude = 51.523806, longitude = -0.775395, scale = 4e4)
         }
 
-    private val _currentGeometryType = MutableStateFlow("Polygon")
-    val startingGeometryType: StateFlow<String> = _currentGeometryType
+    private val _startingGeometryType = MutableStateFlow("Polygon")
+    val startingGeometryType: StateFlow<String> = _startingGeometryType
 
     private val _multiButtonText = MutableStateFlow("")
     val multiButtonText: StateFlow<String> = _multiButtonText
@@ -131,6 +132,10 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     val messageDialogVM = MessageDialogViewModel()
 
     val mapViewProxy = MapViewProxy()
+
+    val canDeleteSelectedElement = geometryEditor.selectedElement.map { selectedElement ->
+        selectedElement?.canDelete ?: false
+    }
 
     init {
         viewModelScope.run {
@@ -156,6 +161,10 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     fun onCancelButtonClick() {
         geometryEditor.stop()
         resetExistingEditState()
+    }
+
+    fun onDeleteButtonPressed() {
+        geometryEditor.deleteSelectedElement()
     }
 
     fun onDoneButtonClick() {
@@ -197,6 +206,18 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
+    fun onRedoButtonPressed() {
+        geometryEditor.redo()
+    }
+
+    fun onUndoButtonPressed() {
+        if (geometryEditor.pickedUpElement.value != null) {
+            geometryEditor.cancelCurrentAction()
+        } else {
+            geometryEditor.undo()
+        }
+    }
+
     fun setAllowVertexCreation(newValue: Boolean) {
         _allowVertexCreation.value = newValue
         programmaticReticleTool.vertexCreationPreviewEnabled = newValue
@@ -207,7 +228,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     }
 
     fun setStartingGeometryType(newGeometryType: String) {
-        _currentGeometryType.value = newGeometryType
+        _startingGeometryType.value = newGeometryType
     }
 
     private suspend fun selectAndSetViewpointAt(tapPosition: ScreenCoordinate) {
