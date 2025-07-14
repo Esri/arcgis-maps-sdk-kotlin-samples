@@ -51,6 +51,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -133,8 +134,14 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
 
     val mapViewProxy = MapViewProxy()
 
+    // True if there is a selected element which is allowed to be deleted.
     val canDeleteSelectedElement = geometryEditor.selectedElement.map { selectedElement ->
         selectedElement?.canDelete ?: false
+    }
+
+    // True if either there is a picked up element or the editor's `canUndo` is true.
+    val canUndoOrCancelInteraction = geometryEditor.pickedUpElement.map { it != null }.combineTransform(geometryEditor.canUndo) {
+        a, b -> emit(a || b)
     }
 
     init {

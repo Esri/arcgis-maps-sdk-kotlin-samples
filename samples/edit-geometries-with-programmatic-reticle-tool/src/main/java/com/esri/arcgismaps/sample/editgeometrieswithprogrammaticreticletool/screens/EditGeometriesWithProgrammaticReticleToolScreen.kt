@@ -51,7 +51,7 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
             val startingGeometryType by mapViewModel.startingGeometryType.collectAsState()
             val isEditorStarted by mapViewModel.geometryEditor.isStarted.collectAsState()
             val canDeleteSelectedElement by mapViewModel.canDeleteSelectedElement.collectAsState(initial = false)
-            val canUndo by mapViewModel.geometryEditor.canUndo.collectAsState()
+            val canUndo by mapViewModel.canUndoOrCancelInteraction.collectAsState(initial = false)
             val canRedo by mapViewModel.geometryEditor.canRedo.collectAsState()
 
             if (isSettingsVisible) {
