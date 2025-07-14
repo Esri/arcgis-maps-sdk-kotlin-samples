@@ -13,8 +13,7 @@ recorded - no need for spray paint or tape.
 
 ## How to use the sample
 
-Before you start, go through the on-screen calibration process to ensure accurate positioning
-of recorded features.
+Before you start, ensure the device has good satellite visibility (ie. no trees or ceilings overhead) or, if using `WorldScaleTrackingMode.Geospatial`, that the device is outside in an area with VPS availability. This sample will indicate whether the device has VPS availability when in Geospatial tracking mode.
 
 When you tap, an yellow diamond will appear at the tapped location. You can move around to
 visually verify that the tapped point is in the correct physical location. When you're
