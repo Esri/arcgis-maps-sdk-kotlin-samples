@@ -13,10 +13,9 @@ recorded - no need for spray paint or tape.
 
 ## How to use the sample
 
-Before you start, go through the on-screen calibration process to ensure accurate positioning
-of recorded features.
+Before you start, ensure the device has good satellite visibility (ie. no trees or ceilings overhead) or, if using `WorldScaleTrackingMode.Geospatial`, that the device is outside in an area with VPS availability. This sample will indicate whether the device has VPS availability when in Geospatial tracking mode.
 
-When you tap, an yellow diamond will appear at the tapped location. You can move around to
+When you tap, a yellow diamond will appear at the tapped location. You can move around to
 visually verify that the tapped point is in the correct physical location. When you're
 satisfied, tap the '+' button to record the feature.
 
@@ -27,7 +26,7 @@ satisfied, tap the '+' button to record the feature.
 2. Load the feature service, create feature layer and add it to the scene.
 3. Create and add the elevation surface to the scene.
 4. Create a graphics overlay for planning the location of features to add and add it to the scene.
-5. Use the `onSingleTapConfirmed` lambda parameter on the `WorldScaleSceneView` to detect when the user taps and get the real-world location of the point they tapped using ARCore's Depth API.
+5. Use the `onSingleTapConfirmed` lambda parameter on the `WorldScaleSceneView` to detect when the user taps and get the real-world location of the point they tapped.
 6. Add a graphic to the graphics overlay preview where the feature will be placed and allow the user to visually verify the placement.
 7. Prompt the user for a tree health value, then create the feature.
 
