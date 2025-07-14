@@ -24,6 +24,7 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryType
+import com.arcgismaps.geometry.Multipart
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
@@ -231,6 +232,17 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         val identifyResult = mapViewProxy.identify(graphicsOverlay,tapPosition, tolerance = 15.dp).getOrNull() ?: return
         val graphic = identifyResult.graphics.firstOrNull() ?: return
         geometryEditor.start(graphic.geometry ?: return)
+
+        graphic.geometry?.let { geometry ->
+            if (allowVertexCreation.value) {
+                mapViewProxy.setViewpointCenter(geometry.extent.center)
+            } else {
+                geometry.lastPoint?.let { lastPoint ->
+                    mapViewProxy.setViewpointCenter(lastPoint)
+                }
+            }
+        }
+
         graphic.isSelected = true
         graphic.isVisible = false
         selectedGraphic = graphic
@@ -316,3 +328,12 @@ private val Geometry.defaultSymbol: Symbol
         is Multipoint -> SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color.yellow, 5f)
         is Point -> SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Square, Color.orangeRed, 10f)
     }
+
+private val Geometry.lastPoint: Point?
+    get() = when (this) {
+        is Envelope -> throw IllegalStateException("Envelopes not supported by the geometry editor.")
+        is Multipart -> parts.firstOrNull()?.endPoint
+        is Point -> this
+        is Multipoint -> points.lastOrNull()
+    }
+
