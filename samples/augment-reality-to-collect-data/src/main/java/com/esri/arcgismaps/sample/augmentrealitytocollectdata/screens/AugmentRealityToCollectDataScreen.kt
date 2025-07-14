@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.augmentrealitytocollectdata.screens
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,7 +54,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withLink
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.edit
@@ -72,7 +70,6 @@ import com.esri.arcgismaps.sample.augmentrealitytocollectdata.components.Augment
 import com.esri.arcgismaps.sample.augmentrealitytocollectdata.components.TreeHealth
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
-import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 private const val KEY_PREF_ACCEPTED_PRIVACY_INFO = "ACCEPTED_PRIVACY_INFO"
