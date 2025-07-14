@@ -49,6 +49,7 @@ import com.arcgismaps.mapping.view.geometryeditor.ProgrammaticReticleTool
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 private const val pinkneysGreenJson = """
@@ -103,18 +104,21 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     private var selectedGraphic: Graphic? = null
     private val programmaticReticleTool = ProgrammaticReticleTool()
 
+    private val _allowVertexCreation = MutableStateFlow(true)
+    val allowVertexCreation: StateFlow<Boolean> = _allowVertexCreation
+
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
             initialViewpoint = Viewpoint(latitude = 51.523806, longitude = -0.775395, scale = 4e4)
         }
 
     private val _currentGeometryType = MutableStateFlow("Polygon")
-    val startingGeometryType = _currentGeometryType
+    val startingGeometryType: StateFlow<String> = _currentGeometryType
 
     private val _multiButtonText = MutableStateFlow("")
-    val multiButtonText = _multiButtonText
+    val multiButtonText: StateFlow<String> = _multiButtonText
 
     private val _multiButtonEnabled = MutableStateFlow(true)
-    val multiButtonEnabled = _multiButtonEnabled
+    val multiButtonEnabled: StateFlow<Boolean> = _multiButtonEnabled
 
     private val graphicsOverlay = GraphicsOverlay()
     val graphicsOverlays = listOf(graphicsOverlay)
@@ -145,7 +149,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
 
         createInitialGraphics()
-        updateMultiButtonText() // set initial 'start editor' button text
+        updateMultiButtonState() // set initial 'start editor' button text
     }
 
     fun onCancelButtonClick() {
@@ -192,6 +196,15 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
     }
 
+    fun setAllowVertexCreation(newValue: Boolean) {
+        _allowVertexCreation.value = newValue
+        programmaticReticleTool.vertexCreationPreviewEnabled = newValue
+        // Picking up a mid-vertex will lead to a new vertex being created. Only show feedback for
+        // this if vertex creation is enabled.
+        programmaticReticleTool.style.growEffect?.applyToMidVertices = newValue
+        updateMultiButtonState()
+    }
+
     fun setStartingGeometryType(newGeometryType: String) {
         _currentGeometryType.value = newGeometryType
     }
@@ -205,8 +218,10 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
                 mapViewProxy.setViewpointCenter(topElement.point)
             }
             is GeometryEditorMidVertex -> {
-                geometryEditor.selectMidVertex(topElement.partIndex, topElement.segmentIndex)
-                mapViewProxy.setViewpointCenter(topElement.point)
+                if (allowVertexCreation.value) {
+                    geometryEditor.selectMidVertex(topElement.partIndex, topElement.segmentIndex)
+                    mapViewProxy.setViewpointCenter(topElement.point)
+                }
             }
             else -> { /* Only zoom to vertices and mid-vertices. */ }
         }
@@ -236,7 +251,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     private fun updateReticleState() {
         if (geometryEditor.pickedUpElement.value != null) {
             reticleState = ReticleState.PickedUp
-            updateMultiButtonText()
+            updateMultiButtonState()
             return
         }
 
@@ -246,19 +261,29 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             else -> ReticleState.Default
         }
 
-        updateMultiButtonText()
+        updateMultiButtonState()
     }
 
-    private fun updateMultiButtonText() {
+    private fun updateMultiButtonState() {
         if (!geometryEditor.isStarted.value) {
             _multiButtonText.value = "Start Geometry Editor"
+            _multiButtonEnabled.value = true
             return
         }
 
-        _multiButtonText.value = when (reticleState) {
-            ReticleState.Default -> "Insert Point"
-            ReticleState.PickedUp -> "Drop Point"
-            ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> "Pick Up Point"
+        if (allowVertexCreation.value) {
+            _multiButtonEnabled.value = true
+            _multiButtonText.value = when (reticleState) {
+                ReticleState.Default -> "Insert Point"
+                ReticleState.PickedUp -> "Drop Point"
+                ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> "Pick Up Point"
+            }
+        } else {
+            _multiButtonText.value = when (reticleState) {
+                ReticleState.PickedUp -> "Drop Point"
+                ReticleState.Default, ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> "Pick Up Point"
+            }
+            _multiButtonEnabled.value = reticleState == ReticleState.HoveringVertex || reticleState == ReticleState.PickedUp
         }
     }
 
@@ -268,7 +293,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             it.isVisible = true
         }
         selectedGraphic = null
-        updateMultiButtonText()
+        updateMultiButtonState()
     }
 
     private enum class ReticleState {
