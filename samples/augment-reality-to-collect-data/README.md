@@ -22,7 +22,8 @@ satisfied, tap the '+' button to record the feature.
 
 ## How it works
 
-1. Create the `WorldScaleSceneView`.
+1. Add a `WorldScaleSceneView` composable to the augmented reality screen, available in the [ArcGIS Maps SDK for Kotlin toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/microapps/ArWorldScaleApp).
+    * The component is available both in `World tracking` and `Geospatial tracking` modes. Geospatial tracking uses street view data to calibrate augmented reality positioning and is available with an [ARCORE API key](https://developers.google.com/ar/develop/authorization?platform=android#api-key-android).
 2. Load the feature service, create feature layer and add it to the scene.
 3. Create and add the elevation surface to the scene.
 4. Create a graphics overlay for planning the location of features to add and add it to the scene.
