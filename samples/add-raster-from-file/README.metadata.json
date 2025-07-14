@@ -26,8 +26,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/components/AddRasterFromFileViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/screens/AddRasterFromFileScreen.kt"
     ],
     "title": "Add raster from file"
