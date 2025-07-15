@@ -23,6 +23,7 @@ import android.provider.BaseColumns
 import android.util.Log
 import android.view.Menu
 import android.widget.AutoCompleteTextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -94,6 +95,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

@@ -9,7 +9,7 @@
             
         </activity>
         <activity
-            android:name="com.arcgismaps.toolkit.authentication.OAuthUserSignInActivity"
+            android:name="com.arcgismaps.toolkit.authentication.AuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:launchMode="singleTop"> <!--keeps only one instance to the top of the stack-->

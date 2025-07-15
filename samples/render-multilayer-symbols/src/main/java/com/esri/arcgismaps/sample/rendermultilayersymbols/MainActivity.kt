@@ -17,10 +17,11 @@
 package com.esri.arcgismaps.sample.rendermultilayersymbols
 
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -57,7 +58,6 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.rendermultilayersymbols.databinding.RenderMultilayerSymbolsActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import androidx.core.graphics.drawable.toDrawable
 
 private val Color.Companion.blue: Color
     get() {
@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

@@ -29,6 +29,8 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ArcGISEnvironment
@@ -36,6 +38,7 @@ import com.arcgismaps.Guid
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.data.CodedValueDomain
+import com.arcgismaps.data.ServiceGeodatabase
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
 import com.arcgismaps.httpcore.authentication.TokenCredential
@@ -112,7 +115,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val utilityNetwork by lazy {
-        UtilityNetwork(getString(R.string.utility_network_url))
+        UtilityNetwork(ServiceGeodatabase(getString(R.string.utility_network_url)))
     }
 
     private var initialExpression: UtilityTraceConditionalExpression? = null
@@ -129,6 +132,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { v, insets ->
+            // Applies system bar insets (status bar and navigation bar) as padding to the given view.
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         ArcGISEnvironment.applicationContext = this
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =

@@ -35,7 +35,7 @@ This sample uses the [Philadelphia Mobile Scene Package](https://www.arcgis.com/
 
 This sample requires a device that is compatible with ARCore on Android.
 
-This sample uses [AR from the Maps SDK Toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/ar).
+This sample uses the [TableTopSceneView](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/ar#tabletopsceneview) toolkit component. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit docs](https://developers.arcgis.com/kotlin/toolkit/).
 
 ## Tags
 

@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.displaymap
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
