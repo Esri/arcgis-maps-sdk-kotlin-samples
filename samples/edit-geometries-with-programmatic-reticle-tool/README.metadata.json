@@ -6,15 +6,37 @@
     "images": [
         "edit-geometries-with-programmatic-reticle-tool.png"
     ],
-    "keywords": ["draw", "edit", "freehand", "geometry editor", "programmatic", "reticle", "sketch", "vertex"],
+    "keywords": [
+        "draw",
+        "edit",
+        "freehand",
+        "geometry editor",
+        "programmatic",
+        "reticle",
+        "sketch",
+        "vertex",
+        "Geometry",
+        "GeometryEditor",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView",
+        "ProgrammaticReticleTool"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": ["Geometry", "GeometryEditor", "Graphic", "GraphicsOverlay", "MapView", "ProgrammaticReticleTool"],
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEditor",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView",
+        "ProgrammaticReticleTool"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/components/EditGeometriesWithProgrammaticReticleToolViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/screens/EditGeometriesWithProgrammaticReticleToolScreen.kt",
-	"src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/screens/SettingsScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/screens/SettingsScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/screens/EditGeometriesWithProgrammaticReticleToolScreen.kt"
     ],
-    "title": "Edit Geometries with Programmatic Reticle Tool"
+    "title": "Edit geometries with programmatic reticle tool"
 }
