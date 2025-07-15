@@ -97,7 +97,7 @@ class AppViewModel(private val application: Application) : AndroidViewModel(appl
 
     fun loadPortal() = viewModelScope.launch {
         _isLoading.value = true
-        authenticatorState.oAuthUserConfiguration = oAuthUserConfiguration
+        authenticatorState.oAuthUserConfigurations = listOf(oAuthUserConfiguration)
         val portal = Portal(url.value, Portal.Connection.Authenticated)
         portal.load().also {
             _isLoading.value = false
