@@ -117,11 +117,11 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     private val _startingGeometryType = MutableStateFlow("Polygon")
     val startingGeometryType: StateFlow<String> = _startingGeometryType
 
-    private val _multiButtonText = MutableStateFlow("")
-    val multiButtonText: StateFlow<String> = _multiButtonText
+    private val _contextActionButtonText = MutableStateFlow("")
+    val contextActionButtonText: StateFlow<String> = _contextActionButtonText
 
-    private val _multiButtonEnabled = MutableStateFlow(true)
-    val multiButtonEnabled: StateFlow<Boolean> = _multiButtonEnabled
+    private val _contextActionButtonEnabled = MutableStateFlow(true)
+    val contextActionButtonEnabled: StateFlow<Boolean> = _contextActionButtonEnabled
 
     private val graphicsOverlay = GraphicsOverlay()
     val graphicsOverlays = listOf(graphicsOverlay)
@@ -162,7 +162,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
 
         createInitialGraphics()
-        updateMultiButtonState() // set initial 'start editor' button text
+        UpdateContextActionButtonState() // set initial 'start editor' button text
     }
 
     /**
@@ -223,7 +223,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
      * - Otherwise, if a vertex or mid-vertex is hovered over, picks it up
      * - Otherwise, inserts a new vertex at the reticle position
      */
-    fun onMultiButtonClick() {
+    fun onContextActionButtonClick() {
         if (!geometryEditor.isStarted.value) {
             geometryEditor.start(geometryTypes.getOrDefault(startingGeometryType.value, GeometryType.Polygon))
             updateReticleState()
@@ -260,7 +260,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
 
     /**
      * Enables or disables vertex creation, which affects the feedback lines and vertices, the
-     * allowed multi-button actions, and the presence of the grow effect for mid-vertices.
+     * allowed context-button actions, and the presence of the grow effect for mid-vertices.
      */
     fun setAllowVertexCreation(newValue: Boolean) {
         _allowVertexCreation.value = newValue
@@ -268,7 +268,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         // Picking up a mid-vertex will lead to a new vertex being created. Only show feedback for
         // this if vertex creation is enabled.
         programmaticReticleTool.style.growEffect?.applyToMidVertices = newValue
-        updateMultiButtonState()
+        UpdateContextActionButtonState()
     }
 
     /**
@@ -342,16 +342,16 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     }
 
     /**
-     * Called whenever something happens that may change what the multi-functional button does
+     * Called whenever something happens that may change what the context-action button does
      * (e.g. editor stopping/starting, hovered or picked-up element changing).
      *
-     * The private [reticleState] property decides what happens when the multi-functional button
+     * The private [reticleState] property decides what happens when the context-action button
      * is pressed, and is used to derive the text and enabled-ness of the button.
      */
     private fun updateReticleState() {
         if (geometryEditor.pickedUpElement.value != null) {
             reticleState = ReticleState.PickedUp
-            updateMultiButtonState()
+            UpdateContextActionButtonState()
             return
         }
 
@@ -361,36 +361,36 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             else -> ReticleState.Default
         }
 
-        updateMultiButtonState()
+        UpdateContextActionButtonState()
     }
 
     /**
-     * Sets the text and enabled-ness of the multi-functional button based on the current reticle
+     * Sets the text and enabled-ness of the context-action button based on the current reticle
      * state as well as whether vertex creation is allowed.
      *
      * Note that the enabled-ness of the button is used to prevent vertex insertion when vertex
      * creation is disabled.
      */
-    private fun updateMultiButtonState() {
+    private fun UpdateContextActionButtonState() {
         if (!geometryEditor.isStarted.value) {
-            _multiButtonText.value = "Start Geometry Editor"
-            _multiButtonEnabled.value = true
+            _contextActionButtonText.value = "Start Geometry Editor"
+            _contextActionButtonEnabled.value = true
             return
         }
 
         if (allowVertexCreation.value) {
-            _multiButtonEnabled.value = true
-            _multiButtonText.value = when (reticleState) {
+            _contextActionButtonEnabled.value = true
+            _contextActionButtonText.value = when (reticleState) {
                 ReticleState.Default -> "Insert Point"
                 ReticleState.PickedUp -> "Drop Point"
                 ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> "Pick Up Point"
             }
         } else {
-            _multiButtonText.value = when (reticleState) {
+            _contextActionButtonText.value = when (reticleState) {
                 ReticleState.PickedUp -> "Drop Point"
                 ReticleState.Default, ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> "Pick Up Point"
             }
-            _multiButtonEnabled.value = reticleState == ReticleState.HoveringVertex || reticleState == ReticleState.PickedUp
+            _contextActionButtonEnabled.value = reticleState == ReticleState.HoveringVertex || reticleState == ReticleState.PickedUp
         }
     }
 
@@ -403,7 +403,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             selectedGraphic.isVisible = true
         }
         selectedGraphic = null
-        updateMultiButtonState()
+        UpdateContextActionButtonState()
     }
 
     private enum class ReticleState {

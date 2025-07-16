@@ -45,8 +45,8 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
             val allowVertexCreation by mapViewModel.allowVertexCreation.collectAsState()
-            val multiButtonEnabled by mapViewModel.multiButtonEnabled.collectAsState()
-            val multiButtonText by mapViewModel.multiButtonText.collectAsState()
+            val contextActionButtonEnabled by mapViewModel.contextActionButtonEnabled.collectAsState()
+            val contextActionButtonText by mapViewModel.contextActionButtonText.collectAsState()
             var isSettingsVisible  by remember { mutableStateOf(false) }
             val startingGeometryType by mapViewModel.startingGeometryType.collectAsState()
             val isEditorStarted by mapViewModel.geometryEditor.isStarted.collectAsState()
@@ -104,10 +104,10 @@ fun EditGeometriesWithProgrammaticReticleToolScreen(sampleName: String) {
                 )
                 Button(
                     modifier = Modifier.fillMaxWidth().padding(2.dp),
-                    onClick = mapViewModel::onMultiButtonClick,
-                    enabled = multiButtonEnabled,
+                    onClick = mapViewModel::onContextActionButtonClick,
+                    enabled = contextActionButtonEnabled,
                 ) {
-                    Text(text = multiButtonText)
+                    Text(text = contextActionButtonText)
                 }
             }
 
