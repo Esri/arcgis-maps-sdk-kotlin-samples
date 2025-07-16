@@ -16,17 +16,12 @@
 
 package com.esri.arcgismaps.sample.createandsavemap.components
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-
+import androidx.lifecycle.viewModelScope
 import com.arcgismaps.httpcore.authentication.OAuthUserConfiguration
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
@@ -39,6 +34,9 @@ import com.arcgismaps.portal.PortalFolder
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import com.esri.arcgismaps.sample.createandsavemap.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -47,10 +45,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // set up authenticator state to handle authentication challenges
     val authenticatorState = AuthenticatorState().apply {
-        oAuthUserConfiguration = OAuthUserConfiguration(
-            portalUrl = application.getString(R.string.portal_url),
-            clientId = application.getString(R.string.client_id),
-            redirectUrl = application.getString(R.string.redirect_url)
+        oAuthUserConfigurations = listOf(
+            OAuthUserConfiguration(
+                portalUrl = application.getString(R.string.portal_url),
+                clientId = application.getString(R.string.client_id),
+                redirectUrl = application.getString(R.string.redirect_url)
+            )
         )
     }
 
