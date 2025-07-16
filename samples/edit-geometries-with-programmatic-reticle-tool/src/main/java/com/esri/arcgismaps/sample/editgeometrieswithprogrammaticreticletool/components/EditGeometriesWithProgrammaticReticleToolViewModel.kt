@@ -99,7 +99,7 @@ private val Color.Companion.orangeRed
     get() = fromRgba(128, 128, 0, 255)
 
 private val Color.Companion.transparentRed
-    get() = fromRgba( 255, 0, 0, 70)
+    get() = fromRgba(255, 0, 0, 70)
 
 class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : AndroidViewModel(app) {
 
