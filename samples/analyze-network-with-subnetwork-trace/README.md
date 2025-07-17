@@ -20,7 +20,7 @@ Example barrier conditions for the default dataset:
 
 ## How it works
 
-1. Create and load a `UtilityNetwork` with a feature service URL, then get an asset type and a tier by their names.
+1. Create and load a `UtilityNetwork` with from a `ServiceGeodatabase`, then get an asset type and a tier by their names.
 2. Populate the choice list for the comparison source with the non-system defined `UtilityNetworkDefinition.networkAttributes`.  Populate the choice list for the comparison operator with the enum values from `UtilityAttributeComparisonOperator`.
 3. Create a `UtilityElement` from this asset type to use as the starting location for the trace.
 4. Update the selected barrier expression and the checked options in the UI using this tier's `UtilityTraceConfiguration`.
