@@ -111,8 +111,8 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     val allowVertexCreation: StateFlow<Boolean> = _allowVertexCreation
 
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-            initialViewpoint = Viewpoint(latitude = 51.523806, longitude = -0.775395, scale = 4e4)
-        }
+        initialViewpoint = Viewpoint(latitude = 51.523806, longitude = -0.775395, scale = 4e4)
+    }
 
     private val _startingGeometryType = MutableStateFlow("Polygon")
     val startingGeometryType: StateFlow<String> = _startingGeometryType
@@ -140,9 +140,9 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     }
 
     // True if either there is a picked up element or the editor's `canUndo` is true.
-    val canUndoOrCancelInteraction = geometryEditor.pickedUpElement.map { it != null }.combineTransform(geometryEditor.canUndo) {
-        a, b -> emit(a || b)
-    }
+    val canUndoOrCancelInteraction = geometryEditor.pickedUpElement
+        .map { it != null }
+        .combineTransform(geometryEditor.canUndo) { a, b -> emit(a || b) }
 
     init {
         viewModelScope.run {
@@ -189,9 +189,9 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     fun onDoneButtonClick() {
         val geometry = geometryEditor.stop()
         if (geometry != null) {
-            val selectedGraphic = selectedGraphic
-            if (selectedGraphic != null) {
-                selectedGraphic.geometry = geometry
+            val graphic = selectedGraphic
+            if (graphic != null) {
+                graphic.geometry = geometry
             } else {
                 graphicsOverlay.graphics.add(Graphic(geometry = geometry, symbol = geometry.defaultSymbol))
             }
@@ -307,7 +307,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
      * are allowed).
      */
     private suspend fun startWithIdentifiedGeometry(tapPosition: ScreenCoordinate) {
-        val identifyResult = mapViewProxy.identify(graphicsOverlay,tapPosition, tolerance = 15.dp).getOrNull() ?: return
+        val identifyResult = mapViewProxy.identify(graphicsOverlay, tapPosition, tolerance = 15.dp).getOrNull() ?: return
         val graphic = identifyResult.graphics.firstOrNull() ?: return
         geometryEditor.start(graphic.geometry ?: return)
 
@@ -388,9 +388,10 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         } else {
             _contextActionButtonText.value = when (reticleState) {
                 ReticleState.PickedUp -> "Drop Point"
-                ReticleState.Default, ReticleState.HoveringVertex, ReticleState.HoveringMidVertex -> "Pick Up Point"
+                else -> "Pick Up Point"
             }
-            _contextActionButtonEnabled.value = reticleState == ReticleState.HoveringVertex || reticleState == ReticleState.PickedUp
+            _contextActionButtonEnabled.value =
+                reticleState == ReticleState.HoveringVertex || reticleState == ReticleState.PickedUp
         }
     }
 

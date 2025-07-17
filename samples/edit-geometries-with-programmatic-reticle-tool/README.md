@@ -23,7 +23,7 @@ Use the buttons in the settings view to undo or redo changes made to the geometr
 1. Create a `GeometryEditor` and pass it to the MapView Composable.
 2. Start the `GeometryEditor` using `GeometryEditor.start(GeometryType)` to create a new geometry or `GeometryEditor.start(Geometry)` to edit an existing geometry.
     * If using the Geometry Editor to edit an existing geometry, the geometry must be retrieved from the graphics overlay being used to visualize the geometry prior to calling the start method. To do this:
-        * Use `MapViewProxy.identifyGraphicsOverlay(...)` to identify graphics at the location of a tap.
+        * Use `MapViewProxy.identify(GraphicsOverlay, ...)` to identify graphics at the location of a tap.
         * Find the desired graphic in the resulting list.
         * Access the geometry associated with the graphic using `Graphic.geometry` - this will be used in the `GeometryEditor.start(Geometry)` method.
 3. Create a `ProgrammaticReticleTool` and set the `GeometryEditor.tool`.
