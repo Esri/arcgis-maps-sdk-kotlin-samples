@@ -1,0 +1,42 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "Use the Programmatic Reticle Tool to edit and create geometries with programmatic operations to facilitate customized workflows such as those using buttons rather than tap interactions.",
+    "formal_name": "EditGeometriesWithProgrammaticReticleTool",
+    "ignore": false,
+    "images": [
+        "edit-geometries-with-programmatic-reticle-tool.png"
+    ],
+    "keywords": [
+        "draw",
+        "edit",
+        "freehand",
+        "geometry editor",
+        "programmatic",
+        "reticle",
+        "sketch",
+        "vertex",
+        "Geometry",
+        "GeometryEditor",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView",
+        "ProgrammaticReticleTool"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEditor",
+        "Graphic",
+        "GraphicsOverlay",
+        "MapView",
+        "ProgrammaticReticleTool"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/components/EditGeometriesWithProgrammaticReticleToolViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/screens/SettingsScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/editgeometrieswithprogrammaticreticletool/screens/EditGeometriesWithProgrammaticReticleToolScreen.kt"
+    ],
+    "title": "Edit geometries with programmatic reticle tool"
+}
