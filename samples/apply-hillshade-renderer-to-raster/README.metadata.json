@@ -19,10 +19,6 @@
         "RasterLayer"
     ],
     "language": "kotlin",
-    "provision_from": [
-        "https://arcgis.com/home/item.html?id=ae9739163a76437ea02482e1a807b806"
-    ],
-    "provision_to": [],
     "redirect_from": "",
     "relevant_apis": [
         "Basemap",
