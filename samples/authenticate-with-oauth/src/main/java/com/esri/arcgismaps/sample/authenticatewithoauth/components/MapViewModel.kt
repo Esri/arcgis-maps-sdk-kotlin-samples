@@ -34,14 +34,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val authenticatorState = AuthenticatorState().apply {
         // Set up OAuth configuration if you want to use OAuth. Leaving the oAuthoUserConfiguration
         // null will instead see the user challenged for credentials in an AlertDialog.
-        oAuthUserConfiguration = OAuthUserConfiguration(
-            "https://www.arcgis.com",
-            // This clientId is a unique identifier associated with an application registered with
-            // the portal. Your app will need its own clientId which you can create here:
-            // https://developers.arcgis.com/documentation/mapping-apis-and-services/security/tutorials/register-your-application/
-            "lgAdHkYZYlwwfAhC",
-            // The URL that the OAuth server will redirect to after the user has authenticated.
-            "authenticate-with-oauth://auth",
+        oAuthUserConfigurations = listOf(
+            OAuthUserConfiguration(
+                "https://www.arcgis.com",
+                // This clientId is a unique identifier associated with an application registered with
+                // the portal. Your app will need its own clientId which you can create here:
+                // https://developers.arcgis.com/documentation/mapping-apis-and-services/security/tutorials/register-your-application/
+                "lgAdHkYZYlwwfAhC",
+                // The URL that the OAuth server will redirect to after the user has authenticated.
+                "authenticate-with-oauth://auth",
+            )
         )
     }
 
