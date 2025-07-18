@@ -6,10 +6,7 @@ Tap on real-world objects to collect data.
 
 ## Use case
 
-You can use AR to quickly photograph an object and automatically determine the object's real-world
-location, facilitating a more efficient data collection workflow. For example, you could quickly
-catalog trees in a park, while maintaining visual context of which trees have been
-recorded - no need for spray paint or tape.
+You can use AR to quickly photograph an object and automatically determine the object's real-world location, facilitating a more efficient data collection workflow. For example, you could quickly catalog trees in a park, while maintaining visual context of which trees have been recorded - no need for spray paint or tape.
 
 ## How to use the sample
 
