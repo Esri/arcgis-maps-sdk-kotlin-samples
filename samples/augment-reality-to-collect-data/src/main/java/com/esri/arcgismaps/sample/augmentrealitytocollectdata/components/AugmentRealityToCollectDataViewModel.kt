@@ -93,7 +93,9 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         periodicallyPollVpsAvailability()
     }
 
-    // Displays a dialog for adding tree data if a marker exists
+    /**
+     * Displays a dialog for adding tree data if a marker exists
+     */
     fun showDialog(context: Context){
         if (treeMarker == null) {
             showToast(context, "Please create marker by tapping on the screen")
