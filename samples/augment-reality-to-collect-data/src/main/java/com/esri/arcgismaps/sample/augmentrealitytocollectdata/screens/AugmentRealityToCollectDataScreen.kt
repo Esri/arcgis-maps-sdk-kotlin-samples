@@ -398,7 +398,7 @@ private fun LegalTextGeospatial() {
         withLink(
             LinkAnnotation.Url(
                 "https://support.google.com/ar?p=how-google-play-services-for-ar-handles-your-data",
-                TextLinkStyles(style = SpanStyle(color = androidx.compose.ui.graphics.Color.Blue))
+                TextLinkStyles(style = SpanStyle(color = Color.Blue))
             )
         ) {
             append("Learn more")
