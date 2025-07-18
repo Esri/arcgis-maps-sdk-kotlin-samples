@@ -50,8 +50,7 @@ Note that unlike other scene samples, a basemap isn't shown most of the time, be
 
 **World-scale AR** is one of three main patterns for working with geographic information in augmented reality currently available in the [toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main).
 
-Note that apps using ARCore must comply with ARCore's user privacy requirements.
-See [this page](https://developers.google.com/ar/develop/privacy-requirements) for more information.
+Note that apps using ARCore must comply with ARCore's user privacy requirements. See [this page](https://developers.google.com/ar/develop/privacy-requirements) for more information.
 
 See the 'Edit feature attachments' sample for more specific information about the attachment editing workflow.
 
