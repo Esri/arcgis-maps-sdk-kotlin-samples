@@ -132,7 +132,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 label = "",
                 symbol = SimpleLineSymbol(
                     style = SimpleLineSymbolStyle.Dash,
-                    color = Color.cyan,
+                    color = Color.green,
                     width = 3f
                 ),
                 values = listOf(3)
@@ -142,7 +142,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 label = "",
                 symbol = SimpleLineSymbol(
                     style = SimpleLineSymbolStyle.Solid,
-                    color = Color.cyan,
+                    color = Color.green,
                     width = 3f
                 ),
                 values = listOf(5)
@@ -181,58 +181,39 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
             getAuthenticationChallengeHandler()
 
+        // Load the map
         arcGISMap.load().onSuccess {
-            // The utility network used for tracing.
+
+            // The utility network used for tracing
             utilityNetwork = arcGISMap.utilityNetworks.first()
             utilityNetwork?.let { utilityNetwork ->
 
-                // Load the utility network associated with the web-map
+                // Load the utility network
                 utilityNetwork.load().onSuccess {
 
                     // Get the service geodatabase from the utility network
                     val serviceGeodatabase = utilityNetwork.serviceGeodatabase
-                    // Load the service geodatabase
-                    serviceGeodatabase?.load()?.onSuccess {
-/*
-                        Log.d(
-                            "ServiceGeodatabase",
-                            "Service geodatabase loaded successfully: " + serviceGeodatabase.connectedTables.value.size
-                        )
-                        Log.d("ServiceGeodatabase", "Layer 0: " + serviceGeodatabase.getTable(0)?.layer?.name)
-                        if (serviceGeodatabase.getTable(0)?.layer is FeatureLayer) {
-                            Log.d("ServiceGeodatabase", "Layer 0 is a FeatureLayer")
-                        } else {
-                            Log.d("ServiceGeodatabase", "Layer 0 is not a FeatureLayer")
-                        }
-                        Log.d("ServiceGeodatabase", "Layer 3: " + serviceGeodatabase.getTable(3)?.layer?.name)
-                        if (serviceGeodatabase.getTable(3)?.layer is FeatureLayer) {
-                            Log.d("ServiceGeodatabase", "Layer 3 is a FeatureLayer")
-                        } else {
-                            Log.d("ServiceGeodatabase", "Layer 3 is not a FeatureLayer")
-                        }
-*/
-                        // Use the ElectricDistribution domain network
-                        val electricDistribution = utilityNetwork.definition?.getDomainNetwork("ElectricDistribution")
 
-                        // Use the Medium Voltage Tier
-                        mediumVoltageTier = electricDistribution?.getTier("Medium Voltage Radial")
+                    // Use the ElectricDistribution domain network
+                    val electricDistribution = utilityNetwork.definition?.getDomainNetwork("ElectricDistribution")
 
-                        
-                        (serviceGeodatabase.getTable(3)?.layer as FeatureLayer).apply {
-                            // Customize rendering for the layer
-                            renderer = electricalDistributionUniqueValueRenderer
-                        }
+                    // Use the Medium Voltage Tier
+                    mediumVoltageTier = electricDistribution?.getTier("Medium Voltage Radial")
 
+                    (serviceGeodatabase?.getTable(3)?.layer as FeatureLayer).apply {
+                        // Customize rendering for the layer
+                        renderer = electricalDistributionUniqueValueRenderer
+                    }
 
-                        // Update hint values to reflect trace stage changes
-                        viewModelScope.launch {
-                            _traceState.collect { updateHint(it) }
-                        }
+                    // Update hint values to reflect trace stage changes
+                    viewModelScope.launch {
+                        _traceState.collect { updateHint(it) }
                     }
                 }
             }
         }
     }
+
 
     /**
      * Performs an identify operation to obtain the [ArcGISFeature] nearest to the
