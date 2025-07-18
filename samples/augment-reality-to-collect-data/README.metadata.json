@@ -25,7 +25,7 @@
         "WorldScaleSceneView"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": "",
     "relevant_apis": [
         "GraphicsOverlay",
         "SceneView",
