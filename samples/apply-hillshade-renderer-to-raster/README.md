@@ -27,10 +27,6 @@ Choose and adjust the settings to update the hillshade renderer on the raster la
 * Raster
 * RasterLayer
 
-## Offline data
-
-This sample downloads the [Hillshade raster](https://arcgis.com/home/item.html?id=ae9739163a76437ea02482e1a807b806) portal item from ArcGIS Online automatically.
-
 ## Tags
 
 altitude, angle, azimuth, raster, slope, visualization
