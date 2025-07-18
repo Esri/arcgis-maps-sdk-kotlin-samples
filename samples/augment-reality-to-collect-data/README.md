@@ -34,9 +34,7 @@ When you tap, a yellow diamond will appear at the tapped location. You can move 
 
 ## About the data
 
-The sample uses a publicly-editable sample tree survey feature service hosted on ArcGIS Online
-called [AR Tree Survey](https://arcgisruntime.maps.arcgis.com/home/item.html?id=8feb9ea6a27f48b58b3faf04e0e303ed).
-You can use AR to quickly record the location and health of a tree.
+The sample uses a publicly-editable sample tree survey feature service hosted on ArcGIS Online called [AR Tree Survey](https://arcgisruntime.maps.arcgis.com/home/item.html?id=8feb9ea6a27f48b58b3faf04e0e303ed). You can use AR to quickly record the location and health of a tree.
 
 ## Additional information
 
