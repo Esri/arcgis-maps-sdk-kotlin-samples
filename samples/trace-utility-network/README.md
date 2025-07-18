@@ -15,7 +15,7 @@ Tap on one or more features while 'Add starting locations' or 'Add barriers' is 
 ## How it works
 
 1. Create a `MapView` and identify the feature `onSingleTap` event.
-2. Create and load a `Map` with a web map item URL that contains a `UtilityNetwork`.
+2. Create and load an `ArcGISMap` with a web map item URL that contains an `UtilityNetwork`.
 3. Get and load the first `UtilityNetwork` from the web map.
 4. Get and load the `ServiceGeodatabase` from the utility network and fetch the line `FeatureLayer` from the `ServiceGeodatabase`'s tables.
 5. Add a `GraphicsOverlay` with symbology that distinguishes starting locations from barriers.
