@@ -364,7 +364,7 @@ private fun PrivacyInfoDialog(
 @Composable
 private fun LegalTextArCore() {
     val textLinkStyle =
-        TextLinkStyles(style = SpanStyle(color = androidx.compose.ui.graphics.Color.Blue))
+        TextLinkStyles(style = SpanStyle(color = Color.Blue))
     Text(text = buildAnnotatedString {
         append("This application runs on ")
         withLink(
