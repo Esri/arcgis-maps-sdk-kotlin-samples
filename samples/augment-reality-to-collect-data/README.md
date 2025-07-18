@@ -46,9 +46,7 @@ Note that the `WorldScaleSceneViewProxy` also supports converting screen coordin
 
 This sample uses the `onSingleTapConfirmed` lambda, as it is the only way to get accurate positions for features present in the real-world but not present in the scene, such as trees.
 
-Note that unlike other scene samples, a basemap isn't shown most of the time, because the real
-world provides the context. Only while calibrating is the basemap displayed at 50% opacity, to
-give the user a visual reference to compare to.
+Note that unlike other scene samples, a basemap isn't shown most of the time, because the real world provides the context. Only while calibrating is the basemap displayed at 50% opacity, to give the user a visual reference to compare to.
 
 **World-scale AR** is one of three main patterns for working with geographic information in augmented
 reality currently available in the [toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main).
