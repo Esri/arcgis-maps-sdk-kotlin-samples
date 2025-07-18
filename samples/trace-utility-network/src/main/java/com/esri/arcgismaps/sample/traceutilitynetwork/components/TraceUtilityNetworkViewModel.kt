@@ -187,44 +187,47 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             utilityNetwork?.let { utilityNetwork ->
 
                 // Load the utility network associated with the web-map
-                utilityNetwork.load().getOrElse {
-                    handleError(
-                        title = "Error loading the utility network: ${it.message}", description = it.cause.toString()
-                    )
-                }
+                utilityNetwork.load().onSuccess {
 
-                // Get the service geodatabase from the utility network
-                val serviceGeodatabase = utilityNetwork.serviceGeodatabase
-                // Load the service geodatabase
-                serviceGeodatabase?.load()?.onSuccess {
+                    // Get the service geodatabase from the utility network
+                    val serviceGeodatabase = utilityNetwork.serviceGeodatabase
+                    // Load the service geodatabase
+                    serviceGeodatabase?.load()?.onSuccess {
+/*
+                        Log.d(
+                            "ServiceGeodatabase",
+                            "Service geodatabase loaded successfully: " + serviceGeodatabase.connectedTables.value.size
+                        )
+                        Log.d("ServiceGeodatabase", "Layer 0: " + serviceGeodatabase.getTable(0)?.layer?.name)
+                        if (serviceGeodatabase.getTable(0)?.layer is FeatureLayer) {
+                            Log.d("ServiceGeodatabase", "Layer 0 is a FeatureLayer")
+                        } else {
+                            Log.d("ServiceGeodatabase", "Layer 0 is not a FeatureLayer")
+                        }
+                        Log.d("ServiceGeodatabase", "Layer 3: " + serviceGeodatabase.getTable(3)?.layer?.name)
+                        if (serviceGeodatabase.getTable(3)?.layer is FeatureLayer) {
+                            Log.d("ServiceGeodatabase", "Layer 3 is a FeatureLayer")
+                        } else {
+                            Log.d("ServiceGeodatabase", "Layer 3 is not a FeatureLayer")
+                        }
+*/
+                        // Use the ElectricDistribution domain network
+                        val electricDistribution = utilityNetwork.definition?.getDomainNetwork("ElectricDistribution")
 
-                    // Use the ElectricDistribution domain network
-                    val electricDistribution = utilityNetwork.definition?.getDomainNetwork("ElectricDistribution")
+                        // Use the Medium Voltage Tier
+                        mediumVoltageTier = electricDistribution?.getTier("Medium Voltage Radial")
 
-                    // Use the Medium Voltage Tier
-                    mediumVoltageTier = electricDistribution?.getTier("Medium Voltage Radial")
-
-                    // Once loaded, remove all operational layers
-                    arcGISMap.operationalLayers.clear()
-
-                    // Create feature layers from the service feature tables.
-                    val electricalDeviceFeatureLayer = serviceGeodatabase.getTable(0)?.layer as FeatureLayer
-                    val electricalDistributionFeatureLayer =
+                        
                         (serviceGeodatabase.getTable(3)?.layer as FeatureLayer).apply {
                             // Customize rendering for the layer
                             renderer = electricalDistributionUniqueValueRenderer
                         }
 
-                    // Add the two feature layers to the map's operational layers
-                    arcGISMap.operationalLayers.addAll(
-                        listOf(
-                            electricalDistributionFeatureLayer, electricalDeviceFeatureLayer
-                        )
-                    )
 
-                    // Update hint values to reflect trace stage changes
-                    viewModelScope.launch {
-                        _traceState.collect { updateHint(it) }
+                        // Update hint values to reflect trace stage changes
+                        viewModelScope.launch {
+                            _traceState.collect { updateHint(it) }
+                        }
                     }
                 }
             }
