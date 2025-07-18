@@ -93,21 +93,6 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
         periodicallyPollVpsAvailability()
     }
 
-    /**
-     * Displays a dialog for adding tree data if a marker exists
-     */
-    fun showDialog(context: Context){
-        if (treeMarker == null) {
-            showToast(context, "Please create marker by tapping on the screen")
-            return
-        }
-        isDialogOptionsVisible = true
-    }
-
-    fun hideDialog(){
-        isDialogOptionsVisible = false
-    }
-
     // Adds a marker to the graphics overlay based on a single tap event
     fun addMarker(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         // Remove all graphics from the graphics overlay
@@ -182,6 +167,21 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
                     }
                 }
         }
+    }
+
+    /**
+     * Displays a dialog for adding tree data if a marker exists
+     */
+    fun showDialog(context: Context){
+        if (treeMarker == null) {
+            showToast(context, "Please create marker by tapping on the screen")
+            return
+        }
+        isDialogOptionsVisible = true
+    }
+
+    fun hideDialog(){
+        isDialogOptionsVisible = false
     }
 }
 
