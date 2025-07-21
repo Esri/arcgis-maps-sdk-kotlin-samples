@@ -21,7 +21,6 @@ dependencies {
     // Only module specific dependencies needed here
 
     // lib dependencies from rootProject build.gradle
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.android.material)
     implementation(libs.commons.io)
