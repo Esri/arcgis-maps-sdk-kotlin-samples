@@ -94,7 +94,7 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
         mapViewModel.arcGISMap.apply {
             // Check if the network is not loaded
             if (utilityNetworks.size == 0 || loadStatus.value == LoadStatus.NotLoaded) {
-                mapViewModel.initializeTrace()
+                mapViewModel.initializeTraceViewModel()
             }
         }
     }

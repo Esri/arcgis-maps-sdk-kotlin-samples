@@ -12,13 +12,13 @@
         "geodesic",
         "geodetic",
         "GeometryEngine.densifyGeodetic",
-        "GeometryEngine.lengthGeodetic"
+        "GeometryEngine.distanceGeodeticOrNull"
     ],
     "language": "kotlin",
     "redirect_from": "/android/latest/sample-code/geodesic-operations.htm",
     "relevant_apis": [
         "GeometryEngine.densifyGeodetic",
-        "GeometryEngine.lengthGeodetic"
+        "GeometryEngine.distanceGeodeticOrNull"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showgeodesicpathbetweentwopoints/MainActivity.kt"

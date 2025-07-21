@@ -1,5 +1,0 @@
-<resources>
-    <string name="add_scene_layer_with_elevation_app_name">Add scene layer with elevation</string>
-    <string name="brest_buildings">
-        https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer</string>
-</resources>

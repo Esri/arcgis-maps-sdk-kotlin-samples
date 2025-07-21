@@ -37,7 +37,7 @@ This sample uses a [raster image service](https://sampleserver7.arcgisonline.com
 
 ## Additional information
 
-For more information, see [Understanding the mosaicking rules for a mosaic dataset](https://pro.arcgis.com/en/pro-app/latest/help/data/imagery/mosaicking-rules-for-a-mosaic-dataset-pro-.htm) from *ArcGIS Pro* documentation. To learn more about how to define certain mosaic rules, see [Mosaic rule objects](https://developers.arcgis.com/rest/services-reference/enterprise/mosaic-rules/) from the *ArcGIS REST API documentation*.
+The sample applies a hillshade function to a raster produced from the National Land Cover Database, [NLCDLandCover2001](https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer). You can learn more about the [hillshade function](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/hillshade-function.htm) in the *ArcGIS Pro* documentation.
 
 ## Tags
 

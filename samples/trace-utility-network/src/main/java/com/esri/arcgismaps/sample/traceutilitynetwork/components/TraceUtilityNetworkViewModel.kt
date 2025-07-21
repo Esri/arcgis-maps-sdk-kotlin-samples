@@ -25,16 +25,14 @@ import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.QueryParameters
-import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
+import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
+import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
 import com.arcgismaps.httpcore.authentication.TokenCredential
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.layers.SelectionMode
@@ -48,9 +46,7 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.IdentifyLayerResult
 import com.arcgismaps.mapping.view.ScreenCoordinate
-import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
-import com.arcgismaps.utilitynetworks.UtilityDomainNetwork
 import com.arcgismaps.utilitynetworks.UtilityElement
 import com.arcgismaps.utilitynetworks.UtilityElementTraceResult
 import com.arcgismaps.utilitynetworks.UtilityNetwork
@@ -64,6 +60,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -95,30 +92,17 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     private var _selectedTerminalConfigurationIndex = MutableStateFlow<Int?>(null)
 
     // ArcGISMap holding the UtilityNetwork and operational layers
-    val arcGISMap = ArcGISMap(
-        item = PortalItem(
-            portal = Portal.arcGISOnline(connection = Portal.Connection.Authenticated),
-            itemId = NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID
-        )
-    ).apply {
-        // Add the map with streets night vector basemap
-        setBasemap(Basemap(BasemapStyle.ArcGISStreetsNight))
-    }
+    val arcGISMap =
+        ArcGISMap("https://sampleserver7.arcgisonline.com/portal/home/item.html?id=be0e4637620a453584118107931f718b")
 
     // Used to handle map view animations
     val mapViewProxy = MapViewProxy()
 
-    // The utility network used for tracing.
-    private val utilityNetwork: UtilityNetwork
-        get() = arcGISMap.utilityNetworks.first()
+    // The utility network used for tracing
+    private var utilityNetwork: UtilityNetwork? = null
 
-    // Use the ElectricDistribution domain network
-    private val electricDistribution: UtilityDomainNetwork?
-        get() = utilityNetwork.definition?.getDomainNetwork("ElectricDistribution")
-
-    // Use the Medium Voltage Tier
-    private val mediumVoltageTier: UtilityTier?
-        get() = electricDistribution?.getTier("Medium Voltage Radial")
+    // The medium voltage tier used for the electric distribution domain network
+    private var mediumVoltageTier: UtilityTier? = null
 
     // Create lists for starting locations and barriers
     private val utilityElementStartingLocations: MutableList<UtilityElement> = mutableListOf()
@@ -148,7 +132,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 label = "",
                 symbol = SimpleLineSymbol(
                     style = SimpleLineSymbolStyle.Dash,
-                    color = Color.cyan,
+                    color = Color.green,
                     width = 3f
                 ),
                 values = listOf(3)
@@ -158,7 +142,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 label = "",
                 symbol = SimpleLineSymbol(
                     style = SimpleLineSymbolStyle.Solid,
-                    color = Color.cyan,
+                    color = Color.green,
                     width = 3f
                 ),
                 values = listOf(5)
@@ -167,70 +151,69 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     )
 
     /**
+     * Returns a [ArcGISAuthenticationChallengeHandler] to access the utility network URL.
+     */
+    private fun getAuthenticationChallengeHandler(): ArcGISAuthenticationChallengeHandler {
+        return ArcGISAuthenticationChallengeHandler { challenge ->
+            val result: Result<TokenCredential> = runBlocking {
+                TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
+            }
+            if (result.getOrNull() != null) {
+                val credential = result.getOrNull()
+                return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse.ContinueWithCredential(
+                    credential!!
+                )
+            } else {
+                val ex = result.exceptionOrNull()
+                return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse.ContinueAndFailWithError(
+                    ex!!
+                )
+            }
+        }
+    }
+
+    /**
      * Initializes view model by adding credentials, loading map and utility network,
      * and electrical device and distribution feature layers.
      */
-    suspend fun initializeTrace() {
-        // A licensed user is required to perform utility network operations
-        TokenCredential.create(
-            url = SAMPLE_PORTAL_URL,
-            username = USERNAME,
-            password = PASSWORD
-        ).onSuccess { tokenCredential ->
-            // Add the loaded token credential to the app session's authenticationManager
-            ArcGISEnvironment.authenticationManager.arcGISCredentialStore.add(tokenCredential)
-            // Load the Naperville electric web-map
-            arcGISMap.load().getOrElse {
-                handleError(
-                    title = "Error loading the web-map: ${it.message}",
-                    description = it.cause.toString()
-                )
+    suspend fun initializeTraceViewModel() {
+
+        ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =
+            getAuthenticationChallengeHandler()
+
+        // Load the map
+        arcGISMap.load().onSuccess {
+
+            // The utility network used for tracing
+            utilityNetwork = arcGISMap.utilityNetworks.first()
+            utilityNetwork?.let { utilityNetwork ->
+
+                // Load the utility network
+                utilityNetwork.load().onSuccess {
+
+                    // Get the service geodatabase from the utility network
+                    val serviceGeodatabase = utilityNetwork.serviceGeodatabase
+
+                    // Use the ElectricDistribution domain network
+                    val electricDistribution = utilityNetwork.definition?.getDomainNetwork("ElectricDistribution")
+
+                    // Use the Medium Voltage Tier
+                    mediumVoltageTier = electricDistribution?.getTier("Medium Voltage Radial")
+
+                    (serviceGeodatabase?.getTable(3)?.layer as FeatureLayer).apply {
+                        // Customize rendering for the layer
+                        renderer = electricalDistributionUniqueValueRenderer
+                    }
+
+                    // Update hint values to reflect trace stage changes
+                    viewModelScope.launch {
+                        _traceState.collect { updateHint(it) }
+                    }
+                }
             }
-            // Load the utility network associated with the web-map
-            utilityNetwork.load().getOrElse {
-                handleError(
-                    title = "Error loading the utility network: ${it.message}",
-                    description = it.cause.toString()
-                )
-            }
-
-            // Once loaded, remove all operational layers
-            arcGISMap.operationalLayers.clear()
-
-            // Create the two service feature table to be added as layers
-            val electricalDeviceTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/0")
-            val electricalDistributionTable = ServiceFeatureTable("$FEATURE_SERVICE_URL/3")
-
-            // Create feature layers from the service feature tables.
-            val electricalDeviceFeatureLayer = FeatureLayer.createWithFeatureTable(
-                featureTable = electricalDeviceTable
-            )
-            val electricalDistributionFeatureLayer = FeatureLayer.createWithFeatureTable(
-                featureTable = electricalDistributionTable
-            ).apply {
-                // Customize rendering for the layer
-                renderer = electricalDistributionUniqueValueRenderer
-            }
-
-            // Add the two feature layers to the map's operational layers
-            arcGISMap.operationalLayers.addAll(
-                listOf(
-                    electricalDistributionFeatureLayer,
-                    electricalDeviceFeatureLayer
-                )
-            )
-
-            // Update hint values to reflect trace stage changes
-            viewModelScope.launch {
-                _traceState.collect { updateHint(it) }
-            }
-        }.onFailure {
-            handleError(
-                title = "Error using TokenCredential: ${it.message}",
-                description = it.cause.toString()
-            )
         }
     }
+
 
     /**
      * Performs an identify operation to obtain the [ArcGISFeature] nearest to the
@@ -276,7 +259,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         mapPoint: Point
     ) {
         // Get the network source of the identified feature
-        val utilityNetworkSource = utilityNetwork.definition?.networkSources?.value?.firstOrNull {
+        val utilityNetworkSource = utilityNetwork?.definition?.networkSources?.value?.firstOrNull {
             it.featureTable.tableName == identifiedFeature.featureTable?.tableName
         } ?: return handleError("Selected feature does not contain a Utility Network Source.")
 
@@ -312,8 +295,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         // Find the network source's asset group with the matching code
         utilityNetworkSource.assetGroups.first { it.code == assetGroupCode }.assetTypes
             // Find the asset group type code matching the feature's asset type code
-            .first { it.code == identifiedFeature.attributes["assettype"].toString().toInt() }
-            .let { utilityAssetType ->
+            .first { it.code == identifiedFeature.attributes["assettype"].toString().toInt() }.let { utilityAssetType ->
                 // Get the list of terminals for the feature
                 val terminals = utilityAssetType.terminalConfiguration?.terminals
                     ?: return handleError("Error retrieving terminal configuration")
@@ -322,9 +304,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 when (terminals.size) {
                     1 -> {
                         // Create a utility element
-                        utilityNetwork.createElementOrNull(
-                            arcGISFeature = identifiedFeature,
-                            terminal = terminals.first()
+                        utilityNetwork?.createElementOrNull(
+                            arcGISFeature = identifiedFeature, terminal = terminals.first()
                         )?.let { utilityElement ->
                             // Add the utility element to the map
                             addUtilityElementToMap(
@@ -349,9 +330,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                             _selectedTerminalConfigurationIndex.collect { selectedIndex ->
                                 if (selectedIndex != null) {
                                     // Create a utility element
-                                    val element = utilityNetwork.createElementOrNull(
-                                        arcGISFeature = identifiedFeature,
-                                        terminal = terminals[selectedIndex]
+                                    val element = utilityNetwork?.createElementOrNull(
+                                        arcGISFeature = identifiedFeature, terminal = terminals[selectedIndex]
                                     ) ?: return@collect handleError(
                                         "Error creating utility element"
                                     )
@@ -379,9 +359,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         mapPoint: Point
     ) {
         // Create a utility element with the identified feature
-        val element = (utilityNetwork.createElementOrNull(
-            arcGISFeature = identifiedFeature,
-            terminal = null
+        val element = (utilityNetwork?.createElementOrNull(
+            arcGISFeature = identifiedFeature, terminal = null
         ) ?: return handleError("Error creating element"))
         // Calculate the fraction along these the map point is located
         element.fractionAlongEdge = GeometryEngine.fractionAlong(
@@ -433,8 +412,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                         symbol = barrierPointSymbol
                     }
                 }
-            }
-        )
+            })
     }
 
     /**
@@ -466,68 +444,61 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
             // Update the trace state
             _traceState.value = TraceState.RUNNING_TRACE_UTILITY_NETWORK
             // Perform the trace with the above parameters, and obtain the results list
-            val traceResults = utilityNetwork.trace(traceParameters)
-                .getOrElse {
-                    return@launch handleError(
-                        title = "Error performing trace",
-                        description = it.message.toString()
-                    )
-                }
+            val traceResults = utilityNetwork?.trace(traceParameters)?.getOrElse {
+                return@launch handleError(
+                    title = "Error performing trace",
+                    description = it.message.toString()
+                )
+            }
 
             // Get the utility trace result's first result as a utility element trace result
-            (traceResults.first() as? UtilityElementTraceResult)?.let { utilityElementTraceResult ->
+            (traceResults?.first() as? UtilityElementTraceResult)?.let { utilityElementTraceResult ->
                 // Ensure the result is not empty
-                if (utilityElementTraceResult.elements.isEmpty())
-                    return@launch handleError("No elements found in the trace result")
+                if (utilityElementTraceResult.elements.isEmpty()) return@launch handleError("No elements found in the trace result")
 
-                arcGISMap.operationalLayers.filterIsInstance<FeatureLayer>()
-                    .forEach { featureLayer ->
-                        // Clear previous selection
-                        featureLayer.clearSelection()
-                        val params = QueryParameters().apply {
-                            returnGeometry = true // Used to calculate the viewpoint result
-                        }
-                        // Create query parameters to find features who's network source name matches the layer's feature table name
-                        utilityElementTraceResult.elements.filter {
-                            it.networkSource.name == featureLayer.featureTable?.tableName
-                        }.forEach { utilityElement ->
-                            params.objectIds.add(utilityElement.objectId)
-                        }
-
-                        // Check if any trace results were added from the above filter
-                        if (params.objectIds.isNotEmpty()) {
-                            // Select features that match the query
-                            val featureQueryResult = featureLayer.selectFeatures(
-                                parameters = params,
-                                mode = SelectionMode.New
-                            ).getOrElse {
-                                return@launch handleError(
-                                    title = it.message.toString(),
-                                    description = it.cause.toString()
-                                )
-                            }
-
-                            // Create list of all the feature result geometries
-                            val resultGeometryList = mutableListOf<Geometry>()
-                            featureQueryResult.iterator().forEach { feature ->
-                                feature.geometry?.let {
-                                    resultGeometryList.add(it)
-                                }
-                            }
-
-                            // Obtain the union geometry of all the feature geometries
-                            GeometryEngine.unionOrNull(resultGeometryList)?.let { unionGeometry ->
-                                // Set the map's viewpoint to the union result geometry
-                                mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = unionGeometry))
-                            }
-                        } else {
-                            Toast.makeText(
-                                getApplication(),
-                                "Trace result found 0 elements",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                arcGISMap.operationalLayers.filterIsInstance<FeatureLayer>().forEach { featureLayer ->
+                    // Clear previous selection
+                    featureLayer.clearSelection()
+                    val params = QueryParameters().apply {
+                        returnGeometry = true // Used to calculate the viewpoint result
                     }
+                    // Create query parameters to find features who's network source name matches the layer's feature table name
+                    utilityElementTraceResult.elements.filter {
+                        it.networkSource.name == featureLayer.featureTable?.tableName
+                    }.forEach { utilityElement ->
+                        params.objectIds.add(utilityElement.objectId)
+                    }
+
+                    // Check if any trace results were added from the above filter
+                    if (params.objectIds.isNotEmpty()) {
+                        // Select features that match the query
+                        val featureQueryResult = featureLayer.selectFeatures(
+                            parameters = params, mode = SelectionMode.New
+                        ).getOrElse {
+                            return@launch handleError(
+                                title = it.message.toString(), description = it.cause.toString()
+                            )
+                        }
+
+                        // Create list of all the feature result geometries
+                        val resultGeometryList = mutableListOf<Geometry>()
+                        featureQueryResult.iterator().forEach { feature ->
+                            feature.geometry?.let {
+                                resultGeometryList.add(it)
+                            }
+                        }
+
+                        // Obtain the union geometry of all the feature geometries
+                        GeometryEngine.unionOrNull(resultGeometryList)?.let { unionGeometry ->
+                            // Set the map's viewpoint to the union result geometry
+                            mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = unionGeometry))
+                        }
+                    } else {
+                        Toast.makeText(
+                            getApplication(), "Trace result found 0 elements", Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
 
                 // Update the trace state
                 _traceState.value = TraceState.TRACE_COMPLETED
@@ -539,9 +510,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      * Resets the trace, removing graphics and clearing selections.
      */
     fun reset() {
-        arcGISMap.operationalLayers
-            .filterIsInstance<FeatureLayer>()
-            .forEach { it.clearSelection() }
+        arcGISMap.operationalLayers.filterIsInstance<FeatureLayer>().forEach { it.clearSelection() }
         utilityElementBarriers.clear()
         utilityElementStartingLocations.clear()
         graphicsOverlay.graphics.clear()
@@ -598,19 +567,6 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
         reset()
         _traceState.value = TraceState.TRACE_FAILED
         messageDialogVM.showMessageDialog(title, description)
-    }
-
-    companion object {
-        // Public credentials for the data in this sample.
-        const val USERNAME = "viewer01"
-        const val PASSWORD = "I68VGU^nMurF"
-
-        // The portal item ID for Naperville’s electrical network
-        private const val NAPERVILLE_ELECTRICAL_NETWORK_ITEM_ID = "471eb0bf37074b1fbb972b1da70fb310"
-        private const val SAMPLE_SERVER_7 = "https://sampleserver7.arcgisonline.com"
-        private const val SAMPLE_PORTAL_URL = "$SAMPLE_SERVER_7/portal/sharing/rest"
-        private const val FEATURE_SERVICE_URL =
-            "$SAMPLE_SERVER_7/server/rest/services/UtilityNetwork/NapervilleElectric/FeatureServer"
     }
 
     private fun Double.roundToThreeDecimals(): Double {

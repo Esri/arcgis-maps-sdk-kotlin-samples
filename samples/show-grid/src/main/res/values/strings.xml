@@ -6,6 +6,7 @@
     <string name="grid_type">Grid Type</string>
     <string name="change_grid_button">Grid Options</string>
     <string name="label_position">Label Position</string>
+    <string name="label_offset">Label Offset</string>
     <string-array name="layers_array">
         <item>Lat and Long</item>
         <item>MGRS Grid</item>

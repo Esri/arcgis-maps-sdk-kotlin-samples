@@ -94,7 +94,7 @@ class ShowServiceAreaViewModel(app: Application) : AndroidViewModel(app) {
 
     // Service area task for the San Diego network analysis service
     private val serviceAreaTask = ServiceAreaTask(
-        url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/NetworkAnalysis/SanDiego/NAServer/ServiceArea"
+        url = "https://sampleserver7.arcgisonline.com/server/rest/services/NetworkAnalysis/SanDiego/NAServer/ServiceArea"
     )
 
     // StateFlow for the currently selected graphic type (facility or barrier)
