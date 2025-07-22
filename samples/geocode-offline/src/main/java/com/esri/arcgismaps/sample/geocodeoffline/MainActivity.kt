@@ -22,7 +22,9 @@ import android.os.Bundle
 import android.provider.BaseColumns
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.cursoradapter.widget.SimpleCursorAdapter
@@ -128,8 +130,17 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         val search = menu.findItem(R.id.appSearchBar)
+        val searchView = search.actionView as SearchView
         // set up address search view and listeners
-        setupAddressSearchView(search.actionView as SearchView)
+        setupAddressSearchView(searchView)
+        val surfaceContainerColor = getColor(com.esri.arcgismaps.sample.sampleslib.R.color.colorBackground)
+        val onSurfaceColor = getColor(com.esri.arcgismaps.sample.sampleslib.R.color.textColor)
+        searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text).apply {
+            setTextColor(onSurfaceColor)
+        }
+        searchView.findViewById<View>(androidx.appcompat.R.id.search_plate).apply {
+            setBackgroundColor(surfaceContainerColor)
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
