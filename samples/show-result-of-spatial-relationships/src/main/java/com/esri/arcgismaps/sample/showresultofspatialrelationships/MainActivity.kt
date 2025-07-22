@@ -18,8 +18,7 @@ package com.esri.arcgismaps.sample.showresultofspatialrelationships
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -51,7 +50,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowResultOfSpatialRelationshipsActivityMainBinding by lazy {
@@ -119,7 +118,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

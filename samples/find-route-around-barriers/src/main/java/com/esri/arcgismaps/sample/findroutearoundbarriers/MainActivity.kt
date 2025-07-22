@@ -26,8 +26,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -65,7 +64,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: FindRouteAroundBarriersActivityMainBinding by lazy {
@@ -161,7 +160,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

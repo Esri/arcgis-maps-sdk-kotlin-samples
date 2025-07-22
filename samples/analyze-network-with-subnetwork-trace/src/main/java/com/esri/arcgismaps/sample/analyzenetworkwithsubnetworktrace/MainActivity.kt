@@ -28,7 +28,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
@@ -67,7 +67,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: AnalyzeNetworkWithSubnetworkTraceActivityMainBinding by lazy {

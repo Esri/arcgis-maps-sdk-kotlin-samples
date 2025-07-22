@@ -26,8 +26,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
@@ -53,7 +52,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: SearchWithGeocodeActivityMainBinding by lazy {
@@ -94,7 +93,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

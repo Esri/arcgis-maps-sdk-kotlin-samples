@@ -19,8 +19,7 @@ package com.esri.arcgismaps.sample.findaddresswithreversegeocode
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +38,7 @@ import com.esri.arcgismaps.sample.findaddresswithreversegeocode.databinding.Find
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     // service url to be provided to the LocatorTask (geocoder)
     private val geocodeServer =
@@ -78,7 +77,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

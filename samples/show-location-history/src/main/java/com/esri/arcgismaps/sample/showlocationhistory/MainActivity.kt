@@ -17,8 +17,7 @@
 package com.esri.arcgismaps.sample.showlocationhistory
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -47,7 +46,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.time.Instant
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     private var isTrackLocation: Boolean = false
 
@@ -62,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

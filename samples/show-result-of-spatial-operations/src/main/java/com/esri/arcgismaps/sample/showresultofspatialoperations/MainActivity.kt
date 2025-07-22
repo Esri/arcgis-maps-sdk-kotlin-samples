@@ -18,8 +18,7 @@ package com.esri.arcgismaps.sample.showresultofspatialoperations
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -48,7 +47,7 @@ private val Color.Companion.blue: Color
         return fromRgba(0, 0, 255, 255)
     }
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowResultOfSpatialOperationsActivityMainBinding by lazy {
@@ -85,7 +84,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

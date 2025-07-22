@@ -23,8 +23,6 @@ import android.provider.BaseColumns
 import android.util.Log
 import android.view.Menu
 import android.widget.AutoCompleteTextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.cursoradapter.widget.SimpleCursorAdapter
@@ -46,11 +44,12 @@ import com.arcgismaps.tasks.geocode.GeocodeParameters
 import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.esri.arcgismaps.sample.geocodeoffline.databinding.GeocodeOfflineActivityMainBinding
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: GeocodeOfflineActivityMainBinding by lazy {
@@ -95,7 +94,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

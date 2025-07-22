@@ -18,8 +18,7 @@ package com.esri.arcgismaps.sample.applyfunctiontorasterfromservice
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -35,7 +34,7 @@ import com.esri.arcgismaps.sample.applyfunctiontorasterfromservice.databinding.A
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseEdgeToEdgeActivity() {
 
     private val activityMainBinding: ApplyFunctionToRasterFromServiceActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.apply_function_to_raster_from_service_activity_main)
@@ -55,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
