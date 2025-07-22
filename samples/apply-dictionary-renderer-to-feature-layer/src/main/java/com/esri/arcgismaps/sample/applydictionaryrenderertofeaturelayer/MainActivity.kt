@@ -18,7 +18,7 @@ package com.esri.arcgismaps.sample.applydictionaryrenderertofeaturelayer
 
 import android.os.Bundle
 import android.util.Log
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -35,7 +35,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ApplyDictionaryRendererToFeatureLayerActivityMainBinding by lazy {

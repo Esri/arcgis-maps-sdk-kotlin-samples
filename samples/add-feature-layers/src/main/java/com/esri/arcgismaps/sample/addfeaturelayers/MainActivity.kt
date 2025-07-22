@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -39,7 +39,7 @@ import com.esri.arcgismaps.sample.addfeaturelayers.databinding.AddFeatureLayersA
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: AddFeatureLayersActivityMainBinding by lazy {

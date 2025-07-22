@@ -18,7 +18,7 @@ package com.esri.arcgismaps.sample.displaydimensions
 
 import android.os.Bundle
 import android.util.Log
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -32,7 +32,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val provisionPath: String by lazy {
         getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.display_dimensions_app_name)

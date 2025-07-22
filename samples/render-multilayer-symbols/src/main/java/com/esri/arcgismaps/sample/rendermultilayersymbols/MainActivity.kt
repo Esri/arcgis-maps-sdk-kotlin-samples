@@ -19,7 +19,7 @@ package com.esri.arcgismaps.sample.rendermultilayersymbols
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -71,7 +71,7 @@ private val Color.Companion.magenta: Color
 // define offset used to keep a consistent distance between symbols in the same column
 private const val OFFSET = 20.0
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: RenderMultilayerSymbolsActivityMainBinding by lazy {

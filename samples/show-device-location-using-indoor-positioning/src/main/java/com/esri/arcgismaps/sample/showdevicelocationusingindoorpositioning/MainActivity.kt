@@ -23,7 +23,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -43,7 +43,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowDeviceLocationUsingIndoorPositioningActivityMainBinding by lazy {

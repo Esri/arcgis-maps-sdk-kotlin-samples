@@ -22,7 +22,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-abstract class BaseEdgeToEdgeActivity : AppCompatActivity() {
+/**
+ * A base activity designed to enable edge-to-edge display support for devices targeting API 35 and above.
+ * This class extends [AppCompatActivity] and provides a consistent implementation for handling
+ * system bar insets, ensuring proper layout padding for ArcGIS MapsSDK Kotlin samples using
+ * view-based (XML) layouts.
+ */
+abstract class EdgeToEdgeCompatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

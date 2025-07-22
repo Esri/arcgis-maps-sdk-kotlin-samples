@@ -17,7 +17,7 @@
 package com.esri.arcgismaps.sample.stylegraphicswithsymbols
 
 import android.os.Bundle
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
@@ -44,7 +44,7 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.stylegraphicswithsymbols.databinding.StyleGraphicsWithSymbolsActivityMainBinding
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -19,7 +19,7 @@ package com.esri.arcgismaps.sample.addwmslayer
 
 import android.os.Bundle
 import android.util.Log
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -32,7 +32,7 @@ import com.esri.arcgismaps.sample.addwmslayer.databinding.AddWmsLayerActivityMai
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: AddWmsLayerActivityMainBinding by lazy {

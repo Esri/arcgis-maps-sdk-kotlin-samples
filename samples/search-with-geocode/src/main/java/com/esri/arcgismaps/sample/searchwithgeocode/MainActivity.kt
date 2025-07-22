@@ -26,7 +26,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
@@ -52,7 +52,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.launch
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: SearchWithGeocodeActivityMainBinding by lazy {

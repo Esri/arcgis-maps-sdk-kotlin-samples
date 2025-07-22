@@ -19,7 +19,7 @@ package com.esri.arcgismaps.sample.changecameracontroller
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -46,7 +46,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ChangeCameraControllerActivityMainBinding by lazy {

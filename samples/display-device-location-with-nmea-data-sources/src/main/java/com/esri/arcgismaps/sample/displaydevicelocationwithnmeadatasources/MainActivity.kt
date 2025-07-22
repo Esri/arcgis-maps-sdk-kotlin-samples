@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -44,7 +44,7 @@ import java.nio.charset.StandardCharsets
 import java.util.Timer
 import kotlin.concurrent.timerTask
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val provisionPath: String by lazy {
         getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.display_device_location_with_nmea_data_sources_app_name)

@@ -17,7 +17,7 @@
 package com.esri.arcgismaps.sample.setviewpointrotation
 
 import android.os.Bundle
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -28,7 +28,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.setviewpointrotation.databinding.SetViewpointRotationActivityMainBinding
 import kotlinx.coroutines.launch
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

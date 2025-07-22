@@ -44,12 +44,12 @@ import com.arcgismaps.tasks.geocode.GeocodeParameters
 import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.esri.arcgismaps.sample.geocodeoffline.databinding.GeocodeOfflineActivityMainBinding
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: GeocodeOfflineActivityMainBinding by lazy {

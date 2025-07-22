@@ -28,9 +28,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ArcGISEnvironment
@@ -60,6 +57,7 @@ import com.arcgismaps.utilitynetworks.UtilityTraceType
 import com.arcgismaps.utilitynetworks.UtilityTraversability
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.AnalyzeNetworkWithSubnetworkTraceActivityMainBinding
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.LoadingOptionsDialogBinding
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -67,7 +65,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: AnalyzeNetworkWithSubnetworkTraceActivityMainBinding by lazy {
@@ -132,13 +130,6 @@ class MainActivity : BaseEdgeToEdgeActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { v, insets ->
-            // Applies system bar insets (status bar and navigation bar) as padding to the given view.
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         ArcGISEnvironment.applicationContext = this
         ArcGISEnvironment.authenticationManager.arcGISAuthenticationChallengeHandler =

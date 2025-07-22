@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
@@ -48,7 +48,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowGridActivityMainBinding by lazy {

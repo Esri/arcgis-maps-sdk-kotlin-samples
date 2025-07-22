@@ -27,7 +27,7 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val activityMainBinding: EditFeatureAttachmentsActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.edit_feature_attachments_activity_main)

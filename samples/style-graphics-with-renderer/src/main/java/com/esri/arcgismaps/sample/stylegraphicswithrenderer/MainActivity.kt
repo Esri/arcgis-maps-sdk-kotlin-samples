@@ -17,7 +17,7 @@
 package com.esri.arcgismaps.sample.stylegraphicswithrenderer
 
 import android.os.Bundle
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
@@ -49,7 +49,7 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.stylegraphicswithrenderer.databinding.StyleGraphicsWithRendererActivityMainBinding
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: StyleGraphicsWithRendererActivityMainBinding by lazy {

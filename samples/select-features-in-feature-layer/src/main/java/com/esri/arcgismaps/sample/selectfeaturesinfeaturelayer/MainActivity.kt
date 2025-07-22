@@ -31,12 +31,12 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.ScreenCoordinate
-import com.esri.arcgismaps.sample.sampleslib.BaseEdgeToEdgeActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import com.esri.arcgismaps.sample.selectfeaturesinfeaturelayer.databinding.SelectFeaturesInFeatureLayerActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : BaseEdgeToEdgeActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: SelectFeaturesInFeatureLayerActivityMainBinding by lazy {
