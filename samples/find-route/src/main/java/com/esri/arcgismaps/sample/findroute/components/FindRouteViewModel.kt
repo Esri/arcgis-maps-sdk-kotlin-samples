@@ -44,6 +44,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.findroute.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
+import kotlin.math.roundToLong
 
 class FindRouteViewModel(private val application: Application) : AndroidViewModel(application) {
 
@@ -188,8 +189,8 @@ class FindRouteViewModel(private val application: Application) : AndroidViewMode
                 directions = route.directionManeuvers
 
                 // set the time and distance info for the route
-                routeDirectionsInfo = "${Math.round(route.travelTime)} min " +
-                        "(${Math.round(route.totalLength / 1000.0)} km)"
+                routeDirectionsInfo = "${route.travelTime.roundToLong()} min " +
+                        "(${(route.totalLength / 1000.0).roundToLong()} km)"
 
                 // animate the map to the route's geometry
                 route.routeGeometry?.let { geometry ->

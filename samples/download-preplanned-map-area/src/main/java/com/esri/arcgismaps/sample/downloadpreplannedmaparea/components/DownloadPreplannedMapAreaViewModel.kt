@@ -28,6 +28,7 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.tasks.offlinemaptask.DownloadPreplannedOfflineMapJob
+import com.arcgismaps.tasks.offlinemaptask.DownloadPreplannedOfflineMapParameters
 import com.arcgismaps.tasks.offlinemaptask.GenerateOfflineMapJob
 import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.arcgismaps.tasks.offlinemaptask.PreplannedMapArea
@@ -178,7 +179,6 @@ class DownloadPreplannedMapAreaViewModel(application: Application) : AndroidView
                     // Set the offline map result as the displayed
                     currentMap = downloadedMap.offlineMap
                     // Update the UI to show the map as downloaded
-                    val index = preplannedMapAreaInfoList.indexOf(preplannedMapAreaInfo)
                     preplannedMapAreaInfoList[preplannedMapAreaInfo.index] =
                         preplannedMapAreaInfo.copy(isDownloaded = true)
                     // Add the downloaded map to the list of downloaded maps

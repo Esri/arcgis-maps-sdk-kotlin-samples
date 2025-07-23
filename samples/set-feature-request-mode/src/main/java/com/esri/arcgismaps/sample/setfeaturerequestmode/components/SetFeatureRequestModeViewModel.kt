@@ -50,7 +50,6 @@ class SetFeatureRequestModeViewModel(application: Application) : AndroidViewMode
         }
 
     private var viewpoint: Viewpoint? = null
-        private set
 
     var currentFeatureRequestMode by mutableStateOf<FeatureRequestMode>(FeatureRequestMode.OnInteractionCache)
         private set
