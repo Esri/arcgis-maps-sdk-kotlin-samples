@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.editfeaturesusingfeatureforms
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.MapViewModel
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ArcGISEnvironment.applicationContext = this
+        enableEdgeToEdge()
         setContent {
             SampleAppTheme {
                 val mapViewModel: MapViewModel = viewModel()

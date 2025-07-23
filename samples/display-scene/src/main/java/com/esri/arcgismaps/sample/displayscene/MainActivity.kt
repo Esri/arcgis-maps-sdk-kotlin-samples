@@ -17,8 +17,7 @@
 package com.esri.arcgismaps.sample.displayscene
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
@@ -28,7 +27,7 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.displayscene.databinding.DisplaySceneActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: DisplaySceneActivityMainBinding by lazy {
@@ -41,7 +40,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

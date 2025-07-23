@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.filterfeaturesinscene
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
+        enableEdgeToEdge()
         setContent {
             SampleAppTheme {
                 FilterFeaturesInSceneApp()

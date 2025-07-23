@@ -16,16 +16,11 @@
 
 package com.esri.arcgismaps.sample.sampleslib.theme
 
-import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 
 @Composable
 fun SampleAppTheme(
@@ -36,16 +31,6 @@ fun SampleAppTheme(
         LightColors
     } else {
         DarkColors
-    }
-
-    val view = LocalView.current
-    val activity = view.context as? Activity
-    val isLightIcons = colors.onPrimary == Color.White
-
-    SideEffect {
-        activity?.window?.let { window ->
-            WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = isLightIcons
-        }
     }
 
     MaterialTheme(
