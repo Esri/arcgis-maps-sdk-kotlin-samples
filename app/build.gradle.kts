@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.esri.arcgismaps.kotlin.sampleviewer"
-        buildConfigField("String", "ARCGIS_VERSION", "\"${System.getProperty("build") ?: libs.versions.arcgisMapsKotlinVersion}\"")
+        buildConfigField("String", "ARCGIS_VERSION", "\"${System.getProperty("build") ?: libs.versions.arcgisMapsKotlinVersion.get()}\"")
     }
 
     // Optional input to apply the external signing configuration for the sample viewer
