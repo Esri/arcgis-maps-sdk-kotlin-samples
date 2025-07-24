@@ -23,8 +23,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -68,7 +67,7 @@ const val notificationIdParameter = "NotificationId"
 // key for the json job file path
 const val jobParameter = "JsonJobPath"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: GenerateOfflineMapUsingAndroidJetpackWorkmanagerActivityMainBinding by lazy {
@@ -121,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
 
         // request notifications permission
         requestNotificationPermission()

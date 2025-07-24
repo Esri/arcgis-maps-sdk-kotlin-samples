@@ -25,10 +25,9 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.ViewGroup
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
@@ -55,7 +54,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val activityMainBinding: EditFeatureAttachmentsActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.edit_feature_attachments_activity_main)
@@ -98,7 +97,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

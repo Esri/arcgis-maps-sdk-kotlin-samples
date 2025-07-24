@@ -17,8 +17,7 @@
 package com.esri.arcgismaps.sample.stylegraphicswithsymbols
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
@@ -45,11 +44,10 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.stylegraphicswithsymbols.databinding.StyleGraphicsWithSymbolsActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services

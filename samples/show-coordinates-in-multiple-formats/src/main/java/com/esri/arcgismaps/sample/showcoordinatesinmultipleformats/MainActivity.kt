@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.showcoordinatesinmultipleformats
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
         // remove focus from text fields when keyboard closes
         WindowCompat.setDecorFitsSystemWindows(window, false)
         // set compose content
+        enableEdgeToEdge()
         setContent {
             SampleAppTheme {
                 ShowCoordinatesInMultipleFormatsApp()

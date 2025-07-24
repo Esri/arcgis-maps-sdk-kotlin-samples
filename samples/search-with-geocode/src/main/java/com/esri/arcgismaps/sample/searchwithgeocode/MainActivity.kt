@@ -24,10 +24,10 @@ import android.provider.BaseColumns
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
@@ -48,12 +48,13 @@ import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.tasks.geocode.GeocodeParameters
 import com.arcgismaps.tasks.geocode.GeocodeResult
 import com.arcgismaps.tasks.geocode.LocatorTask
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import com.esri.arcgismaps.sample.searchwithgeocode.databinding.SearchWithGeocodeActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: SearchWithGeocodeActivityMainBinding by lazy {
@@ -94,7 +95,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         // authentication with an API key or named user is
         // required to access basemaps and other location services
@@ -142,8 +142,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         val search = menu.findItem(R.id.appSearchBar)
+        val searchView = search.actionView as SearchView
         // set up address search view and listeners
-        setupAddressSearchView(search.actionView as SearchView)
+        setupAddressSearchView(searchView)
+        val surfaceContainerColor = getColor(com.esri.arcgismaps.sample.sampleslib.R.color.colorBackground)
+        val onSurfaceColor = getColor(com.esri.arcgismaps.sample.sampleslib.R.color.textColor)
+        searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text).apply {
+            setTextColor(onSurfaceColor)
+        }
+        searchView.findViewById<View>(androidx.appcompat.R.id.search_plate).apply {
+            setBackgroundColor(surfaceContainerColor)
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
