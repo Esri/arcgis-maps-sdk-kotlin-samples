@@ -1,3 +1,5 @@
+import com.esri.arcgismaps.kotlin.build_logic.convention.implementation
+
 plugins {
     alias(libs.plugins.arcgismaps.android.library)
     alias(libs.plugins.arcgismaps.android.library.compose)
@@ -34,7 +36,15 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.arcgis.maps.kotlin)
+    val buildVersion = System.getProperty("build")
+    // Override version in libs.versions.toml file
+    if (buildVersion != null) {
+        implementation("com.esri:arcgis-maps-kotlin:${buildVersion}")
+        implementation(platform("com.esri:arcgis-maps-kotlin-toolkit-bom:$buildVersion"))
+    } else {
+        implementation(libs.arcgis.maps.kotlin)
+        implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
+    }
 }
 
 
