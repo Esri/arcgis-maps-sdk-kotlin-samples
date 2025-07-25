@@ -154,7 +154,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     ) : ArrayAdapter<FloorLevel>(context, layoutResourceId, floorLevels) {
 
         private val mLayoutInflater: LayoutInflater =
-            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         override fun getCount(): Int {
             return floorLevels.size

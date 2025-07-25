@@ -18,9 +18,9 @@ package com.esri.arcgismaps.sample.editgeometrieswithprogrammaticreticletool.com
 
 import android.app.Application
 import androidx.compose.ui.unit.dp
-import com.arcgismaps.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.Color
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryType
@@ -162,7 +162,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         }
 
         createInitialGraphics()
-        UpdateContextActionButtonState() // set initial 'start editor' button text
+        updateContextActionButtonState() // set initial 'start editor' button text
     }
 
     /**
@@ -268,7 +268,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
         // Picking up a mid-vertex will lead to a new vertex being created. Only show feedback for
         // this if vertex creation is enabled.
         programmaticReticleTool.style.growEffect?.applyToMidVertices = newValue
-        UpdateContextActionButtonState()
+        updateContextActionButtonState()
     }
 
     /**
@@ -351,7 +351,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
     private fun updateReticleState() {
         if (geometryEditor.pickedUpElement.value != null) {
             reticleState = ReticleState.PickedUp
-            UpdateContextActionButtonState()
+            updateContextActionButtonState()
             return
         }
 
@@ -361,7 +361,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             else -> ReticleState.Default
         }
 
-        UpdateContextActionButtonState()
+        updateContextActionButtonState()
     }
 
     /**
@@ -371,7 +371,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
      * Note that the enabled-ness of the button is used to prevent vertex insertion when vertex
      * creation is disabled.
      */
-    private fun UpdateContextActionButtonState() {
+    private fun updateContextActionButtonState() {
         if (!geometryEditor.isStarted.value) {
             _contextActionButtonText.value = "Start Geometry Editor"
             _contextActionButtonEnabled.value = true
@@ -404,7 +404,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
             selectedGraphic.isVisible = true
         }
         selectedGraphic = null
-        UpdateContextActionButtonState()
+        updateContextActionButtonState()
     }
 
     private enum class ReticleState {

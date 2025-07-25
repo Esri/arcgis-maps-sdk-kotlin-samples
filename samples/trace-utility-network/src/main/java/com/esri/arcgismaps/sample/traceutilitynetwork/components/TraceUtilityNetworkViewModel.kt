@@ -61,6 +61,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.math.roundToLong
 
 class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -570,7 +571,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
     }
 
     private fun Double.roundToThreeDecimals(): Double {
-        return Math.round(this * 1000.0) / 1000.0
+        return (this * 1000.0).roundToLong() / 1000.0
     }
 }
 

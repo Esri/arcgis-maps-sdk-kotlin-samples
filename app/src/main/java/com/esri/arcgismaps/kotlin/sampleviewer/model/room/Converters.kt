@@ -19,7 +19,6 @@ package com.esri.arcgismaps.kotlin.sampleviewer.model.room
 import androidx.room.TypeConverter
 import com.esri.arcgismaps.kotlin.sampleviewer.model.CodeFile
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**

@@ -216,13 +216,13 @@ fun AugmentedRealityScreen(
                                 .align(Alignment.CenterHorizontally)
                                 .padding(8.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.8f))
+                                .background(Color.Black.copy(alpha = 0.8f))
                                 .padding(16.dp)
                         ) {
 
                             Text(
                                 text = augmentedRealityViewModel.nextDirectionText,
-                                color = androidx.compose.ui.graphics.Color.White
+                                color = Color.White
                             )
                         }
                     }
@@ -374,7 +374,7 @@ private fun PrivacyInfoDialog(
 private fun TextWithScrim(text: String) {
     Column(
         modifier = Modifier
-            .background(androidx.compose.ui.graphics.Color.Gray.copy(alpha = 0.5f))
+            .background(Color.Gray.copy(alpha = 0.5f))
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -389,7 +389,7 @@ private fun TextWithScrim(text: String) {
 @Composable
 private fun LegalTextArCore() {
     val textLinkStyle =
-        TextLinkStyles(style = SpanStyle(color = androidx.compose.ui.graphics.Color.Blue))
+        TextLinkStyles(style = SpanStyle(color = Color.Blue))
     Text(text = buildAnnotatedString {
         append("This application runs on ")
         withLink(
@@ -423,7 +423,7 @@ private fun LegalTextGeospatial() {
         withLink(
             LinkAnnotation.Url(
                 "https://support.google.com/ar?p=how-google-play-services-for-ar-handles-your-data",
-                TextLinkStyles(style = SpanStyle(color = androidx.compose.ui.graphics.Color.Blue))
+                TextLinkStyles(style = SpanStyle(color = Color.Blue))
             )
         ) {
             append("Learn more")

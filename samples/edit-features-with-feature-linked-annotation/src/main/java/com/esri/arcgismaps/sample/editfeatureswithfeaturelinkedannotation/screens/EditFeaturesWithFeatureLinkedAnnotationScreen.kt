@@ -93,7 +93,7 @@ fun EditFeaturesWithFeatureLinkedAnnotationScreen(sampleName: String) {
                     EditAddressDialog(
                         buildingNumber = mapViewModel.buildingNumber.toString(),
                         streetName = mapViewModel.streetName,
-                        onBuildingNumberChange = { mapViewModel.onBuildingNumberChange(it.toInt()) },
+                        onBuildingNumberChange = { mapViewModel.onBuildingNumberChange(it) },
                         onStreetNameChange = { mapViewModel.onStreetNameChange(it) },
                         onDismiss = { mapViewModel.onShowEditAddressDialogChange(false) },
                         onConfirm = {

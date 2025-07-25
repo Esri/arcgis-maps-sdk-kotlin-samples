@@ -50,10 +50,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Sample
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CodeView
@@ -179,7 +182,10 @@ private fun CodePageView(
                         .height(200.dp)
                         .width(350.dp)
                         .padding(8.dp),
-                    model = screenshotURL,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(screenshotURL)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = "Sample screenshot"
                 )
                 ReadmeView(markdownText = markdownText)

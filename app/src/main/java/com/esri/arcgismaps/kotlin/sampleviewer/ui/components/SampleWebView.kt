@@ -126,7 +126,6 @@ fun createWebView(context: Context): WebView {
             javaScriptEnabled = true
             domStorageEnabled = true
         }
-        alpha = 0.99f // TODO: Weirdly, without this the screen crashes on popBackStack (#4632)
     }
 }
 

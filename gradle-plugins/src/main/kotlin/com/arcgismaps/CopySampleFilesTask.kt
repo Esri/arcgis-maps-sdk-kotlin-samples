@@ -1,6 +1,5 @@
 package com.arcgismaps
 
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.gradle.api.Plugin
 import org.gradle.api.Project

@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.searchwithgeocode
 
-import android.content.Context
 import android.database.MatrixCursor
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -379,7 +378,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         this.clearFocus()
         // close the keyboard once search is complete
         val inputManager =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
