@@ -42,14 +42,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.GeometryType
 import com.esri.arcgismaps.sample.snapgeometryedits.R
-import com.esri.arcgismaps.sample.snapgeometryedits.components.MapViewModel
+import com.esri.arcgismaps.sample.snapgeometryedits.components.SnapGeometryEditsViewModel
 
 /**
  * Composable component to display the menu buttons.
  */
 @Composable
 fun ButtonMenu(
-    mapViewModel: MapViewModel
+    mapViewModel: SnapGeometryEditsViewModel
 ) {
     Row(
         modifier = Modifier

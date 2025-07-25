@@ -20,7 +20,10 @@ import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -28,14 +31,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.snapgeometryedits.components.MapViewModel
+import com.esri.arcgismaps.sample.snapgeometryedits.components.SnapGeometryEditsViewModel
 
 /**
  * Main screen layout for the sample app
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(sampleName: String) {
     // coroutineScope that will be cancelled when this call leaves the composition
@@ -43,9 +46,11 @@ fun MainScreen(sampleName: String) {
     // get the application property that will be used to construct MapViewModel
     val sampleApplication = LocalContext.current.applicationContext as Application
     // create a ViewModel to handle MapView interactions
-    val mapViewModel = remember { MapViewModel(sampleApplication, sampleCoroutineScope) }
+    val mapViewModel = remember { SnapGeometryEditsViewModel(sampleApplication, sampleCoroutineScope) }
     // the collection of graphics overlays used by the MapView
     val graphicsOverlayCollection = listOf(mapViewModel.graphicsOverlay)
+    val bottomSheetState = rememberModalBottomSheetState()
+
 
     Scaffold(
         topBar = {
@@ -79,7 +84,11 @@ fun MainScreen(sampleName: String) {
                     }
                 }
             }
-            BottomSheet(isVisible = mapViewModel.isBottomSheetVisible.value) {
+            if (mapViewModel.isBottomSheetVisible.value) {
+                ModalBottomSheet(
+                    onDismissRequest = { mapViewModel.dismissBottomSheet() },
+                    sheetState = bottomSheetState
+                ) {
                 SnapSettings(
                     snapSourceList = mapViewModel.snapSourceList.collectAsState(),
                     onSnappingChanged = mapViewModel::snappingEnabledStatus,
@@ -93,5 +102,5 @@ fun MainScreen(sampleName: String) {
                 ) { mapViewModel.dismissBottomSheet() }
             }
         }
-    )
+    })
 }
