@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.takescreenshot.screens
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -54,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotViewModel
@@ -188,8 +190,8 @@ fun shareImage(context: Context, imageUri: Uri) {
 @Composable
 fun SaveImageButton(context: Context, bitmap: Bitmap, saveBitmapToGallery: (Context, Bitmap) -> Uri?) {
 
-    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Manifest.permission.READ_MEDIA_IMAGES
+    val permission = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
     } else null
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -204,7 +206,8 @@ fun SaveImageButton(context: Context, bitmap: Bitmap, saveBitmapToGallery: (Cont
     }
 
     TextButton(onClick = {
-        if (permission == null) {
+        // If permission is null (i.e., running on API > 28), or if permission is already granted
+        if (permission == null || ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
             saveBitmapToGallery(context, bitmap)
             showToast(context, "Image saved!")
         } else {

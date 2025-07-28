@@ -21,7 +21,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.compose.runtime.getValue
@@ -41,6 +43,9 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -100,8 +105,26 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveBitmapToGallery(context: Context, bitmap: Bitmap): Uri? {
         val resolver = context.contentResolver
+        val filename = "screenshot-${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.jpg"
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val imageFile = File(imagesDir, filename)
+            FileOutputStream(imageFile).use { stream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            }
+            // Notify the media scanner about the new file.
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(imageFile.toString()),
+                arrayOf("image/jpeg"),
+                null
+            )
+            return Uri.fromFile(imageFile)
+        }
+
+        // Use MediaStore API for Android 10 (API 29) and above
         val contentValues = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "screenshot.jpg")
+            put(MediaStore.Images.Media.DISPLAY_NAME, filename)
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
             put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
             put(MediaStore.Images.Media.IS_PENDING, 1)
