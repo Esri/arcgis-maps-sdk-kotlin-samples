@@ -58,11 +58,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.takescreenshot.R
+import com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotViewModel
 
 /**
  * Main screen layout for the sample app
@@ -199,7 +199,7 @@ fun SaveImageButton(context: Context, bitmap: Bitmap, saveBitmapToGallery: (Cont
     ) { isGranted ->
         if (isGranted) {
             saveBitmapToGallery(context, bitmap)
-            showToast(context, "Image saved!")
+            showToast(context, "Image saved to Photos gallery!")
         } else {
             showToast(context, "Permission denied")
         }
@@ -209,7 +209,7 @@ fun SaveImageButton(context: Context, bitmap: Bitmap, saveBitmapToGallery: (Cont
         // If permission is null (i.e., running on API > 28), or if permission is already granted
         if (permission == null || ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
             saveBitmapToGallery(context, bitmap)
-            showToast(context, "Image saved!")
+            showToast(context, "Image saved to Photos gallery!")
         } else {
             permissionLauncher.launch(permission)
         }
