@@ -19,12 +19,12 @@ package com.esri.arcgismaps.sample.showlabelsonlayer
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
-import com.arcgismaps.Color
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.Color
 import com.arcgismaps.arcgisservices.LabelingPlacement
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.mapping.ArcGISMap
@@ -38,7 +38,7 @@ import com.esri.arcgismaps.sample.showlabelsonlayer.databinding.ShowLabelsOnLaye
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowLabelsOnLayerActivityMainBinding by lazy {

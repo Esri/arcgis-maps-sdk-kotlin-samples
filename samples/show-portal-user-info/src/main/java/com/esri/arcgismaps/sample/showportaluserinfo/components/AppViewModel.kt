@@ -23,11 +23,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.httpcore.authentication.OAuthUserConfiguration
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
-import com.arcgismaps.toolkit.authentication.signOut
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showportaluserinfo.R
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +85,7 @@ class AppViewModel(private val application: Application) : AndroidViewModel(appl
 
     fun signOut() = viewModelScope.launch {
         _isLoading.value = true
-        ArcGISEnvironment.authenticationManager.signOut()
+        authenticatorState.signOut()
         _infoText.value = startInfoText
         _isLoading.value = false
         _portalUserName.value = ""
@@ -99,7 +97,7 @@ class AppViewModel(private val application: Application) : AndroidViewModel(appl
 
     fun loadPortal() = viewModelScope.launch {
         _isLoading.value = true
-        authenticatorState.oAuthUserConfiguration = oAuthUserConfiguration
+        authenticatorState.oAuthUserConfigurations = listOf(oAuthUserConfiguration)
         val portal = Portal(url.value, Portal.Connection.Authenticated)
         portal.load().also {
             _isLoading.value = false

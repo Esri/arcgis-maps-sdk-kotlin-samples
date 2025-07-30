@@ -8,10 +8,12 @@
     ],
     "keywords": [
         "extent",
+        "geoview-compose",
         "limit panning",
         "map",
         "mapview",
         "max extent",
+        "toolkit",
         "zoom",
         "ArcGISMap",
         "Envelope"
@@ -23,7 +25,9 @@
         "Envelope"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/setmaxextent/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/setmaxextent/components/SetMaxExtentViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setmaxextent/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setmaxextent/screens/SetMaxExtentScreen.kt"
     ],
     "title": "Set max extent"
 }

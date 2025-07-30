@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.selectfeaturesinfeaturelayer
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -32,11 +31,12 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.ScreenCoordinate
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import com.esri.arcgismaps.sample.selectfeaturesinfeaturelayer.databinding.SelectFeaturesInFeatureLayerActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: SelectFeaturesInFeatureLayerActivityMainBinding by lazy {

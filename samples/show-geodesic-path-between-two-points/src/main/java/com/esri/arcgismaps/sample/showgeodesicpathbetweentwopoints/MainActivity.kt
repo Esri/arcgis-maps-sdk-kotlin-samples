@@ -19,19 +19,19 @@ package com.esri.arcgismaps.sample.showgeodesicpathbetweentwopoints
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.LinearUnit
-import com.arcgismaps.geometry.LinearUnitId
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
-import com.arcgismaps.geometry.GeometryEngine
-import com.arcgismaps.geometry.Polyline
+import com.arcgismaps.geometry.AngularUnit
 import com.arcgismaps.geometry.GeodeticCurveType
+import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.LinearUnit.Companion.kilometers
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.Polyline
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -46,7 +46,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowGeodesicPathBetweenTwoPointsActivityMainBinding by lazy {
@@ -87,10 +87,6 @@ class MainActivity : AppCompatActivity() {
         val lineSymbol = SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.red, 5f)
         Graphic(symbol = lineSymbol)
     }
-
-    // the unit of distance measurement in kilometers
-    private val unitsOfMeasurement = LinearUnit(LinearUnitId.Kilometers)
-
 
     // starting location for the distance calculation
     private val startingPoint = Point(-73.7781, 40.6413, SpatialReference.wgs84())
@@ -158,20 +154,22 @@ class MainActivity : AppCompatActivity() {
             val pathGeometry = GeometryEngine.densifyGeodeticOrNull(
                 geometry = polyline,
                 maxSegmentLength = 1.0,
-                lengthUnit = unitsOfMeasurement,
+                lengthUnit = kilometers,
                 curveType = GeodeticCurveType.Geodesic
                 // only compute the distance if the returned curved path geometry is not null
             ) ?: return showError("Error creating a densified geometry")
             // update the path graphic
             geodesicPathGraphic.geometry = pathGeometry
             // compute the path distance in kilometers
-            val distance = GeometryEngine.lengthGeodetic(
-                geometry = pathGeometry,
-                lengthUnit = unitsOfMeasurement,
+            val distance = GeometryEngine.distanceGeodeticOrNull(
+                startingPoint,
+                destinationPoint,
+                distanceUnit = kilometers,
+                azimuthUnit = AngularUnit.degrees,
                 curveType = GeodeticCurveType.Geodesic
             )
             // display the distance result
-            infoTextView.text = getString(R.string.distance_info_text, distance.roundToInt())
+            infoTextView.text = getString(R.string.distance_info_text, distance?.distance?.roundToInt())
         }
     }
 

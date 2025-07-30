@@ -1,33 +1,31 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "200.7.0"
+arcgisMapsKotlinVersion = "200.8.0"
 
 ### Android versions
-androidGradlePlugin = "8.7.3"
+androidGradlePlugin = "8.9.2"
 lifecycle = "2.8.7"
-androidTools = "31.7.3"
+androidTools = "31.9.1"
 appcompat = "1.7.0"
-constraintLayoutVersion = "2.2.0"
-kotlinxSerializationJson = "1.6.0"
+constraintLayoutVersion = "2.2.1"
+kotlinxSerializationJson = "1.8.1"
 accompanistSystemuicontroller = "0.32.0"
 workVersion = "2.10.0"
-datastorePreferences = "1.1.1"
-roomVersion = "2.6.1"
+datastorePreferences = "1.1.4"
+roomVersion = "2.7.0"
 
 ### Kotlin versions
-kotlinVersion = "2.0.0"
-coreKtx = "1.15.0"
-ktxActivity = "1.9.1"
-ksp = "2.0.0-1.0.21"
-kotlinCompilerExt = "1.5.12"
-commonsIoVersion = "2.15.1"
+kotlinVersion = "2.1.20"
+coreKtx = "1.16.0"
+ksp = "2.1.20-1.0.32"
+commonsIoVersion = "2.18.0"
 
 ### Compose versions
-composeBom = "2024.12.01"
-activityCompose = "1.9.3"
+composeBom = "2025.04.00"
+activityCompose = "1.10.1"
 material = "1.12.0"
-navigationCompose = "2.8.5"
+navigationCompose = "2.8.9"
 
 ### Testing versions
 junit = "4.13.2"
@@ -35,20 +33,21 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 
 ### Application Verions
-versionCode = "2007000"
-versionName = "200.7.0"
-minSdk = "26"
-targetSdk = "35"
+versionCode = "2008000"
+versionName = "200.8.0"
+minSdk = "28"
+targetSdk = "36"
 
 ### Third party libraries
-arcore = "1.47.0"
+arcore = "1.48.0"
 playServicesLocation = "21.3.0"
+navigationFragmentKtx = "2.8.9"
+navigationUiKtx = "2.8.9"
 
 [libraries]
 
 ### Android libs
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIoVersion" }
@@ -102,6 +101,8 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

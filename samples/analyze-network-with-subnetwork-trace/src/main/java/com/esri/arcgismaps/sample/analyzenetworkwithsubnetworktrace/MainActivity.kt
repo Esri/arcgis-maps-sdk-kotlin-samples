@@ -28,7 +28,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ArcGISEnvironment
@@ -36,6 +35,7 @@ import com.arcgismaps.Guid
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.data.CodedValueDomain
+import com.arcgismaps.data.ServiceGeodatabase
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
 import com.arcgismaps.httpcore.authentication.TokenCredential
@@ -57,6 +57,7 @@ import com.arcgismaps.utilitynetworks.UtilityTraceType
 import com.arcgismaps.utilitynetworks.UtilityTraversability
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.AnalyzeNetworkWithSubnetworkTraceActivityMainBinding
 import com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace.databinding.LoadingOptionsDialogBinding
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -64,7 +65,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: AnalyzeNetworkWithSubnetworkTraceActivityMainBinding by lazy {
@@ -112,7 +113,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val utilityNetwork by lazy {
-        UtilityNetwork(getString(R.string.utility_network_url))
+        UtilityNetwork(ServiceGeodatabase(getString(R.string.utility_network_url)))
     }
 
     private var initialExpression: UtilityTraceConditionalExpression? = null

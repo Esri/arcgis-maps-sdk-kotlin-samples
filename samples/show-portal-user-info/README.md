@@ -37,6 +37,10 @@ Enter your ArcGIS Online credentials for the specified URL.
 
 This sample signs into your ArcGIS online account and displays the user's profile information.
 
+## Additional information
+
+This sample uses the toolkit's [authentication](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/authentication#authenticator) module to handle authentication. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit docs](https://developers.arcgis.com/kotlin/toolkit/).
+
 ## Tags
 
 account, avatar, bio, cloud and portal, email, login, picture, profile, user, username

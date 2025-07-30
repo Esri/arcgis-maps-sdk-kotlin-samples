@@ -18,21 +18,21 @@ package com.esri.arcgismaps.sample.displaydimensions
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.MobileMapPackage
 import com.arcgismaps.mapping.layers.DimensionLayer
-import com.esri.arcgismaps.sample.displaydimensions.databinding.DisplayDimensionsActivityMainBinding
 import com.esri.arcgismaps.sample.displaydimensions.databinding.DimensionsDialogLayoutBinding
+import com.esri.arcgismaps.sample.displaydimensions.databinding.DisplayDimensionsActivityMainBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val provisionPath: String by lazy {
         getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.display_dimensions_app_name)

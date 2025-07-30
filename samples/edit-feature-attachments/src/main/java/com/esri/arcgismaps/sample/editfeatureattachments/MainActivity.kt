@@ -27,8 +27,9 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -43,18 +44,17 @@ import com.arcgismaps.mapping.GeoElement
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.IdentifyLayerResult
-import com.esri.arcgismaps.sample.editfeatureattachments.databinding.EditFeatureAttachmentsActivityMainBinding
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentEditSheetBinding
 import com.esri.arcgismaps.sample.editfeatureattachments.databinding.AttachmentLoadingDialogBinding
+import com.esri.arcgismaps.sample.editfeatureattachments.databinding.EditFeatureAttachmentsActivityMainBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import androidx.core.graphics.drawable.toDrawable
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val activityMainBinding: EditFeatureAttachmentsActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.edit_feature_attachments_activity_main)
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
 
         // file provider URI
         val contentUri = FileProvider.getUriForFile(
-            this, getString(R.string.provider_authority), file
+            this, getString(R.string.edit_feature_attachments_provider_authority), file
         )
         // open the file in gallery
         val imageIntent = Intent().apply {
@@ -337,3 +337,6 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+// Custom FileProvider for fetching attachments
+class EditFeatureAttachmentsProvider : FileProvider()

@@ -18,7 +18,7 @@ package com.esri.arcgismaps.sample.showresultofspatialoperations
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.arcgismaps.ApiKey
@@ -47,7 +47,7 @@ private val Color.Companion.blue: Color
         return fromRgba(0, 0, 255, 255)
     }
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: ShowResultOfSpatialOperationsActivityMainBinding by lazy {

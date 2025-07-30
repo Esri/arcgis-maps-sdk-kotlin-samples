@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <application>
+
+        <activity
+            android:exported="true"
+            android:name=".MainActivity"
+            android:label="@string/take_screenshot_app_name">
+        </activity>
+
+        <provider
+            android:name="com.esri.arcgismaps.sample.takescreenshot.components.TakeScreenshotFileProvider"
+            android:authorities="@string/take_screenshot_provider_authority"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/take_screenshot_file_paths"/>
+        </provider>
+
+    </application>
+
+</manifest>

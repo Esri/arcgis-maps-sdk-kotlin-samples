@@ -21,7 +21,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.toolkit.authentication.signOut
+import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import kotlinx.serialization.Serializable
 
 /**
@@ -93,7 +93,7 @@ data class Sample(
             // Assuming imageArray will always have one image.
             // Otherwise, function should be modified to return list of URLs for each image
             val modifiedJsonSampleName = sampleName.replace(" ", "-").lowercase()
-            val imageFileName = imageArray.first().toString().replace("\"", "")
+            val imageFileName = imageArray.first().replace("\"", "")
             return "https://raw.githubusercontent.com/Esri/arcgis-maps-sdk-kotlin-samples/v.next/samples/$modifiedJsonSampleName/$imageFileName"
         }
 
@@ -129,7 +129,7 @@ data class Sample(
  */
 suspend fun Sample.start(context: Context) {
     // Revoke previously configured ArcGISEnvironment settings like ApiKeys/OAuth tokens/Credentials
-    ArcGISEnvironment.authenticationManager.signOut()
+    AuthenticatorState().signOut()
     ArcGISEnvironment.apiKey = null
     // Obtain and launch the sample activity
     val className = Class.forName(mainActivity) as Class<*>

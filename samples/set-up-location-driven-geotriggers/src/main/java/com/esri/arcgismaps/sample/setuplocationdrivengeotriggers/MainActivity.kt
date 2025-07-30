@@ -20,7 +20,7 @@ package com.esri.arcgismaps.sample.setuplocationdrivengeotriggers
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,14 +31,21 @@ import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Polyline
-import com.arcgismaps.geotriggers.*
+import com.arcgismaps.geotriggers.FeatureFenceParameters
+import com.arcgismaps.geotriggers.FenceGeotrigger
+import com.arcgismaps.geotriggers.FenceGeotriggerNotificationInfo
+import com.arcgismaps.geotriggers.FenceNotificationType
+import com.arcgismaps.geotriggers.FenceRuleType
+import com.arcgismaps.geotriggers.GeotriggerMonitor
+import com.arcgismaps.geotriggers.GeotriggerNotificationInfo
+import com.arcgismaps.geotriggers.LocationGeotriggerFeed
 import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.location.SimulatedLocationDataSource
 import com.arcgismaps.location.SimulationParameters
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.portal.Portal
 import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.portal.Portal
 import com.esri.arcgismaps.sample.setuplocationdrivengeotriggers.databinding.SetUpLocationDrivenGeotriggersActivityMainBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -46,7 +53,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.time.Instant
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: SetUpLocationDrivenGeotriggersActivityMainBinding by lazy {

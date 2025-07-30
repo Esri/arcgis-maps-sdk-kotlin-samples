@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,15 +10,13 @@
             
         </activity>
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/provider_authority"
-            tools:replace="android:authorities"
+            android:name="com.esri.arcgismaps.sample.editfeatureattachments.EditFeatureAttachmentsProvider"
+            android:authorities="@string/edit_feature_attachments_provider_authority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"
-                tools:replace="android:resource"/>
+                android:resource="@xml/edit_feature_attachments_provider_paths"/>
         </provider>
     </application>
 

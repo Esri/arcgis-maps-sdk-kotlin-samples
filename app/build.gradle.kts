@@ -22,11 +22,11 @@ android {
 
     defaultConfig {
         applicationId = "com.esri.arcgismaps.kotlin.sampleviewer"
-        buildConfigField("String", "ARCGIS_VERSION", "\"${rootProject.extra.get("arcgisMapsKotlinVersion")}\"")
+        buildConfigField("String", "ARCGIS_VERSION", "\"${System.getProperty("build") ?: libs.versions.arcgisMapsKotlinVersion.get()}\"")
     }
 
     // Optional input to apply the external signing configuration for the sample viewer
-    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=200.7.0
+    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=200.8.0
     val signingPropsFilePath = project.findProperty("signingPropsFilePath").toString()
     val signingPropsFile = rootProject.file(signingPropsFilePath)
 

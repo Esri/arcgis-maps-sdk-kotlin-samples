@@ -28,6 +28,10 @@ by the max extent. Use the toggle switch to disable the max extent to freely pan
 * ArcGISMap
 * Envelope
 
+## Additional information
+
+This sample uses the GeoView-Compose Toolkit module to be able to implement a composable MapView.
+
 ## Tags
 
-extent, limit panning, map, mapview, max extent, zoom
+extent, geoview-compose, limit panning, map, mapview, max extent, toolkit, zoom

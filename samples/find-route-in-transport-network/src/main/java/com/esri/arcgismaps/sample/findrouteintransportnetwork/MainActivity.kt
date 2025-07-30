@@ -19,7 +19,7 @@ package com.esri.arcgismaps.sample.findrouteintransportnetwork
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.roundToInt
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: FindRouteInTransportNetworkActivityMainBinding by lazy {
@@ -203,31 +203,29 @@ class MainActivity : AppCompatActivity() {
 
         // solve the route
         val results = routeParameters?.let { routeTask?.solveRoute(it) }
-        if (results != null) {
-            results.onFailure {
-                showError("No route solution. ${it.message}")
-                routeOverlay.graphics.clear()
-            }.onSuccess { routeResult ->
-                // get the first solved route result
-                val route = routeResult.routes[0]
+        results?.onFailure {
+            showError("No route solution. ${it.message}")
+            routeOverlay.graphics.clear()
+        }?.onSuccess { routeResult ->
+            // get the first solved route result
+            val route = routeResult.routes[0]
 
-                // create graphic for route
-                val graphic = Graphic(
-                    route.routeGeometry, SimpleLineSymbol(
-                        SimpleLineSymbolStyle.Solid,
-                        Color.black, 3F
-                    )
+            // create graphic for route
+            val graphic = Graphic(
+                route.routeGeometry, SimpleLineSymbol(
+                    SimpleLineSymbolStyle.Solid,
+                    Color.black, 3F
                 )
-                routeOverlay.graphics.clear()
-                routeOverlay.graphics.add(graphic)
+            )
+            routeOverlay.graphics.clear()
+            routeOverlay.graphics.add(graphic)
 
-                // set distance-time text
-                val travelTime = route.travelTime.roundToInt()
-                val travelDistance = "%.2f".format(
-                    route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
-                )
-                distanceTimeTextView.text = String.format("$travelTime min ($travelDistance mi)")
-            }
+            // set distance-time text
+            val travelTime = route.travelTime.roundToInt()
+            val travelDistance = "%.2f".format(
+                route.totalLength * 0.000621371192 // convert meters to miles and round 2 decimals
+            )
+            distanceTimeTextView.text = String.format("$travelTime min ($travelDistance mi)")
         }
     }
 

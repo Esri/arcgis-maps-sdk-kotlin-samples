@@ -21,7 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.time.Instant
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : EdgeToEdgeCompatActivity() {
 
     // set up data binding for the activity
     private val activityMainBinding: CreateMobileGeodatabaseActivityMainBinding by lazy {
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
             // get the URI of the geodatabase file using FileProvider
             val geodatabaseURI = FileProvider.getUriForFile(
                 this,
-                getString(R.string.provider_authority),
+                getString(R.string.create_mobile_geodatabase_provider_authority),
                 File(geodatabase?.path.toString())
             )
 
@@ -290,8 +290,17 @@ class MainActivity : AppCompatActivity() {
         setMapView()
     }
 
+    override fun onDestroy() {
+        // close the mobile geodatabase before destroy
+        geodatabase?.close()
+        super.onDestroy()
+    }
+
     private fun showError(message: String) {
         Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+
+// Custom FileProvider for handling file sharing
+class CreateMobileGeodatabaseFileProvider : FileProvider()

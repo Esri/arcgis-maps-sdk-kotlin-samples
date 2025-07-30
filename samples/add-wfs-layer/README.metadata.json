@@ -1,0 +1,40 @@
+{
+    "category": "Layers",
+    "description": "Display a layer from a WFS service, requesting only features for the current extent.",
+    "formal_name": "AddWfsLayer",
+    "ignore": false,
+    "images": [
+        "add-wfs-layer.png"
+    ],
+    "keywords": [
+        "OGC",
+        "WFS",
+        "browse",
+        "catalog",
+        "feature",
+        "interaction cache",
+        "layers",
+        "service",
+        "web",
+        "FeatureLayer",
+        "MapView.onNavigationChanged",
+        "MapView.onVisibleAreaChanged",
+        "WfsFeatureTable",
+        "WfsFeatureTable.populateFromService"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "MapView.onNavigationChanged",
+        "MapView.onVisibleAreaChanged",
+        "WfsFeatureTable",
+        "WfsFeatureTable.populateFromService"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addwfslayer/components/AddWfsLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addwfslayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addwfslayer/screens/AddWfsLayerScreen.kt"
+    ],
+    "title": "Add WFS layer"
+}

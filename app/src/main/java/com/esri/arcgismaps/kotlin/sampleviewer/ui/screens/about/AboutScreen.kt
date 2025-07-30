@@ -20,7 +20,6 @@ package com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
