@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "ApplySimpleRendererToSceneLayer",
+    "ignore": false,
+    "images": [
+        "apply-simple-renderer-to-scene-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/components/ApplySimpleRendererToSceneLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/screens/ApplySimpleRendererToSceneLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/MainActivity.kt"
+    ],
+    "title": "Apply simple renderer to scene layer"
+}
