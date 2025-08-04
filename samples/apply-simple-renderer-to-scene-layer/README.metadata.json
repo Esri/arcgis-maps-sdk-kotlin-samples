@@ -1,19 +1,39 @@
 {
     "category": "Visualization",
-    "description": "TODO",
+    "description": "Change the appearance of a scene layer with a renderer.",
     "formal_name": "ApplySimpleRendererToSceneLayer",
     "ignore": false,
     "images": [
         "apply-simple-renderer-to-scene-layer.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "3D",
+        "buildings",
+        "renderer",
+        "scene",
+        "symbology",
+        "visualization",
+        "ArcGISSceneLayer",
+        "MaterialSymbolLayer",
+        "MultilayerMeshSymbol",
+        "SceneView",
+        "SimpleRenderer",
+        "SymbolLayerEdges3D"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ArcGISSceneLayer",
+        "MaterialSymbolLayer",
+        "MultilayerMeshSymbol",
+        "SceneView",
+        "SimpleRenderer",
+        "SymbolLayerEdges3D"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/components/ApplySimpleRendererToSceneLayerViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/screens/ApplySimpleRendererToSceneLayerScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysimplerenderertoscenelayer/screens/ApplySimpleRendererToSceneLayerScreen.kt"
     ],
     "title": "Apply simple renderer to scene layer"
 }

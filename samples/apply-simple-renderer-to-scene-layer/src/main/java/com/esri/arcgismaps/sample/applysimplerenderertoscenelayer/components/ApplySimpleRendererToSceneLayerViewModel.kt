@@ -33,8 +33,6 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.symbology.MaterialFillSymbolLayer
 import com.arcgismaps.mapping.symbology.MultilayerMeshSymbol
 import com.arcgismaps.mapping.symbology.SimpleRenderer
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.SymbolLayerEdges3D
 import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
@@ -80,9 +78,9 @@ class ApplySimpleRendererToSceneLayerViewModel(app: Application) : AndroidViewMo
         )
     }
 
-    // Create the ArcGISScene with imagery basemap
+    // Create the ArcGISScene with light gray basemap
     val arcGISScene by mutableStateOf(
-        ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+        ArcGISScene(BasemapStyle.ArcGISLightGray).apply {
             // Add the Portland buildings scene layer
             operationalLayers.add(sceneLayer)
             // Add the elevation source to the base surface
@@ -107,16 +105,17 @@ class ApplySimpleRendererToSceneLayerViewModel(app: Application) : AndroidViewMo
     }
 
     /**
-     * Applies a simple renderer with a random color to the scene layer.
+     * Applies a simple renderer with a multilayer mesh symbol to the 3D object scene layer.
      */
     fun applyRandomSimpleRenderer() {
         // Pick a random color from the list
         val colorList = listOf(Color.red, Color.yellow, Color.blue, Color.green)
         val randomColor = colorList[Random.nextInt(colorList.size)]
-        // Create a multilayer mesh symbol
+        // Create a material fill symbol layer using color and edges
         val materialFillSymbolLayer = MaterialFillSymbolLayer(randomColor).apply {
-            edges = SymbolLayerEdges3D(Color.black, 1.0)
+            edges = SymbolLayerEdges3D(Color.black, 1.5)
         }
+        // Create a multilayer mesh symbol with the material fill symbol layer
         val meshSymbol = MultilayerMeshSymbol(materialFillSymbolLayer)
         // Create and apply the simple renderer
         val renderer = SimpleRenderer(meshSymbol)

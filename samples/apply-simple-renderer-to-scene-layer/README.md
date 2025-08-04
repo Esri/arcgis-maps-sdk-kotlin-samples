@@ -2,30 +2,32 @@
 
 Change the appearance of a scene layer with a renderer.
 
-![Image of Apply simple renderer to scene layer sample](apply-simple-renderer-to-scene-layer.png)
+![Screenshot of apply simple renderer to scene layer sample](apply-simple-renderer-to-scene-layer.png)
 
 ## Use case
 
-A scene layer hosted on ArcGIS Online has a preset renderer and will display in an application with that renderer. However, for example, the color associated with the original renderer may be unsuitable for a company with staff or clients who are color blind, or for presentation with a different set of basemap and operational layers. In these cases, the renderer on the scene layer's data can be set to a more suitable color.
+A scene layer of 3D buildings hosted on ArcGIS Online has a preset renderer, which determines how the buildings are displayed in an application. However, the fill color may blend into the basemap, making buildings hard to see. To improve the visualization, you can apply a custom renderer with a more contrasting fill color to the scene layer’s data, making the 3D buildings stand out more clearly.
 
 ## How to use the sample
 
-Use the button to change the renderer on the scene layer. The original renderer displays the buildings with their default symbology. When the simple renderer is applied, it displays the buildings with a random color.
+Use the button to change the renderer on the scene layer. The original renderer displays the buildings with their default symbology. When the simple renderer is applied, it displays the buildings with a random fill color.
 
 ## How it works
 
 1. Create an `ArcGISSceneLayer` from a service URL.
 2. Add the scene layer to an `ArcGISScene` and display it in a `SceneView`.
-3. Create a `MultilayerMeshSymbol` with a random color.
+3. Create a `MultilayerMeshSymbol` with a `MaterialSymbolLayer` using a random color and a `SymbolLayerEdges3D`.
 4. Create a `SimpleRenderer` using the mesh symbol.
 5. Set the scene layer's `renderer` property to the new renderer.
 
 ## Relevant API
 
 * ArcGISSceneLayer
-* SimpleRenderer
+* MaterialSymbolLayer
 * MultilayerMeshSymbol
 * SceneView
+* SimpleRenderer
+* SymbolLayerEdges3D
 
 ## About the data
 
