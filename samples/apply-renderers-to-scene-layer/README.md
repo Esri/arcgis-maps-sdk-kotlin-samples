@@ -25,14 +25,14 @@ Wait for the scene layer to load. The original scene layer displays 3D textured 
 
 ## Relevant API
 
-- ArcGISSceneLayer
-- ClassBreaksRenderer
-- MaterialFillSymbolLayer
-- MultilayerMeshSymbol
-- SceneView
-- SimpleRenderer
-- SymbolLayerEdges3D
-- UniqueValueRenderer
+* ArcGISSceneLayer
+* ClassBreaksRenderer
+* MaterialFillSymbolLayer
+* MultilayerMeshSymbol
+* SceneView
+* SimpleRenderer
+* SymbolLayerEdges3D
+* UniqueValueRenderer
 
 ## About the data
 
