@@ -6,7 +6,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/apply_simple_renderer_to_scene_layer_app_name">
+            android:label="@string/apply_renderers_to_scene_layer_app_name">
             
         </activity>
     </application>

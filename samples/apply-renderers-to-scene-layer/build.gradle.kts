@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.applysimplerenderertoscenelayer"
+    namespace = "com.esri.arcgismaps.sample.applyrendererstoscenelayer"
     buildFeatures {
         buildConfig = true
     }

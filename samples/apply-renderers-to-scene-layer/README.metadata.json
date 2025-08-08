@@ -1,0 +1,45 @@
+{
+    "category": "Visualization",
+    "description": "Change the appearance of a 3D object scene layer with different renderers.",
+    "formal_name": "ApplyRenderersToSceneLayer",
+    "ignore": false,
+    "images": [
+        "apply-renderers-to-scene-layer.png"
+    ],
+    "keywords": [
+        "3D",
+        "buildings",
+        "renderer",
+        "scene layer",
+        "symbology",
+        "visualization",
+        "ArcGISSceneLayer",
+        "ClassBreaksRenderer",
+        "MaterialFillSymbolLayer",
+        "MultilayerMeshSymbol",
+        "SceneView",
+        "SimpleRenderer",
+        "SymbolLayerEdges3D",
+        "UniqueValueRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "TODO"
+    ],
+    "relevant_apis": [
+        "ArcGISSceneLayer",
+        "ClassBreaksRenderer",
+        "MaterialFillSymbolLayer",
+        "MultilayerMeshSymbol",
+        "SceneView",
+        "SimpleRenderer",
+        "SymbolLayerEdges3D",
+        "UniqueValueRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyrendererstoscenelayer/components/ApplyRenderersToSceneLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrendererstoscenelayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrendererstoscenelayer/screens/ApplyRenderersToSceneLayerScreen.kt"
+    ],
+    "title": "Apply renderers to scene layer"
+}

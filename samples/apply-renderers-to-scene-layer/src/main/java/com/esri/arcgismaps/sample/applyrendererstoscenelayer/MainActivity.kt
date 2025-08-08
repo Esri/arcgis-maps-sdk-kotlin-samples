@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.applysimplerenderertoscenelayer
+package com.esri.arcgismaps.sample.applyrendererstoscenelayer
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,8 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.applyrendererstoscenelayer.screens.ApplyRenderersToSceneLayerScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.applysimplerenderertoscenelayer.screens.ApplySimpleRendererToSceneLayerScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                ApplySimpleRendererToSceneLayerApp()
+                ApplyRenderersToSceneLayerApp()
             }
         }
     }
 
     @Composable
-    private fun ApplySimpleRendererToSceneLayerApp() {
+    private fun ApplyRenderersToSceneLayerApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            ApplySimpleRendererToSceneLayerScreen(
-                sampleName = getString(R.string.apply_simple_renderer_to_scene_layer_app_name)
+            ApplyRenderersToSceneLayerScreen(
+                sampleName = getString(R.string.apply_renderers_to_scene_layer_app_name)
             )
         }
     }
