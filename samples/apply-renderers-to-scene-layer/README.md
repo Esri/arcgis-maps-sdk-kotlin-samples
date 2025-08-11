@@ -19,7 +19,7 @@ Wait for the scene layer to load. The original scene layer displays 3D textured 
 3. Create different renderers:
    * A `SimpleRenderer` with a `MultilayerMeshSymbol` and a fill color and edges.
    * A `UniqueValueRenderer` using a string field and different `MultilayerMeshSymbol` for each unique value of the building usage.
-   * A `ClassBreaksRenderer` using a numeric field and different `MultilayerMeshSymbol` for each value range of year completed of the building.
+   * A `ClassBreaksRenderer` using a numeric field and different `MultilayerMeshSymbol` for each value range of the year completed of the building.
 4. Set the scene layer's `renderer` property to the selected renderer.
 5. Set the scene layer's `renderer` property to `null`, resulting in displaying the original texture of the buildings.
 

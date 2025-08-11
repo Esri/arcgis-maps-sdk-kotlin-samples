@@ -57,48 +57,41 @@ class ApplyRenderersToSceneLayerViewModel(app: Application) : AndroidViewModel(a
         "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
 
     // ArcGISTiledElevationSource for world elevation
-    private val elevationSource: ArcGISTiledElevationSource by lazy {
-        ArcGISTiledElevationSource(worldElevationServiceUrl)
-    }
+    private val elevationSource = ArcGISTiledElevationSource(worldElevationServiceUrl)
 
-    // ArcGISSceneLayer for Portland buildings
-    val sceneLayer: ArcGISSceneLayer by lazy {
-        ArcGISSceneLayer(helsinkiBuildingsSceneLayerUrl)
-    }
+    // ArcGISSceneLayer for Helsinki buildings
+    val sceneLayer = ArcGISSceneLayer(helsinkiBuildingsSceneLayerUrl)
 
     // Camera location for Helsinki
-    private val cameraLocation : Point by lazy {
-        Point(
-            x = 2778453.800861455,
-            y = 8436451.388274617,
-            z = 387.45244609192014,
-            spatialReference = SpatialReference.webMercator()
-        )
-    }
+    private val cameraLocation = Point(
+        x = 2778453.8008,
+        y = 8436451.3882,
+        z = 387.4524,
+        spatialReference = SpatialReference.webMercator()
+    )
 
     // Camera to view the scene
-    private val camera : Camera by lazy {
-        Camera(
-            locationPoint = cameraLocation,
-            heading = 308.9,
-            pitch = 50.7,
-            roll = 0.0
-        )
-    }
+    private val camera = Camera(
+        locationPoint = cameraLocation,
+        heading = 308.9,
+        pitch = 50.7,
+        roll = 0.0
+    )
 
     // Create the ArcGISScene with light gray basemap
     val arcGISScene by mutableStateOf(
         ArcGISScene(BasemapStyle.ArcGISLightGray).apply {
-            // Add the Portland buildings scene layer
+            // Add the Helsinki buildings scene layer
             operationalLayers.add(sceneLayer)
-            // Add the elevation source to the base surface
+            // Add the 3D elevation source to the base surface
             baseSurface = Surface().apply {
                 elevationSources.add(elevationSource)
             }
-            // Set the viewpoint camera at Portland
+            // Set the viewpoint camera at Helsinki
             initialViewpoint = Viewpoint(
-                boundingGeometry = cameraLocation,
-                camera = camera
+                center = cameraLocation,
+                camera = camera,
+                scale = 1e4
             )
         }
     )
@@ -110,7 +103,9 @@ class ApplyRenderersToSceneLayerViewModel(app: Application) : AndroidViewModel(a
         RendererType.ClassBreaksRenderer,
         RendererType.NullRenderer
     )
+    // Create a flow to keep track of the current selected renderer type. It is initialized as SimpleRenderer.
     private val _selectedRendererType = MutableStateFlow(RendererType.SimpleRenderer)
+    // Keep track of the current selected renderer type
     val selectedRendererType = _selectedRendererType.asStateFlow()
 
     // Simple renderer created from a multilayer mesh symbol with a material fill symbol layer
@@ -118,10 +113,17 @@ class ApplyRenderersToSceneLayerViewModel(app: Application) : AndroidViewModel(a
     // Edges are also set.
     private val simpleRenderer : SimpleRenderer by lazy {
         SimpleRenderer(
-            symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.yellow).apply {
-                colorMixMode= ColorMixMode.Replace
-                edges = SymbolLayerEdges3D(color = Color.black, width = 0.5)
-            })
+            symbol = MultilayerMeshSymbol(
+                symbolLayer = MaterialFillSymbolLayer(
+                    color = Color.yellow
+                ).apply {
+                    colorMixMode= ColorMixMode.Replace
+                    edges = SymbolLayerEdges3D(
+                        color = Color.black,
+                        width = 0.5
+                    )
+                }
+            )
         )
     }
 
@@ -131,24 +133,40 @@ class ApplyRenderersToSceneLayerViewModel(app: Application) : AndroidViewModel(a
     private val uniqueValueRenderer : UniqueValueRenderer by lazy {
         UniqueValueRenderer(
             fieldNames = listOf("usage"),
-            defaultSymbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(230, 230, 230, 255))),
+            defaultSymbol = MultilayerMeshSymbol(
+                symbolLayer = MaterialFillSymbolLayer(
+                    color = Color.fromRgba(230, 230, 230, 255)
+                )
+            ),
             uniqueValues = listOf(
                 UniqueValue(
                     description = "commercial buildings",
                     label = "commercial buildings",
-                    symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(245, 213, 169, 200))),
+                    symbol = MultilayerMeshSymbol(
+                        symbolLayer = MaterialFillSymbolLayer(
+                            color = Color.fromRgba(245, 213, 169, 200)
+                        )
+                    ),
                     values = listOf("general or commercial")
                 ),
                 UniqueValue(
                     description = "residential buildings",
                     label = "residential buildings",
-                    symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(210, 254, 208, 255))),
+                    symbol = MultilayerMeshSymbol(
+                        symbolLayer = MaterialFillSymbolLayer(
+                            color = Color.fromRgba(210, 254, 208, 255)
+                        )
+                    ),
                     values = listOf("residential")
                 ),
                 UniqueValue(
                     description = "other",
                     label = "other",
-                    symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(253, 198, 227, 150))),
+                    symbol = MultilayerMeshSymbol(
+                        symbolLayer = MaterialFillSymbolLayer(
+                            color = Color.fromRgba(253, 198, 227, 150)
+                        )
+                    ),
                     values = listOf("other")
                 )
             )
@@ -166,36 +184,44 @@ class ApplyRenderersToSceneLayerViewModel(app: Application) : AndroidViewModel(a
                     label = "before 1900",
                     minValue = 1725.0,
                     maxValue = 1899.0,
-                    symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(230, 238, 207, 255)).apply {
-                        colorMixMode = ColorMixMode.Tint
-                    })
+                    symbol = MultilayerMeshSymbol(
+                        symbolLayer = MaterialFillSymbolLayer(
+                            color = Color.fromRgba(230, 238, 207, 255)
+                        ).apply { colorMixMode = ColorMixMode.Tint }
+                    )
                 ),
                 ClassBreak(
                     description = "1900 - 1956",
                     label = "1900 - 1956",
                     minValue = 1900.0,
                     maxValue = 1956.0,
-                    symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(155, 196, 193, 255)).apply {
-                        colorMixMode = ColorMixMode.Tint
-                    })
+                    symbol = MultilayerMeshSymbol(
+                        symbolLayer = MaterialFillSymbolLayer(
+                            color = Color.fromRgba(155, 196, 193, 255)
+                        ).apply { colorMixMode = ColorMixMode.Tint }
+                    )
                 ),
                 ClassBreak(
                     description = "1957 - 2000",
                     label = "1957 - 2000",
                     minValue = 1957.0,
                     maxValue = 2000.0,
-                    symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(105, 168, 183, 255)).apply {
-                        colorMixMode = ColorMixMode.Tint
-                    })
+                    symbol = MultilayerMeshSymbol(
+                        symbolLayer = MaterialFillSymbolLayer(
+                            color = Color.fromRgba(105, 168, 183, 255)
+                        ).apply { colorMixMode = ColorMixMode.Tint }
+                    )
                 ),
                 ClassBreak(
                     description = "after 2000",
                     label = "after 2000",
                     minValue = 2001.0,
                     maxValue = 3000.0,
-                    symbol = MultilayerMeshSymbol(MaterialFillSymbolLayer(Color.fromRgba(75, 126, 152, 255)).apply {
-                        colorMixMode = ColorMixMode.Tint
-                    })
+                    symbol = MultilayerMeshSymbol(
+                        symbolLayer = MaterialFillSymbolLayer(
+                            color = Color.fromRgba(75, 126, 152, 255)
+                        ).apply { colorMixMode = ColorMixMode.Tint }
+                    )
                 )
             )
         )
@@ -207,12 +233,14 @@ class ApplyRenderersToSceneLayerViewModel(app: Application) : AndroidViewModel(a
     init {
         // Load the scene
         viewModelScope.launch {
+            // Apply simple renderer to the scene layer as the initial renderer
+            sceneLayer.renderer = simpleRenderer
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 
     /**
-     * Switches the renderer according to the selected type.
+     * Switches the selected renderer according to the selected type.
      */
     fun updateSceneLayerRenderer(rendererType: RendererType) {
         _selectedRendererType.value = rendererType
