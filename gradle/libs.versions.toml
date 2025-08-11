@@ -1,7 +1,7 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "300.0.0-4676"
+arcgisMapsKotlinVersion = "300.0.0-4689"
 
 ### Android versions
 androidGradlePlugin = "8.9.2"
