@@ -134,7 +134,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                     })
                 // display the selected feature form using the Toolkit component
                 FeatureForm(
-                    featureFormState = FeatureFormState(featureForm!!,scope),
+                    featureFormState = FeatureFormState(featureForm!!, scope),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 20.dp)
