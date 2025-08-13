@@ -240,7 +240,7 @@ class ApplyRenderersToSceneLayerViewModel(app: Application) : AndroidViewModel(a
     }
 
     /**
-     * Switches the selected renderer according to the selected type.
+     * Switches the selected renderer according to the renderer type.
      */
     fun updateSceneLayerRenderer(rendererType: RendererType) {
         _selectedRendererType.value = rendererType
