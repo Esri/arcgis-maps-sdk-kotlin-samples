@@ -10,7 +10,7 @@ A scene layer of 3D buildings hosted on ArcGIS Online comes with a preset render
 
 ## How to use the sample
 
-Wait for the scene layer to load. The original scene layer displays 3D textured buildings. Tap on the "Select Renderer" dropdown menu and choose a different renderer to change how the buildings are visualized. Each renderer applies different symbology to the scene layer. Selecting a null renderer will remove any applied symbology, reverting the buildings to their original textured appearance.
+Wait for the scene layer to load. The original scene layer displays 3D textured buildings. Tap on the "Select Renderer" dropdown menu and choose a different renderer to change how the buildings are visualized. Each renderer applies different symbology to the scene layer. Setting the renderer to null will remove any applied symbology, reverting the buildings to their original textured appearance.
 
 ## How it works
 
@@ -19,7 +19,7 @@ Wait for the scene layer to load. The original scene layer displays 3D textured 
 3. Create different renderers:
    * A `SimpleRenderer` with a `MultilayerMeshSymbol` and a fill color and edges.
    * A `UniqueValueRenderer` using a string field and different `MultilayerMeshSymbol` for each unique value of the building usage.
-   * A `ClassBreaksRenderer` using a numeric field and different `MultilayerMeshSymbol` for each value range of the year completed of the building.
+   * A `ClassBreaksRenderer` using a numeric field and different `MultilayerMeshSymbol` for each value range of the year the building was completed.
 4. Set the scene layer's `renderer` property to the selected renderer.
 5. Set the scene layer's `renderer` property to `null`, resulting in displaying the original texture of the buildings.
 
