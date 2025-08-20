@@ -149,7 +149,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
      */
     private class FloorsAdapter(
         context: Context,
-        @LayoutRes private val layoutResourceId: Int,
+        @param:LayoutRes private val layoutResourceId: Int,
         private val floorLevels: List<FloorLevel>
     ) : ArrayAdapter<FloorLevel>(context, layoutResourceId, floorLevels) {
 
