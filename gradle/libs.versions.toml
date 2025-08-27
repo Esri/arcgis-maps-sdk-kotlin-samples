@@ -16,9 +16,9 @@ datastorePreferences = "1.1.7"
 roomVersion = "2.7.2"
 
 ### Kotlin versions
-kotlinVersion = "2.2.0"
+kotlinVersion = "2.2.10"
 coreKtx = "1.17.0"
-ksp = "2.2.0-2.0.2"
+ksp = "2.2.10-2.0.2"
 commonsIoVersion = "2.20.0"
 
 ### Compose versions
