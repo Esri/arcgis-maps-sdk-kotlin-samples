@@ -1,7 +1,7 @@
 [versions]
 
 # ArcGIS Maps SDK for Kotlin version
-arcgisMapsKotlinVersion = "300.0.0-4698"
+arcgisMapsKotlinVersion = "300.0.0-4719"
 
 ### Android versions
 androidGradlePlugin = "8.12.1"
@@ -19,6 +19,7 @@ roomVersion = "2.7.2"
 kotlinVersion = "2.2.10"
 coreKtx = "1.17.0"
 ksp = "2.2.10-2.0.2"
+kotlinReflection = "2.2.20"
 commonsIoVersion = "2.20.0"
 
 ### Compose versions
@@ -54,6 +55,7 @@ commons-io = { group = "commons-io", name = "commons-io", version.ref = "commons
 android-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayoutVersion" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" , version.ref = "kotlinReflection"}
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workVersion" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }

@@ -286,9 +286,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                     valuesEditText.inputType = InputType.TYPE_CLASS_NUMBER
                     setVisible(valuesEditText.id)
                 }
-                else -> {
-                    showError("Unexpected utility network attribute data type.")
-                }
             }
         }
     }
@@ -438,9 +435,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                     networkAttributeNameAndOperator +
                             (expression.otherNetworkAttribute?.name ?: expression.value)
                 }
-            }
-            else -> {
-                return null
             }
         }
     }
