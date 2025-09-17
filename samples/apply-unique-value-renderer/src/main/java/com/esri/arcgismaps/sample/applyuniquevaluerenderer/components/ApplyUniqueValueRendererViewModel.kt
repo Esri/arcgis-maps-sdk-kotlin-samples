@@ -60,7 +60,7 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
     }
 
 
-    // Service feature table for the U.S. states (subregions)
+    // Create a service feature table from the census feature service
     private val censusFeatureTable = ServiceFeatureTable(
         uri = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3"
     )
@@ -72,13 +72,13 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // Configure the renderer and add the layer to the map up-front, but load operations run in coroutine
+        // Set a unique value renderer to the feature layer
         configureUniqueValueRenderer()
 
         // Add the feature layer to the map's operational layers
         arcGISMap.operationalLayers.add(statesFeatureLayer)
 
-        // Load the map and the feature layer, report failures via the message dialog
+        // Load the map and the feature layer
         viewModelScope.launch {
             arcGISMap.load().onFailure { throwable ->
                 messageDialogVM.showMessageDialog(
@@ -89,9 +89,16 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
         }
     }
 
-    // Build and apply a UniqueValueRenderer to the statesFeatureLayer
+    /**
+     * Creates a unique value renderer configured to render the Pacific states
+     * as blue, the Mountain states as green, and the West South Central states
+     * as brown.
+     *
+     * Build and apply a [UniqueValueRenderer] object to the [statesFeatureLayer].
+     */
+
     private fun configureUniqueValueRenderer() {
-        // Outline used for all region fill symbols
+        // Outline used for all fill symbols
         val stateOutline = SimpleLineSymbol(
             style = SimpleLineSymbolStyle.Solid,
             color = Color.white,
@@ -113,7 +120,7 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
 
         val westSouthCentralFill = SimpleFillSymbol(
             style = SimpleFillSymbolStyle.Solid,
-            color = Color.fromRgba(165, 90, 0, 255), // brown-like
+            color = Color.fromRgba(165, 90, 0, 255), // brown
             outline = stateOutline
         )
 
@@ -142,7 +149,7 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
         // Default symbol for any other regions not explicitly defined
         val defaultFill = SimpleFillSymbol(
             style = SimpleFillSymbolStyle.Cross,
-            color = Color.fromRgba(200, 200, 200, 255),
+            color = Color.fromRgba(200, 200, 200, 255), // gray
             outline = stateOutline
         )
 
