@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "AddPointCloudLayerFromFile",
+    "ignore": false,
+    "images": [
+        "add-point-cloud-layer-from-file.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/components/AddPointCloudLayerFromFileViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/screens/AddPointCloudLayerFromFileScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/MainActivity.kt"
+    ],
+    "title": "Add point cloud layer from file"
+}
