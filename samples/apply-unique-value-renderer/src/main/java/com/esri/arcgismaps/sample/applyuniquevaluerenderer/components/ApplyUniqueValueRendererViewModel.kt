@@ -81,10 +81,7 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
         // Load the map and the feature layer
         viewModelScope.launch {
             arcGISMap.load().onFailure { throwable ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load map",
-                    description = throwable.message.toString()
-                )
+                messageDialogVM.showMessageDialog(throwable)
             }
         }
     }
