@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.arcgismaps.android.library)
+    alias(libs.plugins.arcgismaps.android.library.compose)
     alias(libs.plugins.arcgismaps.kotlin.sample)
     alias(libs.plugins.gradle.secrets)
 }
@@ -10,15 +11,12 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.analyzenetworkwithsubnetworktrace"
-    // For view based samples
+    namespace = "com.esri.arcgismaps.sample.applyrendererstoscenelayer"
     buildFeatures {
-        dataBinding = true
         buildConfig = true
     }
 }
 
 dependencies {
     // Only module specific dependencies needed here
-    implementation(libs.kotlin.reflect)
 }

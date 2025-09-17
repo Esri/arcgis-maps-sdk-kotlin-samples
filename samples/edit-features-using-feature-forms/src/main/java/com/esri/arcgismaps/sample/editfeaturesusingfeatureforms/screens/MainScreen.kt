@@ -62,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arcgismaps.toolkit.featureforms.FeatureForm
+import com.arcgismaps.toolkit.featureforms.FeatureFormState
 import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
 import com.arcgismaps.toolkit.featureforms.theme.FeatureFormDefaults
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -133,7 +134,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                     })
                 // display the selected feature form using the Toolkit component
                 FeatureForm(
-                    featureForm = featureForm!!,
+                    featureFormState = FeatureFormState(featureForm!!, scope),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 20.dp)

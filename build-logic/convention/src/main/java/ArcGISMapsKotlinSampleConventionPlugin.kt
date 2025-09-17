@@ -10,7 +10,7 @@ class ArcGISMapsKotlinSampleConventionPlugin : Plugin<Project> {
         with(target) {
             dependencies {
                 dependencies {
-                    // if a "build" property is set from the command line like: "-D build=200.X.X-XXXX"
+                    // if a "build" property is set from the command line like: "-D build=300.X.X-XXXX"
                     val buildVersion = System.getProperty("build")
                     // Override version in libs.versions.toml file
                     if (buildVersion != null) {
