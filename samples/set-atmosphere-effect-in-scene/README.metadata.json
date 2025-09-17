@@ -30,8 +30,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/components/SetAtmosphereEffectInSceneViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/screens/SetAtmosphereEffectInSceneScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/screens/SetAtmosphereEffectInSceneScreen.kt"
     ],
     "title": "Set atmosphere effect in scene"
 }
