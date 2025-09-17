@@ -38,14 +38,13 @@ class AddPointSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
         uri = "https://tiles.arcgis.com/tiles/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Airports_PointSceneLayer/SceneServer/layers/0"
 
     )
-
     // Add an elevation source to display elevation
     val elevationSource = ArcGISTiledElevationSource(
         uri = "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
     )
 
     val viewpoint = Viewpoint(
-        center = Point(
+        Point(
             x = -98.6, // longitude
             y = 39.8,  // latitude
             spatialReference = SpatialReference.wgs84()
@@ -54,16 +53,17 @@ class AddPointSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     // Scene with world airports point scene layer
-    val arcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
-        // Set initial viewpoint to show the world
-        initialViewpoint = viewpoint
-        // Set the point scene layer
-        operationalLayers.add(sceneLayer)
-        // Set the draped base surface using elevation source
-        baseSurface = Surface().apply {
-            elevationSources.add(elevationSource)
+    val arcGISScene by mutableStateOf(
+        ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+            // Set initial viewpoint to show the world
+            initialViewpoint = viewpoint
+            operationalLayers.add(sceneLayer)
+
+            baseSurface = Surface().apply {
+                elevationSources.add(elevationSource)
+            }
         }
-    }
+    )
 
     // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()

@@ -49,16 +49,13 @@ class AddPointCloudLayerFromFileViewModel(private val app: Application) : Androi
         initialViewpoint = Viewpoint(camera = camera, boundingGeometry = camera.location)
     }
 
-    // Message dialog helper to show load errors
-    val messageDialogVM = MessageDialogViewModel()
-
-    // Name of the local slpk file provisioned on device
-    private val slpkFileName = "sandiego-north-balboa-pointcloud.slpk"
-
     // Folder path for the sample provisioned directory
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path + File.separator + app.getString(R.string.add_point_cloud_layer_from_file_app_name)
     }
+
+    // Name of the local slpk file provisioned on device
+    private val slpkFileName = "sandiego-north-balboa-pointcloud.slpk"
 
     // File path to the local slpk
     private val slpkFilePath: String
@@ -68,6 +65,9 @@ class AddPointCloudLayerFromFileViewModel(private val app: Application) : Androi
     private val elevationSource = ArcGISTiledElevationSource(
         uri = "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
     )
+
+    // Message dialog helper to show load errors
+    val messageDialogVM = MessageDialogViewModel()
 
     init {
         // Create the point cloud layer from the local SLPK file. The file must exist at the provision path.

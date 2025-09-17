@@ -29,7 +29,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
  * Main screen layout for the Add point cloud layer from file sample.
- * Uses a SceneView to render a Scene containing a local point cloud layer.
  */
 @Composable
 fun AddPointCloudLayerFromFileScreen(sampleName: String) {
