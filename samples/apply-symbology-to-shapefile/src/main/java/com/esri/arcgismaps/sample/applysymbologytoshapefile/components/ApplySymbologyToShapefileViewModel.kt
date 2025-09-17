@@ -21,26 +21,73 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.Color
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.data.ShapefileFeatureTable
+import com.arcgismaps.mapping.symbology.SimpleLineSymbol
+import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleFillSymbol
+import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
+import com.arcgismaps.mapping.symbology.SimpleRenderer
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.esri.arcgismaps.sample.applysymbologytoshapefile.R
 import kotlinx.coroutines.launch
+import java.io.File
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 
-class ApplySymbologyToShapefileViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
+class ApplySymbologyToShapefileViewModel(application: Application) : AndroidViewModel(application) {
+    val provisionPath =
+        application.getExternalFilesDir(null)?.path + File.separator + application.getString(R.string.apply_symbology_to_shapefile_app_name)
+
+    // Initialize the map with a topographic basemap and an initial viewpoint
     val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+        ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+            val center = Point(
+                x = -11662054.0,
+                y = 4818336.0,
+                spatialReference = SpatialReference.webMercator()
+            )
+            initialViewpoint = Viewpoint(center, 200000.0)
         }
     )
 
-    // Create a message dialog view model for handling error messages
+    // Create a message dialog view model to surface errors
     val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            try {
+                // Ensure the shapefile is available on device storage and load its layer
+                val shapefileTable = ShapefileFeatureTable("${provisionPath}${File.separator}Subdivisions.shp")
+                val featureLayer = FeatureLayer.createWithFeatureTable(shapefileTable)
+
+                // Define renderer: red outline with yellow fill for all features
+                val outlineSymbol = SimpleLineSymbol(
+                    style = SimpleLineSymbolStyle.Solid,
+                    color = Color.red,
+                    width = 1.0f
+                )
+                val fillSymbol = SimpleFillSymbol(
+                    style = SimpleFillSymbolStyle.Solid,
+                    color = Color.yellow,
+                    outline = outlineSymbol
+                )
+
+                // Apply the renderer to the layer
+                featureLayer.renderer = SimpleRenderer(fillSymbol)
+
+                // Add the shapefile layer to the map and attempt to load the map
+                arcGISMap.operationalLayers.add(featureLayer)
+                arcGISMap.load().onSuccess { /* map ready */ }.onFailure { error ->
+                    messageDialogVM.showMessageDialog(error)
+                }
+            } catch (e: Exception) {
+                messageDialogVM.showMessageDialog(e)
+            }
         }
     }
 }

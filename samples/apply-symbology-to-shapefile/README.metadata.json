@@ -1,19 +1,37 @@
 {
     "category": "Visualization",
-    "description": "TODO",
+    "description": "Display a shapefile with custom symbology.",
     "formal_name": "ApplySymbologyToShapefile",
     "ignore": false,
     "images": [
         "apply-symbology-to-shapefile.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "package",
+        "shape file",
+        "shapefile",
+        "symbology",
+        "visualization",
+        "FeatureLayer",
+        "ShapefileFeatureTable",
+        "SimpleFillSymbol",
+        "SimpleLineSymbol",
+        "SimpleRenderer"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "FeatureLayer",
+        "ShapefileFeatureTable",
+        "SimpleFillSymbol",
+        "SimpleLineSymbol",
+        "SimpleRenderer"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/components/ApplySymbologyToShapefileViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/screens/ApplySymbologyToShapefileScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/MainActivity.kt"
+        "rc/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/components/ApplySymbologyToShapefileViewModel.kt",
+        "rc/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/MainActivity.kt",
+        "rc/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/DownloadActivity.kt",
+        "rc/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/screens/ApplySymbologyToShapefileScreen.kt"
     ],
     "title": "Apply symbology to shapefile"
 }
