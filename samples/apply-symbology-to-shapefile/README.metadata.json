@@ -1,0 +1,19 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "ApplySymbologyToShapefile",
+    "ignore": false,
+    "images": [
+        "apply-symbology-to-shapefile.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/components/ApplySymbologyToShapefileViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/screens/ApplySymbologyToShapefileScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applysymbologytoshapefile/MainActivity.kt"
+    ],
+    "title": "Apply symbology to shapefile"
+}
