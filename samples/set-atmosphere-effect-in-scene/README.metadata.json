@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "SetAtmosphereEffectInScene",
+    "ignore": false,
+    "images": [
+        "set-atmosphere-effect-in-scene.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/components/SetAtmosphereEffectInSceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/screens/SetAtmosphereEffectInSceneScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/MainActivity.kt"
+    ],
+    "title": "Set atmosphere effect in scene"
+}
