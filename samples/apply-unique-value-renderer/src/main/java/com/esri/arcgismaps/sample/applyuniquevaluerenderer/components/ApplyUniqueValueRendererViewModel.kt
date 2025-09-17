@@ -86,13 +86,6 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
                     description = throwable.message.toString()
                 )
             }
-
-            statesFeatureLayer.load().onFailure { throwable ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load feature layer",
-                    description = throwable.message.toString()
-                )
-            }
         }
     }
 
