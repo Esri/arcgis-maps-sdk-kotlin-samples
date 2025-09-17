@@ -9,6 +9,10 @@
             android:label="@string/add_point_cloud_layer_from_file_app_name">
             
         </activity>
-    </application>
+        <activity
+    android:name=".DownloadActivity"
+    android:exported="true"
+    android:label="@string/add_point_cloud_layer_from_file_app_name" />
+</application>
 
 </manifest>

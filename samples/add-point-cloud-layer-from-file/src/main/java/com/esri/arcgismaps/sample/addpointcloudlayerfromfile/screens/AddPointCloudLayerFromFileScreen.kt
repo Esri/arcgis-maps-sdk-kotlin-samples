@@ -20,39 +20,34 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.addpointcloudlayerfromfile.components.AddPointCloudLayerFromFileViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the Add point cloud layer from file sample.
+ * Uses a SceneView to render a Scene containing a local point cloud layer.
  */
 @Composable
 fun AddPointCloudLayerFromFileScreen(sampleName: String) {
-    val mapViewModel: AddPointCloudLayerFromFileViewModel = viewModel()
+    val viewModel: AddPointCloudLayerFromFileViewModel = viewModel()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
+        content = { paddingValues ->
+            Column(modifier = androidx.compose.ui.Modifier.padding(paddingValues)) {
+                // SceneView displays the 3D Scene provided by the ViewModel.
+                SceneView(
+                    modifier = androidx.compose.ui.Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISScene = viewModel.arcGISScene
                 )
-                // TODO: Add UI components in this Column ...
             }
-
-            mapViewModel.messageDialogVM.apply {
+            viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,

@@ -1,19 +1,27 @@
 {
     "category": "Scenes",
-    "description": "TODO",
+    "description": "Display local 3D point cloud data.",
     "formal_name": "AddPointCloudLayerFromFile",
     "ignore": false,
     "images": [
         "add-point-cloud-layer-from-file.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "3D",
+        "lidar",
+        "point cloud",
+        "PointCloudLayer"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "PointCloudLayer"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/components/AddPointCloudLayerFromFileViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/screens/AddPointCloudLayerFromFileScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/screens/AddPointCloudLayerFromFileScreen.kt"
     ],
     "title": "Add point cloud layer from file"
 }
