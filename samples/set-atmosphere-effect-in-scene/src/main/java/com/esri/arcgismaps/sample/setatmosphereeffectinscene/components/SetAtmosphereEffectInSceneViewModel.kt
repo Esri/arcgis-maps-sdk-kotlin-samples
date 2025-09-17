@@ -48,7 +48,7 @@ class SetAtmosphereEffectInSceneViewModel(app: Application) : AndroidViewModel(a
             pitch = 105.0,
             roll = 0.0
         )
-        // Add an initial viewpoint using a camera
+        // Add an initial viewpoint using a camera.
         initialViewpoint = Viewpoint(
             boundingGeometry = camera.location,
             camera = camera
@@ -60,11 +60,11 @@ class SetAtmosphereEffectInSceneViewModel(app: Application) : AndroidViewModel(a
     }
     )
 
-    // Keep track of the SceneView's atmosphere effect state
+    // Keep track of the SceneView's atmosphere effect state.
     private val _atmosphereEffect = MutableStateFlow<AtmosphereEffect>(AtmosphereEffect.HorizonOnly)
     val atmosphereEffect = _atmosphereEffect.asStateFlow()
 
-    // Message dialog view model for error handling
+    // Message dialog view model for error handling.
     val messageDialogVM = MessageDialogViewModel()
 
     init {

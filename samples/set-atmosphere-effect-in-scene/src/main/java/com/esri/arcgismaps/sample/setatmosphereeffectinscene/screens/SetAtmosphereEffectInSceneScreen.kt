@@ -44,13 +44,13 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun SetAtmosphereEffectInSceneScreen(sampleName: String) {
     val viewModel: SetAtmosphereEffectInSceneViewModel = viewModel()
 
-    // Observe the currently selected atmosphere effect
+    // Observe the currently selected atmosphere effect.
     val currentAtmosphereEffect by viewModel.atmosphereEffect.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -60,7 +60,7 @@ fun SetAtmosphereEffectInSceneScreen(sampleName: String) {
                 .fillMaxSize()
                 .padding(paddingValues),
                 verticalArrangement = Arrangement.Center) {
-                // SceneView composable that displays the 3D Scene
+                // SceneView composable that displays the 3D Scene.
                 // The atmosphere effect parameter controls how the sky/atmosphere is rendered.
                 SceneView(
                     modifier = Modifier
@@ -77,7 +77,7 @@ fun SetAtmosphereEffectInSceneScreen(sampleName: String) {
                 )
             }
 
-            // Display a dialog if the sample encounters an error
+            // Display a dialog if the sample encounters an error.
             viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
