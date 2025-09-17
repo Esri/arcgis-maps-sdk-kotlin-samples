@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "AddKMLLayer",
+    "ignore": false,
+    "images": [
+        "add-kml-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/components/AddKMLLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/screens/AddKMLLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/MainActivity.kt"
+    ],
+    "title": "Add KML layer"
+}
