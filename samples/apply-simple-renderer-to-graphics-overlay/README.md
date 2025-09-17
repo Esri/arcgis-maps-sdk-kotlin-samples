@@ -37,4 +37,3 @@ Renderers are used to display graphics that don't already have a symbol set. A r
 ## Tags
 
 graphics, marker, renderer, symbol, symbolize, symbology
-
