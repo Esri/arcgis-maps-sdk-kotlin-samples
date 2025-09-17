@@ -36,4 +36,4 @@ There are three atmosphere effect options:
 
 ## Tags
 
-atmosphere, horizon, scene, sceneview, sky
+atmosphere, horizon, scene, sky
