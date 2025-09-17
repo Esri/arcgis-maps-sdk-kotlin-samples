@@ -93,7 +93,6 @@ class ApplyUniqueValueRendererViewModel(application: Application) : AndroidViewM
      *
      * Build and apply a [UniqueValueRenderer] object to the [statesFeatureLayer].
      */
-
     private fun configureUniqueValueRenderer() {
         // Outline used for all fill symbols
         val stateOutline = SimpleLineSymbol(
