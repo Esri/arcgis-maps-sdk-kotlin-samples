@@ -20,11 +20,11 @@ Select one of the three available atmosphere effects. The sky will change to dis
 
 ## Relevant API
 
-* AtmosphereEffect
 * ArcGISScene
+* ArcGISTiledElevationSource
+* AtmosphereEffect
 * SceneView
 * Viewpoint
-* ArcGISTiledElevationSource
 
 ## About the data
 
@@ -36,4 +36,4 @@ There are three atmosphere effect options:
 
 ## Tags
 
-atmosphere, horizon, sky, scene, SceneView, Compose, Kotlin
+atmosphere, horizon, scene, sceneview, sky
