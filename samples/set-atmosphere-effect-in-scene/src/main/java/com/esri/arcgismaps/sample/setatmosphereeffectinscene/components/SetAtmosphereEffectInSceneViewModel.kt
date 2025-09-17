@@ -19,28 +19,65 @@ package com.esri.arcgismaps.sample.setatmosphereeffectinscene.components
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.AtmosphereEffect
+import com.arcgismaps.mapping.view.Camera
+import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the sample demonstrating setting the atmosphere effect on a Scene.
+ */
 class SetAtmosphereEffectInSceneViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
+
+    // Create a scene with an imagery basemap & set an initial viewpoint.
+    var arcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+        val camera = Camera(
+            latitude = 64.416919,
+            longitude = -14.483728,
+            altitude = 0.0,
+            heading = 318.0,
+            pitch = 105.0,
+            roll = 0.0
+        )
+        // Add an initial viewpoint using a camera
+        initialViewpoint = Viewpoint(
+            boundingGeometry = camera.location,
+            camera = camera
+        )
+        // Creates an elevation source and set it on the scene's base surface.
+        baseSurface.elevationSources.add(
+            ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
+        )
+    }
     )
 
-    // Create a message dialog view model for handling error messages
+    // Keep track of the SceneView's atmosphere effect state
+    private val _atmosphereEffect = MutableStateFlow<AtmosphereEffect>(AtmosphereEffect.HorizonOnly)
+    val atmosphereEffect = _atmosphereEffect.asStateFlow()
+
+    // Message dialog view model for error handling
     val messageDialogVM = MessageDialogViewModel()
 
     init {
+        // Load the scene and report load failures if they occur.
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
+    }
+
+    /**
+     * Update the [AtmosphereEffect] applied to the SceneView.
+     */
+    fun updateAtmosphereEffect(newEffect: AtmosphereEffect) {
+        _atmosphereEffect.value = newEffect
     }
 }
