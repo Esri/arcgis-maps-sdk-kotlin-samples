@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "AddIntegratedMeshLayer",
+    "ignore": false,
+    "images": [
+        "add-integrated-mesh-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addintegratedmeshlayer/components/AddIntegratedMeshLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addintegratedmeshlayer/screens/AddIntegratedMeshLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addintegratedmeshlayer/MainActivity.kt"
+    ],
+    "title": "Add integrated mesh layer"
+}
