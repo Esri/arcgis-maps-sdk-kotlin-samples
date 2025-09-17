@@ -20,12 +20,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.addintegratedmeshlayer.components.AddIntegratedMeshLayerViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -34,25 +34,32 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun AddIntegratedMeshLayerScreen(sampleName: String) {
-    val mapViewModel: AddIntegratedMeshLayerViewModel = viewModel()
+    val viewModel: AddIntegratedMeshLayerViewModel = viewModel()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        content = { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(paddingValues)
             ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                // SceneView displays the ArcGISScene from the ViewModel.
+                // The onDrawStatusChanged callback detects when the scene finishes initial draw
+                SceneView(
+                    modifier = Modifier.fillMaxSize(),
+                    arcGISScene = viewModel.arcGISScene,
+                    onDrawStatusChanged = viewModel::onDrawStatusChanged // Toggle the flag when the scene DrawStatus.Completed
                 )
-                // TODO: Add UI components in this Column ...
             }
 
-            mapViewModel.messageDialogVM.apply {
+            // While the scene is still performing initial draw, display a loading dialog
+            if (!viewModel.isDrawStatusCompleted) {
+                LoadingDialog(loadingMessage = "Loading integrated mesh...")
+            }
+
+            // If any errors during loading, display a message dialog.
+            viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
