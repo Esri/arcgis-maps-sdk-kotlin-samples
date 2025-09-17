@@ -43,50 +43,55 @@ class ApplySymbologyToShapefileViewModel(application: Application) : AndroidView
     val provisionPath =
         application.getExternalFilesDir(null)?.path + File.separator + application.getString(R.string.apply_symbology_to_shapefile_app_name)
 
-    // Initialize the map with a topographic basemap and an initial viewpoint
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            val center = Point(
-                x = -11662054.0,
-                y = 4818336.0,
-                spatialReference = SpatialReference.webMercator()
-            )
-            initialViewpoint = Viewpoint(center, 200000.0)
-        }
+    // Define renderer: red outline with yellow fill for all features
+    private val outlineSymbol = SimpleLineSymbol(
+        style = SimpleLineSymbolStyle.Solid,
+        color = Color.red,
+        width = 1.0f
     )
+    private val fillSymbol = SimpleFillSymbol(
+        style = SimpleFillSymbolStyle.Solid,
+        color = Color.yellow,
+        outline = outlineSymbol
+    )
+
+    // Initialize the map with a topographic basemap, an initial viewpoint, and the shapefile layer
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        val center = Point(
+            x = -11662054.0,
+            y = 4818336.0,
+            spatialReference = SpatialReference.webMercator()
+        )
+        initialViewpoint = Viewpoint(center, 200000.0)
+        // Add the shapefile layer to the map and attempt to load the map
+    }
 
     // Create a message dialog view model to surface errors
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        viewModelScope.launch {
-            try {
-                // Ensure the shapefile is available on device storage and load its layer
-                val shapefileTable = ShapefileFeatureTable("${provisionPath}${File.separator}Subdivisions.shp")
-                val featureLayer = FeatureLayer.createWithFeatureTable(shapefileTable)
-
-                // Define renderer: red outline with yellow fill for all features
-                val outlineSymbol = SimpleLineSymbol(
-                    style = SimpleLineSymbolStyle.Solid,
-                    color = Color.red,
-                    width = 1.0f
-                )
-                val fillSymbol = SimpleFillSymbol(
-                    style = SimpleFillSymbolStyle.Solid,
-                    color = Color.yellow,
-                    outline = outlineSymbol
-                )
-
+        val shapeFile = File(provisionPath, "Subdivisions.shp")
+        if (!shapeFile.exists()) {
+            messageDialogVM.showMessageDialog(
+                "Shapefile not found",
+                "Expected .shp file at ${shapeFile.path}"
+            )
+        } else {
+            // Create shapefile table using local file, and create its layer
+            val shapefileTable = ShapefileFeatureTable(
+                shapeFile.path
+            )
+            val featureLayer = FeatureLayer.createWithFeatureTable(shapefileTable).apply {
                 // Apply the renderer to the layer
-                featureLayer.renderer = SimpleRenderer(fillSymbol)
-
-                // Add the shapefile layer to the map and attempt to load the map
-                arcGISMap.operationalLayers.add(featureLayer)
-                arcGISMap.load().onSuccess { /* map ready */ }.onFailure { error ->
+                renderer = SimpleRenderer(fillSymbol)
+            }
+            // Add the shapefile layer to the map and attempt to load the map
+            arcGISMap.operationalLayers.add(featureLayer)
+            // Load the configured ArcGIS Map
+            viewModelScope.launch {
+                arcGISMap.load().onFailure { error ->
                     messageDialogVM.showMessageDialog(error)
                 }
-            } catch (e: Exception) {
-                messageDialogVM.showMessageDialog(e)
             }
         }
     }
