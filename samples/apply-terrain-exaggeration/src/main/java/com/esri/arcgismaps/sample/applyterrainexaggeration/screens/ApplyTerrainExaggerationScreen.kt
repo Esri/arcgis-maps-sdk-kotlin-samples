@@ -19,13 +19,18 @@ package com.esri.arcgismaps.sample.applyterrainexaggeration.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,21 +40,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.applyterrainexaggeration.components.ApplyTerrainExaggerationViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
-import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
-import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
- * Main screen layout for the sample app
+ * Main screen that displays a SceneView and a bottom sheet with controls
+ * to adjust terrain vertical exaggeration.
  */
 @Composable
 fun ApplyTerrainExaggerationScreen(sampleName: String) {
-    val mapViewModel: ApplyTerrainExaggerationViewModel = viewModel()
+    val sceneViewModel: ApplyTerrainExaggerationViewModel = viewModel()
+
+    // Observe the exaggeration value from the ViewModel
+    val exaggeration by sceneViewModel.elevationExaggeration.collectAsStateWithLifecycle()
+
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -59,36 +69,39 @@ fun ApplyTerrainExaggerationScreen(sampleName: String) {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { isBottomSheetVisible = true }
-                ) { Icon(Icons.Filled.Settings, contentDescription = "Show options") }
+                ) {
+                    Icon(Icons.Default.Settings, contentDescription = "Show options")
+                }
             }
         },
-        content = {
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(padding)
             ) {
-                MapView(
+                SceneView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    onVisibleAreaChanged = { isBottomSheetVisible = false }
+                    arcGISScene = sceneViewModel.arcGISScene,
+                    onViewpointChangedForBoundingGeometry = { isBottomSheetVisible = false }
                 )
             }
 
             BottomSheet(
                 isVisible = isBottomSheetVisible,
-                sheetTitle = "Bottom sheet options",
+                sheetTitle = "Terrain options",
                 onDismissRequest = { isBottomSheetVisible = false }
             ) {
-                SampleOptions(
-                    // isCurrentOptionEnabled = ...,
-                    // onOptionToggled = { ... },
+                TerrainOptions(
+                    currentExaggeration = exaggeration,
+                    onIncrement = { sceneViewModel.updateElevationExaggerationByFactor(1f) },
+                    onDecrement = { sceneViewModel.updateElevationExaggerationByFactor(-1f) }
                 )
             }
-
-            mapViewModel.messageDialogVM.apply {
+            // Display error dialogs from the ViewModel
+            sceneViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
@@ -102,30 +115,49 @@ fun ApplyTerrainExaggerationScreen(sampleName: String) {
 }
 
 @Composable
-fun SampleOptions() {
+fun TerrainOptions(
+    currentExaggeration: Float,
+    onIncrement: () -> Unit,
+    onDecrement: () -> Unit
+) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
     ) {
-        DropDownMenuBox(
-            textFieldValue = "<selected-option>",
-            textFieldLabel = "Select an option",
-            dropDownItemList = emptyList(),
-            onIndexSelected = { }
-        )
+        Text(text = "Elevation exaggeration: ${currentExaggeration.toInt()}x")
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(onClick = { onDecrement() }, enabled = currentExaggeration > 1f) {
+                Text(text = "-")
+            }
+
+            Text(text = "${currentExaggeration.toInt()}x")
+
+            Button(onClick = { onIncrement() }, enabled = currentExaggeration < 10f) {
+                Text(text = "+")
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun BottomSheetPreview() {
-    SamplePreviewSurface {
-        BottomSheet(
-            isVisible = true,
-            sheetTitle = "Bottom sheet options",
-        ) {
-            SampleOptions()
+fun PreviewTerrainOptions() {
+    SampleAppTheme {
+        Surface {
+            TerrainOptions(
+                currentExaggeration = 2f,
+                onIncrement = {},
+                onDecrement = {}
+            )
         }
     }
 }
