@@ -1,0 +1,20 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "ApplyDictionaryRendererToGraphicsOverlay",
+    "ignore": false,
+    "images": [
+        "apply-dictionary-renderer-to-graphics-overlay.png"
+    ],
+    "keywords": [],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/components/ApplyDictionaryRendererToGraphicsOverlayViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/screens/ApplyDictionaryRendererToGraphicsOverlayScreen.kt"
+    ],
+    "title": "Apply dictionary renderer to graphics overlay"
+}
