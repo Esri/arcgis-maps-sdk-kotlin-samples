@@ -22,11 +22,11 @@ When the sample loads, note the map is opened at the initial view point that is 
 
 ## Relevant API
 
-- ArcGISMap
-- Envelope
-- MapView
-- SpatialReference
-- Viewpoint
+* ArcGISMap
+* Envelope
+* MapView
+* SpatialReference
+* Viewpoint
 
 ## Tags
 envelope, extent, initial viewpoint, zoom
