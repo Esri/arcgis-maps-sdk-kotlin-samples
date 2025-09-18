@@ -18,6 +18,9 @@ package com.esri.arcgismaps.sample.applydictionaryrenderertographicsoverlay.comp
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.MultipointBuilder
@@ -25,6 +28,7 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Camera
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.symbology.DictionaryRenderer
@@ -47,21 +51,26 @@ import java.io.InputStreamReader
  *  - Create an ArcGISScene and a GraphicsOverlay
  *  - Load a DictionarySymbolStyle from a portal item and apply it as a DictionaryRenderer
  *  - Parse a local XML resource containing MIL-STD-2525D messages and create graphics
- *  - Center the scene on the graphics extent once they are added
+ *  - Center the scene on the graphics extent and set a Camera as the initial viewpoint
  */
 class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Application) : AndroidViewModel(app) {
 
     // The scene shown in the SceneView composable
     val arcGISScene = ArcGISScene(basemapStyle = BasemapStyle.ArcGISTopographic).apply {
-            // a conservative default viewpoint while resources load
-            initialViewpoint = Viewpoint(34.0, -98.0, 1e7)
-        }
+        // conservative default viewpoint while resources load
+        initialViewpoint = Viewpoint(34.0, -98.0, 1e7)
+    }
 
     // Graphics overlay that will hold the message graphics
     val graphicsOverlay: GraphicsOverlay = GraphicsOverlay()
 
     // A SceneViewProxy to enable programmatic viewpoint changes
     val sceneViewProxy = SceneViewProxy()
+
+    // Camera used to set the initial viewpoint of the scene. Exposed as a Compose-observable state so
+    // the composable SceneView can react when it is set.
+    var camera by mutableStateOf<Camera?>(null)
+        private set
 
     // Used to display error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -73,7 +82,7 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
         // Kick-off loading of the scene and style and parsing of messages
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Load the scene (this is fast but we keep the pattern consistent)
+                // Load the scene
                 arcGISScene.load().onFailure { throwable ->
                     messageDialogVM.showMessageDialog(throwable)
                 }
@@ -81,8 +90,10 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
                 // Attempt to create and apply the MIL-STD-2525D renderer
                 val dictionaryRenderer = createMil2525dDictionaryRenderer()
                 if (dictionaryRenderer != null) {
-                    // Apply the renderer to the graphics overlay
-                    graphicsOverlay.renderer = dictionaryRenderer
+                    // Apply the renderer to the graphics overlay (UI object) on the main thread
+                    viewModelScope.launch {
+                        graphicsOverlay.renderer = dictionaryRenderer
+                    }
                 }
 
                 // Parse the local XML file into message objects
@@ -94,25 +105,36 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
                         Graphic(geometry = multipoint, attributes = attributes)
                     }
 
-                    // Add graphics on main thread (graphicsOverlay is a UI object)
-                    viewModelScope.launch {
+                    // Add graphics and update viewpoint/camera on the main thread
+                    viewModelScope.launch(Dispatchers.Main) {
                         graphicsOverlay.graphics.addAll(graphics)
 
-                        // If an extent can be obtained, update the scene viewpoint to show the graphics
                         try {
-                            // graphicsOverlay.extent is computed lazily by the SDK; use it if available
                             val extent = graphicsOverlay.extent
                             if (extent != null) {
-                                // Set a viewpoint that looks at the extent with a pitched camera
-                                arcGISScene.initialViewpoint = Viewpoint(boundingGeometry = extent)
+                                // Create a pitched camera that looks at the extent center
+                                val extentCenter = extent.center
+                                val newCamera = Camera(
+                                    lookAtPoint = extentCenter,
+                                    distance = 15000.0,
+                                    heading = 0.0,
+                                    pitch = 70.0,
+                                    roll = 0.0
+                                )
 
-                                // Try to animate the SceneView to the extent via the proxy.
-                                // If the proxy is not attached yet, this will be a no-op.
-                                sceneViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = extent))
+                                // Store camera so Compose SceneView can consume it
+                                camera = newCamera
+
+                                // Also set the scene's initial viewpoint with the camera
+                                arcGISScene.initialViewpoint = Viewpoint(camera = newCamera)
+
+                                // Attempt to animate the SceneView to the camera using the proxy.
+                                // If the proxy is not attached yet this call will be a no-op.
+                                sceneViewProxy.setViewpointAnimated(Viewpoint(camera = newCamera))
                             }
                         } catch (ex: Exception) {
                             // Not critical — log and continue
-                            Log.e("ApplyDictRendererVM", "Failed to update viewpoint: ${ex.message}")
+                            Log.e("ApplyDictRendererVM", "Failed to update viewpoint/camera: ${'$'}{ex.message}")
                         }
                     }
                 } else {
@@ -148,15 +170,13 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
             }
 
             // Choose the draw rule configuration to use ordered anchor points if available.
-            // Many dictionary styles expose configurations, attempt to find a configuration named "model"
-            // and set its value to the ordered anchor points mode — if available on the style.
             try {
                 dictionarySymbolStyle.configurations.firstOrNull { it.name.equals("model", ignoreCase = true) }
                     ?.let { configuration ->
                         configuration.value = "ORDERED ANCHOR POINTS"
                     }
             } catch (ignored: Exception) {
-                // Not all styles may expose the same configuration API; this is best-effort.
+                // Best-effort; not all styles expose the same config API.
             }
 
             // Keep loaded style and create renderer
@@ -219,7 +239,6 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
                                     "_control_points" -> currentControlPointsText.append(text)
                                     "_wkid" -> currentWkidText += text.trim()
                                     else -> {
-                                        // store other elements as attributes (trim text)
                                         val existing = currentMessageAttributes[currentElementName] ?: ""
                                         currentMessageAttributes[currentElementName] = (existing.toString() + text).trim()
                                     }
@@ -254,16 +273,15 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
                                             }
                                         }.toGeometry()
 
-                                        // The SDK's Multipoint type is returned by the builder; cast safely
                                         val mp = multipoint as com.arcgismaps.geometry.Multipoint
 
-                                        // Copy currentMessageAttributes to an immutable map
+                                        // Copy attributes to immutable map
                                         val attributesCopy: Map<String, Any> = currentMessageAttributes.toMap()
 
                                         results.add(Pair(mp, attributesCopy))
                                     }
                                 } catch (ex: Exception) {
-                                    Log.e("ApplyDictRendererVM", "Error parsing message geometry: ${ex.message}")
+                                    Log.e("ApplyDictRendererVM", "Error parsing message geometry: ${'$'}{ex.message}")
                                 }
 
                                 // reset message parsing state

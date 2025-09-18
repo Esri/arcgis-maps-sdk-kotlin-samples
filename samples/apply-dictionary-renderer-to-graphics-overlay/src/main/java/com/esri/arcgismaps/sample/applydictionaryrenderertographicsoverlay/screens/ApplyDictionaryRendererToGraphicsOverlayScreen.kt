@@ -30,7 +30,8 @@ import androidx.compose.ui.Modifier
 
 /**
  * Screen composable that displays a SceneView and binds to the [ApplyDictionaryRendererToGraphicsOverlayViewModel].
- * The SceneView shows graphics styled with a DictionaryRenderer loaded from a web style.
+ * The SceneView shows graphics styled with a DictionaryRenderer loaded from a web style and uses a Camera
+ * provided by the ViewModel to set the initial viewpoint.
  */
 @Composable
 fun ApplyDictionaryRendererToGraphicsOverlayScreen(sampleName: String) {
@@ -45,11 +46,14 @@ fun ApplyDictionaryRendererToGraphicsOverlayScreen(sampleName: String) {
 
                 // The SceneView is a composable provided by the toolkit. All ArcGIS objects come
                 // from the ViewModel (scene, overlays, proxy) — the composable only renders them.
+                // We supply the camera from the ViewModel so the SceneView uses the camera as the
+                // initial viewpoint once the ViewModel has calculated it.
                 SceneView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
                     arcGISScene = viewModel.arcGISScene,
+                    camera = viewModel.camera,
                     sceneViewProxy = viewModel.sceneViewProxy,
                     graphicsOverlays = listOf(viewModel.graphicsOverlay)
                 )
