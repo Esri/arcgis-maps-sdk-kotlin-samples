@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "ApplyTerrainExaggeration",
+    "ignore": false,
+    "images": [
+        "apply-terrain-exaggeration.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyterrainexaggeration/components/ApplyTerrainExaggerationViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyterrainexaggeration/screens/ApplyTerrainExaggerationScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyterrainexaggeration/MainActivity.kt"
+    ],
+    "title": "Apply terrain exaggeration"
+}
