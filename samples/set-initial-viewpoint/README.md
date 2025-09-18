@@ -29,5 +29,5 @@ When the sample loads, note the map is opened at the initial view point that is 
 * Viewpoint
 
 ## Tags
-envelope, extent, initial viewpoint, zoom
 
+envelope, extent, initial viewpoint, zoom
