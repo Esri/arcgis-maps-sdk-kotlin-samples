@@ -35,7 +35,7 @@ import java.io.File
  */
 class AddPointCloudLayerFromFileViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    // The scene displayed in the SceneView composable
+    // The scene displayed in the SceneView composable.
     val arcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
         // Set an initial camera viewpoint focused on the point cloud area.
         val camera = Camera(
@@ -49,24 +49,24 @@ class AddPointCloudLayerFromFileViewModel(private val app: Application) : Androi
         initialViewpoint = Viewpoint(camera = camera, boundingGeometry = camera.location)
     }
 
-    // Folder path for the sample provisioned directory
+    // Folder path for the sample provisioned directory.
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path + File.separator + app.getString(R.string.add_point_cloud_layer_from_file_app_name)
     }
 
-    // Name of the local slpk file provisioned on device
+    // Name of the local slpk file provisioned on device.
     private val slpkFileName = "sandiego-north-balboa-pointcloud.slpk"
 
-    // File path to the local slpk
+    // File path to the local slpk.
     private val slpkFilePath: String
         get() = File(provisionPath, slpkFileName).path
 
-    // World 3D elevation service
+    // World 3D elevation service.
     private val elevationSource = ArcGISTiledElevationSource(
         uri = "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
     )
 
-    // Message dialog helper to show load errors
+    // Message dialog helper to show load errors.
     val messageDialogVM = MessageDialogViewModel()
 
     init {
@@ -79,13 +79,13 @@ class AddPointCloudLayerFromFileViewModel(private val app: Application) : Androi
             )
         } else {
             viewModelScope.launch {
-                // Add an elevation source so point cloud will be draped properly on the surface
+                // Add an elevation source so point cloud will be draped properly on the surface.
                 arcGISScene.baseSurface.elevationSources.add(elevationSource)
 
-                // Add the point cloud layer to the scene's operational layers
+                // Add the point cloud layer to the scene's operational layers.
                 arcGISScene.operationalLayers.add(PointCloudLayer(uri = slpkFile.path))
 
-                // Load the scene and the point cloud layer
+                // Load the scene and the point cloud layer.
                 arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
             }
         }
