@@ -30,7 +30,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun AddIntegratedMeshLayerScreen(sampleName: String) {
@@ -45,15 +45,16 @@ fun AddIntegratedMeshLayerScreen(sampleName: String) {
                     .padding(paddingValues)
             ) {
                 // SceneView displays the ArcGISScene from the ViewModel.
-                // The onDrawStatusChanged callback detects when the scene finishes initial draw
+                // The onDrawStatusChanged callback detects when the scene finishes initial draw.
                 SceneView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISScene = viewModel.arcGISScene,
-                    onDrawStatusChanged = viewModel::onDrawStatusChanged // Toggle the flag when the scene DrawStatus.Completed
+                    // Toggle the flag when the scene DrawStatus changes.
+                    onDrawStatusChanged = viewModel::onDrawStatusChanged
                 )
             }
 
-            // While the scene is still performing initial draw, display a loading dialog
+            // While the scene is still performing initial draw, display a loading dialog.
             if (!viewModel.isDrawStatusCompleted) {
                 LoadingDialog(loadingMessage = "Loading integrated mesh...")
             }

@@ -47,12 +47,12 @@ class AddIntegratedMeshLayerViewModel(application: Application) : AndroidViewMod
         uri = "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Girona_Spain/SceneServer"
     )
 
-    // The elevation source to use on the scene's base surface
+    // The elevation source to use on the scene's base surface.
     val elevationSource = ArcGISTiledElevationSource(
         uri = "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
     )
 
-    // The initial camera object for the scene
+    // The initial camera object for the scene.
     val camera = Camera(
         latitude = 41.9906,
         longitude = 2.8259,
@@ -62,13 +62,13 @@ class AddIntegratedMeshLayerViewModel(application: Application) : AndroidViewMod
         roll = 0.0
     )
 
-    // The scene displayed by the SceneView composable
+    // The scene displayed by the SceneView composable.
     var arcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
-        // Add an elevation source to the scene's base surface so the integrated mesh renders with realistic elevation
+        // Add an elevation source to the scene's base surface so the integrated mesh renders with realistic elevation.
         baseSurface = Surface().apply { elevationSources.add(elevationSource) }
-        // Add the integrated mesh layer as an operational layer
+        // Add the integrated mesh layer as an operational layer.
         operationalLayers.add(integratedMeshLayer)
-        // Set an initial viewpoint near the integrated mesh
+        // Set an initial viewpoint near the integrated mesh.
         initialViewpoint = Viewpoint(
             center = camera.location,
             camera = camera,
@@ -81,7 +81,7 @@ class AddIntegratedMeshLayerViewModel(application: Application) : AndroidViewMod
     var isDrawStatusCompleted by mutableStateOf(false)
         private set
 
-    // Message dialog for surface or layer load errors
+    // Message dialog for surface or layer load errors.
     val messageDialogVM = MessageDialogViewModel()
 
     init {
