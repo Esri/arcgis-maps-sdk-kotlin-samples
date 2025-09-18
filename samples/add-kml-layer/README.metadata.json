@@ -1,19 +1,30 @@
 {
     "category": "Layers",
-    "description": "TODO",
-    "formal_name": "AddKMLLayer",
+    "description": "Display KML from a URL, portal item, or local KML file.",
+    "formal_name": "AddKmlLayer",
     "ignore": false,
     "images": [
         "add-kml-layer.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "KML",
+        "KMZ",
+        "OGC",
+        "keyhole",
+        "KmlDataset",
+        "KmlLayer"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "KmlDataset",
+        "KmlLayer"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addkmllayer/components/AddKMLLayerViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/screens/AddKMLLayerScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/screens/AddKMLLayerScreen.kt"
     ],
     "title": "Add KML layer"
 }

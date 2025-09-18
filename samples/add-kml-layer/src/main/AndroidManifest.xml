@@ -9,6 +9,10 @@
             android:label="@string/add_kml_layer_app_name">
             
         </activity>
-    </application>
+        <activity
+    android:name=".DownloadActivity"
+    android:exported="true"
+    android:label="@string/add_kml_layer_app_name" />
+</application>
 
 </manifest>
