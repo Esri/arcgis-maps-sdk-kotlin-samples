@@ -26,7 +26,7 @@ When the sample loads, note the map is opened at the initial view point that is 
 - ArcGISMap
 - Envelope
 - MapView
-- Point
+- SpatialReference
 - Viewpoint
 
 ## Tags
