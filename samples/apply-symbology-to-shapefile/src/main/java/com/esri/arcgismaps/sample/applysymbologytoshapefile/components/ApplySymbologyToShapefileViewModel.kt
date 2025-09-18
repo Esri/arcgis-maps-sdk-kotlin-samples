@@ -63,7 +63,6 @@ class ApplySymbologyToShapefileViewModel(application: Application) : AndroidView
             spatialReference = SpatialReference.webMercator()
         )
         initialViewpoint = Viewpoint(center, 200000.0)
-        // Add the shapefile layer to the map and attempt to load the map
     }
 
     // Create a message dialog view model to surface errors
