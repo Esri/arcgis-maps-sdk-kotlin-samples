@@ -39,17 +39,17 @@ import java.io.File
  */
 class AddKmlLayerViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    // Lazy provision path for local sample resource
+    // Lazy provision path for local sample resource.
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(R.string.add_kml_layer_app_name)
     }
 
-    // The ArcGIS map used by the composable MapView
+    // The ArcGIS map used by the composable MapView.
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
         initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
     }
 
-    // Build the list of KML options
+    // Build the list of KML options.
     val kmlOptions: List<KmlOption> = listOf(
         KmlOption.LocalFile(File(provisionPath, "US_State_Capitals.kml")),
         KmlOption.FromUrl(url = "https://www.spc.noaa.gov/products/outlook/SPC_outlooks.kml"),
@@ -61,22 +61,22 @@ class AddKmlLayerViewModel(private val app: Application) : AndroidViewModel(app)
         )
     )
 
-    // Selected label shown in the drop-down TextField
+    // Selected label shown in the drop-down TextField.
     private val _selectedKmlOption = MutableStateFlow(kmlOptions[0])
     val selectedKmlOption = _selectedKmlOption.asStateFlow()
 
-    // Map proxy to allow the ViewModel to set viewpoint
+    // Map proxy to allow the ViewModel to set viewpoint.
     val mapViewProxy: MapViewProxy = MapViewProxy()
 
-    // Loading state to show/hide the loading dialog
+    // Loading state to show/hide the loading dialog.
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    // Message dialog ViewModel
+    // Message dialog ViewModel.
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // Validate local file then load the map
+        // Validate local file then load the map.
         val localKmlFile = File(provisionPath, "US_State_Capitals.kml")
         if (!localKmlFile.exists()) {
             messageDialogVM.showMessageDialog(
@@ -85,7 +85,7 @@ class AddKmlLayerViewModel(private val app: Application) : AndroidViewModel(app)
             )
         }
 
-        // Load the default KML layer
+        // Load the default KML layer.
         setKmlLayer(0)
     }
 

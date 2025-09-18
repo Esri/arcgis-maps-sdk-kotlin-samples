@@ -42,9 +42,9 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun AddKMLLayerScreen(sampleName: String) {
     val mapViewModel: AddKmlLayerViewModel = viewModel()
-    // Observe the current selected KML option for the DropDown text field
+    // Observe the current selected KML option for the DropDown text field.
     val selectedKmlOption by mapViewModel.selectedKmlOption.collectAsStateWithLifecycle()
-    // Observe loading state from the viewmodel to show loading dialog
+    // Observe loading state from the viewmodel to show loading dialog.
     val isLoading by mapViewModel.isLoading.collectAsStateWithLifecycle(false)
 
     Scaffold(
@@ -74,12 +74,12 @@ fun AddKMLLayerScreen(sampleName: String) {
                 }
             }
 
-            // Display dialog while loading a KML layer
+            // Display dialog while loading a KML layer.
             if (isLoading) {
                 LoadingDialog(loadingMessage = "Loading KmlLayer...")
             }
 
-            // Display errors in a dialog
+            // Display errors in a dialog.
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
