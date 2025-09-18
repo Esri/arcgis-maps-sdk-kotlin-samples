@@ -41,24 +41,13 @@ fun SetInitialViewpointScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) }
     ) { paddingValues ->
-        Column(
+        // MapView displays the map configured in the ViewModel
+        MapView(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // MapView displays the map configured in the ViewModel
-            MapView(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize(),
-                arcGISMap = mapViewModel.arcGISMap
-            )
-
-            // Simple descriptive text shown beneath the map
-            Text(
-                modifier = Modifier.padding(12.dp),
-                text = "The map opens at an initial bounding viewpoint defined by an envelope."
-            )
+                .padding(paddingValues),
+            arcGISMap = mapViewModel.arcGISMap
+        )
         }
 
         // Show message dialog when the viewmodel reports an error

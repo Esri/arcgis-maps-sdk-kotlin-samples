@@ -37,23 +37,22 @@ class SetInitialViewpointViewModel(application: Application) : AndroidViewModel(
     /**
      * ArcGISMap configured with an imagery basemap and an initial viewpoint.
      * The initial viewpoint is set using a bounding geometry (Envelope) in Web Mercator.
-     * The ArcGISMap instance itself is created here but loaded in the init.
      */
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImageryStandard).apply {
-            initialViewpoint = Viewpoint(
-                boundingGeometry = Envelope(
-                    /* Coordinates representing the area around Potash Ponds (Web Mercator) */
-                    -12211308.778729,
-                    4645116.003309,
-                    -12208257.879667,
-                    4650542.535773,
-                    spatialReference = SpatialReference.webMercator()
-                )
+        initialViewpoint = Viewpoint(
+            // Web Mercator coordinates around Potash Ponds, Moab, Utah.
+            boundingGeometry = Envelope(
+                xMin = -12211308.778729,
+                yMin = 4645116.003309,
+                xMax = -12208257.879667,
+                yMax = 4650542.535773,
+                spatialReference = SpatialReference.webMercator()
             )
-        }
+        )
+    }
 
 
-    // Message dialog VM to show errors to the user
+    // Message dialog VM to show errors
     val messageDialogVM = MessageDialogViewModel()
 
     init {
