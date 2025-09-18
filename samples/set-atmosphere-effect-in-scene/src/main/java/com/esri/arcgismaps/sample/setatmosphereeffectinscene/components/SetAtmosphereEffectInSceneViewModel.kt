@@ -17,17 +17,14 @@
 package com.esri.arcgismaps.sample.setatmosphereeffectinscene.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.AtmosphereEffect
 import com.arcgismaps.mapping.view.Camera
-import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,7 +36,7 @@ import kotlinx.coroutines.launch
 class SetAtmosphereEffectInSceneViewModel(app: Application) : AndroidViewModel(app) {
 
     // Create a scene with an imagery basemap & set an initial viewpoint.
-    var arcGISScene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+    var arcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
         val camera = Camera(
             latitude = 64.416919,
             longitude = -14.483728,
@@ -58,7 +55,6 @@ class SetAtmosphereEffectInSceneViewModel(app: Application) : AndroidViewModel(a
             ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
         )
     }
-    )
 
     // Keep track of the SceneView's atmosphere effect state.
     private val _atmosphereEffect = MutableStateFlow<AtmosphereEffect>(AtmosphereEffect.HorizonOnly)
