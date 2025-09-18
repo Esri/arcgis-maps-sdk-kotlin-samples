@@ -1,0 +1,38 @@
+{
+    "category": "Visualization",
+    "description": "Render features in a layer using a distinct symbol for each unique attribute value.",
+    "formal_name": "ApplyUniqueValueRenderer",
+    "ignore": false,
+    "images": [
+        "apply-unique-value-renderer.png"
+    ],
+    "keywords": [
+        "draw",
+        "renderer",
+        "symbol",
+        "symbology",
+        "values",
+        "FeatureLayer",
+        "ServiceFeatureTable",
+        "SimpleFillSymbol",
+        "SimpleLineSymbol",
+        "UniqueValue",
+        "UniqueValueRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "ServiceFeatureTable",
+        "SimpleFillSymbol",
+        "SimpleLineSymbol",
+        "UniqueValue",
+        "UniqueValueRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyuniquevaluerenderer/components/ApplyUniqueValueRendererViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyuniquevaluerenderer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyuniquevaluerenderer/screens/ApplyUniqueValueRendererScreen.kt"
+    ],
+    "title": "Apply unique value renderer"
+}
