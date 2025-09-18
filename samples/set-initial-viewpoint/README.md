@@ -12,7 +12,6 @@ Setting the initial viewpoint is useful when a user wishes to first load the map
 
 When the sample loads, note the map is opened at the initial view point that is set to it.
 
-
 ## How it works
 
 1. Create an ArcGISMap and specify a basemap style (for example, BasemapStyle.ArcGISImageryStandard).
@@ -30,6 +29,5 @@ When the sample loads, note the map is opened at the initial view point that is 
 - Viewpoint
 
 ## Tags
-
 envelope, extent, initial viewpoint, zoom
 
