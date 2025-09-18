@@ -23,7 +23,7 @@
         "ArcGISMap",
         "Envelope",
         "MapView",
-        "SpatialReference",
+        "Point",
         "Viewpoint"
     ],
     "snippets": [
