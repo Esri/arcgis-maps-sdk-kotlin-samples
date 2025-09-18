@@ -15,8 +15,8 @@ Select one of the three available atmosphere effects. The sky will change to dis
 ## How it works
 
 1. Create an ArcGISScene and add it to a SceneView composable.
-2. Expose the selected AtmosphereEffect from a ViewModel and observe it in the Compose screen using collectAsState or collectAsStateWithLifecycle.
-3. Pass the AtmosphereEffect value into the SceneView composable (the toolkit SceneView accepts an atmosphereEffect parameter) so changing the selected value updates the composable SceneView rendering.
+2. Expose the selected `AtmosphereEffect` from a ViewModel and observe it in the Compose screen using `collectAsStateWithLifecycle`.
+3. Pass the `AtmosphereEffect` value into the SceneView composable, so changing the selected value updates the composable SceneView.
 
 ## Relevant API
 
@@ -26,7 +26,7 @@ Select one of the three available atmosphere effects. The sky will change to dis
 * SceneView
 * Viewpoint
 
-## About the data
+## Additional information
 
 There are three atmosphere effect options:
 
