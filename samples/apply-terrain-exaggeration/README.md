@@ -28,4 +28,4 @@ Open the sample to display a SceneView centered on a location with elevation dat
 
 ## Tags
 
-3D, DEM, elevation, surface, scene, terrain, exaggeration
+3D, DEM, elevation, exaggeration, scene, surface, terrain
