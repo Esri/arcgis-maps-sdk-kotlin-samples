@@ -15,7 +15,7 @@ Open the sample to display a SceneView centered on a location with elevation dat
 ## How it works
 
 1. Create an `ArcGISTiledElevationSource` that points to a terrain ImageServer.
-    - An elevation source defines the terrain based on a digital elevation model (DEM) or digital terrain model (DTM). 
+    1. An elevation source defines the terrain based on a digital elevation model (DEM) or digital terrain model (DTM).
 2. Add the elevation source to a `Surface` and assign that surface to a Scene's `baseSurface`.
 3. Configure the surface's `elevationExaggeration` using a multiplier factor.
 
