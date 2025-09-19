@@ -70,7 +70,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
     }
 
     private fun createAndAddFeatureCollectionLayer() {
-        try {
+
             // Create each feature collection table
             val pointsTable = createPointsCollectionTable()
             val linesTable = createLinesCollectionTable()
@@ -82,17 +82,13 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
             // Create a layer from the feature collection and add it to the map
             val featureCollectionLayer = FeatureCollectionLayer(featureCollection = featureCollection)
             arcGISMap.operationalLayers.add(featureCollectionLayer)
-        } catch (ex: Exception) {
-            // Surface any unexpected exceptions in a dialog
-            messageDialogVM.showMessageDialog(ex)
-        }
     }
 
     /**
      * Create an in-memory points [FeatureCollectionTable], define a simple schema and renderer,
      * add a single point feature and return the table.
      */
-    private fun createPointsCollectionTable(): FeatureCollectionTable {
+    private suspend fun createPointsCollectionTable(): FeatureCollectionTable {
 
         // Define a simple text field for a place name
         val placeField = Field(
@@ -126,9 +122,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
 
         // Create and add the feature to the table
         val pointFeature = pointsCollectionTable.createFeature(placeAttributes, pointGeometry)
-        viewModelScope.launch {
-            pointsCollectionTable.addFeature(pointFeature).onFailure { messageDialogVM.showMessageDialog(it) }
-        }
+        pointsCollectionTable.addFeature(pointFeature).onFailure { messageDialogVM.showMessageDialog(it) }
 
         return pointsCollectionTable
     }
@@ -137,7 +131,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
      * Create an in-memory polyline FeatureCollectionTable with a dash renderer and a single line
      * feature between two points.
      */
-    private fun createLinesCollectionTable(): FeatureCollectionTable {
+    private suspend fun createLinesCollectionTable(): FeatureCollectionTable {
         val boundaryField = Field(
             fieldType = FieldType.Text,
             name = "Boundary",
@@ -168,9 +162,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
 
         val lineAttributes = mapOf("Boundary" to "AManAPlanACanalPanama")
         val lineFeature = linesCollectionTable.createFeature(lineAttributes, lineGeometry)
-        viewModelScope.launch {
-            linesCollectionTable.addFeature(lineFeature).onFailure { messageDialogVM.showMessageDialog(it) }
-        }
+        linesCollectionTable.addFeature(lineFeature).onFailure { messageDialogVM.showMessageDialog(it) }
 
         return linesCollectionTable
     }
@@ -178,7 +170,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
     /**
      * Create an in-memory polygon FeatureCollectionTable with a fill renderer and a single polygon feature.
      */
-    private fun createPolygonsCollectionTable(): FeatureCollectionTable {
+    private suspend fun createPolygonsCollectionTable(): FeatureCollectionTable {
         val areaField = Field(
             fieldType = FieldType.Text,
             name = "Area",
@@ -215,9 +207,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
 
         val polygonAttributes = mapOf("Area" to "Restricted area")
         val polygonFeature = polygonsCollectionTable.createFeature(polygonAttributes, polygonGeometry)
-        viewModelScope.launch {
-            polygonsCollectionTable.addFeature(polygonFeature).onFailure { messageDialogVM.showMessageDialog(it) }
-        }
+        polygonsCollectionTable.addFeature(polygonFeature).onFailure { messageDialogVM.showMessageDialog(it) }
 
         return polygonsCollectionTable
     }
