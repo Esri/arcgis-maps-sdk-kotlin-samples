@@ -16,11 +16,11 @@
 
 package com.esri.arcgismaps.sample.addpointcloudlayerfromfile.screens
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.addpointcloudlayerfromfile.components.AddPointCloudLayerFromFileViewModel
@@ -37,15 +37,13 @@ fun AddPointCloudLayerFromFileScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { paddingValues ->
-            Column(modifier = androidx.compose.ui.Modifier.padding(paddingValues)) {
-                // SceneView displays the 3D Scene provided by the ViewModel.
-                SceneView(
-                    modifier = androidx.compose.ui.Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISScene = viewModel.arcGISScene
-                )
-            }
+            // SceneView displays the 3D Scene provided by the ViewModel.
+            SceneView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                arcGISScene = viewModel.arcGISScene
+            )
             viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
