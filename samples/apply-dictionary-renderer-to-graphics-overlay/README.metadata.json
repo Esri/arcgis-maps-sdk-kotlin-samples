@@ -1,19 +1,32 @@
 {
     "category": "Scenes",
-    "description": "TODO",
+    "description": "Create graphics from an XML file with key-value pairs for each graphic, and display the military symbols using a MIL-STD-2525D web style in 3D.",
     "formal_name": "ApplyDictionaryRendererToGraphicsOverlay",
     "ignore": false,
     "images": [
         "apply-dictionary-renderer-to-graphics-overlay.png"
     ],
-    "keywords": [],
+    "keywords": [
+        "defense",
+        "military",
+        "situational awareness",
+        "tactical",
+        "visualization",
+        "AGSDictionaryRenderer",
+        "AGSDictionarySymbolStyle",
+        "AGSGraphicsOverlay"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [],
+    "relevant_apis": [
+        "AGSDictionaryRenderer",
+        "AGSDictionarySymbolStyle",
+        "AGSGraphicsOverlay"
+    ],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/components/ApplyDictionaryRendererToGraphicsOverlayViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/components/ApplyDictionaryRendererToGraphicsOverlayViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/screens/ApplyDictionaryRendererToGraphicsOverlayScreen.kt"
     ],
     "title": "Apply dictionary renderer to graphics overlay"
