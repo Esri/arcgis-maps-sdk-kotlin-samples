@@ -1,0 +1,35 @@
+{
+    "category": "Scenes",
+    "description": "Changes the appearance of the atmosphere in a scene.",
+    "formal_name": "SetAtmosphereEffectInScene",
+    "ignore": false,
+    "images": [
+        "set-atmosphere-effect-in-scene.png"
+    ],
+    "keywords": [
+        "atmosphere",
+        "horizon",
+        "scene",
+        "sky",
+        "ArcGISScene",
+        "ArcGISTiledElevationSource",
+        "AtmosphereEffect",
+        "SceneView",
+        "Viewpoint"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISScene",
+        "ArcGISTiledElevationSource",
+        "AtmosphereEffect",
+        "SceneView",
+        "Viewpoint"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/components/SetAtmosphereEffectInSceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setatmosphereeffectinscene/screens/SetAtmosphereEffectInSceneScreen.kt"
+    ],
+    "title": "Set atmosphere effect in scene"
+}
