@@ -46,6 +46,7 @@ import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.applyterrainexaggeration.components.ApplyTerrainExaggerationViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
@@ -151,13 +152,11 @@ fun TerrainOptions(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun PreviewTerrainOptions() {
-    SampleAppTheme {
-        Surface {
-            TerrainOptions(
-                currentExaggeration = 2f,
-                onIncrement = {},
-                onDecrement = {}
-            )
-        }
+    SamplePreviewSurface {
+        TerrainOptions(
+            currentExaggeration = 2f,
+            onIncrement = {},
+            onDecrement = {}
+        )
     }
 }
