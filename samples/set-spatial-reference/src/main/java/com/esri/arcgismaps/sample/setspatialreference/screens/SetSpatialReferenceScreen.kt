@@ -25,7 +25,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.setspatialreference.components.SetSpatialReferenceViewModel
 
 /**
@@ -57,4 +56,3 @@ fun SetSpatialReferenceScreen(sampleName: String) {
     }
 }
 
-}
