@@ -11,7 +11,7 @@ class DownloadActivity : DownloaderActivity() {
             Intent(this, MainActivity::class.java),
             getString(R.string.apply_dictionary_renderer_to_graphics_overlay_app_name),
             listOf(
-                "https://arcgis.com/home/item.html?id=d815f3bdf6e6452bb8fd153b654c94ca"
+                "https://www.arcgis.com/home/item.html?id=8776cfc26eed4485a03de6316826384c"
             )
         )
     }

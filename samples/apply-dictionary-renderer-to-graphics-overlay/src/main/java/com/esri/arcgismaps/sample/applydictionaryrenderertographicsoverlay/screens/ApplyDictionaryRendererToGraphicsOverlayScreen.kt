@@ -53,7 +53,6 @@ fun ApplyDictionaryRendererToGraphicsOverlayScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     arcGISScene = viewModel.arcGISScene,
-                    camera = viewModel.camera,
                     sceneViewProxy = viewModel.sceneViewProxy,
                     graphicsOverlays = listOf(viewModel.graphicsOverlay)
                 )
