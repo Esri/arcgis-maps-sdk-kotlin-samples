@@ -31,17 +31,18 @@ import kotlinx.coroutines.launch
  */
 class SetSpatialReferenceViewModel(application: Application) : AndroidViewModel(application) {
 
-    // A simple message dialog view model for presenting errors
+    // Message dialog view model for presenting errors
     val messageDialogVM = MessageDialogViewModel()
 
     // Create a map using World Bonne spatial reference (WKID: 54024)
-    var arcGISMap = ArcGISMap(spatialReference = SpatialReference(wkid = WORLD_BONNE_WKID))
+    var arcGISMap = ArcGISMap(spatialReference = SpatialReference(wkid = WORLD_BONNE_WKID)).apply {
+        // Use an ArcGISMapImageLayer as the basemap's base layer so the
+        // map image service will be displayed in the map's spatial reference.
+        setBasemap(basemap = Basemap(baseLayer = ArcGISMapImageLayer(url = WORLD_CITIES_MAP_SERVICE)))
+    }
 
     init {
         viewModelScope.launch {
-                // Use an ArcGISMapImageLayer as the basemap's base layer so the
-                // map image service will be displayed in the map's spatial reference.
-                arcGISMap.setBasemap(Basemap(baseLayer = ArcGISMapImageLayer(url = WORLD_CITIES_MAP_SERVICE)))
 
                 // Load the map and show an error dialog if loading fails.
                 arcGISMap.load().onFailure { throwable ->
@@ -51,10 +52,10 @@ class SetSpatialReferenceViewModel(application: Application) : AndroidViewModel(
     }
 
     companion object {
-        // World Bonne WKID used in the Swift sample (54024)
+        // The spatial reference for the sample, World Bonne (WKID: 54024)
         private const val WORLD_BONNE_WKID = 54024
 
-        // Map image service with World Bonne spatial reference.
+        // Map image service URL with World Bonne spatial reference.
         private const val WORLD_CITIES_MAP_SERVICE =
             "https://sampleserver6.arcgisonline.com/arcgis/rest/services/SampleWorldCities/MapServer"
     }

@@ -57,9 +57,4 @@ fun SetSpatialReferenceScreen(sampleName: String) {
     }
 }
 
-@Composable
-fun PreviewSetSpatialReferenceScreen() {
-    SamplePreviewSurface {
-        SetSpatialReferenceScreen(sampleName = "Set spatial reference")
-    }
 }
