@@ -49,10 +49,10 @@ import kotlinx.coroutines.launch
  */
 class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidViewModel(app) {
 
-    // ArcGIS map exposed as mutable state for Compose.
+    // ArcGIS map exposed for Compose screen.
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans).apply {
-            initialViewpoint = Viewpoint(latitude = 8.849289, longitude = -79.497238, scale = 1e6)
-     }
+        initialViewpoint = Viewpoint(latitude = 8.849289, longitude = -79.497238, scale = 1e6)
+    }
 
     // Message dialog view model for error handling
     val messageDialogVM = MessageDialogViewModel()
@@ -63,9 +63,9 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
             arcGISMap.load()
                 .onFailure { messageDialogVM.showMessageDialog(it) }
                 .onSuccess {
-                // Create feature collection tables and add them to the map
-                createAndAddFeatureCollectionLayer()
-            }
+                    // Create feature collection tables and add them to the map
+                    createAndAddFeatureCollectionLayer()
+                }
         }
     }
 
@@ -89,7 +89,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
     }
 
     /**
-     * Create an in-memory points FeatureCollectionTable, define a simple schema and renderer,
+     * Create an in-memory points [FeatureCollectionTable], define a simple schema and renderer,
      * add a single point feature and return the table.
      */
     private fun createPointsCollectionTable(): FeatureCollectionTable {
@@ -107,7 +107,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
         // Create the feature collection table for points using WGS84 spatial reference
         val pointsCollectionTable = FeatureCollectionTable(
             fields = listOf(placeField),
-            geometryType = com.arcgismaps.geometry.GeometryType.Point,
+            geometryType = GeometryType.Point,
             spatialReference = SpatialReference.wgs84()
         )
 
@@ -149,7 +149,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
 
         val linesCollectionTable = FeatureCollectionTable(
             fields = listOf(boundaryField),
-            geometryType = com.arcgismaps.geometry.GeometryType.Polyline,
+            geometryType = GeometryType.Polyline,
             spatialReference = SpatialReference.wgs84()
         )
 
@@ -190,7 +190,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
 
         val polygonsCollectionTable = FeatureCollectionTable(
             fields = listOf(areaField),
-            geometryType = com.arcgismaps.geometry.GeometryType.Polygon,
+            geometryType = GeometryType.Polygon,
             spatialReference = SpatialReference.wgs84()
         )
 
@@ -228,10 +228,5 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
  */
 private val Color.Companion.blue: Color
     get() {
-        return fromRgba(
-            r = 0,
-            g = 0,
-            b = 255,
-            a = 255
-        )
+        return fromRgba(r = 0, g = 0, b = 255, a = 255)
     }

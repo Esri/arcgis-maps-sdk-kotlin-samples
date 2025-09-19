@@ -15,13 +15,13 @@ When launched, this sample displays a `FeatureCollectionLayer` with a `Point`, `
 ## How it works
 
 1. Create a `FeatureCollectionLayer` using a new feature collection, `FeatureCollectionLayer(featureCollection)`
-2. Add the feature collection layer to the map, `ArcGISMap.getOperationalLayers().add(featureCollectionLayer)`.
-3. Create a `FeatureCollectionTable` for the `GeometryType`s `Point`, `Polyline`, and `Polygon`, `FeatureCollectionTable(fields, geometryType, spatialRefernce)`
+2. Add the feature collection layer to the map, `ArcGISMap.operationalLayers.add(featureCollectionLayer)`.
+3. Create a `FeatureCollectionTable` for the `GeometryType`s `Point`, `Polyline`, and `Polygon`, `FeatureCollectionTable(fields, geometryType, spatialReference)`
 4. Additionally, pass in a list of `Field` objects to represent the table's schema. In this case a field of type String named `name` is added.
 5. Assign a `SimpleRenderer` to each table to render any `Feature`s from that table using the `Symbol` that was set.
-6. Add the feature collection table to the feature collection, `FeatureCollection.getTables().add(featureCollectionTable)`.
+6. Add the all feature collection tables to the feature collection, `FeatureCollection(featureCollectionTables = listOf(points, lines, polygons))`.
 7. Use the `createFeature` method to create a feature from the feature collection table, passing an attribute and geometry for that feature, `FeatureCollectionTable.createFeature(attributes, geometry)`.
-8. Add new features to the table, `FeatureCollectionTable.addFeatureAsync(feature)`.
+8. Add new features to the table, `FeatureCollectionTable.addFeature(feature)`.
 
 ## Relevant API
 
