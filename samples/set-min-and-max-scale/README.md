@@ -28,4 +28,3 @@ Zoom in and out of the map. The zoom extents of the map are limited between the 
 ## Tags
 
 area of interest, level of detail, maximum, minimum, scale, viewpoint
-
