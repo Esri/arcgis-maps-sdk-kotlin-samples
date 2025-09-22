@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "IdentifyGraphics",
+    "ignore": false,
+    "images": [
+        "identify-graphics.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/components/IdentifyGraphicsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/screens/IdentifyGraphicsScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/MainActivity.kt"
+    ],
+    "title": "Identify graphics"
+}
