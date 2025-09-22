@@ -24,6 +24,7 @@ import com.arcgismaps.data.FeatureCollection
 import com.arcgismaps.data.FeatureCollectionTable
 import com.arcgismaps.data.Field
 import com.arcgismaps.data.FieldType
+import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polyline
@@ -69,7 +70,7 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
         }
     }
 
-    private fun createAndAddFeatureCollectionLayer() {
+    private suspend fun createAndAddFeatureCollectionLayer() {
 
             // Create each feature collection table
             val pointsTable = createPointsCollectionTable()
