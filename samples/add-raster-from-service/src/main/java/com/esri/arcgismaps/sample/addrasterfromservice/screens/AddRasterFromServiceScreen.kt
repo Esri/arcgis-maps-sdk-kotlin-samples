@@ -41,7 +41,7 @@ fun AddRasterFromServiceScreen(sampleName: String) {
     val mapViewModel: AddRasterFromServiceViewModel = viewModel()
 
     // Observe raster load status to show a simple loading overlay while the raster is being fetched/drawn
-    val rasterLoadStatus by mapViewModel.rasterLoadStatus.collectAsStateWithLifecycle(initialValue = LoadStatus.NotLoaded)
+    val rasterLoadStatus by mapViewModel.rasterLoadStatus.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -51,15 +51,12 @@ fun AddRasterFromServiceScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                // Compose MapView from the ArcGIS Toolkit. The map and proxy come from the ViewModel.
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
                 )
-
-                // Additional UI controls could be added here (legend, buttons, etc.)
             }
 
             // Display a loading dialog while the raster layer is not yet fully loaded

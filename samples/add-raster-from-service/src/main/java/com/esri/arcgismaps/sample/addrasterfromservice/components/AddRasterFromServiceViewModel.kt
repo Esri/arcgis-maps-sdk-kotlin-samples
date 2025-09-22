@@ -27,7 +27,6 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.RasterLayer
 import com.arcgismaps.raster.ImageServiceRaster
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,14 +39,12 @@ class AddRasterFromServiceViewModel(application: Application) : AndroidViewModel
 
     // Map used by the Compose MapView
     var arcGISMap = ArcGISMap(BasemapStyle.ArcGISDarkGray).apply {
-            initialViewpoint = Viewpoint(
-                Point(-13637000.0, 4550000.0, SpatialReference.webMercator()),
-                100000.0
-            )
-        }
+        initialViewpoint = Viewpoint(
+            center = Point(-13637000.0, 4550000.0, SpatialReference.webMercator()),
+            scale = 100000.0
+        )
+    }
 
-    // MapViewProxy allows the ViewModel to request viewpoint changes on the MapView
-    val mapViewProxy = MapViewProxy()
 
     // The image service raster (NOAA bathymetry service)
     private val imageServiceRaster = ImageServiceRaster(
