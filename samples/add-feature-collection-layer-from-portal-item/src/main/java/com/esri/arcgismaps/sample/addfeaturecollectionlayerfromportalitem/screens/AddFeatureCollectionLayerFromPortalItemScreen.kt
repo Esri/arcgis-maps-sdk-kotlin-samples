@@ -16,11 +16,9 @@
 
 package com.esri.arcgismaps.sample.addfeaturecollectionlayerfromportalitem.screens
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,7 +28,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Composable screen that shows the MapView. The ViewModel loads a FeatureCollectionLayer
+ * from a PortalItem and adds it to the map's operational layers.
  */
 @Composable
 fun AddFeatureCollectionLayerFromPortalItemScreen(sampleName: String) {
@@ -38,20 +37,13 @@ fun AddFeatureCollectionLayerFromPortalItemScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Column(
+            MapView(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
-                )
-                // TODO: Add UI components in this Column ...
-            }
-
+                arcGISMap = mapViewModel.arcGISMap
+            )
+            // Show any errors surfaced by the ViewModel
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
