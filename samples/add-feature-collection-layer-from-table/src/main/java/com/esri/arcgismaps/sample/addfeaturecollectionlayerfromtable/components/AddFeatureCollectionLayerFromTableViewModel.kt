@@ -61,12 +61,9 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
     init {
         // Load the map and then build the feature collection layer
         viewModelScope.launch {
+            createAndAddFeatureCollectionLayer()
             arcGISMap.load()
                 .onFailure { messageDialogVM.showMessageDialog(it) }
-                .onSuccess {
-                    // Create feature collection tables and add them to the map
-                    createAndAddFeatureCollectionLayer()
-                }
         }
     }
 
