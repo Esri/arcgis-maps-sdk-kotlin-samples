@@ -1,0 +1,35 @@
+{
+    "category": "Maps",
+    "description": "Restrict zooming between specific scale ranges.",
+    "formal_name": "SetMinAndMaxScale",
+    "ignore": false,
+    "images": [
+        "set-min-and-max-scale.png"
+    ],
+    "keywords": [
+        "area of interest",
+        "level of detail",
+        "maximum",
+        "minimum",
+        "scale",
+        "viewpoint",
+        "ArcGISMap",
+        "Basemap",
+        "MapView",
+        "ViewPoint"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "Basemap",
+        "MapView",
+        "ViewPoint"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setminandmaxscale/components/SetMinAndMaxScaleViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setminandmaxscale/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setminandmaxscale/screens/SetMinAndMaxScaleScreen.kt"
+    ],
+    "title": "Set min and max scale"
+}
