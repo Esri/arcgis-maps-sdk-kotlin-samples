@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.applyblendrenderertohillshade.components
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
