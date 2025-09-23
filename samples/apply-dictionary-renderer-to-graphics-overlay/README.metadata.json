@@ -12,16 +12,16 @@
         "situational awareness",
         "tactical",
         "visualization",
-        "AGSDictionaryRenderer",
-        "AGSDictionarySymbolStyle",
-        "AGSGraphicsOverlay"
+        "DictionaryRenderer",
+        "DictionarySymbolStyle",
+        "GraphicsOverlay"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": "TODO",
     "relevant_apis": [
-        "AGSDictionaryRenderer",
-        "AGSDictionarySymbolStyle",
-        "AGSGraphicsOverlay"
+        "DictionaryRenderer",
+        "DictionarySymbolStyle",
+        "GraphicsOverlay"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/components/ApplyDictionaryRendererToGraphicsOverlayViewModel.kt",
