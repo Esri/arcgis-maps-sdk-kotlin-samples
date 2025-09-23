@@ -16,45 +16,113 @@
 
 package com.esri.arcgismaps.sample.monitorchangestodrawstatus.screens
 
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.mapping.view.DrawStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.monitorchangestodrawstatus.components.MainViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 
 /**
- * Main screen layout for the sample app
+ * Main screen for the Monitor changes to draw status sample.
+ *
+ * The composable observes the ViewModel's mapIsDrawing flow and updates the UI
+ * when the draw status changes. The MapView's onDrawStatusChanged callback
+ * is used to notify the ViewModel of draw status changes.
  */
 @Composable
 fun MainScreen(sampleName: String) {
-    val arcGISMap = remember {
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    }
+    val viewModel: MainViewModel = viewModel()
+
+    // Observe whether the map is currently drawing
+    val mapIsDrawing by viewModel.mapIsDrawing.collectAsStateWithLifecycle(false)
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = arcGISMap
-                )
-                // TODO: Add UI components in this Column ...
+        content = { padding ->
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)) {
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Compose MapView: pass in the ArcGISMap from the ViewModel and the draw status callback.
+                    MapView(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        arcGISMap = viewModel.arcGISMap,
+                        onDrawStatusChanged = { drawStatus: DrawStatus ->
+                            // Forward draw status updates to the ViewModel
+                            viewModel.updateDrawStatus(drawStatus)
+                        }
+                    )
+
+                    // Top overlay text showing current draw status
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(8.dp),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        tonalElevation = 2.dp
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            text = if (mapIsDrawing) "Drawing…" else "Drawing completed.",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+
+                    // Center overlay: show a circular progress indicator while drawing
+                    if (mapIsDrawing) {
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .shadow(8.dp),
+                            tonalElevation = 8.dp
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.padding(24.dp))
+                        }
+                    }
+                }
+
+                // Message dialog shown when ViewModel surfaces an error
+                viewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun PreviewMonitorChangesToDrawStatusScreen() {
+    SamplePreviewSurface {
+        MainScreen(sampleName = "Monitor changes to draw status")
+    }
 }
