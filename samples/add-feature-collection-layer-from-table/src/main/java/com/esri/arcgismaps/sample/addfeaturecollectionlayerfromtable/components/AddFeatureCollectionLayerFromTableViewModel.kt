@@ -69,17 +69,17 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
 
     private suspend fun createAndAddFeatureCollectionLayer() {
 
-            // Create each feature collection table
-            val pointsTable = createPointsCollectionTable()
-            val linesTable = createLinesCollectionTable()
-            val polygonsTable = createPolygonsCollectionTable()
+        // Create each feature collection table
+        val pointsTable = createPointsCollectionTable()
+        val linesTable = createLinesCollectionTable()
+        val polygonsTable = createPolygonsCollectionTable()
 
-            // Create a FeatureCollection from the tables
-            val featureCollection = FeatureCollection(featureCollectionTables = listOf(pointsTable, linesTable, polygonsTable))
+        // Create a FeatureCollection from the tables
+        val featureCollection = FeatureCollection(featureCollectionTables = listOf(pointsTable, linesTable, polygonsTable))
 
-            // Create a layer from the feature collection and add it to the map
-            val featureCollectionLayer = FeatureCollectionLayer(featureCollection = featureCollection)
-            arcGISMap.operationalLayers.add(featureCollectionLayer)
+        // Create a layer from the feature collection and add it to the map
+        val featureCollectionLayer = FeatureCollectionLayer(featureCollection = featureCollection)
+        arcGISMap.operationalLayers.add(featureCollectionLayer)
     }
 
     /**
@@ -153,10 +153,12 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
             )
         )
 
-        val lineGeometry = Polyline(points = listOf(
-            Point(x = -79.497238, y = 8.849289, spatialReference = SpatialReference.wgs84()),
-            Point(x = -80.035568, y = 9.432302, spatialReference = SpatialReference.wgs84())
-        ))
+        val lineGeometry = Polyline(
+            points = listOf(
+                Point(x = -79.497238, y = 8.849289, spatialReference = SpatialReference.wgs84()),
+                Point(x = -80.035568, y = 9.432302, spatialReference = SpatialReference.wgs84())
+            )
+        )
 
         val lineAttributes = mapOf("Boundary" to "AManAPlanACanalPanama")
         val lineFeature = linesCollectionTable.createFeature(lineAttributes, lineGeometry)
@@ -166,7 +168,8 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
     }
 
     /**
-     * Create an in-memory polygon FeatureCollectionTable with a fill renderer and a single polygon feature.
+     * Create an in-memory polygon and add it to the FeatureCollectionTable as a single polygon feature.
+     * A simple fill renderer is added to the FeatureCollectionTable to render the polygon.
      */
     private suspend fun createPolygonsCollectionTable(): FeatureCollectionTable {
         val areaField = Field(
@@ -218,3 +221,4 @@ private val Color.Companion.blue: Color
     get() {
         return fromRgba(r = 0, g = 0, b = 255, a = 255)
     }
+    
