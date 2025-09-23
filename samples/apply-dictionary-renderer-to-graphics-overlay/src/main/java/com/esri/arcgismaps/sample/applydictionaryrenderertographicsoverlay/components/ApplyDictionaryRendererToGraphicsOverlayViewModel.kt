@@ -123,7 +123,7 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
     }
 
     /**
-     * Create point graphics from a local XML file containing `MIL-2525-D` message data.
+     * Create point graphics from a local XML file containing `MIL-STD-2525D` message data.
      */
     private fun makeMessageGraphics(): Result<List<Graphic>> {
         return runCatching {
