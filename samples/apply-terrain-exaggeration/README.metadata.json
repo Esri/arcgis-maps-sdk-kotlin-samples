@@ -1,0 +1,36 @@
+{
+    "category": "Scenes",
+    "description": "Vertically exaggerate terrain in a scene.",
+    "formal_name": "ApplyTerrainExaggeration",
+    "ignore": false,
+    "images": [
+        "apply-terrain-exaggeration.png"
+    ],
+    "keywords": [
+        "3D",
+        "DEM",
+        "elevation",
+        "exaggeration",
+        "scene",
+        "surface",
+        "terrain",
+        "Scene",
+        "Surface",
+        "baseSurface",
+        "elevationExaggeration"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Scene",
+        "Surface",
+        "baseSurface",
+        "elevationExaggeration"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyterrainexaggeration/components/ApplyTerrainExaggerationViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyterrainexaggeration/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyterrainexaggeration/screens/ApplyTerrainExaggerationScreen.kt"
+    ],
+    "title": "Apply terrain exaggeration"
+}
