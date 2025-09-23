@@ -69,10 +69,7 @@ class AddRasterFromServiceViewModel(application: Application) : AndroidViewModel
         viewModelScope.launch {
             // Attempt to load the raster layer and report any immediate failures
             rasterLayer.load().onFailure { throwable ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load raster layer",
-                    description = throwable.message.toString()
-                )
+                messageDialogVM.showMessageDialog(throwable)
             }.onSuccess {
                 _rasterLoadStatus.value = LoadStatus.Loaded
             }
