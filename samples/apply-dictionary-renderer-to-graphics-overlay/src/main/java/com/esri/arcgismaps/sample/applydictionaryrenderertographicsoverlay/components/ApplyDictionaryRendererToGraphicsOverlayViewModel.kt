@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.applydictionaryrenderertographicsoverlay.components
 
 import android.app.Application
+import android.util.Xml
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Multipoint
@@ -34,11 +35,8 @@ import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.applydictionaryrenderertographicsoverlay.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.File
 
 /**
@@ -64,24 +62,24 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
     }
 
     init {
-        viewModelScope.launch() {
+        viewModelScope.launch {
             // Load the scene first
             arcGISScene.load().onFailure { throwable ->
                 messageDialogVM.showMessageDialog(throwable)
             }
 
             // Create and apply dictionary renderer from a web style
-            val dictionaryRendererDeferred = viewModelScope.async(Dispatchers.IO) {
-                createMil2525dDictionaryRenderer()
+            val dictionaryRenderer = createMil2525dDictionaryRenderer().getOrElse {
+                messageDialogVM.showMessageDialog(it)
+                return@launch
             }
 
             // Create the point graphics in separate coroutine from a local XML file
-            val graphicsDeferred = viewModelScope.async(Dispatchers.IO) {
-                makeMessageGraphics()
+            val pointGraphics = makeMessageGraphics().getOrElse {
+                messageDialogVM.showMessageDialog(it)
+                return@launch
             }
 
-            val dictionaryRenderer = dictionaryRendererDeferred.await()
-            val pointGraphics = graphicsDeferred.await()
 
             // Set the graphics overlay to use the dictionary renderer and add graphics
             graphicsOverlay.apply {
@@ -107,7 +105,7 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
     /**
      * Create and load a [DictionarySymbolStyle] from a web style and use it to create a [DictionaryRenderer].
      */
-    private suspend fun createMil2525dDictionaryRenderer(): DictionaryRenderer? {
+    private suspend fun createMil2525dDictionaryRenderer(): Result<DictionaryRenderer> {
         // Creates a dictionary symbol style from a dictionary style portal item.
         val portalItem = PortalItem(
             portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
@@ -116,46 +114,36 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
 
         val dictionarySymbolStyle = DictionarySymbolStyle(portalItem = portalItem)
 
-        dictionarySymbolStyle.load().onFailure { throwable ->
-            messageDialogVM.showMessageDialog(throwable)
-            return null
+        return dictionarySymbolStyle.load().mapCatching {
+            // Uses the "Ordered Anchor Points" for the symbol style draw rule.
+            dictionarySymbolStyle.configurations.firstOrNull { it.name.equals("model", ignoreCase = true) }
+                ?.let { configuration -> configuration.value = "ORDERED ANCHOR POINTS" }
+            DictionaryRenderer(dictionarySymbolStyle = dictionarySymbolStyle)
         }
-
-        // Uses the "Ordered Anchor Points" for the symbol style draw rule.
-        dictionarySymbolStyle.configurations.firstOrNull { it.name.equals("model", ignoreCase = true) }
-            ?.let { configuration -> configuration.value = "ORDERED ANCHOR POINTS" }
-
-        return DictionaryRenderer(dictionarySymbolStyle = dictionarySymbolStyle)
     }
 
     /**
      * Create point graphics from a local XML file containing `MIL-2525-D` message data.
      */
-    private fun makeMessageGraphics(): List<Graphic> {
-        val xmlFile = File(provisionPath, "mil2525dmessages.xml")
-        val messageXml = xmlFile.readText()
-        val messages = MessageXmlParser().parse(messageXml)
+    private fun makeMessageGraphics(): Result<List<Graphic>> {
+        return runCatching {
+            val xmlFile = File(provisionPath, "mil2525dmessages.xml")
+            val messageXml = xmlFile.readText()
+            val messages = MessageXmlParser().parse(messageXml)
 
-        return messages.mapNotNull { message ->
-            val wkid = message.wkid
-            val controlPoints = message.controlPoints
-            if (wkid == null || controlPoints.isEmpty()) {
-                // Optionally log or handle the error here
-                null
-            } else {
-                try {
-                    val spatialReference = SpatialReference(wkid = wkid)
-                    val points = controlPoints.map { (x, y) ->
-                        Point(x = x, y = y, spatialReference = spatialReference)
-                    }
-                    Graphic(geometry = Multipoint(points), attributes = message.other)
-                } catch (ex: Exception) {
-                    messageDialogVM.showMessageDialog(
-                        title = "Unable to create graphic from XML file.", description = ex.message.toString()
-                    )
-                    null
+            val graphics = messages.map { message ->
+                val wkid = message.wkid
+                val controlPoints = message.controlPoints
+                if (wkid == null || controlPoints.isEmpty()) {
+                    throw IllegalArgumentException("Invalid message: missing wkid or control points")
                 }
+                val spatialReference = SpatialReference(wkid = wkid)
+                val points = controlPoints.map { (x, y) ->
+                    Point(x = x, y = y, spatialReference = spatialReference)
+                }
+                Graphic(geometry = Multipoint(points), attributes = message.other)
             }
+            graphics
         }
     }
 }
@@ -177,9 +165,9 @@ class MessageXmlParser {
     fun parse(xml: String): List<Message> {
         val messages = mutableListOf<Message>()
 
-        val factory = XmlPullParserFactory.newInstance()
-        val parser = factory.newPullParser()
-        parser.setInput(xml.reader())
+        val parser = Xml.newPullParser().apply {
+            setInput(xml.reader())
+        }
 
         var eventType = parser.eventType
         var currentControlPoints: List<Pair<Double, Double>> = emptyList()
