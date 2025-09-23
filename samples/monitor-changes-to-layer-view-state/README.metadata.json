@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "MonitorChangesToLayerViewState",
+    "ignore": false,
+    "images": [
+        "monitor-changes-to-layer-view-state.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/components/MonitorChangesToLayerViewStateViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/screens/MonitorChangesToLayerViewStateScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/MainActivity.kt"
+    ],
+    "title": "Monitor changes to layer view state"
+}
