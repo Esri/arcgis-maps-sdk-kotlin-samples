@@ -64,7 +64,7 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
     }
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             // Load the scene first
             arcGISScene.load().onFailure { throwable ->
                 messageDialogVM.showMessageDialog(throwable)
@@ -83,39 +83,36 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
             val dictionaryRenderer = dictionaryRendererDeferred.await()
             val pointGraphics = graphicsDeferred.await()
 
-            // sets the graphics in the overlay
+            // Set the graphics overlay to use the dictionary renderer and add graphics
             graphicsOverlay.apply {
                 renderer = dictionaryRenderer
                 graphics.addAll(pointGraphics)
             }
 
             // Sets the camera to look a the graphics in the graphics overlay
-            val extent = graphicsOverlay.extent ?: run {
-                messageDialogVM.showMessageDialog(
-                    title = "Error",
-                    description = "The extent of the graphics overlay is null."
+            graphicsOverlay.extent?.let { extent ->
+                sceneViewProxy.setViewpointCamera(
+                    camera = Camera(
+                        lookAtPoint = extent.center,
+                        distance = 15000.0,
+                        heading = 0.0,
+                        pitch = 70.0,
+                        roll = 0.0
+                    )
                 )
-                return@launch
             }
-
-            // Set the viewpoint of the scene view using a camera
-            val camera = Camera(
-                lookAtPoint = extent.center,
-                distance = 15_000.toDouble(),
-                heading = 0.toDouble(),
-                pitch = 70.toDouble(),
-                roll = 0.toDouble()
-            )
-            sceneViewProxy.setViewpointCamera(camera)
         }
     }
 
     /**
-     * Create and load a DictionarySymbolStyle from a web style and use it to create a DictionaryRenderer.
+     * Create and load a [DictionarySymbolStyle] from a web style and use it to create a [DictionaryRenderer].
      */
     private suspend fun createMil2525dDictionaryRenderer(): DictionaryRenderer? {
-        val portalItem =
-            PortalItem(Portal.arcGISOnline(Portal.Connection.Anonymous), "d815f3bdf6e6452bb8fd153b654c94ca")
+        // Creates a dictionary symbol style from a dictionary style portal item.
+        val portalItem = PortalItem(
+            portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
+            itemId = "d815f3bdf6e6452bb8fd153b654c94ca"
+        )
 
         val dictionarySymbolStyle = DictionarySymbolStyle(portalItem = portalItem)
 
@@ -132,14 +129,12 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
     }
 
     /**
-     * Create point graphics from a local XML file containing Mil2525d message data.
-     * The XML file is downloaded by the downloader activity.
+     * Create point graphics from a local XML file containing `MIL-2525-D` message data.
      */
     private fun makeMessageGraphics(): List<Graphic> {
         val xmlFile = File(provisionPath, "mil2525dmessages.xml")
         val messageXml = xmlFile.readText()
-        val parser = MessageXmlParser()
-        val messages = parser.parse(messageXml)
+        val messages = MessageXmlParser().parse(messageXml)
 
         return messages.mapNotNull { message ->
             val wkid = message.wkid
@@ -171,7 +166,7 @@ private const val TAG_CONTROL_POINTS = "_control_points"
 private const val TAG_WKID = "_wkid"
 
 /**
- * Simple XML parser for the Mil2525d message XML file.
+ * Simple XML parser for the `MIL-STD-2525D` message XML file.
  * This is a basic implementation and does not cover all edge cases.
  */
 class MessageXmlParser {
@@ -212,7 +207,8 @@ class MessageXmlParser {
                             currentWkid = parser.nextText().toIntOrNull()
                         }
 
-                        TAG_MESSAGE, TAG_MESSAGES -> { /* ignore container tags */ }
+                        TAG_MESSAGE, TAG_MESSAGES -> { /* ignore container tags */
+                        }
 
                         else -> {
                             if (tagName != null) {

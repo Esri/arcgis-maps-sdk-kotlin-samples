@@ -40,25 +40,18 @@ fun ApplyDictionaryRendererToGraphicsOverlayScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { padding ->
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)) {
+            // Composable SceneView that renders graphics styled with DictionaryRenderer
+            // using configured ArcGISObjects from the ViewModel (scene, overlays, proxy)
+            SceneView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                arcGISScene = viewModel.arcGISScene,
+                sceneViewProxy = viewModel.sceneViewProxy,
+                graphicsOverlays = listOf(viewModel.graphicsOverlay)
+            )
 
-                // The SceneView is a composable provided by the toolkit. All ArcGIS objects come
-                // from the ViewModel (scene, overlays, proxy) — the composable only renders them.
-                // We supply the camera from the ViewModel so the SceneView uses the camera as the
-                // initial viewpoint once the ViewModel has calculated it.
-                SceneView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISScene = viewModel.arcGISScene,
-                    sceneViewProxy = viewModel.sceneViewProxy,
-                    graphicsOverlays = listOf(viewModel.graphicsOverlay)
-                )
-
-                // Additional sample UI (controls) could go here. For this sample we keep the UI minimal.
-            }
+            // Additional sample UI (controls) could go here. For this sample we keep the UI minimal.
 
             // Show any error/messages from the view model
             viewModel.messageDialogVM.apply {
