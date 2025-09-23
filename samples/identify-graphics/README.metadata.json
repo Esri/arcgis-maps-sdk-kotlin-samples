@@ -1,6 +1,6 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Display a message when a graphic on the map is tapped.",
     "formal_name": "IdentifyGraphics",
     "ignore": false,
     "images": [
