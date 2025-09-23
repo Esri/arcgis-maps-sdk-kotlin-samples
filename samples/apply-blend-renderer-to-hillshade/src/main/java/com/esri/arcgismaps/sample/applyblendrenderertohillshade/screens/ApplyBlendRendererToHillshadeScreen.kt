@@ -23,14 +23,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -44,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.raster.SlopeType
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applyblendrenderertohillshade.components.ApplyBlendRendererToHillshadeViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
@@ -124,9 +123,9 @@ private fun DialogOptions(
     onAltitudeChange: (Double) -> Unit,
     azimuth: Double,
     onAzimuthChange: (Double) -> Unit,
-    slopeTypeOptions: List<Pair<String, com.arcgismaps.raster.SlopeType?>>,
-    selectedSlopeType: com.arcgismaps.raster.SlopeType?,
-    onSlopeTypeSelected: (com.arcgismaps.raster.SlopeType?) -> Unit,
+    slopeTypeOptions: List<Pair<String, SlopeType>>,
+    selectedSlopeType: SlopeType,
+    onSlopeTypeSelected: (SlopeType) -> Unit,
     colorRampPresets: List<String>,
     selectedColorRampIndex: Int,
     onColorRampSelected: (Int) -> Unit,
@@ -179,9 +178,6 @@ private fun DialogOptions(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(onClick = onDismissRequest, modifier = Modifier.wrapContentWidth()) {
-                Text("Dismiss")
-            }
             Button(onClick = onDismissRequest, modifier = Modifier.padding(start = 8.dp)) {
                 Text("Done")
             }
@@ -200,7 +196,7 @@ fun PreviewDialogOptions() {
             azimuth = 0.0,
             onAzimuthChange = {},
             slopeTypeOptions = ApplyBlendRendererToHillshadeViewModel.slopeTypeOptions,
-            selectedSlopeType = com.arcgismaps.raster.SlopeType.Degree,
+            selectedSlopeType = SlopeType.Degree,
             onSlopeTypeSelected = {},
             colorRampPresets = listOf("None", "DEM Light", "Screen Display", "Elevation"),
             selectedColorRampIndex = 0,

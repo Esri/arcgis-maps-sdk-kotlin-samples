@@ -95,7 +95,7 @@ class ApplyBlendRendererToHillshadeViewModel(private val app: Application) : And
     var azimuth by mutableDoubleStateOf(0.0)
         private set
 
-    var slopeType by mutableStateOf<SlopeType?>(SlopeType.None)
+    var slopeType by mutableStateOf<SlopeType>(SlopeType.None)
         private set
 
     // Color ramp presets exposed as user-friendly strings. The underlying ColorRamp is created
@@ -117,7 +117,7 @@ class ApplyBlendRendererToHillshadeViewModel(private val app: Application) : And
                 updateRenderer()
                 arcGISMap.load().onFailure { throw it }
             } catch (ex: Throwable) {
-               messageDialogVM.showMessageDialog(ex)
+                messageDialogVM.showMessageDialog(ex)
             }
         }
     }
@@ -128,49 +128,29 @@ class ApplyBlendRendererToHillshadeViewModel(private val app: Application) : And
      * basemap when a color ramp is active so the color ramp is visible.
      */
     private fun updateRenderer() {
-        try {
-            val colorRamp = createColorRampFromPresetIndex(selectedColorRampPresetIndex)
+        val colorRamp = createColorRampFromPresetIndex(selectedColorRampPresetIndex)
+        val renderer = BlendRenderer(
+            elevationRaster = elevationRaster,
+            outputMinValues = listOf(9.0),
+            outputMaxValues = listOf(255.0),
+            sourceMinValues = emptyList(),
+            sourceMaxValues = emptyList(),
+            noDataValues = emptyList(),
+            gammas = emptyList(),
+            colorRamp = colorRamp,
+            altitude = altitude,
+            azimuth = azimuth,
+            slopeType = slopeType
+        )
 
-            if (colorRamp != null) {
-                // When a color ramp is applied, set the basemap to the elevation raster
-                val renderer = BlendRenderer(
-                    elevationRaster = elevationRaster,
-                    outputMinValues = listOf(9.0),
-                    outputMaxValues = listOf(255.0),
-                    sourceMinValues = emptyList(),
-                    sourceMaxValues = emptyList(),
-                    noDataValues = emptyList(),
-                    gammas = emptyList(),
-                    colorRamp = colorRamp,
-                    altitude = altitude,
-                    azimuth = azimuth,
-                    slopeType = slopeType ?: SlopeType.None
-                )
-                elevationRasterLayer.renderer = renderer
-                arcGISMap.setBasemap(elevationBasemap)
-            } else {
-                // Since no ColorRamp is selected, apply BlendRenderer to imagery raster layer.
-                val renderer = BlendRenderer(
-                    elevationRaster = elevationRaster,
-                    outputMinValues = listOf(9.0),
-                    outputMaxValues = listOf(255.0),
-                    sourceMinValues = emptyList(),
-                    sourceMaxValues = emptyList(),
-                    noDataValues = emptyList(),
-                    gammas = emptyList(),
-                    colorRamp = null,
-                    altitude = altitude,
-                    azimuth = azimuth,
-                    slopeType = slopeType ?: SlopeType.None
-                )
-
-                imageryRasterLayer.renderer = renderer
-                arcGISMap.setBasemap(imageryBasemap)
-            }
-        } catch (ex: Throwable) {
-            messageDialogVM.showMessageDialog(
-                ex
-            )
+        if (colorRamp != null) {
+            // When a color ramp is applied, set the basemap to the elevation raster
+            elevationRasterLayer.renderer = renderer
+            arcGISMap.setBasemap(elevationBasemap)
+        } else {
+            // Since no ColorRamp is selected, apply BlendRenderer to imagery raster layer.
+            imageryRasterLayer.renderer = renderer
+            arcGISMap.setBasemap(imageryBasemap)
         }
     }
 
@@ -193,8 +173,8 @@ class ApplyBlendRendererToHillshadeViewModel(private val app: Application) : And
     /**
      * Update the slope type for the hillshade renderer and re-apply.
      */
-    fun updateSlopeType(newSlopeType: SlopeType?) {
-        slopeType = newSlopeType ?: SlopeType.None
+    fun updateSlopeType(newSlopeType: SlopeType) {
+        slopeType = newSlopeType
         updateRenderer()
     }
 
@@ -212,16 +192,16 @@ class ApplyBlendRendererToHillshadeViewModel(private val app: Application) : And
      */
     private fun createColorRampFromPresetIndex(index: Int): ColorRamp? {
         return when (index) {
-            1 -> ColorRamp.create(PresetColorRampType.DemLight, 256)
-            2 -> ColorRamp.create(PresetColorRampType.DemScreen, 256)
-            3 -> ColorRamp.create(PresetColorRampType.Elevation, 256)
+            1 -> ColorRamp.create(type = PresetColorRampType.DemLight, size = 256)
+            2 -> ColorRamp.create(type = PresetColorRampType.DemScreen, size = 256)
+            3 -> ColorRamp.create(type = PresetColorRampType.Elevation, size = 256)
             else -> null
         }
     }
 
     companion object {
         // Small helper list for exposing slope types with a user-friendly label in the UI.
-        val slopeTypeOptions: List<Pair<String, SlopeType?>> = listOf(
+        val slopeTypeOptions: List<Pair<String, SlopeType>> = listOf(
             "None" to SlopeType.None,
             "Degree" to SlopeType.Degree,
             "Percent Rise" to SlopeType.PercentRise,
