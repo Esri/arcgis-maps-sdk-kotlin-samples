@@ -117,11 +117,7 @@ class ApplyBlendRendererToHillshadeViewModel(private val app: Application) : And
                 updateRenderer()
                 arcGISMap.load().onFailure { throw it }
             } catch (ex: Throwable) {
-               // messageDialogVM.showMessageDialog(ex)
-                messageDialogVM.showMessageDialog(
-                    title = ex.message.toString(),
-                    description = ex.cause.toString() +" BAR"
-                )
+               messageDialogVM.showMessageDialog(ex)
             }
         }
     }
