@@ -2,6 +2,8 @@
 
 Display a message when a graphic on the map is tapped.
 
+![Image of identify graphics](identify-graphics.png)
+
 ## Use case
 
 A user may wish to select a graphic on a map to view relevant information about it.
