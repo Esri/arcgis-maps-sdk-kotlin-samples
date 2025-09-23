@@ -148,16 +148,15 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
     }
 }
 
-private const val TAG_MESSAGES = "messages"
-private const val TAG_MESSAGE = "message"
-private const val TAG_CONTROL_POINTS = "_control_points"
-private const val TAG_WKID = "_wkid"
-
 /**
  * Simple XML parser for the `MIL-STD-2525D` message XML file.
  * This is a basic implementation and does not cover all edge cases.
  */
 class MessageXmlParser {
+    private val messagesTag = "messages"
+    private val messageTag = "message"
+    private val controlPointsTag = "_control_points"
+    private val wkidTag = "_wkid"
 
     /**
      * Parses the provided XML string and returns a list of Message objects.
@@ -178,7 +177,7 @@ class MessageXmlParser {
             when (eventType) {
                 XmlPullParser.START_TAG -> {
                     when (val tagName = parser.name) {
-                        TAG_CONTROL_POINTS -> {
+                        controlPointsTag -> {
                             val controlPointsText = parser.nextText()
                             currentControlPoints = controlPointsText.split(";")
                                 .mapNotNull {
@@ -191,11 +190,11 @@ class MessageXmlParser {
                                 }
                         }
 
-                        TAG_WKID -> {
+                        wkidTag -> {
                             currentWkid = parser.nextText().toIntOrNull()
                         }
 
-                        TAG_MESSAGE, TAG_MESSAGES -> { /* ignore container tags */
+                        messageTag, messagesTag -> { /* ignore container tags */
                         }
 
                         else -> {
@@ -207,7 +206,7 @@ class MessageXmlParser {
                 }
 
                 XmlPullParser.END_TAG -> {
-                    if (parser.name == TAG_MESSAGE) {
+                    if (parser.name == messageTag) {
                         messages.add(
                             Message(
                                 controlPoints = currentControlPoints,

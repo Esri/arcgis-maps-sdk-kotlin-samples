@@ -49,7 +49,7 @@ fun ApplyDictionaryRendererToGraphicsOverlayScreen(sampleName: String) {
                 sceneViewProxy = viewModel.sceneViewProxy,
                 graphicsOverlays = listOf(viewModel.graphicsOverlay)
             )
-            
+
             // Show any error/messages from the view model
             viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
