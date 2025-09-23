@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "StylePointWithDistanceCompositeSceneSymbol",
+    "ignore": false,
+    "images": [
+        "style-point-with-distance-composite-scene-symbol.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/components/StylePointWithDistanceCompositeSceneSymbolViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/screens/StylePointWithDistanceCompositeSceneSymbolScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/MainActivity.kt"
+    ],
+    "title": "Style point with distance composite scene symbol"
+}
