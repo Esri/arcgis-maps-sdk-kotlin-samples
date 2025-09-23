@@ -44,7 +44,7 @@ fun StylePointWithSceneSymbolScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
             ) {
-                // SceneView is a composable from the Toolkit. Provide the pre-built scene and graphics overlay from the ViewModel.
+                // Render the SceneView using scene and graphics overlay from the ViewModel.
                 SceneView(
                     modifier = Modifier
                         .fillMaxSize()
@@ -52,8 +52,6 @@ fun StylePointWithSceneSymbolScreen(sampleName: String) {
                     arcGISScene = viewModel.arcGISScene,
                     graphicsOverlays = listOf(viewModel.graphicsOverlay)
                 )
-
-                // Additional UI controls could be added below the SceneView if needed.
             }
 
             // Display an error dialog from the ViewModel when needed

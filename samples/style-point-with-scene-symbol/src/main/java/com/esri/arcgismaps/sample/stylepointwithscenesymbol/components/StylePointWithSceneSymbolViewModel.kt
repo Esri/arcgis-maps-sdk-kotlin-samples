@@ -70,10 +70,8 @@ class StylePointWithSceneSymbolViewModel(application: Application) : AndroidView
 
 
     // Graphics overlay that will contain the 3D symbols. SurfacePlacement.Absolute so symbols use absolute Z values.
-    val graphicsOverlay: GraphicsOverlay = GraphicsOverlay().apply {
+    val graphicsOverlay = GraphicsOverlay(graphics = makeSceneSymbolGraphics()).apply {
         sceneProperties.surfacePlacement = SurfacePlacement.Absolute
-        // populate with graphics on creation
-        graphics.addAll(makeSceneSymbolGraphics())
     }
 
     init {
@@ -86,10 +84,10 @@ class StylePointWithSceneSymbolViewModel(application: Application) : AndroidView
     }
 
     /**
-     * Create a list of Graphics each using a SimpleMarkerSceneSymbol of different styles.
+     * Create a list of graphics each using a [SimpleMarkerSceneSymbol] of different styles.
      */
     private fun makeSceneSymbolGraphics(): List<Graphic> {
-        // the available styles we want to show
+        // Scene symbol styles to show
         val styles = listOf(
             SimpleMarkerSceneSymbolStyle.Cone,
             SimpleMarkerSceneSymbolStyle.Cube,
@@ -99,14 +97,14 @@ class StylePointWithSceneSymbolViewModel(application: Application) : AndroidView
             SimpleMarkerSceneSymbolStyle.Tetrahedron
         )
 
-        // starting location and spacing in longitude
+        // Starting location and spacing in longitude
         val startLongitude = 4.975
         val latitude = 49.0
         val altitude = 500.0
         val spacing = 0.01
 
         return styles.mapIndexed { index, style ->
-            // create a scene symbol for the style
+            // Create a scene symbol for the style
             val symbol = SimpleMarkerSceneSymbol(
                 style = style,
                 color = randomColor(),
@@ -116,7 +114,7 @@ class StylePointWithSceneSymbolViewModel(application: Application) : AndroidView
                 anchorPosition = SceneSymbolAnchorPosition.Center
             )
 
-            // position the symbol slightly offset in longitude for each symbol
+            // Position the symbol slightly offset in longitude for each symbol
             val point = Point(
                 x = startLongitude + spacing * index,
                 y = latitude,
@@ -129,7 +127,7 @@ class StylePointWithSceneSymbolViewModel(application: Application) : AndroidView
     }
 
     /**
-     * Helper function to produce a random color using ArcGIS Color.fromRgba
+     * Helper function to produce a random color using ArcGIS [Color.fromRgba]
      */
     private fun randomColor(): Color {
         val r = (0..255).random()
