@@ -1,19 +1,37 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Determine whether a layer is currently visible.",
     "formal_name": "MonitorChangesToLayerViewState",
     "ignore": false,
     "images": [
         "monitor-changes-to-layer-view-state.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "layer",
+        "load",
+        "map",
+        "status",
+        "view",
+        "visibility",
+        "GeoViewLayerViewStateChanged",
+        "Layer",
+        "LayerViewState",
+        "Map",
+        "MapView"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "GeoViewLayerViewStateChanged",
+        "Layer",
+        "LayerViewState",
+        "Map",
+        "MapView"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/components/MonitorChangesToLayerViewStateViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/screens/MonitorChangesToLayerViewStateScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestolayerviewstate/screens/MonitorChangesToLayerViewStateScreen.kt"
     ],
     "title": "Monitor changes to layer view state"
 }
