@@ -1,0 +1,27 @@
+{
+    "category": "Layers",
+    "description": "Create a raster layer from a raster image service.",
+    "formal_name": "AddRasterFromService",
+    "ignore": false,
+    "images": [
+        "add-raster-from-service.png"
+    ],
+    "keywords": [
+        "image service",
+        "raster",
+        "ImageServiceRaster",
+        "RasterLayer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ImageServiceRaster",
+        "RasterLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromservice/components/AddRasterFromServiceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromservice/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrasterfromservice/screens/AddRasterFromServiceScreen.kt"
+    ],
+    "title": "Add raster from service"
+}
