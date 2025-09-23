@@ -103,7 +103,7 @@ class ApplyBlendRendererToHillshadeViewModel(private val app: Application) : And
     val colorRampPresets = listOf("None", "DEM Light", "Screen Display", "Elevation")
 
     // Index of the selected color ramp preset; 0 means "None" (no color ramp).
-    var selectedColorRampPresetIndex by mutableStateOf(0)
+    var selectedColorRampPresetIndex by mutableIntStateOf(0)
         private set
 
     init {
