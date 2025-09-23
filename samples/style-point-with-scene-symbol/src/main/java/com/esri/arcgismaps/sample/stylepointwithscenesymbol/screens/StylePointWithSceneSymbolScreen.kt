@@ -1,0 +1,71 @@
+/* Copyright 2025 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.esri.arcgismaps.sample.stylepointwithscenesymbol.screens
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
+import com.esri.arcgismaps.sample.stylepointwithscenesymbol.components.StylePointWithSceneSymbolViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+
+/**
+ * Compose screen that displays a SceneView showing several 3D SimpleMarkerSceneSymbols.
+ * The ArcGIS Scene and GraphicsOverlay are provided by the ViewModel.
+ */
+@Composable
+fun StylePointWithSceneSymbolScreen(sampleName: String) {
+    val viewModel: StylePointWithSceneSymbolViewModel = viewModel()
+
+    Scaffold(
+        topBar = { SampleTopAppBar(title = sampleName) },
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+            ) {
+                // SceneView is a composable from the Toolkit. Provide the pre-built scene and graphics overlay from the ViewModel.
+                SceneView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    arcGISScene = viewModel.arcGISScene,
+                    graphicsOverlays = listOf(viewModel.graphicsOverlay)
+                )
+
+                // Additional UI controls could be added below the SceneView if needed.
+            }
+
+            // Display an error dialog from the ViewModel when needed
+            viewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
+            }
+        }
+    )
+}
