@@ -42,8 +42,7 @@ fun MainScreen(sampleName: String) {
             ) {
                 MapView(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                        .fillMaxSize(),
                     arcGISMap = viewModel.arcGISMap,
                     mapViewProxy = viewModel.mapViewProxy,
                     graphicsOverlays = viewModel.graphicsOverlays,
