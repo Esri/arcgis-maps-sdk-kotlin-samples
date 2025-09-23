@@ -35,6 +35,7 @@ Run the sample and view the military symbols on the map.
 The sample viewer will load [MIL-STD-2525D symbol dictionary web style](https://arcgis.com/home/item.html?id=d815f3bdf6e6452bb8fd153b654c94ca) from ArcGIS Online before loading the sample. This ArcGIS Web Style is for use to build custom applications that incorporate the MIL-STD-2525D symbol dictionary. This style supports a configuration for modeling locations as ordered anchor points or full geometries.
 
 A local XML file containing messages with MIL-STD-2525D fields for military symbology ([MIL-STD-2525D Messages 100.13.0](https://www.arcgis.com/home/item.html?id=8776cfc26eed4485a03de6316826384c)) is also used. This is downloaded from ArcGIS Online automatically.
+
 ## Tags
 
 defense, military, situational awareness, tactical, visualization
