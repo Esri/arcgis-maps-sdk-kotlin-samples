@@ -127,7 +127,7 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
      */
     private fun makeMessageGraphics(): Result<List<Graphic>> {
         return runCatching {
-            val xmlFile = File(provisionPath, "mil2525dmessages.xml")
+            val xmlFile = File(provisionPath, "Mil2525DMessages.xml")
             val messageXml = xmlFile.readText()
             val messages = MessageXmlParser().parse(messageXml)
 
