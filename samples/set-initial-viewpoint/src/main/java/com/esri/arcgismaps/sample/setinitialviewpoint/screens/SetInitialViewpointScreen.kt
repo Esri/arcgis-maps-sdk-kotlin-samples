@@ -48,17 +48,17 @@ fun SetInitialViewpointScreen(sampleName: String) {
                 .padding(paddingValues),
             arcGISMap = mapViewModel.arcGISMap
         )
-        }
+    }
 
-        // Show message dialog when the viewmodel reports an error
-        mapViewModel.messageDialogVM.apply {
-            if (dialogStatus) {
-                MessageDialog(
-                    title = messageTitle,
-                    description = messageDescription,
-                    onDismissRequest = ::dismissDialog
-                )
-            }
+    // Show message dialog when the viewmodel reports an error
+    mapViewModel.messageDialogVM.apply {
+        if (dialogStatus) {
+            MessageDialog(
+                title = messageTitle,
+                description = messageDescription,
+                onDismissRequest = ::dismissDialog
+            )
         }
     }
 }
+
