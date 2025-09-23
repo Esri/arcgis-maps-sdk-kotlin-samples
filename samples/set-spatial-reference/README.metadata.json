@@ -1,0 +1,33 @@
+{
+    "category": "Maps",
+    "description": "Specify a map's spatial reference.",
+    "formal_name": "SetSpatialReference",
+    "ignore": false,
+    "images": [
+        "set-spatial-reference.png"
+    ],
+    "keywords": [
+        "WKID",
+        "project",
+        "ArcGISMap",
+        "ArcGISMapImageLayer",
+        "Basemap",
+        "MapView",
+        "SpatialReference"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "ArcGISMapImageLayer",
+        "Basemap",
+        "MapView",
+        "SpatialReference"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setspatialreference/components/SetSpatialReferenceViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setspatialreference/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setspatialreference/screens/SetSpatialReferenceScreen.kt"
+    ],
+    "title": "Set spatial reference"
+}
