@@ -19,14 +19,10 @@ package com.esri.arcgismaps.sample.identifygraphics.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.identifygraphics.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -35,9 +31,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun MainScreen(sampleName: String) {
     val viewModel: MapViewModel = viewModel()
-
-    // Observe the identify banner text.
-    val bannerTextState = viewModel.resultBannerText.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -57,13 +50,6 @@ fun MainScreen(sampleName: String) {
                     onSingleTapConfirmed = { tapEvent ->
                         viewModel.identifyGraphics(tapEvent.screenCoordinate)
                     }
-                )
-
-                // A simple banner to show identify results.
-                Text(
-                    modifier = Modifier.padding(all = 12f.dp),
-                    text = bannerTextState.value,
-                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 

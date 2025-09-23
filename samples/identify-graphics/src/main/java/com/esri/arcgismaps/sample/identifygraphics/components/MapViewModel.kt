@@ -38,8 +38,6 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(app: Application) : AndroidViewModel(app) {
@@ -55,8 +53,11 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
     // ArcGISMap displayed by the MapView. Use a topographic basemap.
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            // Set an initial viewpoint that frames the polygon nicely.
-            initialViewpoint = Viewpoint(boundingGeometry = polygon)
+            // Set an initial viewpoint with the polygon graphic centered on the screen.
+            initialViewpoint = Viewpoint(
+                center = polygon.extent.center,
+                scale = 1.3e8
+            )
         }
     )
 
@@ -78,10 +79,6 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
     // Dialog view model to present error messages to the user.
     val messageDialogVM = MessageDialogViewModel()
 
-    // UI text banner to display identify results to the user.
-    private val _resultBannerText = MutableStateFlow("Tap on the map to identify graphics")
-    val resultBannerText = _resultBannerText.asStateFlow()
-
     init {
         // Load the map and handle any load failures.
         viewModelScope.launch {
@@ -96,7 +93,8 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
 
     /**
      * Called when the user taps the map. Identifies graphics in [graphicsOverlay] near the
-     * [screenCoordinate] using [mapViewProxy], then updates [_resultBannerText] with the result.
+     * [screenCoordinate] using [mapViewProxy], then shows the number of identified graphics in an
+     * alert dialog.
      */
     fun identifyGraphics(screenCoordinate: ScreenCoordinate) {
         viewModelScope.launch {
@@ -108,11 +106,16 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
                 maximumResults = 10
             ).onSuccess { identifyResult ->
                 val count = identifyResult.graphics.size
-                _resultBannerText.value = if (count > 0) {
+                val message = if (count > 0) {
                     "Tapped on $count graphic(s)."
                 } else {
                     "No graphics at tapped location."
                 }
+                // Show an alert dialog with the identify result.
+                messageDialogVM.showMessageDialog(
+                    title = "Identify Result",
+                    description = message
+                )
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     title = "Error performing identify",
