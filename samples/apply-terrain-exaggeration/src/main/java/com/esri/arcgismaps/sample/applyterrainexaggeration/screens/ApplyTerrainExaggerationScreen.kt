@@ -29,7 +29,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.applyterrainexaggeration.components.ApplyTerrainExaggerationViewModel
@@ -48,7 +46,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
  * Main screen that displays a SceneView and a bottom sheet with controls
@@ -57,10 +54,6 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 @Composable
 fun ApplyTerrainExaggerationScreen(sampleName: String) {
     val sceneViewModel: ApplyTerrainExaggerationViewModel = viewModel()
-
-    // Observe the exaggeration value from the ViewModel
-    val exaggeration by sceneViewModel.elevationExaggeration.collectAsStateWithLifecycle()
-
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -70,9 +63,7 @@ fun ApplyTerrainExaggerationScreen(sampleName: String) {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { isBottomSheetVisible = true }
-                ) {
-                    Icon(Icons.Default.Settings, contentDescription = "Show options")
-                }
+                ) { Icon(Icons.Default.Settings, contentDescription = "Show options") }
             }
         },
         content = { padding ->
@@ -96,9 +87,9 @@ fun ApplyTerrainExaggerationScreen(sampleName: String) {
                 onDismissRequest = { isBottomSheetVisible = false }
             ) {
                 TerrainOptions(
-                    currentExaggeration = exaggeration,
-                    onIncrement = { sceneViewModel.updateElevationExaggerationByFactor(1f) },
-                    onDecrement = { sceneViewModel.updateElevationExaggerationByFactor(-1f) }
+                    currentExaggeration = sceneViewModel.currentElevationExaggeration,
+                    onIncrement = { sceneViewModel.updateElevationExaggeration(1f) },
+                    onDecrement = { sceneViewModel.updateElevationExaggeration(-1f) }
                 )
             }
             // Display error dialogs from the ViewModel

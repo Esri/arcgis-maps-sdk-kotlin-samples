@@ -17,6 +17,9 @@
 package com.esri.arcgismaps.sample.applyterrainexaggeration.components
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.Point
@@ -28,8 +31,6 @@ import com.arcgismaps.mapping.Surface
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.Camera
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -43,9 +44,8 @@ class ApplyTerrainExaggerationViewModel(app: Application) : AndroidViewModel(app
         uri = "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
     )
 
-    // Expose the elevation exaggeration as a MutableStateFlow for the UI to observe.
-    private val _elevationExaggeration = MutableStateFlow(1f)
-    val elevationExaggeration = _elevationExaggeration.asStateFlow()
+    // Expose the elevation exaggeration as a mutable state.
+    var currentElevationExaggeration by mutableFloatStateOf(1f)
 
     // Set the camera location to center on Levering, WA.
     private val camera = Camera(
@@ -65,7 +65,7 @@ class ApplyTerrainExaggerationViewModel(app: Application) : AndroidViewModel(app
         baseSurface = Surface().apply {
             elevationSources.add(elevationSource)
             // Initial exaggeration value.
-            elevationExaggeration = _elevationExaggeration.value
+            elevationExaggeration = currentElevationExaggeration
         }
         // Set the initial viewpoint using the camera.
         initialViewpoint = Viewpoint(camera = camera, boundingGeometry = camera.location)
@@ -75,26 +75,20 @@ class ApplyTerrainExaggerationViewModel(app: Application) : AndroidViewModel(app
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // Load the scene and observe changes to the exaggeration flow to update the surface.
+        // Load the scene.
         viewModelScope.launch {
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
-        }
-
-        viewModelScope.launch {
-            _elevationExaggeration.collect { value ->
-                // Update the surface exaggeration whenever the flow changes.
-                arcGISScene.baseSurface.elevationExaggeration = value
-            }
         }
     }
 
     /**
-     * Update exaggeration using an increment or decrement factor.
+     * Update exaggeration using an increment or decrement amount.
      * Value is expected between 1 and 10, clamped for the sample.
      */
-    fun updateElevationExaggerationByFactor(factor: Float) {
-        val newValue = _elevationExaggeration.value + factor
-        val clamped = newValue.coerceIn(1f, 10f)
-        _elevationExaggeration.value = clamped
+    fun updateElevationExaggeration(amount: Float) {
+        // Update current elevation state with the exaggeration amount
+        currentElevationExaggeration = (currentElevationExaggeration + amount).coerceIn(1f, 10f)
+        // Update the base surface to honor the current elevation state
+        arcGISScene.baseSurface.elevationExaggeration = currentElevationExaggeration
     }
 }
