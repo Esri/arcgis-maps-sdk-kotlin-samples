@@ -46,7 +46,7 @@ fun MainScreen(sampleName: String) {
                         .weight(1f),
                     arcGISMap = viewModel.arcGISMap,
                     mapViewProxy = viewModel.mapViewProxy,
-                    graphicsOverlays = listOf(viewModel.graphicsOverlay),
+                    graphicsOverlays = viewModel.graphicsOverlays,
                     onSingleTapConfirmed = { tapEvent ->
                         viewModel.identifyGraphics(tapEvent.screenCoordinate)
                     }

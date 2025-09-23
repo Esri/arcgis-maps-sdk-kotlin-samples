@@ -65,7 +65,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
     val mapViewProxy = MapViewProxy()
 
     // Graphics overlay that holds the polygon graphic and a renderer.
-    val graphicsOverlay = GraphicsOverlay().apply {
+    private val graphicsOverlay = GraphicsOverlay().apply {
         // Configure the graphics overlay with a renderer and add a graphic for the polygon.
         val polygonFillSymbol = SimpleFillSymbol(
             style = SimpleFillSymbolStyle.Solid,
@@ -75,6 +75,8 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
         renderer = SimpleRenderer(polygonFillSymbol)
         graphics.add(Graphic(geometry = polygon))
     }
+
+    val graphicsOverlays = listOf(graphicsOverlay)
 
     // Dialog view model to present error messages to the user.
     val messageDialogVM = MessageDialogViewModel()
