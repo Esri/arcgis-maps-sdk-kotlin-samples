@@ -55,4 +55,3 @@ fun SetSpatialReferenceScreen(sampleName: String) {
         }
     }
 }
-
