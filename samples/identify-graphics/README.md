@@ -10,8 +10,7 @@ A user may wish to select a graphic on a map to view relevant information about 
 
 ## How to use the sample
 
-- Tap anywhere on the map.
-- If your tap intersects the sample polygon, a dialog shows how many graphics were found at that location.
+Tap on a graphic to identify it. You will see an alert message displayed.
 
 ## How it works
 
