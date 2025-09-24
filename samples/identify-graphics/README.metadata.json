@@ -7,9 +7,13 @@
         "identify-graphics.png"
     ],
     "keywords": [
-        "geoview-compose",
+        "graphics",
         "identify",
-        "graphic"
+        "Graphic",
+        "GraphicsOverlay",
+        "IdentifyGraphicsOverlayResult",
+        "MapView",
+        "MapViewProxy"
     ],
     "language": "kotlin",
     "redirect_from": "",
