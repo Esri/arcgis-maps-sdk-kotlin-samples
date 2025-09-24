@@ -40,7 +40,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
-class MapViewModel(app: Application) : AndroidViewModel(app) {
+class IdentifyGraphicsViewModel(app: Application) : AndroidViewModel(app) {
 
     // Create a polygon from a list of points
     private val polygon: Polygon = PolygonBuilder(SpatialReference.webMercator()).apply {
