@@ -83,10 +83,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
         // Load the map and handle any load failures.
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load map",
-                    description = error.message.toString()
-                )
+                messageDialogVM.showMessageDialog(error)
             }
         }
     }
