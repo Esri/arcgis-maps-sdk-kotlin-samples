@@ -35,8 +35,6 @@ import java.io.File
  *
  * The sample expects the raster file to be placed in the application's external files directory
  * under a folder matching the sample name and a subfolder "raster-file" containing "Shasta.tif".
- * This mirrors the behavior of other samples that provision offline assets. If the raster is not
- * present the ViewModel will attempt to load and will surface an error through [messageDialogVM].
  */
 class ApplyColormapRendererToRasterViewModel(private val app: Application) : AndroidViewModel(app) {
 
