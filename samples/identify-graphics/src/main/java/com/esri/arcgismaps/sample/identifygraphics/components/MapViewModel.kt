@@ -50,7 +50,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
         addPoint(Point(x = -20e5, y = -20e5))
     }.toGeometry()
 
-    // ArcGISMap displayed by the MapView. Use a topographic basemap.
+    // ArcGISMap displayed by the MapView using a topographic basemap.
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
             // Set an initial viewpoint with the polygon graphic centered on the screen.
