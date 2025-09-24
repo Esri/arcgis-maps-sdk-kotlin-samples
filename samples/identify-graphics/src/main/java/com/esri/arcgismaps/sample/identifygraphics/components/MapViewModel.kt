@@ -51,15 +51,13 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
     }.toGeometry()
 
     // ArcGISMap displayed by the MapView using a topographic basemap.
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            // Set an initial viewpoint with the polygon graphic centered on the screen.
-            initialViewpoint = Viewpoint(
-                center = polygon.extent.center,
-                scale = 1.3e8
-            )
-        }
-    )
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        // Set an initial viewpoint with the polygon graphic centered on the screen.
+        initialViewpoint = Viewpoint(
+            center = polygon.extent.center,
+            scale = 1.3e8
+        )
+    }
 
     // MapViewProxy enables identify operations and view navigation from the ViewModel.
     val mapViewProxy = MapViewProxy()
