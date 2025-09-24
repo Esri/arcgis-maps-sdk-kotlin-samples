@@ -35,10 +35,9 @@ class MonitorChangesToMapLoadStatusViewModel(app: Application) : AndroidViewMode
 
     // ArcGISMap created once and exposed as a compose state so UI can consume it
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-            // Provide an initial viewpoint
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-
+        // Provide an initial viewpoint
+        initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
+    }
 
     // Expose load status string as StateFlow to be observed by the UI
     private val _loadStatusText = MutableStateFlow(LoadStatus.NotLoaded::class.simpleName)
