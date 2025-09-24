@@ -27,11 +27,6 @@ Tap on a graphic to identify it. You will see an alert message displayed.
 * MapView
 * MapViewProxy
 
-## Notes
-
-* The tolerance controls the radius (in device-independent pixels) around the tap used during the identify operation.
-* You can use MapViewProxy.identifyGraphicsOverlays to run the identify operation across all graphics overlays at once.
-
 ## Tags
 
 graphics, identify
