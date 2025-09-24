@@ -59,7 +59,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
-    // MapViewProxy enables identify operations and view navigation from the ViewModel.
+    // MapViewProxy enables identify operations from the ViewModel.
     val mapViewProxy = MapViewProxy()
 
     // Graphics overlay that holds the polygon graphic and a renderer.
