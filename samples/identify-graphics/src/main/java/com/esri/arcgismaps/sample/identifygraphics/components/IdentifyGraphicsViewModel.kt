@@ -50,18 +50,16 @@ class IdentifyGraphicsViewModel(app: Application) : AndroidViewModel(app) {
         addPoint(Point(x = -20e5, y = -20e5))
     }.toGeometry()
 
-    // ArcGISMap displayed by the MapView. Use a topographic basemap.
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            // Set an initial viewpoint with the polygon graphic centered on the screen.
-            initialViewpoint = Viewpoint(
-                center = polygon.extent.center,
-                scale = 1.3e8
-            )
-        }
-    )
+    // ArcGISMap displayed by the MapView using a topographic basemap.
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
+        // Set an initial viewpoint with the polygon graphic centered on the screen.
+        initialViewpoint = Viewpoint(
+            center = polygon.extent.center,
+            scale = 1.3e8
+        )
+    }
 
-    // MapViewProxy enables identify operations and view navigation from the ViewModel.
+    // MapViewProxy enables identify operations from the ViewModel.
     val mapViewProxy = MapViewProxy()
 
     // Graphics overlay that holds the polygon graphic and a renderer.
@@ -78,23 +76,20 @@ class IdentifyGraphicsViewModel(app: Application) : AndroidViewModel(app) {
 
     val graphicsOverlays = listOf(graphicsOverlay)
 
-    // Dialog view model to present error messages to the user.
+    // Dialog view model to present error messages.
     val messageDialogVM = MessageDialogViewModel()
 
     init {
         // Load the map and handle any load failures.
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load map",
-                    description = error.message.toString()
-                )
+                messageDialogVM.showMessageDialog(error)
             }
         }
     }
 
     /**
-     * Called when the user taps the map. Identifies graphics in [graphicsOverlay] near the
+     * Called when single tap is detected on the map. Identifies graphics in [graphicsOverlay] near the
      * [screenCoordinate] using [mapViewProxy], then shows the number of identified graphics in an
      * alert dialog.
      */
@@ -119,10 +114,7 @@ class IdentifyGraphicsViewModel(app: Application) : AndroidViewModel(app) {
                     description = message
                 )
             }.onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Error performing identify",
-                    description = error.message.toString()
-                )
+                messageDialogVM.showMessageDialog(error)
             }
         }
     }
