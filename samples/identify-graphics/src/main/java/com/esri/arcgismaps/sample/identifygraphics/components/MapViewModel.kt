@@ -114,10 +114,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
                     description = message
                 )
             }.onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Error performing identify",
-                    description = error.message.toString()
-                )
+                messageDialogVM.showMessageDialog(error)
             }
         }
     }
