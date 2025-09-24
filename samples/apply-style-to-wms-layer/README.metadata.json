@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "ApplyStyleToWMSLayer",
+    "ignore": false,
+    "images": [
+        "apply-style-to-wms-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applystyletowmslayer/components/ApplyStyleToWMSLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystyletowmslayer/screens/ApplyStyleToWMSLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystyletowmslayer/MainActivity.kt"
+    ],
+    "title": "Apply style to WMS layer"
+}
