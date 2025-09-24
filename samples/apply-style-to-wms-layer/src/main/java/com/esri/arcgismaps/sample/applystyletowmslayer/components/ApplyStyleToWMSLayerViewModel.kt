@@ -39,6 +39,8 @@ class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
 
     // Map used by the MapView.
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
+        // apply a min scale
+        minScale = 7_000_000.0
         // Add the WMS layer to the map's operational layers
         operationalLayers.add(wmsLayer)
     }
