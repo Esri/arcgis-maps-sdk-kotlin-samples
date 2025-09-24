@@ -1,0 +1,42 @@
+{
+    "category": "Visualization",
+    "description": "Blend a hillshade with a raster by specifying the elevation data. The resulting raster looks similar to the original raster, but with some terrain shading, giving it a textured look.",
+    "formal_name": "ApplyBlendRendererToHillshade",
+    "ignore": false,
+    "images": [
+        "apply-blend-renderer-to-hillshade.png"
+    ],
+    "keywords": [
+        "color ramp",
+        "elevation",
+        "hillshade",
+        "image",
+        "raster",
+        "raster layer",
+        "visualization",
+        "BlendRenderer",
+        "ColorRamp",
+        "Raster",
+        "RasterLayer"
+    ],
+    "language": "kotlin",
+    "provision_from": [
+        "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd",
+        "https://www.arcgis.com/home/item.html?id=b051f5c3e01048f3bf11c59b41507896"
+    ],
+    "provision_to": [],
+    "redirect_from": "",
+    "relevant_apis": [
+        "BlendRenderer",
+        "ColorRamp",
+        "Raster",
+        "RasterLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/components/ApplyBlendRendererToHillshadeViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/screens/ApplyBlendRendererToHillshadeScreen.kt"
+    ],
+    "title": "Apply blend renderer to hillshade"
+}
