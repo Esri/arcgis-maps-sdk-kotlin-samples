@@ -17,30 +17,96 @@
 package com.esri.arcgismaps.sample.applystyletowmslayer.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.WmsLayer
+import com.arcgismaps.mapping.layers.WmsSublayer
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ApplyStyleToWMSLayerViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
+class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
+    // WMS layer displaying Minnesota's county boundaries with multiple styles.
+    private val wmsLayer = WmsLayer(
+        url = "https://imageserver.gisdata.mn.gov/cgi-bin/mncomp?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities",
+        layerNames = listOf("mncomp")
     )
 
-    // Create a message dialog view model for handling error messages
+    // Map used by the MapView.
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
+        // Add the WMS layer to the map's operational layers
+        operationalLayers.add(wmsLayer)
+    }
+
+    // MapViewProxy to perform view operations (like setting the viewpoint) safely from a ViewModel.
+    val mapViewProxy = MapViewProxy()
+
+    // Message dialog ViewModel for error reporting.
     val messageDialogVM = MessageDialogViewModel()
+
+    // Flow of available WMS styles.
+    private val _stylesFlow = MutableStateFlow<List<String>>(emptyList())
+    val stylesFlow = _stylesFlow.asStateFlow()
+
+    // Selected style index.
+    private val _selectedStyleIndex = MutableStateFlow(0)
+    val selectedStyleIndex = _selectedStyleIndex.asStateFlow()
+
+    // The WMS sublayer for which we will change the style.
+    private var wmsSublayer: WmsSublayer? = null
+
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            createAndLoadWmsLayer()
+        }
+    }
+
+    /**
+     * Creates the WMS layer, loads it, zooms to its full extent, and exposes its styles.
+     */
+    private suspend fun createAndLoadWmsLayer() {
+        wmsLayer.load().onSuccess {
+            // Zoom to the full extent of the WMS layer, if available
+            wmsLayer.fullExtent?.let { fullExtent ->
+                mapViewProxy.setViewpointAnimated(Viewpoint(boundingGeometry = fullExtent))
+            }
+
+            // Get the first WMS sublayer
+            wmsSublayer = wmsLayer.sublayers.value.firstOrNull() as? WmsSublayer
+
+            // Obtain available styles from the WMS layer info
+            val styles = wmsLayer.layerInfos.firstOrNull()?.styles ?: emptyList()
+            if (styles.isEmpty()) {
+                messageDialogVM.showMessageDialog("No styles found for the WMS layer.")
+                return@onSuccess
+            }
+
+            _stylesFlow.value = styles
+            // Set initial selection to the first available style
+            _selectedStyleIndex.value = 0
+            wmsSublayer?.currentStyle = styles[0]
+        }.onFailure { error ->
+            messageDialogVM.showMessageDialog(
+                title = "Failed to load WMS layer",
+                description = error.message.toString()
+            )
+        }
+    }
+
+    /**
+     * Updates the selected style by index and applies it to the WMS sublayer.
+     */
+    fun updateSelectedStyle(index: Int) {
+        val styles = _stylesFlow.value
+        if (index in styles.indices) {
+            _selectedStyleIndex.value = index
+            wmsSublayer?.currentStyle = styles[index]
         }
     }
 }

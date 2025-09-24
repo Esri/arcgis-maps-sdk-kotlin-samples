@@ -24,8 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.applystyletowmslayer.screens.ApplyStyleToWmsLayerScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.applystyletowmslayer.screens.ApplyStyleToWMSLayerScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun ApplyStyleToWMSLayerApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            ApplyStyleToWMSLayerScreen(
+            ApplyStyleToWmsLayerScreen(
                 sampleName = getString(R.string.apply_style_to_wms_layer_app_name)
             )
         }

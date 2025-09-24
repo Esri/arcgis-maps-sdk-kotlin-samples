@@ -16,42 +16,88 @@
 
 package com.esri.arcgismaps.sample.applystyletowmslayer.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.applystyletowmslayer.components.ApplyStyleToWMSLayerViewModel
+import com.esri.arcgismaps.sample.applystyletowmslayer.components.ApplyStyleToWmsLayerViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the Apply style to WMS layer sample.
  */
 @Composable
-fun ApplyStyleToWMSLayerScreen(sampleName: String) {
-    val mapViewModel: ApplyStyleToWMSLayerViewModel = viewModel()
+fun ApplyStyleToWmsLayerScreen(sampleName: String) {
+    val mapViewModel: ApplyStyleToWmsLayerViewModel = viewModel()
+
+    // Observe WMS styles and selected index from the ViewModel
+    val styles: List<String> by mapViewModel.stylesFlow.collectAsStateWithLifecycle(initialValue = emptyList())
+    val selectedStyleIndex: Int by mapViewModel.selectedStyleIndex.collectAsStateWithLifecycle(initialValue = 0)
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        content = { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(paddingValues)
             ) {
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = mapViewModel.arcGISMap,
+                    mapViewProxy = mapViewModel.mapViewProxy
                 )
-                // TODO: Add UI components in this Column ...
+
+                // Controls: style picker
+                OutlinedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Style")
+
+                        val styleTitles = styles.map { styleId ->
+                            when (styleId.lowercase()) {
+                                "default" -> "Default"
+                                "stretch" -> "Contrast Stretch"
+                                else -> styleId.ifBlank { "Unknown" }
+                            }
+                        }
+
+                        DropDownMenuBox(
+                            textFieldValue = styleTitles.getOrNull(selectedStyleIndex) ?: "",
+                            textFieldLabel = "Choose WMS style",
+                            dropDownItemList = styleTitles,
+                            onIndexSelected = mapViewModel::updateSelectedStyle
+                        )
+                    }
+                }
             }
 
+            // Display a dialog if the sample encounters an error
             mapViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
