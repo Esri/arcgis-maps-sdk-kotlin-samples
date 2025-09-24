@@ -17,7 +17,7 @@
 package com.esri.arcgismaps.sample.monitorchangestomaploadstatus.screens
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,16 +45,13 @@ fun MonitorChangesToMapLoadStatusScreen(sampleName: String) {
     val mapViewModel: MonitorChangesToMapLoadStatusViewModel = viewModel()
 
     // Observe the load status from the ViewModel
-    val loadStatusText by mapViewModel.loadStatusText.collectAsStateWithLifecycle(
-        initialValue = "Not Loaded"
-    )
+    val loadStatusText by mapViewModel.loadStatusText.collectAsStateWithLifecycle()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        SampleTopAppBar(title = sampleName)
+    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }) { padding ->
 
         Box(modifier = Modifier
             .fillMaxSize()
-            .padding(top = 0.dp)) {
+            .padding(padding)) {
 
             MapView(
                 modifier = Modifier
