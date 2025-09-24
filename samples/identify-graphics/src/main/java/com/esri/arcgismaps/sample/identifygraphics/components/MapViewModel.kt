@@ -89,7 +89,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Called when the user taps the map. Identifies graphics in [graphicsOverlay] near the
+     * Called when single tap is detected on the map. Identifies graphics in [graphicsOverlay] near the
      * [screenCoordinate] using [mapViewProxy], then shows the number of identified graphics in an
      * alert dialog.
      */
