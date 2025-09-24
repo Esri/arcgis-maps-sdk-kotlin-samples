@@ -25,8 +25,8 @@
         "MapViewProxy"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/components/MapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/screens/MainScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/components/IdentifyGraphicsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/screens/IdentifyGraphicsScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/identifygraphics/MainActivity.kt"
     ],
     "title": "Identify graphics"
