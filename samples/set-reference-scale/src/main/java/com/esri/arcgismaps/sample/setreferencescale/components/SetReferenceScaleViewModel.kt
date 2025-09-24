@@ -59,7 +59,7 @@ class SetReferenceScaleViewModel(application: Application) : AndroidViewModel(ap
     private val _mapScale = MutableStateFlow(Double.NaN)
     val mapScale = _mapScale.asStateFlow()
 
-    // Expose a list of layers with the states of map's reference scale.
+    // Expose a list of layers with the map's reference scale state.
     private val _layers = MutableStateFlow<List<LayerToggleState>>(emptyList())
     val layers = _layers.asStateFlow()
 
@@ -73,7 +73,7 @@ class SetReferenceScaleViewModel(application: Application) : AndroidViewModel(ap
                 val layerStates = arcGISMap.operationalLayers
                     .filterIsInstance<FeatureLayer>()
                     .map { layer ->
-                        // If layer is a FeatureLayer, access its property.
+                        // If layer is a FeatureLayer, access its properties.
                         LayerToggleState(
                             name = layer.name,
                             scaleSymbols = layer.scaleSymbols
@@ -105,7 +105,7 @@ class SetReferenceScaleViewModel(application: Application) : AndroidViewModel(ap
     /**
      * Toggle whether a [FeatureLayer] instance operational layer honors the map reference scale.
      */
-    fun onToggleLayerScales(toggleState: LayerToggleState, enabled: Boolean) {
+    fun onLayerScaleSymbolToggled(toggleState: LayerToggleState, enabled: Boolean) {
         // Set the new value for the layer's scale symbols.
         val newLayerState = toggleState.copy(scaleSymbols = enabled)
         // Update the new layer state on the map.

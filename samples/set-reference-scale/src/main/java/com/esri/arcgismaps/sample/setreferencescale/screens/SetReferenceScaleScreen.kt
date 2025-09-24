@@ -120,7 +120,7 @@ fun SetReferenceScaleScreen(sampleName: String) {
                 SampleDialog(onDismissRequest = { isLayersDialogVisible = false }) {
                     LayersDialogContent(
                         layers = layers,
-                        onToggleLayerScales = mapViewModel::onToggleLayerScales,
+                        onLayerScaleSymbolToggled = mapViewModel::onLayerScaleSymbolToggled,
                         onDone = { isLayersDialogVisible = false }
                     )
                 }
@@ -210,7 +210,7 @@ fun SettingsControls(
 @Composable
 fun LayersDialogContent(
     layers: List<LayerToggleState>,
-    onToggleLayerScales: (LayerToggleState, Boolean) -> Unit,
+    onLayerScaleSymbolToggled: (LayerToggleState, Boolean) -> Unit,
     onDone: () -> Unit
 ) {
     Column(
@@ -222,7 +222,7 @@ fun LayersDialogContent(
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "Layers",
+            text = "Layers Symbol Scaling",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge
         )
@@ -235,7 +235,7 @@ fun LayersDialogContent(
                 Text(layerState.name)
                 Switch(
                     checked = layerState.scaleSymbols,
-                    onCheckedChange = { enabled -> onToggleLayerScales(layerState, enabled) }
+                    onCheckedChange = { isChecked -> onLayerScaleSymbolToggled(layerState, isChecked) }
                 )
             }
         }
@@ -275,6 +275,6 @@ fun PreviewLayersDialog() {
                     name = "Roads",
                     scaleSymbols = false
                 )
-            ), onToggleLayerScales = { _, _ -> }, onDone = {})
+            ), onLayerScaleSymbolToggled = { _, _ -> }, onDone = {})
     }
 }
