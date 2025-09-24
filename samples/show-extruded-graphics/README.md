@@ -20,7 +20,6 @@ Run the sample. Note that the graphics are extruded to the level set in their he
 4. Set the renderer on the graphics overlay using, GraphicsOverlay.renderer.
 5. Create graphics with their attribute set, graphic.attributes["height"].
 
-
 ## Relevant API
 
 * ExtrusionMode
