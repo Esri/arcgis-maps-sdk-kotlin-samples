@@ -45,7 +45,7 @@ class StylePointWithSceneSymbolViewModel(application: Application) : AndroidView
     val messageDialogVM = MessageDialogViewModel()
 
     // Set an initial camera position
-    val camera = Camera(
+    private val camera = Camera(
         latitude = 48.973,
         longitude = 4.92,
         altitude = 2082.0,
