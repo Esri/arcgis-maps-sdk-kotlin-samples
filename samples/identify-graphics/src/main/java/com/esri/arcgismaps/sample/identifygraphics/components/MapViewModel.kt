@@ -76,7 +76,7 @@ class MapViewModel(app: Application) : AndroidViewModel(app) {
 
     val graphicsOverlays = listOf(graphicsOverlay)
 
-    // Dialog view model to present error messages to the user.
+    // Dialog view model to present error messages.
     val messageDialogVM = MessageDialogViewModel()
 
     init {
