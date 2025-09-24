@@ -18,9 +18,11 @@
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
+        "Graphic",
+        "GraphicsOverlay",
         "IdentifyGraphicsOverlayResult",
-        "IdentifyGraphicsOverlayResult.graphics",
-        "GraphicsOverlay"
+        "MapView",
+        "MapViewProxy"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/identifygraphics/components/MapViewModel.kt",
