@@ -16,10 +16,11 @@
         "Raster",
         "RasterLayer"
     ],
+    "language": "kotlin",
     "provision_from": [
         "https://www.arcgis.com/home/item.html?id=cc68728b5904403ba637e1f1cd2995ae"
     ],
-    "language": "kotlin",
+    "provision_to": [],
     "redirect_from": "",
     "relevant_apis": [
         "ColormapRenderer",
@@ -27,8 +28,8 @@
         "RasterLayer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/components/ApplyColormapRendererToRasterViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/screens/ApplyColormapRendererToRasterScreen.kt"
     ],
