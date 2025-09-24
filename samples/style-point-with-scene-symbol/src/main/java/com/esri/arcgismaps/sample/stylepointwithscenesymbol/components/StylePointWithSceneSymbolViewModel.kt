@@ -68,7 +68,6 @@ class StylePointWithSceneSymbolViewModel(application: Application) : AndroidView
         )
     }
 
-
     // Graphics overlay that will contain the 3D symbols. SurfacePlacement.Absolute so symbols use absolute Z values.
     val graphicsOverlay = GraphicsOverlay(graphics = makeSceneSymbolGraphics()).apply {
         sceneProperties.surfacePlacement = SurfacePlacement.Absolute

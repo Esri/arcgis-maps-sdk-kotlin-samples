@@ -38,21 +38,15 @@ fun StylePointWithSceneSymbolScreen(sampleName: String) {
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
+        content = { paddingValues ->
+            // Render the SceneView using scene and graphics overlay from the ViewModel.
+            SceneView(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
-            ) {
-                // Render the SceneView using scene and graphics overlay from the ViewModel.
-                SceneView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISScene = viewModel.arcGISScene,
-                    graphicsOverlays = listOf(viewModel.graphicsOverlay)
-                )
-            }
+                    .padding(paddingValues),
+                arcGISScene = viewModel.arcGISScene,
+                graphicsOverlays = listOf(viewModel.graphicsOverlay)
+            )
 
             // Display an error dialog from the ViewModel when needed
             viewModel.messageDialogVM.apply {
