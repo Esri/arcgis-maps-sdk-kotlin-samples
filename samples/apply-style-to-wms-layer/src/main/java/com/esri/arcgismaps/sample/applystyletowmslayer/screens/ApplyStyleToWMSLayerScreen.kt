@@ -64,7 +64,7 @@ fun ApplyStyleToWmsLayerScreen(sampleName: String) {
                     mapViewProxy = mapViewModel.mapViewProxy
                 )
 
-                // Controls: style picker
+                // Style Picker UI
                 OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
