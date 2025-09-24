@@ -1,19 +1,31 @@
 {
     "category": "Scenes",
-    "description": "TODO",
+    "description": "Change a graphic's symbol based on the camera's proximity to it.",
     "formal_name": "StylePointWithDistanceCompositeSceneSymbol",
     "ignore": false,
     "images": [
         "style-point-with-distance-composite-scene-symbol.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "3D",
+        "data",
+        "graphic",
+        "DistanceCompositeSceneSymbol",
+        "DistanceSymbolRange",
+        "OrbitGeoElementCameraController"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "DistanceCompositeSceneSymbol",
+        "DistanceSymbolRange",
+        "OrbitGeoElementCameraController"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/components/StylePointWithDistanceCompositeSceneSymbolViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/screens/StylePointWithDistanceCompositeSceneSymbolScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithdistancecompositescenesymbol/screens/StylePointWithDistanceCompositeSceneSymbolScreen.kt"
     ],
     "title": "Style point with distance composite scene symbol"
 }

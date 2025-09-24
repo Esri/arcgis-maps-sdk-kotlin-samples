@@ -16,51 +16,75 @@
 
 package com.esri.arcgismaps.sample.stylepointwithdistancecompositescenesymbol.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.stylepointwithdistancecompositescenesymbol.components.StylePointWithDistanceCompositeSceneSymbolViewModel
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.stylepointwithdistancecompositescenesymbol.components.StylePointWithDistanceCompositeSceneSymbolViewModel
 
 /**
- * Main screen layout for the sample app
+ * Main screen for the sample. Hosts a SceneView and a simple overlay with instructions and distance display.
  */
 @Composable
 fun StylePointWithDistanceCompositeSceneSymbolScreen(sampleName: String) {
-    val mapViewModel: StylePointWithDistanceCompositeSceneSymbolViewModel = viewModel()
+    val viewModel: StylePointWithDistanceCompositeSceneSymbolViewModel = viewModel()
+
+    // Collect camera distance exposed by the ViewModel.
+    val cameraDistance by viewModel.cameraDistanceMeters.collectAsStateWithLifecycle()
+
     Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        topBar = { SampleTopAppBar(title = sampleName) }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding)) {
+            // Provide the scene, camera controller, overlays and the SceneViewProxy.
+            SceneView(
+                modifier = Modifier.fillMaxSize().weight(1f),
+                arcGISScene = viewModel.arcGISScene,
+                sceneViewProxy = viewModel.sceneViewProxy,
+                cameraController = viewModel.orbitCameraController,
+                graphicsOverlays = listOf(viewModel.graphicsOverlay),
+            )
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                Text(
+                    modifier = Modifier.padding(top = 6.dp),
+                    text = "Distance from target: ${cameraDistance.toInt()} m",
+                    style = MaterialTheme.typography.bodyLarge
                 )
-                // TODO: Add UI components in this Column ...
-            }
-
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
+                Text(
+                    text = "Zoom in and out to see the symbol change.",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
-    )
+        // Display message dialog if any error occurs
+        viewModel.messageDialogVM.apply {
+            if (dialogStatus) {
+                MessageDialog(
+                    title = messageTitle,
+                    description = messageDescription,
+                    onDismissRequest = ::dismissDialog
+                )
+            }
+        }
+    }
 }
