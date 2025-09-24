@@ -49,9 +49,11 @@ fun MonitorChangesToMapLoadStatusScreen(sampleName: String) {
 
     Scaffold(topBar = { SampleTopAppBar(title = sampleName) }) { padding ->
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
 
             MapView(
                 modifier = Modifier
