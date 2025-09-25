@@ -11,8 +11,8 @@
         "loading",
         "map",
         "render",
-        "DrawStatus",
         "ArcGISMap",
+        "DrawStatus",
         "MapView"
     ],
     "language": "kotlin",
