@@ -73,17 +73,6 @@ fun CreateBuffersAroundPointsScreen(sampleName: String) {
         content = { padding ->
             Column(modifier = Modifier.padding(padding)) {
 
-                // Message dialog from the view model
-                mapViewModel.messageDialogVM.apply {
-                    if (dialogStatus) {
-                        MessageDialog(
-                            title = messageTitle,
-                            description = messageDescription,
-                            onDismissRequest = ::dismissDialog
-                        )
-                    }
-                }
-
                 // Overlay at the top center that shows the current status of interactions
                 Surface(
                     modifier = Modifier
@@ -140,7 +129,16 @@ fun CreateBuffersAroundPointsScreen(sampleName: String) {
                     }
                 }
 
-
+                // Message dialog from the view model
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
 
             // Buffer radius input dialog
