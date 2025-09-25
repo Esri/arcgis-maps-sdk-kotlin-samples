@@ -7,7 +7,7 @@
         <activity
                 android:exported="true"
                 android:name=".MainActivity"
-                android:label="@string/monitor_changes_to_draw_status_app_name"></activity>
+                android:label="@string/monitor_changes_to_draw_status_app_name" />
     </application>
 
 </manifest>
