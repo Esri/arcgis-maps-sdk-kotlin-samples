@@ -23,8 +23,6 @@ Display an indicator of layers drawing.
 
 * ArcGISMap
 * DrawStatus
-* DrawStatusChangedEvent
-* DrawStatusChangedListener
 * MapView
 
 ## Tags
