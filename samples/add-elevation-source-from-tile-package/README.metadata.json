@@ -6,14 +6,15 @@
     "images": [
         "add-elevation-source-from-tile-package.png"
     ],
-    "keywords": [ ],
+    "keywords": [],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/components/AddElevationSourceFromTilePackageViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/screens/AddElevationSourceFromTilePackageScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/screens/AddElevationSourceFromTilePackageScreen.kt"
     ],
     "title": "Add Elevation Source From Tile Package"
 }

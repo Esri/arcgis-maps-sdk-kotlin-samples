@@ -17,30 +17,76 @@
 package com.esri.arcgismaps.sample.addelevationsourcefromtilepackage.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Surface
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.Camera
+import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
+import com.esri.arcgismaps.sample.addelevationsourcefromtilepackage.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
+import java.io.File
 
 class AddElevationSourceFromTilePackageViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
-
-    // Create a message dialog view model for handling error messages
+    // Message dialog view model to display errors
     val messageDialogVM = MessageDialogViewModel()
+
+    // Base provision path for this sample's offline resources
+    private val provisionPath: String by lazy {
+        val basePath = app.getExternalFilesDir(null)?.path ?: ""
+        basePath + File.separator + app.getString(R.string.add_elevation_source_from_tile_package_app_name)
+    }
+
+    // Camera location point (Monterey, CA)
+    private val cameraLocation: Point by lazy {
+        Point(
+            x = -121.8,
+            y = 36.525,
+            z = 300.0,
+            spatialReference = SpatialReference.wgs84()
+        )
+    }
+
+    // Camera to view the scene
+    private val camera: Camera by lazy {
+        Camera(
+            locationPoint = cameraLocation,
+            heading = 180.0,
+            pitch = 80.0,
+            roll = 0.0
+        )
+    }
+
+    // Create the ArcGISScene with imagery basemap
+    val arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+        // Create a surface and add the local elevation source if found
+        baseSurface = Surface().apply {
+            val tilePackageFile = File(provisionPath, "MontereyElevation.tpkx")
+            if (tilePackageFile.exists()) {
+                elevationSources.add(ArcGISTiledElevationSource(tilePackageFile.path))
+            } else {
+                messageDialogVM.showMessageDialog(
+                    title = "Elevation tile package not found",
+                    description = "Expected file at:\n${tilePackageFile.path}"
+                )
+            }
+        }
+        // Set the viewpoint using boundingGeometry with camera
+        initialViewpoint = Viewpoint(
+            boundingGeometry = cameraLocation,
+            camera = camera
+        )
+    }
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 }
