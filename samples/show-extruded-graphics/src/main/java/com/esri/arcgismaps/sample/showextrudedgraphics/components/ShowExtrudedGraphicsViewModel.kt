@@ -109,8 +109,9 @@ class ShowExtrudedGraphicsViewModel(application: Application) : AndroidViewModel
         }
 
         // Populate the overlay with extruded graphics.
+        addExtrudedGraphics()
         viewModelScope.launch {
-            addExtrudedGraphics()
+            
             // Load the scene; if loading fails, show a message.
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }

@@ -52,7 +52,6 @@ fun ShowExtrudedGraphicsScreen(sampleName: String) {
                     graphicsOverlays = listOf(viewModel.graphicsOverlay)
                 )
 
-                // Additional UI controls could be added below the SceneView if desired.
             }
 
             // Show any message dialogs coming from the ViewModel (loading / errors)
