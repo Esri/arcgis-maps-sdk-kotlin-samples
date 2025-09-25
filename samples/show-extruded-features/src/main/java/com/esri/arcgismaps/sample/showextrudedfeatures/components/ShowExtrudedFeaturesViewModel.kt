@@ -63,10 +63,10 @@ class ShowExtrudedFeaturesViewModel(application: Application) : AndroidViewModel
     // A simple renderer and its scene properties used to extrude features
     private val fillSymbol = SimpleFillSymbol(
         style = SimpleFillSymbolStyle.Solid,
-        color = Color.blue,
+        color = Color.fromRgba(0, 0, 255, 255), //blue
         outline = SimpleLineSymbol(
             style = SimpleLineSymbolStyle.Solid,
-            color = Color.white, // white with 50% alpha
+            color = Color.white,
             width = 1f
         )
     )
@@ -133,13 +133,4 @@ class ShowExtrudedFeaturesViewModel(application: Application) : AndroidViewModel
         // If the layer is loaded, trigger a redraw by reassigning the renderer
         statesFeatureLayer.renderer = renderer
     }
-
-    /**
-     * Define a blue color.
-     */
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
 }
-
