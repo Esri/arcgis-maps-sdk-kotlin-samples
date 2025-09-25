@@ -9,6 +9,7 @@
     "keywords": [
         "draw",
         "loading",
+        "map",
         "render",
         "DrawStatus",
         "ArcGISMap",
@@ -22,8 +23,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/components/MonitorDrawStatusViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/screens/MonitorDrawStatusScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/screens/MonitorDrawStatusScreen.kt"
     ],
     "title": "Monitor changes to draw status"
 }
