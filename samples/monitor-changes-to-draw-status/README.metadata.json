@@ -1,12 +1,20 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Get the draw status of your map view or scene view to know when all layers in the map or scene have finished drawing.",
     "formal_name": "MonitorChangesToDrawStatus",
     "ignore": false,
     "images": [
         "monitor-changes-to-draw-status.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "draw",
+        "loading",
+        "map",
+        "render",
+        "DrawStatus",
+        "Map",
+        "MapView"
+    ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [ ],
