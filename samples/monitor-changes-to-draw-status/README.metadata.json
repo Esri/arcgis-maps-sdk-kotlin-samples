@@ -11,8 +11,8 @@
     "redirect_from": "",
     "relevant_apis": [ ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/components/MonitorChangesToDrawStatusViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/screens/MonitorChangesToDrawStatusScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/components/MonitorDrawStatusViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/screens/MonitorDrawStatusScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/MainActivity.kt"
     ],
     "title": "Monitor changes to draw status"

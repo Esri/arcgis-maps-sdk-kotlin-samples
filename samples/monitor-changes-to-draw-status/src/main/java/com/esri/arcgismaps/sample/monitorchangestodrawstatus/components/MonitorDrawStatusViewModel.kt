@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
  * Exposes an ArcGISMap and a flow indicating whether the map is currently drawing
  * so the UI can react (show a progress indicator and status text).
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MonitorDrawStatusViewModel(application: Application) : AndroidViewModel(application) {
 
     // Create a map shown by the sample
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {

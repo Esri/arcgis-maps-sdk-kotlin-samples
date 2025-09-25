@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.monitorchangestodrawstatus.screens.MainScreen
+import com.esri.arcgismaps.sample.monitorchangestodrawstatus.screens.MonitorDrawStatusScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MonitorChangesToDrawStatusApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            MainScreen(
+            MonitorDrawStatusScreen(
                 sampleName = getString(R.string.monitor_changes_to_draw_status_app_name)
             )
         }

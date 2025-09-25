@@ -37,7 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.DrawStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.monitorchangestodrawstatus.components.MainViewModel
+import com.esri.arcgismaps.sample.monitorchangestodrawstatus.components.MonitorDrawStatusViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
@@ -50,8 +50,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
  * is used to notify the ViewModel of draw status changes.
  */
 @Composable
-fun MainScreen(sampleName: String) {
-    val viewModel: MainViewModel = viewModel()
+fun MonitorDrawStatusScreen(sampleName: String) {
+    val viewModel: MonitorDrawStatusViewModel = viewModel()
 
     // Observe whether the map is currently drawing
     val mapIsDrawing by viewModel.mapIsDrawing.collectAsStateWithLifecycle(false)
@@ -123,6 +123,6 @@ fun MainScreen(sampleName: String) {
 @Composable
 private fun PreviewMonitorChangesToDrawStatusScreen() {
     SamplePreviewSurface {
-        MainScreen(sampleName = "Monitor changes to draw status")
+        MonitorDrawStatusScreen(sampleName = "Monitor changes to draw status")
     }
 }
