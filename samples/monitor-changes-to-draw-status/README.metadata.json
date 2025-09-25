@@ -9,15 +9,17 @@
     "keywords": [
         "draw",
         "loading",
-        "map",
         "render",
         "DrawStatus",
-        "Map",
+        "ArcGISMap",
         "MapView"
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "DrawStatus",
+        "MapView"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/components/MonitorDrawStatusViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/screens/MonitorDrawStatusScreen.kt",
