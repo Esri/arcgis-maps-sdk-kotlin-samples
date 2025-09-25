@@ -27,7 +27,6 @@ import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Surface
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.Camera
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.addelevationsourcefromtilepackage.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
@@ -77,7 +76,7 @@ class AddElevationSourceFromTilePackageViewModel(app: Application) : AndroidView
                 )
             }
         }
-        // Set the viewpoint using boundingGeometry with camera
+        // Set initial viewpoint using boundingGeometry with camera
         initialViewpoint = Viewpoint(
             boundingGeometry = cameraLocation,
             camera = camera
@@ -86,7 +85,12 @@ class AddElevationSourceFromTilePackageViewModel(app: Application) : AndroidView
 
     init {
         viewModelScope.launch {
-            arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            arcGISScene.load().onFailure { error ->
+                messageDialogVM.showMessageDialog(
+                    title = "Failed to load scene",
+                    description = error.message.toString()
+                )
+            }
         }
     }
 }

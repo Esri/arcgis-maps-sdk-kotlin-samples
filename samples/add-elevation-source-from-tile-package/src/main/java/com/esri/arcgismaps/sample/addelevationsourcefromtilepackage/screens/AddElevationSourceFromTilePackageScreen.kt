@@ -44,7 +44,7 @@ fun AddElevationSourceFromTilePackageScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISScene = sceneViewModel.arcGISScene,
+                    arcGISScene = sceneViewModel.arcGISScene
                 )
             }
 
