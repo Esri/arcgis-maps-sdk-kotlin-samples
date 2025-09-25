@@ -1,12 +1,12 @@
 # Monitor changes to draw status
 
-Get the draw status of your MapView to know when all layers in the map have finished drawing.
+Get the draw status of your map view or scene view to know when all layers in the map or scene have finished drawing.
 
 Image: monitor-changes-to-draw-status.png
 
 ## Use case
 
-Display a progress indicator while layers are drawing.
+Display an indicator of layers drawing.
 
 ## How to use the sample
 
@@ -17,14 +17,15 @@ Display a progress indicator while layers are drawing.
 
 1. Create an ArcGISMap.
 2. Pass the ArcGISMap to the Compose MapView.
-3. Use the MapView onDrawStatusChanged callback to receive DrawStatus updates and forward them to the ViewModel.
-4. The ViewModel exposes a flow that indicates whether the map is drawing; the UI observes that flow and shows/hides UI elements accordingly.
+3. Use the MapView onDrawStatusChanged callback to receive DrawStatus updates
 
 ## Relevant API
 
-- DrawStatus
-- MapView
-- ArcGISMap
+* ArcGISMap
+* DrawStatus
+* DrawStatusChangedEvent
+* DrawStatusChangedListener
+* MapView
 
 ## Tags
 
