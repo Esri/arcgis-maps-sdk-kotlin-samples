@@ -117,12 +117,3 @@ fun MonitorDrawStatusScreen(sampleName: String) {
         }
     )
 }
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-private fun PreviewMonitorChangesToDrawStatusScreen() {
-    SamplePreviewSurface {
-        MonitorDrawStatusScreen(sampleName = "Monitor changes to draw status")
-    }
-}
