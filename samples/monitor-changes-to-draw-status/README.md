@@ -2,7 +2,7 @@
 
 Get the draw status of your map view or scene view to know when all layers in the map or scene have finished drawing.
 
-Image: monitor-changes-to-draw-status.png
+![Image of monitor changes to draw status](monitor-changes-to-draw-status.png)
 
 ## Use case
 
