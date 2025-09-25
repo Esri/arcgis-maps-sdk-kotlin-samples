@@ -16,7 +16,7 @@ Once the layer loads, the toggle button will be enabled. Click it to toggle betw
 
 1. Create a `WmsLayer` specifying the URL of the service and the layer names you want `WmsLayer(url, names)`.
 2. When the layer is done loading, get it's list of style strings using `wmsLayer.layerInfos.firstOrNull()?.styles`.
-3. Set one of the styles using `wmsSublayer.currentStyle = styleString `.
+3. Set one of the styles using `wmsSublayer.currentStyle = styleString`.
 
 ## Relevant API
 
