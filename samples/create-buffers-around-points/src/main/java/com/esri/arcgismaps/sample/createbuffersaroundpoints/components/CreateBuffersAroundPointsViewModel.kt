@@ -20,8 +20,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.Latitude
+import com.arcgismaps.geometry.Longitude
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.PolygonBuilder
@@ -52,13 +53,97 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
     // Message dialog VM for reporting errors to the UI
     val messageDialogVM = MessageDialogViewModel()
 
-    // Graphics overlays: boundary, buffers, and tapped points
-    val boundaryGraphicsOverlay = GraphicsOverlay()
-    val bufferGraphicsOverlay = GraphicsOverlay()
-    val tappedPointsGraphicsOverlay = GraphicsOverlay()
+    // Create the spatial reference (State Plane North Central Texas, WKID 32038)
+    val statePlaneNorthCentralTexas = SpatialReference(wkid = 32038)
 
+    // Map with projected spatial reference (State Plane North Central Texas).
+    val arcGISMap by lazy {
+        ArcGISMap(spatialReference = statePlaneNorthCentralTexas).apply {
+            // Set initial viewpoint of the map
+            initialViewpoint = Viewpoint(boundingGeometry = boundaryPolygon)
+            // Set the basemap base layer to display the USA map server.
+            setBasemap(
+                basemap = Basemap(
+                    baseLayer = ArcGISMapImageLayer(
+                        url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer"
+                    )
+                )
+            )
+        }
+    }
+    // The boundary polygon that defines the valid area of use.
+    private val boundaryPolygon: Polygon by lazy {
+        // Build the boundary polygon coordinates in lat/long and project into the state plane spatial reference
+        val boundaryLatLon = listOf(
+            Point(Latitude(31.720), Longitude(-103.070)),
+            Point(Latitude(34.580), Longitude(-103.070)),
+            Point(Latitude(34.580), Longitude(-94.000)),
+            Point(Latitude(31.720), Longitude(-94.000))
+        )
+
+        // Project the polygon into the State Plane spatial reference
+        val projectedBoundaryPoints = boundaryLatLon.mapNotNull { point ->
+            GeometryEngine.projectOrNull(
+                geometry = point,
+                spatialReference = statePlaneNorthCentralTexas
+            )
+        }
+        // Build the boundary polygon geometry using the projected points
+        PolygonBuilder(spatialReference = statePlaneNorthCentralTexas).apply {
+            projectedBoundaryPoints.forEach { addPoint(it) }
+        }.toGeometry()
+    }
+
+    // Graphics overlays: boundary, buffers, and tapped points
+    private val boundaryGraphicsOverlay by lazy {
+        GraphicsOverlay().apply {
+            // Create a dashed red boundary graphic
+            graphics += Graphic(
+                geometry = boundaryPolygon,
+                symbol = SimpleLineSymbol(
+                    style = SimpleLineSymbolStyle.Dash,
+                    color = Color.red,
+                    width = 5f
+                )
+            )
+        }
+    }
+
+    // Configure buffer overlay renderer (yellow fill with green outline)
+    private val bufferGraphicsOverlay by lazy {
+        val bufferOutline = SimpleLineSymbol(
+            style = SimpleLineSymbolStyle.Solid,
+            color = Color.green,
+            width = 3f
+        )
+        val bufferFill = SimpleFillSymbol(
+            style = SimpleFillSymbolStyle.Solid,
+            color = Color.fromRgba(r = 255, g = 255, b = 0, a = 153),
+            outline = bufferOutline
+        )
+        GraphicsOverlay().apply { renderer = SimpleRenderer(symbol = bufferFill) }
+    }
+
+
+    // Configure tapped points overlay renderer (small red circles)
+    private val tappedPointsGraphicsOverlay by lazy {
+        val tapSymbol = SimpleMarkerSymbol(
+            style = SimpleMarkerSymbolStyle.Circle,
+            color = Color.red,
+            size = 10f
+        )
+        GraphicsOverlay().apply { renderer = SimpleRenderer(symbol = tapSymbol) }
+    }
+   
     val graphicsOverlays: List<GraphicsOverlay>
         get() = listOf(boundaryGraphicsOverlay, bufferGraphicsOverlay, tappedPointsGraphicsOverlay)
+
+    // Keep last tapped point when requesting radius input
+    private var lastTappedPoint: Point? = null
+
+    // List of (point, radiusInMapUnits)
+    private val bufferPoints: MutableList<Pair<Point, Double>> = mutableListOf()
+
 
     private val _statusText = MutableStateFlow("Tap on the map to add buffers.")
     val statusText = _statusText.asStateFlow()
@@ -70,90 +155,10 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
     private val _shouldUnion = MutableStateFlow(false)
     val shouldUnion = _shouldUnion.asStateFlow()
 
-    // Keep last tapped point when requesting radius input
-    private var lastTappedPoint: Point? = null
-
-    // List of (point, radiusInMapUnits)
-    private val bufferPoints: MutableList<Pair<Point, Double>> = mutableListOf()
-
-    // The boundary polygon that defines the valid area of use.
-    private var boundaryPolygon: Polygon? = null
-
-    // Create the spatial reference (State Plane North Central Texas, WKID 32038)
-    val statePlaneNorthCentralTexas = SpatialReference(wkid = 32038)
-
-    // Map with projected spatial reference (State Plane North Central Texas).
-    val arcGISMap = ArcGISMap(statePlaneNorthCentralTexas).apply {
-        val usaLayer = ArcGISMapImageLayer(url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer")
-        // set a basemap that works well with projected data
-        setBasemap(Basemap(baseLayer = usaLayer))
-    }
-
     init {
         viewModelScope.launch {
-            try {
-
-                // Build the boundary polygon coordinates in lat/long and project into the state plane spatial reference
-                val boundaryLatLon = listOf(
-                    Point(x = -103.070, y = 31.720, spatialReference = SpatialReference.wgs84()),
-                    Point(x = -103.070, y = 34.580, spatialReference = SpatialReference.wgs84()),
-                    Point(x = -94.000, y = 34.580, spatialReference = SpatialReference.wgs84()),
-                    Point(x = -94.000, y = 31.720, spatialReference = SpatialReference.wgs84())
-                )
-
-                // Project the polygon into the State Plane spatial reference
-                val polygonGeoms = boundaryLatLon.map { GeometryEngine.projectOrNull(it, statePlaneNorthCentralTexas) }
-                if (polygonGeoms.any { it == null }) {
-                    messageDialogVM.showMessageDialog("Error projecting boundary geometry")
-                    return@launch
-                }
-
-                val builder = PolygonBuilder(spatialReference = statePlaneNorthCentralTexas)
-                polygonGeoms.filterNotNull().forEach { builder.addPoint(it) }
-                boundaryPolygon = builder.toGeometry()
-
-                // The boundary polygon extent to configure the map's initial viewpoint
-                boundaryPolygon?.let { poly ->
-                   // Create and add a dashed red boundary graphic
-                    val boundaryOutline = SimpleLineSymbol(
-                        style = SimpleLineSymbolStyle.Dash,
-                        color = Color.red,
-                        width = 5f
-                    )
-                    val boundaryGraphic = Graphic(geometry = poly, symbol = boundaryOutline)
-                    boundaryGraphicsOverlay.graphics.add(boundaryGraphic)
-                }
-
-                // Configure buffer overlay renderer (yellow fill with green outline)
-                val bufferOutline = SimpleLineSymbol(
-                    style = SimpleLineSymbolStyle.Solid,
-                    color = Color.green,
-                    width = 3f
-                )
-                val bufferFill = SimpleFillSymbol(
-                    style = SimpleFillSymbolStyle.Solid,
-                    color = Color.fromRgba(r = 255, g = 255, b = 0, a = 153),
-                    outline = bufferOutline
-                )
-                bufferGraphicsOverlay.renderer = SimpleRenderer(symbol = bufferFill)
-
-                // Configure tapped points overlay renderer (small red circles)
-                val tapSymbol = SimpleMarkerSymbol(
-                    style = SimpleMarkerSymbolStyle.Circle,
-                    color = Color.red,
-                    size = 10f
-                )
-                tappedPointsGraphicsOverlay.renderer = SimpleRenderer(symbol = tapSymbol)
-
-                //Set initial viewpoint of the map
-                arcGISMap.initialViewpoint = Viewpoint(boundingGeometry = boundaryPolygon as Geometry)
-                // Load the map; report any failure
-                arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
-
-
-            } catch (e: Throwable) {
-                messageDialogVM.showMessageDialog(e)
-            }
+            // Load the map; report any failure
+            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 
@@ -162,26 +167,15 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
      * request a buffer radius input from the UI. Otherwise update status to indicate out-of-bounds.
      */
     fun onMapTapped(mapPoint: Point) {
-        viewModelScope.launch {
-            val boundary = boundaryPolygon
-            if (boundary == null) {
-                _statusText.value = "Boundary not initialized"
-                return@launch
-            }
-
-            val contains = GeometryEngine.contains(boundary, mapPoint)
-            if (!contains) {
-                _statusText.value = "Tap within the boundary to add buffer."
-                // Inform the user via message dialog as well
-                messageDialogVM.showMessageDialog("Tap within the boundary to add buffer.")
-                return@launch
-            }
-
-            // Store the tapped point and request input dialog
-            lastTappedPoint = mapPoint
-            _isInputDialogVisible.value = true
-            _statusText.value = "Enter buffer radius (miles) for the tapped location"
+        val contains = GeometryEngine.contains(boundaryPolygon, mapPoint)
+        if (!contains) {
+            _statusText.value = "Tap within the boundary to add buffer."
         }
+
+        // Store the tapped point and request input dialog
+        lastTappedPoint = mapPoint
+        _isInputDialogVisible.value = true
+        _statusText.value = "Enter buffer radius (miles) for the tapped location"
     }
 
     /**
@@ -191,22 +185,16 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
     fun submitRadiusMiles(radiusMiles: Double) {
         viewModelScope.launch {
             val point = lastTappedPoint
-            if (point == null) {
-                messageDialogVM.showMessageDialog("Internal error: missing tapped point")
-                _isInputDialogVisible.value = false
-                return@launch
-            }
 
-            if (radiusMiles <= 0.0) {
-                messageDialogVM.showMessageDialog("Please enter a value greater than 0")
-                return@launch
+            if (radiusMiles <= 0.0 || radiusMiles >= 300) {
+                messageDialogVM.showMessageDialog("Please enter a value between 0 & 300.")
             }
 
             // Convert miles to feet (1 mile = 5280 feet). The state plane uses US feet for this sample.
             val radiusFeet = radiusMiles * 5280.0
 
             // Add to internal list and draw
-            bufferPoints.add(point to radiusFeet)
+            bufferPoints.add(point!! to radiusFeet)
 
             // Add tap point graphic
             tappedPointsGraphicsOverlay.graphics.add(Graphic(geometry = point))
@@ -245,18 +233,13 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
 
             if (unioned) {
                 // Union the polygons into a single geometry (may return a Polygon or Multipart geometry)
-                val unionedGeometry = GeometryEngine.unionOrNull(polygons)
-                if (unionedGeometry != null) {
+                GeometryEngine.unionOrNull(polygons)?.let { unionedGeometry ->
                     bufferGraphicsOverlay.graphics.add(Graphic(geometry = unionedGeometry))
-                } else {
-                    // Fallback: add each polygon separately
-                    polygons.forEach { bufferGraphicsOverlay.graphics.add(Graphic(geometry = it)) }
                 }
-            } else {
+            }else {
                 // Add each polygon as its own graphic
                 polygons.forEach { bufferGraphicsOverlay.graphics.add(Graphic(geometry = it)) }
             }
-
             _statusText.value = "Buffers drawn (${if (unioned) "unioned" else "individual"})."
         }
     }
