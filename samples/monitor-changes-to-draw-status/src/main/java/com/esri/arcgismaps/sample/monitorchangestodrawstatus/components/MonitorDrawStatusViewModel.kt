@@ -62,12 +62,9 @@ class MonitorDrawStatusViewModel(application: Application) : AndroidViewModel(ap
     init {
         // Load the map and surface any errors via the MessageDialogViewModel.
         viewModelScope.launch {
-            arcGISMap.load().onFailure { throwable ->
+            arcGISMap.load().onFailure { error ->
                 // Surface the error so the UI can present a dialog
-                messageDialogVM.showMessageDialog(
-                    title = "Error loading map",
-                    description = throwable.message.toString()
-                )
+                messageDialogVM.showMessageDialog(error)
             }
         }
     }
