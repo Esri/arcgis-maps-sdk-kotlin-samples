@@ -1,0 +1,40 @@
+{
+    "category": "Visualization",
+    "description": "Extrude features based on their attributes.",
+    "formal_name": "ShowExtrudedFeatures",
+    "ignore": false,
+    "images": [
+        "show-extruded-features.png"
+    ],
+    "keywords": [
+        "3D",
+        "extrude",
+        "extrusion",
+        "extrusion expression",
+        "height",
+        "renderer",
+        "scene",
+        "ExtrusionExpression",
+        "ExtrusionMode",
+        "FeatureLayer",
+        "SceneProperties",
+        "ServiceFeatureTable",
+        "SimpleRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ExtrusionExpression",
+        "ExtrusionMode",
+        "FeatureLayer",
+        "SceneProperties",
+        "ServiceFeatureTable",
+        "SimpleRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showextrudedfeatures/components/ShowExtrudedFeaturesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showextrudedfeatures/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showextrudedfeatures/screens/ShowExtrudedFeaturesScreen.kt"
+    ],
+    "title": "Show extruded features"
+}
