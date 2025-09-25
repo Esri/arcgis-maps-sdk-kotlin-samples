@@ -25,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,19 +45,30 @@ import com.esri.arcgismaps.sample.stylepointwithdistancecompositescenesymbol.com
 fun StylePointWithDistanceCompositeSceneSymbolScreen(sampleName: String) {
     val viewModel: StylePointWithDistanceCompositeSceneSymbolViewModel = viewModel()
 
+    // Collect camera controlled exposed by the ViewModel.
+    val cameraController by viewModel.cameraControllerFlow.collectAsStateWithLifecycle()
     // Collect camera distance exposed by the ViewModel.
     val cameraDistance by viewModel.cameraDistanceMeters.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) }
-    ) { padding ->
+    // Create the orbit controller to be attached for the SceneView's displayed graphic
+    LaunchedEffect(Unit) {
+        viewModel.createOrbitGeoElementCameraController()
+    }
+
+    // Clear camera controller on dispose, to avoid orbiting a graphic which doesn't exist.
+    DisposableEffect(Unit) {
+        onDispose { viewModel.clearCameraController() }
+    }
+
+    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             // Provide the scene, camera controller, overlays and the SceneViewProxy.
             SceneView(
-                modifier = Modifier.fillMaxSize().weight(1f),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
                 arcGISScene = viewModel.arcGISScene,
-                sceneViewProxy = viewModel.sceneViewProxy,
-                cameraController = viewModel.orbitCameraController,
+                cameraController = cameraController,
                 graphicsOverlays = listOf(viewModel.graphicsOverlay),
             )
             Column(
