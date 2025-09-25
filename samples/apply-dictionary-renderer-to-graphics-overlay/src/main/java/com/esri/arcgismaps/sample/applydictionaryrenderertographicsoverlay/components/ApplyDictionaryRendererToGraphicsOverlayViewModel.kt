@@ -74,7 +74,7 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
                 return@launch
             }
 
-            // Create the point graphics in separate coroutine from a local XML file
+            // Create the point graphics from a local XML file
             val pointGraphics = makeMessageGraphics().getOrElse {
                 messageDialogVM.showMessageDialog(it)
                 return@launch
@@ -116,8 +116,14 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
 
         return dictionarySymbolStyle.load().mapCatching {
             // Uses the "Ordered Anchor Points" for the symbol style draw rule.
-            dictionarySymbolStyle.configurations.firstOrNull { it.name.equals("model", ignoreCase = true) }
-                ?.let { configuration -> configuration.value = "ORDERED ANCHOR POINTS" }
+            // Get the model configuration from the style's list of configurations.
+            val modelConfiguration = dictionarySymbolStyle.configurations.firstOrNull {
+                it.name.equals("model", ignoreCase = true)
+            }
+            if (modelConfiguration != null) {
+                // Set the draw rule of the style to "ORDERED ANCHOR POINTS".
+                modelConfiguration.value = "ORDERED ANCHOR POINTS"
+            }
             DictionaryRenderer(dictionarySymbolStyle = dictionarySymbolStyle)
         }
     }
