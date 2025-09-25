@@ -94,10 +94,7 @@ class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
             _selectedStyleIndex.value = 0
             wmsSublayer?.currentStyle = styles[0]
         }.onFailure { error ->
-            messageDialogVM.showMessageDialog(
-                title = "Failed to load WMS layer",
-                description = error.message.toString()
-            )
+            messageDialogVM.showMessageDialog(error)
         }
     }
 
