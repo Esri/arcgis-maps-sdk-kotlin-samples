@@ -20,10 +20,10 @@ When loaded, the sample will show a scene with a terrain surface applied. Pan an
 4. Assign the `surface` to the scene's `baseSurface`.
 5. Display the scene in a `SceneView` by passing the `ArcGISScene`.
 
-### Key classes
+### Relevant API
 
-- ArcGISTiledElevationSource
-- Surface
+* ArcGISTiledElevationSource
+* Surface
 
 ## Offline data
 
