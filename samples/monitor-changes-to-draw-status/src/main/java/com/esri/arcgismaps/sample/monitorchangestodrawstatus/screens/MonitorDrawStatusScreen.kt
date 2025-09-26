@@ -69,10 +69,8 @@ fun MonitorDrawStatusScreen(sampleName: String) {
                         modifier = Modifier
                             .fillMaxSize(),
                         arcGISMap = viewModel.arcGISMap,
-                        onDrawStatusChanged = { drawStatus: DrawStatus ->
-                            // Forward draw status updates to the ViewModel
-                            viewModel.updateDrawStatus(drawStatus)
-                        }
+                        // Forward draw status updates to the ViewModel
+                        onDrawStatusChanged = viewModel::updateDrawStatus
                     )
 
                     // Top overlay text showing current draw status
