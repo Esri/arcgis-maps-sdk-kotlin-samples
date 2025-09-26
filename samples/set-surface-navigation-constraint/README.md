@@ -2,6 +2,8 @@
 
 See through terrain in a scene and move the camera underground.
 
+![Image of add elevation source from tile package](set-surface-navigation-constraint.png)
+
 ## Use case
 
 By default, a scene's terrain is fully opaque, and the camera cannot go underground. To see underground features such as pipes in a utility network, you can lower the opacity of the terrain surface and set the navigation constraint on the surface to allow underground navigation.
@@ -18,7 +20,7 @@ The sample loads a scene with underground features. Pan and zoom to explore the 
 
 ## Relevant API
 
-- NavigationConstraint
+* NavigationConstraint
 
 ## About the data
 
