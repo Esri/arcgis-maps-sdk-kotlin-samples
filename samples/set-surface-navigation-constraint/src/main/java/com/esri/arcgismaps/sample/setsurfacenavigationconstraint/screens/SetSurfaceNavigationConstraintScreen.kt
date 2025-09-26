@@ -44,8 +44,7 @@ fun SetSurfaceNavigationConstraintScreen(sampleName: String) {
                     .padding(paddingValues)
             ) {
                 SceneView(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     arcGISScene = sceneViewModel.arcGISScene
                 )
             }

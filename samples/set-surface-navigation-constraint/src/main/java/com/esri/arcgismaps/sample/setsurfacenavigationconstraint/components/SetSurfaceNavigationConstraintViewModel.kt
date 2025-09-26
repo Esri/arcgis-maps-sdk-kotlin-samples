@@ -36,13 +36,13 @@ class SetSurfaceNavigationConstraintViewModel(app: Application) : AndroidViewMod
             itemId = "91a4fafd747a47c7bab7797066cb9272"
         )
     ).apply {
-        // Allow the camera to move below the elevation surface
+        // Allow the camera to move above and below the elevation surface.
         baseSurface.navigationConstraint = NavigationConstraint.None
         // Sets the opacity so that it is possible to see below the surface.
         baseSurface.opacity = 0.7f
     }
 
-    // Create a message dialog view model for handling error messages
+    // Message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
