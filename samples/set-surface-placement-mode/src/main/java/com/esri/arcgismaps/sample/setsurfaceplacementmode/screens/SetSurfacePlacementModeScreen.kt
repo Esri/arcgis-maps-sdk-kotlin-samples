@@ -87,7 +87,6 @@ fun SetSurfacePlacementModeScreen(sampleName: String) {
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Compact row: label on the left, segmented control on the right
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -111,7 +110,6 @@ fun SetSurfacePlacementModeScreen(sampleName: String) {
                             }
                         }
 
-                        // Compact row: label on the left, slider on the right
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),

@@ -42,10 +42,7 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.TextSymbol
 import com.arcgismaps.mapping.symbology.VerticalAlignment
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewModel(application) {
@@ -55,13 +52,21 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
     private val elevationSourceUrl =
         "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
 
-    // Create ArcGISScene with an imagery basemap, elevation, and buildings in Brest, France
+    // Z-value range used for interactive elevation updates
+    val zMin = 0.0
+    val zMax = 140.0
+    val zMid = (zMin + zMax) / 2.0
+
+    // Create ArcGISScene
     val arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
+        // Add elevation to the base surface
         baseSurface = Surface().apply {
             elevationSources.add(ArcGISTiledElevationSource(elevationSourceUrl))
         }
+        // Add scene layer from a URL
         operationalLayers.add(ArcGISSceneLayer(uri = arcGISSceneLayerUrl))
 
+        // Set an initial viewpoint
         val viewpointPoint = Point(
             x = -4.4595,
             y = 48.3889,
@@ -104,6 +109,7 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
     private val overlayRelativeToScene = createGraphicsOverlay(
         surfacePlacement = SurfacePlacement.RelativeToScene,
         label = "Relative to Scene",
+        // Tiny X/Y offset helps differentiate symbols rendered at the same location
         offset = 2e-4
     )
 
@@ -116,13 +122,11 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
         overlayRelativeToScene
     )
 
+    // Current draped mode selection
     var drapedMode by mutableStateOf(DrapedMode.Billboarded)
         private set
 
-    val zMin = 0.0
-    val zMax = 140.0
-    val zMid = (zMin + zMax) / 2.0
-
+    // Current Z-value in meters used by all graphics
     var zValue by mutableDoubleStateOf(zMid)
         private set
 
@@ -138,24 +142,26 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
         }
     }
 
-    // Update the draped mode and overlay visibility
+    // Update currently selected draped mode and toggle visibility
     fun updateDrapedMode(mode: DrapedMode) {
         drapedMode = mode
         updateDrapedOverlayVisibility(mode)
     }
 
-    // Update z-value (expects meters)
+    // Update the Z-value (in meters) applied to all placement graphics
     fun updateZValue(valueMeters: Float) {
         val newZ = valueMeters.toDouble()
         zValue = newZ
         updateGraphicsZValue(newZ)
     }
 
+    // Toggle visibility between DrapedBillboarded and DrapedFlat overlays
     private fun updateDrapedOverlayVisibility(mode: DrapedMode) {
         overlayDrapedBillboarded.isVisible = mode == DrapedMode.Billboarded
         overlayDrapedFlat.isVisible = mode == DrapedMode.Flat
     }
 
+    // Apply the given Z-value to all graphics
     private fun updateGraphicsZValue(zMeters: Double) {
         graphicsOverlays.forEach { overlay ->
             overlay.graphics.forEach { graphic ->
@@ -166,17 +172,19 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
         }
     }
 
+    // Create a GraphicsOverlay with a marker and label configured for the given SurfacePlacement
     private fun createGraphicsOverlay(
         surfacePlacement: SurfacePlacement,
         label: String,
         offset: Double
     ): GraphicsOverlay {
-        // Create symbols
+        // Simple red triangle marker
         val markerSymbol = SimpleMarkerSymbol(
             style = SimpleMarkerSymbolStyle.Triangle,
             color = Color.red,
             size = 20f
         )
+        // Blue text label with cyan halo for readability
         val textSymbol = TextSymbol(
             text = label,
             color = Color.fromRgba(0, 0, 255, 255),
@@ -186,10 +194,11 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
         ).apply {
             haloColor = Color.cyan
             haloWidth = 2f
+            // Vertical offset avoids overlapping label and marker
             offsetY = 20f
         }
 
-        // Create a point with a tiny offset for RelativeToScene to avoid overlap
+        // apply tiny XY offset when requested to avoid overlap
         val point = Point(
             x = -4.4609257 + offset,
             y = 48.3903965 + offset,
@@ -197,7 +206,7 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
             spatialReference = SpatialReference.wgs84()
         )
 
-        // Create graphics and overlay
+        // Create overlay with both graphics and set its placement behavior
         return GraphicsOverlay().apply {
             graphics.addAll(
                 listOf(
