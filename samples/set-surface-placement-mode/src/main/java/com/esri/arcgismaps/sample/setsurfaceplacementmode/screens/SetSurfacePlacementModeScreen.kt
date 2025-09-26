@@ -16,16 +16,24 @@
 
 package com.esri.arcgismaps.sample.setsurfaceplacementmode.screens
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,23 +41,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.setsurfaceplacementmode.components.SetSurfacePlacementModeViewModel
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
-import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
-import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.setsurfaceplacementmode.components.SetSurfacePlacementModeViewModel
+import com.esri.arcgismaps.sample.setsurfaceplacementmode.components.SetSurfacePlacementModeViewModel.DrapedMode
+import java.util.Locale
 
-/**
- * Main screen layout for the sample app
- */
 @Composable
 fun SetSurfacePlacementModeScreen(sampleName: String) {
-    val mapViewModel: SetSurfacePlacementModeViewModel = viewModel()
+    val sceneViewModel: SetSurfacePlacementModeViewModel = viewModel()
+
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -62,33 +67,71 @@ fun SetSurfacePlacementModeScreen(sampleName: String) {
                 ) { Icon(Icons.Filled.Settings, contentDescription = "Show options") }
             }
         },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    onVisibleAreaChanged = { isBottomSheetVisible = false }
+        content = { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                SceneView(
+                    modifier = Modifier.fillMaxSize(),
+                    arcGISScene = sceneViewModel.arcGISScene,
+                    graphicsOverlays = sceneViewModel.graphicsOverlays
                 )
+
+                BottomSheet(
+                    isVisible = isBottomSheetVisible,
+                    sheetTitle = "Surface Placement Options",
+                    onDismissRequest = { isBottomSheetVisible = false }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Compact row: label on the left, segmented control on the right
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Draped mode:",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            SingleChoiceSegmentedButtonRow {
+                                DrapedMode.entries.forEach { mode ->
+                                    SegmentedButton(
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                            index = mode.ordinal, count = DrapedMode.entries.size),
+                                        onClick = { sceneViewModel.updateDrapedMode(mode) },
+                                        selected = sceneViewModel.drapedMode == mode
+                                    ) {
+                                        Text(mode.name)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Compact row: label on the left, slider on the right
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Z-value: ${String.format(Locale.getDefault(),"%.1f", sceneViewModel.zValue)} m",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Slider(
+                                value = sceneViewModel.zValue.toFloat(),
+                                onValueChange = { newValue -> sceneViewModel.updateZValue(newValue) },
+                                valueRange = sceneViewModel.zMin.toFloat()..sceneViewModel.zMax.toFloat()
+                            )
+                        }
+                    }
+                }
             }
 
-            BottomSheet(
-                isVisible = isBottomSheetVisible,
-                sheetTitle = "Bottom sheet options",
-                onDismissRequest = { isBottomSheetVisible = false }
-            ) {
-                SampleOptions(
-                    // isCurrentOptionEnabled = ...,
-                    // onOptionToggled = { ... },
-                )
-            }
-
-            mapViewModel.messageDialogVM.apply {
+            sceneViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
@@ -99,33 +142,4 @@ fun SetSurfacePlacementModeScreen(sampleName: String) {
             }
         }
     )
-}
-
-@Composable
-fun SampleOptions() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        DropDownMenuBox(
-            textFieldValue = "<selected-option>",
-            textFieldLabel = "Select an option",
-            dropDownItemList = emptyList(),
-            onIndexSelected = { }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun BottomSheetPreview() {
-    SamplePreviewSurface {
-        BottomSheet(
-            isVisible = true,
-            sheetTitle = "Bottom sheet options",
-        ) {
-            SampleOptions()
-        }
-    }
 }
