@@ -17,6 +17,10 @@
         "Surface"
     ],
     "language": "kotlin",
+    "provision_from": [
+        "https://www.arcgis.com/home/item.html?id=52ca74b4ba8042b78b3c653696f34a9c"
+    ],
+    "provision_to": [],
     "redirect_from": "",
     "relevant_apis": [
         "ArcGISTiledElevationSource",
