@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                ApplystretchRendererApp()
+                ApplyStretchRendererApp()
             }
         }
     }
 
     @Composable
-    private fun ApplystretchRendererApp() {
+    private fun ApplyStretchRendererApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
             ApplyStretchRendererScreen(
                 sampleName = getString(R.string.apply_stretch_renderer_app_name)
