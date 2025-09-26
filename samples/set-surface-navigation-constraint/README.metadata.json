@@ -11,12 +11,14 @@
         "subsurface",
         "underground",
         "utilities",
-        "NavigationConstraint"
+        "NavigationConstraint",
+        "Surface"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
-        "NavigationConstraint"
+        "NavigationConstraint",
+        "Surface"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/components/SetSurfaceNavigationConstraintViewModel.kt",
