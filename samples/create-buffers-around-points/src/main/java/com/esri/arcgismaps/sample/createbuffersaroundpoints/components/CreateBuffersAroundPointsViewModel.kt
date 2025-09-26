@@ -170,6 +170,7 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
         val contains = GeometryEngine.contains(boundaryPolygon, mapPoint)
         if (!contains) {
             _statusText.value = "Tap within the boundary to add buffer."
+            return
         }
 
         // Store the tapped point and request input dialog
