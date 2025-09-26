@@ -20,11 +20,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.setsurfacenavigationconstraint.components.SetSurfaceNavigationConstraintViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -34,25 +33,25 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun SetSurfaceNavigationConstraintScreen(sampleName: String) {
-    val mapViewModel: SetSurfaceNavigationConstraintViewModel = viewModel()
+    val sceneViewModel: SetSurfaceNavigationConstraintViewModel = viewModel()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
+        content = { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(paddingValues)
             ) {
-                MapView(
+                SceneView(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                        .fillMaxSize(),
+                    arcGISScene = sceneViewModel.arcGISScene
                 )
-                // TODO: Add UI components in this Column ...
             }
 
-            mapViewModel.messageDialogVM.apply {
+            // Display a dialog if the sample encounters an error
+            sceneViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
