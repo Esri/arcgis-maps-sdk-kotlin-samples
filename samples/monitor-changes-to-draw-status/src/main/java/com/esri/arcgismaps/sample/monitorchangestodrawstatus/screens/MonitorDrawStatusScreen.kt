@@ -64,7 +64,7 @@ fun MonitorDrawStatusScreen(sampleName: String) {
                 .padding(padding)) {
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // Compose MapView: pass in the ArcGISMap from the ViewModel and the draw status callback.
+                    // Pass in the ArcGISMap from the ViewModel and the draw status callback.
                     MapView(
                         modifier = Modifier
                             .fillMaxSize(),
