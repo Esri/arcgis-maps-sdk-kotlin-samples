@@ -15,23 +15,23 @@ TThe sample loads a scene showing four points that use the individual surface pl
 ## How it works
 
 1. Create a `GraphicsOverlay` for each `SurfacePlacement`:
-   - `Absolute` positions the graphic using only its z-value.
-   - `DrapedBillboarded` positions the graphic upright on the surface, always facing the camera, ignoring its z-value.
-   - `DrapedFlat` positions the graphic flat on the surface, ignoring its z-value.
-   - `Relative` positions the graphic using its z-value plus the elevation of the surface.
-   - `RelativeToScene` positions the graphic using its z-value plus the altitude values of the scene.
+   * `Absolute` positions the graphic using only its z-value.
+   * `DrapedBillboarded` positions the graphic upright on the surface, always facing the camera, ignoring its z-value.
+   * `DrapedFlat` positions the graphic flat on the surface, ignoring its z-value.
+   * `Relative` positions the graphic using its z-value plus the elevation of the surface.
+   * `RelativeToScene` positions the graphic using its z-value plus the altitude values of the scene.
 2. Create and add graphics to the graphics overlays.
 3. Set `GraphicsOverlay.sceneProperties.surfacePlacement` to the respective `SurfacePlacement`.
 4. Create a `SceneView` instance with a scene and the graphics overlays.
 
 ## Relevant API
 
-- Graphic
-- GraphicsOverlay
-- GeometryEngine.createWithZ
-- LayerSceneProperties
-- Surface
-- SurfacePlacement
+* Graphic 
+* GraphicsOverlay
+* GeometryEngine.createWithZ
+* LayerSceneProperties
+* Surface
+* SurfacePlacement
 
 ## About the data
 
