@@ -86,10 +86,7 @@ class AddElevationSourceFromTilePackageViewModel(app: Application) : AndroidView
     init {
         viewModelScope.launch {
             arcGISScene.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load scene",
-                    description = error.message.toString()
-                )
+                messageDialogVM.showMessageDialog(error)
             }
         }
     }
