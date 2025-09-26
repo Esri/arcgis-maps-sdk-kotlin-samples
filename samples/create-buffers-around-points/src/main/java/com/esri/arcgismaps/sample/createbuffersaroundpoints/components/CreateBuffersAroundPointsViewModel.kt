@@ -163,7 +163,7 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
     }
 
     /**
-     * Called by the MapView when the user taps the map. If the tap is within the valid boundary,
+     *  Called by the MapView on single tap. If the tap is within the valid boundary,
      * request a buffer radius input from the UI. Otherwise update status to indicate out-of-bounds.
      */
     fun onMapTapped(mapPoint: Point) {
@@ -179,32 +179,30 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
     }
 
     /**
-     * Submit the radius (in miles) provided by the user. Converts miles to the map's linear units
+     * Submit the radius (in miles) & converts miles to the map's linear units. Converts miles to the map's linear units
      * (the state plane spatial reference uses US feet) then creates the buffer and updates the overlays.
      */
     fun submitRadiusMiles(radiusMiles: Double) {
-        viewModelScope.launch {
-            val point = lastTappedPoint
+        val point = lastTappedPoint ?: return
 
-            if (radiusMiles <= 0.0 || radiusMiles >= 300) {
-                messageDialogVM.showMessageDialog("Please enter a value between 0 & 300.")
-            }
-
-            // Convert miles to feet (1 mile = 5280 feet). The state plane uses US feet for this sample.
-            val radiusFeet = radiusMiles * 5280.0
-
-            // Add to internal list and draw
-            bufferPoints.add(point!! to radiusFeet)
-
-            // Add tap point graphic
-            tappedPointsGraphicsOverlay.graphics.add(Graphic(geometry = point))
-
-            // Redraw buffers using current union setting
-            drawBuffers(unioned = _shouldUnion.value)
-
-            _isInputDialogVisible.value = false
-            _statusText.value = "Buffer created. Tap to add more points or press Clear."
+        if (radiusMiles <= 0.0 || radiusMiles >= 300) {
+            messageDialogVM.showMessageDialog("Please enter a value between 0 & 300.")
         }
+
+        // Convert miles to feet (1 mile = 5280 feet). The state plane uses US feet for this sample.
+        val radiusFeet = radiusMiles * 5280.0
+
+        // Add to internal list and draw
+        bufferPoints.add(point to radiusFeet)
+
+        // Add tap point graphic
+        tappedPointsGraphicsOverlay.graphics.add(Graphic(geometry = point))
+
+        // Redraw buffers using current union setting
+        drawBuffers(unioned = _shouldUnion.value)
+
+        _isInputDialogVisible.value = false
+        _statusText.value = "Buffer created. Tap to add more points or press Clear."
     }
 
     /**
@@ -212,36 +210,35 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
      * into a single geometry before displaying.
      */
     fun drawBuffers(unioned: Boolean) {
-        viewModelScope.launch {
-            // Clear existing buffer graphics
-            bufferGraphicsOverlay.graphics.clear()
+        // Clear existing buffer graphics
+        bufferGraphicsOverlay.graphics.clear()
 
-            if (bufferPoints.isEmpty()) {
-                _statusText.value = "Add a point to draw the buffers."
-                return@launch
-            }
-
-            // Create buffer geometries for each point
-            val polygons = bufferPoints.mapNotNull { (pt, radius) ->
-                GeometryEngine.bufferOrNull(pt, radius)
-            }
-
-            if (polygons.isEmpty()) {
-                messageDialogVM.showMessageDialog("Error creating buffer geometries")
-                return@launch
-            }
-
-            if (unioned) {
-                // Union the polygons into a single geometry (may return a Polygon or Multipart geometry)
-                GeometryEngine.unionOrNull(polygons)?.let { unionedGeometry ->
-                    bufferGraphicsOverlay.graphics.add(Graphic(geometry = unionedGeometry))
-                }
-            }else {
-                // Add each polygon as its own graphic
-                polygons.forEach { bufferGraphicsOverlay.graphics.add(Graphic(geometry = it)) }
-            }
-            _statusText.value = "Buffers drawn (${if (unioned) "unioned" else "individual"})."
+        if (bufferPoints.isEmpty()) {
+            _statusText.value = "Add a point to draw the buffers."
+            return
         }
+
+        // Create buffer geometries for each point
+        val polygons = bufferPoints.mapNotNull { (pt, radius) ->
+            GeometryEngine.bufferOrNull(pt, radius)
+        }
+
+        if (polygons.isEmpty()) {
+            messageDialogVM.showMessageDialog("Error creating buffer geometries")
+            return
+        }
+
+        if (unioned) {
+            // Union the polygons into a single geometry (may return a Polygon or Multipart geometry)
+            GeometryEngine.unionOrNull(polygons)?.let { unionedGeometry ->
+                bufferGraphicsOverlay.graphics.add(Graphic(geometry = unionedGeometry))
+            }
+        } else {
+            // Add each polygon as its own graphic
+            polygons.forEach { bufferGraphicsOverlay.graphics.add(Graphic(geometry = it)) }
+        }
+        _statusText.value = "Buffers drawn (${if (unioned) "unioned" else "individual"})."
+
     }
 
     /**
@@ -256,12 +253,10 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
      * Clears all buffer points and corresponding graphics.
      */
     fun clearAll() {
-        viewModelScope.launch {
-            bufferPoints.clear()
-            bufferGraphicsOverlay.graphics.clear()
-            tappedPointsGraphicsOverlay.graphics.clear()
-            _statusText.value = "Tap on the map to add buffers."
-        }
+        bufferPoints.clear()
+        bufferGraphicsOverlay.graphics.clear()
+        tappedPointsGraphicsOverlay.graphics.clear()
+        _statusText.value = "Tap on the map to add buffers."
     }
 
     /**
