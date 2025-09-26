@@ -163,7 +163,7 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
     }
 
     /**
-     *  Called by the MapView on single tap. If the tap is within the valid boundary,
+     * Called by the MapView on single tap. If the tap is within the valid boundary,
      * request a buffer radius input from the UI. Otherwise update status to indicate out-of-bounds.
      */
     fun onMapTapped(mapPoint: Point) {
