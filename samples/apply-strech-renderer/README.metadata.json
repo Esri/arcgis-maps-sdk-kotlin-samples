@@ -1,0 +1,49 @@
+{
+    "category": "Visualization",
+    "description": "Use a stretch renderer to enhance the visual contrast of raster data for analysis.",
+    "formal_name": "ApplyStretchRenderer",
+    "ignore": false,
+    "images": [
+        "apply-strech-renderer.png"
+    ],
+    "keywords": [
+        "analysis",
+        "deviation",
+        "histogram",
+        "imagery",
+        "interpretation",
+        "min-max",
+        "percent clip",
+        "pixel",
+        "raster",
+        "stretch",
+        "symbology",
+        "visualization",
+        "ColorRamp",
+        "MinMaxStretchParameters",
+        "PercentClipStretchParameters",
+        "Raster",
+        "RasterLayer",
+        "StandardDeviationStretchParameters",
+        "StretchParameters",
+        "StretchRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ColorRamp",
+        "MinMaxStretchParameters",
+        "PercentClipStretchParameters",
+        "Raster",
+        "RasterLayer",
+        "StandardDeviationStretchParameters",
+        "StretchParameters",
+        "StretchRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applystrechrenderer/components/ApplyStrechRendererViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystrechrenderer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystrechrenderer/screens/ApplyStrechRendererScreen.kt"
+    ],
+    "title": "Apply stretch renderer"
+}
