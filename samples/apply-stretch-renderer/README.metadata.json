@@ -42,9 +42,9 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/components/ApplystretchRendererViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/components/ApplyStretchRendererViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/screens/ApplystretchRendererScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/screens/ApplyStretchRendererScreen.kt"
     ],
     "title": "Apply stretch renderer"
 }

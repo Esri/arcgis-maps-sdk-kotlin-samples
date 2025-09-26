@@ -210,7 +210,7 @@ fun ApplyStretchRendererScreen(sampleName: String) {
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun PreviewApplystretchRendererScreen() {
+fun PreviewApplyStretchRendererScreen() {
     SamplePreviewSurface {
         Surface { Text("Apply stretch renderer preview") }
     }
