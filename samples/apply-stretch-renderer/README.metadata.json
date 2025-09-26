@@ -4,7 +4,7 @@
     "formal_name": "ApplyStretchRenderer",
     "ignore": false,
     "images": [
-        "apply-stretch-renderer.png"
+        "apply-strech-renderer.png"
     ],
     "keywords": [
         "analysis",
@@ -29,6 +29,10 @@
         "StretchRenderer"
     ],
     "language": "kotlin",
+    "provision_from": [
+        "https://arcgisruntime.maps.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"
+    ],
+    "provision_to": [],
     "redirect_from": "",
     "relevant_apis": [
         "ColorRamp",
@@ -41,8 +45,8 @@
         "StretchRenderer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/components/ApplyStretchRendererViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/screens/ApplyStretchRendererScreen.kt"
     ],
