@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "SetSurfaceNavigationConstraint",
+    "ignore": false,
+    "images": [
+        "set-surface-navigation-constraint.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/components/SetSurfaceNavigationConstraintViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/screens/SetSurfaceNavigationConstraintScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/MainActivity.kt"
+    ],
+    "title": "Set surface navigation constraint"
+}
