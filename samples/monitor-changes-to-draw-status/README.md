@@ -15,9 +15,9 @@ Display an indicator of layers drawing.
 
 ## How it works
 
-1. Create an ArcGISMap.
-2. Pass the ArcGISMap to the Compose MapView.
-3. Use the MapView onDrawStatusChanged callback to receive DrawStatus updates
+1. Create an `ArcGISMap`.
+2. Pass the `ArcGISMap` to the Compose `MapView`.
+3. Use the MapView's `onDrawStatusChanged` callback to receive `DrawStatus` updates
 
 ## Relevant API
 
