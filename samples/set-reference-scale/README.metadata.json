@@ -1,0 +1,28 @@
+{
+    "category": "Maps",
+    "description": "Set the map's reference scale and which feature layers should honor the reference scale.",
+    "formal_name": "SetReferenceScale",
+    "ignore": false,
+    "images": [
+        "set-reference-scale.png"
+    ],
+    "keywords": [
+        "map",
+        "reference scale",
+        "scene",
+        "FeatureLayer",
+        "Map"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "Map"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setreferencescale/components/SetReferenceScaleViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setreferencescale/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setreferencescale/screens/SetReferenceScaleScreen.kt"
+    ],
+    "title": "Set reference scale"
+}

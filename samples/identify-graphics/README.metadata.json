@@ -1,0 +1,33 @@
+{
+    "category": "Search and Query",
+    "description": "Display a message when a graphic on the map is tapped.",
+    "formal_name": "IdentifyGraphics",
+    "ignore": false,
+    "images": [
+        "identify-graphics.png"
+    ],
+    "keywords": [
+        "graphics",
+        "identify",
+        "Graphic",
+        "GraphicsOverlay",
+        "IdentifyGraphicsOverlayResult",
+        "MapView",
+        "MapViewProxy"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Graphic",
+        "GraphicsOverlay",
+        "IdentifyGraphicsOverlayResult",
+        "MapView",
+        "MapViewProxy"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/components/IdentifyGraphicsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifygraphics/screens/IdentifyGraphicsScreen.kt"
+    ],
+    "title": "Identify graphics"
+}
