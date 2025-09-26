@@ -177,11 +177,7 @@ fun CreateBuffersAroundPointsScreen(sampleName: String) {
                         }
                     },
                     dismissButton = {
-                        Button(onClick = {
-                            // Cancel input
-                            radiusInput = ""
-                            mapViewModel.dismissInputDialog()
-                        }) {
+                        Button(onClick = mapViewModel::dismissInputDialog) {
                             Text("Cancel")
                         }
                     }
