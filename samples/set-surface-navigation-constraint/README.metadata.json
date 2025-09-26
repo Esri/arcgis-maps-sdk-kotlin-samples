@@ -1,19 +1,27 @@
 {
     "category": "Scenes",
-    "description": "TODO",
+    "description": "See through terrain in a scene and move the camera underground.",
     "formal_name": "SetSurfaceNavigationConstraint",
     "ignore": false,
     "images": [
         "set-surface-navigation-constraint.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "3D",
+        "subsurface",
+        "underground",
+        "utilities",
+        "NavigationConstraint"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "NavigationConstraint"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/components/SetSurfaceNavigationConstraintViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/screens/SetSurfaceNavigationConstraintScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setsurfacenavigationconstraint/screens/SetSurfaceNavigationConstraintScreen.kt"
     ],
     "title": "Set surface navigation constraint"
 }
