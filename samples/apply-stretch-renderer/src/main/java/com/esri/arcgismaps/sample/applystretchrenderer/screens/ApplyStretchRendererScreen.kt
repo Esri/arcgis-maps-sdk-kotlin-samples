@@ -81,17 +81,13 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onDown = { isBottomSheetVisible = false },
-//                    onLayerViewStateChanged = {
-//                        // Set initial viewpoint based on raster full extent once MapView enters composition
-//                        mapViewModel.setInitialViewpointIfNeeded()
-//                    }
                 )
 
                 BottomSheet(
                     isVisible = isBottomSheetVisible,
                     sheetTitle = "Stretch Renderer Settings",
                     onDismissRequest = { isBottomSheetVisible = false }
-                ) { columnScope ->
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
