@@ -180,7 +180,7 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
     }
 
     /**
-     * Submit the radius (in miles) & converts miles to the map's linear units. Converts miles to the map's linear units
+     * Submit the radius (in miles) & converts miles to the map's linear units,
      * (the state plane spatial reference uses US feet) then creates the buffer and updates the overlays.
      */
     fun submitRadiusMiles(radiusMiles: Double) {
