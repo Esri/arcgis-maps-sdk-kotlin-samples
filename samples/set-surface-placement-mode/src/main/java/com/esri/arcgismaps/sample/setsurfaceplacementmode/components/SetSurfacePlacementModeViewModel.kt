@@ -55,10 +55,6 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
     private val elevationSourceUrl =
         "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
 
-    val zMin = 0.0
-    val zMax = 140.0
-    val zMid = (zMin + zMax) / 2.0
-
     // Create ArcGISScene with an imagery basemap, elevation, and buildings in Brest, France
     val arcGISScene: ArcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
         baseSurface = Surface().apply {
@@ -122,6 +118,10 @@ class SetSurfacePlacementModeViewModel(application: Application) : AndroidViewMo
 
     var drapedMode by mutableStateOf(DrapedMode.Billboarded)
         private set
+
+    val zMin = 0.0
+    val zMax = 140.0
+    val zMid = (zMin + zMax) / 2.0
 
     var zValue by mutableDoubleStateOf(zMid)
         private set
