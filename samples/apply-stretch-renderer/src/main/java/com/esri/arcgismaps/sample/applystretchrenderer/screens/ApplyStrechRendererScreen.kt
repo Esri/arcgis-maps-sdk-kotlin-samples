@@ -177,7 +177,11 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                             OutlinedButton(onClick = { isBottomSheetVisible = false }) {
                                 Text("Dismiss")
                             }
-                            Button(onClick = { mapViewModel.updateRenderer() }) {
+                            Button(onClick = {
+                                mapViewModel.updateRenderer()
+                                isBottomSheetVisible = false
+                            }
+                            ) {
                                 Text("Update Renderer")
                             }
                         }
