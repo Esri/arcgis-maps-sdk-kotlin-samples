@@ -52,8 +52,8 @@ class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
     val messageDialogVM = MessageDialogViewModel()
 
     // Flow of available WMS styles.
-    private val _stylesFlow = MutableStateFlow<List<String>>(emptyList())
-    val stylesFlow = _stylesFlow.asStateFlow()
+    private val _styles = MutableStateFlow<List<String>>(emptyList())
+    val styles = _styles.asStateFlow()
 
     // Selected style index.
     private val _selectedStyleIndex = MutableStateFlow(0)

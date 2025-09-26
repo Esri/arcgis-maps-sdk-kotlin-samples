@@ -1,5 +1,5 @@
 {
-    "category": "Layers",
+    "category": "Visualization",
     "description": "Change the style of a Web Map Service (WMS) layer.",
     "formal_name": "ApplyStyleToWmsLayer",
     "ignore": false,
