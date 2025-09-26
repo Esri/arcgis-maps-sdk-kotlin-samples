@@ -89,7 +89,7 @@ class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
                 return@onSuccess
             }
 
-            _stylesFlow.value = styles
+            _styles.value = styles
             // Set initial selection to the first available style
             _selectedStyleIndex.value = 0
             wmsSublayer?.currentStyle = styles[0]
@@ -102,7 +102,7 @@ class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
      * Updates the selected style by index and applies it to the WMS sublayer.
      */
     fun updateSelectedStyle(index: Int) {
-        val styles = _stylesFlow.value
+        val styles = _styles.value
         if (index in styles.indices) {
             _selectedStyleIndex.value = index
             wmsSublayer?.currentStyle = styles[index]
