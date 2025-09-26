@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.applystrechrenderer
+package com.esri.arcgismaps.sample.applystretchrenderer
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.applystrechrenderer.screens.ApplyStrechRendererScreen
+import com.esri.arcgismaps.sample.applystretchrenderer.screens.ApplyStretchRendererScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,16 +37,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                ApplyStrechRendererApp()
+                ApplystretchRendererApp()
             }
         }
     }
 
     @Composable
-    private fun ApplyStrechRendererApp() {
+    private fun ApplystretchRendererApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            ApplyStrechRendererScreen(
-                sampleName = getString(R.string.apply_strech_renderer_app_name)
+            ApplyStretchRendererScreen(
+                sampleName = getString(R.string.apply_stretch_renderer_app_name)
             )
         }
     }

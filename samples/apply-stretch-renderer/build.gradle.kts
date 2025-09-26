@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.applystrechrenderer"
+    namespace = "com.esri.arcgismaps.sample.applystretchrenderer"
     buildFeatures {
         buildConfig = true
     }

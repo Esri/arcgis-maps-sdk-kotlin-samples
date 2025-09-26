@@ -4,7 +4,7 @@
     "formal_name": "ApplyStretchRenderer",
     "ignore": false,
     "images": [
-        "apply-strech-renderer.png"
+        "apply-stretch-renderer.png"
     ],
     "keywords": [
         "analysis",
@@ -41,9 +41,10 @@
         "StretchRenderer"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applystrechrenderer/components/ApplyStrechRendererViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applystrechrenderer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applystrechrenderer/screens/ApplyStrechRendererScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/components/ApplystretchRendererViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/screens/ApplystretchRendererScreen.kt"
     ],
     "title": "Apply stretch renderer"
 }
