@@ -26,7 +26,7 @@ TThe sample loads a scene showing four points that use the individual surface pl
 
 ## Relevant API
 
-* Graphic 
+* Graphic
 * GraphicsOverlay
 * GeometryEngine.createWithZ
 * LayerSceneProperties
