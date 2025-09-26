@@ -187,7 +187,7 @@ class CreateBuffersAroundPointsViewModel(app: Application) : AndroidViewModel(ap
         val point = lastTappedPoint ?: return
 
         if (radiusMiles <= 0.0 || radiusMiles >= 300) {
-            messageDialogVM.showMessageDialog("Please enter a value between 0 & 300.")
+            return messageDialogVM.showMessageDialog("Please enter a value between 0 & 300.")
         }
 
         // Convert miles to feet (1 mile = 5280 feet). The state plane uses US feet for this sample.
