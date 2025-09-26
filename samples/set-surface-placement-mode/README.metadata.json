@@ -1,19 +1,43 @@
 {
     "category": "Scenes",
-    "description": "TODO",
+    "description": "Position graphics relative to a surface using different surface placement modes.",
     "formal_name": "SetSurfacePlacementMode",
     "ignore": false,
     "images": [
         "set-surface-placement-mode.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "3D",
+        "absolute",
+        "altitude",
+        "draped",
+        "elevation",
+        "floating",
+        "relative",
+        "scenes",
+        "sea level",
+        "surface placement",
+        "GeometryEngine.createWithZ",
+        "Graphic",
+        "GraphicsOverlay",
+        "LayerSceneProperties",
+        "Surface",
+        "SurfacePlacement"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "GeometryEngine.createWithZ",
+        "Graphic",
+        "GraphicsOverlay",
+        "LayerSceneProperties",
+        "Surface",
+        "SurfacePlacement"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/components/SetSurfacePlacementModeViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/screens/SetSurfacePlacementModeScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/screens/SetSurfacePlacementModeScreen.kt"
     ],
     "title": "Set surface placement mode"
 }
