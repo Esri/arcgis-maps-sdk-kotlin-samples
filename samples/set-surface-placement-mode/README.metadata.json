@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "SetSurfacePlacementMode",
+    "ignore": false,
+    "images": [
+        "set-surface-placement-mode.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/components/SetSurfacePlacementModeViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/screens/SetSurfacePlacementModeScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setsurfaceplacementmode/MainActivity.kt"
+    ],
+    "title": "Set surface placement mode"
+}
