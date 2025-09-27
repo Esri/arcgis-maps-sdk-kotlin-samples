@@ -1,0 +1,24 @@
+{
+    "category": "Visualization",
+    "description": "TODO",
+    "formal_name": "ApplyRGBRenderer",
+    "ignore": false,
+    "images": [
+        "apply-rgb-renderer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "provision_from": [
+        "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"
+    ],
+    "provision_to": [],
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/components/ApplyRGBRendererViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/screens/ApplyRGBRendererScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/DownloadActivity.kt"
+    ],
+    "title": "Apply RGB renderer"
+}
