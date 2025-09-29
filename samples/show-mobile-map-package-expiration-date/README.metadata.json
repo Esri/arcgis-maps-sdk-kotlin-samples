@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "ShowMobileMapPackageExpirationDate",
+    "ignore": false,
+    "images": [
+        "show-mobile-map-package-expiration-date.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/components/ShowMobileMapPackageExpirationDateViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/screens/ShowMobileMapPackageExpirationDateScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/MainActivity.kt"
+    ],
+    "title": "Show mobile map package expiration date"
+}
