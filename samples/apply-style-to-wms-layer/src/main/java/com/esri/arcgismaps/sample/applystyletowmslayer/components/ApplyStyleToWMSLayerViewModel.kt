@@ -19,8 +19,8 @@ package com.esri.arcgismaps.sample.applystyletowmslayer.components
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.WmsLayer
 import com.arcgismaps.mapping.layers.WmsSublayer
@@ -38,14 +38,14 @@ class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     // Map used by the MapView.
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISLightGray).apply {
+    val arcGISMap = ArcGISMap(SpatialReference(wkid = 26915)).apply {
         // apply a min scale
         minScale = 7_000_000.0
         // Add the WMS layer to the map's operational layers
         operationalLayers.add(wmsLayer)
     }
 
-    // MapViewProxy to perform view operations (like setting the viewpoint) safely from a ViewModel.
+    // MapViewProxy used to perform viewpoint operations.
     val mapViewProxy = MapViewProxy()
 
     // Message dialog ViewModel for error reporting.
@@ -61,7 +61,6 @@ class ApplyStyleToWmsLayerViewModel(app: Application) : AndroidViewModel(app) {
 
     // The WMS sublayer for which we will change the style.
     private var wmsSublayer: WmsSublayer? = null
-
 
     init {
         viewModelScope.launch {

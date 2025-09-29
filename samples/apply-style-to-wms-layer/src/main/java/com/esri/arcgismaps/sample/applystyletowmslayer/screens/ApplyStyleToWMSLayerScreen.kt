@@ -45,8 +45,8 @@ fun ApplyStyleToWmsLayerScreen(sampleName: String) {
     val mapViewModel: ApplyStyleToWmsLayerViewModel = viewModel()
 
     // Observe WMS styles and selected index from the ViewModel
-    val styles: List<String> by mapViewModel.styles.collectAsStateWithLifecycle(initialValue = emptyList())
-    val selectedStyleIndex: Int by mapViewModel.selectedStyleIndex.collectAsStateWithLifecycle(initialValue = 0)
+    val styles by mapViewModel.styles.collectAsStateWithLifecycle()
+    val selectedStyleIndex by mapViewModel.selectedStyleIndex.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
