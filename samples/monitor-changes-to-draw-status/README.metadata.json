@@ -1,0 +1,31 @@
+{
+    "category": "Maps",
+    "description": "Get the draw status of your map view or scene view to know when all layers in the map or scene have finished drawing.",
+    "formal_name": "MonitorChangesToDrawStatus",
+    "ignore": false,
+    "images": [
+        "monitor-changes-to-draw-status.png"
+    ],
+    "keywords": [
+        "draw",
+        "loading",
+        "map",
+        "render",
+        "ArcGISMap",
+        "DrawStatus",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "DrawStatus",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/components/MonitorDrawStatusViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestodrawstatus/screens/MonitorDrawStatusScreen.kt"
+    ],
+    "title": "Monitor changes to draw status"
+}
