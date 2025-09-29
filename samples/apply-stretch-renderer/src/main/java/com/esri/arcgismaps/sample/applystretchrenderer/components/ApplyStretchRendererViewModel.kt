@@ -19,6 +19,8 @@ package com.esri.arcgismaps.sample.applystretchrenderer.components
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -57,8 +59,15 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
                 app.getString(R.string.apply_stretch_renderer_app_name)
     }
 
+    // The raster data (Shasta.tif) should be downloaded to external storage on launch
+    private val raster: Raster by lazy {
+        val rasterFile = File(provisionPath, "raster-file${File.separator}Shasta.tif")
+        require(rasterFile.exists()) { "Invalid raster data: file does not exist at ${rasterFile.path}" }
+        Raster.createWithPath(rasterFile.path)
+    }
+
     // The raster layer to which the stretch renderer will be applied
-    private var rasterLayer: RasterLayer? = null
+    private val rasterLayer: RasterLayer = RasterLayer(raster)
 
     // Stretch type options for UI
     val stretchTypeOptions: List<String> = listOf("MinMax", "Percent Clip", "Std Deviation")
@@ -87,24 +96,25 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
 
     init {
         viewModelScope.launch {
-            try {
-                // Load the raster layer and apply an initial renderer
-                val raster = Raster.createWithPath(File(provisionPath, "raster-file${File.separator}Shasta.tif").path)
-                rasterLayer = RasterLayer(raster)
-                rasterLayer?.load()?.getOrThrow()
-
-                arcGISMap.apply {
-                    rasterLayer?.let {
-                        operationalLayers.add(it)
-                    }
-                }.load().getOrThrow()
-
-                val center = rasterLayer?.fullExtent?.center ?: throw Exception("Failed to get raster center")
-                mapViewProxy.setViewpoint(Viewpoint(center = center, scale = 80_000.0))
-                updateRenderer()
-            } catch (ex: Exception) {
-                messageDialogVM.showMessageDialog(ex)
+            rasterLayer.load().onSuccess {
+                arcGISMap.operationalLayers.add(rasterLayer)
+            }.onFailure {
+                messageDialogVM.showMessageDialog(
+                    title = "Error",
+                    description = "Failed to load raster layer: ${it.message}"
+                )
             }
+
+            arcGISMap.load().onFailure {
+                messageDialogVM.showMessageDialog(
+                    title = "Error",
+                    description = "Failed to load map: ${it.message}"
+                )
+            }
+
+            val center = rasterLayer.fullExtent?.center ?: Point(0.0, 0.0, SpatialReference.wgs84())
+            mapViewProxy.setViewpoint(Viewpoint(center = center, scale = 80_000.0))
+            updateRenderer()
         }
     }
 
@@ -164,7 +174,7 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
                 factor = _stdDeviationFactor.value
             )
         }
-        rasterLayer?.renderer = StretchRenderer(
+        rasterLayer.renderer = StretchRenderer(
             parameters = parameters,
             gammas = emptyList(),
             estimateStatistics = true,

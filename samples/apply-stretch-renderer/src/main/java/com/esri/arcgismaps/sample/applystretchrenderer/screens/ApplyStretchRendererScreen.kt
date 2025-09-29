@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.applystretchrenderer.screens
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,11 +27,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -52,7 +50,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 
 /**
  * Main screen layout for the sample app.
@@ -121,7 +118,7 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                                 Slider(
                                     value = minValue.toFloat(),
                                     onValueChange = { value -> mapViewModel.updateMinValue(value.toDouble()) },
-                                    valueRange = 0f..(maxValue.toFloat() - 1f)
+                                    valueRange = 0f..maxValue.coerceIn(0.0, maxValue - 1.0).toFloat()
                                 )
 
                                 // Max value slider ((min+1) .. 255)
@@ -157,7 +154,7 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                                 Text("Standard Deviation Parameters", style = MaterialTheme.typography.titleMedium)
 
                                 // Factor slider (0.25 .. 4.0)
-                                Text(text = "Factor: ${String.format("%.2f", stdDevFactor)}")
+                                Text(text = "Factor: %.2f".format(stdDevFactor))
                                 Slider(
                                     value = stdDevFactor.toFloat(),
                                     onValueChange = { value -> mapViewModel.updateStdDeviationFactor(value.toDouble()) },
@@ -201,7 +198,12 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { isBottomSheetVisible = true }
-                ) { androidx.compose.material3.Icon(Icons.Filled.Settings, contentDescription = "Show Renderer Settings") }
+                ) {
+                    Icon(
+                        Icons.Filled.Settings,
+                        contentDescription = "Show Renderer Settings"
+                    )
+                }
             }
         }
     )
