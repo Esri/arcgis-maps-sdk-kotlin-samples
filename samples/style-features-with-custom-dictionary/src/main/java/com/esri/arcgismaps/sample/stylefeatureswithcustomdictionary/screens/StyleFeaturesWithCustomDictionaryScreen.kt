@@ -29,7 +29,6 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -51,7 +49,6 @@ import com.esri.arcgismaps.sample.stylefeatureswithcustomdictionary.components.S
 @Composable
 fun StyleFeaturesWithCustomDictionaryScreen(sampleName: String) {
     val mapViewModel: StyleFeaturesWithCustomDictionaryViewModel = viewModel()
-    val selectedStyle by mapViewModel.selectedStyle.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -72,7 +69,6 @@ fun StyleFeaturesWithCustomDictionaryScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    selectedStyle = selectedStyle,
                     onStyleSelected = mapViewModel::updateSelectedStyle
                 )
             }
@@ -97,17 +93,9 @@ fun StyleFeaturesWithCustomDictionaryScreen(sampleName: String) {
 @Composable
 private fun DictionaryStyleToggle(
     modifier: Modifier = Modifier,
-    selectedStyle: CustomDictionaryStyle,
     onStyleSelected: (CustomDictionaryStyle) -> Unit
 ) {
     var currentSelectionIndex by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(selectedStyle) {
-        currentSelectionIndex = when (selectedStyle) {
-            CustomDictionaryStyle.StyleFile -> 0
-            CustomDictionaryStyle.WebStyle -> 1
-        }
-    }
 
     Column(
         modifier = modifier,
@@ -122,7 +110,8 @@ private fun DictionaryStyleToggle(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
                     onClick = {
                         currentSelectionIndex = index
-                        val newStyle = if (index == 0) CustomDictionaryStyle.StyleFile else CustomDictionaryStyle.WebStyle
+                        val newStyle =
+                            if (index == 0) CustomDictionaryStyle.StyleFile else CustomDictionaryStyle.WebStyle
                         onStyleSelected(newStyle)
                     },
                     selected = (index == currentSelectionIndex)

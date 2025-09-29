@@ -31,8 +31,6 @@ import com.arcgismaps.data.ServiceFeatureTable
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.stylefeatureswithcustomdictionary.R
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -40,10 +38,10 @@ private const val RESTAURANTS_SERVICE_URL =
     "https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/Redlands_Restaurants/FeatureServer/0"
 private const val WEB_STYLE_ITEM_ID = "adee951477014ec68d7cf0ea0579c800"
 
-class StyleFeaturesWithCustomDictionaryViewModel(application: Application) : AndroidViewModel(application) {
+class StyleFeaturesWithCustomDictionaryViewModel(app: Application) : AndroidViewModel(app) {
 
     // Feature layer showing restaurant data in Redlands, CA
-    private val restaurantFeatureLayer: FeatureLayer = FeatureLayer.createWithFeatureTable(
+    private val restaurantFeatureLayer = FeatureLayer.createWithFeatureTable(
         featureTable = ServiceFeatureTable(uri = RESTAURANTS_SERVICE_URL)
     )
     var arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
@@ -52,34 +50,35 @@ class StyleFeaturesWithCustomDictionaryViewModel(application: Application) : And
             longitude = -117.1963,
             scale = 1e4
         )
-        // Add the restaurants feature layer to the map
-        operationalLayers.add(restaurantFeatureLayer)
     }
-
     private var dictionaryRendererFromStyleFile: DictionaryRenderer? = null
     private var dictionaryRendererFromWebStyle: DictionaryRenderer? = null
 
     private val _selectedStyle = MutableStateFlow(CustomDictionaryStyle.StyleFile)
-    val selectedStyle: StateFlow<CustomDictionaryStyle> = _selectedStyle.asStateFlow()
 
     val messageDialogVM = MessageDialogViewModel()
     private val provisionPath: String by lazy {
-        application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(R.string.style_features_with_custom_dictionary_app_name)
+        app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(R.string.style_features_with_custom_dictionary_app_name)
     }
 
     init {
         viewModelScope.launch {
-            // Load the map
-            try {
-                arcGISMap.load().getOrThrow()
-                // Prepare both dictionary renderers
-                dictionaryRendererFromStyleFile = createDictionaryRendererFromStyleFile()
-                dictionaryRendererFromWebStyle = createDictionaryRendererFromWebStyle().getOrThrow()
+            // Prepare the dictionary renderer from the style file
+            dictionaryRendererFromStyleFile = createDictionaryRendererFromStyleFile()
+            // Prepare the dictionary renderer from the web style
+            dictionaryRendererFromWebStyle = createDictionaryRendererFromWebStyle().getOrElse {
+                messageDialogVM.showMessageDialog(it)
+                return@launch
+            }
 
-                // Apply the renderer for the initially selected style
-                applyRendererForSelectedStyle()
-            } catch (ex: Exception) {
-                messageDialogVM.showMessageDialog(ex)
+            // Apply the renderer for the initially selected style
+            applyRendererForSelectedStyle()
+
+            // Add the restaurant layer to the map and load the map
+            arcGISMap.apply {
+                operationalLayers.add(restaurantFeatureLayer)
+            }.load().onFailure {
+                messageDialogVM.showMessageDialog(it)
             }
         }
     }
@@ -93,7 +92,7 @@ class StyleFeaturesWithCustomDictionaryViewModel(application: Application) : And
     }
 
     /**
-     * Apply the dictionary renderer corresponding to the current [selectedStyle] to the restaurants layer.
+     * Apply the dictionary renderer to the restaurants layer.
      */
     private fun applyRendererForSelectedStyle() {
         restaurantFeatureLayer.renderer = when (_selectedStyle.value) {
@@ -120,7 +119,7 @@ class StyleFeaturesWithCustomDictionaryViewModel(application: Application) : And
      * Maps the feature layer's field "healthgrade" to the dictionary style's expected field "Inspection".
      */
     private suspend fun createDictionaryRendererFromWebStyle(): Result<DictionaryRenderer> {
-        val portal = Portal(url = "https://www.arcgis.com", connection = Portal.Connection.Anonymous)
+        val portal = Portal(url = "https://www.arcgis.com")
         val portalItem = PortalItem(portal = portal, itemId = WEB_STYLE_ITEM_ID)
         val restaurantSymbolStyle = DictionarySymbolStyle(portalItem).apply {
             load().getOrElse {
