@@ -14,7 +14,7 @@ When loaded, the sample will show a scene with a terrain surface applied. Pan an
 
 ## How it works
 
-1. Create an `ArcGISScene` with a basemap style (for example, `ArcGISImagery`).
+1. Create an `ArcGISScene` with an `ArcGISImagery` basemap style.
 2. Create an `ArcGISTiledElevationSource` using the path to a local elevation tile package (.tpkx).
 3. Create a `Surface` and add the elevation source to the surface's `elevationSources` collection.
 4. Assign the `surface` to the scene's `baseSurface`.
