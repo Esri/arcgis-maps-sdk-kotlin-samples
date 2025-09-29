@@ -1,7 +1,7 @@
 {
     "category": "Visualization",
     "description": "Apply an RGB renderer to a raster layer to enhance feature visibility.",
-    "formal_name": "ApplyRGBRenderer",
+    "formal_name": "ApplyRgbRenderer",
     "ignore": false,
     "images": [
         "apply-rgb-renderer.png"
@@ -26,9 +26,6 @@
         "StretchParameters"
     ],
     "language": "kotlin",
-    "provision_from": [
-        "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"
-    ],
     "redirect_from": "",
     "relevant_apis": [
         "Basemap",
@@ -38,10 +35,10 @@
         "StretchParameters"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/components/ApplyRGBRendererViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/screens/ApplyRGBRendererScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/components/ApplyRgbRendererViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/DownloadActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applyrgbrenderer/screens/ApplyRgbRendererScreen.kt"
     ],
     "title": "Apply RGB renderer"
 }
