@@ -1,42 +1,37 @@
 # Apply RGB renderer
 
-This sample demonstrates how to apply an RGB renderer to a multispectral raster to adjust how the raster's bands are mapped to red, green and blue and how stretch parameters affect the display.
+Apply an RGB renderer to a raster layer to enhance feature visibility.
 
-What this sample does
+![Image of Apply RGB renderer sample](apply-rgb-renderer.png)
 
-- Attempts to load a local multispectral raster named `Shasta.tif` from the app's external files directory under the folder `ApplyRgbRenderer`.
-- If the raster is found it is added as the basemap using a RasterLayer.
-- The sample provides controls to choose a stretch parameter type and configure its parameters (Min-Max, Percent Clip, Histogram Equalization, Standard Deviation) and then applies an RGB renderer to the raster layer.
+## Use case
 
-How to use
+An RGB renderer is used to adjust the color bands of a multispectral image. Remote sensing images acquired from satellites often contain values representing the reflection of multiple spectrums of light. Changing the RGB renderer of such rasters can be used to differentiate and highlight particular features that reflect light differently, such as different vegetation types, or turbidity in water.
 
-1. (Optional) For the full sample experience place a multispectral raster named `Shasta.tif` into the folder:
+## How to use the sample
 
-   <external-files>/ApplyRgbRenderer/Shasta.tif
+Choose one of the stretch parameter types. The other options will adjust based on the chosen type.
 
-   The external files folder path varies by device and can be found programmatically by the app when running. If the raster is not present the sample will still run with a default basemap but you will not be able to apply an RGB renderer.
+## How it works
 
-2. Launch the sample.
-3. Tap the settings FAB to open the bottom sheet.
-4. Choose a stretch type. If the selected stretch type requires additional parameters configure them.
-5. Press "Update Renderer" to apply the RGB renderer to the raster layer (if available).
+1. Create a `Raster` from a from a multispectral raster file.
+2. Create a `RasterLayer` from the raster.
+3. Create a `Basemap` from the raster layer and set it to the map.
+4. Create an `RGBRenderer`, specifying the `StretchParameters` and other properties.
+5. Set the `Renderer` on the raster layer.
 
-Notes
+## Relevant API
 
-- The sample is written with Jetpack Compose and follows the pattern of exposing ArcGIS SDK types from a ViewModel and consuming them from a Compose UI.
-- The sample performs safety checks: if the raster is not found a helpful message will be shown. This allows the sample to run even when the local resource is not present.
-- The sample uses simple preset color choices for the Min-Max stretch. In a production app you could provide a color picker or retrieve raster statistics for better endpoints.
+* Basemap
+* Raster
+* RasterLayer
+* RGBRenderer
+* StretchParameters
 
-Relevant API
+## About the data
 
-- Raster, RasterLayer
-- RGBRenderer and StretchParameters (MinMaxStretchParameters, PercentClipStretchParameters, StandardDeviationStretchParameters, HistogramEqualizationStretchParameters)
-- MapView (Toolkit Compose MapView)
+The raster used in this sample shows an area in the south of the Shasta-Trinity National Forest, California.
 
-Troubleshooting
+## Tags
 
-- If you place a raster file into the external files folder and the sample still cannot find it, verify the file name and that the app has access to external storage. On recent Android versions the app-specific external files directory does not require special permissions.
-
-License
-
-This sample uses the ArcGIS Maps SDK for Kotlin. Follow the SDK licensing and your organization's policy for distributing imagery files.
+analysis, color, composite, imagery, multiband, multispectral, pan-sharpen, photograph, raster, spectrum, stretch, visualization
