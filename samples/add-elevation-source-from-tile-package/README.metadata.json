@@ -1,0 +1,36 @@
+{
+    "category": "Scenes",
+    "description": "Set the terrain surface with elevation described by a local tile package.",
+    "formal_name": "AddElevationSourceFromTilePackage",
+    "ignore": false,
+    "images": [
+        "add-elevation-source-from-tile-package.png"
+    ],
+    "keywords": [
+        "3D",
+        "LERC",
+        "elevation",
+        "surface",
+        "terrain",
+        "tile cache",
+        "ArcGISTiledElevationSource",
+        "Surface"
+    ],
+    "language": "kotlin",
+    "provision_from": [
+        "https://www.arcgis.com/home/item.html?id=52ca74b4ba8042b78b3c653696f34a9c"
+    ],
+    "provision_to": [],
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISTiledElevationSource",
+        "Surface"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/components/AddElevationSourceFromTilePackageViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addelevationsourcefromtilepackage/screens/AddElevationSourceFromTilePackageScreen.kt"
+    ],
+    "title": "Add elevation source from tile package"
+}
