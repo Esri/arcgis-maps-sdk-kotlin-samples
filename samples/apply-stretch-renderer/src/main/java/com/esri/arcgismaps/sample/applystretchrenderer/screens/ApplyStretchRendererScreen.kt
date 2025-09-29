@@ -149,13 +149,15 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                             onClick = {
                                 isBottomSheetVisible = false
                                 mapViewModel.dismissChanges()
-                            }) {
+                            }
+                        ) {
                             Text("Dismiss")
                         }
-                        Button(onClick = {
-                            mapViewModel.updateRenderer()
-                            isBottomSheetVisible = false
-                        }
+                        Button(
+                            onClick = {
+                                mapViewModel.updateRenderer()
+                                isBottomSheetVisible = false
+                            }
                         ) {
                             Text("Update Renderer")
                         }
