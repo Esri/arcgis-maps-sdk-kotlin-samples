@@ -9,6 +9,10 @@
             android:label="@string/show_mobile_map_package_expiration_date_app_name">
             
         </activity>
-    </application>
+        <activity
+    android:name=".DownloadActivity"
+    android:exported="true"
+    android:label="@string/show_mobile_map_package_expiration_date_app_name" />
+</application>
 
 </manifest>

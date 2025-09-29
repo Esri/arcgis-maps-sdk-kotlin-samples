@@ -6,14 +6,15 @@
     "images": [
         "show-mobile-map-package-expiration-date.png"
     ],
-    "keywords": [ ],
+    "keywords": [],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/components/ShowMobileMapPackageExpirationDateViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/screens/ShowMobileMapPackageExpirationDateScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showmobilemappackageexpirationdate/screens/ShowMobileMapPackageExpirationDateScreen.kt"
     ],
     "title": "Show mobile map package expiration date"
 }

@@ -16,49 +16,81 @@
 
 package com.esri.arcgismaps.sample.showmobilemappackageexpirationdate.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.showmobilemappackageexpirationdate.components.ShowMobileMapPackageExpirationDateViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.showmobilemappackageexpirationdate.components.ShowMobileMapPackageExpirationDateViewModel
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app which displays the map from a mobile map package
+ * and shows expiration information if the mobile map package has expired.
  */
 @Composable
 fun ShowMobileMapPackageExpirationDateScreen(sampleName: String) {
     val mapViewModel: ShowMobileMapPackageExpirationDateViewModel = viewModel()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
+        content = { paddingValues ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(paddingValues)
             ) {
                 MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                    modifier = Modifier.fillMaxSize(),
                     arcGISMap = mapViewModel.arcGISMap
                 )
-                // TODO: Add UI components in this Column ...
-            }
 
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
+                // Display expiration information overlay if the mobile map package is expired
+                if (mapViewModel.isExpired) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(12.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = mapViewModel.expirationMessage ?: "",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                modifier = Modifier.padding(top = 8.dp),
+                                text = "Expiration date: ${mapViewModel.expirationDateText ?: "N/A"}",
+                                style = MaterialTheme.typography.bodySmall,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                // Display error dialog when the sample encounters an error
+                mapViewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
                 }
             }
         }
