@@ -19,14 +19,14 @@ Launch the app. The author of the MMPK used in this sample chose to set the MMPK
 1. Create a `MobileMapPackage` object by providing a path to the local mobile map package file.
 2. Load the `MobileMapPackage`.
 3. Present the mobile map package's expiration information to the user:
-   - Use `Expiration.message` to get the expiration message set by the author of the MMPK.
-   - Use `Expiration.dateTime` to get the expiration date set by the author of the MMPK.
-   - Use `Expiration.isExpired` to determine whether the MMPK has expired.
+   * Use `Expiration.message` to get the expiration message set by the author of the MMPK.
+   * Use `Expiration.dateTime` to get the expiration date set by the author of the MMPK.
+   * Use `Expiration.isExpired` to determine whether the MMPK has expired.
 
 ## Relevant API
 
-- Expiration
-- MobileMapPackage
+* Expiration
+* MobileMapPackage
 
 ## Offline data
 
