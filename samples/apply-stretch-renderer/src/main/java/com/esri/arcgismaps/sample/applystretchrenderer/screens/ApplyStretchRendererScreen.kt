@@ -76,13 +76,19 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                     .padding(padding),
                 arcGISMap = mapViewModel.arcGISMap,
                 mapViewProxy = mapViewModel.mapViewProxy,
-                onDown = { isBottomSheetVisible = false },
+                onDown = {
+                    isBottomSheetVisible = false
+                    mapViewModel.dismissChanges()
+                },
             )
 
             BottomSheet(
                 isVisible = isBottomSheetVisible,
                 sheetTitle = "Stretch Renderer Settings",
-                onDismissRequest = { isBottomSheetVisible = false }
+                onDismissRequest = {
+                    isBottomSheetVisible = false
+                    mapViewModel.dismissChanges()
+                }
             ) {
                 Column(
                     modifier = Modifier
@@ -139,7 +145,11 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        OutlinedButton(onClick = { isBottomSheetVisible = false }) {
+                        OutlinedButton(
+                            onClick = {
+                                isBottomSheetVisible = false
+                                mapViewModel.dismissChanges()
+                            }) {
                             Text("Dismiss")
                         }
                         Button(onClick = {

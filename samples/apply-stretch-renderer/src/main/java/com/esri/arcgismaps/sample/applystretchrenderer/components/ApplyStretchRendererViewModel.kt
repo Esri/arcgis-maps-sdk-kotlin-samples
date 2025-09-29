@@ -39,10 +39,21 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
+private const val DEFAULT_MIN = 10.0
+private const val DEFAULT_MAX = 150.0
+private const val DEFAULT_PERCENT_MIN = 0.0
+private const val DEFAULT_PERCENT_MAX = 50.0
+private const val DEFAULT_STD_DEVIATION_FACTOR = 0.5
+
 /**
  * ViewModel for the "Apply stretch renderer" sample.
  */
 class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewModel(app) {
+    private var appliedMinValue = DEFAULT_MIN
+    private var appliedMaxValue = DEFAULT_MAX
+    private var appliedPercentMin = DEFAULT_PERCENT_MIN
+    private var appliedPercentMax = DEFAULT_PERCENT_MAX
+    private var appliedStdDeviationFactor = DEFAULT_STD_DEVIATION_FACTOR
 
     // The map used in the sample, with imagery basemap
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISImageryStandard)
@@ -77,21 +88,21 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     val selectedStretchType = _selectedStretchType.asStateFlow()
 
     // Min-Max parameters (values represent pixel value range)
-    private val _minValue = MutableStateFlow(10.0)
+    private val _minValue = MutableStateFlow(DEFAULT_MIN)
     val minValue = _minValue.asStateFlow()
 
-    private val _maxValue = MutableStateFlow(150.0)
+    private val _maxValue = MutableStateFlow(DEFAULT_MAX)
     val maxValue = _maxValue.asStateFlow()
 
     // Percent clip parameters (values represent percent 0..100)
-    private val _percentMin = MutableStateFlow(0.0)
+    private val _percentMin = MutableStateFlow(DEFAULT_PERCENT_MIN)
     val percentMin = _percentMin.asStateFlow()
 
-    private val _percentMax = MutableStateFlow(50.0)
+    private val _percentMax = MutableStateFlow(DEFAULT_PERCENT_MAX)
     val percentMax = _percentMax.asStateFlow()
 
     // Standard deviation factor (typical range 0.25..4.0)
-    private val _stdDeviationFactor = MutableStateFlow(0.5)
+    private val _stdDeviationFactor = MutableStateFlow(DEFAULT_STD_DEVIATION_FACTOR)
     val stdDeviationFactor = _stdDeviationFactor.asStateFlow()
 
     init {
@@ -131,7 +142,7 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     /** Update MinMax minimum value (clamped to 0..(max-1)). */
     fun updateMinValue(value: Double) {
         val max = _maxValue.value
-        _minValue.value = value.coerceIn(0.0, max - 1.0)
+        _minValue.value = value.coerceIn(DEFAULT_MIN, max - 1.0)
     }
 
     /** Update MinMax maximum value (clamped to (min+1)..255). */
@@ -143,7 +154,7 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     /** Update Percent Clip minimum percent (clamped to 0..percentMax). */
     fun updatePercentMin(value: Double) {
         val max = _percentMax.value
-        _percentMin.value = value.coerceIn(0.0, max)
+        _percentMin.value = value.coerceIn(DEFAULT_MIN, max)
     }
 
     /** Update Percent Clip maximum percent (clamped to percentMin..100). */
@@ -160,19 +171,51 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     /** Construct and apply a StretchRenderer to the raster layer using current UI parameters. */
     fun updateRenderer() {
         val parameters: StretchParameters = when (_selectedStretchType.value) {
-            StretchType.MinMax -> MinMaxStretchParameters(
-                minValues = listOf(_minValue.value),
-                maxValues = listOf(_maxValue.value)
-            )
+            StretchType.MinMax -> {
+                // save the new initial values
+                appliedMaxValue = _maxValue.value
+                appliedMinValue = _minValue.value
 
-            StretchType.PercentClip -> PercentClipStretchParameters(
-                min = _percentMin.value,
-                max = _percentMax.value
-            )
+                // reset other parameter sets to their initial values
+                resetToInitialPercentClipValues()
+                resetToInitialStdDeviationValue()
 
-            StretchType.StandardDeviation -> StandardDeviationStretchParameters(
-                factor = _stdDeviationFactor.value
-            )
+                // apply the values to the renderer
+                MinMaxStretchParameters(
+                    minValues = listOf(_minValue.value),
+                    maxValues = listOf(_maxValue.value)
+                )
+            }
+
+            StretchType.PercentClip -> {
+                // save the new initial values
+                appliedPercentMin = _percentMin.value
+                appliedPercentMax = _percentMax.value
+
+                // reset other parameter sets to their initial values
+                resetToInitialMinMaxValues()
+                resetToInitialStdDeviationValue()
+
+                // apply the values to the renderer
+                PercentClipStretchParameters(
+                    min = _percentMin.value,
+                    max = _percentMax.value
+                )
+            }
+
+            StretchType.StandardDeviation -> {
+                // save the new initial value
+                appliedStdDeviationFactor = _stdDeviationFactor.value
+
+                // reset other parameter sets to their initial values
+                resetToInitialMinMaxValues()
+                resetToInitialPercentClipValues()
+
+                // apply the value to the renderer
+                StandardDeviationStretchParameters(
+                    factor = _stdDeviationFactor.value
+                )
+            }
         }
         rasterLayer.renderer = StretchRenderer(
             parameters = parameters,
@@ -180,6 +223,39 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
             estimateStatistics = true,
             colorRamp = null
         )
+    }
+
+    /** Dismiss any unapplied changes and reset UI to last applied values. */
+    fun dismissChanges() {
+        _minValue.value = appliedMinValue
+        _maxValue.value = appliedMaxValue
+
+        _percentMin.value = appliedPercentMin
+        _percentMax.value = appliedPercentMax
+
+        _stdDeviationFactor.value = appliedStdDeviationFactor
+    }
+
+    /** Reset MinMax parameters to their initial default values. */
+    private fun resetToInitialMinMaxValues() {
+        appliedMinValue = DEFAULT_MIN
+        appliedMaxValue = DEFAULT_MAX
+        _minValue.value = DEFAULT_MIN
+        _maxValue.value = DEFAULT_MAX
+    }
+
+    /** Reset Percent Clip parameters to their initial default values. */
+    private fun resetToInitialPercentClipValues() {
+        appliedPercentMin = DEFAULT_PERCENT_MIN
+        appliedPercentMax = DEFAULT_PERCENT_MAX
+        _percentMin.value = DEFAULT_PERCENT_MIN
+        _percentMax.value = DEFAULT_PERCENT_MAX
+    }
+
+    /** Reset Standard Deviation factor to its initial default value. */
+    private fun resetToInitialStdDeviationValue() {
+        appliedStdDeviationFactor = DEFAULT_STD_DEVIATION_FACTOR
+        _stdDeviationFactor.value = DEFAULT_STD_DEVIATION_FACTOR
     }
 }
 
