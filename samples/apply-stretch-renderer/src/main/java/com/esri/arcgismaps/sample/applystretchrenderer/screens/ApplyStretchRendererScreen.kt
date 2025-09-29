@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.applystretchrenderer.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -71,125 +70,97 @@ fun ApplyStretchRendererScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { padding ->
-            Box(modifier = Modifier.padding(padding)) {
-                MapView(
+            MapView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                arcGISMap = mapViewModel.arcGISMap,
+                mapViewProxy = mapViewModel.mapViewProxy,
+                onDown = { isBottomSheetVisible = false },
+            )
+
+            BottomSheet(
+                isVisible = isBottomSheetVisible,
+                sheetTitle = "Stretch Renderer Settings",
+                onDismissRequest = { isBottomSheetVisible = false }
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    mapViewProxy = mapViewModel.mapViewProxy,
-                    onDown = { isBottomSheetVisible = false },
-                )
-
-                BottomSheet(
-                    isVisible = isBottomSheetVisible,
-                    sheetTitle = "Stretch Renderer Settings",
-                    onDismissRequest = { isBottomSheetVisible = false }
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Choose stretch type and configure parameters.",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                    Text(
+                        text = "Choose stretch type and configure parameters.",
+                        style = MaterialTheme.typography.labelLarge
+                    )
 
-                        // Stretch type dropdown
-                        DropDownMenuBox(
-                            textFieldValue = when (selectedStretchType) {
-                                StretchType.MinMax -> mapViewModel.stretchTypeOptions[0]
-                                StretchType.PercentClip -> mapViewModel.stretchTypeOptions[1]
-                                StretchType.StandardDeviation -> mapViewModel.stretchTypeOptions[2]
-                            },
-                            textFieldLabel = "Stretch Type",
-                            dropDownItemList = mapViewModel.stretchTypeOptions,
-                            onIndexSelected = mapViewModel::updateStretchTypeByIndex
-                        )
+                    // Stretch type dropdown
+                    DropDownMenuBox(
+                        textFieldValue = when (selectedStretchType) {
+                            StretchType.MinMax -> mapViewModel.stretchTypeOptions[0]
+                            StretchType.PercentClip -> mapViewModel.stretchTypeOptions[1]
+                            StretchType.StandardDeviation -> mapViewModel.stretchTypeOptions[2]
+                        },
+                        textFieldLabel = "Stretch Type",
+                        dropDownItemList = mapViewModel.stretchTypeOptions,
+                        onIndexSelected = mapViewModel::updateStretchTypeByIndex
+                    )
 
-                        when (selectedStretchType) {
-                            StretchType.MinMax -> {
-                                Text("Min-Max Parameters", style = MaterialTheme.typography.titleMedium)
-
-                                // Min value slider (0 .. max-1)
-                                Text(text = "Min Value: ${minValue.toInt()}")
-                                Slider(
-                                    value = minValue.toFloat(),
-                                    onValueChange = { value -> mapViewModel.updateMinValue(value.toDouble()) },
-                                    valueRange = 0f..maxValue.coerceIn(0.0, maxValue - 1.0).toFloat()
-                                )
-
-                                // Max value slider ((min+1) .. 255)
-                                Text(text = "Max Value: ${maxValue.toInt()}")
-                                Slider(
-                                    value = maxValue.toFloat(),
-                                    onValueChange = { value -> mapViewModel.updateMaxValue(value.toDouble()) },
-                                    valueRange = (minValue.toFloat() + 1f)..255f
-                                )
-                            }
-
-                            StretchType.PercentClip -> {
-                                Text("Percent Clip Parameters", style = MaterialTheme.typography.titleMedium)
-
-                                // Percent min slider (0 .. percentMax)
-                                Text(text = "Min (%): ${percentMin.toInt()}")
-                                Slider(
-                                    value = percentMin.toFloat(),
-                                    onValueChange = { value -> mapViewModel.updatePercentMin(value.toDouble()) },
-                                    valueRange = 0f..percentMax.toFloat()
-                                )
-
-                                // Percent max slider (percentMin .. 100)
-                                Text(text = "Max (%): ${percentMax.toInt()}")
-                                Slider(
-                                    value = percentMax.toFloat(),
-                                    onValueChange = { value -> mapViewModel.updatePercentMax(value.toDouble()) },
-                                    valueRange = percentMin.toFloat()..100f
-                                )
-                            }
-
-                            StretchType.StandardDeviation -> {
-                                Text("Standard Deviation Parameters", style = MaterialTheme.typography.titleMedium)
-
-                                // Factor slider (0.25 .. 4.0)
-                                Text(text = "Factor: %.2f".format(stdDevFactor))
-                                Slider(
-                                    value = stdDevFactor.toFloat(),
-                                    onValueChange = { value -> mapViewModel.updateStdDeviationFactor(value.toDouble()) },
-                                    valueRange = 0.25f..4.0f
-                                )
-                            }
+                    when (selectedStretchType) {
+                        StretchType.MinMax -> {
+                            MinMaxSettings(
+                                minValue = minValue,
+                                maxValue = maxValue,
+                                onMinValueChange = mapViewModel::updateMinValue,
+                                onMaxValueChange = mapViewModel::updateMaxValue
+                            )
                         }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                        StretchType.PercentClip -> {
+                            PercentClipSettings(
+                                percentMin = percentMin,
+                                percentMax = percentMax,
+                                onPercentMinChange = mapViewModel::updatePercentMin,
+                                onPercentMaxChange = mapViewModel::updatePercentMax
+                            )
+                        }
+
+                        StretchType.StandardDeviation -> {
+                            StdDevSettings(
+                                stdDevFactor = stdDevFactor,
+                                onStdDevFactorChange = mapViewModel::updateStdDeviationFactor
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        OutlinedButton(onClick = { isBottomSheetVisible = false }) {
+                            Text("Dismiss")
+                        }
+                        Button(onClick = {
+                            mapViewModel.updateRenderer()
+                            isBottomSheetVisible = false
+                        }
                         ) {
-                            OutlinedButton(onClick = { isBottomSheetVisible = false }) {
-                                Text("Dismiss")
-                            }
-                            Button(onClick = {
-                                mapViewModel.updateRenderer()
-                                isBottomSheetVisible = false
-                            }
-                            ) {
-                                Text("Update Renderer")
-                            }
+                            Text("Update Renderer")
                         }
                     }
                 }
+            }
 
-                // Error dialog
-                mapViewModel.messageDialogVM.apply {
-                    if (dialogStatus) {
-                        MessageDialog(
-                            title = messageTitle,
-                            description = messageDescription,
-                            onDismissRequest = ::dismissDialog
-                        )
-                    }
+            // Error dialog
+            mapViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
                 }
             }
         },
@@ -207,4 +178,110 @@ fun ApplyStretchRendererScreen(sampleName: String) {
             }
         }
     )
+}
+
+// UI for Min-Max stretch parameters
+@Composable
+fun MinMaxSettings(
+    minValue: Double,
+    maxValue: Double,
+    onMinValueChange: (Double) -> Unit,
+    onMaxValueChange: (Double) -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("Min-Max Parameters", style = MaterialTheme.typography.titleMedium)
+
+        // Min value slider (0 .. max-1)
+        Text(text = "Min Value: ${minValue.toInt()}")
+
+        Slider(
+            value = minValue.toFloat(),
+            onValueChange = { value -> onMinValueChange(value.toDouble()) },
+            valueRange = 0f..maxValue.coerceIn(0.0, maxValue - 1.0).toFloat()
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "0")
+            Text(text = "${(maxValue - 1).toInt()}")
+        }
+
+        // Max value slider ((min+1) .. 255)
+        Text(text = "Max Value: ${maxValue.toInt()}")
+        Slider(
+            value = maxValue.toFloat(),
+            onValueChange = { value -> onMaxValueChange(value.toDouble()) },
+            valueRange = (minValue.toFloat() + 1f)..255f
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "${(minValue + 1).toInt()}")
+            Text(text = "255")
+        }
+    }
+}
+
+// UI for Percent Clip stretch parameters
+@Composable
+fun PercentClipSettings(
+    percentMin: Double,
+    percentMax: Double,
+    onPercentMinChange: (Double) -> Unit,
+    onPercentMaxChange: (Double) -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("Percent Clip Parameters", style = MaterialTheme.typography.titleMedium)
+
+        // Percent min slider (0 .. percentMax)
+        Text(text = "Min (%): ${percentMin.toInt()}")
+        Slider(
+            value = percentMin.toFloat(),
+            onValueChange = { value -> onPercentMinChange(value.toDouble()) },
+            valueRange = 0f..percentMax.toFloat()
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "0")
+            Text(text = "${percentMax.toInt()}")
+        }
+
+        // Percent max slider (percentMin .. 100)
+        Text(text = "Max (%): ${percentMax.toInt()}")
+        Slider(
+            value = percentMax.toFloat(),
+            onValueChange = { value -> onPercentMaxChange(value.toDouble()) },
+            valueRange = percentMin.toFloat()..100f
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "${percentMin.toInt()}")
+            Text(text = "100")
+        }
+    }
+}
+
+// UI for Standard Deviation stretch parameters
+@Composable
+fun StdDevSettings(
+    stdDevFactor: Double,
+    onStdDevFactorChange: (Double) -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("Standard Deviation Parameters", style = MaterialTheme.typography.titleMedium)
+
+        // Factor slider (0.25 .. 4.0)
+        Text(text = "Factor: %.2f".format(stdDevFactor))
+        Slider(
+            value = stdDevFactor.toFloat(),
+            onValueChange = { value -> onStdDevFactorChange(value.toDouble()) },
+            valueRange = 0.25f..4.0f
+        )
+    }
 }
