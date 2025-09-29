@@ -27,18 +27,14 @@ import com.arcgismaps.mapping.MobileMapPackage
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showmobilemappackageexpirationdate.R
 import java.io.File
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
-import kotlin.String
+import kotlinx.coroutines.launch
 
 class ShowMobileMapPackageExpirationDateViewModel(application: Application) : AndroidViewModel(application) {
-    // ArcGISMap displayed on the MapView. Updated after loading the mobile map package
+    // The map displayed on the MapView. Updated after loading the mobile map package
     var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap())
         private set
 
@@ -71,9 +67,7 @@ class ShowMobileMapPackageExpirationDateViewModel(application: Application) : An
         }
     }
 
-    /**
-     * Loads the local mobile map package and updates the map and expiration states.
-     */
+    // Loads the local mobile map package and updates the map and expiration states
     private suspend fun loadMobileMapPackageAndUpdateState() {
         // Locate the LothianRiversAnno.mmpk file in the provisioned path
         val mmpkFile = File(provisionPath, "LothianRiversAnno.mmpk")
@@ -98,11 +92,13 @@ class ShowMobileMapPackageExpirationDateViewModel(application: Application) : An
             mobileMapPackage.expiration?.let { expiration ->
                 isExpired = expiration.isExpired
                 expirationMessage = expiration.message
+
                 val formatter = DateTimeFormatter
                     .ofLocalizedDateTime(FormatStyle.SHORT)
                     .withLocale(Locale.getDefault())
                     .withZone(ZoneId.systemDefault())
-                expirationDateText = expiration.dateTime?.let{formatter.format(it)} ?: "N/A"
+
+                expirationDateText = expiration.dateTime?.let { formatter.format(it) } ?: "N/A"
             }
         }.onFailure { error ->
             messageDialogVM.showMessageDialog(

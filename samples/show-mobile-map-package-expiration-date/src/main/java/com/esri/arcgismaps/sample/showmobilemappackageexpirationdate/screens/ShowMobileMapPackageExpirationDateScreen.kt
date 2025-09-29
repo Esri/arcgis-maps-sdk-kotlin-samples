@@ -26,12 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -45,6 +43,7 @@ import com.esri.arcgismaps.sample.showmobilemappackageexpirationdate.components.
 @Composable
 fun ShowMobileMapPackageExpirationDateScreen(sampleName: String) {
     val mapViewModel: ShowMobileMapPackageExpirationDateViewModel = viewModel()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = { paddingValues ->
