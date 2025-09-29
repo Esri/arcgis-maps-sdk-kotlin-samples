@@ -42,11 +42,8 @@ import java.io.File
 /**
  * ViewModel for the Apply RGB Renderer sample.
  *
- * This ViewModel attempts to load a local multispectral raster (Shasta.tif) from the
- * app's external files directory under a folder named "ApplyRgbRenderer". If the raster
- * file is found it will be added as a basemap using a RasterLayer. If not found the
- * ViewModel will keep a default basemap and show a message explaining how to provide
- * the raster for the full sample experience.
+ * This ViewModel loads a local multispectral raster (Shasta.tif) from the
+ * app's external files directory.
  *
  * The ViewModel exposes properties to control the different stretch parameter types
  * used to create an RGBRenderer that can be applied to the raster layer.
@@ -57,20 +54,16 @@ class ApplyRgbRendererViewModel(private val app: Application) : AndroidViewModel
     var arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
         private set
 
-    // Simple viewpoint so the map doesn't start zoomed out to world by default
+    // The initial viewpoint of the map.
     private val defaultViewpoint = Viewpoint(latitude = 40.0, longitude = -122.5, scale = 5e6)
 
     // Message dialog view model for error/info messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // Provision path under external files for the sample raster. Place the Shasta.tif file here if you want the
-    // sample to load a local raster: <external-files>/ApplyRgbRenderer/Shasta.tif
+    // Provision path under external files for the sample raster.
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(R.string.apply_rgb_renderer_app_name) + File.separator + "raster-file"
     }
-
-    // Raster file expected by the sample
-    private val rasterFile: File by lazy { File(provisionPath, "Shasta.tif") }
 
     // Create raster
     private val raster = Raster.createWithPath(path = "$provisionPath/Shasta.tif")
@@ -78,7 +71,7 @@ class ApplyRgbRendererViewModel(private val app: Application) : AndroidViewModel
     // Create raster layer
     private val rasterLayer = RasterLayer(raster)
 
-    // UI state for renderer settings
+    // The StretchTypes supported by the sample.
     enum class StretchType { HistogramEqualization, MinMax, PercentClip, StandardDeviation }
 
     var selectedStretchType by mutableStateOf(StretchType.HistogramEqualization)
@@ -96,7 +89,7 @@ class ApplyRgbRendererViewModel(private val app: Application) : AndroidViewModel
         "White" to Color.white,
         "Green" to Color.green,
         "Red" to Color.red,
-        "Blue" to Color.cyan, // cyan used as blue-ish; SDK Color.blue companion may not exist
+        "Blue" to Color.fromRgba(0, 0, 255, a = 255),
         "Transparent" to Color.transparent
     )
 
@@ -136,6 +129,16 @@ class ApplyRgbRendererViewModel(private val app: Application) : AndroidViewModel
         }
     }
 
+    fun resetRenderer() {
+        selectedStretchType = StretchType.HistogramEqualization
+        minColorIndex = 0
+        maxColorIndex = 1
+        percentClipMin = 10.0
+        percentClipMax = 90.0
+        standardDeviationFactor = 0.5
+        applyRgbRenderer()
+    }
+
     // Update UI controls
     fun updateStretchType(type: StretchType) {
         selectedStretchType = type
@@ -169,59 +172,55 @@ class ApplyRgbRendererViewModel(private val app: Application) : AndroidViewModel
      * that a local raster is required.
      */
     fun applyRgbRenderer() {
-        val layer = rasterLayer
-        if (layer == null) {
-            messageDialogVM.showMessageDialog(
-                title = "No raster layer",
-                description = "An RGB renderer requires a raster layer. Place 'Shasta.tif' in: $provisionPath and restart the sample."
-            )
-            return
-        }
+        try {
+            // Build stretch parameters depending on the selected stretch type
+            val stretchParameters = when (selectedStretchType) {
+                StretchType.HistogramEqualization -> HistogramEqualizationStretchParameters()
 
-        viewModelScope.launch {
-            try {
-                // Build stretch parameters depending on the selected stretch type
-                val stretchParameters = when (selectedStretchType) {
-                    StretchType.HistogramEqualization -> HistogramEqualizationStretchParameters()
-
-                    StretchType.MinMax -> {
-                        // Convert the chosen colors to three-band numeric arrays.
-                        // The Raster SDK expects numeric band endpoints in the same units as the raster's pixel values.
-                        // For the purpose of this sample we use simple RGB 0/255 values for min/max which is a common case.
-                        val minColor = presetColors[minColorIndex].second
-                        val maxColor = presetColors[maxColorIndex].second
-                        val minValues = colorToRgbArray(minColor)
-                        val maxValues = colorToRgbArray(maxColor)
-                        MinMaxStretchParameters(minValues = minValues, maxValues = maxValues)
-                    }
-
-                    StretchType.PercentClip -> PercentClipStretchParameters(min = percentClipMin, max = percentClipMax)
-
-                    StretchType.StandardDeviation -> StandardDeviationStretchParameters(factor = standardDeviationFactor)
+                StretchType.MinMax -> {
+                    // Convert the chosen colors to three-band numeric arrays.
+                    // The Raster SDK expects numeric band endpoints in the same units as the raster's pixel values.
+                    // For the purpose of this sample we use simple RGB 0/255 values for min/max which is a common case.
+                    val minColor = presetColors[minColorIndex].second
+                    val maxColor = presetColors[maxColorIndex].second
+                    val minValues = colorToRgbArray(minColor)
+                    val maxValues = colorToRgbArray(maxColor)
+                    MinMaxStretchParameters(minValues = minValues, maxValues = maxValues)
                 }
 
-                // Create an RGB renderer with the chosen stretch parameters. Use default band indexes and gammas so
-                // the renderer will use the raster's bands for R,G,B in order. EstimateStatistics true helps produce
-                // a pleasing stretch when the raster has not had statistics computed.
-                val rgbRenderer = RgbRenderer(stretchParameters = stretchParameters, bandIndexes = listOf(), gammas = listOf(), estimateStatistics = true)
+                StretchType.PercentClip -> PercentClipStretchParameters(
+                    min = percentClipMin,
+                    max = percentClipMax
+                )
 
-                layer.renderer = rgbRenderer
-            } catch (ex: Exception) {
-                messageDialogVM.showMessageDialog("Failed to apply RGB renderer", ex.message ?: "Unknown error")
+                StretchType.StandardDeviation -> StandardDeviationStretchParameters(factor = standardDeviationFactor)
             }
+
+            // Create an RGB renderer with the chosen stretch parameters. Use default band indexes and gammas so
+            // the renderer will use the raster's bands for R,G,B in order. EstimateStatistics true helps produce
+            // a pleasing stretch when the raster has not had statistics computed.
+            val rgbRenderer = RgbRenderer(
+                stretchParameters = stretchParameters,
+                bandIndexes = listOf(),
+                gammas = listOf(),
+                estimateStatistics = true
+            )
+
+            rasterLayer.renderer = rgbRenderer
+        } catch (ex: Exception) {
+            messageDialogVM.showMessageDialog(
+                "Failed to apply RGB renderer",
+                ex.message ?: "Unknown error"
+            )
         }
+
     }
 
     // Helper: convert an ArcGIS Color to a list of three Double RGB values [R, G, B] in 0..255 range
-    private fun colorToRgbArray(color: Color): List<Double> {
-        return when (color) {
-            Color.black -> listOf(0.0, 0.0, 0.0)
-            Color.white -> listOf(255.0, 255.0, 255.0)
-            Color.green -> listOf(0.0, 255.0, 0.0)
-            Color.red -> listOf(255.0, 0.0, 0.0)
-            Color.cyan -> listOf(0.0, 255.0, 255.0)
-            Color.transparent -> listOf(0.0, 0.0, 0.0)
-            else -> listOf(0.0, 0.0, 0.0)
+    private fun colorToRgbArray(color: Color): List<Double> =
+        mutableListOf<Double>().apply {
+            add(color.red.toDouble())
+            add(color.green.toDouble())
+            add(color.blue.toDouble())
         }
-    }
 }

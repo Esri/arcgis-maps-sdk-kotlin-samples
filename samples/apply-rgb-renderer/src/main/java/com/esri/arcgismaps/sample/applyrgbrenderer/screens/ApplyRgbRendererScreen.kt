@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.applyrgbrenderer.screens
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,13 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -42,23 +34,22 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applyrgbrenderer.components.ApplyRgbRendererViewModel
 import com.esri.arcgismaps.sample.applyrgbrenderer.components.ApplyRgbRendererViewModel.StretchType
@@ -66,7 +57,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the Apply RGB renderer sample.
@@ -80,8 +70,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ApplyRgbRendererScreen(sampleName: String) {
     val viewModel: ApplyRgbRendererViewModel = viewModel()
-    val coroutineScope = rememberCoroutineScope()
-
     // UI states for dropdowns
     var isBottomSheetVisible by remember { mutableStateOf(false) }
     var stretchDropdownExpanded by remember { mutableStateOf(false) }
@@ -137,7 +125,6 @@ fun ApplyRgbRendererScreen(sampleName: String) {
                             label = { Text("Stretch Type") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = stretchDropdownExpanded) }
                         )
-                        println("expanded = $stretchDropdownExpanded")
                         ExposedDropdownMenu(
                             expanded = stretchDropdownExpanded,
                             onDismissRequest = { stretchDropdownExpanded = false }) {
@@ -145,6 +132,7 @@ fun ApplyRgbRendererScreen(sampleName: String) {
                                 println("FOO type = ${type.name}")
                                 DropdownMenuItem(text = { Text(type.name) }, onClick = {
                                     viewModel.updateStretchType(type)
+                                    viewModel.applyRgbRenderer()
                                     stretchDropdownExpanded = false
                                 })
                                 // show a divider between dropdown menu options
@@ -154,178 +142,188 @@ fun ApplyRgbRendererScreen(sampleName: String) {
                             }
                         }
                     }
-//
-//                    @Suppress("DEPRECATION")
-//                    Divider()
-//
-//                    // Conditional UI for selected stretch
-//                    when (viewModel.selectedStretchType) {
-//                        StretchType.HistogramEqualization -> {
-//                            Text(
-//                                "Histogram Equalization has no parameters.",
-//                                modifier = Modifier.padding(8.dp)
-//                            )
-//                        }
-//
-//                        StretchType.MinMax -> {
-//                            Text(
-//                                "Min-Max Stretch Parameters",
-//                                style = MaterialTheme.typography.titleMedium
-//                            )
-//
-//                            // Min color selector
-//                            ExposedDropdownMenuBox(
-//                                expanded = minColorDropdownExpanded,
-//                                onExpandedChange = {
-//                                    minColorDropdownExpanded = !minColorDropdownExpanded
-//                                },
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(horizontal = 8.dp)
-//                            ) {
-//                                val minLabel = viewModel.presetColors[viewModel.minColorIndex].first
-//                                TextField(
-//                                    value = minLabel,
-//                                    onValueChange = {},
-//                                    readOnly = true,
-//                                    label = { Text("Min Color") },
-//                                    trailingIcon = {
-//                                        ExposedDropdownMenuDefaults.TrailingIcon(
-//                                            expanded = minColorDropdownExpanded
-//                                        )
-//                                    }
-//                                )
-//                                ExposedDropdownMenu(
-//                                    expanded = minColorDropdownExpanded,
-//                                    onDismissRequest = { minColorDropdownExpanded = false }) {
-//                                    viewModel.presetColors.forEachIndexed { index, pair ->
-//                                        DropdownMenuItem(text = { Text(pair.first) }, onClick = {
-//                                            viewModel.updateMinColorIndex(index)
-//                                            minColorDropdownExpanded = false
-//                                        })
-//                                    }
-//                                }
-//                            }
-//
-//                            // Max color selector
-//                            ExposedDropdownMenuBox(
-//                                expanded = maxColorDropdownExpanded,
-//                                onExpandedChange = {
-//                                    maxColorDropdownExpanded = !maxColorDropdownExpanded
-//                                },
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(horizontal = 8.dp)
-//                            ) {
-//                                val maxLabel = viewModel.presetColors[viewModel.maxColorIndex].first
-//                                TextField(
-//                                    value = maxLabel,
-//                                    onValueChange = {},
-//                                    readOnly = true,
-//                                    label = { Text("Max Color") },
-//                                    trailingIcon = {
-//                                        ExposedDropdownMenuDefaults.TrailingIcon(
-//                                            expanded = maxColorDropdownExpanded
-//                                        )
-//                                    }
-//                                )
-//                                ExposedDropdownMenu(
-//                                    expanded = maxColorDropdownExpanded,
-//                                    onDismissRequest = { maxColorDropdownExpanded = false }) {
-//                                    viewModel.presetColors.forEachIndexed { index, pair ->
-//                                        DropdownMenuItem(text = { Text(pair.first) }, onClick = {
-//                                            viewModel.updateMaxColorIndex(index)
-//                                            maxColorDropdownExpanded = false
-//                                        })
-//                                    }
-//                                }
-//                            }
-//                        }
-//
-//                        StretchType.PercentClip -> {
-//                            Text(
-//                                "Percent Clip Stretch",
-//                                style = MaterialTheme.typography.titleMedium
-//                            )
-//
-//                            Text(
-//                                "Min: ${viewModel.percentClipMin.toInt()}%",
-//                                modifier = Modifier.padding(start = 8.dp)
-//                            )
-//                            Slider(
-//                                value = viewModel.percentClipMin.toFloat(),
-//                                onValueChange = { newVal ->
-//                                    viewModel.updatePercentClip(
-//                                        newVal.toDouble(),
-//                                        viewModel.percentClipMax
-//                                    )
-//                                },
-//                                valueRange = 0f..100f
-//                            )
-//
-//                            Text(
-//                                "Max: ${viewModel.percentClipMax.toInt()}%",
-//                                modifier = Modifier.padding(start = 8.dp)
-//                            )
-//                            Slider(
-//                                value = viewModel.percentClipMax.toFloat(),
-//                                onValueChange = { newVal ->
-//                                    viewModel.updatePercentClip(
-//                                        viewModel.percentClipMin,
-//                                        newVal.toDouble()
-//                                    )
-//                                },
-//                                valueRange = 0f..100f
-//                            )
-//                        }
-//
-//                        StretchType.StandardDeviation -> {
-//                            Text(
-//                                "Standard Deviation Stretch",
-//                                style = MaterialTheme.typography.titleMedium
-//                            )
-//                            Text(
-//                                "Factor: ${
-//                                    String.format(
-//                                        "%.2f",
-//                                        viewModel.standardDeviationFactor
-//                                    )
-//                                }", modifier = Modifier.padding(start = 8.dp)
-//                            )
-//                            Slider(
-//                                value = viewModel.standardDeviationFactor.toFloat(),
-//                                onValueChange = { newVal ->
-//                                    viewModel.updateStandardDeviationFactor(newVal.toDouble())
-//                                },
-//                                valueRange = 0f..16f
-//                            )
-//                        }
-//                    }
-//
-//                    Divider()
-//
-//                    Row(
-//                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp)
-//                    ) {
-//                        OutlinedButton(
-//                            onClick = { isBottomSheetVisible = false },
-//                            modifier = Modifier.weight(1f)
-//                        ) {
-//                            Text("Dismiss")
-//                        }
-//
-//                        Button(onClick = {
-//                            coroutineScope.launch { viewModel.applyRgbRenderer() }
-//                        }, modifier = Modifier.weight(1f)) {
-//                            Text("Update Renderer")
-//                        }
-//                    }
+
+                    HorizontalDivider()
+
+                    // Conditional UI for selected stretch
+                    when (viewModel.selectedStretchType) {
+                        StretchType.HistogramEqualization -> {
+                            Text(
+                                "Histogram Equalization has no parameters.",
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+
+                        StretchType.MinMax -> {
+                            Text(
+                                "Min-Max Stretch Parameters",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            // Min color selector
+                            ExposedDropdownMenuBox(
+                                expanded = minColorDropdownExpanded,
+                                onExpandedChange = {
+                                    minColorDropdownExpanded = !minColorDropdownExpanded
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                            ) {
+                                val minLabel = viewModel.presetColors[viewModel.minColorIndex].first
+                                TextField(
+                                    value = minLabel,
+                                    onValueChange = {},
+                                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                                    readOnly = true,
+                                    label = { Text("Min Color") },
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                            expanded = minColorDropdownExpanded
+                                        )
+                                    }
+                                )
+                                ExposedDropdownMenu(
+                                    expanded = minColorDropdownExpanded,
+                                    onDismissRequest = { minColorDropdownExpanded = false }) {
+                                    viewModel.presetColors.forEachIndexed { index, pair ->
+                                        DropdownMenuItem(text = { Text(pair.first) }, onClick = {
+                                            viewModel.updateMinColorIndex(index)
+                                            viewModel.applyRgbRenderer()
+                                            minColorDropdownExpanded = false
+                                        })
+                                        // show a divider between dropdown menu options
+                                        if (index < viewModel.presetColors.lastIndex) {
+                                            HorizontalDivider()
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Max color selector
+                            ExposedDropdownMenuBox(
+                                expanded = maxColorDropdownExpanded,
+                                onExpandedChange = {
+                                    maxColorDropdownExpanded = !maxColorDropdownExpanded
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                            ) {
+                                val maxLabel = viewModel.presetColors[viewModel.maxColorIndex].first
+                                TextField(
+                                    value = maxLabel,
+                                    onValueChange = {},
+                                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                                    readOnly = true,
+                                    label = { Text("Max Color") },
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                            expanded = maxColorDropdownExpanded
+                                        )
+                                    }
+                                )
+                                ExposedDropdownMenu(
+                                    expanded = maxColorDropdownExpanded,
+                                    onDismissRequest = { maxColorDropdownExpanded = false }) {
+                                    viewModel.presetColors.forEachIndexed { index, pair ->
+                                        DropdownMenuItem(text = { Text(pair.first) }, onClick = {
+                                            viewModel.updateMaxColorIndex(index)
+                                            viewModel.applyRgbRenderer()
+                                            maxColorDropdownExpanded = false
+                                        })
+                                        // show a divider between dropdown menu options
+                                        if (index < viewModel.presetColors.lastIndex) {
+                                            HorizontalDivider()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        StretchType.PercentClip -> {
+                            Text(
+                                "Percent Clip Stretch",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Text(
+                                "Min: ${viewModel.percentClipMin.toInt()}%",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            Slider(
+                                value = viewModel.percentClipMin.toFloat(),
+                                onValueChange = { newVal ->
+                                    viewModel.updatePercentClip(
+                                        newVal.toDouble(),
+                                        viewModel.percentClipMax
+                                    )
+                                    viewModel.applyRgbRenderer()
+                                },
+                                valueRange = 0f..100f
+                            )
+
+                            Text(
+                                "Max: ${viewModel.percentClipMax.toInt()}%",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            Slider(
+                                value = viewModel.percentClipMax.toFloat(),
+                                onValueChange = { newVal ->
+                                    viewModel.updatePercentClip(
+                                        viewModel.percentClipMin,
+                                        newVal.toDouble()
+                                    )
+                                    viewModel.applyRgbRenderer()
+                                },
+                                valueRange = 0f..100f
+                            )
+                        }
+
+                        StretchType.StandardDeviation -> {
+                            Text(
+                                "Standard Deviation Stretch",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                "Factor: ${
+                                    String.format(
+                                        "%.2f",
+                                        viewModel.standardDeviationFactor
+                                    )
+                                }", modifier = Modifier.padding(start = 8.dp)
+                            )
+                            Slider(
+                                value = viewModel.standardDeviationFactor.toFloat(),
+                                onValueChange = { newVal ->
+                                    viewModel.updateStandardDeviationFactor(newVal.toDouble())
+                                    viewModel.applyRgbRenderer()
+                                },
+                                valueRange = 0f..16f
+                            )
+                        }
+                    }
+
+                    HorizontalDivider()
+
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.resetRenderer()
+                            },
+                            enabled = viewModel.selectedStretchType != StretchType.HistogramEqualization
+                        ) {
+                            Text("Reset Renderer")
+                        }
+                    }
                 }
-                }
+            }
 
             // Show message dialogs produced by the ViewModel
             viewModel.messageDialogVM.apply {
@@ -339,9 +337,11 @@ fun ApplyRgbRendererScreen(sampleName: String) {
             }
         },
         floatingActionButton = {
-            // Floating action toggles the bottom sheet
-            FloatingActionButton(onClick = { isBottomSheetVisible = true }) {
-                Icon(imageVector = Icons.Default.Settings, contentDescription = "Options")
+            if (!isBottomSheetVisible) {
+                // Floating action toggles the bottom sheet
+                FloatingActionButton(onClick = { isBottomSheetVisible = true }) {
+                    Icon(imageVector = Icons.Default.Settings, contentDescription = "Options")
+                }
             }
         }
     )
