@@ -29,6 +29,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -39,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -198,40 +200,33 @@ fun MinMaxSettings(
     minValue: Double,
     maxValue: Double,
     onMinValueChange: (Double) -> Unit,
-    onMaxValueChange: (Double) -> Unit
+    onMaxValueChange: (Double) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..255f
 ) {
+    var range by remember { mutableStateOf(minValue.toFloat()..maxValue.toFloat()) }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Min-Max Parameters", style = MaterialTheme.typography.titleMedium)
 
-        // Min value slider (0 .. max-1)
-        Text(text = "Min Value: ${minValue.toInt()}")
+        Text(text = "Min Value: ${range.start.toInt()}  Max Value: ${range.endInclusive.toInt()}")
 
-        Slider(
-            value = minValue.toFloat(),
-            onValueChange = { value -> onMinValueChange(value.toDouble()) },
-            valueRange = 0f..maxValue.coerceIn(0.0, maxValue - 1.0).toFloat()
+        RangeSlider(
+            value = range,
+            onValueChange = { newRange ->
+                range = newRange
+                onMinValueChange(newRange.start.toDouble())
+                onMaxValueChange(newRange.endInclusive.toDouble())
+            },
+            valueRange = valueRange,
+            steps = (valueRange.endInclusive - 1).toInt(), // steps between 0 and 255
         )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "0")
-            Text(text = "${(maxValue - 1).toInt()}")
-        }
-
-        // Max value slider ((min+1) .. 255)
-        Text(text = "Max Value: ${maxValue.toInt()}")
-        Slider(
-            value = maxValue.toFloat(),
-            onValueChange = { value -> onMaxValueChange(value.toDouble()) },
-            valueRange = (minValue.toFloat() + 1f)..255f
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "${(minValue + 1).toInt()}")
-            Text(text = "255")
+            Text(text = "${valueRange.start.toInt()}")
+            Text(text = "${valueRange.endInclusive.toInt()}")
         }
     }
 }
