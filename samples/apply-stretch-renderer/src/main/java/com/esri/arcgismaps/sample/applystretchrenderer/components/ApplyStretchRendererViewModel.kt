@@ -111,17 +111,11 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
             rasterLayer.load().onSuccess {
                 arcGISMap.operationalLayers.add(rasterLayer)
             }.onFailure {
-                messageDialogVM.showMessageDialog(
-                    title = "Error",
-                    description = "Failed to load raster layer: ${it.message}"
-                )
+                messageDialogVM.showMessageDialog(it)
             }
 
             arcGISMap.load().onFailure {
-                messageDialogVM.showMessageDialog(
-                    title = "Error",
-                    description = "Failed to load map: ${it.message}"
-                )
+                messageDialogVM.showMessageDialog(it)
             }
 
             val center = rasterLayer.fullExtent?.center ?: Point(0.0, 0.0, SpatialReference.wgs84())
