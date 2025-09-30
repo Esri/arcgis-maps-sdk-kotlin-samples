@@ -54,6 +54,7 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     private var appliedPercentMin = DEFAULT_PERCENT_MIN
     private var appliedPercentMax = DEFAULT_PERCENT_MAX
     private var appliedStdDeviationFactor = DEFAULT_STD_DEVIATION_FACTOR
+    private var appliedStretchType = StretchType.MinMax
 
     // The map used in the sample, with imagery basemap
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISImageryStandard)
@@ -84,7 +85,7 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     val stretchTypeOptions: List<String> = listOf("MinMax", "Percent Clip", "Std Deviation")
 
     // Current selected stretch type
-    private val _selectedStretchType = MutableStateFlow(StretchType.MinMax)
+    private val _selectedStretchType = MutableStateFlow(appliedStretchType)
     val selectedStretchType = _selectedStretchType.asStateFlow()
 
     // Min-Max parameters (values represent pixel value range)
@@ -170,6 +171,7 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
 
     /** Construct and apply a StretchRenderer to the raster layer using current UI parameters. */
     fun updateRenderer() {
+        appliedStretchType = _selectedStretchType.value
         val parameters: StretchParameters = when (_selectedStretchType.value) {
             StretchType.MinMax -> {
                 // save the new initial values
@@ -227,6 +229,7 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
 
     /** Dismiss any unapplied changes and reset UI to last applied values. */
     fun dismissChanges() {
+        _selectedStretchType.value = appliedStretchType
         _minValue.value = appliedMinValue
         _maxValue.value = appliedMaxValue
 
