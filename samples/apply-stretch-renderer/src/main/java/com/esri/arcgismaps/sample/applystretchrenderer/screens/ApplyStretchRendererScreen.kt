@@ -40,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -213,12 +212,15 @@ fun MinMaxSettings(
         RangeSlider(
             value = range,
             onValueChange = { newRange ->
-                range = newRange
-                onMinValueChange(newRange.start.toDouble())
-                onMaxValueChange(newRange.endInclusive.toDouble())
+                if ( newRange.start < newRange.endInclusive ) {
+                    range = newRange
+                    onMinValueChange(newRange.start.toDouble())
+                    onMaxValueChange(newRange.endInclusive.toDouble())
+                }
+
             },
             valueRange = valueRange,
-            steps = (valueRange.endInclusive - 1).toInt(), // steps between 0 and 255
+            steps = 254 // steps between 0 and 255
         )
 
         Row(
@@ -237,39 +239,34 @@ fun PercentClipSettings(
     percentMin: Double,
     percentMax: Double,
     onPercentMinChange: (Double) -> Unit,
-    onPercentMaxChange: (Double) -> Unit
+    onPercentMaxChange: (Double) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..100f
 ) {
+    var range by remember { mutableStateOf(percentMin.toFloat()..percentMax.toFloat()) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Percent Clip Parameters", style = MaterialTheme.typography.titleMedium)
 
         // Percent min slider (0 .. percentMax)
-        Text(text = "Min (%): ${percentMin.toInt()}")
-        Slider(
-            value = percentMin.toFloat(),
-            onValueChange = { value -> onPercentMinChange(value.toDouble()) },
-            valueRange = 0f..percentMax.toFloat()
+        Text(text = " Min %: ${range.start.toInt()}  Max %: ${range.endInclusive.toInt()}")
+        RangeSlider(
+            value = range,
+            onValueChange = { newRange ->
+                // Ensure min is always less than max
+                if (newRange.start < newRange.endInclusive) {
+                    range = newRange
+                    onPercentMinChange(newRange.start.toDouble())
+                    onPercentMaxChange(newRange.endInclusive.toDouble())
+                }
+            },
+            valueRange = valueRange,
+            steps = 99 // steps between 0 and 100
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "0")
-            Text(text = "${percentMax.toInt()}")
-        }
-
-        // Percent max slider (percentMin .. 100)
-        Text(text = "Max (%): ${percentMax.toInt()}")
-        Slider(
-            value = percentMax.toFloat(),
-            onValueChange = { value -> onPercentMaxChange(value.toDouble()) },
-            valueRange = percentMin.toFloat()..100f
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "${percentMin.toInt()}")
-            Text(text = "100")
+            Text(text = "${valueRange.start.toInt()}")
+            Text(text = "${valueRange.endInclusive.toInt()}")
         }
     }
 }
