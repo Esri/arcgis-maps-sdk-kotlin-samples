@@ -14,11 +14,11 @@ Run the sample. Note that the graphics are extruded to the level set in their he
 
 ## How it works
 
-1. Create a GraphicsOverlay and SimpleRenderer.
-2. Set the extrusion mode for the renderer with RendererSceneProperties.extrusionMode = ExtrusionMode.BaseHeight.
-3. Specify the attribute name of the graphic that the extrusion mode will use, RendererSceneProperties.extrusionExpression = "[height]".
-4. Set the renderer on the graphics overlay using, GraphicsOverlay.renderer.
-5. Create graphics with their attribute set, graphic.attributes["height"].
+1. Create a `GraphicsOverlay` and `SimpleRenderer`.
+2. Set the extrusion mode for the renderer with `RendererSceneProperties.extrusionMode = ExtrusionMode.BaseHeight`.
+3. Specify the attribute name of the graphic that the extrusion mode will use, `RendererSceneProperties.extrusionExpression = "[height]"`.
+4. Set the renderer on the graphics overlay using, `GraphicsOverlay.renderer`.
+5. Create graphics with their attribute set, `graphic.attributes["height"]`.
 
 ## Relevant API
 
