@@ -26,6 +26,8 @@ import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.symbology.DistanceCompositeSceneSymbol
 import com.arcgismaps.mapping.symbology.DistanceSymbolRange
 import com.arcgismaps.mapping.symbology.ModelSceneSymbol
@@ -33,19 +35,14 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSceneSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.view.Camera
-import com.arcgismaps.mapping.view.CameraController
-import com.arcgismaps.mapping.view.GlobeCameraController
-import com.arcgismaps.mapping.view.Graphic
-import com.arcgismaps.mapping.view.GraphicsOverlay
-import com.arcgismaps.mapping.view.OrbitGeoElementCameraController
 import com.arcgismaps.mapping.view.SurfacePlacement
+import com.arcgismaps.mapping.view.OrbitGeoElementCameraController
+import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.stylepointwithdistancecompositescenesymbol.R
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.launch
 import java.io.File
 
 /**
@@ -56,9 +53,11 @@ class StylePointWithDistanceCompositeSceneSymbolViewModel(app: Application) :
     AndroidViewModel(app) {
 
     // Lazy provision path for reference offline resources.
-    private val provisionPath: String = app.getExternalFilesDir(null)?.path.toString() +
-            File.separator +
-            app.getString(R.string.style_point_with_distance_composite_scene_symbol_app_name)
+    private val provisionPath: String by lazy {
+        app.getExternalFilesDir(null)?.path.toString() +
+                File.separator +
+                app.getString(R.string.style_point_with_distance_composite_scene_symbol_app_name)
+    }
 
     // Construct the model file URI from the provision path.
     private val bristolModelUri
@@ -70,9 +69,9 @@ class StylePointWithDistanceCompositeSceneSymbolViewModel(app: Application) :
         spatialReference = SpatialReference.wgs84()
     )
 
-    // Distance composite symbol with three ranges (Plane model, cone model, and a simple circle).
+    // Distance composite symbol with three ranges (detailed model, simplified model, and a simple circle).
     private val distanceCompositeSymbol: DistanceCompositeSceneSymbol by lazy {
-        // Close-up: Plane 3D model.
+        // Close-up: Detailed 3D model.
         val planeModel = ModelSceneSymbol(
             uri = bristolModelUri,
             scale = 100.0F
@@ -93,7 +92,7 @@ class StylePointWithDistanceCompositeSceneSymbolViewModel(app: Application) :
         )
 
         DistanceCompositeSceneSymbol().apply {
-            // Close-up: Plane 3D model.
+            // Close-up: Detailed 3D model.
             ranges.add(
                 DistanceSymbolRange(
                     symbol = planeModel,
@@ -121,10 +120,20 @@ class StylePointWithDistanceCompositeSceneSymbolViewModel(app: Application) :
     }
 
     // Graphic for the plane using the distance composite symbol.
-    private val planeGraphic = Graphic(
-        geometry = planePosition,
-        symbol = distanceCompositeSymbol
-    )
+    private val planeGraphic by lazy {
+        Graphic(
+            geometry = planePosition,
+            symbol = distanceCompositeSymbol
+        )
+    }
+
+    // Orbit camera controller that targets the plane graphic.
+    val orbitCameraController: OrbitGeoElementCameraController by lazy {
+        OrbitGeoElementCameraController(planeGraphic, 4000.0).apply {
+            setCameraPitchOffset(80.0)
+            setCameraHeadingOffset(-30.0)
+        }
+    }
 
     // Scene using imagery basemap and a world elevation service.
     val arcGISScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
@@ -145,13 +154,14 @@ class StylePointWithDistanceCompositeSceneSymbolViewModel(app: Application) :
     }
 
     // Graphics overlay to display the plane graphic using a distance composite symbol.
-    val graphicsOverlay = GraphicsOverlay(graphics = listOf(planeGraphic)).apply {
-        sceneProperties.surfacePlacement = SurfacePlacement.Relative
+    val graphicsOverlay by lazy {
+        GraphicsOverlay(graphics = listOf(planeGraphic)).apply {
+            sceneProperties.surfacePlacement = SurfacePlacement.Relative
+        }
     }
 
-    // Flow exposing the CameraController to attach with the SceneView.
-    private val _cameraControllerFlow = MutableStateFlow<CameraController>(GlobeCameraController())
-    val cameraControllerFlow = _cameraControllerFlow.asStateFlow()
+    // SceneView proxy to hand to the composable SceneView
+    val sceneViewProxy = SceneViewProxy()
 
     // Flow exposing the distance between camera and target (meters).
     private val _cameraDistanceMeters = MutableStateFlow(0.0)
@@ -166,37 +176,12 @@ class StylePointWithDistanceCompositeSceneSymbolViewModel(app: Application) :
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
 
-        // When controller is orbiting the graphic, collect the cameraDistance flow.
+        // Collect the cameraDistance flow exposed by the controller
         viewModelScope.launch {
-            _cameraControllerFlow
-                .filterIsInstance<OrbitGeoElementCameraController>()
-                .collectLatest { orbitGeoElementCameraController ->
-                    orbitGeoElementCameraController.cameraDistance.collect { distance ->
-                        _cameraDistanceMeters.value = distance
-                    }
-                }
+            // Update flow to keep UI reactive.
+            orbitCameraController.cameraDistance.collect { distance ->
+                _cameraDistanceMeters.value = distance
+            }
         }
-    }
-
-    /**
-     * Create a new [OrbitGeoElementCameraController] targeted at the [planeGraphic].
-     */
-    fun createOrbitGeoElementCameraController() {
-        val controller = OrbitGeoElementCameraController(
-            targetGeoElement = planeGraphic,
-            distance = 4000.0
-        ).apply {
-            setCameraPitchOffset(80.0)
-            setCameraHeadingOffset(-30.0)
-        }
-        _cameraControllerFlow.value = controller
-    }
-
-    /**
-     * Clear camera controller and reset distance.
-     */
-    fun clearCameraController() {
-        _cameraControllerFlow.value = GlobeCameraController()
-        _cameraDistanceMeters.value = 0.0
     }
 }
