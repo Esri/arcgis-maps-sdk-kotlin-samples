@@ -1,0 +1,33 @@
+{
+    "category": "Scenes",
+    "description": "Extrude graphics based on an attribute value.",
+    "formal_name": "ShowExtrudedGraphics",
+    "ignore": false,
+    "images": [
+        "show-extruded-graphics.png"
+    ],
+    "keywords": [
+        "3D",
+        "extrude",
+        "extrusion",
+        "height",
+        "scene",
+        "visualization",
+        "ExtrusionMode",
+        "RendererSceneProperties",
+        "SimpleRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ExtrusionMode",
+        "RendererSceneProperties",
+        "SimpleRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showextrudedgraphics/components/ShowExtrudedGraphicsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showextrudedgraphics/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showextrudedgraphics/screens/ShowExtrudedGraphicsScreen.kt"
+    ],
+    "title": "Show extruded graphics"
+}
