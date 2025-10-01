@@ -1,0 +1,30 @@
+{
+    "category": "Maps",
+    "description": "Determine the map's load status which can be: `NotLoaded`, `FailedToLoad`, `Loading`, `Loaded`.",
+    "formal_name": "MonitorChangesToMapLoadStatus",
+    "ignore": false,
+    "images": [
+        "monitor-changes-to-map-load-status.png"
+    ],
+    "keywords": [
+        "load status",
+        "loadable pattern",
+        "map",
+        "ArcGISMap",
+        "LoadStatus StateFlow",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "LoadStatus StateFlow",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestomaploadstatus/components/MonitorChangesToMapLoadStatusViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestomaploadstatus/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/monitorchangestomaploadstatus/screens/MonitorChangesToMapLoadStatusScreen.kt"
+    ],
+    "title": "Monitor changes to map load status"
+}

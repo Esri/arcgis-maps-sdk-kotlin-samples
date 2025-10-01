@@ -1,0 +1,36 @@
+{
+    "category": "Layers",
+    "description": "Create a feature collection layer from a portal item.",
+    "formal_name": "AddFeatureCollectionLayerFromPortalItem",
+    "ignore": false,
+    "images": [
+        "add-feature-collection-layer-from-portal-item.png"
+    ],
+    "keywords": [
+        "collection",
+        "feature collection",
+        "feature collection layer",
+        "id",
+        "item",
+        "map notes",
+        "portal",
+        "FeatureCollection",
+        "FeatureCollectionLayer",
+        "Portal",
+        "PortalItem"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureCollection",
+        "FeatureCollectionLayer",
+        "Portal",
+        "PortalItem"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addfeaturecollectionlayerfromportalitem/components/AddFeatureCollectionLayerFromPortalItemViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeaturecollectionlayerfromportalitem/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addfeaturecollectionlayerfromportalitem/screens/AddFeatureCollectionLayerFromPortalItemScreen.kt"
+    ],
+    "title": "Add feature collection layer from portal item"
+}
