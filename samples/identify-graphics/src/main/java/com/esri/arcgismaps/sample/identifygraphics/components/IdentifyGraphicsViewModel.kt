@@ -37,6 +37,7 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.ScreenCoordinate
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.identifygraphics.screens.MessageDialogState
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
@@ -76,14 +77,14 @@ class IdentifyGraphicsViewModel(app: Application) : AndroidViewModel(app) {
 
     val graphicsOverlays = listOf(graphicsOverlay)
 
-    // Dialog view model to present error messages.
-    val messageDialogVM = MessageDialogViewModel()
+    // Dialog state to present error messages.
+    val messageDialogState = MessageDialogState()
 
     init {
         // Load the map and handle any load failures.
         viewModelScope.launch {
             arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(error)
+                messageDialogState.showError(error)
             }
         }
     }
@@ -109,12 +110,12 @@ class IdentifyGraphicsViewModel(app: Application) : AndroidViewModel(app) {
                     "No graphics at tapped location."
                 }
                 // Show an alert dialog with the identify result.
-                messageDialogVM.showMessageDialog(
+                messageDialogState.showMessage(
                     title = "Identify Result",
                     description = message
                 )
             }.onFailure { error ->
-                messageDialogVM.showMessageDialog(error)
+                messageDialogState.showError(error)
             }
         }
     }
