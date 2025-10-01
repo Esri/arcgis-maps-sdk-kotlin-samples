@@ -1,0 +1,39 @@
+{
+    "category": "Visualization",
+    "description": "Apply a unique value with alternate symbols at different scales.",
+    "formal_name": "DisplayAlternateSymbolsAtDifferentScales",
+    "ignore": false,
+    "images": [
+        "display-alternate-symbols-at-different-scales.png"
+    ],
+    "keywords": [
+        "alternate symbols",
+        "multilayer symbol",
+        "scale based rendering",
+        "simple marker symbol",
+        "symbol reference properties",
+        "symbology",
+        "unique value",
+        "unique value renderer",
+        "MultilayerSymbol",
+        "SimpleMarkerSymbol",
+        "SymbolReferenceProperties",
+        "UniqueValue",
+        "UniqueValueRenderer"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "MultilayerSymbol",
+        "SimpleMarkerSymbol",
+        "SymbolReferenceProperties",
+        "UniqueValue",
+        "UniqueValueRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displayalternatesymbolsatdifferentscales/components/DisplayAlternateSymbolsAtDifferentScalesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayalternatesymbolsatdifferentscales/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayalternatesymbolsatdifferentscales/screens/DisplayAlternateSymbolsAtDifferentScalesScreen.kt"
+    ],
+    "title": "Display alternate symbols at different scales"
+}
