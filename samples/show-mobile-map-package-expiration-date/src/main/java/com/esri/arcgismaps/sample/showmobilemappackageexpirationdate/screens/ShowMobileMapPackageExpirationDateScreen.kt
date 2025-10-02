@@ -74,8 +74,8 @@ fun ShowMobileMapPackageExpirationDateScreen(sampleName: String) {
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center
                             )
+                            Spacer(modifier = Modifier.padding(8.dp))
                             Text(
-                                modifier = Modifier.padding(top = 8.dp),
                                 text = "Expiration date: ${mapViewModel.expirationDateText ?: "N/A"}",
                                 style = MaterialTheme.typography.bodySmall,
                                 textAlign = TextAlign.Center
