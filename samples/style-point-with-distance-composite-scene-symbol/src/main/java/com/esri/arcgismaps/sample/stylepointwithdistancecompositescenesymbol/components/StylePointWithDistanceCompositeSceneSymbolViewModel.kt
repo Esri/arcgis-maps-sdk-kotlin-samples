@@ -154,11 +154,14 @@ class StylePointWithDistanceCompositeSceneSymbolViewModel(app: Application) :
     }
 
     // Graphics overlay to display the plane graphic using a distance composite symbol.
-    val graphicsOverlay by lazy {
+    private val graphicsOverlay by lazy {
         GraphicsOverlay(graphics = listOf(planeGraphic)).apply {
             sceneProperties.surfacePlacement = SurfacePlacement.Relative
         }
     }
+
+    // Expose the graphics overlay list for the SceneView
+    val graphicsOverlays = listOf(graphicsOverlay)
 
     // SceneView proxy to hand to the composable SceneView
     val sceneViewProxy = SceneViewProxy()

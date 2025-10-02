@@ -56,7 +56,7 @@ fun StylePointWithDistanceCompositeSceneSymbolScreen(sampleName: String) {
                 arcGISScene = viewModel.arcGISScene,
                 sceneViewProxy = viewModel.sceneViewProxy,
                 cameraController = viewModel.orbitCameraController,
-                graphicsOverlays = listOf(viewModel.graphicsOverlay),
+                graphicsOverlays = viewModel.graphicsOverlays,
             )
             Column(
                 modifier = Modifier
