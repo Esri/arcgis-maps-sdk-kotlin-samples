@@ -68,7 +68,6 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     // The raster data (raster-file/Shasta.tif) should be downloaded to external storage on launch
     private val raster by lazy {
         val rasterFile = File(provisionPath, "raster-file${File.separator}Shasta.tif")
-        require(rasterFile.exists()) { "Invalid raster data: file does not exist at ${rasterFile.path}" }
         Raster.createWithPath(rasterFile.path)
     }
 
@@ -105,15 +104,16 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
             rasterLayer.load().onSuccess {
                 arcGISMap.operationalLayers.add(rasterLayer)
             }.onFailure {
-                messageDialogVM.showMessageDialog(it)
+                return@launch messageDialogVM.showMessageDialog(it)
             }
 
             arcGISMap.load().onFailure {
-                messageDialogVM.showMessageDialog(it)
+                return@launch messageDialogVM.showMessageDialog(it)
             }
 
-            val center = rasterLayer.fullExtent?.center ?: Point(0.0, 0.0, SpatialReference.wgs84())
-            mapViewProxy.setViewpoint(Viewpoint(center = center, scale = 80_000.0))
+            rasterLayer.fullExtent?.center?.let { center ->
+                mapViewProxy.setViewpoint(Viewpoint(center = center, scale = 80_000.0))
+            }
             updateRenderer()
         }
     }
