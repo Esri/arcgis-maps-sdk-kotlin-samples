@@ -65,7 +65,10 @@ fun ShowMobileMapPackageExpirationDateScreen(sampleName: String) {
                             .padding(top = 16.dp, bottom = 16.dp)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Text(
                                 text = mapViewModel.expirationMessage ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
