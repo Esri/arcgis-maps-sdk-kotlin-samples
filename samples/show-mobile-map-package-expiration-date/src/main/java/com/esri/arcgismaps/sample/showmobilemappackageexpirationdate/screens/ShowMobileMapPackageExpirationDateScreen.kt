@@ -19,8 +19,10 @@ package com.esri.arcgismaps.sample.showmobilemappackageexpirationdate.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -59,7 +61,7 @@ fun ShowMobileMapPackageExpirationDateScreen(sampleName: String) {
 
                 // Display expiration information overlay if the mobile map package is expired
                 if (mapViewModel.isExpired) {
-                    Surface(
+                    Card(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(top = 16.dp, bottom = 16.dp)
@@ -70,13 +72,13 @@ fun ShowMobileMapPackageExpirationDateScreen(sampleName: String) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = mapViewModel.expirationMessage ?: "",
+                                text = mapViewModel.expirationMessage,
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.padding(8.dp))
                             Text(
-                                text = "Expiration date: ${mapViewModel.expirationDateText ?: "N/A"}",
+                                text = "Expiration date: ${mapViewModel.expirationDateText}",
                                 style = MaterialTheme.typography.bodySmall,
                                 textAlign = TextAlign.Center
                             )

@@ -45,10 +45,10 @@ class ShowMobileMapPackageExpirationDateViewModel(application: Application) : An
     var isExpired by mutableStateOf(false)
         private set
 
-    var expirationMessage by mutableStateOf<String?>(null)
+    var expirationMessage by mutableStateOf("")
         private set
 
-    var expirationDateText by mutableStateOf<String?>(null)
+    var expirationDateText by mutableStateOf("N/A")
         private set
 
     // Build the provision path where offline resources are stored for the sample app
