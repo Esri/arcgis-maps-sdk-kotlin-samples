@@ -28,7 +28,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -141,27 +140,13 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                             )
                         }
                     }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                    Button(
+                        onClick = {
+                            mapViewModel.resetAllChanges()
+                            isBottomSheetVisible = false
+                        }
                     ) {
-                        OutlinedButton(
-                            onClick = {
-                                isBottomSheetVisible = false
-                                mapViewModel.dismissChanges()
-                            }
-                        ) {
-                            Text("Dismiss")
-                        }
-                        Button(
-                            onClick = {
-                                mapViewModel.updateRenderer()
-                                isBottomSheetVisible = false
-                            }
-                        ) {
-                            Text("Update Renderer")
-                        }
+                        Text("Reset all changes")
                     }
                 }
             }
