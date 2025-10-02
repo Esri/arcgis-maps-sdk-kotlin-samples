@@ -1,0 +1,31 @@
+{
+    "category": "Visualization",
+    "description": "Change the style of a Web Map Service (WMS) layer.",
+    "formal_name": "ApplyStyleToWmsLayer",
+    "ignore": false,
+    "images": [
+        "apply-style-to-wms-layer.png"
+    ],
+    "keywords": [
+        "WMS",
+        "imagery",
+        "styles",
+        "visualization",
+        "WmsLayer",
+        "WmsSublayer",
+        "WmsSublayerInfo"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "WmsLayer",
+        "WmsSublayer",
+        "WmsSublayerInfo"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applystyletowmslayer/components/ApplyStyleToWMSLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystyletowmslayer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystyletowmslayer/screens/ApplyStyleToWMSLayerScreen.kt"
+    ],
+    "title": "Apply style to WMS layer"
+}
