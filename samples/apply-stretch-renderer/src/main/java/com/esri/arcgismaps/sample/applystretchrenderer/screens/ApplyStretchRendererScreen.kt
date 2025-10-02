@@ -195,7 +195,7 @@ fun MinMaxSettings(
         RangeSlider(
             value = range,
             onValueChange = { newRange ->
-                if ( newRange.start < newRange.endInclusive ) {
+                if (newRange.start < newRange.endInclusive) {
                     range = newRange
                     onMinValueChange(newRange.start.toDouble())
                     onMaxValueChange(newRange.endInclusive.toDouble())

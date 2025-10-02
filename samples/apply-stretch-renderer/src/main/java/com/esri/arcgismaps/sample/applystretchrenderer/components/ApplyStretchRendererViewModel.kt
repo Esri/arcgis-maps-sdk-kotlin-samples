@@ -50,7 +50,7 @@ private const val DEFAULT_STD_DEVIATION_FACTOR = 0.5
  */
 class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    // The map used in the sample, with imagery basemap
+    // The map with imagery basemap style
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISImageryStandard)
 
     // MapViewProxy used to set viewpoint after layer loads
@@ -59,24 +59,24 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
     // Message dialog view model for error handling
     val messageDialogVM = MessageDialogViewModel()
 
-    // Provision path for local offline resources (raster-file/Shasta.tif)
-    private val provisionPath: String by lazy {
+    // Provision path for local offline resources
+    private val provisionPath by lazy {
         app.getExternalFilesDir(null)?.path.toString() + File.separator +
                 app.getString(R.string.apply_stretch_renderer_app_name)
     }
 
-    // The raster data (Shasta.tif) should be downloaded to external storage on launch
-    private val raster: Raster by lazy {
+    // The raster data (raster-file/Shasta.tif) should be downloaded to external storage on launch
+    private val raster by lazy {
         val rasterFile = File(provisionPath, "raster-file${File.separator}Shasta.tif")
         require(rasterFile.exists()) { "Invalid raster data: file does not exist at ${rasterFile.path}" }
         Raster.createWithPath(rasterFile.path)
     }
 
     // The raster layer to which the stretch renderer will be applied
-    private val rasterLayer: RasterLayer = RasterLayer(raster)
+    private val rasterLayer = RasterLayer(raster)
 
     // Stretch type options for UI
-    val stretchTypeOptions: List<String> = listOf("MinMax", "Percent Clip", "Std Deviation")
+    val stretchTypeOptions = listOf("MinMax", "Percent Clip", "Std Deviation")
 
     // Current selected stretch type
     private val _selectedStretchType = MutableStateFlow(StretchType.MinMax)
@@ -210,4 +210,4 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
 }
 
 /** Enum representing available stretch parameter types. */
-enum class StretchType { MinMax, PercentClip, StandardDeviation; }
+enum class StretchType { MinMax, PercentClip, StandardDeviation }
