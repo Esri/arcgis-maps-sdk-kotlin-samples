@@ -62,7 +62,7 @@ fun ShowMobileMapPackageExpirationDateScreen(sampleName: String) {
                     Surface(
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .padding(12.dp)
+                            .padding(top = 16.dp, bottom = 16.dp)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
