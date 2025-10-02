@@ -80,13 +80,14 @@ class ShowMobileMapPackageExpirationDateViewModel(application: Application) : An
         val mobileMapPackage = MobileMapPackage(mmpkFile.path)
         mobileMapPackage.load().onSuccess {
             // If the loaded mobile map package does not contain any maps
-            if (mobileMapPackage.maps.isEmpty()) {
+            val map = mobileMapPackage.maps.firstOrNull()
+            if (map == null) {
                 messageDialogVM.showMessageDialog("Mobile map package does not contain a map")
                 return@onSuccess
             }
 
             // Set the map to the first map in the mobile map package
-            arcGISMap = mobileMapPackage.maps.first()
+            arcGISMap = map
 
             // Read expiration information from the mobile map package
             mobileMapPackage.expiration?.let { expiration ->
