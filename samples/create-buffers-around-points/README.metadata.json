@@ -1,0 +1,33 @@
+{
+    "category": "Analysis",
+    "description": "Generate multiple individual buffers or a single unioned buffer around multiple points.",
+    "formal_name": "CreateBuffersAroundPoints",
+    "ignore": false,
+    "images": [
+        "create-buffers-around-points.png"
+    ],
+    "keywords": [
+        "analysis",
+        "buffer",
+        "geometry",
+        "planar",
+        "Geometry",
+        "GeometryEngine.bufferOrNull",
+        "GeometryEngine.unionOrNull",
+        "SpatialReference"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEngine.bufferOrNull",
+        "GeometryEngine.unionOrNull",
+        "SpatialReference"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createbuffersaroundpoints/components/CreateBuffersAroundPointsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createbuffersaroundpoints/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createbuffersaroundpoints/screens/CreateBuffersAroundPointsScreen.kt"
+    ],
+    "title": "Create buffers around points"
+}
