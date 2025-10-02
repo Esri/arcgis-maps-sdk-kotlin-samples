@@ -78,7 +78,6 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                 mapViewProxy = mapViewModel.mapViewProxy,
                 onDown = {
                     isBottomSheetVisible = false
-                    mapViewModel.dismissChanges()
                 },
             )
 
@@ -87,7 +86,6 @@ fun ApplyStretchRendererScreen(sampleName: String) {
                 sheetTitle = "Stretch Renderer Settings",
                 onDismissRequest = {
                     isBottomSheetVisible = false
-                    mapViewModel.dismissChanges()
                 }
             ) {
                 Column(
