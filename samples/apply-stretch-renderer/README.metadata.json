@@ -1,0 +1,54 @@
+{
+    "category": "Visualization",
+    "description": "Use a stretch renderer to enhance the visual contrast of raster data for analysis.",
+    "formal_name": "ApplyStretchRenderer",
+    "ignore": false,
+    "images": [
+        "apply-stretch-renderer.png"
+    ],
+    "keywords": [
+        "analysis",
+        "deviation",
+        "histogram",
+        "imagery",
+        "interpretation",
+        "min-max",
+        "percent clip",
+        "pixel",
+        "raster",
+        "stretch",
+        "symbology",
+        "visualization",
+        "ColorRamp",
+        "MinMaxStretchParameters",
+        "PercentClipStretchParameters",
+        "Raster",
+        "RasterLayer",
+        "StandardDeviationStretchParameters",
+        "StretchParameters",
+        "StretchRenderer"
+    ],
+    "language": "kotlin",
+    "provision_from": [
+        "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"
+    ],
+    "provision_to": [],
+    "redirect_from": "",
+    "relevant_apis": [
+        "ColorRamp",
+        "MinMaxStretchParameters",
+        "PercentClipStretchParameters",
+        "Raster",
+        "RasterLayer",
+        "StandardDeviationStretchParameters",
+        "StretchParameters",
+        "StretchRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/components/ApplyStretchRendererViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applystretchrenderer/screens/ApplyStretchRendererScreen.kt"
+    ],
+    "title": "Apply stretch renderer"
+}
