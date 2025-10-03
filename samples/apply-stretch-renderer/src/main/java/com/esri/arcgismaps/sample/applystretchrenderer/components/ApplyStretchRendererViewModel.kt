@@ -19,8 +19,6 @@ package com.esri.arcgismaps.sample.applystretchrenderer.components
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint

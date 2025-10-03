@@ -16,15 +16,15 @@ Choose one of the stretch parameter types:
 * Min-max - a linear stretch based on minimum and maximum pixel values
 * Percent clip - a linear stretch between the defined percent clip minimum and percent clip maximum pixel values
 
-Then configure the parameters and click 'Update renderer'.
+Then configure the parameters.
 
 ## How it works
 
-1. Create a `Raster` from a raster file.
+1. Create a `Raster` from a raster file using `Raster.createWithPath`.
 2. Create a `RasterLayer` from the `Raster`.
-3. Add the layer to the map.
+3. Add the layer to the map's operational layers.
 4. Create a `StretchRenderer`, specifying the stretch parameters and other properties.
-5. Set the `Renderer` on the `RasterLayer` with `rasterLayer.setRenderer(renderer)`.
+5. Set the renderer on the layer using `rasterLayer.renderer(...)`.
 
 ## Relevant API
 
@@ -39,7 +39,7 @@ Then configure the parameters and click 'Update renderer'.
 
 ## Offline data
 
-* [raster-file.zip](https://arcgisruntime.maps.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd)
+This sample uses the [Shasta](https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd) raster file.
 
 ## About the data
 
