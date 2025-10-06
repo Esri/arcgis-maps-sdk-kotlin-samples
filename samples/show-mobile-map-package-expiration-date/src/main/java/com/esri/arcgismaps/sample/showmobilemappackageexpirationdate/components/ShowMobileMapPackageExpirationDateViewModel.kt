@@ -53,10 +53,8 @@ class ShowMobileMapPackageExpirationDateViewModel(val app: Application) : Androi
 
     // Build the provision path where offline resources are stored for the sample app
     private val provisionPath: String by lazy {
-        val basePath = application.getExternalFilesDir(null)?.path ?: ""
-        val appFolderName = getApplication<Application>().getString(
-            R.string.show_mobile_map_package_expiration_date_app_name
-        )
+        val basePath = app.getExternalFilesDir(null)?.path.toString()
+        val appFolderName = app.getString(R.string.show_mobile_map_package_expiration_date_app_name)
         basePath + File.separator + appFolderName
     }
 
