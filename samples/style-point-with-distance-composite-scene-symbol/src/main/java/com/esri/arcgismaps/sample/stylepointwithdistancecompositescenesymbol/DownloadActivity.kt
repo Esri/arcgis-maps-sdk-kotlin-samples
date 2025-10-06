@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.applydictionaryrenderertographicsoverlay
+package com.esri.arcgismaps.sample.stylepointwithdistancecompositescenesymbol
 
 import android.content.Intent
 import android.os.Bundle
@@ -25,9 +25,9 @@ class DownloadActivity : DownloaderActivity() {
         super.onCreate(savedInstanceState)
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
-            getString(R.string.apply_dictionary_renderer_to_graphics_overlay_app_name),
+            getString(R.string.style_point_with_distance_composite_scene_symbol_app_name),
             listOf(
-                "https://www.arcgis.com/home/item.html?id=8776cfc26eed4485a03de6316826384c"
+                "https://www.arcgis.com/home/item.html?id=681d6f7694644709a7c830ec57a2d72b"
             )
         )
     }
