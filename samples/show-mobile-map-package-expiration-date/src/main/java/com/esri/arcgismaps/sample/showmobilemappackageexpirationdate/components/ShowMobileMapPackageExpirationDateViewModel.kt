@@ -33,7 +33,7 @@ import java.time.format.FormatStyle
 import java.util.Locale
 import kotlinx.coroutines.launch
 
-class ShowMobileMapPackageExpirationDateViewModel(application: Application) : AndroidViewModel(application) {
+class ShowMobileMapPackageExpirationDateViewModel(val app: Application) : AndroidViewModel(app) {
     // The map displayed on the MapView. Updated after loading the mobile map package
     var arcGISMap: ArcGISMap by mutableStateOf(ArcGISMap())
         private set
