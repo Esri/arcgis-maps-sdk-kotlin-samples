@@ -165,6 +165,3 @@ class DisplayAlternateSymbolsAtDifferentScalesViewModel(app: Application) : Andr
     }
 }
 
-// Provide a blue color companion for convenience.
-private val Color.Companion.blue: Color
-    get() = fromRgba(0, 0, 255, 255)

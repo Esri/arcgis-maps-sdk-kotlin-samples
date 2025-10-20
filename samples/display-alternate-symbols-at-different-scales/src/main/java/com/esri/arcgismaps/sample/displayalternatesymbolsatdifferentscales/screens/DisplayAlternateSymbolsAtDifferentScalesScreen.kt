@@ -98,11 +98,7 @@ private fun RendererControls(scale: Double?, onReset: () -> Unit) {
     ) {
         // Display the current scale; format if available
         val scaleText = scale?.let {
-            String.format(
-                LocalConfiguration.current.locales[0],
-                "Scale: 1:%,d",
-                it.toInt()
-            )
+            String.format(null, "Scale: 1:%,d", it.toInt())
         } ?: "Scale: N/A"
 
         Text(text = scaleText, style = MaterialTheme.typography.titleMedium)
