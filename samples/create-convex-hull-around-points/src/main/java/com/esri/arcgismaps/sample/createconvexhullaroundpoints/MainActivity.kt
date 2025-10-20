@@ -211,9 +211,3 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
 }
-
-/**
- * Simple extension property that represents a blue color
- */
-private val Color.Companion.blue
-    get() = fromRgba(0, 0, 255)

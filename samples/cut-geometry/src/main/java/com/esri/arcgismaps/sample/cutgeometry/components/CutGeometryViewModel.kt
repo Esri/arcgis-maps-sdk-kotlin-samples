@@ -184,19 +184,6 @@ class CutGeometryViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * Define a blue color for polygon boundary.
-     */
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(
-                r = 0,
-                g = 0,
-                b = 255,
-                a = 255
-            )
-        }
-
-    /**
      * Create a polygon corresponding to Lake Superior.
      */
     private fun makeLakeSuperior() : Polygon {

@@ -281,14 +281,4 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             graphics.add(Graphic(polygon))
         }
     }
-
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
-
-    private val Color.Companion.magenta: Color
-        get() {
-            return fromRgba(255, 0, 255, 255)
-        }
 }

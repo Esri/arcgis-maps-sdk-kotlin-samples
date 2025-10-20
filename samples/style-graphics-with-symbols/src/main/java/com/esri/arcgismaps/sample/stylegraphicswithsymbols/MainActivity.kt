@@ -293,14 +293,4 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         // create a polygon from the point collection
         return pointsPolygonBuilder.toGeometry()
     }
-
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
-
-    private val Color.Companion.magenta: Color
-        get() {
-            return fromRgba(255, 0, 255, 255)
-        }
 }

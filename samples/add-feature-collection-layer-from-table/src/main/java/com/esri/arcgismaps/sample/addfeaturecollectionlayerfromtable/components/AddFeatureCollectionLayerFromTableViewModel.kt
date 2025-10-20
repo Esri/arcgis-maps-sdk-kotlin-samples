@@ -213,12 +213,3 @@ class AddFeatureCollectionLayerFromTableViewModel(app: Application) : AndroidVie
         return polygonsCollectionTable
     }
 }
-
-/**
- * Define a blue color.
- */
-private val Color.Companion.blue: Color
-    get() {
-        return fromRgba(r = 0, g = 0, b = 255, a = 255)
-    }
-    
