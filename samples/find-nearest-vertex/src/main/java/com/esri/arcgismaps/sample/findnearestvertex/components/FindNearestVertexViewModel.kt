@@ -211,22 +211,6 @@ class FindNearestVertexViewModel(application: Application) : AndroidViewModel(ap
     }
 
     /**
-     * Define a blue color for the nearest vertex graphic.
-     */
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(r = 0, g = 0, b = 255, a = 255)
-        }
-
-    /**
-     * Define a magenta color for the tapped location graphic.
-     */
-    private val Color.Companion.magenta: Color
-        get() {
-            return fromRgba(r = 255, g = 0, b = 255, a = 255)
-        }
-
-    /**
      * Converts a quantity in meters to kilometers.
      */
     private fun Double.metersToKilometers(): Double {

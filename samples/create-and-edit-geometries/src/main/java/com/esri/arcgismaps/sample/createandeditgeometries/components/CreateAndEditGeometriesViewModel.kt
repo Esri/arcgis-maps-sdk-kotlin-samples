@@ -413,12 +413,4 @@ class CreateAndEditGeometriesViewModel(application: Application) : AndroidViewMo
             [-1068004.43,6998409.28],[-1067943.67,6998403.86]]],
             "spatialReference":{"latestWkid":3857,"wkid":102100}}"""
 
-    /**
-     * Define a blue color for polylines.
-     */
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
-
 }

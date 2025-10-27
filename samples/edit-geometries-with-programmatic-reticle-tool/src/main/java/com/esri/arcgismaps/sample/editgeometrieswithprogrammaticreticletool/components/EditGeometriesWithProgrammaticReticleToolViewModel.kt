@@ -92,9 +92,6 @@ private val geometryTypes = mapOf(
     "Polygon" to GeometryType.Polygon,
 )
 
-private val Color.Companion.blue
-    get() = fromRgba(0, 0, 255, 255)
-
 private val Color.Companion.orangeRed
     get() = fromRgba(128, 128, 0, 255)
 
