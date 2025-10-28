@@ -26,11 +26,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.snapgeometryedits.components.SnapGeometryEditsViewModel
@@ -101,6 +103,9 @@ fun MainScreen(sampleName: String) {
                     isSnapSourceEnabled = mapViewModel.snapSourceCheckedState
                 ) { mapViewModel.dismissBottomSheet() }
             }
+        }
+        if (!mapViewModel.isLayersLoaded.value) {
+            LoadingDialog("Loading map with feature layers...")
         }
     })
 }
