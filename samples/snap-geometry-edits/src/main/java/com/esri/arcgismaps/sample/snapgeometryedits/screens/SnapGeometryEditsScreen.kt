@@ -103,7 +103,7 @@ fun MainScreen(sampleName: String) {
                 ) { mapViewModel.dismissBottomSheet() }
             }
         }
-        if (!mapViewModel.isLayersLoaded.value) {
+        if (mapViewModel.areLayersLoading.value) {
             LoadingDialog("Loading map with feature layers...")
         }
     })

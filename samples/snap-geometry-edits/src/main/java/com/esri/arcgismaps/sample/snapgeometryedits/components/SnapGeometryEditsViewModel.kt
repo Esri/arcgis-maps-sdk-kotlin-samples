@@ -66,7 +66,7 @@ class SnapGeometryEditsViewModel(
     val snapSourceList: StateFlow<List<SnapSourceSettings>> = _snapSourceSettingsList
 
     // create boolean flags to track the state of UI components
-    val isLayersLoaded = mutableStateOf(false)
+    val areLayersLoading = mutableStateOf(true)
     val isCreateButtonEnabled = mutableStateOf(false)
     val isSnapSettingsButtonEnabled = mutableStateOf(false)
     val isBottomSheetVisible = mutableStateOf(false)
@@ -105,9 +105,9 @@ class SnapGeometryEditsViewModel(
                         )
                     }
                 }
-                isLayersLoaded.value = true
+                areLayersLoading.value = false
             }.onFailure { error ->
-                isLayersLoaded.value = true
+                areLayersLoading.value = false
                 messageDialogVM.showMessageDialog(
                     error.message.toString(),
                     error.cause.toString()
