@@ -15,7 +15,7 @@ ArcGIS Maps SDK for Kotlin v300.0.0 samples.  The `main` branch of this reposito
 
 ## Prerequisites
 
-* The samples are building with `compileSdkVersion 36`
+* The samples are building with `targetSdk 36`
 * [Android Studio](http://developer.android.com/sdk/index.html)
 * [An ArcGIS Developers API key](https://developers.arcgis.com/kotlin/get-started/#3-get-an-api-key)
 

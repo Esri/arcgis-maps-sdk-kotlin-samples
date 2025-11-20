@@ -273,7 +273,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
 
         // create a non-zero notification id for the OfflineJobWorker
         // this id will be used to post or update any progress/status notifications
-        val notificationId = Random.Default.nextInt(1, 100)
+        val notificationId = Random.nextInt(1, 100)
 
         // create a one-time work request with an instance of OfflineJobWorker
         val workRequest = OneTimeWorkRequestBuilder<OfflineJobWorker>()

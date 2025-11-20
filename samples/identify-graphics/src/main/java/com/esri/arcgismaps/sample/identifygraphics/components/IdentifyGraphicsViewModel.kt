@@ -17,8 +17,6 @@
 package com.esri.arcgismaps.sample.identifygraphics.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.compose.ui.unit.dp
