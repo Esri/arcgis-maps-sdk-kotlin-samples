@@ -20,13 +20,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.displaylocalscene.components.DisplayLocalSceneViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.arcgismaps.geometry.Envelope
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.ArcGISTiledElevationSource
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.layers.ArcGISSceneLayer
+import com.arcgismaps.mapping.view.Camera
+import com.arcgismaps.mapping.view.SceneViewingMode
+import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -34,7 +41,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun DisplayLocalSceneScreen(sampleName: String) {
-    val mapViewModel: DisplayLocalSceneViewModel = viewModel()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -43,23 +49,68 @@ fun DisplayLocalSceneScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
             ) {
-                MapView(
+                val sceneLayer = remember {
+                    ArcGISSceneLayer("https://www.arcgis.com/home/item.html?id=61da8dc1a7bc4eea901c20ffb3f8b7af")
+                }
+
+                val elevationSource = remember {
+                    ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
+                }
+
+                val camera = remember {
+                    Camera(
+                        locationPoint = Point(
+                            19455578.6821,
+                            -5056336.2227,
+                            1699.3366,
+                            SpatialReference.webMercator()),
+                        heading = 338.7410,
+                        pitch = 40.3763,
+                        roll = 0.0,
+                    )
+                }
+
+                val arcGISScene = remember {
+                    ArcGISScene(
+                        BasemapStyle.ArcGISTopographic,
+                        SceneViewingMode.Local
+                    ).apply {
+                        operationalLayers.add(sceneLayer)
+                        baseSurface.elevationSources.add(elevationSource)
+
+                        initialViewpoint = Viewpoint(
+                            center = Point(19455026.8116, -5054995.7415, SpatialReference.webMercator()),
+                            scale = 8314.6991,
+                            camera = camera
+//                            camera = Camera(
+//                                locationPoint = Point(
+//                                    x = 19455578.6821,
+//                                    y = 5056336.2227,
+//                                    z = 1699.3366,
+//                                    spatialReference = SpatialReference.webMercator()
+//                                ),
+//                                heading = 338.7410,
+//                                pitch = 40.3763,
+//                                roll = 0.0
+//                            )
+                        )
+                        clippingArea = Envelope(
+                            xMin = 19454578.8235,
+                            yMin = -5055381.4798,
+                            xMax = 19455518.8814,
+                            yMax = -5054888.4150,
+                            spatialReference = SpatialReference.webMercator()
+                        )
+                        isClippingEnabled = true
+                    }
+                }
+
+                LocalSceneView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    scene = arcGISScene
                 )
-                // TODO: Add UI components in this Column ...
-            }
-
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
             }
         }
     )
