@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "DisplayLocalScene",
+    "ignore": false,
+    "images": [
+        "display-local-scene.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaylocalscene/components/DisplayLocalSceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaylocalscene/screens/DisplayLocalSceneScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaylocalscene/MainActivity.kt"
+    ],
+    "title": "Display local scene"
+}
