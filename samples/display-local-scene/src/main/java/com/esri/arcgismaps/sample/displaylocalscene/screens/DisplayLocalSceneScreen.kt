@@ -57,19 +57,6 @@ fun DisplayLocalSceneScreen(sampleName: String) {
                     ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
                 }
 
-//                val camera = remember {
-//                    Camera(
-//                        locationPoint = Point(
-//                            19455578.6821,
-//                            -5056336.2227,
-//                            1699.3366,
-//                            SpatialReference.webMercator()),
-//                        heading = 338.7410,
-//                        pitch = 40.3763,
-//                        roll = 0.0,
-//                    )
-//                }
-
                 val arcGISScene = remember {
                     ArcGISScene(
                         BasemapStyle.ArcGISTopographic,
