@@ -66,14 +66,18 @@ fun DisplayLocalSceneScreen(sampleName: String) {
                         baseSurface.elevationSources.add(elevationSource)
 
                         initialViewpoint = Viewpoint(
-                            center = Point(19455026.8116, -5054995.7415, SpatialReference.webMercator()),
+                            center = Point(
+                                x = 19455026.8116,
+                                y = -5054995.7415,
+                                spatialReference = SpatialReference.webMercator()
+                            ),
                             scale = 8314.6991,
                             camera = Camera(
                                 locationPoint = Point(
-                                    19455578.6821,
-                                    -5056336.2227,
-                                    1699.3366,
-                                    SpatialReference.webMercator()),
+                                    x = 19455578.6821,
+                                    y = -5056336.2227,
+                                    z = 1699.3366,
+                                    spatialReference = SpatialReference.webMercator()),
                                 heading = 338.7410,
                                 pitch = 40.3763,
                                 roll = 0.0,
