@@ -95,9 +95,7 @@ fun DisplayLocalSceneScreen(sampleName: String) {
                 }
 
                 LocalSceneView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                    modifier = Modifier.fillMaxSize(),
                     scene = arcGISScene
                 )
             }
