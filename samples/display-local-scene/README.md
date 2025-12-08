@@ -33,6 +33,10 @@ This sample displays a local scene clipped to an extent. Pan and zoom to explore
 * ArcGISTiledElevationSource
 * LocalSceneView
 
+## Additional information
+
+This sample requires a device capable of OpenGL ES 3.2 and will not run on an emulator.
+
 ## Tags
 
 3D, basemap, elevation, scene, surface
