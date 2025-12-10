@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISScene
@@ -58,22 +59,23 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
     }
 
     val buildingSceneLayer = remember {
-        BuildingSceneLayer("https://www.arcgis.com/home/item.html?id=669f6279c579486eb4a0acc7eb59d7ca").apply { altitudeOffset = 1.0 }
+        BuildingSceneLayer("https://www.arcgis.com/home/item.html?id=669f6279c579486eb4a0acc7eb59d7ca")
+            .apply {
+                // Sets the altitude offset of the building scene layer.
+                // Upon first inspection of the model, it does not line up with the global
+                // elevation layer perfectly. To fix this, add an altitude offset to align
+                // the model with the ground surface.
+                altitudeOffset = 1.0
+            }
     }
 
-    val camera = remember {
-        Camera(
-            Point(
-                x = -13045109.0,
-                y = 4036614.0,
-                z = 511.0,
-                spatialReference = SpatialReference.webMercator()
-            ),
-            heading = 343.0,
-            pitch = 64.0,
-            roll = 0.0
-        )
-    }
+    val localSceneViewProxy = remember { LocalSceneViewProxy() }
+
+    // The overview sublayer which represents the exterior shell of the building.
+    var overviewSublayer: BuildingSublayer? = null
+
+    // The full model sublayer which contains all the features of the building.
+    var fullModelSublayer: BuildingSublayer? = null
 
     val arcGISScene = remember {
         ArcGISScene(
@@ -85,20 +87,27 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
         }
     }
 
-    val localSceneViewProxy = remember { LocalSceneViewProxy() }
-
-    // The overview sublayer which represents the exterior shell of the building.
-    var overviewSublayer: BuildingSublayer? = null
-
-    // The full model sublayer which contains all the features of the building.
-    var fullModelSublayer: BuildingSublayer? = null
-
+    // set a suitable camera to view the building
     LaunchedEffect(Unit) {
         arcGISScene.load().onSuccess {
-            localSceneViewProxy.setViewpointCamera(camera)
+            localSceneViewProxy.setViewpointCamera(
+                Camera(
+                    Point(
+                        x = -13045114.646632874,
+                        y = 4036662.761124578,
+                        z = 511.0,
+                        spatialReference = SpatialReference.webMercator()
+                    ),
+                    heading = 343.0,
+                    pitch = 64.0,
+                    roll = 0.0
+                )
+            )
         }
     }
 
+    // Get the overview and full model sublayers for the
+    // toggle
     LaunchedEffect(Unit) {
         buildingSceneLayer.load().onSuccess {
             val sublayers = buildingSceneLayer.sublayers
@@ -109,7 +118,6 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-
         content = {
             Column(
                 modifier = Modifier
@@ -121,19 +129,19 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     localSceneViewProxy = localSceneViewProxy,
-                    scene = arcGISScene
+                    scene = arcGISScene,
                 )
                 Row(modifier = Modifier.fillMaxWidth(),
-                    //horizontalArrangement = Arrangement.SpaceBetween,
-                    horizontalArrangement = Arrangement.SpaceAround,
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text("Full Model")
+                    Text(text = "Full Model")
                     Switch(checked = isFullModel,
                         onCheckedChange = { isChecked ->
                             isFullModel = isChecked
                             fullModelSublayer?.isVisible = isFullModel
                             overviewSublayer?.isVisible = !isFullModel
-                        })
+                        },
+                        modifier = Modifier.padding(10.dp))
                 }
             }
         }
