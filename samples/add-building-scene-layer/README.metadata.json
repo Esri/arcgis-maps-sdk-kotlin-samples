@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "AddBuildingSceneLayer",
+    "ignore": false,
+    "images": [
+        "add-building-scene-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addbuildingscenelayer/components/AddBuildingSceneLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addbuildingscenelayer/screens/AddBuildingSceneLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addbuildingscenelayer/MainActivity.kt"
+    ],
+    "title": "Add building scene layer"
+}
