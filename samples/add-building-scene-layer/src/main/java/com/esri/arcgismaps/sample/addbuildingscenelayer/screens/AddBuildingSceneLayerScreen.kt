@@ -52,6 +52,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun AddBuildingSceneLayerScreen(sampleName: String) {
+    // A Boolean value that indicates if the full model of the building scene layer is showing or not
     var isFullModel by remember { mutableStateOf(false) }
 
     val elevationSource = remember {
@@ -106,8 +107,7 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
         }
     }
 
-    // Get the overview and full model sublayers for the
-    // toggle
+    // Get the overview and full model sublayers for the toggle
     LaunchedEffect(Unit) {
         buildingSceneLayer.load().onSuccess {
             val sublayers = buildingSceneLayer.sublayers
