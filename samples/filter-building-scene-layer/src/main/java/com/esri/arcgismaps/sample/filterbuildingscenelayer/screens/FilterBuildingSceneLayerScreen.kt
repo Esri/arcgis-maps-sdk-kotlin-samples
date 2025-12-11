@@ -27,6 +27,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +37,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.layers.BuildingSceneLayer
+import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.esri.arcgismaps.sample.filterbuildingscenelayer.components.FilterBuildingSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
@@ -49,8 +52,22 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun FilterBuildingSceneLayerScreen(sampleName: String) {
-    val mapViewModel: FilterBuildingSceneLayerViewModel = viewModel()
+    val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
     var isBottomSheetVisible by remember { mutableStateOf(false) }
+
+    val scene = remember {
+        ArcGISScene("https://www.arcgis.com/home/item.html?id=b7c387d599a84a50aafaece5ca139d44")
+    }
+
+    var buildingSceneLayer: BuildingSceneLayer? = remember { null }
+
+    LaunchedEffect(Unit) {
+        scene.load().onSuccess {
+            buildingSceneLayer = scene.operationalLayers.first {
+                layer -> layer is BuildingSceneLayer
+            } as BuildingSceneLayer
+        }
+    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -68,12 +85,12 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
             ) {
-                MapView(
+                LocalSceneView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    onVisibleAreaChanged = { isBottomSheetVisible = false }
+                    scene = scene,
+                    //onVisibleAreaChanged = { isBottomSheetVisible = false }
                 )
             }
 
@@ -88,7 +105,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 )
             }
 
-            mapViewModel.messageDialogVM.apply {
+            localSceneViewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
