@@ -1,0 +1,19 @@
+{
+    "category": "Layers",
+    "description": "TODO",
+    "formal_name": "FilterBuildingSceneLayer",
+    "ignore": false,
+    "images": [
+        "filter-building-scene-layer.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/components/FilterBuildingSceneLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/screens/FilterBuildingSceneLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/MainActivity.kt"
+    ],
+    "title": "Filter building scene layer"
+}
