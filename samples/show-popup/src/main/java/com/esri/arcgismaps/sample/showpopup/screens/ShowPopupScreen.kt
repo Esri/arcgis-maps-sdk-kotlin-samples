@@ -25,7 +25,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.popup.Popup
@@ -42,6 +44,7 @@ fun ShowPopupScreen(sampleName: String) {
     val mapViewModel: ShowPopupViewModel = viewModel()
 
     val sheetState = rememberModalBottomSheetState()
+    val popupState by mapViewModel.popupState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -59,14 +62,15 @@ fun ShowPopupScreen(sampleName: String) {
                     mapViewProxy = mapViewModel.mapViewProxy,
                     onSingleTapConfirmed = mapViewModel::identifyForPopup
                 )
-                mapViewModel.popup?.let { popup ->
+                popupState?.let { popupState ->
                     ModalBottomSheet(
                         modifier = Modifier.wrapContentSize(),
-                        onDismissRequest = { mapViewModel.onDismissRequest() },
+                        onDismissRequest = mapViewModel::onDismissRequest,
                         sheetState = sheetState
                     ) {
                         Popup(
-                            popup = popup,
+                            popupState = popupState,
+                            onDismiss = mapViewModel::onDismissRequest,
                             modifier = Modifier.fillMaxSize()
                         )
                     }

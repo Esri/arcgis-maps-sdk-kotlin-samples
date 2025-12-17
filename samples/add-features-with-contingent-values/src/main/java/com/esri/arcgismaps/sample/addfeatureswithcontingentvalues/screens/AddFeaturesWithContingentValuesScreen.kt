@@ -32,10 +32,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -269,7 +269,7 @@ fun AttributeDropdown(
             enabled = availableValues.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
             value = textValue ?: "",
             onValueChange = {},
             label = { Text(attributeName) },

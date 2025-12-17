@@ -52,6 +52,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 implementation(libs.findLibrary("androidx-constraintlayout").get())
                 implementation(libs.findLibrary("androidx-appcompat").get())
                 implementation(libs.findLibrary("android-material").get())
+                implementation(libs.findLibrary("androidx-compose-material-icons-extended").get())
             }
         }
     }
