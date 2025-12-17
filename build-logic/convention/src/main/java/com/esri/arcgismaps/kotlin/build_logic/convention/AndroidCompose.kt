@@ -26,6 +26,8 @@ internal fun Project.configureAndroidCompose(
             implementation(libs.findLibrary("androidx-compose-material3").get())
             implementation(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
             implementation(libs.findLibrary("androidx-compose-ui-tooling-preview").get())
+            implementation(libs.findLibrary("androidx-concurrent-futures").get())
+            implementation(libs.findLibrary("androidx-concurrent-futures-ktx").get())
             debugImplementation(libs.findLibrary("androidx-compose-ui-tooling").get())
         }
     }

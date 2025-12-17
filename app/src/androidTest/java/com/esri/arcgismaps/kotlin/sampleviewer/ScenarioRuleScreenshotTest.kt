@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer
 
-import android.graphics.Bitmap
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.captureToBitmap
@@ -41,10 +40,9 @@ class ScenarioRuleScreenshotTest {
     @Test
     fun launch_idle_and_save_screenshot() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-        onView(isRoot()).perform(
-            captureToBitmap { bmp: Bitmap ->
+        onView(isRoot())
+            .perform(captureToBitmap { bmp ->
                 bmp.writeToTestStorage("Launcher_${testName.methodName}")
-            }
-        )
+            })
     }
 }

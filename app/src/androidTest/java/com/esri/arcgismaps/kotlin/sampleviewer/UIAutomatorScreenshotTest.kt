@@ -79,6 +79,6 @@ class UIAutomatorScreenshotTest {
         )
         val screenshotDir = File(picturesDir, "SampleViewerScreenshots")
         screenshotDir.mkdirs()
-        return File(screenshotDir, "${fileName}.png")
+        return File(screenshotDir, "${System.currentTimeMillis()}_${fileName}.png")
     }
 }
