@@ -126,4 +126,11 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
     override fun getSamplesInCategory(sampleCategory: SampleCategory): Flow<List<Sample>> {
         return sampleData.map { it.filter { sample -> sample.metadata.sampleCategory == sampleCategory } }
     }
+
+    /**
+     * Get all samples from the repository.
+     */
+    override fun getAllSamples(): Flow<List<Sample>> {
+        return sampleData
+    }
 }

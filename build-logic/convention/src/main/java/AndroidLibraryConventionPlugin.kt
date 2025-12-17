@@ -2,12 +2,10 @@ import com.android.build.gradle.LibraryExtension
 import com.esri.arcgismaps.kotlin.build_logic.convention.configureKotlinAndroid
 import com.esri.arcgismaps.kotlin.build_logic.convention.implementation
 import com.esri.arcgismaps.kotlin.build_logic.convention.libs
-import com.esri.arcgismaps.kotlin.build_logic.convention.testImplementation
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.kotlin
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -21,7 +19,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 configureKotlinAndroid(this)
                 compileSdk = libs.findVersion("targetSdk").get().toString().toInt()
                 defaultConfig {
-                    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                     vectorDrawables {
                         useSupportLibrary = true
                     }
@@ -47,7 +44,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                testImplementation(kotlin("test"))
                 // External libraries
                 implementation(libs.findLibrary("androidx-constraintlayout").get())
                 implementation(libs.findLibrary("androidx-appcompat").get())

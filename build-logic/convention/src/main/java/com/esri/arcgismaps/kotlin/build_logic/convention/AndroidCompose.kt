@@ -22,16 +22,31 @@ internal fun Project.configureAndroidCompose(
         dependencies {
             val composeBom = libs.findLibrary("androidx-compose-bom").get()
             implementation(platform(composeBom))
-            androidTestImplementation(platform(composeBom))
             implementation(libs.findLibrary("androidx-activity-compose").get())
             implementation(libs.findLibrary("androidx-compose-material3").get())
             implementation(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
             implementation(libs.findLibrary("androidx-compose-ui-tooling-preview").get())
             debugImplementation(libs.findLibrary("androidx-compose-ui-tooling").get())
-            debugImplementation(libs.findLibrary("androidx-compose-ui-test-manifest").get())
-            androidTestImplementation(libs.findLibrary("androidx-compose-ui-test").get())
-            androidTestImplementation(libs.findLibrary("androidx-compose-ui-test-junit4").get())
+        }
+    }
+}
 
+internal fun Project.configureAndroidComposeTests(
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
+) {
+    commonExtension.apply {
+        dependencies {
+            val composeBom = libs.findLibrary("androidx-compose-bom").get()
+            androidTestImplementation(platform(composeBom))
+            androidTestImplementation(libs.findLibrary("androidx-compose-ui-test-junit4").get())
+            androidTestImplementation(libs.findLibrary("androidx-test-uiautomator").get())
+            androidTestImplementation(libs.findLibrary("androidx-test-runner").get())
+            androidTestImplementation(libs.findLibrary("androidx-test-rules").get())
+            androidTestImplementation(libs.findLibrary("androidx-test-ext-junit-ktx").get())
+            androidTestImplementation(libs.findLibrary("androidx-junit").get())
+            androidTestImplementation(libs.findLibrary("androidx-espresso-core").get())
+            androidTestImplementation(libs.findLibrary("kotlinx-coroutines-test").get())
+            debugImplementation(libs.findLibrary("androidx-compose-ui-test-manifest").get())
         }
     }
 }
