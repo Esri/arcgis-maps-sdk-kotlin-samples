@@ -49,6 +49,7 @@ internal fun Project.configureAndroidComposeTests(
             androidTestImplementation(libs.findLibrary("androidx-espresso-core").get())
             androidTestImplementation(libs.findLibrary("kotlinx-coroutines-test").get())
             debugImplementation(libs.findLibrary("androidx-compose-ui-test-manifest").get())
+            debugImplementation(libs.findLibrary("junit").get())
         }
     }
 }
