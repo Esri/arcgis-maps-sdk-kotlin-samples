@@ -33,7 +33,7 @@ class SampleScenarioTestScope(val activityClass: Class<out Activity>) {
 
     val instrumentation: Instrumentation by lazy { InstrumentationRegistry.getInstrumentation() }
 
-    val device: UiDevice by lazy(LazyThreadSafetyMode.NONE) { UiDevice.getInstance(instrumentation) }
+    val device: UiDevice by lazy { UiDevice.getInstance(instrumentation) }
 
     /**
      * Waits for the sample activity to be in the foreground and for the UI thread to be idle.

@@ -37,7 +37,7 @@ class SampleInfoRepositoryTest {
     /**
      * Given the generated assets in 'samples/samples.json',
      * when the DefaultSampleInfoRepository is loaded,
-     * then the count of samples emitted by getAllSamples()
+     * then the count of samples emitted by [DefaultSampleInfoRepository.getAllSamples]
      * should match the JSON sample count.
      */
     @Test
