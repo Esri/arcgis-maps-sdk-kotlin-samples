@@ -15,8 +15,6 @@
 
 package com.esri.arcgismaps.kotlin.samples.scenario
 
-import com.esri.arcgismaps.sample.displaymap.MainActivity
-
 /**
  * Registry of all sample scenarios with their associated test steps.
  */
@@ -24,7 +22,7 @@ object SampleScenarioRegistry {
     val scenarios: List<SampleScenario> = listOf(
         SampleScenario(
             id = "display-map",
-            activityClass = MainActivity::class.java,
+            activityClass = com.esri.arcgismaps.sample.displaymap.MainActivity::class.java,
             steps = listOf(
                 ScenarioStep { activity ->
                     awaitSampleIdle()

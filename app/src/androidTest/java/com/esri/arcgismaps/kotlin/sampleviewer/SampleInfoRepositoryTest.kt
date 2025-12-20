@@ -53,8 +53,8 @@ class SampleInfoRepositoryTest {
         DefaultSampleInfoRepository.load(context)
 
         // Wait for the repository flow to be populated.
-        // The StateFlow emits an initial empty list, so we wait until it emits the expected count.
-        val sampleViewerCount = withTimeout(30_000) {
+        // The StateFlow emits an initial empty list, await until it emits the expected count.
+        val sampleViewerCount = withTimeout(10_000) {
             DefaultSampleInfoRepository.getAllSamples()
                 .first { samples -> samples.size >= jsonCount }
                 .size
