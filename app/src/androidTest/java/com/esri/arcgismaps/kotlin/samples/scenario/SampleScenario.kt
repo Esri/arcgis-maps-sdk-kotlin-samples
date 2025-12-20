@@ -25,7 +25,12 @@ data class SampleScenario(
     val activityClass: Class<out Activity>,
     val timeoutMs: Long = 10_000,
     val steps: List<ScenarioStep>
-)
+) {
+    /**
+     * Returns the scenario ID for display in test runner UIs.
+     */
+    override fun toString(): String = id
+}
 
 /**
  * A single step in a [SampleScenario] consisting of an action to be performed on the sample UI.

@@ -46,11 +46,6 @@ class SampleScenarioTests(private val scenario: SampleScenario) {
     }
 
     /**
-     * Returns the scenario ID for display in test runner UIs.
-     */
-    override fun toString(): String = scenario.id
-
-    /**
      * Given a [SampleScenario],
      * When the sample is launched and each step action is performed,
      * Then no exceptions or assertion failures occur.
