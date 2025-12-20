@@ -26,6 +26,10 @@ import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+/**
+ * Tests for the [DefaultSampleInfoRepository] to verify it correctly loads sample info
+ * from the generated assets.
+ */
 class SampleInfoRepositoryTest {
 
     private val json = Json { ignoreUnknownKeys = true }

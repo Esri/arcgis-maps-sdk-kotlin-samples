@@ -29,8 +29,8 @@ object SampleScenarioRegistry {
                 ScenarioStep { activity ->
                     awaitSampleIdle()
                     assertHasGeoView()
-                },
-            ),
+                }
+            )
         ),
         SampleScenario(
             id = "display-composable-mapview",
@@ -39,9 +39,8 @@ object SampleScenarioRegistry {
                 ScenarioStep { activity ->
                     awaitSampleIdle()
                     assertHasGeoView()
-                },
-            ),
-            //
+                }
+            )
         ),
         SampleScenario(
             id = "display-scene",
@@ -50,8 +49,8 @@ object SampleScenarioRegistry {
                 ScenarioStep { activity ->
                     awaitSampleIdle()
                     assertHasGeoView()
-                },
-            ),
-        ),
+                }
+            )
+        )
     )
 }
