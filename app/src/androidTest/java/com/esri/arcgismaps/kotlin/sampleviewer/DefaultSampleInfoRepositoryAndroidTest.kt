@@ -14,21 +14,19 @@
  *
  */
 
-package com.esri.arcgismaps.kotlin.sampleviewer.model
+package com.esri.arcgismaps.kotlin.sampleviewer
 
 import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class SampleInfoRepositoryTest {
+class DefaultSampleInfoRepositoryAndroidTest {
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -58,6 +56,7 @@ class SampleInfoRepositoryTest {
                 .size
         }
 
+        // Assert that the counts match.
         assertEquals(jsonCount, sampleViewerCount)
     }
 }
