@@ -49,6 +49,16 @@ object SampleScenarioRegistry {
                     assertHasGeoView()
                 }
             )
+        ),
+        SampleScenario(
+            id = "display-local-scene",
+            activityClass = com.esri.arcgismaps.sample.displaylocalscene.MainActivity::class.java,
+            steps = listOf(
+                ScenarioStep { activity ->
+                    awaitSampleIdle()
+                    assertHasGeoView()
+                }
+            )
         )
     )
 }

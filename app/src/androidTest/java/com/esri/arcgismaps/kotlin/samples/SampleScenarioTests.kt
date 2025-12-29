@@ -51,7 +51,7 @@ class SampleScenarioTests(private val scenario: SampleScenario) {
      * Then no exceptions or assertion failures occur.
      */
     @Test
-    fun testAllSampleScenarios() = runBlocking {
+    fun testSampleScenario() = runBlocking {
         val sampleScope = SampleScenarioTestScope(scenario.activityClass)
         val intent = Intent(
             sampleScope.instrumentation.targetContext,

@@ -45,13 +45,14 @@ class SampleScenarioTestScope(val activityClass: Class<out Activity>) {
     }
 
     /**
-     * Asserts that either a MapView or SceneView is displayed.
+     * Asserts that either a MapView or SceneView or LocalSceneView is displayed.
      */
     fun assertHasGeoView() {
         onView(
             anyOf(
                 withClassName(endsWith("com.arcgismaps.mapping.view.MapView")),
                 withClassName(endsWith("com.arcgismaps.mapping.view.SceneView")),
+                withClassName(endsWith("com.arcgismaps.mapping.view.LocalSceneView"))
             )
         ).check(matches(isDisplayed()))
     }
