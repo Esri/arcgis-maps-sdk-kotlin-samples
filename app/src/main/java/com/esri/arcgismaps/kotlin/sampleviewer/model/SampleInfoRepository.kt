@@ -26,4 +26,6 @@ interface SampleInfoRepository {
     fun getSamplesInCategory(sampleCategory: SampleCategory): Flow<List<Sample>>
 
     fun getSampleByName(sampleName: String): Flow<Sample>
+
+    fun getAllSamples(): Flow<List<Sample>>
 }
