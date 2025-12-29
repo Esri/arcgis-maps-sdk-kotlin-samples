@@ -18,13 +18,13 @@ roomVersion = "2.8.4"
 ### Kotlin versions
 kotlinVersion = "2.2.21"
 coreKtx = "1.17.0"
-ksp = "2.3.3"
+ksp = "2.3.4"
 kotlinReflection = "2.2.21"
 commonsIoVersion = "2.21.0"
 
 ### Compose versions
 composeBom = "2025.12.00"
-activityCompose = "1.12.1"
+activityCompose = "1.12.2"
 material = "1.13.0"
 navigationCompose = "2.9.6"
 materialIconsExt = "1.7.8"
@@ -48,7 +48,7 @@ minSdk = "28"
 targetSdk = "36"
 
 ### Third party libraries
-arcore = "1.51.0"
+arcore = "1.52.0"
 playServicesLocation = "21.3.0"
 navigationFragmentKtx = "2.9.6"
 navigationUiKtx = "2.9.6"
