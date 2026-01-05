@@ -1,0 +1,33 @@
+{
+    "category": "Scenes",
+    "description": "Display a local scene with a topographic surface and 3D scene layer clipped to a local area.",
+    "formal_name": "DisplayLocalScene",
+    "ignore": false,
+    "images": [
+        "display-local-scene.png"
+    ],
+    "keywords": [
+        "3D",
+        "basemap",
+        "elevation",
+        "scene",
+        "surface",
+        "ArcGISScene",
+        "ArcGISSceneLayer",
+        "ArcGISTiledElevationSource",
+        "LocalSceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISScene",
+        "ArcGISSceneLayer",
+        "ArcGISTiledElevationSource",
+        "LocalSceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaylocalscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaylocalscene/screens/DisplayLocalSceneScreen.kt"
+    ],
+    "title": "Display local scene"
+}

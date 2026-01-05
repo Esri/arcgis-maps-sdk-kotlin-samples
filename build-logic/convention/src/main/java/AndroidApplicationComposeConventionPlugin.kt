@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.esri.arcgismaps.kotlin.build_logic.convention.configureAndroidCompose
+import com.esri.arcgismaps.kotlin.build_logic.convention.configureAndroidComposeTests
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
@@ -14,6 +15,7 @@ class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
             }
             val extension = extensions.getByType<ApplicationExtension>()
             configureAndroidCompose(extension)
+            configureAndroidComposeTests(extension)
         }
     }
 }
