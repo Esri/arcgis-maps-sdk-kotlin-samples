@@ -45,6 +45,7 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.SceneViewingMode
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -52,8 +53,11 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun AddBuildingSceneLayerScreen(sampleName: String) {
-    // A Boolean value that indicates if the full model of the building scene layer is showing or not
+    // A boolean value that indicates if the full model of the building scene layer is showing or not
     var isFullModel by remember { mutableStateOf(false) }
+
+    // A boolean value that indicated if the building scene layer is loaded or not
+    var isLoaded by remember { mutableStateOf(false) }
 
     val elevationSource = remember {
         ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
@@ -90,7 +94,8 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
 
     // set a suitable camera to view the building
     LaunchedEffect(Unit) {
-        arcGISScene.load().onSuccess {
+        buildingSceneLayer.load().onSuccess {
+            isLoaded = true
             localSceneViewProxy.setViewpointCamera(
                 Camera(
                     Point(
@@ -124,12 +129,15 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
                     .fillMaxSize()
                     .padding(it),
             ) {
+                if (!isLoaded) {
+                    LoadingDialog(loadingMessage = "Loading building scene layer...")
+                }
                 LocalSceneView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
                     localSceneViewProxy = localSceneViewProxy,
-                    scene = arcGISScene,
+                    scene = arcGISScene
                 )
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
