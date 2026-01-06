@@ -17,9 +17,6 @@
 package com.esri.arcgismaps.sample.showpopup.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,11 +25,13 @@ import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.layers.FeatureLayer
-import com.arcgismaps.mapping.popup.Popup
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.portal.Portal
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.arcgismaps.toolkit.popup.PopupState
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ShowPopupViewModel(application: Application) : AndroidViewModel(application) {
@@ -55,9 +54,10 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
 
-    // Popup that gets passed to the main screen composable
-    var popup: Popup? by mutableStateOf(null)
-        private set
+    // PopupState flow that gets passed to the main screen composable
+    private var _popupState = MutableStateFlow<PopupState?>(null)
+    val popupState = _popupState.asStateFlow()
+
 
     // Keep track of the identified feature
     private var identifiedFeature: Feature? = null
@@ -87,11 +87,12 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
                 tolerance = 12.dp,
                 returnPopupsOnly = true
             ).onSuccess { result ->
-                popup = result.popups.first().also { popup ->
+                val popup = result.popups.first().also { popup ->
                     identifiedFeature = (popup.geoElement as Feature).also { identifiedFeature ->
                         featureLayer.selectFeature(identifiedFeature)
                     }
                 }
+                _popupState.value = PopupState(popup,viewModelScope)
             }.onFailure { error ->
                 messageDialogVM.showMessageDialog(
                     title = "Failed to identify: ${error.message}",
@@ -105,7 +106,7 @@ class ShowPopupViewModel(application: Application) : AndroidViewModel(applicatio
      * Dismiss the popup and unselect the identified feature.
      */
     fun onDismissRequest() {
-        popup = null
+        _popupState.value = null
         identifiedFeature?.let { featureLayer.unselectFeature(it) }
     }
 }
