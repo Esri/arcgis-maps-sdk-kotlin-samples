@@ -17,16 +17,28 @@
 package com.esri.arcgismaps.sample.filterbuildingscenelayer.components
 
 import android.app.Application
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.layers.BuildingSceneLayer
+import com.arcgismaps.mapping.layers.buildingscene.BuildingFilter
+import com.arcgismaps.mapping.layers.buildingscene.BuildingFilterBlock
+import com.arcgismaps.mapping.layers.buildingscene.BuildingSolidFilterMode
+import com.arcgismaps.mapping.layers.buildingscene.BuildingXrayFilterMode
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
     val scene = ArcGISScene("https://www.arcgis.com/home/item.html?id=b7c387d599a84a50aafaece5ca139d44")
 
-    val floors: MutableList<String> = mutableListOf("All")
+    var buildingSceneLayer: BuildingSceneLayer? = null
+
+    var selectedFloor by mutableStateOf("All")
+    val floors: MutableList<String> = mutableListOf(selectedFloor)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -34,6 +46,35 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     init {
         viewModelScope.launch {
             scene.load().onFailure { messageDialogVM.showMessageDialog(it) }
+        }
+    }
+
+    fun selectFloor(index: Int) {
+        selectedFloor = floors[index]
+        Log.d("LSV", "Selected floor ${floors[index]} $index")
+
+        buildingSceneLayer?.let { buildingSceneLayer ->
+            if (selectedFloor == "All") {
+                buildingSceneLayer.activeFilter = null
+                return
+            }
+            val buildingFilter = BuildingFilter(
+                name = "Floor filter",
+                description = "Show selected floor and xray filter for lower floors.",
+                listOf(
+                    BuildingFilterBlock(
+                        title = "solid block",
+                        whereClause = "BldgLevel = $selectedFloor",
+                        mode = BuildingSolidFilterMode()
+                    ),
+                    BuildingFilterBlock(
+                        title = "x ray block",
+                        whereClause = "BldgLevel < $selectedFloor",
+                        mode = BuildingXrayFilterMode()
+                    )
+                )
+            )
+            buildingSceneLayer.activeFilter = buildingFilter
         }
     }
 }
