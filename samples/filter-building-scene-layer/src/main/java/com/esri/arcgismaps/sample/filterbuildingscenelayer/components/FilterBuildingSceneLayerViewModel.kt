@@ -28,6 +28,7 @@ import com.arcgismaps.mapping.layers.BuildingSceneLayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingFilter
 import com.arcgismaps.mapping.layers.buildingscene.BuildingFilterBlock
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSolidFilterMode
+import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingXrayFilterMode
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
@@ -39,6 +40,8 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     var selectedFloor by mutableStateOf("All")
     val floors: MutableList<String> = mutableListOf(selectedFloor)
+
+    val categories: MutableList<BuildingSublayer> = mutableListOf()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -76,5 +79,9 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
             )
             buildingSceneLayer.activeFilter = buildingFilter
         }
+    }
+
+    fun checkCategory(buildingSublayer: BuildingSublayer, checked: Boolean) {
+        buildingSublayer.isVisible = checked
     }
 }

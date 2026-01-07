@@ -19,13 +19,18 @@ package com.esri.arcgismaps.sample.filterbuildingscenelayer.screens
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,7 +84,8 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 
                 val categorySublayers = fullModesSublayer.sublayers
                 categorySublayers.forEach { buildingSublayer ->
-                    Log.d("LSV", "${buildingSublayer.name}")
+                    Log.d("LSV", buildingSublayer.name)
+                    localSceneViewModel.categories.add(buildingSublayer)
                 }
 
                 val componentSublayerGroups = categorySublayers.map { categorySublayer ->
@@ -124,7 +130,9 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 sheetTitle = "Settings",
                 onDismissRequest = { isBottomSheetVisible = false }
             ) {
-                SampleOptions(localSceneViewModel.floors)
+                FloorSelector(localSceneViewModel.floors)
+                HorizontalDivider()
+                CategorySelector()
             }
 
             localSceneViewModel.messageDialogVM.apply {
@@ -141,9 +149,8 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 }
 
 @Composable
-fun SampleOptions(
-    floors: List<String>,
-    // categories
+fun FloorSelector(
+    floors: List<String>
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -157,6 +164,40 @@ fun SampleOptions(
             dropDownItemList = floors,
             onIndexSelected = localSceneViewModel::selectFloor
         )
+    }
+}
+
+@Composable
+fun CategorySelector() {
+    val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Categories:")
+        LazyColumn(
+            //verticalArrangement = Arrangement.spacedBy(8.dp),
+            //horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            localSceneViewModel.categories.forEach { buildingSublayer ->
+                item {
+                    var checked by remember { mutableStateOf(buildingSublayer.isVisible) }
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(buildingSublayer.name)
+                            Checkbox(checked = checked, onCheckedChange = {
+                                checked = it
+                                localSceneViewModel.checkCategory(buildingSublayer, it)
+                            })
+                            if (checked) {
+                                // show drop down list of component sublayers
+                                Text(">>>")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
