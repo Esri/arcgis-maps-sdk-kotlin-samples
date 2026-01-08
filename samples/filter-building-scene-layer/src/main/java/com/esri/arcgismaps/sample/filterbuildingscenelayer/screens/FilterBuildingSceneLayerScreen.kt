@@ -17,11 +17,13 @@
 package com.esri.arcgismaps.sample.filterbuildingscenelayer.screens
 
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Checkbox
@@ -129,10 +131,12 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 sheetTitle = "Settings",
                 onDismissRequest = { isBottomSheetVisible = false },
             ) {
+                Column(modifier = Modifier.fillMaxHeight(0.5f).verticalScroll(rememberScrollState())) {
                 //Box(modifier = Modifier.fillMaxSize(0.5f)) {
                     FloorSelector(localSceneViewModel.floors)
                     HorizontalDivider()
                     CategorySelector()
+                }
                 //}
             }
 
@@ -153,10 +157,10 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 fun FloorSelector(
     floors: List<String>
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+//    Column(
+//        verticalArrangement = Arrangement.spacedBy(8.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
         val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
 
         DropDownMenuBox(
@@ -165,7 +169,7 @@ fun FloorSelector(
             dropDownItemList = floors,
             onIndexSelected = localSceneViewModel::selectFloor
         )
-    }
+//    }
 }
 
 @Composable
@@ -195,7 +199,10 @@ fun CategorySelector() {
                         var checked by remember { mutableStateOf(it.isVisible) }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(it.name)
-                            Checkbox(checked = checked, onCheckedChange = { isChecked -> checked = isChecked })
+                            Checkbox(checked = checked, onCheckedChange = {
+                                isChecked -> checked = isChecked
+                                it.isVisible = isChecked
+                            })
                         }
                     }
                 }
