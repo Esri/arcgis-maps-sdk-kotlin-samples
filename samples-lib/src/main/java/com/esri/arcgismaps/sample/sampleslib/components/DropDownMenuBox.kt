@@ -65,9 +65,9 @@ fun DropDownMenuBox(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            dropDownItemList.forEachIndexed { index, scalebarStyle ->
+            dropDownItemList.forEachIndexed { index, itemText ->
                 DropdownMenuItem(
-                    text = { Text(scalebarStyle) },
+                    text = { Text(itemText) },
                     onClick = {
                         onIndexSelected(index)
                         expanded = false
