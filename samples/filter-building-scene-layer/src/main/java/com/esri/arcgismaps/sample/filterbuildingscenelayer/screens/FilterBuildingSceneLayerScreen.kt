@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Checkbox
@@ -128,11 +127,13 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
             BottomSheet(
                 isVisible = isBottomSheetVisible,
                 sheetTitle = "Settings",
-                onDismissRequest = { isBottomSheetVisible = false }
+                onDismissRequest = { isBottomSheetVisible = false },
             ) {
-                FloorSelector(localSceneViewModel.floors)
-                HorizontalDivider()
-                CategorySelector()
+                //Box(modifier = Modifier.fillMaxSize(0.5f)) {
+                    FloorSelector(localSceneViewModel.floors)
+                    HorizontalDivider()
+                    CategorySelector()
+                //}
             }
 
             localSceneViewModel.messageDialogVM.apply {
@@ -175,27 +176,32 @@ fun CategorySelector() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Categories:")
-        LazyColumn(
-            //verticalArrangement = Arrangement.spacedBy(8.dp),
-            //horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        //LazyColumn {
+        Column {
             localSceneViewModel.categories.forEach { buildingSublayer ->
-                item {
-                    var checked by remember { mutableStateOf(buildingSublayer.isVisible) }
-                    Column {
+                //item {
+                var checked by remember { mutableStateOf(buildingSublayer.isVisible) }
+                //Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(buildingSublayer.name)
+                    Checkbox(checked = checked, onCheckedChange = {
+                        checked = it
+                        localSceneViewModel.checkCategory(buildingSublayer, it)
+                    })
+                }
+                Column(modifier = Modifier.align(Alignment.End)) {
+                    val buildingGroupSublayer = buildingSublayer as BuildingGroupSublayer
+                    buildingGroupSublayer.sublayers.forEach {
+                        var checked by remember { mutableStateOf(it.isVisible) }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(buildingSublayer.name)
-                            Checkbox(checked = checked, onCheckedChange = {
-                                checked = it
-                                localSceneViewModel.checkCategory(buildingSublayer, it)
-                            })
-                            if (checked) {
-                                // show drop down list of component sublayers
-                                Text(">>>")
-                            }
+                            Text(it.name)
+                            Checkbox(checked = checked, onCheckedChange = { isChecked -> checked = isChecked })
                         }
                     }
                 }
+                HorizontalDivider()
+                //}
+                //}
             }
         }
     }
