@@ -80,8 +80,4 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
             buildingSceneLayer.activeFilter = buildingFilter
         }
     }
-
-    fun checkCategory(buildingSublayer: BuildingSublayer, checked: Boolean) {
-        buildingSublayer.isVisible = checked
-    }
 }

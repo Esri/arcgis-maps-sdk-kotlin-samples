@@ -19,17 +19,21 @@ package com.esri.arcgismaps.sample.filterbuildingscenelayer.screens
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.layers.BuildingSceneLayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
+import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.esri.arcgismaps.sample.filterbuildingscenelayer.components.FilterBuildingSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
@@ -71,8 +76,8 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 buildingSceneLayer.fetchStatistics().onSuccess { statistics ->
                     statistics["BldgLevel"]?.mostFrequentValues?.forEach {
                         localSceneViewModel.floors.add(it)
-                        localSceneViewModel.floors.sort()
                     }
+                    localSceneViewModel.floors.sort()
                     localSceneViewModel.floors.forEach {
                         Log.d("LSV", "Sorted: $it")
                     }
@@ -88,15 +93,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                     Log.d("LSV", buildingSublayer.name)
                     localSceneViewModel.categories.add(buildingSublayer)
                 }
-
-                val componentSublayerGroups = categorySublayers.map { categorySublayer ->
-                    categorySublayer as BuildingGroupSublayer
-                }
-                componentSublayerGroups.forEach { buildingGroupSublayer ->
-                    buildingGroupSublayer.sublayers.forEach { buildingSublayer ->
-                        Log.d("LSV", "${buildingGroupSublayer.name} - ${buildingSublayer.name}")
-                    }
-                }
+                localSceneViewModel.categories.sortBy { buildingSublayer -> buildingSublayer.name }
             }
         }
     }
@@ -121,8 +118,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    scene = localSceneViewModel.scene,
-                    //onVisibleAreaChanged = { isBottomSheetVisible = false }
+                    scene = localSceneViewModel.scene
                 )
             }
 
@@ -131,13 +127,15 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 sheetTitle = "Settings",
                 onDismissRequest = { isBottomSheetVisible = false },
             ) {
-                Column(modifier = Modifier.fillMaxHeight(0.5f).verticalScroll(rememberScrollState())) {
-                //Box(modifier = Modifier.fillMaxSize(0.5f)) {
-                    FloorSelector(localSceneViewModel.floors)
+                Column(modifier = Modifier
+                    .fillMaxHeight(0.5f)
+                    .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    FloorSelector(floors = localSceneViewModel.floors)
                     HorizontalDivider()
-                    CategorySelector()
+                    CategorySelector(categories = localSceneViewModel.categories)
                 }
-                //}
             }
 
             localSceneViewModel.messageDialogVM.apply {
@@ -157,73 +155,65 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 fun FloorSelector(
     floors: List<String>
 ) {
-//    Column(
-//        verticalArrangement = Arrangement.spacedBy(8.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-        val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
+    val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
 
-        DropDownMenuBox(
-            textFieldValue = localSceneViewModel.selectedFloor,
-            textFieldLabel = "Floor",
-            dropDownItemList = floors,
-            onIndexSelected = localSceneViewModel::selectFloor
-        )
-//    }
+    DropDownMenuBox(
+        textFieldValue = localSceneViewModel.selectedFloor,
+        textFieldLabel = "Floor",
+        dropDownItemList = floors,
+        onIndexSelected = localSceneViewModel::selectFloor
+    )
 }
 
 @Composable
-fun CategorySelector() {
-    val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
-
+fun CategorySelector(categories: List<BuildingSublayer>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Categories:")
-        //LazyColumn {
+        Text(text = "Categories:", modifier = Modifier.padding(8.dp))
+
         Column {
-            localSceneViewModel.categories.forEach { buildingSublayer ->
-                //item {
-                var checked by remember { mutableStateOf(buildingSublayer.isVisible) }
-                //Column {
+            categories.forEach { buildingSublayer ->
+                var categoryChecked by remember { mutableStateOf(buildingSublayer.isVisible) }
+                var showSubCategories by remember { mutableStateOf(false) }
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(buildingSublayer.name)
-                    Checkbox(checked = checked, onCheckedChange = {
-                        checked = it
-                        localSceneViewModel.checkCategory(buildingSublayer, it)
+                    Text(text = buildingSublayer.name, modifier = Modifier.padding(8.dp))
+                    Spacer(modifier = Modifier.weight(1f))
+                    Checkbox(checked = categoryChecked, onCheckedChange = {
+                        categoryChecked = it
+                        buildingSublayer.isVisible = categoryChecked
                     })
+                    IconButton(
+                        onClick = { showSubCategories = !showSubCategories }
+                    ) {
+                        val imageVector = when {
+                            showSubCategories -> Icons.Default.ArrowDropUp
+                            else -> Icons.Default.ArrowDropDown
+                        }
+                        Icon(
+                            imageVector = imageVector,
+                            contentDescription = "Show sub-categories",
+                            modifier = Modifier
+                        )
+                    }
                 }
-                Column(modifier = Modifier.align(Alignment.End)) {
+                if (showSubCategories) {
                     val buildingGroupSublayer = buildingSublayer as BuildingGroupSublayer
-                    buildingGroupSublayer.sublayers.forEach {
-                        var checked by remember { mutableStateOf(it.isVisible) }
+                    buildingGroupSublayer.sublayers.sortedBy { it.name }.forEach {
+                        var subCategoryChecked by remember { mutableStateOf(it.isVisible) }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(it.name)
-                            Checkbox(checked = checked, onCheckedChange = {
-                                isChecked -> checked = isChecked
+                            Text(text = it.name, modifier = Modifier.padding(8.dp))
+                            Spacer(modifier = Modifier.weight(1f))
+                            Checkbox(checked = subCategoryChecked, onCheckedChange = { isChecked ->
+                                subCategoryChecked = isChecked
                                 it.isVisible = isChecked
                             })
                         }
                     }
                 }
                 HorizontalDivider()
-                //}
-                //}
             }
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-//@Composable
-//fun BottomSheetPreview() {
-//    SamplePreviewSurface {
-//        BottomSheet(
-//            isVisible = true,
-//            sheetTitle = "Bottom sheet options",
-//        ) {
-//            SampleOptions()
-//        }
-//    }
-//}
