@@ -23,11 +23,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,10 +56,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun AddBuildingSceneLayerScreen(sampleName: String) {
-    // A boolean value that indicates if the full model of the building scene layer is showing or not
-    var isFullModel by remember { mutableStateOf(false) }
-
-    // A boolean value that indicated if the building scene layer is loaded or not
+    // A boolean value that indicates if the building scene layer is loaded or not
     var isLoaded by remember { mutableStateOf(false) }
 
     val elevationSource = remember {
@@ -139,17 +139,35 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
                     localSceneViewProxy = localSceneViewProxy,
                     scene = arcGISScene
                 )
+
+                var selectedIndex by remember { mutableIntStateOf(0) }
+                val options = remember { listOf("Overview", "Full Model") }
+
                 Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Full Model")
-                    Switch(checked = isFullModel,
-                        onCheckedChange = { isChecked ->
-                            isFullModel = isChecked
-                            fullModelSublayer?.isVisible = isFullModel
-                            overviewSublayer?.isVisible = !isFullModel
-                        },
-                        modifier = Modifier.padding(10.dp))
+
+                    SingleChoiceSegmentedButtonRow(modifier = Modifier.padding(10.dp)) {
+                        options.forEachIndexed { index, label ->
+                            SegmentedButton(
+                                shape = SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = options.size
+                                ),
+                                onClick = { selectedIndex = index },
+                                selected = index == selectedIndex,
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+
+                    if (selectedIndex == 0) {
+                        fullModelSublayer?.isVisible = false
+                        overviewSublayer?.isVisible = true
+                    } else {
+                        fullModelSublayer?.isVisible = true
+                        overviewSublayer?.isVisible = false
+                    }
                 }
             }
         }
