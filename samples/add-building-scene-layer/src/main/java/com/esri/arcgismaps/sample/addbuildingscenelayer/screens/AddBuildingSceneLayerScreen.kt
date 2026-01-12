@@ -56,7 +56,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun AddBuildingSceneLayerScreen(sampleName: String) {
-    // A boolean value that indicates if the building scene layer is loaded or not
+    // A boolean value to indicate if the building scene layer is loaded
     var isLoaded by remember { mutableStateOf(false) }
 
     val elevationSource = remember {
@@ -84,21 +84,21 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
 
     val arcGISScene = remember {
         ArcGISScene(
-            BasemapStyle.ArcGISTopographic,
-            SceneViewingMode.Local
+            basemapStyle = BasemapStyle.ArcGISTopographic,
+            viewingMode = SceneViewingMode.Local
         ).apply {
             baseSurface.elevationSources.add(elevationSource)
             operationalLayers.add(buildingSceneLayer)
         }
     }
 
-    // set a suitable camera to view the building
+    // Set a viewpoint camera to see the building
     LaunchedEffect(Unit) {
         buildingSceneLayer.load().onSuccess {
             isLoaded = true
             localSceneViewProxy.setViewpointCamera(
                 Camera(
-                    Point(
+                    locationPoint = Point(
                         x = -13045114.646632874,
                         y = 4036662.761124578,
                         z = 511.0,
@@ -112,7 +112,7 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
         }
     }
 
-    // Get the overview and full model sublayers for the toggle
+    // Get the overview and full model sublayers for the seggmented choice button
     LaunchedEffect(Unit) {
         buildingSceneLayer.load().onSuccess {
             val sublayers = buildingSceneLayer.sublayers
