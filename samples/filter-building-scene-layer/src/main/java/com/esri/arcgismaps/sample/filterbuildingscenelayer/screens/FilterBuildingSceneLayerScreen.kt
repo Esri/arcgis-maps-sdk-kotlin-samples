@@ -53,6 +53,7 @@ import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.esri.arcgismaps.sample.filterbuildingscenelayer.components.FilterBuildingSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
+import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -66,6 +67,8 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 
     LaunchedEffect(Unit) {
         localSceneViewModel.scene.load().onSuccess {
+            localSceneViewModel.showLoadingDialog.value = false
+
             localSceneViewModel.buildingSceneLayer =
                 localSceneViewModel.scene.operationalLayers.first { layer ->
                     layer is BuildingSceneLayer
@@ -109,6 +112,11 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
             }
         },
         content = {
+            // display a LoadingDialog to indicate the map loading status
+            if (localSceneViewModel.showLoadingDialog.value) {
+                LoadingDialog(loadingMessage = "Loading layer...")
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()

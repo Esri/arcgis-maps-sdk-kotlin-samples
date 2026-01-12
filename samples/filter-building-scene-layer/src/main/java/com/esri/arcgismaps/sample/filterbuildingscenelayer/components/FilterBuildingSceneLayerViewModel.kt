@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.filterbuildingscenelayer.components
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -35,6 +34,8 @@ import kotlinx.coroutines.launch
 
 class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
     val scene = ArcGISScene("https://www.arcgis.com/home/item.html?id=b7c387d599a84a50aafaece5ca139d44")
+
+    val showLoadingDialog = mutableStateOf(true)
 
     var buildingSceneLayer: BuildingSceneLayer? = null
 
@@ -54,7 +55,6 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     fun selectFloor(index: Int) {
         selectedFloor = floors[index]
-        Log.d("LSV", "Selected floor ${floors[index]} $index")
 
         buildingSceneLayer?.let { buildingSceneLayer ->
             if (selectedFloor == "All") {
