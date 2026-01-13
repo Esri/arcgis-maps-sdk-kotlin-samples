@@ -44,4 +44,3 @@ Applying filters to the Building Scene Layer can highlight features of interest 
 ## Tags
 
 3D, building scene layer, layers
-
