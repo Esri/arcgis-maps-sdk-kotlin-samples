@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.filterbuildingscenelayer.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +36,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.mapping.layers.BuildingSceneLayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
@@ -64,42 +61,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun FilterBuildingSceneLayerScreen(sampleName: String) {
     val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
     var isBottomSheetVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        localSceneViewModel.scene.load().onSuccess {
-            localSceneViewModel.showLoadingDialog.value = false
-
-            localSceneViewModel.buildingSceneLayer =
-                localSceneViewModel.scene.operationalLayers.first { layer ->
-                    layer is BuildingSceneLayer
-                } as BuildingSceneLayer
-
-            localSceneViewModel.buildingSceneLayer?.let { buildingSceneLayer ->
-                // Get the floor listing from the statistics
-                buildingSceneLayer.fetchStatistics().onSuccess { statistics ->
-                    statistics["BldgLevel"]?.mostFrequentValues?.forEach {
-                        localSceneViewModel.floors.add(it)
-                    }
-                    localSceneViewModel.floors.sort()
-                    localSceneViewModel.floors.forEach {
-                        Log.d("LSV", "Sorted: $it")
-                    }
-                }
-
-                val fullModesSublayer =
-                    buildingSceneLayer.sublayers.find { sublayer ->
-                        sublayer.name == "Full Model"
-                    } as BuildingGroupSublayer
-
-                val categorySublayers = fullModesSublayer.sublayers
-                categorySublayers.forEach { buildingSublayer ->
-                    Log.d("LSV", buildingSublayer.name)
-                    localSceneViewModel.categories.add(buildingSublayer)
-                }
-                localSceneViewModel.categories.sortBy { buildingSublayer -> buildingSublayer.name }
-            }
-        }
-    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -136,7 +97,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 onDismissRequest = { isBottomSheetVisible = false },
             ) {
                 Column(modifier = Modifier
-                    .fillMaxHeight(0.5f)
+                    .fillMaxHeight(0.4f)
                     .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -195,20 +156,21 @@ fun CategorySelector(categories: List<BuildingSublayer>) {
                     IconButton(
                         onClick = { showSubCategories = !showSubCategories }
                     ) {
-                        val imageVector = when {
-                            showSubCategories -> Icons.Default.ArrowDropUp
-                            else -> Icons.Default.ArrowDropDown
-                        }
                         Icon(
-                            imageVector = imageVector,
+                            imageVector = when {
+                                showSubCategories -> Icons.Default.ArrowDropUp
+                                else -> Icons.Default.ArrowDropDown
+                            },
                             contentDescription = "Show sub-categories",
                             modifier = Modifier
                         )
                     }
                 }
                 if (showSubCategories) {
-                    val buildingGroupSublayer = buildingSublayer as BuildingGroupSublayer
-                    buildingGroupSublayer.sublayers.sortedBy { it.name }.forEach {
+                    remember {
+                        val buildingGroupSublayer = buildingSublayer as BuildingGroupSublayer
+                        buildingGroupSublayer.sublayers.sortedBy { it.name }
+                    }.forEach {
                         var subCategoryChecked by remember { mutableStateOf(it.isVisible) }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(text = it.name, modifier = Modifier.padding(8.dp))

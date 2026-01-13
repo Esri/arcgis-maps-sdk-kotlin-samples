@@ -26,6 +26,7 @@ import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.layers.BuildingSceneLayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingFilter
 import com.arcgismaps.mapping.layers.buildingscene.BuildingFilterBlock
+import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSolidFilterMode
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingXrayFilterMode
@@ -37,7 +38,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     val showLoadingDialog = mutableStateOf(true)
 
-    var buildingSceneLayer: BuildingSceneLayer? = null
+    private var buildingSceneLayer: BuildingSceneLayer? = null
 
     var selectedFloor by mutableStateOf("All")
     val floors: MutableList<String> = mutableListOf(selectedFloor)
@@ -49,7 +50,35 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     init {
         viewModelScope.launch {
-            scene.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            scene.load().onFailure {
+                messageDialogVM.showMessageDialog(it)
+            }.onSuccess {
+                showLoadingDialog.value = false
+
+                buildingSceneLayer =
+                    scene.operationalLayers.first { layer ->
+                        layer is BuildingSceneLayer
+                    } as BuildingSceneLayer
+
+                buildingSceneLayer?.let { buildingSceneLayer ->
+                    // Get the floor listing from the statistics
+                    buildingSceneLayer.fetchStatistics().onSuccess { statistics ->
+                        statistics["BldgLevel"]?.mostFrequentValues?.forEach {
+                            floors.add(it)
+                        }
+                        floors.sort()
+                    }
+
+                    val fullModesSublayer =
+                        buildingSceneLayer.sublayers.find { sublayer ->
+                            sublayer.name == "Full Model"
+                        } as BuildingGroupSublayer
+
+                    val categorySublayers = fullModesSublayer.sublayers
+                    categories.addAll(categorySublayers)
+                    categories.sortBy { it.name }
+                }
+            }
         }
     }
 
