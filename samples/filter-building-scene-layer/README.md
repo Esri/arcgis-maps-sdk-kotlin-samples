@@ -17,7 +17,7 @@ In the filter controls, select floor and category options to filter what parts o
 1. Create an `ArcGISScene` with the URL to a Building Scene Layer service.
 2. Create a `LocalSceneView` and add the scene.
 3. Retrieve the `BuildingSceneLayer` from the scene's operational layers.
-4. Click the "Building Filter Settings" button to view the filtering options.
+4. Click the floating action button to view the filtering options.
 5. Select a floor from the "Floor" dropdown to view the internal details of each floor or "All" to view the entire model.
 6. Expand the categories to show or hide individual items in the building model. The entire category may be shown or hidden as well.
 7. Click on any of the building features to view the attributes of the feature.

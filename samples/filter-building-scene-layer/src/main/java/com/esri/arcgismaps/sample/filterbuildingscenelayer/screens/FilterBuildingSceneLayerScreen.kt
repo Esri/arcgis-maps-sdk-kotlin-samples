@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
-import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.esri.arcgismaps.sample.filterbuildingscenelayer.components.FilterBuildingSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
@@ -59,7 +58,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun FilterBuildingSceneLayerScreen(sampleName: String) {
-    val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
+    val viewModel: FilterBuildingSceneLayerViewModel = viewModel()
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -74,7 +73,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
         },
         content = {
             // display a LoadingDialog to indicate the map loading status
-            if (localSceneViewModel.showLoadingDialog.value) {
+            if (viewModel.showLoadingDialog.value) {
                 LoadingDialog(loadingMessage = "Loading layer...")
             }
 
@@ -87,7 +86,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    scene = localSceneViewModel.scene
+                    scene = viewModel.scene
                 )
             }
 
@@ -101,13 +100,13 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                     .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    FloorSelector(floors = localSceneViewModel.floors)
+                    FloorSelector()
                     HorizontalDivider()
-                    CategorySelector(categories = localSceneViewModel.categories)
+                    CategorySelector()
                 }
             }
 
-            localSceneViewModel.messageDialogVM.apply {
+            viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
@@ -121,28 +120,28 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 }
 
 @Composable
-fun FloorSelector(
-    floors: List<String>
-) {
-    val localSceneViewModel: FilterBuildingSceneLayerViewModel = viewModel()
+fun FloorSelector() {
+    val viewModel: FilterBuildingSceneLayerViewModel = viewModel()
 
     DropDownMenuBox(
-        textFieldValue = localSceneViewModel.selectedFloor,
+        textFieldValue = viewModel.selectedFloor,
         textFieldLabel = "Floor",
-        dropDownItemList = floors,
-        onIndexSelected = localSceneViewModel::selectFloor
+        dropDownItemList = viewModel.floors,
+        onIndexSelected = viewModel::selectFloor
     )
 }
 
 @Composable
-fun CategorySelector(categories: List<BuildingSublayer>) {
+fun CategorySelector() {
+    val viewModel: FilterBuildingSceneLayerViewModel = viewModel()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Categories:", modifier = Modifier.padding(8.dp))
 
         Column {
-            categories.forEach { buildingSublayer ->
+            viewModel.categories.forEach { buildingSublayer ->
                 var categoryChecked by remember { mutableStateOf(buildingSublayer.isVisible) }
                 var showSubCategories by remember { mutableStateOf(false) }
 
