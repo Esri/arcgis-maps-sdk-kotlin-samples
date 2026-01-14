@@ -52,6 +52,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
         viewModelScope.launch {
             scene.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
+                showLoadingDialog.value = false
             }.onSuccess {
                 showLoadingDialog.value = false
 
@@ -63,33 +64,37 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
                 buildingSceneLayer?.let { buildingSceneLayer ->
                     // Get the floor listing from the statistics
                     buildingSceneLayer.fetchStatistics().onSuccess { statistics ->
-                        statistics["BldgLevel"]?.mostFrequentValues?.forEach {
-                            floors.add(it)
+                        statistics["BldgLevel"]?.mostFrequentValues?.let {
+                            floors.addAll(0, it.sorted())
                         }
-                        floors.sort()
-                    }
 
-                    val fullModesSublayer =
+                        // The top-level sublayer groups will be the categories
                         buildingSceneLayer.sublayers.find { sublayer ->
                             sublayer.name == "Full Model"
-                        } as BuildingGroupSublayer
-
-                    val categorySublayers = fullModesSublayer.sublayers
-                    categories.addAll(categorySublayers)
-                    categories.sortBy { it.name }
+                        }?.let { buildingSublayer ->
+                            buildingSublayer as BuildingGroupSublayer
+                            categories.addAll(buildingSublayer.sublayers.sortedBy { it.name })
+                        }
+                    }
                 }
             }
         }
     }
 
+    /**
+     * Utility function to update the building filters based on the selected floor
+     */
     fun selectFloor(index: Int) {
         selectedFloor = floors[index]
 
         buildingSceneLayer?.let { buildingSceneLayer ->
             if (selectedFloor == "All") {
+                // No filtering applied if 'All' floors are selected
                 buildingSceneLayer.activeFilter = null
                 return
             }
+            // Build a building filter to show the selected floor and an xray view of the floors below.
+            // Floors above the selected floor are not shown at all.
             val buildingFilter = BuildingFilter(
                 name = "Floor filter",
                 description = "Show selected floor and xray filter for lower floors.",
