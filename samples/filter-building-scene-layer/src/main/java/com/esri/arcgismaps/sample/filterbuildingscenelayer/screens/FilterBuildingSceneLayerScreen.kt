@@ -84,11 +84,12 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
             }
         },
         content = {
-            // display a LoadingDialog to indicate the map loading status
+            // display a progress dialog to indicate the map loading status
             if (viewModel.showLoadingDialog.value) {
                 LoadingDialog(loadingMessage = "Loading layer...")
             }
 
+            // display a progress dialog when an identify is take longer than expected
             if (identifyState.value) {
                 LoadingDialog("Identifying...")
             }
@@ -127,7 +128,9 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
             }
 
             popupState?.let {
-                ModalBottomSheet(modifier = Modifier.wrapContentSize(), onDismissRequest = viewModel::dismissPopup, sheetState = sheetState) {
+                ModalBottomSheet(modifier = Modifier.wrapContentSize(),
+                    onDismissRequest = viewModel::dismissPopup,
+                    sheetState = sheetState) {
                     Popup(
                         popupState = it,
                         onDismiss = viewModel::dismissPopup,
