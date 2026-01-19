@@ -20,23 +20,33 @@ import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.data.Feature
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.layers.BuildingSceneLayer
+import com.arcgismaps.mapping.layers.buildingscene.BuildingComponentSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingFilter
 import com.arcgismaps.mapping.layers.buildingscene.BuildingFilterBlock
 import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSolidFilterMode
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingXrayFilterMode
+import com.arcgismaps.mapping.popup.Popup
+import com.arcgismaps.mapping.view.DoubleXY
+import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
+import com.arcgismaps.toolkit.popup.PopupState
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
     val scene = ArcGISScene("https://www.arcgis.com/home/item.html?id=b7c387d599a84a50aafaece5ca139d44")
 
     val showLoadingDialog = mutableStateOf(true)
+    val showIdentifyProgress = mutableStateOf(false)
 
     private var buildingSceneLayer: BuildingSceneLayer? = null
 
@@ -47,6 +57,14 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
+
+    // LocalSceneViewProxy enables identify operations from the ViewModel.
+    val localSceneViewProxy = LocalSceneViewProxy()
+
+    private var _popupState = MutableStateFlow<PopupState?>(null)
+    val popupState = _popupState.asStateFlow()
+
+    private var sublayerWithSelection : BuildingComponentSublayer? = null
 
     init {
         viewModelScope.launch {
@@ -113,5 +131,42 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
             )
             buildingSceneLayer.activeFilter = buildingFilter
         }
+    }
+
+    fun identify(tapPoint: DoubleXY) {
+        showIdentifyProgress.value = true
+
+        sublayerWithSelection?.clearSelection()
+
+        viewModelScope.launch {
+            localSceneViewProxy.identify(
+                layer = buildingSceneLayer!!,
+                screenCoordinate = tapPoint,
+                tolerance = 12.dp,
+                returnPopupsOnly = false,
+                maximumResults = 1
+            ).onSuccess {
+                showIdentifyProgress.value = false
+
+                val results = it.sublayerResults
+
+                if (results.isNotEmpty()) {
+                    val element = results.first().geoElements.first()
+                    val popup = Popup(element)
+                    _popupState.value = PopupState(popup, viewModelScope)
+
+                    val sublayer =
+                        results.first().layerContent as BuildingComponentSublayer
+                    sublayer.selectFeature(element as Feature)
+                    sublayerWithSelection = sublayer
+                }
+            }.onFailure {
+                showIdentifyProgress.value = false
+            }
+        }
+    }
+
+    fun dismissPopup() {
+        _popupState.value = null
     }
 }
