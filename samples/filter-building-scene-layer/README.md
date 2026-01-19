@@ -29,8 +29,8 @@ In the filter controls, select floor and category options to filter what parts o
 * BuildingFilterBlock
 * BuildingSceneLayer
 * LocalSceneView
-* Scene
 * Popup
+* Scene
 
 ## About the data
 
