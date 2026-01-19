@@ -40,13 +40,13 @@ import com.arcgismaps.toolkit.popup.PopupState
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
     val scene = ArcGISScene("https://www.arcgis.com/home/item.html?id=b7c387d599a84a50aafaece5ca139d44")
 
     val showLoadingDialog = mutableStateOf(true)
-    val showIdentifyProgress = mutableStateOf(false)
 
     private var buildingSceneLayer: BuildingSceneLayer? = null
 
@@ -63,6 +63,9 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     private var _popupState = MutableStateFlow<PopupState?>(null)
     val popupState = _popupState.asStateFlow()
+
+    private var _identifyState = MutableStateFlow(false)
+    val identifyState = _identifyState.debounce(1000)
 
     private var sublayerWithSelection : BuildingComponentSublayer? = null
 
@@ -134,7 +137,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     }
 
     fun identify(tapPoint: DoubleXY) {
-        showIdentifyProgress.value = true
+        _identifyState.value = true
 
         sublayerWithSelection?.clearSelection()
 
@@ -146,7 +149,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
                 returnPopupsOnly = false,
                 maximumResults = 1
             ).onSuccess {
-                showIdentifyProgress.value = false
+                _identifyState.value = false
 
                 val results = it.sublayerResults
 
@@ -161,7 +164,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
                     sublayerWithSelection = sublayer
                 }
             }.onFailure {
-                showIdentifyProgress.value = false
+                _identifyState.value = false
             }
         }
     }

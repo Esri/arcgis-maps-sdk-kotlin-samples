@@ -71,6 +71,8 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
     val sheetState = rememberModalBottomSheetState()
     val popupState by viewModel.popupState.collectAsStateWithLifecycle()
 
+    val identifyState = viewModel.identifyState.collectAsStateWithLifecycle(initialValue = false)
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         floatingActionButton = {
@@ -87,7 +89,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 LoadingDialog(loadingMessage = "Loading layer...")
             }
 
-            if (viewModel.showIdentifyProgress.value) {
+            if (identifyState.value) {
                 LoadingDialog("Identifying...")
             }
 
