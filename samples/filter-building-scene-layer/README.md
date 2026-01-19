@@ -46,4 +46,4 @@ This sample uses the [Popup](https://github.com/Esri/arcgis-maps-sdk-kotlin-tool
 
 ## Tags
 
-3D, building scene layer, layers, popup, toolkit,
+3D, building scene layer, layers, popup, toolkit
