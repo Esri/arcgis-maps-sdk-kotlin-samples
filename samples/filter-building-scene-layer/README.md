@@ -2,7 +2,7 @@
 
 Explore details of a building scene by using filters and sublayer visibility.
 
-![Image of a building scene layer](FilterBuildingSceneLayer.png)
+![Image of a building scene layer](filter-building-scene-layer.png)
 
 ## Use case
 
@@ -30,6 +30,7 @@ In the filter controls, select floor and category options to filter what parts o
 * BuildingSceneLayer
 * LocalSceneView
 * Scene
+* Popup
 
 ## About the data
 
@@ -41,6 +42,8 @@ Buildings in a Building Scene Layer can be very complex models composed of subla
 
 Applying filters to the Building Scene Layer can highlight features of interest in the model. Filters are made up of filter blocks, which contain several properties that allow control over the filter's function. Setting the filter mode to X-Ray, for instance, will render features with a semi-transparent white color so other interior features can be seen. In addition, toggling the visibility of sublayers can show or hide all the features of a sublayer.
 
+This sample uses the [Popup](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/popup#popup) toolkit component. For information about setting up the toolkit, as well as code for the underlying component, visit the [toolkit docs](https://developers.arcgis.com/kotlin/toolkit/).
+
 ## Tags
 
-3D, building scene layer, layers
+3D, building scene layer, layers, popup, toolkit,
