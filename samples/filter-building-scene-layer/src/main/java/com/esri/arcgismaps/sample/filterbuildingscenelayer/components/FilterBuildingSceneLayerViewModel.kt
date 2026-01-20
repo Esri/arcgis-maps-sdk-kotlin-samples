@@ -46,13 +46,19 @@ import kotlinx.coroutines.launch
 class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
     val scene = ArcGISScene("https://www.arcgis.com/home/item.html?id=b7c387d599a84a50aafaece5ca139d44")
 
+    // State to control if a loading progress indicator is shown
     val showLoadingDialog = mutableStateOf(true)
 
+    // Building scene layer that will be filtered. Set after the WebScene is loaded.
     private var buildingSceneLayer: BuildingSceneLayer? = null
 
+    // The selected floor
     var selectedFloor by mutableStateOf("All")
+
+    // The list of available floors
     val floors: MutableList<String> = mutableListOf(selectedFloor)
 
+    // The list of building sublayer categories
     val categories: MutableList<BuildingSublayer> = mutableListOf()
 
     // Create a message dialog view model for handling error messages
@@ -61,12 +67,16 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     // LocalSceneViewProxy enables identify operations from the ViewModel.
     val localSceneViewProxy = LocalSceneViewProxy()
 
+    // State that will contain a popup state for an identify result
     private var _popupState = MutableStateFlow<PopupState?>(null)
     val popupState = _popupState.asStateFlow()
 
-    private var _identifyState = MutableStateFlow(false)
-    val identifyState = _identifyState.debounce(1000)
+    // State to control if a progress indicator is shown while identifying
+    private var _showIdentifyProgressState = MutableStateFlow(false)
+    // Use a debounce so progress indication is only shown for a slow identify
+    val showIdentifyProgressState = _showIdentifyProgressState.debounce(1000)
 
+    // Building scene layer sublayer that contains the currently selected feature
     private var sublayerWithSelection : BuildingComponentSublayer? = null
 
     init {
@@ -103,7 +113,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     }
 
     /**
-     * Utility function to update the building filters based on the selected floor
+     * Updates the building filters based on the selected floor
      */
     fun selectFloor(index: Int) {
         selectedFloor = floors[index]
@@ -136,8 +146,11 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
         }
     }
 
+    /**
+     * Does an identify on the building scene layer
+     */
     fun identify(tapPoint: DoubleXY) {
-        _identifyState.value = true
+        _showIdentifyProgressState.value = true
 
         sublayerWithSelection?.clearSelection()
 
@@ -149,7 +162,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
                 returnPopupsOnly = false,
                 maximumResults = 1
             ).onSuccess {
-                _identifyState.value = false
+                _showIdentifyProgressState.value = false
 
                 val results = it.sublayerResults
 
@@ -164,11 +177,14 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
                     sublayerWithSelection = sublayer
                 }
             }.onFailure {
-                _identifyState.value = false
+                _showIdentifyProgressState.value = false
             }
         }
     }
 
+    /**
+     * Dismisses any displayed popup
+     */
     fun dismissPopup() {
         _popupState.value = null
     }

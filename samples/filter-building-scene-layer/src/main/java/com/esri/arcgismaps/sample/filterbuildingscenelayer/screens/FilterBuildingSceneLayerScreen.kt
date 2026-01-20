@@ -71,7 +71,8 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
     val sheetState = rememberModalBottomSheetState()
     val popupState by viewModel.popupState.collectAsStateWithLifecycle()
 
-    val identifyState = viewModel.identifyState.collectAsStateWithLifecycle(initialValue = false)
+    val showIdentifyProgress =
+        viewModel.showIdentifyProgressState.collectAsStateWithLifecycle(initialValue = false)
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -90,7 +91,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
             }
 
             // display a progress dialog when an identify is take longer than expected
-            if (identifyState.value) {
+            if (showIdentifyProgress.value && popupState == null) {
                 LoadingDialog("Identifying...")
             }
 
@@ -152,6 +153,9 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
     )
 }
 
+/**
+ * A menu to select floors
+ */
 @Composable
 fun FloorSelector() {
     val viewModel: FilterBuildingSceneLayerViewModel = viewModel()
@@ -164,6 +168,9 @@ fun FloorSelector() {
     )
 }
 
+/**
+ * Check boxes to select building categories and sub-categories
+ */
 @Composable
 fun CategorySelector() {
     val viewModel: FilterBuildingSceneLayerViewModel = viewModel()
