@@ -178,6 +178,10 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
                 }
             }.onFailure {
                 _showIdentifyProgressState.value = false
+                messageDialogVM.showMessageDialog(
+                    title = "Failed to identify: ${it.message}",
+                    description = it.message.toString()
+                )
             }
         }
     }
