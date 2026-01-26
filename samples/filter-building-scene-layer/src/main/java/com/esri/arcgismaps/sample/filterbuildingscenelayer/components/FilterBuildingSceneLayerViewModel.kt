@@ -20,10 +20,8 @@ import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.data.Feature
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.layers.BuildingSceneLayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingComponentSublayer
@@ -33,14 +31,7 @@ import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSolidFilterMode
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingXrayFilterMode
-import com.arcgismaps.mapping.popup.Popup
-import com.arcgismaps.mapping.view.DoubleXY
-import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
-import com.arcgismaps.toolkit.popup.PopupState
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
@@ -50,7 +41,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     val showLoadingDialog = mutableStateOf(true)
 
     // Building scene layer that will be filtered. Set after the WebScene is loaded.
-    private var buildingSceneLayer: BuildingSceneLayer? = null
+    var buildingSceneLayer: BuildingSceneLayer? = null
 
     // The selected floor
     var selectedFloor by mutableStateOf("All")
@@ -64,20 +55,8 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // LocalSceneViewProxy enables identify operations from the ViewModel.
-    val localSceneViewProxy = LocalSceneViewProxy()
-
-    // State that will contain a popup state for an identify result
-    private var _popupState = MutableStateFlow<PopupState?>(null)
-    val popupState = _popupState.asStateFlow()
-
-    // State to control if a progress indicator is shown while identifying
-    private var _showIdentifyProgressState = MutableStateFlow(false)
-    // Use a debounce so progress indication is only shown for a slow identify
-    val showIdentifyProgressState = _showIdentifyProgressState.debounce(1000)
-
     // Building scene layer sublayer that contains the currently selected feature
-    private var sublayerWithSelection : BuildingComponentSublayer? = null
+    var sublayerWithSelection : BuildingComponentSublayer? = null
 
     init {
         viewModelScope.launch {
@@ -144,52 +123,5 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
             )
             buildingSceneLayer.activeFilter = buildingFilter
         }
-    }
-
-    /**
-     * Does an identify on the building scene layer
-     */
-    fun identify(tapPoint: DoubleXY) {
-        _showIdentifyProgressState.value = true
-
-        sublayerWithSelection?.clearSelection()
-
-        viewModelScope.launch {
-            localSceneViewProxy.identify(
-                layer = buildingSceneLayer!!,
-                screenCoordinate = tapPoint,
-                tolerance = 12.dp,
-                returnPopupsOnly = false,
-                maximumResults = 1
-            ).onSuccess {
-                _showIdentifyProgressState.value = false
-
-                val results = it.sublayerResults
-
-                if (results.isNotEmpty()) {
-                    val element = results.first().geoElements.first()
-                    val popup = Popup(element)
-                    _popupState.value = PopupState(popup, viewModelScope)
-
-                    val sublayer =
-                        results.first().layerContent as BuildingComponentSublayer
-                    sublayer.selectFeature(element as Feature)
-                    sublayerWithSelection = sublayer
-                }
-            }.onFailure {
-                _showIdentifyProgressState.value = false
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to identify: ${it.message}",
-                    description = it.message.toString()
-                )
-            }
-        }
-    }
-
-    /**
-     * Dismisses any displayed popup
-     */
-    fun dismissPopup() {
-        _popupState.value = null
     }
 }

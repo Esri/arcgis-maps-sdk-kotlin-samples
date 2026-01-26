@@ -43,21 +43,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.data.Feature
+import com.arcgismaps.mapping.layers.buildingscene.BuildingComponentSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
+import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
 import com.arcgismaps.toolkit.popup.Popup
+import com.arcgismaps.toolkit.popup.PopupState
 import com.esri.arcgismaps.sample.filterbuildingscenelayer.components.FilterBuildingSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -69,10 +75,16 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState()
-    val popupState by viewModel.popupState.collectAsStateWithLifecycle()
 
-    val showIdentifyProgress =
-        viewModel.showIdentifyProgressState.collectAsStateWithLifecycle(initialValue = false)
+    //val popupState by viewModel.popupState.collectAsStateWithLifecycle()
+    var popupState by remember { mutableStateOf<PopupState?>(null) }
+
+    var showIdentifyProgress by remember { mutableStateOf(false)}
+        //viewModel.showIdentifyProgressState.collectAsStateWithLifecycle(initialValue = false)
+
+    val localSceneViewProxy = remember { LocalSceneViewProxy() }
+
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -91,7 +103,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
             }
 
             // display a progress dialog when an identify is take longer than expected
-            if (showIdentifyProgress.value && popupState == null) {
+            if (showIdentifyProgress) {
                 LoadingDialog("Identifying...")
             }
 
@@ -105,9 +117,46 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     scene = viewModel.scene,
-                    localSceneViewProxy = viewModel.localSceneViewProxy,
+                    localSceneViewProxy = localSceneViewProxy,
                     onSingleTapConfirmed = { singleTapConfirmedEvent ->
-                        viewModel.identify(singleTapConfirmedEvent.screenCoordinate)
+                        coroutineScope.launch {
+                            viewModel.sublayerWithSelection?.clearSelection()
+
+                            // only show identify progress if it has been more than one second
+                            val identifyInProgress = coroutineScope.launch {
+                                delay(1000)
+                                showIdentifyProgress = true
+                            }
+
+                            localSceneViewProxy.identify(
+                                layer = viewModel.buildingSceneLayer!!,
+                                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
+                                tolerance = 12.dp,
+                                returnPopupsOnly = false,
+                                maximumResults = 1
+                            ).onSuccess { identifyLayerResult ->
+                                identifyInProgress.cancel()
+                                showIdentifyProgress = false
+
+                                val results = identifyLayerResult.sublayerResults
+
+                                if (results.isNotEmpty()) {
+                                    val element = results.first().geoElements.first()
+                                    val popup = com.arcgismaps.mapping.popup.Popup(element)
+                                    popupState = PopupState(popup, coroutineScope)
+
+                                    val sublayer =
+                                        results.first().layerContent as BuildingComponentSublayer
+                                    sublayer.selectFeature(element as Feature)
+                                    viewModel.sublayerWithSelection = sublayer
+                                }
+                            }.onFailure { throwable ->
+                                identifyInProgress.cancel()
+                                showIdentifyProgress = false
+
+                                viewModel.messageDialogVM.showMessageDialog(throwable)
+                            }
+                        }
                     }
                 )
             }
@@ -130,11 +179,11 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 
             popupState?.let {
                 ModalBottomSheet(modifier = Modifier.wrapContentSize(),
-                    onDismissRequest = viewModel::dismissPopup,
+                    onDismissRequest = { popupState = null },
                     sheetState = sheetState) {
                     Popup(
                         popupState = it,
-                        onDismiss = viewModel::dismissPopup,
+                        onDismiss = { popupState = null },
                         modifier = Modifier.fillMaxSize()
                     )
                 }
