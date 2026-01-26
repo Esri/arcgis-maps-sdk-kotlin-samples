@@ -23,13 +23,13 @@
   "language": "kotlin",
   "redirect_from": "",
   "relevant_apis": [
+    "ArcGISScene",,
     "BuildingComponentSublayer",
     "BuildingFilter",
     "BuildingFilterBlock",
     "BuildingSceneLayer",
     "LocalSceneView",
-    "Popup",
-    "ArcGISScene"
+    "Popup"
   ],
   "snippets": [
     "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/components/FilterBuildingSceneLayerViewModel.kt",
