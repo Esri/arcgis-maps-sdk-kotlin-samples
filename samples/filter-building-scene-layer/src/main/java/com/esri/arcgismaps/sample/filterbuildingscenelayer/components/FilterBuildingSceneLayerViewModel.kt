@@ -43,7 +43,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     // State to control if a loading progress indicator is shown
     private val _showLoadingDialog = MutableStateFlow(true)
-    val showLoadingDialog = showLoadingDialog.asStateFlow()
+    val showLoadingDialog = _showLoadingDialog.asStateFlow()
 
     // Building scene layer that will be filtered. Set after the WebScene is loaded.
     var buildingSceneLayer: BuildingSceneLayer? = null
