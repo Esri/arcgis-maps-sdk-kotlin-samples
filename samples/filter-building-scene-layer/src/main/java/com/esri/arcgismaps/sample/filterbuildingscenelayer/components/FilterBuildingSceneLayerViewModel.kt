@@ -31,7 +31,11 @@ import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSolidFilterMode
 import com.arcgismaps.mapping.layers.buildingscene.BuildingSublayer
 import com.arcgismaps.mapping.layers.buildingscene.BuildingXrayFilterMode
+import com.arcgismaps.mapping.popup.Popup
+import com.arcgismaps.toolkit.popup.PopupState
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app) {
@@ -57,6 +61,11 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
     // Building scene layer sublayer that contains the currently selected feature
     var sublayerWithSelection : BuildingComponentSublayer? = null
+
+    // State that will contain a popup state for an identify result
+    private var _popupState = MutableStateFlow<PopupState?>(null)
+    val popupState = _popupState.asStateFlow()
+
 
     init {
         viewModelScope.launch {
@@ -123,5 +132,19 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
             )
             buildingSceneLayer.activeFilter = buildingFilter
         }
+    }
+
+    /**
+     * Creates a popup state to display identify result
+     */
+    fun createPopupState(popup: Popup) {
+        _popupState.value = PopupState(popup = popup, scope = viewModelScope)
+    }
+
+    /**
+     * Dismisses an identify result
+     */
+    fun dismissPopup() {
+        _popupState.value = null
     }
 }

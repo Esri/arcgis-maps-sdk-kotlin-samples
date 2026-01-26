@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.data.Feature
 import com.arcgismaps.mapping.layers.buildingscene.BuildingComponentSublayer
@@ -55,7 +56,6 @@ import com.arcgismaps.mapping.layers.buildingscene.BuildingGroupSublayer
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
 import com.arcgismaps.toolkit.popup.Popup
-import com.arcgismaps.toolkit.popup.PopupState
 import com.esri.arcgismaps.sample.filterbuildingscenelayer.components.FilterBuildingSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
@@ -76,15 +76,13 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
 
     val sheetState = rememberModalBottomSheetState()
 
-    //val popupState by viewModel.popupState.collectAsStateWithLifecycle()
-    var popupState by remember { mutableStateOf<PopupState?>(null) }
-
     var showIdentifyProgress by remember { mutableStateOf(false)}
-        //viewModel.showIdentifyProgressState.collectAsStateWithLifecycle(initialValue = false)
 
     val localSceneViewProxy = remember { LocalSceneViewProxy() }
 
     val coroutineScope = rememberCoroutineScope()
+
+    val popupState by viewModel.popupState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -143,7 +141,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                                 if (results.isNotEmpty()) {
                                     val element = results.first().geoElements.first()
                                     val popup = com.arcgismaps.mapping.popup.Popup(element)
-                                    popupState = PopupState(popup, coroutineScope)
+                                    viewModel.createPopupState(popup)
 
                                     val sublayer =
                                         results.first().layerContent as BuildingComponentSublayer
@@ -177,13 +175,13 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
                 }
             }
 
-            popupState?.let {
+            popupState?.let { popupState ->
                 ModalBottomSheet(modifier = Modifier.wrapContentSize(),
-                    onDismissRequest = { popupState = null },
+                    onDismissRequest = viewModel::dismissPopup,
                     sheetState = sheetState) {
                     Popup(
-                        popupState = it,
-                        onDismiss = { popupState = null },
+                        popupState = popupState,
+                        onDismiss = viewModel::dismissPopup,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
