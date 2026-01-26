@@ -66,8 +66,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     // State that will contain a popup state for an identify result
     private val _popupState = MutableStateFlow<PopupState?>(null)
     val popupState = _popupState.asStateFlow()
-
-
+    
     init {
         viewModelScope.launch {
             scene.load().onFailure {
