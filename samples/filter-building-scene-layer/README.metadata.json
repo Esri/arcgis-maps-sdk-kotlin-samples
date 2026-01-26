@@ -29,7 +29,7 @@
     "BuildingSceneLayer",
     "LocalSceneView",
     "Popup",
-    "Scene"
+    "ArcGISScene"
   ],
   "snippets": [
     "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/components/FilterBuildingSceneLayerViewModel.kt",

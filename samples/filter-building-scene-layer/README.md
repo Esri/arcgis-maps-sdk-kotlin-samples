@@ -30,7 +30,7 @@ In the filter controls, select floor and category options to filter what parts o
 * BuildingSceneLayer
 * LocalSceneView
 * Popup
-* Scene
+* ArcGISScene
 
 ## About the data
 
