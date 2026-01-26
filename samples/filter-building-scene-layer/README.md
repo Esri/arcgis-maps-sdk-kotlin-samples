@@ -24,13 +24,13 @@ In the filter controls, select floor and category options to filter what parts o
 
 ## Relevant API
 
+* ArcGISScene
 * BuildingComponentSublayer
 * BuildingFilter
 * BuildingFilterBlock
 * BuildingSceneLayer
 * LocalSceneView
 * Popup
-* ArcGISScene
 
 ## About the data
 
