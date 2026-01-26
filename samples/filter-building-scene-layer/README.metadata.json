@@ -23,7 +23,7 @@
   "language": "kotlin",
   "redirect_from": "",
   "relevant_apis": [
-    "ArcGISScene",,
+    "ArcGISScene",
     "BuildingComponentSublayer",
     "BuildingFilter",
     "BuildingFilterBlock",
