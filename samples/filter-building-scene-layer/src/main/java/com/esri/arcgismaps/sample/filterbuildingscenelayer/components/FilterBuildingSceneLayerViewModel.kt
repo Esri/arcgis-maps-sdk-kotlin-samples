@@ -42,7 +42,8 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     val scene = ArcGISScene("https://www.arcgis.com/home/item.html?id=b7c387d599a84a50aafaece5ca139d44")
 
     // State to control if a loading progress indicator is shown
-    val showLoadingDialog = mutableStateOf(true)
+    private val _showLoadingDialog = MutableStateFlow(true)
+    val showLoadingDialog = showLoadingDialog.asStateFlow()
 
     // Building scene layer that will be filtered. Set after the WebScene is loaded.
     var buildingSceneLayer: BuildingSceneLayer? = null
@@ -63,7 +64,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
     var sublayerWithSelection : BuildingComponentSublayer? = null
 
     // State that will contain a popup state for an identify result
-    private var _popupState = MutableStateFlow<PopupState?>(null)
+    private val _popupState = MutableStateFlow<PopupState?>(null)
     val popupState = _popupState.asStateFlow()
 
 
@@ -71,9 +72,9 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
         viewModelScope.launch {
             scene.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
-                showLoadingDialog.value = false
+                _showLoadingDialog.value = false
             }.onSuccess {
-                showLoadingDialog.value = false
+                _showLoadingDialog.value = false
 
                 buildingSceneLayer =
                     scene.operationalLayers.first { layer ->

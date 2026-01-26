@@ -72,7 +72,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun FilterBuildingSceneLayerScreen(sampleName: String) {
     val viewModel: FilterBuildingSceneLayerViewModel = viewModel()
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    
+var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState()
 
@@ -81,6 +82,8 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
     val localSceneViewProxy = remember { LocalSceneViewProxy() }
 
     val coroutineScope = rememberCoroutineScope()
+
+    val showLoadingDialog by viewModel.showLoadingDialog.collectAsStateWithLifecycle()
 
     val popupState by viewModel.popupState.collectAsStateWithLifecycle()
 
@@ -96,7 +99,7 @@ fun FilterBuildingSceneLayerScreen(sampleName: String) {
         },
         content = {
             // display a progress dialog to indicate the map loading status
-            if (viewModel.showLoadingDialog.value) {
+            if (showLoadingDialog) {
                 LoadingDialog(loadingMessage = "Loading layer...")
             }
 
