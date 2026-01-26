@@ -12,13 +12,13 @@
     "layers",
     "popup",
     "toolkit",
+    "ArcGISScene",
     "BuildingComponentSublayer",
     "BuildingFilter",
     "BuildingFilterBlock",
     "BuildingSceneLayer",
     "LocalSceneView",
-    "Popup",
-    "Scene"
+    "Popup"
   ],
   "language": "kotlin",
   "redirect_from": "",
