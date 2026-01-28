@@ -1,0 +1,43 @@
+{
+  "category": "Layers",
+  "description": "Explore details of a building scene by using filters and sublayer visibility.",
+  "formal_name": "FilterBuildingSceneLayer",
+  "ignore": false,
+  "images": [
+    "filter-building-scene-layer.png"
+  ],
+  "keywords": [
+    "3D",
+    "building scene layer",
+    "layers",
+    "popup",
+    "toolkit",
+    "ArcGISScene",
+    "BuildingComponentSublayer",
+    "BuildingFilter",
+    "BuildingFilterBlock",
+    "BuildingSceneLayer",
+    "LocalSceneView",
+    "Popup"
+  ],
+  "language": "kotlin",
+  "redirect_from": "",
+  "relevant_apis": [
+    "ArcGISScene",
+    "BuildingComponentSublayer",
+    "BuildingFilter",
+    "BuildingFilterBlock",
+    "BuildingSceneLayer",
+    "LocalSceneView",
+    "Popup"
+  ],
+  "snippets": [
+    "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/components/FilterBuildingSceneLayerViewModel.kt",
+    "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/MainActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/filterbuildingscenelayer/screens/FilterBuildingSceneLayerScreen.kt"
+  ],
+  "title": "Filter building scene layer"
+}
+
+
+
