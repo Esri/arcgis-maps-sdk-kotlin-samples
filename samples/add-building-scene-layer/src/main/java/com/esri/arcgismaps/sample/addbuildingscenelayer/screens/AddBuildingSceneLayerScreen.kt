@@ -84,8 +84,8 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
 
     val arcGISScene = remember {
         ArcGISScene(
-            basemapStyle = BasemapStyle.ArcGISTopographic,
-            viewingMode = SceneViewingMode.Local
+            viewingMode = SceneViewingMode.Local,
+            basemapStyle = BasemapStyle.ArcGISTopographic
         ).apply {
             baseSurface.elevationSources.add(elevationSource)
             operationalLayers.add(buildingSceneLayer)

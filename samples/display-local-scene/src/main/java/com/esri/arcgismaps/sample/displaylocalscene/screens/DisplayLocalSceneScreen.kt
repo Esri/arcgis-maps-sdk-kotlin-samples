@@ -59,8 +59,8 @@ fun DisplayLocalSceneScreen(sampleName: String) {
 
                 val arcGISScene = remember {
                     ArcGISScene(
-                        BasemapStyle.ArcGISTopographic,
-                        SceneViewingMode.Local
+                        viewingMode = SceneViewingMode.Local,
+                        basemapStyle = BasemapStyle.ArcGISTopographic
                     ).apply {
                         operationalLayers.add(sceneLayer)
                         baseSurface.elevationSources.add(elevationSource)
