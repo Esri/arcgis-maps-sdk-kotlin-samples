@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.addintegratedmeshlayer.components.AddIntegratedMeshLayerViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -56,7 +56,7 @@ fun AddIntegratedMeshLayerScreen(sampleName: String) {
 
             // While the scene is still performing initial draw, display a loading dialog.
             if (!viewModel.isDrawStatusCompleted) {
-                LoadingDialog(loadingMessage = "Loading integrated mesh...")
+                ProgressDialog(message = "Loading integrated mesh...")
             }
 
             // If any errors during loading, display a message dialog.

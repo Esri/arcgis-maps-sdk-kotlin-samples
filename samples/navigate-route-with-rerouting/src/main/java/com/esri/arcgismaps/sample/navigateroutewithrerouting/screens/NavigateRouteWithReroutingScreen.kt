@@ -44,7 +44,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import com.esri.arcgismaps.sample.navigateroutewithrerouting.R
 import com.esri.arcgismaps.sample.navigateroutewithrerouting.components.NavigateRouteWithReroutingViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -65,7 +65,7 @@ fun NavigateRouteWithReroutingScreen(sampleName: String) {
     }
     // Display loading dialog on initialization
     if (!isViewmodelInitialized) {
-        LoadingDialog("Loading route result...")
+        ProgressDialog("Loading route result...")
     }
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },

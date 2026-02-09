@@ -48,7 +48,7 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.SceneViewingMode
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -130,7 +130,7 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
                     .padding(it),
             ) {
                 if (!isLoaded) {
-                    LoadingDialog(loadingMessage = "Loading building scene layer...")
+                    ProgressDialog(message = "Loading building scene layer...")
                 }
                 LocalSceneView(
                     modifier = Modifier

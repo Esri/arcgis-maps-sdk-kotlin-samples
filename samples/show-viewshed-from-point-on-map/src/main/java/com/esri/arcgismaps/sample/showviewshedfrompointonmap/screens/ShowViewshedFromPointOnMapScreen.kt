@@ -26,7 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showviewshedfrompointonmap.components.ShowViewshedFromPointOnMapViewModel
@@ -76,7 +76,7 @@ fun ShowViewshedFromPointOnMapScreen(sampleName: String) {
 
             // If geoprocessing is running, show a loading dialog
             if (isGeoprocessingInProgress) {
-                LoadingDialog(loadingMessage = "Calculating viewshed…")
+                ProgressDialog(message = "Calculating viewshed…")
             }
         }
     )

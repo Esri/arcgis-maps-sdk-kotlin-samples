@@ -34,11 +34,11 @@ import androidx.compose.ui.window.Dialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
- * Composable component to display an indeterminate loading dialog along with a [loadingMessage]
+ * Composable component to display an indeterminate progress dialog along with a [message]
  */
 @Composable
-fun LoadingDialog(
-    loadingMessage: String,
+fun ProgressDialog(
+    message: String,
 ) {
     Dialog(
         onDismissRequest = { }
@@ -60,7 +60,7 @@ fun LoadingDialog(
                 Text(
                     modifier = Modifier
                         .padding(30.dp),
-                    text = loadingMessage,
+                    text = message,
                     textAlign = TextAlign.Center
                 )
             }
@@ -71,9 +71,9 @@ fun LoadingDialog(
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun PreviewLoadingDialog() {
+fun PreviewProgressDialog() {
     SampleAppTheme {
-        LoadingDialog(loadingMessage = "Dialog loading message here")
+        ProgressDialog(message = "Dialog loading message here")
     }
 }
 

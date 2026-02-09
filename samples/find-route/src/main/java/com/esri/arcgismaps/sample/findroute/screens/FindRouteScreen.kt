@@ -60,7 +60,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.findroute.R
 import com.esri.arcgismaps.sample.findroute.components.FindRouteViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -153,7 +153,7 @@ fun FindRouteScreen(sampleName: String) {
             }
 
             if (isRouteTaskRunning) {
-                LoadingDialog("Solving route ...")
+                ProgressDialog("Solving route ...")
             }
         }
     )

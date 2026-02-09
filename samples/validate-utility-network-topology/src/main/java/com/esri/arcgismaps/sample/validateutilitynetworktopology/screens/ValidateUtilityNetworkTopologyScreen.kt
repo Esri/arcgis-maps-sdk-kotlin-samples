@@ -69,7 +69,7 @@ import com.arcgismaps.Color
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.mapping.view.SelectionProperties
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -92,7 +92,7 @@ fun ValidateUtilityNetworkTopologyScreen(sampleName: String) {
     }
     // Display loading dialog on initialization
     if (!isViewmodelInitialized) {
-        LoadingDialog("Loading utility network")
+        ProgressDialog("Loading utility network")
     }
 
     // Collect UI states from the ViewModel

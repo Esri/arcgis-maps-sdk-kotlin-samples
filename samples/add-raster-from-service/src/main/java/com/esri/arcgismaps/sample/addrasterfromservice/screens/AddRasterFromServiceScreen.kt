@@ -28,7 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addrasterfromservice.components.AddRasterFromServiceViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -61,7 +61,7 @@ fun AddRasterFromServiceScreen(sampleName: String) {
 
             // Display a loading dialog while the raster layer is not yet fully loaded
             if (rasterLoadStatus != LoadStatus.Loaded) {
-                LoadingDialog(loadingMessage = "Loading raster…")
+                ProgressDialog(message = "Loading raster…")
             }
 
             // Display any error messages raised by the ViewModel

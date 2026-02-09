@@ -31,7 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.snapgeometryedits.components.SnapGeometryEditsViewModel
@@ -104,7 +104,7 @@ fun MainScreen(sampleName: String) {
             }
         }
         if (mapViewModel.areLayersLoading.value) {
-            LoadingDialog("Loading map with feature layers...")
+            ProgressDialog("Loading map with feature layers...")
         }
     })
 }

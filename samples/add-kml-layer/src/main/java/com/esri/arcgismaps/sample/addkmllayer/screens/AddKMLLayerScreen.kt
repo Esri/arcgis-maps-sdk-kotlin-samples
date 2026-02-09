@@ -32,7 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addkmllayer.components.AddKmlLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -76,7 +76,7 @@ fun AddKMLLayerScreen(sampleName: String) {
 
             // Display dialog while loading a KML layer.
             if (isLoading) {
-                LoadingDialog(loadingMessage = "Loading KmlLayer...")
+                ProgressDialog(message = "Loading KmlLayer...")
             }
 
             // Display errors in a dialog.

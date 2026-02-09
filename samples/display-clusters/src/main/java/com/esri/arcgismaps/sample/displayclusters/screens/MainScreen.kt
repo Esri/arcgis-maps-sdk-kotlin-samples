@@ -37,7 +37,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.displayclusters.components.ClusterInfoContent
 import com.esri.arcgismaps.sample.displayclusters.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
@@ -106,7 +106,7 @@ fun MainScreen(sampleName: String) {
 
                 // display a LoadingDialog to indicate the map loading status
                 if (mapViewModel.showLoadingDialog.value) {
-                    LoadingDialog(loadingMessage = "Loading map...")
+                    ProgressDialog(message = "Loading map...")
                 }
             }
 

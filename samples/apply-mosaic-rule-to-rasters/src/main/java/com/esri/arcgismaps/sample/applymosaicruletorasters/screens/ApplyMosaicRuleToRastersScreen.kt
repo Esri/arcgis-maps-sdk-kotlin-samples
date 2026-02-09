@@ -41,7 +41,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applymosaicruletorasters.components.ApplyMosaicRuleToRastersViewModel
 import com.esri.arcgismaps.sample.applymosaicruletorasters.components.MosaicRuleType
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -68,7 +68,7 @@ fun ApplyMosaicRuleToRastersScreen(sampleName: String) {
                         mapViewProxy = mapViewModel.mapViewProxy
                     )
                     if (isLoading) {
-                        LoadingDialog(loadingMessage = "Loading...")
+                        ProgressDialog(message = "Loading...")
                     }
                 }
                 MosaicRuleOptionsBar(

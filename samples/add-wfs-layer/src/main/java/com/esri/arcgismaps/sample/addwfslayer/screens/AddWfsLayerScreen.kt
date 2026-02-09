@@ -29,7 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addwfslayer.components.AddWfsLayerViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -61,7 +61,7 @@ fun AddWfsLayerScreen(sampleName: String) {
                     )
                 }
                 if (isPopulating) {
-                    LoadingDialog(loadingMessage = "Populating features...")
+                    ProgressDialog(message = "Populating features...")
                 }
                 mapViewModel.messageDialogVM.apply {
                     if (dialogStatus) {

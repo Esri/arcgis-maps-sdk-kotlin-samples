@@ -59,7 +59,7 @@ import com.arcgismaps.toolkit.popup.Popup
 import com.esri.arcgismaps.sample.filterbuildingscenelayer.components.FilterBuildingSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.delay
@@ -100,12 +100,12 @@ var isBottomSheetVisible by remember { mutableStateOf(false) }
         content = {
             // display a progress dialog to indicate the map loading status
             if (showLoadingDialog) {
-                LoadingDialog(loadingMessage = "Loading layer...")
+                ProgressDialog(message = "Loading layer...")
             }
 
             // display a progress dialog when an identify is take longer than expected
             if (showIdentifyProgress) {
-                LoadingDialog("Identifying...")
+                ProgressDialog("Identifying...")
             }
 
             Column(

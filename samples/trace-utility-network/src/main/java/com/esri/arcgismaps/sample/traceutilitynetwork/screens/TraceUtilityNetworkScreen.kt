@@ -73,7 +73,7 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.utilitynetworks.UtilityTerminal
 import com.arcgismaps.utilitynetworks.UtilityTraceType
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -390,7 +390,7 @@ fun SegmentedButtonTracePointTypes(
 
 @Composable
 fun RunningTraceDialog(traceName: String) {
-    LoadingDialog(loadingMessage = "Running $traceName trace...")
+    ProgressDialog(message = "Running $traceName trace...")
 }
 
 @Preview(showBackground = true)

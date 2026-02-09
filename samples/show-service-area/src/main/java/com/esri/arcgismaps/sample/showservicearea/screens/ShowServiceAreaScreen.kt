@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.ProgressDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
@@ -124,7 +124,7 @@ fun ShowServiceAreaScreen(sampleName: String) {
 
             // Show a loading dialog while the service area is being solved
             if (isSolvingServiceArea) {
-                LoadingDialog(loadingMessage = "Solving service area...")
+                ProgressDialog(message = "Solving service area...")
             }
 
             // Show error dialog if needed
