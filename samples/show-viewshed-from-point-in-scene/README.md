@@ -1,12 +1,12 @@
-# Show viewshed from point in scene
+# Show exploratory viewshed from point in scene
 
-Perform a viewshed analysis from a defined vantage point.
+Perform a exploratory viewshed analysis from a defined vantage point.
 
 ![Image of viewshed location](show-viewshed-from-point-in-scene.png)
 
 ## Use case
 
-A 3D viewshed analysis is a type of visual analysis you can perform on a scene. The viewshed shows what can be seen from a given location. The output is an overlay with two different colors - one representing the visible areas (green) and the other representing the obstructed areas (red). Viewshed analysis is a form of "exploratory analysis", which means the results are calculated on the current scale of the data, and the results are generated very quickly. If more "conclusive" results are required, consider using a `GeoprocessingTask` to perform a viewshed instead.
+A 3D exploratory viewshed analysis is a type of visual analysis you can perform on a scene. The viewshed shows what can be seen from a given location. The output is an overlay with two different colors - one representing the visible areas (green) and the other representing the obstructed areas (red). Viewshed analysis is a form of "exploratory analysis", which means the results are calculated on the current scale of the data, and the results are generated very quickly. If more "conclusive" results are required, consider using a `GeoprocessingTask` to perform a viewshed instead.
 
 ## How to use the sample
 
@@ -14,7 +14,7 @@ Use the sliders to change the properties (heading, pitch, etc.), of the viewshed
 
 ## How it works
 
-1. Create a `LocationViewshed` passing in the observer location, heading, pitch, horizontal/vertical angles, and min/max distances.
+1. Create a `ExploratoryLocationViewshed` passing in the observer location, heading, pitch, horizontal/vertical angles, and min/max distances.
 2. Set the property values on the viewshed instance for location, direction, range, and visibility properties.
 
 ## Relevant API
@@ -22,8 +22,8 @@ Use the sliders to change the properties (heading, pitch, etc.), of the viewshed
 * AnalysisOverlay
 * ArcGISSceneLayer
 * ArcGISTiledElevationSource
-* LocationViewshed
-* Viewshed
+* ExploratoryLocationViewshed
+* ExploratoryViewshed
 
 ## About the data
 

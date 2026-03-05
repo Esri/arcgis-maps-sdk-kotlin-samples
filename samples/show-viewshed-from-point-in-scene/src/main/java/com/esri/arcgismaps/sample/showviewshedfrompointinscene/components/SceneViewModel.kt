@@ -21,7 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import com.arcgismaps.analysis.LocationViewshed
+import com.arcgismaps.analysis.interactive.ExploratoryLocationViewshed
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
@@ -37,7 +37,7 @@ import com.esri.arcgismaps.sample.showviewshedfrompointinscene.R
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
 
     // initialize location viewshed parameters
-    private var viewShed: LocationViewshed
+    private var viewShed: ExploratoryLocationViewshed
     private val initHeading = 82.0
     private val initPitch = 60.0
     private val initHorizontalAngle = 75.0
@@ -82,7 +82,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
 
         val initLocation = Point(-4.50, 48.4, 1000.0)
         // create viewshed from the initial location
-        viewShed = LocationViewshed(
+        viewShed = ExploratoryLocationViewshed(
             location = initLocation,
             heading = initHeading,
             pitch = initPitch,

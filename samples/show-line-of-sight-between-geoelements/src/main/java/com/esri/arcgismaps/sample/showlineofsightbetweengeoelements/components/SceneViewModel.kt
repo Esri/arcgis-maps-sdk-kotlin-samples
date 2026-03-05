@@ -24,8 +24,8 @@ import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
-import com.arcgismaps.analysis.GeoElementLineOfSight
-import com.arcgismaps.analysis.LineOfSightTargetVisibility
+import com.arcgismaps.analysis.interactive.ExploratoryGeoElementLineOfSight
+import com.arcgismaps.analysis.interactive.ExploratoryLineOfSightTargetVisibility
 import com.arcgismaps.geometry.AngularUnit
 import com.arcgismaps.geometry.GeodeticCurveType
 import com.arcgismaps.geometry.GeometryEngine
@@ -178,7 +178,7 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
 
 
     // Create a line of sight between the two graphics and add it to the analysis overlay
-    private val lineOfSight = GeoElementLineOfSight(
+    private val lineOfSight = ExploratoryGeoElementLineOfSight(
         observerGeoElement = observerGraphic,
         targetGeoElement = taxiGraphic
     ).apply {
@@ -188,15 +188,15 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
             // Update target visibility status and select (highlight) the taxi when the line of sight target visibility changes to visible
             targetVisibility.collect { targetVisibility ->
                 when(targetVisibility) {
-                    is LineOfSightTargetVisibility.Visible -> {
+                    is ExploratoryLineOfSightTargetVisibility.Visible -> {
                         updateTargetVisibilityString("Visible")
                         taxiGraphic.isSelected = true
                     }
-                    is LineOfSightTargetVisibility.Obstructed -> {
+                    is ExploratoryLineOfSightTargetVisibility.Obstructed -> {
                         updateTargetVisibilityString("Obstructed")
                         taxiGraphic.isSelected = false
                     }
-                    is LineOfSightTargetVisibility.Unknown -> {
+                    is ExploratoryLineOfSightTargetVisibility.Unknown -> {
                         updateTargetVisibilityString("Unknown")
                         taxiGraphic.isSelected = false
                     }

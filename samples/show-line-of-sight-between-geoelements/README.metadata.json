@@ -13,15 +13,15 @@
         "visibility",
         "visibility analysis",
         "AnalysisOverlay",
-        "GeoElementLineOfSight",
-        "LineOfSight.TargetVisibility"
+        "ExploratoryGeoElementLineOfSight",
+        "ExploratoryLineOfSightTargetVisibility"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
         "AnalysisOverlay",
-        "GeoElementLineOfSight",
-        "LineOfSight.TargetVisibility"
+        "ExploratoryLineOfSightTargetVisibility",
+        "ExploratoryLineOfSightTargetVisibility"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/components/SceneViewModel.kt",

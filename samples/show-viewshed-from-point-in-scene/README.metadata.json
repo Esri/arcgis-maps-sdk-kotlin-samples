@@ -25,8 +25,8 @@
         "AnalysisOverlay",
         "ArcGISSceneLayer",
         "ArcGISTiledElevationSource",
-        "LocationViewshed",
-        "Viewshed"
+        "ExploratoryLocationViewshed",
+        "ExploratoryViewshed"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/components/SceneViewModel.kt",
