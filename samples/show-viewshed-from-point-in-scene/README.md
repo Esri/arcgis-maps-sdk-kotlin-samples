@@ -1,6 +1,6 @@
 # Show exploratory viewshed from point in scene
 
-Perform a exploratory viewshed analysis from a defined vantage point.
+Perform an exploratory viewshed analysis from a defined vantage point.
 
 ![Image of viewshed location](show-viewshed-from-point-in-scene.png)
 
