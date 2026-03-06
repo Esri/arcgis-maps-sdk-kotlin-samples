@@ -16,8 +16,8 @@
         "AnalysisOverlay",
         "ArcGISSceneLayer",
         "ArcGISTiledElevationSource",
-        "LocationViewshed",
-        "Viewshed"
+        "ExploratoryLocationViewshed",
+        "ExploratoryViewshed"
     ],
     "language": "kotlin",
     "redirect_from": "",
