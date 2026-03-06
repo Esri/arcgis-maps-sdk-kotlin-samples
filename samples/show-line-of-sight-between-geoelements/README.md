@@ -1,6 +1,6 @@
 # Show exploratory line of sight between geoelements
 
-Show a exploratory line of sight between two moving objects.
+Show an exploratory line of sight between two moving objects.
 
 ![Image of Show Line of Sight Between Geoelements](show-line-of-sight-between-geoelements.png)
 
