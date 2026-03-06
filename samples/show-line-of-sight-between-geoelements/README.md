@@ -1,4 +1,4 @@
-# Show exploratory line of sight between geoelements
+# Show line of sight between geoelements
 
 Show an exploratory line of sight between two moving objects.
 

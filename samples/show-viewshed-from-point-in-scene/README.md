@@ -1,4 +1,4 @@
-# Show exploratory viewshed from point in scene
+# Show viewshed from point in scene
 
 Perform an exploratory viewshed analysis from a defined vantage point.
 
