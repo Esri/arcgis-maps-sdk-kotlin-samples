@@ -35,22 +35,3 @@ This application provides two different perspectives of the `arcGISImagery` base
 ## Tags
 
 3D, automatic refresh, event, event handler, events, extent, interaction, interactions, pan, zoom
-
-
-- Use ViewModel to host all ArcGIS SDK objects (ArcGISMap, ArcGISScene, proxies). Do not create or load SDK resources directly in Composables.
-- Use mutableStateOf and/or StateFlow to expose UI-driven state changes from the ViewModel to composables.
-- When calling setViewpoint on the proxies, prefer the non-blocking proxy methods that schedule the viewpoint change on the GeoView to keep Compose responsiveness.
-- Make sure to observe load status if you attach additional layers or data; handle errors with a dialog or a simple logging strategy.
-
-## Files (implementation)
-
-Typical implementation files for this sample are:
-- MatchViewpointOfGeoViewsViewModel.kt — creates ArcGISMap/ArcGISScene, proxies, and handles navigation/viewpoint synchronization.
-- MatchViewpointOfGeoViewsScreen.kt — Composable screen that shows MapView and SceneView and hooks callbacks to the ViewModel.
-
-(If you enabled sample generation flags, the ViewModel and Screen Kotlin files would be generated alongside this README.)
-
-## References
-
-- GeoView, MapView, SceneView, Viewpoint APIs in the ArcGIS Maps SDK for Kotlin
-- geoviewcompose MapViewProxy and SceneViewProxy helpers
