@@ -1,6 +1,6 @@
 {
     "category": "Analysis",
-    "description": "Show a line of sight between two moving objects.",
+    "description": "Show an exploratory line of sight between two moving objects.",
     "formal_name": "ShowLineOfSightBetweenGeoelements",
     "ignore": false,
     "images": [
@@ -13,15 +13,15 @@
         "visibility",
         "visibility analysis",
         "AnalysisOverlay",
-        "GeoElementLineOfSight",
-        "LineOfSight.TargetVisibility"
+        "ExploratoryGeoElementLineOfSight",
+        "ExploratoryLineOfSightTargetVisibility"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
         "AnalysisOverlay",
-        "GeoElementLineOfSight",
-        "LineOfSight.TargetVisibility"
+        "ExploratoryGeoElementLineOfSight",
+        "ExploratoryLineOfSightTargetVisibility"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightbetweengeoelements/components/SceneViewModel.kt",

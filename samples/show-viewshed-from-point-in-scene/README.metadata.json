@@ -1,6 +1,6 @@
 {
     "category": "Analysis",
-    "description": "Perform a viewshed analysis from a defined vantage point.",
+    "description": "Perform an exploratory viewshed analysis from a defined vantage point.",
     "formal_name": "ShowViewshedFromPointInScene",
     "ignore": false,
     "images": [
@@ -16,8 +16,8 @@
         "AnalysisOverlay",
         "ArcGISSceneLayer",
         "ArcGISTiledElevationSource",
-        "LocationViewshed",
-        "Viewshed"
+        "ExploratoryLocationViewshed",
+        "ExploratoryViewshed"
     ],
     "language": "kotlin",
     "redirect_from": "",
@@ -25,15 +25,15 @@
         "AnalysisOverlay",
         "ArcGISSceneLayer",
         "ArcGISTiledElevationSource",
-        "LocationViewshed",
-        "Viewshed"
+        "ExploratoryLocationViewshed",
+        "ExploratoryViewshed"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/components/SceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/ViewshedSlider.kt",
         "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/MainScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/ViewshedOptionsScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/ViewshedSlider.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointinscene/screens/ViewshedOptionsScreen.kt"
     ],
     "title": "Show viewshed from point in scene"
 }

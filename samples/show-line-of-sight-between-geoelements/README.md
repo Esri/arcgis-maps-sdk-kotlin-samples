@@ -1,6 +1,6 @@
 # Show line of sight between geoelements
 
-Show a line of sight between two moving objects.
+Show an exploratory line of sight between two moving objects.
 
 ![Image of Show Line of Sight Between Geoelements](show-line-of-sight-between-geoelements.png)
 
@@ -17,14 +17,14 @@ A line of sight will display between a point on the Empire State Building (obser
 ## How it works
 
 1. Instantiate an `AnalysisOverlay` and add it to the `SceneView`'s analysis overlays collection.
-2. Instantiate a `GeoElementLineOfSight`, passing in observer and target `GeoElement`s (features or graphics). Add the line of sight to the analysis overlay's analysis collection.
-3. To get the target visibility when it changes, react to the target visibility changing on the `GeoElementLineOfSight` instance.
+2. Instantiate an `ExploratoryGeoElementLineOfSight`, passing in observer and target `GeoElement`s (features or graphics). Add the line of sight to the analysis overlay's analysis collection.
+3. To get the target visibility when it changes, react to the target visibility changing on the `ExploratoryGeoElementLineOfSight` instance.
 
 ## Relevant API
 
 * AnalysisOverlay
-* GeoElementLineOfSight
-* LineOfSight.TargetVisibility
+* ExploratoryGeoElementLineOfSight
+* ExploratoryLineOfSightTargetVisibility
 
 ## Additional information
 
