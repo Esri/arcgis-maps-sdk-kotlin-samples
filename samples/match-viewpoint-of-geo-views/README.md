@@ -17,8 +17,8 @@ Interact with the map view or scene view by zooming or panning. The other map vi
 1. The ViewModel creates two containers: an ArcGISMap and an ArcGISScene. Both are initialized with the same initial Viewpoint (center coordinate and scale).
 2. The ViewModel also exposes a MapViewProxy and a SceneViewProxy. These proxies provide convenience functions to set viewpoints on the map/scene from the ViewModel without needing direct MapView/SceneView references.
 3. Each GeoView composable registers two callbacks:
-   - onNavigationChanged: notifies when the user is actively navigating (panning/zooming/rotating).
-   - onViewpointChangedForCenterAndScale: notifies about center-and-scale viewpoint updates.
+   * onNavigationChanged: notifies when the user is actively navigating (panning/zooming/rotating).
+   * onViewpointChangedForCenterAndScale: notifies about center-and-scale viewpoint updates.
 4. When the MapView viewpoint changes and the SceneView is not currently navigating, the ViewModel sets the SceneViewProxy to the new viewpoint. Symmetrically, when the SceneView viewpoint changes and the MapView is not navigating, the ViewModel sets the MapViewProxy to that viewpoint.
 
 ## Relevant API
