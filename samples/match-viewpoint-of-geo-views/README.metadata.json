@@ -1,16 +1,12 @@
 {
     "category": "Scenes",
     "description": "This sample demonstrates how to keep the viewpoints of two GeoViews (a 2D MapView and a 3D SceneView) synchronized with each other.",
-    "formal_name": "Matchviewpointofgeoviews",
+    "formal_name": "MatchViewpointOfGeoViews",
     "ignore": false,
     "images": [
         "match-viewpoint-of-geo-views.png"
     ],
     "keywords": [
-        "- Make sure to observe load status if you attach additional layers or data; handle errors with a dialog or a simple logging strategy.",
-        "- Use ViewModel to host all ArcGIS SDK objects (ArcGISMap",
-        "- Use mutableStateOf and/or StateFlow to expose UI-driven state changes from the ViewModel to composables.",
-        "- When calling setViewpoint on the proxies",
         "3D",
         "ArcGISScene",
         "automatic refresh",
@@ -21,8 +17,6 @@
         "interaction",
         "interactions",
         "pan",
-        "prefer the non-blocking proxy methods that schedule the viewpoint change on the GeoView to keep Compose responsiveness.",
-        "proxies). Do not create or load SDK resources directly in Composables.",
         "zoom",
         "GeoView",
         "MapView",
