@@ -33,4 +33,3 @@ Use the 'Zoom In'/'Zoom Out' button to trigger the zoom animation on both static
 ## Tags
 
 dynamic, feature layer, features, rendering, static
-
