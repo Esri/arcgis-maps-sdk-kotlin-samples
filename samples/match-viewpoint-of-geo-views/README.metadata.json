@@ -35,5 +35,5 @@
         "src/main/java/com/esri/arcgismaps/sample/matchviewpointofgeoviews/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/matchviewpointofgeoviews/screens/MatchViewpointOfGeoViewsScreen.kt"
     ],
-    "title": "MatchViewpointOfGeoViews"
+    "title": "Match viewpoint of geo views"
 }

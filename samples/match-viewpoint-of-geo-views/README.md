@@ -1,4 +1,4 @@
-# MatchViewpointOfGeoViews
+# Match viewpoint of geo views
 
 This sample demonstrates how to keep the viewpoints of two GeoViews (a 2D MapView and a 3D SceneView) synchronized with each other.
 
@@ -10,7 +10,7 @@ You might need to synchronize `GeoView` viewpoints if you had two map views in o
 
 ## How to use the sample
 
-Interact with the map view or scene view by zooming or panning. The other map view or scene view will automatically focus on the same viewpoint.
+Interact with the MapView or SceneView by zooming or panning. The other MapView or SceneView will automatically focus on the same viewpoint.
 
 ## How it works
 
@@ -30,7 +30,7 @@ Interact with the map view or scene view by zooming or panning. The other map vi
 
 ## About the data
 
-This application provides two different perspectives of the `arcGISImagery` basemap, A 2D `MapView` as well as a 3D `SceneView`, displayed on top of one another.
+This application provides two different perspectives of the `arcGISImagery` basemap, A 2D `MapView` as well as a 3D `SceneView`, displayed side by side.
 
 ## Tags
 
