@@ -94,6 +94,7 @@ arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgi
 arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-featureforms" }
 arcgis-maps-kotlin-toolkit-popup = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-popup" }
 arcgis-maps-kotlin-toolkit-scalebar = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-scalebar" }
+arcgis-maps-kotlin-toolkit-basemapgallery = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-basemapgallery" }
 
 ### Third party libraries
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
