@@ -1,0 +1,35 @@
+{
+    "category": "Visualization",
+    "description": "Render features in a scene statically or dynamically by setting the feature layer rendering mode.",
+    "formal_name": "SetFeatureLayerRenderingModeOnScene",
+    "ignore": false,
+    "images": [
+        "set-feature-layer-rendering-mode-on-scene.png"
+    ],
+    "keywords": [
+        "3D",
+        "dynamic",
+        "feature layer",
+        "features",
+        "rendering",
+        "static",
+        "FeatureLayer",
+        "FeatureRenderingMode",
+        "Scene",
+        "SceneView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "FeatureRenderingMode",
+        "Scene",
+        "SceneView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturelayerrenderingmodeonscene/components/SetFeatureLayerRenderingModeOnSceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturelayerrenderingmodeonscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturelayerrenderingmodeonscene/screens/SetFeatureLayerRenderingModeOnSceneScreen.kt"
+    ],
+    "title": "Set feature layer rendering mode on scene"
+}
