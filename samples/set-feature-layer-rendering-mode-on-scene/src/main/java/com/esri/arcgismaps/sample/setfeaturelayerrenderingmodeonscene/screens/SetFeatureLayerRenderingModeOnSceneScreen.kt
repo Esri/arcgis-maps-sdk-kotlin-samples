@@ -17,10 +17,8 @@
 package com.esri.arcgismaps.sample.setfeaturelayerrenderingmodeonscene.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.setfeaturelayerrenderingmodeonscene.components.SetFeatureLayerRenderingModeOnSceneViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -54,7 +51,8 @@ fun SetFeatureLayerRenderingModeOnSceneScreen(sampleName: String) {
         content = { paddingValues ->
             Column(modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)) {
+                .padding(paddingValues),
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
                 // Static SceneView - renders its layers using static rendering
                 Box(modifier = Modifier
@@ -109,23 +107,8 @@ fun SetFeatureLayerRenderingModeOnSceneScreen(sampleName: String) {
                     }
                 }
 
-                // Small row showing state information and a manual zoom button
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val dynamicStatus = viewModel.dynamicScene.loadStatus.collectAsStateWithLifecycle().value
-                    val staticStatus = viewModel.staticScene.loadStatus.collectAsStateWithLifecycle().value
-                    val statusText = "Dynamic: $dynamicStatus | Static: $staticStatus"
-
-                    Text(text = statusText)
-
-                    Button(onClick = { viewModel.toggleZoom() }, enabled = true) {
-                        Text(if (viewModel.isZoomedIn) "Zoom Out" else "Zoom In")
-                    }
+                Button(onClick = { viewModel.toggleZoom() }, enabled = true) {
+                    Text(if (viewModel.isZoomedIn) "Zoom Out" else "Zoom In")
                 }
 
                 // Display message dialog if an error occurred in the ViewModel

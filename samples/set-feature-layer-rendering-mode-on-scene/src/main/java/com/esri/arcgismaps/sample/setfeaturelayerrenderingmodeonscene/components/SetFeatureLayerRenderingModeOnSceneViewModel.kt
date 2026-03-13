@@ -33,6 +33,7 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * ViewModel for the SetFeatureLayerRenderingModeOnScene sample.
@@ -128,37 +129,38 @@ class SetFeatureLayerRenderingModeOnSceneViewModel(application: Application) : A
      * Toggle between zoomed-in and zoomed-out cameras for both scenes.
      */
     fun toggleZoom() {
-        viewModelScope.launch {
-            val zoomedIn = isZoomedIn
-            val staticPoint: Point
-            val dynamicPoint: Point
-            val distance: Double
-            val heading: Double
-            val pitch: Double
 
-            if (!zoomedIn) {
-                // Zoom in
-                staticPoint = Point(-118.45, 34.395, SpatialReference.wgs84())
-                dynamicPoint = Point(-118.45, 34.395, SpatialReference.wgs84())
-                distance = 2500.0
-                heading = 90.0
-                pitch = 75.0
-            } else {
-                // Zoom out
-                staticPoint = Point(-118.37, 34.46, SpatialReference.wgs84())
-                dynamicPoint = Point(-118.37, 34.46, SpatialReference.wgs84())
-                distance = 30000.0
-                heading = 0.0
-                pitch = 0.0
-            }
+        val zoomedIn = isZoomedIn
+        val staticPoint: Point
+        val dynamicPoint: Point
+        val distance: Double
+        val heading: Double
+        val pitch: Double
 
-            val staticCamera = Camera(staticPoint, distance, heading, pitch, 0.0)
-            val dynamicCamera = Camera(dynamicPoint, distance, heading, pitch, 0.0)
-
-            staticSceneViewProxy.setViewpointCamera(staticCamera)
-            dynamicSceneViewProxy.setViewpointCamera(dynamicCamera)
-
-            isZoomedIn = !isZoomedIn
+        if (!zoomedIn) {
+            // Zoom in
+            staticPoint = Point(-118.45, 34.395, SpatialReference.wgs84())
+            dynamicPoint = Point(-118.45, 34.395, SpatialReference.wgs84())
+            distance = 2500.0
+            heading = 90.0
+            pitch = 75.0
+        } else {
+            // Zoom out
+            staticPoint = Point(-118.37, 34.46, SpatialReference.wgs84())
+            dynamicPoint = Point(-118.37, 34.46, SpatialReference.wgs84())
+            distance = 30000.0
+            heading = 0.0
+            pitch = 0.0
         }
+
+        val staticCamera = Camera(staticPoint, distance, heading, pitch, 0.0)
+        val dynamicCamera = Camera(dynamicPoint, distance, heading, pitch, 0.0)
+        viewModelScope.launch {
+            staticSceneViewProxy.setViewpointCameraAnimated(staticCamera,5.seconds)
+        }
+        viewModelScope.launch {
+            dynamicSceneViewProxy.setViewpointCameraAnimated(dynamicCamera, 5.seconds)
+        }
+        isZoomedIn = !isZoomedIn
     }
 }
