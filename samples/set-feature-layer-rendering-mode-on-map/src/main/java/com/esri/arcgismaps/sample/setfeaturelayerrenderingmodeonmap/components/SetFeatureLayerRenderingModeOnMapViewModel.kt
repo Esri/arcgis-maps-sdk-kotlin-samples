@@ -47,15 +47,11 @@ class SetFeatureLayerRenderingModeOnMapViewModel(app: Application) : AndroidView
 
     // Map and proxy for the dynamic-rendered map
     val mapViewProxyDynamic = MapViewProxy()
-    val arcGISMapDynamic: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-        // initial viewpoint is set below in init
-    }
+    val arcGISMapDynamic: ArcGISMap = ArcGISMap()
 
     // Map and proxy for the static-rendered map
     val mapViewProxyStatic = MapViewProxy()
-    val arcGISMapStatic: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-        // initial viewpoint is set below in init
-    }
+    val arcGISMapStatic: ArcGISMap = ArcGISMap()
 
     private val _isZoomedIn = MutableStateFlow(true)
     val isZoomedIn = _isZoomedIn.asStateFlow()
@@ -64,14 +60,16 @@ class SetFeatureLayerRenderingModeOnMapViewModel(app: Application) : AndroidView
     private val zoomedInViewpoint by lazy {
         Viewpoint(
             center = Point(x = -118.45, y = 34.395, spatialReference = SpatialReference.wgs84()),
-            scale = 50000.0
+            scale = 50000.0,
+            rotation = 90.0
         )
     }
 
     private val zoomedOutViewpoint by lazy {
         Viewpoint(
             center = Point(x = -118.37, y = 34.46, spatialReference = SpatialReference.wgs84()),
-            scale = 650000.0
+            scale = 650000.0,
+            rotation = 0.0
         )
     }
 
@@ -144,10 +142,10 @@ class SetFeatureLayerRenderingModeOnMapViewModel(app: Application) : AndroidView
         val targetViewpoint = if (_isZoomedIn.value) zoomedOutViewpoint else zoomedInViewpoint
 
         viewModelScope.launch {
-            mapViewProxyDynamic.setViewpointAnimated(targetViewpoint)
+            mapViewProxyDynamic.setViewpointAnimated(targetViewpoint, 5.seconds)
         }
         viewModelScope.launch {
-            mapViewProxyStatic.setViewpointAnimated(targetViewpoint)
+            mapViewProxyStatic.setViewpointAnimated(targetViewpoint, 5.seconds)
         }
         _isZoomedIn.value = !_isZoomedIn.value
     }

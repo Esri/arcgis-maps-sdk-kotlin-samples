@@ -54,9 +54,12 @@ fun SetFeatureLayerRenderingModeOnMapScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) }
     ) { paddingValues ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
             // Dynamic rendering MapView
             Box(modifier = Modifier
@@ -110,24 +113,10 @@ fun SetFeatureLayerRenderingModeOnMapScreen(sampleName: String) {
                 }
             }
 
-            // Small row showing state information and a manual zoom button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val dynamicStatus = viewModel.arcGISMapDynamic.loadStatus.collectAsStateWithLifecycle().value
-                val staticStatus = viewModel.arcGISMapStatic.loadStatus.collectAsStateWithLifecycle().value
-                val statusText = "Dynamic: $dynamicStatus | Static: $staticStatus"
-
-                Text(text = statusText)
-
-                Button(onClick = { viewModel.onZoomButtonClicked() }, enabled = true) {
-                    Text(if (isZoomedIn) "Zoom Out" else "Zoom In")
-                }
+            Button(modifier = Modifier.padding(12.dp), onClick = viewModel::onZoomButtonClicked) {
+                Text(if (isZoomedIn) "Zoom Out" else "Zoom In")
             }
+
 
             // Display any message dialogs raised by the ViewModel
             viewModel.messageDialogVM.apply {
