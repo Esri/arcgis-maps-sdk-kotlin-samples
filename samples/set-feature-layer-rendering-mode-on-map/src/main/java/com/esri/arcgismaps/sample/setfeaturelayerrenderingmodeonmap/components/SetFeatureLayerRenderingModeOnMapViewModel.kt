@@ -60,6 +60,21 @@ class SetFeatureLayerRenderingModeOnMapViewModel(app: Application) : AndroidView
     private val _isZoomedIn = MutableStateFlow(true)
     val isZoomedIn = _isZoomedIn.asStateFlow()
 
+    // Lazy properties for zoomed in and zoomed out viewpoints
+    private val zoomedInViewpoint by lazy {
+        Viewpoint(
+            center = Point(x = -118.45, y = 34.395, spatialReference = SpatialReference.wgs84()),
+            scale = 50000.0
+        )
+    }
+
+    private val zoomedOutViewpoint by lazy {
+        Viewpoint(
+            center = Point(x = -118.37, y = 34.46, spatialReference = SpatialReference.wgs84()),
+            scale = 650000.0
+        )
+    }
+
     init {
         // Define service URLs for point, polyline and polygon feature services
         val pointServiceUrl = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Energy/Geology/FeatureServer/0"
@@ -126,29 +141,14 @@ class SetFeatureLayerRenderingModeOnMapViewModel(app: Application) : AndroidView
      * target viewpoint (zoomed in or zoomed out) using their respective MapViewProxy.
      */
     fun onZoomButtonClicked() {
+        val targetViewpoint = if (_isZoomedIn.value) zoomedOutViewpoint else zoomedInViewpoint
+
         viewModelScope.launch {
-            val targetViewpoint = if (_isZoomedIn.value) zoomedOutViewpoint() else zoomedInViewpoint()
-
-            launch {
-                mapViewProxyDynamic.setViewpointAnimated(targetViewpoint)
-                mapViewProxyStatic.setViewpointAnimated(targetViewpoint)
-                // Toggle zoom state after both animations complete
-                _isZoomedIn.value = !_isZoomedIn.value
-            }
+            mapViewProxyDynamic.setViewpointAnimated(targetViewpoint)
         }
-    }
-
-    private fun zoomedInViewpoint(): Viewpoint {
-        return Viewpoint(
-            center = Point(x = -118.45, y = 34.395, spatialReference = SpatialReference.wgs84()),
-            scale = 50000.0
-        )
-    }
-
-    private fun zoomedOutViewpoint(): Viewpoint {
-        return Viewpoint(
-            center = Point(x = -118.37, y = 34.46, spatialReference = SpatialReference.wgs84()),
-            scale = 650000.0
-        )
+        viewModelScope.launch {
+            mapViewProxyStatic.setViewpointAnimated(targetViewpoint)
+        }
+        _isZoomedIn.value = !_isZoomedIn.value
     }
 }
