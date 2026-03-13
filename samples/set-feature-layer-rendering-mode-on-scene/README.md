@@ -1,4 +1,5 @@
 # Set feature layer rendering mode on scene
+
 Render features in a scene statically or dynamically by setting the feature layer rendering mode.
 
 ![Screenshot of Set feature layer rendering mode on scene sample](set-feature-layer-rendering-mode-on-scene.png)

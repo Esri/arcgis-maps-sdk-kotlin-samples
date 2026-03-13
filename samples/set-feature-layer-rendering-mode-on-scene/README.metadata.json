@@ -14,7 +14,7 @@
         "rendering",
         "static",
         "FeatureLayer",
-        "FeatureRenderingMode",
+        "FeatureLayer.RenderingMode",
         "Scene",
         "SceneView"
     ],
@@ -22,7 +22,7 @@
     "redirect_from": "",
     "relevant_apis": [
         "FeatureLayer",
-        "FeatureRenderingMode",
+        "FeatureLayer.RenderingMode",
         "Scene",
         "SceneView"
     ],
