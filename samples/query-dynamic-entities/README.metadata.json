@@ -6,14 +6,15 @@
     "images": [
         "query-dynamic-entities.png"
     ],
-    "keywords": [ ],
+    "keywords": [],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/components/QueryDynamicEntitiesViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/screens/QueryDynamicEntitiesScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/screens/QueryDynamicEntitiesScreen.kt"
     ],
     "title": "Query dynamic entities"
 }
