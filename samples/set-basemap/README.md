@@ -19,18 +19,18 @@ Open the sample and browse the basemap list shown in the bottom sheet. Tap a bas
 3. Load `BasemapStylesService` to retrieve the available basemap styles. 
 4. For each `BasemapStyleInfo` returned, create a `BasemapGalleryItem` and display them in the `BasemapGallery` Toolkit composable.
 5. When BasemapGalleryItem is tapped, update the current map's basemap using:
-   - `arcGISMap.setBasemap(Basemap(basemapStyleInfo.style))`
+    * `arcGISMap.setBasemap(Basemap(basemapStyleInfo.style))`
 
 ## Relevant API
 
-- ArcGISMap
-- Basemap
-- BasemapStyle
-- BasemapStyleInfo
-- BasemapStylesService
-- BasemapGallery
-- BasemapGalleryItem
-- MapView
+* ArcGISMap
+* Basemap
+* BasemapGallery
+* BasemapGalleryItem
+* BasemapStyle
+* BasemapStyleInfo
+* BasemapStylesService
+* MapView
 
 ## Additional information
 
