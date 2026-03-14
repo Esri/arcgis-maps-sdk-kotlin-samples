@@ -20,6 +20,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
+import com.arcgismaps.arcgisservices.LabelingPlacement
+import com.arcgismaps.data.Field
+import com.arcgismaps.data.FieldType
+import com.arcgismaps.data.SpatialRelationship
 import com.arcgismaps.geometry.GeodeticCurveType
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.GeometryEngine
@@ -43,10 +47,6 @@ import com.arcgismaps.realtime.CustomDynamicEntityDataSource
 import com.arcgismaps.realtime.DynamicEntity
 import com.arcgismaps.realtime.DynamicEntityDataSourceInfo
 import com.arcgismaps.realtime.DynamicEntityQueryParameters
-import com.arcgismaps.arcgisservices.LabelingPlacement
-import com.arcgismaps.data.Field
-import com.arcgismaps.data.FieldType
-import com.arcgismaps.data.SpatialRelationship
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -63,7 +63,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Math.toRadians
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -74,11 +73,11 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
         initialViewpoint = Viewpoint(center = phoenixAirport, scale = 1_266_500.0)
     }
 
-    // Graphics overlay to display the 15-mile airport buffer when querying by geometry
+    // Graphics overlay to display the 15-mile buffer around the airport
     val graphicsOverlay = GraphicsOverlay()
     private val bufferGraphic = Graphic()
 
-    // Dynamic entity data source and layer
+    // Simulated plane feed and dynamic entity layer
     private val planeFeedProvider = PlaneFeedProvider()
     private val dynamicEntityDataSource = CustomDynamicEntityDataSource(planeFeedProvider)
     private val dynamicEntityLayer = DynamicEntityLayer(dynamicEntityDataSource).apply {
@@ -88,7 +87,7 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
             maximumObservations = 20
         }
 
-        // Label flight numbers above entities
+        // Display flight numbers above entities
         val labelDefinition = LabelDefinition(
             labelExpression = SimpleLabelExpression("[flight_number]"),
             textSymbol = TextSymbol().apply {
@@ -103,7 +102,7 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
     // Message dialog for error handling
     val messageDialogVM = MessageDialogViewModel()
 
-    // Query UI state flows
+    // Query UI states
     private val _isQueryRunning = MutableStateFlow(false)
     val isQueryRunning = _isQueryRunning.asStateFlow()
 
@@ -114,20 +113,20 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
     val resultLabel = _resultLabel.asStateFlow()
 
     init {
-        // Add dynamic entity layer to the map
+        // Add layer to the map
         arcGISMap.operationalLayers.add(dynamicEntityLayer)
 
-        // Prepare the buffer graphic and add to overlay; hide by default
+        // Prepare buffer graphic; keep overlay hidden until used
         val redFill = SimpleFillSymbol(
             style = SimpleFillSymbolStyle.Solid,
-            color = Color.fromRgba(255, 0, 0, 64), // translucent red
+            color = Color.fromRgba(255, 0, 0, 64),
             outline = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1f)
         )
         bufferGraphic.symbol = redFill
         graphicsOverlay.graphics.add(bufferGraphic)
         graphicsOverlay.isVisible = false
 
-        // Connect the data source (starts streaming simulated plane updates)
+        // Connect the data source to start streaming observations
         viewModelScope.launch {
             dynamicEntityDataSource.connect().onFailure {
                 messageDialogVM.showMessageDialog(
@@ -138,11 +137,10 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
         }
     }
 
-    // Perform query: Flights within 15 miles of PHX
+    // Query: Flights within 15 miles of PHX
     fun queryFlightsWithinPhoenixBuffer() {
         viewModelScope.launch {
             _isQueryRunning.value = true
-            // Create and display the 15-mile geodetic buffer
             val buffer = createPhoenixAirportBuffer()
             bufferGraphic.geometry = buffer
             graphicsOverlay.isVisible = true
@@ -154,7 +152,6 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
 
             val queryResult = dynamicEntityDataSource.queryDynamicEntities(parameters)
             queryResult.onSuccess { result ->
-                // Update selection and UI result list
                 val entities = result.toList()
                 dynamicEntityLayer.clearSelection()
                 dynamicEntityLayer.selectDynamicEntities(entities)
@@ -170,12 +167,12 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
         }
     }
 
-    // Perform query: Flights arriving in PHX (attribute query)
+    // Query: Flights arriving in PHX (attribute query)
     fun queryFlightsArrivingInPHX() {
         viewModelScope.launch {
             _isQueryRunning.value = true
-            // Hide the geometry overlay for attribute-only query
             graphicsOverlay.isVisible = false
+
             val parameters = DynamicEntityQueryParameters().apply {
                 whereClause = "status = 'In flight' AND arrival_airport = 'PHX'"
             }
@@ -197,12 +194,12 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
         }
     }
 
-    // Perform query: Flights with a specific flight number (track ID)
+    // Query: Flights with a specific flight number (trackId)
     fun queryFlightsWithNumber(flightNumber: String) {
         viewModelScope.launch {
             _isQueryRunning.value = true
-            // Hide the geometry overlay for track ID-only query
             graphicsOverlay.isVisible = false
+
             val parameters = DynamicEntityQueryParameters().apply {
                 trackIds.add(flightNumber)
             }
@@ -224,15 +221,15 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
         }
     }
 
-    // Clear selection and hide the buffer overlay
+    // Reset selection and overlay
     fun resetDisplay() {
-        dynamicEntityLayer.clearSelection()
         _queryResultEntities.value = emptyList()
+        dynamicEntityLayer.clearSelection()
         graphicsOverlay.isVisible = false
         _resultLabel.value = ""
     }
 
-    // Create a 15-mile geodetic buffer around PHX airport
+    // Create a 15-mile geodetic buffer around PHX
     private fun createPhoenixAirportBuffer(): Geometry {
         return GeometryEngine.bufferGeodeticOrNull(
             geometry = phoenixAirport,
@@ -244,7 +241,7 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
     }
 
     companion object {
-        // Phoenix Sky Harbor Intl Airport (longitude, latitude) in WGS84
+        // Phoenix Sky Harbor Intl Airport (lon, lat) in WGS84
         private val phoenixAirport = Point(
             -112.0101,
             33.4352,
@@ -253,7 +250,7 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
     }
 }
 
-// A simple simulated plane feed provider that emits dynamic entity observations around Phoenix.
+// Simulated plane feed provider that emits observations near Phoenix
 private class PlaneFeedProvider : CustomDynamicEntityDataSource.EntityFeedProvider {
 
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -266,7 +263,7 @@ private class PlaneFeedProvider : CustomDynamicEntityDataSource.EntityFeedProvid
 
     private var feedJob: Job? = null
 
-    // Schema: matches the attributes used by the Swift sample
+    // Schema for attributes used in the sample
     private val schema: List<Field> by lazy {
         listOf(
             Field(FieldType.Text, "flight_number", "", 128),
@@ -296,15 +293,9 @@ private class PlaneFeedProvider : CustomDynamicEntityDataSource.EntityFeedProvid
     }
 
     private fun startEmitting() {
-        // Create a set of simulated flight tracks
-        val flights = buildList {
-            repeat(20) { index -> add("Flight_${300 + index}") }
-        }
-        val bearings = flights.associateWith { (0..359).random().toDouble() }.toMutableMap()
-        val speedsKts = flights.associateWith { (300..520).random().toDouble() }.toMutableMap()
-
+        val flights = buildList { repeat(20) { add("Flight_${300 + it}") } }
         val phoenix = Point(-112.0101, 33.4352, SpatialReference.wgs84())
-        val radiusDegrees = 0.18 // ~ 12-13 miles; movement will keep within ~15 miles
+        val radiusDegrees = 0.18 // ~12-13 miles radius
         var tick = 0
 
         feedJob = scope.launch(Dispatchers.IO) {
@@ -312,28 +303,26 @@ private class PlaneFeedProvider : CustomDynamicEntityDataSource.EntityFeedProvid
                 while (true) {
                     tick++
                     flights.forEachIndexed { idx, flightId ->
-                        // Update bearing slightly to simulate turning
-                        bearings[flightId] = ((bearings[flightId] ?: 0.0) + (idx % 5 - 2)) % 360.0
-                        val angle = (tick * 6 + idx * 18) % 360
-                        val angleRad = toRadians(angle.toDouble())
+                        val angleDeg = (tick * 6 + idx * 18) % 360
+                        val angleRad = Math.toRadians(angleDeg.toDouble())
                         val lon = phoenix.x + radiusDegrees * cos(angleRad)
                         val lat = phoenix.y + radiusDegrees * sin(angleRad)
                         val point = Point(lon, lat, SpatialReference.wgs84())
 
-                        val attributes = mutableMapOf<String, Any?>(
+                        val attributes = mapOf(
                             "flight_number" to flightId,
                             "aircraft" to listOf("A320", "B737", "B738", "E175", "A321")[idx % 5],
-                            "altitude_feet" to (14_000..36_000).random().toDouble(),
+                            "altitude_feet" to (14000..36000).random().toDouble(),
                             "arrival_airport" to "PHX",
-                            "heading" to (bearings[flightId] ?: 0.0),
-                            "speed" to (speedsKts[flightId] ?: 420.0),
+                            "heading" to (angleDeg.toDouble()),
+                            "speed" to (350..520).random().toDouble(),
                             "status" to "In flight"
                         )
 
                         _feed.tryEmit(
                             CustomDynamicEntityDataSource.FeedEvent.NewObservation(
-                                point,
-                                attributes
+                                geometry = point,
+                                attributes = attributes
                             )
                         )
                     }
