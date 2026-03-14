@@ -1,0 +1,19 @@
+{
+    "category": "Search and Query",
+    "description": "TODO",
+    "formal_name": "QueryDynamicEntities",
+    "ignore": false,
+    "images": [
+        "query-dynamic-entities.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/components/QueryDynamicEntitiesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/screens/QueryDynamicEntitiesScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/MainActivity.kt"
+    ],
+    "title": "Query dynamic entities"
+}
