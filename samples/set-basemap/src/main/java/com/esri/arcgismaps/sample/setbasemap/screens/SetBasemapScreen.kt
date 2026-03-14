@@ -16,82 +16,99 @@
 
 package com.esri.arcgismaps.sample.setbasemap.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.basemapgallery.BasemapGallery
 import com.arcgismaps.toolkit.basemapgallery.BasemapGalleryItem
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.setbasemap.components.SetBasemapViewModel
+import kotlinx.coroutines.launch
 
-/**
- * Main screen layout for the sample app.
- * A FloatingActionButton opens a BottomSheet with a Basemap Gallery. The sheet
- * is dismissed when the user interacts with the map.
- */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetBasemapScreen(sampleName: String) {
     val mapViewModel: SetBasemapViewModel = viewModel()
+    val maxSheetHeight = LocalWindowInfo.current.containerDpSize.height / 2
 
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    // Create a sheet state that starts expanded and allows dragging to collapse/expand
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
+    )
 
-    Scaffold(
+    val scope = rememberCoroutineScope()
+
+    BottomSheetScaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        floatingActionButton = {
-            if (!isBottomSheetVisible) {
-                FloatingActionButton(onClick = { isBottomSheetVisible = true }) {
-                    Icon(Icons.Filled.Map, contentDescription = "Show basemap gallery")
-                }
-            }
-        },
-        content = { padding ->
-            Box(modifier = Modifier.padding(padding)) {
-                MapView(
-                    modifier = Modifier.fillMaxSize(),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    onDown = { isBottomSheetVisible = false }
+        scaffoldState = scaffoldState,
+        sheetDragHandle = { BottomSheetDefaults.DragHandle() },
+        sheetContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = maxSheetHeight)
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Basemap Gallery",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Choose a basemap style to change the map's basemap.",
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                BottomSheet(
-                    isVisible = isBottomSheetVisible,
-                    sheetTitle = "Basemap Gallery",
-                    onDismissRequest = { isBottomSheetVisible = false }
-                ) {
-                    BasemapGallery(
-                        basemapGalleryItems = mapViewModel.basemapGalleryItems,
-                        onItemClick = { item: BasemapGalleryItem ->
-                            mapViewModel.onBasemapGalleryItemClick(item)
-                            isBottomSheetVisible = false
-                        }
-                    )
-                }
-            }
-
-            // Display a dialog if the sample encounters an error
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
+                BasemapGallery(
+                    basemapGalleryItems = mapViewModel.basemapGalleryItems,
+                    onItemClick = { item: BasemapGalleryItem ->
+                        mapViewModel.onBasemapGalleryItemClick(item)
+                    }
+                )
             }
         }
-    )
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            MapView(
+                modifier = Modifier.fillMaxSize(),
+                arcGISMap = mapViewModel.arcGISMap,
+                onDown = { scope.launch { scaffoldState.bottomSheetState.partialExpand() } }
+            )
+        }
+
+        // Display a dialog if the sample encounters an error
+        mapViewModel.messageDialogVM.apply {
+            if (dialogStatus) {
+                MessageDialog(
+                    title = messageTitle,
+                    description = messageDescription,
+                    onDismissRequest = ::dismissDialog
+                )
+            }
+        }
+    }
 }
