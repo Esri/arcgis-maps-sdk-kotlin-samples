@@ -16,7 +16,7 @@ Open the sample and browse the basemap list shown in the bottom sheet. Tap a bas
 
 1. Create a `Map` object with the `arcGISImagery` basemap style.
 2. Display the map using the MapView composable from the ArcGIS Maps SDK for Kotlin Toolkit.
-3. Load `BasemapStylesService` to retrieve the available basemap styles. 
+3. Load `BasemapStylesService` to retrieve the available basemap styles.
 4. For each `BasemapStyleInfo` returned, create a `BasemapGalleryItem` and display them in the `BasemapGallery` Toolkit composable.
 5. When BasemapGalleryItem is tapped, update the current map's basemap using:
     * `arcGISMap.setBasemap(Basemap(basemapStyleInfo.style))`
