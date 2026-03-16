@@ -98,31 +98,31 @@ class SetFeatureLayerRenderingModeOnSceneViewModel(application: Application) : A
      */
     private fun buildScenes() {
         // Create feature layers from the tables
-        val staticPointLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = POINT_LAYER_URL)).apply {
+        val staticPointLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = pointLayerUrl)).apply {
             renderingMode = FeatureRenderingMode.Static
         }
-        val staticPolylineLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = POLYLINE_LAYER_URL)).apply {
+        val staticPolylineLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = polylineLayerUrl)).apply {
             renderingMode = FeatureRenderingMode.Static
         }
-        val staticPolygonLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = POLYGON_LAYER_URL)).apply {
+        val staticPolygonLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = polygonLayerUrl)).apply {
             renderingMode = FeatureRenderingMode.Static
         }
 
-        val dynamicPointLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = POINT_LAYER_URL)).apply {
+        val dynamicPointLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = pointLayerUrl)).apply {
             // Set rendering mode to Dynamic for the dynamic scene layers
             renderingMode = FeatureRenderingMode.Dynamic
         }
-        val dynamicPolylineLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = POLYLINE_LAYER_URL)).apply {
+        val dynamicPolylineLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = polylineLayerUrl)).apply {
             renderingMode = FeatureRenderingMode.Dynamic
         }
-        val dynamicPolygonLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = POLYGON_LAYER_URL)).apply {
+        val dynamicPolygonLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(uri = polygonLayerUrl)).apply {
             renderingMode = FeatureRenderingMode.Dynamic
         }
 
         // Create scenes and add layers
         staticScene.operationalLayers.addAll(listOf(staticPolygonLayer, staticPolylineLayer, staticPointLayer))
 
-        dynamicScene.operationalLayers.addAll(listOf(dynamicPointLayer, dynamicPolylineLayer, dynamicPolygonLayer))
+        dynamicScene.operationalLayers.addAll(listOf(dynamicPolygonLayer, dynamicPolylineLayer, dynamicPointLayer))
     }
 
     /**

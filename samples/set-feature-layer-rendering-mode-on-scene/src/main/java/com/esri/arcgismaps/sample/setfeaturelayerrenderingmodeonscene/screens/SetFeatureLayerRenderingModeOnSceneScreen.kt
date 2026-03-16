@@ -28,13 +28,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.setfeaturelayerrenderingmodeonscene.components.SetFeatureLayerRenderingModeOnSceneViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import androidx.compose.material3.MaterialTheme
 
 /**
  * Main screen for the SetFeatureLayerRenderingModeOnScene sample.
@@ -68,12 +68,12 @@ fun SetFeatureLayerRenderingModeOnSceneScreen(sampleName: String) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(ComposeColor.Black.copy(alpha = 0.35f))
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
                             .align(Alignment.TopCenter)
                     ) {
                         Text(
                             text = "Static",
-                            color = ComposeColor.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .padding(8.dp)
@@ -94,12 +94,12 @@ fun SetFeatureLayerRenderingModeOnSceneScreen(sampleName: String) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(ComposeColor.Black.copy(alpha = 0.35f))
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
                             .align(Alignment.TopCenter)
                     ) {
                         Text(
                             text = "Dynamic",
-                            color = ComposeColor.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .padding(8.dp)
