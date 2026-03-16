@@ -1,0 +1,34 @@
+{
+    "category": "Visualization",
+    "description": "Render features statically or dynamically by setting the feature layer rendering mode.",
+    "formal_name": "SetFeatureLayerRenderingModeOnMap",
+    "ignore": false,
+    "images": [
+        "set-feature-layer-rendering-mode-on-map.png"
+    ],
+    "keywords": [
+        "dynamic",
+        "feature layer",
+        "features",
+        "rendering",
+        "static",
+        "FeatureLayer",
+        "FeatureRenderingMode",
+        "Map",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "FeatureLayer",
+        "FeatureRenderingMode",
+        "Map",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturelayerrenderingmodeonmap/components/SetFeatureLayerRenderingModeOnMapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturelayerrenderingmodeonmap/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setfeaturelayerrenderingmodeonmap/screens/SetFeatureLayerRenderingModeOnMapScreen.kt"
+    ],
+    "title": "Set feature layer rendering mode on map"
+}
