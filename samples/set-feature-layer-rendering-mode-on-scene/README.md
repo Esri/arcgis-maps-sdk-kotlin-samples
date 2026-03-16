@@ -17,7 +17,7 @@ Use the 'Zoom In'/'Zoom Out' button to trigger the zoom animation on both static
 ## How it works
 
 1. Create a scene with operational layers and set the `FeatureRenderingMode` for each layer.
-2. The `FeatureRenderingMode` can be set to `static`, `dynamic`, or `automatic`.
+2. The `FeatureRenderingMode` can be set to `Static`, `Dynamic`, or `Automatic`.
 
 * In Static rendering mode, the number of features and graphics has little impact on frame render time, meaning it scales well, however points don't stay screen-aligned and point/polyline/polygon objects are only redrawn once scene view navigation is complete.
 * In Dynamic rendering mode, large numbers of features or graphics can affect the responsiveness of scenes to user interaction, however points remain screen-aligned and point/polyline/polygon objects are continually redrawn while the scene view is navigating.

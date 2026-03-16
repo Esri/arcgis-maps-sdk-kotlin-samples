@@ -107,7 +107,7 @@ fun SetFeatureLayerRenderingModeOnSceneScreen(sampleName: String) {
                     }
                 }
 
-                Button(onClick = { viewModel.toggleZoom() }, enabled = true) {
+                Button(onClick = viewModel::toggleZoom) {
                     Text(if (viewModel.isZoomedIn) "Zoom Out" else "Zoom In")
                 }
 

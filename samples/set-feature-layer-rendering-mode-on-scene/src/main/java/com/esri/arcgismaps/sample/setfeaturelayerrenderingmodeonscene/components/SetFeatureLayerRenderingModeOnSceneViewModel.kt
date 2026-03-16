@@ -46,11 +46,11 @@ import kotlin.time.Duration.Companion.seconds
 class SetFeatureLayerRenderingModeOnSceneViewModel(application: Application) : AndroidViewModel(application) {
 
     // URLs for the sample feature service tables (point, polyline, polygon)
-    private val POINT_LAYER_URL =
+    private val pointLayerUrl =
         "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Energy/Geology/FeatureServer/0"
-    private val POLYLINE_LAYER_URL =
+    private val polylineLayerUrl =
         "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Energy/Geology/FeatureServer/8"
-    private val POLYGON_LAYER_URL =
+    private val polygonLayerUrl =
         "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Energy/Geology/FeatureServer/9"
 
     // Scenes exposed to the UI
@@ -120,7 +120,7 @@ class SetFeatureLayerRenderingModeOnSceneViewModel(application: Application) : A
         }
 
         // Create scenes and add layers
-        staticScene.operationalLayers.addAll(listOf(staticPointLayer, staticPolylineLayer, staticPolygonLayer))
+        staticScene.operationalLayers.addAll(listOf(staticPolygonLayer, staticPolylineLayer, staticPointLayer))
 
         dynamicScene.operationalLayers.addAll(listOf(dynamicPointLayer, dynamicPolylineLayer, dynamicPolygonLayer))
     }
