@@ -36,7 +36,7 @@ Open the sample and browse the basemap list shown in the bottom sheet. Tap a bas
 
 Organizational basemaps are a `Portal` feature allowing organizations to specify basemaps for use throughout the organization. Customers expect that they will have access to their organization's standard basemap set when they connect to a `Portal`. Organizational basemaps are useful when certain basemaps are particularly relevant to the organization, or if the organization wants to make premium basemap content available to their workers.
 
-This samples uses the `BasemapGallery` toolkit component, which requires the [ArcGIS Maps SDK for Kotlin Toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit). The `BasemapGallery` toolkit component supports selecting 2D and 3D basemaps from ArcGIS Online, a user-defined portal, or an array of Basemaps.
+This sample uses the `BasemapGallery` toolkit component, which requires the [ArcGIS Maps SDK for Kotlin Toolkit](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit). The `BasemapGallery` toolkit component supports selecting 2D and 3D basemaps from any kind of source, such as ArcGIS Online, a user-defined portal, or a collection of Basemaps.
 
 ## Tags
 
