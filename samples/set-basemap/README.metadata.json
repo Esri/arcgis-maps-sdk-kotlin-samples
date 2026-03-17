@@ -1,0 +1,39 @@
+{
+    "category": "Maps",
+    "description": "Change a map's basemap.",
+    "formal_name": "SetBasemap",
+    "ignore": false,
+    "images": [
+        "set-basemap.png"
+    ],
+    "keywords": [
+        "basemap",
+        "map",
+        "ArcGISMap",
+        "Basemap",
+        "BasemapGallery",
+        "BasemapGalleryItem",
+        "BasemapStyle",
+        "BasemapStyleInfo",
+        "BasemapStylesService",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "Basemap",
+        "BasemapGallery",
+        "BasemapGalleryItem",
+        "BasemapStyle",
+        "BasemapStyleInfo",
+        "BasemapStylesService",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setbasemap/components/SetBasemapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setbasemap/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setbasemap/screens/SetBasemapScreen.kt"
+    ],
+    "title": "Set basemap"
+}
