@@ -1,0 +1,19 @@
+{
+    "category": "Scenes",
+    "description": "TODO",
+    "formal_name": "ConfigureSceneEnvironment",
+    "ignore": false,
+    "images": [
+        "configure-scene-environment.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/components/ConfigureSceneEnvironmentViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/screens/ConfigureSceneEnvironmentScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/MainActivity.kt"
+    ],
+    "title": "Configure scene environment"
+}
