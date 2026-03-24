@@ -75,7 +75,13 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
 
     // Graphics overlay to display the 15-mile buffer around the airport
     val graphicsOverlay = GraphicsOverlay()
-    private val bufferGraphic = Graphic()
+    private val bufferGraphic = Graphic(
+        symbol = SimpleFillSymbol(
+            style = SimpleFillSymbolStyle.Solid,
+            color = Color.fromRgba(255, 0, 0, 64),
+            outline = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1f)
+        )
+    )
 
     // Simulated plane feed and dynamic entity layer
     private val planeFeedProvider = PlaneFeedProvider()
@@ -117,12 +123,6 @@ class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel
         arcGISMap.operationalLayers.add(dynamicEntityLayer)
 
         // Prepare buffer graphic; keep overlay hidden until used
-        val redFill = SimpleFillSymbol(
-            style = SimpleFillSymbolStyle.Solid,
-            color = Color.fromRgba(255, 0, 0, 64),
-            outline = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.black, 1f)
-        )
-        bufferGraphic.symbol = redFill
         graphicsOverlay.graphics.add(bufferGraphic)
         graphicsOverlay.isVisible = false
 
@@ -326,7 +326,7 @@ private class PlaneFeedProvider : CustomDynamicEntityDataSource.EntityFeedProvid
                             )
                         )
                     }
-                    delay(100)
+                    delay(1000)
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e

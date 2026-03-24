@@ -146,7 +146,7 @@ fun QueryDynamicEntitiesScreen(sampleName: String) {
                         value = flightNumber,
                         onValueChange = { flightNumber = it },
                         singleLine = true,
-                        label = { Text("Flight Number") }
+                        label = { Text("Flight Number: (e.g. Flight_302)") }
                     )
                 },
                 confirmButton = {
