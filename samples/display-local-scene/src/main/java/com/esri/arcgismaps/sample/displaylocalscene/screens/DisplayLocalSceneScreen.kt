@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.geometry.Envelope
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
@@ -34,6 +35,8 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.SceneViewingMode
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
@@ -41,6 +44,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun DisplayLocalSceneScreen(sampleName: String) {
+    val messageDialogVM: MessageDialogViewModel = viewModel()
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -77,7 +81,8 @@ fun DisplayLocalSceneScreen(sampleName: String) {
                                     x = 19455578.6821,
                                     y = -5056336.2227,
                                     z = 1699.3366,
-                                    spatialReference = SpatialReference.webMercator()),
+                                    spatialReference = SpatialReference.webMercator()
+                                ),
                                 heading = 338.7410,
                                 pitch = 40.3763,
                                 roll = 0.0,
@@ -96,8 +101,24 @@ fun DisplayLocalSceneScreen(sampleName: String) {
 
                 LocalSceneView(
                     modifier = Modifier.fillMaxSize(),
-                    scene = arcGISScene
+                    scene = arcGISScene,
+                    onCriticalErrorChanged = { throwable ->
+                        if (throwable != null) {
+                            messageDialogVM.showMessageDialog(throwable)
+                        }
+                    }
                 )
+            }
+
+            // Display a dialog if the sample encounters an error
+            messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
             }
         }
     )

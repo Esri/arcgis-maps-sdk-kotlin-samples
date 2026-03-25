@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.kotlin.sampleviewer
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,12 +24,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.exceptions.ArcGISException
 import com.esri.arcgismaps.kotlin.sampleviewer.navigation.NavGraph
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,18 +51,33 @@ class MainActivity : ComponentActivity() {
      */
     @Composable
     fun HandleExceptions() {
-        var sampleViewerException by remember { 
-            mutableStateOf(
-                intent.extras?.let {
-                    it.getStringArray("SampleViewerException") ?: arrayOf()
-                } ?: arrayOf<String>()
-            ) 
+        val messageDialogViewModel: MessageDialogViewModel = viewModel()
+
+        LaunchedEffect(Unit) {
+            val throwable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getSerializableExtra(
+                    SampleViewerLauncherActivity.EXTRA_THROWABLE,
+                    Throwable::class.java
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                (intent.getSerializableExtra(SampleViewerLauncherActivity.EXTRA_THROWABLE) as? Throwable)
+            }
+
+            throwable?.let {
+                when (it) {
+                    is ArcGISException -> messageDialogViewModel.showMessageDialog(it)
+                    else -> messageDialogViewModel.showMessageDialog(it)
+                }
+                intent.removeExtra(SampleViewerLauncherActivity.EXTRA_THROWABLE)
+            }
         }
-        if (sampleViewerException.isNotEmpty()) {
+
+        if (messageDialogViewModel.dialogStatus) {
             MessageDialog(
-                onDismissRequest = { sampleViewerException = arrayOf() },
-                title = sampleViewerException[0],
-                description = sampleViewerException[1]
+                onDismissRequest = { messageDialogViewModel.dismissDialog() },
+                title = messageDialogViewModel.messageTitle,
+                description = messageDialogViewModel.messageDescription
             )
         }
     }

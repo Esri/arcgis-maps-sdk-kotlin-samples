@@ -24,6 +24,10 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 
 class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
+    companion object {
+        const val EXTRA_THROWABLE = "SampleViewerException"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupExceptionHandler()
@@ -37,9 +41,9 @@ class SampleViewerLauncherActivity : ComponentActivity(), ExceptionListener {
     private fun startMainActivity(throwable: Throwable?) {
         val extras = Bundle()
         if (throwable != null) {
-            extras.putStringArray(
-                /* key = */     "SampleViewerException",
-                /* value = */   arrayOf(throwable.message.toString(), throwable.cause.toString())
+            extras.putSerializable(
+                /* key = */ EXTRA_THROWABLE,
+                /* value = */ throwable
             )
         }
 

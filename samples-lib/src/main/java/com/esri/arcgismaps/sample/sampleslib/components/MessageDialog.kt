@@ -97,8 +97,10 @@ class MessageDialogViewModel : ViewModel() {
     var messageDescription by mutableStateOf("")
         private set
 
+    private val newParagraph = "\n\n"
+
     /**
-     * Displays an message dialog
+     * Displays a message dialog using the given [title] & [description].
      */
     fun showMessageDialog(title: String, description: String = "") {
         messageTitle = title
@@ -108,15 +110,42 @@ class MessageDialogViewModel : ViewModel() {
 
     fun showMessageDialog(throwable: Throwable) {
         showMessageDialog(
-            title = throwable.message.toString(),
-            description = throwable.cause.toString()
+            title = "Exception occurred",
+            description = buildString {
+                if (!throwable.message.isNullOrEmpty()) {
+                    append("Message: ${throwable.message}")
+                }
+                if (!throwable.cause?.message.isNullOrEmpty()) {
+                    append(newParagraph)
+                    append("Cause: ${throwable.cause?.message}")
+                }
+            }
         )
     }
 
     fun showMessageDialog(exception: ArcGISException) {
         showMessageDialog(
-            title = exception.message,
-            description = exception.additionalInformation.toString() + "\n" + exception.cause.toString()
+            title = "ArcGISException occurred",
+            description = buildString {
+                if (exception.message.isNotEmpty()) {
+                    append("Message: ${exception.message}")
+                    append(newParagraph)
+                    append("Error Code: ${exception.errorCode}")
+                }
+                if (exception.additionalInformation.isNotEmpty()) {
+                    append(newParagraph)
+                    append("Additional Information:")
+                    append(newParagraph)
+                    exception.additionalInformation.forEach { (message, cause) ->
+                        append("$message: $cause")
+                        append(newParagraph)
+                    }
+                }
+                if (!exception.cause?.message.isNullOrEmpty()) {
+                    append(newParagraph)
+                    append("Cause: ${exception.cause?.message}")
+                }
+            }
         )
     }
 
