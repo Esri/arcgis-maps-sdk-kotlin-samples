@@ -17,20 +17,23 @@
 package com.esri.arcgismaps.sample.configuresceneenvironment.screens
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -44,8 +47,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -168,28 +171,32 @@ fun DialogOptions(
 
             // Background color selection
             Text(text = "Background", style = MaterialTheme.typography.titleMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                // Use a few preset colors. Using SDK Color class values.
-                val presetColors = listOf(
-                    Color.white,
-                    Color.black,
-                    Color.fromRgba(135, 206, 235, 255), // sky-like
-                    Color.transparent
-                )
-                presetColors.forEach { sdkColor ->
-                    val isSelected = sdkColor == currentBackground
-                    FilledTonalButton(
-                        modifier = Modifier.size(48.dp),
-                        onClick = { onBackgroundColorChanged(sdkColor) },
-                        shape = CircleShape,
-                        border = BorderStroke(
-                            width = if (isSelected) 2.dp else 1.dp,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                        ),
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = sdkColor.toComposeColor(),
-                        ),
-                    ) {}
+            var isColorMenuExpanded by remember { mutableStateOf(false) }
+            val selectedColorOption = backgroundColorOptions.firstOrNull { it.color == currentBackground }
+                ?: backgroundColorOptions.last()
+
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { isColorMenuExpanded = true }
+                ) {
+                    ColorOptionContent(option = selectedColorOption)
+                }
+                DropdownMenu(
+                    expanded = isColorMenuExpanded,
+                    onDismissRequest = { isColorMenuExpanded = false },
+                ) {
+                    backgroundColorOptions.forEach { option ->
+                        DropdownMenuItem(
+                            text = {
+                                ColorOptionContent(option = option)
+                            },
+                            onClick = {
+                                onBackgroundColorChanged(option.color)
+                                isColorMenuExpanded = false
+                            }
+                        )
+                    }
                 }
             }
 
@@ -235,6 +242,30 @@ fun DialogOptions(
     }
 }
 
+/** Renders a small color box with a matching label for the color dropdown UI. */
+@Composable
+private fun ColorOptionContent(option: BackgroundColorOption) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(4.dp),
+                )
+                .background(
+                    color = option.color.toComposeColor(),
+                    shape = RoundedCornerShape(4.dp),
+                )
+        )
+        Text(text = option.label)
+    }
+}
+
 private fun formatTimeFromSeconds(seconds: Float): String {
     // The slider stores seconds since midnight. Convert to a clock string for display.
     val localTime = LocalTime.ofSecondOfDay(seconds.toLong())
@@ -248,6 +279,19 @@ private fun Color.toComposeColor(): ComposeColor = ComposeColor(
     green = green / 255f,
     blue = blue / 255f,
     alpha = alpha / 255f,
+)
+
+/** Preset option shown in the background color dropdown. */
+private data class BackgroundColorOption(
+    val label: String,
+    val color: Color,
+)
+
+private val backgroundColorOptions = listOf(
+    BackgroundColorOption("White", Color.white),
+    BackgroundColorOption("Black", Color.black),
+    BackgroundColorOption("Sky blue", Color.fromRgba(135, 206, 235, 255)),
+    BackgroundColorOption("Transparent", Color.transparent),
 )
 
 @Preview(showBackground = true)
