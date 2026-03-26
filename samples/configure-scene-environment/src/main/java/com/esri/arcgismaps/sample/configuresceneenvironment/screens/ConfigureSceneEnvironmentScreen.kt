@@ -103,12 +103,12 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
                     areShadows = viewModel.areDirectShadowsEnabled,
                     timeSeconds = viewModel.timeOfDaySeconds,
                     timeSecondsRange = viewModel.timeOfDaySecondsMin..viewModel.timeOfDaySecondsMax,
-                    onAtmosphereChanged = viewModel::setAtmosphereEnabled,
-                    onStarsChanged = viewModel::setStarsEnabled,
-                    onBackgroundColorChanged = viewModel::setBackgroundColor,
-                    onLightingTypeChanged = viewModel::setLightingType,
-                    onShadowsChanged = viewModel::setDirectShadowsEnabled,
-                    onTimeSecondsChanged = viewModel::setTimeOfDaySeconds,
+                    onAtmosphereChanged = viewModel::updateAtmosphereEnabled,
+                    onStarsChanged = viewModel::updateStarsEnabled,
+                    onBackgroundColorChanged = viewModel::updateBackgroundColor,
+                    onLightingTypeChanged = viewModel::updateLightingType,
+                    onShadowsChanged = viewModel::updateDirectShadowsEnabled,
+                    onTimeSecondsChanged = viewModel::updateTimeOfDaySeconds,
                     onDismissRequest = { isDialogOptionsVisible = false }
                 )
             }

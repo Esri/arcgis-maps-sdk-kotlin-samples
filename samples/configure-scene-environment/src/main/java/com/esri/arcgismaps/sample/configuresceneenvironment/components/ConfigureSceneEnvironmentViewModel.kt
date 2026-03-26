@@ -95,13 +95,13 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
     }
 
     /** Enables or disables atmospheric rendering. */
-    fun setAtmosphereEnabled(enabled: Boolean) {
+    fun updateAtmosphereEnabled(enabled: Boolean) {
         isAtmosphereEnabled = enabled
         _sceneEnvironment.isAtmosphereEnabled = enabled
     }
 
     /** Enables or disables stars. */
-    fun setStarsEnabled(enabled: Boolean) {
+    fun updateStarsEnabled(enabled: Boolean) {
         areStarsEnabled = enabled
         _sceneEnvironment.areStarsEnabled = enabled
     }
@@ -111,16 +111,16 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
      *
      * A solid background color is most visible when atmosphere and stars are disabled.
      */
-    fun setBackgroundColor(color: Color) {
+    fun updateBackgroundColor(color: Color) {
         backgroundColor = color
         _sceneEnvironment.backgroundColor = color
         // Setting a background color should make atmosphere and stars off so the color is visible
-        setAtmosphereEnabled(false)
-        setStarsEnabled(false)
+        updateAtmosphereEnabled(false)
+        updateStarsEnabled(false)
     }
 
     /** Switches between sun-based lighting and virtual lighting. */
-    fun setLightingType(newType: LightingType) {
+    fun updateLightingType(newType: LightingType) {
         lightingType = newType
         when (newType) {
             LightingType.SUN -> {
@@ -137,13 +137,13 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
     }
 
     /** Enables or disables direct shadows on the active lighting model. */
-    fun setDirectShadowsEnabled(enabled: Boolean) {
+    fun updateDirectShadowsEnabled(enabled: Boolean) {
         areDirectShadowsEnabled = enabled
         _sceneEnvironment.lighting.areDirectShadowsEnabled = enabled
     }
 
     /** Updates scene local time using seconds since midnight. */
-    fun setTimeOfDaySeconds(seconds: Float) {
+    fun updateTimeOfDaySeconds(seconds: Float) {
         timeOfDaySeconds = seconds
         val newInstant = instantFromSeconds(seconds)
         (_sceneEnvironment.lighting as? SunLighting)?.simulatedDate = newInstant
