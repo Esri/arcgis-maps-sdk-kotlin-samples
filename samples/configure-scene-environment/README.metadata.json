@@ -1,19 +1,37 @@
 {
     "category": "Scenes",
-    "description": "TODO",
+    "description": "Configure the environment settings in a local scene to change the lighting conditions and background appearance.",
     "formal_name": "ConfigureSceneEnvironment",
     "ignore": false,
     "images": [
         "configure-scene-environment.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "3D",
+        "environment",
+        "lighting",
+        "scene",
+        "LocalSceneView",
+        "Scene",
+        "SceneEnvironment",
+        "SceneLighting",
+        "SunLighting",
+        "VirtualLighting"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "LocalSceneView",
+        "Scene",
+        "SceneEnvironment",
+        "SceneLighting",
+        "SunLighting",
+        "VirtualLighting"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/components/ConfigureSceneEnvironmentViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/screens/ConfigureSceneEnvironmentScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configuresceneenvironment/screens/ConfigureSceneEnvironmentScreen.kt"
     ],
     "title": "Configure scene environment"
 }
