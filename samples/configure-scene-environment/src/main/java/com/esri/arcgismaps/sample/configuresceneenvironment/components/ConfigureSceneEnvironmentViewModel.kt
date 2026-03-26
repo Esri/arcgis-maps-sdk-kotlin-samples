@@ -35,8 +35,13 @@ import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.launch
 
+/**
+ * Holds UI state for the configure scene environment sample and applies user choices to
+ * the ArcGIS [SceneEnvironment].
+ */
 class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(app) {
 
+    // The SceneEnvironment is where we apply user changes to the atmosphere, lighting, background color, etc.
     private val _sceneEnvironment = SceneEnvironment()
 
     // The scene displayed by the SceneView composable.
@@ -48,6 +53,9 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
 
     // Message dialog view model for error handling.
     val messageDialogVM = MessageDialogViewModel()
+
+    // UI state variables that mirror the properties of SceneEnvironment.
+    // These are used to update the UI when changes are made.
 
     var isAtmosphereEnabled by mutableStateOf(_sceneEnvironment.isAtmosphereEnabled)
         private set
@@ -69,9 +77,14 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
     var timeOfDaySeconds by mutableFloatStateOf(43_200f)
         private set
 
+    // Allowed slider bounds for time-of-day.
     val timeOfDaySecondsMin = 0f // 12:00 AM
     val timeOfDaySecondsMax = 82_800f // 11:00 PM
+
+    // Santa Fe follows Mountain Time rules, represented by the America/Denver zone ID.
     private val _sceneTimeZone = ZoneId.of("America/Denver")
+
+    // Anchor the selected time to one date so we can convert local clock time to an Instant.
     private val _sceneDate: LocalDate = LocalDate.now(_sceneTimeZone)
 
     init {
@@ -80,16 +93,23 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
         }
     }
 
+    /** Enables or disables atmospheric rendering. */
     fun setAtmosphereEnabled(enabled: Boolean) {
         isAtmosphereEnabled = enabled
         _sceneEnvironment.isAtmosphereEnabled = enabled
     }
 
+    /** Enables or disables stars. */
     fun setStarsEnabled(enabled: Boolean) {
         areStarsEnabled = enabled
         _sceneEnvironment.areStarsEnabled = enabled
     }
 
+    /**
+     * Sets the scene background color.
+     *
+     * A solid background color is most visible when atmosphere and stars are disabled.
+     */
     fun setBackgroundColor(color: Color) {
         backgroundColor = color
         _sceneEnvironment.backgroundColor = color
@@ -98,10 +118,12 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
         setStarsEnabled(false)
     }
 
+    /** Switches between sun-based lighting and virtual lighting. */
     fun setLightingType(newType: LightingType) {
         lightingType = newType
         when (newType) {
             LightingType.SUN -> {
+                // Rebuild sun lighting with the currently selected scene time.
                 val sunLighting = SunLighting(simulatedDate = instantFromSeconds(timeOfDaySeconds), areDirectShadowsEnabled = areDirectShadowsEnabled)
                 _sceneEnvironment.lighting = sunLighting
             }
@@ -113,17 +135,20 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
         }
     }
 
+    /** Enables or disables direct shadows on the active lighting model. */
     fun setDirectShadowsEnabled(enabled: Boolean) {
         areDirectShadowsEnabled = enabled
         _sceneEnvironment.lighting.areDirectShadowsEnabled = enabled
     }
 
+    /** Updates scene local time using seconds since midnight. */
     fun setTimeOfDaySeconds(seconds: Float) {
         timeOfDaySeconds = seconds
         val newInstant = instantFromSeconds(seconds)
         (_sceneEnvironment.lighting as? SunLighting)?.simulatedDate = newInstant
     }
 
+    // Converts seconds since midnight into an Instant used by SunLighting.
     private fun instantFromSeconds(seconds: Float): Instant {
         return _sceneDate
             .atStartOfDay(_sceneTimeZone)
@@ -133,6 +158,7 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
 
 }
 
+/** Lighting options shown in the segmented control. */
 enum class LightingType(val displayName: String) {
     SUN("Sun"),
     VIRTUAL("Virtual")

@@ -127,6 +127,10 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
     }
 }
 
+/**
+ * Dialog content that exposes scene environment controls and forwards user actions
+ * through callback lambdas.
+ */
 @Composable
 fun DialogOptions(
     isAtmosphere: Boolean,
@@ -204,12 +208,13 @@ fun DialogOptions(
                 }
             }
 
+            // Shadows toggle
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Shadows")
                 Switch(checked = areShadows, onCheckedChange = onShadowsChanged)
             }
 
-            // Time slider only when using SunLighting
+            // Time slider, only meaningful when using Sun lighting
             if (lightingType == LightingType.SUN) {
                 Text(text = "Time of day", style = MaterialTheme.typography.bodyLarge)
                 // Show formatted time label
@@ -222,7 +227,7 @@ fun DialogOptions(
                 )
             }
 
-            // Dismiss button
+            // Done button
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 OutlinedButton(onClick = onDismissRequest) { Text("Done") }
             }
@@ -231,11 +236,13 @@ fun DialogOptions(
 }
 
 private fun formatTimeFromSeconds(seconds: Float): String {
+    // The slider stores seconds since midnight. Convert to a clock string for display.
     val localTime = LocalTime.ofSecondOfDay(seconds.toLong())
     val formatter = DateTimeFormatter.ofPattern("h:mm a")
     return localTime.format(formatter)
 }
 
+/** Maps ArcGIS [Color] values (0..255 channels) to Compose [ComposeColor] (0f..1f channels). */
 private fun Color.toComposeColor(): ComposeColor = ComposeColor(
     red = red / 255f,
     green = green / 255f,
