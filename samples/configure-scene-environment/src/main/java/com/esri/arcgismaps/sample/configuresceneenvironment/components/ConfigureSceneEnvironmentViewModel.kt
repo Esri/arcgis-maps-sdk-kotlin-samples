@@ -18,29 +18,122 @@ package com.esri.arcgismaps.sample.configuresceneenvironment.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.Color
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.mapping.view.SceneEnvironment
+import com.arcgismaps.mapping.view.SunLighting
+import com.arcgismaps.mapping.view.VirtualLighting
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import kotlinx.coroutines.launch
 
 class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
-            initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
-        }
-    )
 
-    // Create a message dialog view model for handling error messages
+    private val _sceneEnvironment = SceneEnvironment()
+
+    // The scene displayed by the SceneView composable.
+    val arcGISScene: ArcGISScene = ArcGISScene(
+        item = PortalItem("https://www.arcgis.com/home/item.html?id=fcebd77958634ac3874bbc0e6b0677a4")
+    ).apply {
+        environment = _sceneEnvironment
+    }
+
+    // Message dialog view model for error handling.
     val messageDialogVM = MessageDialogViewModel()
+
+    var isAtmosphereEnabled by mutableStateOf(_sceneEnvironment.isAtmosphereEnabled)
+        private set
+
+    var areStarsEnabled by mutableStateOf(_sceneEnvironment.areStarsEnabled)
+        private set
+
+    var backgroundColor by mutableStateOf(_sceneEnvironment.backgroundColor)
+        private set
+
+    var lightingType by mutableStateOf(
+        if (_sceneEnvironment.lighting is SunLighting) LightingType.SUN else LightingType.VIRTUAL
+    )
+        private set
+
+    var areDirectShadowsEnabled by mutableStateOf(_sceneEnvironment.lighting.areDirectShadowsEnabled)
+        private set
+
+    var timeOfDaySeconds by mutableFloatStateOf(43_200f)
+        private set
+
+    val timeOfDaySecondsMin = 0f // 12:00 AM
+    val timeOfDaySecondsMax = 82_800f // 11:00 PM
+    private val _sceneTimeZone = ZoneId.of("America/Denver")
+    private val _sceneDate: LocalDate = LocalDate.now(_sceneTimeZone)
 
     init {
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
+
+    fun updateAtmosphereEnabled(enabled: Boolean) {
+        isAtmosphereEnabled = enabled
+        _sceneEnvironment.isAtmosphereEnabled = enabled
+    }
+
+    fun updateStarsEnabled(enabled: Boolean) {
+        areStarsEnabled = enabled
+        _sceneEnvironment.areStarsEnabled = enabled
+    }
+
+    fun updateBackgroundColor(color: Color) {
+        backgroundColor = color
+        _sceneEnvironment.backgroundColor = color
+        // Setting a background color should make atmosphere and stars off so the color is visible
+        updateAtmosphereEnabled(false)
+        updateStarsEnabled(false)
+    }
+
+    fun updateLightingType(newType: LightingType) {
+        lightingType = newType
+        when (newType) {
+            LightingType.SUN -> {
+                val sunLighting = SunLighting(simulatedDate = instantFromSeconds(timeOfDaySeconds), areDirectShadowsEnabled = areDirectShadowsEnabled)
+                _sceneEnvironment.lighting = sunLighting
+            }
+
+            LightingType.VIRTUAL -> {
+                val virtualLighting = VirtualLighting(areDirectShadowsEnabled = areDirectShadowsEnabled)
+                _sceneEnvironment.lighting = virtualLighting
+            }
+        }
+    }
+
+    fun updateDirectShadowsEnabled(enabled: Boolean) {
+        areDirectShadowsEnabled = enabled
+        _sceneEnvironment.lighting.areDirectShadowsEnabled = enabled
+    }
+
+    fun updateTimeOfDaySeconds(seconds: Float) {
+        timeOfDaySeconds = seconds
+        val newInstant = instantFromSeconds(seconds)
+        (_sceneEnvironment.lighting as? SunLighting)?.simulatedDate = newInstant
+    }
+
+    private fun instantFromSeconds(seconds: Float): Instant {
+        return _sceneDate
+            .atStartOfDay(_sceneTimeZone)
+            .plusSeconds(seconds.toLong())
+            .toInstant()
+    }
+
+}
+
+enum class LightingType(val displayName: String) {
+    SUN("Sun"),
+    VIRTUAL("Virtual")
 }
