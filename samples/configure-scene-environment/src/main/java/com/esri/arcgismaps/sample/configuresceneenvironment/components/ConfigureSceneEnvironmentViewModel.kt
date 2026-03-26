@@ -80,25 +80,25 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
         }
     }
 
-    fun updateAtmosphereEnabled(enabled: Boolean) {
+    fun setAtmosphereEnabled(enabled: Boolean) {
         isAtmosphereEnabled = enabled
         _sceneEnvironment.isAtmosphereEnabled = enabled
     }
 
-    fun updateStarsEnabled(enabled: Boolean) {
+    fun setStarsEnabled(enabled: Boolean) {
         areStarsEnabled = enabled
         _sceneEnvironment.areStarsEnabled = enabled
     }
 
-    fun updateBackgroundColor(color: Color) {
+    fun setBackgroundColor(color: Color) {
         backgroundColor = color
         _sceneEnvironment.backgroundColor = color
         // Setting a background color should make atmosphere and stars off so the color is visible
-        updateAtmosphereEnabled(false)
-        updateStarsEnabled(false)
+        setAtmosphereEnabled(false)
+        setStarsEnabled(false)
     }
 
-    fun updateLightingType(newType: LightingType) {
+    fun setLightingType(newType: LightingType) {
         lightingType = newType
         when (newType) {
             LightingType.SUN -> {
@@ -113,12 +113,12 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
         }
     }
 
-    fun updateDirectShadowsEnabled(enabled: Boolean) {
+    fun setDirectShadowsEnabled(enabled: Boolean) {
         areDirectShadowsEnabled = enabled
         _sceneEnvironment.lighting.areDirectShadowsEnabled = enabled
     }
 
-    fun updateTimeOfDaySeconds(seconds: Float) {
+    fun setTimeOfDaySeconds(seconds: Float) {
         timeOfDaySeconds = seconds
         val newInstant = instantFromSeconds(seconds)
         (_sceneEnvironment.lighting as? SunLighting)?.simulatedDate = newInstant

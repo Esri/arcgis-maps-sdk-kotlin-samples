@@ -103,12 +103,12 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
                     areShadows = viewModel.areDirectShadowsEnabled,
                     timeSeconds = viewModel.timeOfDaySeconds,
                     timeSecondsRange = viewModel.timeOfDaySecondsMin..viewModel.timeOfDaySecondsMax,
-                    onAtmosphereChanged = viewModel::updateAtmosphereEnabled,
-                    onStarsChanged = viewModel::updateStarsEnabled,
-                    onBackgroundColorChanged = viewModel::updateBackgroundColor,
-                    onLightingTypeChanged = viewModel::updateLightingType,
-                    onShadowsChanged = viewModel::updateDirectShadowsEnabled,
-                    onTimeSecondsChanged = viewModel::updateTimeOfDaySeconds,
+                    onAtmosphereChanged = viewModel::setAtmosphereEnabled,
+                    onStarsChanged = viewModel::setStarsEnabled,
+                    onBackgroundColorChanged = viewModel::setBackgroundColor,
+                    onLightingTypeChanged = viewModel::setLightingType,
+                    onShadowsChanged = viewModel::setDirectShadowsEnabled,
+                    onTimeSecondsChanged = viewModel::setTimeOfDaySeconds,
                     onDismissRequest = { isDialogOptionsVisible = false }
                 )
             }
@@ -183,12 +183,7 @@ fun DialogOptions(
                             color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                         ),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = ComposeColor(
-                                sdkColor.red / 255f,
-                                sdkColor.green / 255f,
-                                sdkColor.blue / 255f,
-                                sdkColor.alpha / 255f,
-                            ),
+                            containerColor = sdkColor.toComposeColor(),
                         ),
                     ) {}
                 }
@@ -241,6 +236,13 @@ private fun formatTimeFromSeconds(seconds: Float): String {
     return localTime.format(formatter)
 }
 
+private fun Color.toComposeColor(): ComposeColor = ComposeColor(
+    red = red / 255f,
+    green = green / 255f,
+    blue = blue / 255f,
+    alpha = alpha / 255f,
+)
+
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
@@ -253,7 +255,7 @@ fun DialogOptionsPreview() {
             lightingType = LightingType.SUN,
             areShadows = true,
             timeSeconds = 43_200f,
-            timeSecondsRange = 28_800f..79_200f,
+            timeSecondsRange = 0f..82_800f,
             onAtmosphereChanged = {},
             onStarsChanged = {},
             onBackgroundColorChanged = {},
