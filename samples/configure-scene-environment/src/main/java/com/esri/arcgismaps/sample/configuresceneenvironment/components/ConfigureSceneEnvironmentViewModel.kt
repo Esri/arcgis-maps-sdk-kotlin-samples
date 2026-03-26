@@ -41,15 +41,14 @@ import kotlinx.coroutines.launch
  */
 class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(app) {
 
-    // The SceneEnvironment is where we apply user changes to the atmosphere, lighting, background color, etc.
-    private val _sceneEnvironment = SceneEnvironment()
-
     // The scene displayed by the SceneView composable.
     val arcGISScene: ArcGISScene = ArcGISScene(
         item = PortalItem("https://www.arcgis.com/home/item.html?id=fcebd77958634ac3874bbc0e6b0677a4")
-    ).apply {
-        environment = _sceneEnvironment
-    }
+    )
+
+    // The SceneEnvironment of the scene, used to apply changes to the environment based on user input.
+    private val _sceneEnvironment: SceneEnvironment
+        get() = arcGISScene.environment
 
     // Message dialog view model for error handling.
     val messageDialogVM = MessageDialogViewModel()
