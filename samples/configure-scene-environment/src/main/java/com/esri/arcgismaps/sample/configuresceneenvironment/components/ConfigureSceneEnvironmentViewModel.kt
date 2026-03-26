@@ -81,7 +81,8 @@ class ConfigureSceneEnvironmentViewModel(app: Application) : AndroidViewModel(ap
     val timeOfDaySecondsMin = 0f // 12:00 AM
     val timeOfDaySecondsMax = 82_800f // 11:00 PM
 
-    // Santa Fe follows Mountain Time rules, represented by the America/Denver zone ID.
+    // Use the Santa Fe time zone so entered times match local scene time.
+    // Santa Fe's time zone is America/Denver.
     private val _sceneTimeZone = ZoneId.of("America/Denver")
 
     // Anchor the selected time to one date so we can convert local clock time to an Instant.
