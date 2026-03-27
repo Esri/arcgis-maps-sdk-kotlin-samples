@@ -1,0 +1,19 @@
+{
+    "category": "Analysis",
+    "description": "TODO",
+    "formal_name": "ApplyMapAlgebra",
+    "ignore": false,
+    "images": [
+        "apply-map-algebra.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/components/ApplyMapAlgebraViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/screens/ApplyMapAlgebraScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/MainActivity.kt"
+    ],
+    "title": "Apply map algebra"
+}
