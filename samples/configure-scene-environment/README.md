@@ -39,7 +39,7 @@ If sun lighting is active, the slider under the buttons will set the hour of the
 
 ## How it works
 
-1. Create a `Scene` from an online resource and add it to the `LocalSceneView`. The sample’s controls are updated to reflect the web scene's initial environment.
+1. Create a `ArcGISScene` from an online resource and add it to the `LocalSceneView`. The sample’s controls are updated to reflect the web scene's initial environment.
 2. Changes to the sky and background color settings will set values directly on the `SceneEnvironment` object.
     * `isAtmosphereEnabled` and `areStarsEnabled` are boolean properties dictating whether the atmosphere and star field are visible.
     * Colors selected from the dropdown are set to the `backgroundColor`.
@@ -52,8 +52,8 @@ If sun lighting is active, the slider under the buttons will set the hour of the
 
 ## Relevant API
 
+* ArcGISScene
 * LocalSceneView
-* Scene
 * SceneEnvironment
 * SceneLighting
 * SunLighting
