@@ -144,12 +144,12 @@ fun DialogOptions(
     areShadows: Boolean,
     timeOfDaySeconds: Float,
     timeOfDaySecondsRange: ClosedFloatingPointRange<Float>,
-    onAtmosphereChanged: (Boolean) -> Unit,
-    onStarsChanged: (Boolean) -> Unit,
-    onBackgroundColorChanged: (Color) -> Unit,
+    onAtmosphereEnabledChanged: (Boolean) -> Unit,
+    onStarsVisibilityChanged: (Boolean) -> Unit,
+    onBackgroundColorSelected: (Color) -> Unit,
     onLightingTypeChanged: (LightingType) -> Unit,
-    onShadowsChanged: (Boolean) -> Unit,
-    onTimeSecondsChanged: (Float) -> Unit,
+    onShadowsEnabledChanged: (Boolean) -> Unit,
+    onTimeOfDayChanged: (Float) -> Unit,
     onDismissRequest: () -> Unit
 ) {
     SampleDialog(onDismissRequest = onDismissRequest) {
