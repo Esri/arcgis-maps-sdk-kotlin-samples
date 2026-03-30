@@ -291,7 +291,7 @@ private val backgroundColorOptions = listOf(
     BackgroundColorOption("White", Color.white),
     BackgroundColorOption("Black", Color.black),
     BackgroundColorOption("Sky blue", Color.fromRgba(135, 206, 235, 255)),
-    BackgroundColorOption("Transparent", Color.transparent),
+    BackgroundColorOption("Transparent", Color.transparent)
 )
 
 @Preview(showBackground = true)
