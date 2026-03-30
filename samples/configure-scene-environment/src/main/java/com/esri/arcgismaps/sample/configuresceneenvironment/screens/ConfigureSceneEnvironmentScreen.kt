@@ -100,19 +100,19 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
             // The dialog with the scene environment controls
             if (isDialogOptionsVisible) {
                 DialogOptions(
-                    isAtmosphere = viewModel.isAtmosphereEnabled,
+                    isAtmosphereEnabled = viewModel.isAtmosphereEnabled,
                     areStars = viewModel.areStarsEnabled,
-                    currentBackground = viewModel.backgroundColor,
+                    selectedBackgroundColor = viewModel.backgroundColor,
                     lightingType = viewModel.lightingType,
                     areShadows = viewModel.areDirectShadowsEnabled,
-                    timeSeconds = viewModel.timeOfDaySeconds,
-                    timeSecondsRange = viewModel.timeOfDaySecondsMin..viewModel.timeOfDaySecondsMax,
-                    onAtmosphereChanged = viewModel::updateAtmosphereEnabled,
-                    onStarsChanged = viewModel::updateStarsEnabled,
-                    onBackgroundColorChanged = viewModel::updateBackgroundColor,
+                    timeOfDaySeconds = viewModel.timeOfDaySeconds,
+                    timeOfDaySecondsRange = viewModel.timeOfDaySecondsMin..viewModel.timeOfDaySecondsMax,
+                    onAtmosphereEnabledChanged = viewModel::updateAtmosphereEnabled,
+                    onStarsVisibilityChanged = viewModel::updateStarsEnabled,
+                    onBackgroundColorSelected = viewModel::updateBackgroundColor,
                     onLightingTypeChanged = viewModel::updateLightingType,
-                    onShadowsChanged = viewModel::updateDirectShadowsEnabled,
-                    onTimeSecondsChanged = viewModel::updateTimeOfDaySeconds,
+                    onShadowsEnabledChanged = viewModel::updateDirectShadowsEnabled,
+                    onTimeOfDayChanged = viewModel::updateTimeOfDaySeconds,
                     onDismissRequest = { isDialogOptionsVisible = false }
                 )
             }
@@ -159,21 +159,21 @@ fun DialogOptions(
             Text(text = "Sky", style = MaterialTheme.typography.titleMedium)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Atmosphere")
-                Switch(checked = isAtmosphere, onCheckedChange = onAtmosphereChanged)
+                Switch(checked = isAtmosphereEnabled, onCheckedChange = onAtmosphereEnabledChanged)
             }
 
             // Stars controls, only meaningful when using Sun lighting
             if (lightingType == LightingType.SUN) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = "Stars")
-                    Switch(checked = areStars, onCheckedChange = { onStarsChanged(it) })
+                    Switch(checked = areStars, onCheckedChange = { onStarsVisibilityChanged(it) })
                 }
             }
 
             // Background color selection
             Text(text = "Background", style = MaterialTheme.typography.titleMedium)
             var isColorMenuExpanded by remember { mutableStateOf(false) }
-            val selectedColorOption = backgroundColorOptions.firstOrNull { it.color == currentBackground }
+            val selectedColorOption = backgroundColorOptions.firstOrNull { it.color == selectedBackgroundColor }
                 ?: backgroundColorOptions.last()
 
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -193,7 +193,7 @@ fun DialogOptions(
                                 ColorOptionContent(option = option)
                             },
                             onClick = {
-                                onBackgroundColorChanged(option.color)
+                                onBackgroundColorSelected(option.color)
                                 isColorMenuExpanded = false
                             }
                         )
@@ -219,19 +219,19 @@ fun DialogOptions(
             // Shadows toggle
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Shadows")
-                Switch(checked = areShadows, onCheckedChange = onShadowsChanged)
+                Switch(checked = areShadows, onCheckedChange = onShadowsEnabledChanged)
             }
 
             // Time slider, only meaningful when using Sun lighting
             if (lightingType == LightingType.SUN) {
                 Text(text = "Time of day", style = MaterialTheme.typography.bodyLarge)
                 // Show formatted time label
-                val formattedTime = formatTimeFromSeconds(timeSeconds)
+                val formattedTime = formatTimeFromSeconds(timeOfDaySeconds)
                 Text(text = formattedTime)
                 Slider(
-                    value = timeSeconds,
-                    onValueChange = { onTimeSecondsChanged(it) },
-                    valueRange = timeSecondsRange
+                    value = timeOfDaySeconds,
+                    onValueChange = { onTimeOfDayChanged(it) },
+                    valueRange = timeOfDaySecondsRange
                 )
             }
 
@@ -301,19 +301,19 @@ private val backgroundColorOptions = listOf(
 fun DialogOptionsPreview() {
     SamplePreviewSurface {
         DialogOptions(
-            isAtmosphere = true,
+            isAtmosphereEnabled = true,
             areStars = true,
-            currentBackground = Color.transparent,
+            selectedBackgroundColor = Color.transparent,
             lightingType = LightingType.SUN,
             areShadows = true,
-            timeSeconds = 43_200f,
-            timeSecondsRange = 0f..82_800f,
-            onAtmosphereChanged = {},
-            onStarsChanged = {},
-            onBackgroundColorChanged = {},
+            timeOfDaySeconds = 43_200f,
+            timeOfDaySecondsRange = 0f..82_800f,
+            onAtmosphereEnabledChanged = {},
+            onStarsVisibilityChanged = {},
+            onBackgroundColorSelected = {},
             onLightingTypeChanged = {},
-            onShadowsChanged = {},
-            onTimeSecondsChanged = {},
+            onShadowsEnabledChanged = {},
+            onTimeOfDayChanged = {},
             onDismissRequest = {}
         )
     }
