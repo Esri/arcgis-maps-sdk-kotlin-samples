@@ -139,7 +139,7 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
 fun DialogOptions(
     isAtmosphereEnabled: Boolean,
     areStars: Boolean,
-    currentBackground: Color,
+    selectedBackgroundColor: Color,
     lightingType: LightingType,
     areShadows: Boolean,
     timeSeconds: Float,
