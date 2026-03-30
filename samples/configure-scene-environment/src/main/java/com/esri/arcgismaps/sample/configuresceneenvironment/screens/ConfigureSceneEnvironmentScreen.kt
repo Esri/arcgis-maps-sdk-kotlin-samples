@@ -267,11 +267,12 @@ private fun ColorOptionContent(option: BackgroundColorOption) {
     }
 }
 
+private val timeOfDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+
 private fun formatTimeFromSeconds(seconds: Float): String {
     // The slider stores seconds since midnight. Convert to a clock string for display.
     val localTime = LocalTime.ofSecondOfDay(seconds.toLong())
-    val formatter = DateTimeFormatter.ofPattern("h:mm a")
-    return localTime.format(formatter)
+    return localTime.format(timeOfDayFormatter)
 }
 
 /** Maps ArcGIS [Color] values (0..255 channels) to Compose [ComposeColor] (0f..1f channels). */
