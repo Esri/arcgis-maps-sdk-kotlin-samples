@@ -247,7 +247,7 @@ fun DialogOptions(
 private fun ColorOptionContent(option: BackgroundColorOption) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
@@ -255,11 +255,11 @@ private fun ColorOptionContent(option: BackgroundColorOption) {
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(4.dp),
+                    shape = RoundedCornerShape(4.dp)
                 )
                 .background(
                     color = option.color.toComposeColor(),
-                    shape = RoundedCornerShape(4.dp),
+                    shape = RoundedCornerShape(4.dp)
                 )
         )
         Text(text = option.label)
