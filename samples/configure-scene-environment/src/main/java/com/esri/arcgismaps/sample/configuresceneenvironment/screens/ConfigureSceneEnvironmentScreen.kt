@@ -278,7 +278,7 @@ private fun Color.toComposeColor(): ComposeColor = ComposeColor(
     red = red / 255f,
     green = green / 255f,
     blue = blue / 255f,
-    alpha = alpha / 255f,
+    alpha = alpha / 255f
 )
 
 /** Preset option shown in the background color dropdown. */
