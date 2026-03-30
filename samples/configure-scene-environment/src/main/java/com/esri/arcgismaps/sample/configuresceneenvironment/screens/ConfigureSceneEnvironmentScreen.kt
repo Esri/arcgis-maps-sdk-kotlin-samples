@@ -149,7 +149,7 @@ fun DialogOptions(
     onLightingTypeChanged: (LightingType) -> Unit,
     onShadowsChanged: (Boolean) -> Unit,
     onTimeSecondsChanged: (Float) -> Unit,
-    onDismissRequest: () -> Unit,
+    onDismissRequest: () -> Unit
 ) {
     SampleDialog(onDismissRequest = onDismissRequest) {
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
