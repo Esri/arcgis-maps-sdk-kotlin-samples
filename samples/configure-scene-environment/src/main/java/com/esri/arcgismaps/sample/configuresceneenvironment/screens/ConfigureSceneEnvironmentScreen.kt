@@ -137,7 +137,7 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
  */
 @Composable
 fun DialogOptions(
-    isAtmosphere: Boolean,
+    isAtmosphereEnabled: Boolean,
     areStars: Boolean,
     currentBackground: Color,
     lightingType: LightingType,
