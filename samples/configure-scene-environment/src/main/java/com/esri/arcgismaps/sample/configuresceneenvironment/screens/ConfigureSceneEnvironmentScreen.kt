@@ -77,7 +77,7 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
         topBar = { SampleTopAppBar(title = sampleName) },
         floatingActionButton = {
             if (!isDialogOptionsVisible) {
-                androidx.compose.material3.FloatingActionButton(
+                FloatingActionButton(
                     modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
                     onClick = { isDialogOptionsVisible = true }
                 ) { Icon(Icons.Filled.Settings, contentDescription = "Show options") }
