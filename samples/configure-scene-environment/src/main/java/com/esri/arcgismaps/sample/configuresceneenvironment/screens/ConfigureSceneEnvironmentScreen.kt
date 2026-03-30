@@ -142,7 +142,7 @@ fun DialogOptions(
     selectedBackgroundColor: Color,
     lightingType: LightingType,
     areShadows: Boolean,
-    timeSeconds: Float,
+    timeOfDaySeconds: Float,
     timeSecondsRange: ClosedFloatingPointRange<Float>,
     onAtmosphereChanged: (Boolean) -> Unit,
     onStarsChanged: (Boolean) -> Unit,
