@@ -284,7 +284,7 @@ private fun Color.toComposeColor(): ComposeColor = ComposeColor(
 /** Preset option shown in the background color dropdown. */
 private data class BackgroundColorOption(
     val label: String,
-    val color: Color,
+    val color: Color
 )
 
 private val backgroundColorOptions = listOf(
