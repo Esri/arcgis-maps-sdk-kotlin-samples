@@ -174,14 +174,17 @@ fun DialogOptions(
             Text(text = "Background", style = MaterialTheme.typography.titleMedium)
             var isColorMenuExpanded by remember { mutableStateOf(false) }
             val selectedColorOption = backgroundColorOptions.firstOrNull { it.color == selectedBackgroundColor }
-                ?: backgroundColorOptions.last()
 
             Box(modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { isColorMenuExpanded = true }
                 ) {
-                    ColorOptionContent(option = selectedColorOption)
+                    if (selectedColorOption != null) {
+                        ColorOptionContent(option = selectedColorOption)
+                    } else {
+                        Text("Choose background color")
+                    }
                 }
                 DropdownMenu(
                     expanded = isColorMenuExpanded,
