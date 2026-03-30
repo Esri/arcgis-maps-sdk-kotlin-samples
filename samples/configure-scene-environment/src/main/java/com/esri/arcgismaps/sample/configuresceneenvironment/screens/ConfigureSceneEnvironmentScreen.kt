@@ -184,7 +184,7 @@ fun DialogOptions(
                 }
                 DropdownMenu(
                     expanded = isColorMenuExpanded,
-                    onDismissRequest = { isColorMenuExpanded = false },
+                    onDismissRequest = { isColorMenuExpanded = false }
                 ) {
                     backgroundColorOptions.forEach { option ->
                         DropdownMenuItem(
