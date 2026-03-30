@@ -6,14 +6,15 @@
     "images": [
         "apply-map-algebra.png"
     ],
-    "keywords": [ ],
+    "keywords": [],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [],
     "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/components/ApplyMapAlgebraViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/screens/ApplyMapAlgebraScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/screens/ApplyMapAlgebraScreen.kt"
     ],
     "title": "Apply map algebra"
 }

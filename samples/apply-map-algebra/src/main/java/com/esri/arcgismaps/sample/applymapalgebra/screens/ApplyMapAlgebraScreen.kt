@@ -18,12 +18,21 @@ package com.esri.arcgismaps.sample.applymapalgebra.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applymapalgebra.components.ApplyMapAlgebraViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -34,25 +43,70 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  */
 @Composable
 fun ApplyMapAlgebraScreen(sampleName: String) {
-    val mapViewModel: ApplyMapAlgebraViewModel = viewModel()
+    val viewModel: ApplyMapAlgebraViewModel = viewModel()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
+        content = { padding ->
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)) {
+
                 MapView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
+                    arcGISMap = viewModel.arcGISMap
                 )
-                // TODO: Add UI components in this Column ...
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    color = MaterialTheme.colorScheme.surface
+                ) {
+                    if (viewModel.resultsRasterLayer == null || viewModel.isPerformingAnalysis) {
+                        FilledTonalButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { viewModel.categorizeElevation() },
+                            enabled = !viewModel.isPerformingAnalysis
+                        ) {
+                            if (viewModel.isPerformingAnalysis) {
+                                Text("Categorizing...")
+                            } else {
+                                Text("Categorize")
+                            }
+                        }
+                    } else {
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            viewModel.availableLayerNames.forEachIndexed { index, layerName ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = viewModel.availableLayerNames.size
+                                    ),
+                                    selected = layerName == viewModel.selectedRasterLayerName,
+                                    onClick = { viewModel.selectRasterLayer(layerName) }
+                                ) {
+                                    Text(
+                                        text = layerName,
+                                        fontWeight = if (layerName == viewModel.selectedRasterLayerName) {
+                                            FontWeight.Bold
+                                        } else {
+                                            FontWeight.Normal
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            mapViewModel.messageDialogVM.apply {
+            // Show a message dialog if the viewmodel reported an error
+            viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
                         title = messageTitle,
