@@ -101,14 +101,14 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
             if (isDialogOptionsVisible) {
                 DialogOptions(
                     isAtmosphereEnabled = viewModel.isAtmosphereEnabled,
-                    areStars = viewModel.areStarsEnabled,
+                    areStarsEnabled = viewModel.areStarsEnabled,
                     selectedBackgroundColor = viewModel.backgroundColor,
                     lightingType = viewModel.lightingType,
-                    areShadows = viewModel.areDirectShadowsEnabled,
+                    areShadowsEnabled = viewModel.areDirectShadowsEnabled,
                     timeOfDaySeconds = viewModel.timeOfDaySeconds,
                     timeOfDaySecondsRange = viewModel.timeOfDaySecondsMin..viewModel.timeOfDaySecondsMax,
                     onAtmosphereEnabledChanged = viewModel::updateAtmosphereEnabled,
-                    onStarsVisibilityChanged = viewModel::updateStarsEnabled,
+                    onStarsEnabledChanged = viewModel::updateStarsEnabled,
                     onBackgroundColorSelected = viewModel::updateBackgroundColor,
                     onLightingTypeChanged = viewModel::updateLightingType,
                     onShadowsEnabledChanged = viewModel::updateDirectShadowsEnabled,
@@ -138,14 +138,14 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
 @Composable
 fun DialogOptions(
     isAtmosphereEnabled: Boolean,
-    areStars: Boolean,
+    areStarsEnabled: Boolean,
     selectedBackgroundColor: Color,
     lightingType: LightingType,
-    areShadows: Boolean,
+    areShadowsEnabled: Boolean,
     timeOfDaySeconds: Float,
     timeOfDaySecondsRange: ClosedFloatingPointRange<Float>,
     onAtmosphereEnabledChanged: (Boolean) -> Unit,
-    onStarsVisibilityChanged: (Boolean) -> Unit,
+    onStarsEnabledChanged: (Boolean) -> Unit,
     onBackgroundColorSelected: (Color) -> Unit,
     onLightingTypeChanged: (LightingType) -> Unit,
     onShadowsEnabledChanged: (Boolean) -> Unit,
@@ -166,7 +166,7 @@ fun DialogOptions(
             if (lightingType == LightingType.SUN) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = "Stars")
-                    Switch(checked = areStars, onCheckedChange = { onStarsVisibilityChanged(it) })
+                    Switch(checked = areStarsEnabled, onCheckedChange = { onStarsEnabledChanged(it) })
                 }
             }
 
@@ -222,7 +222,7 @@ fun DialogOptions(
             // Shadows toggle
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Shadows")
-                Switch(checked = areShadows, onCheckedChange = onShadowsEnabledChanged)
+                Switch(checked = areShadowsEnabled, onCheckedChange = onShadowsEnabledChanged)
             }
 
             // Time slider, only meaningful when using Sun lighting
@@ -306,14 +306,14 @@ fun DialogOptionsPreview() {
     SamplePreviewSurface {
         DialogOptions(
             isAtmosphereEnabled = true,
-            areStars = true,
+            areStarsEnabled = true,
             selectedBackgroundColor = Color.transparent,
             lightingType = LightingType.SUN,
-            areShadows = true,
+            areShadowsEnabled = true,
             timeOfDaySeconds = 43_200f,
             timeOfDaySecondsRange = 0f..82_800f,
             onAtmosphereEnabledChanged = {},
-            onStarsVisibilityChanged = {},
+            onStarsEnabledChanged = {},
             onBackgroundColorSelected = {},
             onLightingTypeChanged = {},
             onShadowsEnabledChanged = {},
