@@ -116,8 +116,8 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
     LaunchedEffect(Unit) {
         buildingSceneLayer.load().onSuccess {
             val sublayers = buildingSceneLayer.sublayers
-            overviewSublayer = sublayers.first { it.name == "Overview" }
-            fullModelSublayer = sublayers.first { it.name == "Full Model" }
+            overviewSublayer = sublayers.first { it.modelName == "Overview" }
+            fullModelSublayer = sublayers.first { it.modelName == "FullModel" }
         }
     }
 
