@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.showlineofsightbetweengeoelements"
+    namespace = "com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements"
     buildFeatures {
         buildConfig = true
     }

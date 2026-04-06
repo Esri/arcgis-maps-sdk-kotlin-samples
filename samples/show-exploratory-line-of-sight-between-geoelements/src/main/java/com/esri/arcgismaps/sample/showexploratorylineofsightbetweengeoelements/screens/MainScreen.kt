@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.screens
+package com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.components.SceneViewModel
+import com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements.components.SceneViewModel
 
 /**
  * Main screen layout for the sample app

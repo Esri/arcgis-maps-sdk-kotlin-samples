@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.components
+package com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -49,7 +49,7 @@ import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SurfacePlacement
-import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.R
+import com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -86,7 +86,7 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
 
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() + File.separator + application.getString(
-            R.string.show_line_of_sight_between_geoelements_app_name
+            R.string.show_exploratory_line_of_sight_between_geoelements_app_name
         ) + File.separator
     }
 
@@ -177,7 +177,7 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
     }
 
 
-    // Create a line of sight between the two graphics and add it to the analysis overlay
+    // Create an exploratory line of sight between the two graphics and add it to the analysis overlay
     private val lineOfSight = ExploratoryGeoElementLineOfSight(
         observerGeoElement = observerGraphic,
         targetGeoElement = taxiGraphic

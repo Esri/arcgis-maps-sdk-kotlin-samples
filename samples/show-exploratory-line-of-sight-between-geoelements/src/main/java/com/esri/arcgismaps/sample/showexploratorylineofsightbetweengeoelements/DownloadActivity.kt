@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showlineofsightbetweengeoelements
+package com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,7 +26,7 @@ class DownloadActivity : DownloaderActivity() {
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the app name of the sample
-            getString(R.string.show_line_of_sight_between_geoelements_app_name),
+            getString(R.string.show_exploratory_line_of_sight_between_geoelements_app_name),
             listOf(
                 "https://www.arcgis.com/home/item.html?id=3af5cfec0fd24dac8d88aea679027cb9"
             )

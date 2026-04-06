@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showlineofsightbetweengeoelements
+package com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.showlineofsightbetweengeoelements.screens.MainScreen
+import com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
             color = MaterialTheme.colorScheme.background
         ) {
             MainScreen(
-                sampleName = getString(R.string.show_line_of_sight_between_geoelements_app_name)
+                sampleName = getString(R.string.show_exploratory_line_of_sight_between_geoelements_app_name)
             )
         }
     }
