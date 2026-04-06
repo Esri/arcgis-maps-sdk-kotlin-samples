@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -40,12 +39,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,7 +54,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.configurebasemapstyleparameters.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -65,15 +63,9 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions
     val mapViewModel: MapViewModel = viewModel()
+    var showBottomSheet by remember { mutableStateOf(true) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    // handle the BottomSheetScaffold state
-    val bottomSheetScope = rememberCoroutineScope()
-    val bottomSheetState = rememberBottomSheetScaffoldState().apply {
-        bottomSheetScope.launch {
-            // show the bottom sheet on launch
-            bottomSheetState.expand()
-        }
-    }
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -89,16 +81,12 @@ fun MainScreen(sampleName: String) {
                     arcGISMap = mapViewModel.map
                 )
                 // show the "Show controls" button only when the bottom sheet is not visible
-                if (!bottomSheetState.bottomSheetState.isVisible) {
+                if (!showBottomSheet) {
                     Button(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 24.dp),
-                        onClick = {
-                            bottomSheetScope.launch {
-                                bottomSheetState.bottomSheetState.expand()
-                            }
-                        },
+                        onClick = { showBottomSheet = true },
                     ) {
                         Text(
                             text = "Show controls"
@@ -106,46 +94,43 @@ fun MainScreen(sampleName: String) {
                     }
                 }
                 // constrain the bottom sheet to a maximum width of 380dp
-                Box(
-                    modifier = Modifier
-                        .widthIn(0.dp, 380.dp)
-                ) {
-                    BottomSheetScaffold(
-                        scaffoldState = bottomSheetState,
-                        sheetContent = {
-                            Box(
-                                // constrain the height of the bottom sheet to 160dp
-                                Modifier
-                                    .heightIn(max = 160.dp)
-                                    .padding(8.dp)
-                            ) {
-                                Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Column(Modifier.weight(0.5f)) {
-                                        // UI for setting the language strategy
-                                        LanguageStrategyControls(
-                                            languageStrategyOptions = mapViewModel.languageStrategyOptions,
-                                            onLanguageStrategyChange = { languageStrategy ->
-                                                mapViewModel.updateLanguageStrategy(languageStrategy)
-                                            },
-                                            languageStrategy = mapViewModel.languageStrategy,
-                                            enabled = (mapViewModel.specificLanguage == "None")
-                                        )
-                                    }
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = { showBottomSheet = false },
+                        sheetState = bottomSheetState,
+                        modifier = Modifier.widthIn(0.dp, 380.dp)
+                    ) {
+                        Box(
+                            // constrain the height of the bottom sheet to 160dp
+                            Modifier
+                                .heightIn(max = 160.dp)
+                                .padding(8.dp)
+                        ) {
+                            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                                Column(Modifier.weight(0.5f)) {
+                                    // UI for setting the language strategy
+                                    LanguageStrategyControls(
+                                        languageStrategyOptions = mapViewModel.languageStrategyOptions,
+                                        onLanguageStrategyChange = { languageStrategy ->
+                                            mapViewModel.updateLanguageStrategy(languageStrategy)
+                                        },
+                                        languageStrategy = mapViewModel.languageStrategy,
+                                        enabled = (mapViewModel.specificLanguage == "None")
+                                    )
+                                }
 
-                                    Column(Modifier.weight(0.5f)) {
-                                        // UI for setting the specific language
-                                        SpecificLanguageControls(
-                                            specificLanguageOptions = mapViewModel.specificLanguageOptions,
-                                            onSpecificLanguageChange = { specificLanguage ->
-                                                mapViewModel.updateSpecificStrategy(specificLanguage)
-                                            },
-                                            specificLanguage = mapViewModel.specificLanguage
-                                        )
-                                    }
+                                Column(Modifier.weight(0.5f)) {
+                                    // UI for setting the specific language
+                                    SpecificLanguageControls(
+                                        specificLanguageOptions = mapViewModel.specificLanguageOptions,
+                                        onSpecificLanguageChange = { specificLanguage ->
+                                            mapViewModel.updateSpecificStrategy(specificLanguage)
+                                        },
+                                        specificLanguage = mapViewModel.specificLanguage
+                                    )
                                 }
                             }
                         }
-                    ) {
                     }
                 }
             }
