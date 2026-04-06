@@ -225,12 +225,15 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     private fun collectLocationChanges() = lifecycleScope.launch {
         nmeaLocationDataSource.locationChanged.collect { nmeaLocation ->
             // convert from meters to foot
-            val horizontalAccuracy = nmeaLocation.horizontalAccuracy * 3.28084
-            val verticalAccuracy = nmeaLocation.verticalAccuracy * 3.28084
-            accuracyTV.text =
-                getString(R.string.accuracy) + "Horizontal-%.1fft, Vertical-%.1fft".format(
-                    horizontalAccuracy, verticalAccuracy
-                )
+            val horizontalAccuracyFeet = nmeaLocation.horizontalAccuracy
+                .takeIf { it.isFinite() }
+                ?.times(3.28084)
+            val verticalAccuracyFeet = nmeaLocation.verticalAccuracy
+                .takeIf { it.isFinite() }
+                ?.times(3.28084)
+            val horizontalText = horizontalAccuracyFeet?.let { "%.1fft".format(it) } ?: "Unavailable"
+            val verticalText = verticalAccuracyFeet?.let { "%.1fft".format(it) } ?: "Unavailable"
+            accuracyTV.text = getString(R.string.accuracy) + "Horizontal-$horizontalText, Vertical-$verticalText"
         }
     }
 
