@@ -138,6 +138,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                         } else {
                             scope.launch {
                                 sheetState.hide()
+                                mapViewModel.clearSelection()
                             }
                         }
                     },
