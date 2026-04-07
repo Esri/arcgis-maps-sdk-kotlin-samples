@@ -24,9 +24,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -36,10 +34,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -97,38 +95,32 @@ fun MainScreen(sampleName: String) {
                 if (showBottomSheet) {
                     ModalBottomSheet(
                         onDismissRequest = { showBottomSheet = false },
-                        sheetState = bottomSheetState,
-                        modifier = Modifier.widthIn(0.dp, 380.dp)
+                        sheetState = bottomSheetState
                     ) {
-                        Box(
-                            // constrain the height of the bottom sheet to 160dp
-                            Modifier
-                                .heightIn(max = 160.dp)
-                                .padding(8.dp)
+                        Row(
+                            modifier = Modifier.padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                                Column(Modifier.weight(0.5f)) {
-                                    // UI for setting the language strategy
-                                    LanguageStrategyControls(
-                                        languageStrategyOptions = mapViewModel.languageStrategyOptions,
-                                        onLanguageStrategyChange = { languageStrategy ->
-                                            mapViewModel.updateLanguageStrategy(languageStrategy)
-                                        },
-                                        languageStrategy = mapViewModel.languageStrategy,
-                                        enabled = (mapViewModel.specificLanguage == "None")
-                                    )
-                                }
-
-                                Column(Modifier.weight(0.5f)) {
-                                    // UI for setting the specific language
-                                    SpecificLanguageControls(
-                                        specificLanguageOptions = mapViewModel.specificLanguageOptions,
-                                        onSpecificLanguageChange = { specificLanguage ->
-                                            mapViewModel.updateSpecificStrategy(specificLanguage)
-                                        },
-                                        specificLanguage = mapViewModel.specificLanguage
-                                    )
-                                }
+                            Column(Modifier.weight(0.5f)) {
+                                // UI for setting the language strategy
+                                LanguageStrategyControls(
+                                    languageStrategyOptions = mapViewModel.languageStrategyOptions,
+                                    onLanguageStrategyChange = { languageStrategy ->
+                                        mapViewModel.updateLanguageStrategy(languageStrategy)
+                                    },
+                                    languageStrategy = mapViewModel.languageStrategy,
+                                    enabled = (mapViewModel.specificLanguage == "None")
+                                )
+                            }
+                            Column(Modifier.weight(0.5f)) {
+                                // UI for setting the specific language
+                                SpecificLanguageControls(
+                                    specificLanguageOptions = mapViewModel.specificLanguageOptions,
+                                    onSpecificLanguageChange = { specificLanguage ->
+                                        mapViewModel.updateSpecificStrategy(specificLanguage)
+                                    },
+                                    specificLanguage = mapViewModel.specificLanguage
+                                )
                             }
                         }
                     }
