@@ -44,6 +44,8 @@ import java.nio.charset.StandardCharsets
 import java.util.Timer
 import kotlin.concurrent.timerTask
 
+private const val METERS_TO_FEET = 3.28084
+
 class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val provisionPath: String by lazy {
@@ -227,12 +229,12 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             // convert from meters to foot
             val horizontalAccuracyFeet = nmeaLocation.horizontalAccuracy
                 .takeIf { it.isFinite() }
-                ?.times(3.28084)
+                ?.times(METERS_TO_FEET)
             val verticalAccuracyFeet = nmeaLocation.verticalAccuracy
                 .takeIf { it.isFinite() }
-                ?.times(3.28084)
-            val horizontalText = horizontalAccuracyFeet?.let { "%.1fft".format(it) } ?: "Unavailable"
-            val verticalText = verticalAccuracyFeet?.let { "%.1fft".format(it) } ?: "Unavailable"
+                ?.times(METERS_TO_FEET)
+            val horizontalText = horizontalAccuracyFeet?.let { "%.1fft".format(it) } ?: getString(R.string.unavailable)
+            val verticalText = verticalAccuracyFeet?.let { "%.1fft".format(it) } ?: getString(R.string.unavailable)
             accuracyTV.text = getString(R.string.accuracy) + "Horizontal-$horizontalText, Vertical-$verticalText"
         }
     }
