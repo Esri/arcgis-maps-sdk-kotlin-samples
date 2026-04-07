@@ -153,7 +153,9 @@ fun MainScreen(mapViewModel: MapViewModel) {
 
                             is FeatureFormEditingEvent.DiscardedEdits -> {
                                 // when the discard edits event is received, roll back any edits
-                                mapViewModel.rollbackEdits()
+                                scope.launch {
+                                    mapViewModel.rollbackEdits()
+                                }
                             }
                         }
                     },
@@ -191,8 +193,8 @@ fun MainScreen(mapViewModel: MapViewModel) {
     if (showDiscardEditsDialog) {
         DiscardEditsDialog(
             onConfirm = {
-                mapViewModel.rollbackEdits()
                 scope.launch {
+                    mapViewModel.rollbackEdits()
                     sheetState.hide()
                     showDiscardEditsDialog = false
                 }

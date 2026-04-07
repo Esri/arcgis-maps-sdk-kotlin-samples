@@ -175,10 +175,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Discard edits and unselects feature from the layer
      */
-    fun rollbackEdits() {
-        val featureForm = featureFormState?.activeFeatureForm
-        // discard local edits to the feature form
-        featureForm?.discardEdits()
+    suspend fun rollbackEdits() {
+        featureFormState?.discardEdits()
         // reset the validation errors
         _errors.value = listOf()
     }
