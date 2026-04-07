@@ -194,12 +194,12 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                 sb.append("Floor: $floor, ")
                 sb.append("Position-source: $positionSource, ")
                 val horizontalAccuracy = location.horizontalAccuracy
-                val accuracy = if (horizontalAccuracy.isFinite()) {
+                val horizontalAccuracyText = if (horizontalAccuracy.isFinite()) {
                     "${DecimalFormat(".##").format(horizontalAccuracy)}m"
                 } else {
                     "Unavailable"
                 }
-                sb.append("Horizontal-accuracy: $accuracy, ")
+                sb.append("Horizontal-accuracy: $horizontalAccuracyText, ")
                 sb.append(when (positionSource) {
                         Location.SourceProperties.Values.POSITION_SOURCE_GNSS -> "Satellite-count: $satelliteCount"
                         "BLE" -> "Transmitter-count: $transmitterCount"
