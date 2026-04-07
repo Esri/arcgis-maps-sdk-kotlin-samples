@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showviewshedfrompointonmap.components
+package com.esri.arcgismaps.sample.showviewshedcalculatedfromgeoprocessingtask.components
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ShowViewshedFromPointOnMapViewModel(application: Application) :
+class MapViewModel(application: Application) :
     AndroidViewModel(application) {
 
     // ArcGISMap with a topographic basemap

@@ -6,7 +6,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/show_viewshed_from_point_on_map_app_name">
+            android:label="@string/show_viewshed_calculated_from_geoprocessing_task_app_name">
             
         </activity>
     </application>

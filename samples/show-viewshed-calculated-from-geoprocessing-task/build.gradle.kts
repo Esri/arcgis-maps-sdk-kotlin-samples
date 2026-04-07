@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.showviewshedfrompointonmap"
+    namespace = "com.esri.arcgismaps.sample.showviewshedcalculatedfromgeoprocessingtask"
     buildFeatures {
         buildConfig = true
     }

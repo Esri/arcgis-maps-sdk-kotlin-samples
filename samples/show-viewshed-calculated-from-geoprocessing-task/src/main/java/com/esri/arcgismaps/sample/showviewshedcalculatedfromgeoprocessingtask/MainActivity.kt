@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showviewshedfrompointonmap
+package com.esri.arcgismaps.sample.showviewshedcalculatedfromgeoprocessingtask
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.showviewshedfrompointonmap.screens.ShowViewshedFromPointOnMapScreen
+import com.esri.arcgismaps.sample.showviewshedcalculatedfromgeoprocessingtask.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -39,16 +39,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SampleAppTheme {
-                ShowViewshedFromPointOnMapApp()
+                ShowViewshedCalculatedFromGeoprocessingTaskApp()
             }
         }
     }
 
     @Composable
-    private fun ShowViewshedFromPointOnMapApp() {
+    private fun ShowViewshedCalculatedFromGeoprocessingTaskApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            ShowViewshedFromPointOnMapScreen(
-                sampleName = getString(R.string.show_viewshed_from_point_on_map_app_name)
+            MainScreen(
+                sampleName = getString(R.string.show_viewshed_calculated_from_geoprocessing_task_app_name)
             )
         }
     }

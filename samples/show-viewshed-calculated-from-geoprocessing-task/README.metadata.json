@@ -1,10 +1,10 @@
 {
     "category": "Analysis",
     "description": "Calculate a viewshed using a geoprocessing service, in this case showing what parts of a landscape are visible from points on mountainous terrain.",
-    "formal_name": "ShowViewshedFromPointOnMap",
+    "formal_name": "ShowViewshedCalculatedFromGeoprocessingTask",
     "ignore": false,
     "images": [
-        "show-viewshed-from-point-on-map.png"
+        "show-viewshed-calculated-from-geoprocessing-task.png"
     ],
     "keywords": [
         "geoprocessing",
@@ -19,7 +19,7 @@
         "GeoprocessingTask"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": "TODO",
     "relevant_apis": [
         "FeatureCollectionTable",
         "GeoprocessingFeatures",
@@ -29,9 +29,9 @@
         "GeoprocessingTask"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/components/ShowViewshedFromPointOnMapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showviewshedfrompointonmap/screens/ShowViewshedFromPointOnMapScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedcalculatedfromgeoprocessingtask/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedcalculatedfromgeoprocessingtask/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedcalculatedfromgeoprocessingtask/screens/MainScreen.kt"
     ],
-    "title": "Show viewshed from point on map"
+    "title": "Show viewshed calculated from geoprocessing task"
 }

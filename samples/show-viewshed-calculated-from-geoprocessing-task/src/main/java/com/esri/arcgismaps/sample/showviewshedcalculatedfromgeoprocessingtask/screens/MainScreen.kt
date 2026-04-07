@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showviewshedfrompointonmap.screens
+package com.esri.arcgismaps.sample.showviewshedcalculatedfromgeoprocessingtask.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,14 +29,14 @@ import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.showviewshedfrompointonmap.components.ShowViewshedFromPointOnMapViewModel
+import com.esri.arcgismaps.sample.showviewshedcalculatedfromgeoprocessingtask.components.MapViewModel
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun ShowViewshedFromPointOnMapScreen(sampleName: String) {
-    val mapViewModel: ShowViewshedFromPointOnMapViewModel = viewModel()
+fun MainScreen(sampleName: String) {
+    val mapViewModel: MapViewModel = viewModel()
 
     // Observe geoprocessing state from the view model
     val isGeoprocessingInProgress by mapViewModel.isGeoprocessingInProgress.collectAsState()
