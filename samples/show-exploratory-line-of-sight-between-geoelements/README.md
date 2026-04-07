@@ -36,4 +36,4 @@ This sample uses the GeoView-Compose Toolkit module to be able to implement a co
 
 ## Tags
 
-3D, geoview-compose, exploratory line of sight, visibility, visibility analysis
+3D, exploratory line of sight, geoview-compose, visibility, visibility analysis
