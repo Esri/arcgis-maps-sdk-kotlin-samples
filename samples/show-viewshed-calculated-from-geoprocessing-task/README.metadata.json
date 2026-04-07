@@ -19,7 +19,9 @@
         "GeoprocessingTask"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": [
+        "TODO"
+    ],
     "relevant_apis": [
         "FeatureCollectionTable",
         "GeoprocessingFeatures",
