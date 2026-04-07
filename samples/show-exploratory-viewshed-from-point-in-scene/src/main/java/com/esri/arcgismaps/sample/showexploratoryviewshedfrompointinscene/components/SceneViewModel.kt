@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showviewshedfrompointinscene.components
+package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -32,7 +32,7 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.OrbitLocationCameraController
-import com.esri.arcgismaps.sample.showviewshedfrompointinscene.R
+import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.R
 
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
 

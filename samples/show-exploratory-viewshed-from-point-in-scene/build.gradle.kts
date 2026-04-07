@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.showviewshedfrompointinscene"
+    namespace = "com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene"
     buildFeatures {
         buildConfig = true
     }

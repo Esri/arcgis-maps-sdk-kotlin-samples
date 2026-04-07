@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showviewshedfrompointinscene.screens
+package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
 import android.app.Application
 import androidx.compose.foundation.layout.Box
@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.showviewshedfrompointinscene.components.SceneViewModel
+import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.SceneViewModel
 
 /**
  * Main screen layout for the sample app

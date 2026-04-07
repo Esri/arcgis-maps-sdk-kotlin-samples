@@ -1,4 +1,4 @@
-package com.esri.arcgismaps.sample.showviewshedfrompointinscene.screens
+package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding

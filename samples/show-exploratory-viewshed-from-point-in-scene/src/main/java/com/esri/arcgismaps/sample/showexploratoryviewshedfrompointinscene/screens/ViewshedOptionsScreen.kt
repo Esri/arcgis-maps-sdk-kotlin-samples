@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showviewshedfrompointinscene.screens
+package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column

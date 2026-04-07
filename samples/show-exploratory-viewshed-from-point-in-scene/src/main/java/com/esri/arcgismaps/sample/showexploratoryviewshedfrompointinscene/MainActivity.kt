@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showviewshedfrompointinscene
+package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.showviewshedfrompointinscene.screens.MainScreen
+import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun ViewshedLocationApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            MainScreen(sampleName = getString(R.string.show_viewshed_from_point_in_scene_app_name))
+            MainScreen(sampleName = getString(R.string.show_exploratory_viewshed_from_point_in_scene_app_name))
         }
     }
 }
