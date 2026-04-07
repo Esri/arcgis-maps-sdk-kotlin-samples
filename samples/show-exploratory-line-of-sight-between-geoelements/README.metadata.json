@@ -17,9 +17,7 @@
         "ExploratoryLineOfSightTargetVisibility"
     ],
     "language": "kotlin",
-    "redirect_from": [
-        "TODO"
-    ],
+    "redirect_from": ["/kotlin/sample-code/show-line-of-sight-between-geoelements/"],
     "relevant_apis": [
         "AnalysisOverlay",
         "ExploratoryGeoElementLineOfSight",

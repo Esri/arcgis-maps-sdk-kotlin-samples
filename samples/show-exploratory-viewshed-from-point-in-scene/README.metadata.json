@@ -20,7 +20,7 @@
         "ExploratoryViewshed"
     ],
     "language": "kotlin",
-    "redirect_from": "TODO",
+    "redirect_from": ["/kotlin/sample-code/show-viewshed-from-point-in-scene/"],
     "relevant_apis": [
         "AnalysisOverlay",
         "ArcGISSceneLayer",

@@ -19,9 +19,7 @@
         "GeoprocessingTask"
     ],
     "language": "kotlin",
-    "redirect_from": [
-        "TODO"
-    ],
+    "redirect_from": ["/kotlin/sample-code/show-viewshed-from-point-on-map/"],
     "relevant_apis": [
         "FeatureCollectionTable",
         "GeoprocessingFeatures",
