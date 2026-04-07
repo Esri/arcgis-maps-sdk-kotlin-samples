@@ -27,8 +27,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/components/SceneViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/screens/MainScreen.kt"
     ],
     "title": "Show exploratory line of sight between geoelements"

@@ -31,8 +31,8 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showexploratoryviewshedfrompointinscene/components/SceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showexploratoryviewshedfrompointinscene/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showexploratoryviewshedfrompointinscene/screens/ViewshedSlider.kt",
         "src/main/java/com/esri/arcgismaps/sample/showexploratoryviewshedfrompointinscene/screens/ViewshedOptionsScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showexploratoryviewshedfrompointinscene/screens/ViewshedSlider.kt",
         "src/main/java/com/esri/arcgismaps/sample/showexploratoryviewshedfrompointinscene/screens/MainScreen.kt"
     ],
     "title": "Show exploratory viewshed from point in scene"
