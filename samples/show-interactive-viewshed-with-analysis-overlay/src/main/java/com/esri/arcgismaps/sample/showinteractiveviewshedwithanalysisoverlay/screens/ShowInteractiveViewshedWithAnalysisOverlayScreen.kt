@@ -52,7 +52,10 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                         analysisOverlays = listOf(viewModel.analysisOverlay),
                         graphicsOverlays = listOf(viewModel.graphicsOverlay)
                     )
-                    // TODO: Add UI components in this Column ...
+                    // display list of options to modify viewshed parameters
+                    ViewshedParametersScreen(
+                        onHeadingChanged = viewModel::setHeading,
+                    )
                 }
             }
 

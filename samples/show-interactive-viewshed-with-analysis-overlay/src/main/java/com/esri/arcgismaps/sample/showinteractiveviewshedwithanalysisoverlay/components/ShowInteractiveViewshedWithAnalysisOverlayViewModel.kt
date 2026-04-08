@@ -71,6 +71,8 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     private val filePath = provisionPath + app.getString(R.string.elevation_data_filename)
 
+    val viewshedParameters = ViewshedParameters()
+
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
@@ -88,7 +90,6 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
             observerGraphic = Graphic(initObserverPosition, observerSymbol)
             graphicsOverlay.graphics.add(observerGraphic)
 
-            val viewshedParameters = ViewshedParameters()
             viewshedParameters.observerPosition = initObserverPosition
             viewshedParameters.targetHeight = 20.0
             viewshedParameters.maxRadius = 8000.0
@@ -108,5 +109,9 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
             val analysis = FieldAnalysis(discreteViewshed, colormapRenderer)
             analysisOverlay.analyses.add(analysis)
         }
+    }
+
+    fun setHeading(sliderHeading: Float) {
+        viewshedParameters.heading = sliderHeading.toDouble()
     }
 }
