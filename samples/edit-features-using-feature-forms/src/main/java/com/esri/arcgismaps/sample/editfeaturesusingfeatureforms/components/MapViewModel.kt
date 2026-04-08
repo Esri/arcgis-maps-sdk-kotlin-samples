@@ -78,38 +78,31 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             // commits changes of the edited feature to the database
-            featureForm.finishEditing().onSuccess {
-                serviceFeatureTable.serviceGeodatabase?.let { database ->
-                    if (database.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
-                        // applies all local edits in the tables to the service
-                        database.applyEdits().onFailure {
-                            return@onFailure messageDialogVM.showMessageDialog(
-                                title = it.message.toString(),
-                                description = it.cause.toString()
-                            )
-                        }
-                    } else {
-                        // uploads any changes to the local table to the feature service
-                        serviceFeatureTable.applyEdits().onFailure {
-                            return@onFailure messageDialogVM.showMessageDialog(
-                                title = it.message.toString(),
-                                description = it.cause.toString()
-                            )
-                        }
+            serviceFeatureTable.serviceGeodatabase?.let { database ->
+                if (database.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
+                    // applies all local edits in the tables to the service
+                    database.applyEdits().onFailure {
+                        return@onFailure messageDialogVM.showMessageDialog(
+                            title = it.message.toString(),
+                            description = it.cause.toString()
+                        )
+                    }
+                } else {
+                    // uploads any changes to the local table to the feature service
+                    serviceFeatureTable.applyEdits().onFailure {
+                        return@onFailure messageDialogVM.showMessageDialog(
+                            title = it.message.toString(),
+                            description = it.cause.toString()
+                        )
                     }
                 }
-                // resets the attributes and geometry to the values in the data source
-                featureForm.feature.refresh()
-                // unselect the feature after the edits have been saved
-                (featureForm.feature.featureTable?.layer as FeatureLayer).clearSelection()
-                // dismiss dialog when edits are completed
-                onEditsCompleted()
-            }.onFailure {
-                return@onFailure messageDialogVM.showMessageDialog(
-                    title = it.message.toString(),
-                    description = it.cause.toString()
-                )
             }
+            // resets the attributes and geometry to the values in the data source
+            featureForm.feature.refresh()
+            // unselect the feature after the edits have been saved
+            (featureForm.feature.featureTable?.layer as FeatureLayer).clearSelection()
+            // dismiss dialog when edits are completed
+            onEditsCompleted()
         }
     }
 
