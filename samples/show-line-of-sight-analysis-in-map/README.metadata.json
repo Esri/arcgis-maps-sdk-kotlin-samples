@@ -1,0 +1,45 @@
+{
+    "category": "Analysis",
+    "description": "Perform a line of sight analysis in a map view between fixed observer and target positions.",
+    "formal_name": "ShowLineOfSightAnalysisInMap",
+    "ignore": false,
+    "images": [
+        "show-line-of-sight-analysis-in-map.png"
+    ],
+    "keywords": [
+        "analysis",
+        "elevation",
+        "line of sight",
+        "map view",
+        "spatial analysis",
+        "terrain",
+        "visibility",
+        "ContinuousField",
+        "GeometryEngine",
+        "GraphicsOverlay",
+        "LineOfSight",
+        "LineOfSightFunction",
+        "LineOfSightParameters",
+        "LineOfSightPosition",
+        "ObserverTargetPairs"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ContinuousField",
+        "GeometryEngine",
+        "GraphicsOverlay",
+        "LineOfSight",
+        "LineOfSightFunction",
+        "LineOfSightParameters",
+        "LineOfSightPosition",
+        "ObserverTargetPairs"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/components/ShowLineOfSightAnalysisInMapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/screens/ShowLineOfSightAnalysisInMapScreen.kt"
+    ],
+    "title": "Show line of sight analysis in map"
+}
