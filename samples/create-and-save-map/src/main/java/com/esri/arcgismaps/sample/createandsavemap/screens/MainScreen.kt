@@ -23,16 +23,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
@@ -43,14 +39,11 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,7 +54,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -71,6 +63,7 @@ import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.portal.PortalFolder
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.createandsavemap.components.MapViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.flow.StateFlow
@@ -87,90 +80,36 @@ fun MainScreen(sampleName: String) {
 
     val composableScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val controlsBottomSheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false).apply {
-            composableScope.launch { hide() }
-        }
-    )
-
+    var isBottomSheetVisible by remember { mutableStateOf(false) }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-                contentAlignment = Alignment.Center
-            ) {
-                // map view not shown until the portal is loaded and a basemap has been set
-                MapView(
-                    arcGISMap = mapViewModel.arcGISMap,
-                    Modifier.fillMaxSize(),
-                )
-
-                // show the "Edit map" button only when the bottom sheet is not visible
-                if (!controlsBottomSheetState.bottomSheetState.isVisible) {
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(bottom = 36.dp, end = 24.dp),
-                        onClick = {
-                            composableScope.launch {
-                                controlsBottomSheetState.bottomSheetState.show()
-                            }
-                        })
-                    {
-                        Icon(Icons.Filled.Edit, contentDescription = "Edit map button")
-                        Spacer(Modifier.padding(8.dp))
-                    }
+        floatingActionButton = {
+            // show the "Edit map" button only when the bottom sheet is not visible
+            if (!isBottomSheetVisible) {
+                FloatingActionButton(
+                    modifier = Modifier
+                        .padding(bottom = 36.dp, end = 24.dp),
+                    onClick = { isBottomSheetVisible = true })
+                {
+                    Icon(Icons.Filled.Edit, contentDescription = "Edit map button")
+                    Spacer(Modifier.padding(8.dp))
                 }
-
-                BottomSheetScaffold(
-                    modifier = Modifier.wrapContentHeight(),
-                    scaffoldState = controlsBottomSheetState,
-                    sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp.times(0.33f),
-                    sheetContent = {
-                        Column(
-                            Modifier
-                                .padding(12.dp)
-                                .navigationBarsPadding()
-                                .verticalScroll(rememberScrollState())
-                        ) {
-                            CreateMapBottomSheet(
-                                mapViewModel = mapViewModel
-                            )
-
-                            Button(
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .padding(12.dp),
-                                onClick = {
-                                    composableScope.launch {
-                                        // dismiss bottom sheet immediately
-                                        controlsBottomSheetState.bottomSheetState.hide()
-
-                                        // report success in a snack bar, failure in a popup
-                                        mapViewModel.save().onSuccess {
-                                            snackbarHostState.showSnackbar(
-                                                "Map saved to portal.",
-                                                withDismissAction = true
-                                            )
-                                        }.onFailure { err ->
-                                            mapViewModel.messageDialogVM.showMessageDialog(
-                                                "Error",
-                                                err.message.toString()
-                                            )
-                                        }
-                                    }
-                                }) {
-                                Text("Save to account")
-                            }
-                        }
-                        Spacer(Modifier.size(8.dp))
-                    }
-                ) {}
             }
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            contentAlignment = Alignment.Center
+        ) {
+            // map view not shown until the portal is loaded and a basemap has been set
+            MapView(
+                arcGISMap = mapViewModel.arcGISMap,
+                modifier = Modifier.fillMaxSize(),
+                onDown = { isBottomSheetVisible = false }
+            )
 
             // message dialog can draw over all other content in the main screen
             mapViewModel.messageDialogVM.apply {
@@ -183,7 +122,40 @@ fun MainScreen(sampleName: String) {
                 }
             }
         }
-    )
+    }
+    BottomSheet(
+        sheetTitle = "Choose map settings:",
+        onDismissRequest = { isBottomSheetVisible = false },
+        isVisible = isBottomSheetVisible
+    ) {
+        Column {
+            CreateMapBottomSheet(mapViewModel = mapViewModel)
+            Button(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(12.dp),
+                onClick = {
+                    composableScope.launch {
+                        // dismiss bottom sheet immediately
+                        isBottomSheetVisible = false
+                        // report success in a snack bar, failure in a popup
+                        mapViewModel.save().onSuccess {
+                            snackbarHostState.showSnackbar(
+                                "Map saved to portal.",
+                                withDismissAction = true
+                            )
+                        }.onFailure { err ->
+                            mapViewModel.messageDialogVM.showMessageDialog(
+                                "Error",
+                                err.message.toString()
+                            )
+                        }
+                    }
+                }) {
+                Text("Save to account")
+            }
+        }
+    }
 }
 
 /**
@@ -193,25 +165,22 @@ fun MainScreen(sampleName: String) {
 fun CreateMapBottomSheet(
     mapViewModel: MapViewModel
 ) {
-
     Column(
-        modifier = Modifier.padding(vertical = 8.dp),
+        modifier = Modifier
+            .padding(8.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = "Choose map settings:",
-            style = MaterialTheme.typography.titleMedium
-        )
         BasemapDropdown(
-            mapViewModel.selectedBasemapStyle,
-            mapViewModel.stylesMap,
-            mapViewModel::updateBasemapStyle
+            basemapStyle = mapViewModel.selectedBasemapStyle,
+            stylesNameMap = mapViewModel.stylesMap,
+            updateBasemapStyle = mapViewModel::updateBasemapStyle
         )
 
         LayersDropdown(
-            mapViewModel.availableLayers,
-            mapViewModel.arcGISMap,
-            mapViewModel::updateActiveLayers
+            availableLayers = mapViewModel.availableLayers,
+            arcGISMap = mapViewModel.arcGISMap,
+            updateActiveLayers = mapViewModel::updateActiveLayers
         )
 
         HorizontalDivider(Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
@@ -233,9 +202,9 @@ fun CreateMapBottomSheet(
         )
 
         FolderDropdown(
-            mapViewModel.portalFolder,
-            mapViewModel.portalFolders,
-            mapViewModel::updateFolder
+            currentFolder = mapViewModel.portalFolder,
+            portalFolders = mapViewModel.portalFolders,
+            updateFolder = mapViewModel::updateFolder
         )
 
         OutlinedTextField(
