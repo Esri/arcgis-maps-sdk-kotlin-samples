@@ -111,6 +111,18 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
     }
 
+    fun setTargetHeight(targetHeight: Float) {
+        viewshedParameters.targetHeight = targetHeight.toDouble()
+    }
+
+    fun setMaxRadius(maxRadius: Float) {
+        viewshedParameters.maxRadius = maxRadius.toDouble()
+    }
+
+    fun setFieldOfView(fieldOfView: Float) {
+        viewshedParameters.fieldOfView = fieldOfView.toDouble()
+    }
+
     fun setHeading(sliderHeading: Float) {
         viewshedParameters.heading = sliderHeading.toDouble()
     }

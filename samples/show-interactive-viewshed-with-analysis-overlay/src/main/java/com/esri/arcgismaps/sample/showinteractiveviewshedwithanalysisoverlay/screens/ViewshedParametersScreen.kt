@@ -20,19 +20,55 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun ViewshedParametersScreen(
+    onTargetHeightChanged: (Float) -> Unit = {},
+    onMaxRadiusChanged: (Float) -> Unit = {},
+    onFieldOfViewChanged: (Float) -> Unit = {},
     onHeadingChanged: (Float) -> Unit = {},
 ) {
     Column {
         // sliders
+        TargetHeightSlider(onTargetHeightChanged)
+        MaxRadiusSlider(onMaxRadiusChanged)
+        FieldOfViewSlider(onFieldOfViewChanged)
         HeadingSlider(onHeadingChanged)
     }
+}
+
+@Composable
+private fun TargetHeightSlider(onTargetHeightChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Target Height",
+        initialSliderValue = 20f,
+        sliderRangeValue = 2f..1000f,
+        functionChanged = onTargetHeightChanged
+    )
+}
+
+@Composable
+private fun MaxRadiusSlider(onMaxRadiusChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Maximum Radius",
+        initialSliderValue = 8000f,
+        sliderRangeValue = 2500f..20000f,
+        functionChanged = onMaxRadiusChanged
+    )
+}
+
+@Composable
+private fun FieldOfViewSlider(onFieldOfViewChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Field of View",
+        initialSliderValue = 150f,
+        sliderRangeValue = 5f..360f,
+        functionChanged = onFieldOfViewChanged
+    )
 }
 
 @Composable
 private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Heading",
-        initialSliderValue = 82f,
+        initialSliderValue = 10f,
         sliderRangeValue = 0f..360f,
         functionChanged = onHeadingChanged
     )

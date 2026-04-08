@@ -54,6 +54,9 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                     )
                     // display list of options to modify viewshed parameters
                     ViewshedParametersScreen(
+                        onTargetHeightChanged = viewModel::setTargetHeight,
+                        onMaxRadiusChanged = viewModel::setMaxRadius,
+                        onFieldOfViewChanged = viewModel::setFieldOfView,
                         onHeadingChanged = viewModel::setHeading,
                     )
                 }
