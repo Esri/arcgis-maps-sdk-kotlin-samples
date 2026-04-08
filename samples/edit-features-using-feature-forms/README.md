@@ -18,9 +18,9 @@ Tap a feature on the map to open a sheet displaying the feature form. Select for
 2. When the map is tapped, perform an identify operation to check if the tapped location is an `ArcGISFeature`.
 3. Create a `FeatureForm` object using the identified `ArcGISFeature`.
 * **Note:** If the feature's `FeatureLayer`, `ArcGISFeatureTable`, or the `SubtypeSublayer` has an authored `FeatureFormDefinition`, then this definition will be used to create the `FeatureForm`. If such a definition is not found, a default definition is generated.
-4. Use the `FeatureForm` toolkit component to display the feature form configuration by providing the created `featureForm` object.
+4. Use the `FeatureForm` toolkit component to display the feature form configuration by providing a `FeatureFormState` created using the `featureForm` object.
 5. Optionally, you can add a `validationErrorVisibility` option to the `FeatureForm` toolkit component that determines the visibility of validation errors.
-6. Once edits are added to the form fields, check if the validation errors list are empty using `featureForm.validationErrors` to verify that there are no errors.
+6. Listen to the `onEditingEvent` callback to track when edits are saved on the form.
 7. To commit edits on the service geodatabase:
    1. Call `featureForm.finishEditing()` to save edits to the database.
    2. Retrieve the backing service feature table's geodatabase using `serviceFeatureTable?.serviceGeodatabase`.
