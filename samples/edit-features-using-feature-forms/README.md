@@ -22,11 +22,10 @@ Tap a feature on the map to open a sheet displaying the feature form. Select for
 5. Optionally, you can add a `validationErrorVisibility` option to the `FeatureForm` toolkit component that determines the visibility of validation errors.
 6. Listen to the `onEditingEvent` callback to track when edits are saved on the form.
 7. To commit edits on the service geodatabase:
-   1. Call `featureForm.finishEditing()` to save edits to the database.
-   2. Retrieve the backing service feature table's geodatabase using `serviceFeatureTable?.serviceGeodatabase`.
-   3. Verify the service geodatabase can commit changes back to the service using `serviceGeodatabase.serviceInfo?.canUseServiceGeodatabaseApplyEdits`
-   4. If apply edits are allowed, call `serviceGeodatabase.applyEdits()` to apply local edits to the online service.
-   5. If edits are not allowed on the `ServiceGeodatabase`, then apply edits to the `ServiceFeatureTable` using `ServiceFeatureTable.applyEdits()`
+   1. Retrieve the backing service feature table's geodatabase using `serviceFeatureTable?.serviceGeodatabase`.
+   2. Verify the service geodatabase can commit changes back to the service using `serviceGeodatabase.serviceInfo?.canUseServiceGeodatabaseApplyEdits`
+   3. If apply edits are allowed, call `serviceGeodatabase.applyEdits()` to apply local edits to the online service.
+   4. If edits are not allowed on the `ServiceGeodatabase`, then apply edits to the `ServiceFeatureTable` using `ServiceFeatureTable.applyEdits()`
 
 ## Relevant API
 
