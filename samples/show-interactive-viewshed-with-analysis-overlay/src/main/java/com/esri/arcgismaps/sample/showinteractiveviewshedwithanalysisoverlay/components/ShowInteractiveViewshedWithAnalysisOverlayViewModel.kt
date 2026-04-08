@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components
 
 import android.app.Application
-import android.os.Environment
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,7 +25,6 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.analysis.ContinuousField
 import com.arcgismaps.analysis.ContinuousFieldFunction
-import com.arcgismaps.analysis.HeightOrigin
 import com.arcgismaps.analysis.interactive.FieldAnalysis
 import com.arcgismaps.analysis.visibility.ViewshedFunction
 import com.arcgismaps.analysis.visibility.ViewshedParameters
@@ -35,9 +33,12 @@ import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
+import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.raster.Colormap
 import com.arcgismaps.mapping.symbology.raster.ColormapRenderer
 import com.arcgismaps.mapping.view.AnalysisOverlay
+import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
@@ -53,6 +54,14 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     )
     var analysisOverlay by mutableStateOf(AnalysisOverlay())
     var graphicsOverlay by mutableStateOf(GraphicsOverlay())
+
+    val observerSymbol = SimpleMarkerSymbol(
+        SimpleMarkerSymbolStyle.Circle,
+        Color.fromRgba(0, 94, 255, 255),
+        10.0f
+    )
+
+    lateinit var observerGraphic: Graphic
 
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(
@@ -75,6 +84,10 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
             val initObserverPosition =
                 Point(-579246.504, 7479619.947, 20.0, SpatialReference.webMercator())
+
+            observerGraphic = Graphic(initObserverPosition, observerSymbol)
+            graphicsOverlay.graphics.add(observerGraphic)
+
             val viewshedParameters = ViewshedParameters()
             viewshedParameters.observerPosition = initObserverPosition
             viewshedParameters.targetHeight = 20.0
@@ -86,7 +99,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
             val discreteViewshed = viewshedFunction.toDiscreteFieldFunction()
 
             // Prepare a colormap renderer to display the viewshed result
-            val areaNotVisibleColor = Color.fromRgba(100, 100, 100, 255) // grey
+            val areaNotVisibleColor = Color.gray
             val areaVisibleColor = Color.fromRgba(136, 204, 132, 100) // translucent green
             val colors = listOf(areaNotVisibleColor, areaVisibleColor)
             val colormap = Colormap.create(colors)
