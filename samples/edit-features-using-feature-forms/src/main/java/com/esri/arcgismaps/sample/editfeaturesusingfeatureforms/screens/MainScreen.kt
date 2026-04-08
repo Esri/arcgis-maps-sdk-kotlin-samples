@@ -176,6 +176,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                 scope.launch {
                     featureFormState?.discardEdits()
                     sheetState.hide()
+                    mapViewModel.clearSelection()
                     showDiscardEditsDialog = false
                 }
             },
