@@ -27,9 +27,6 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.featureforms.FeatureForm
 import com.arcgismaps.mapping.featureforms.FeatureFormDefinition
-import com.arcgismaps.mapping.featureforms.FieldFormElement
-import com.arcgismaps.mapping.featureforms.FormElement
-import com.arcgismaps.mapping.featureforms.GroupFormElement
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.featureforms.FeatureFormState
@@ -160,32 +157,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
             }
-        }
-    }
-}
-
-/**
- * Returns the [FieldFormElement] with the given [fieldName] in the [FeatureForm]. If none exists
- * null is returned.
- */
-fun List<FormElement>.getFormElement(fieldName: String): FieldFormElement? {
-    val fieldElements = filterIsInstance<FieldFormElement>()
-    val element = if (fieldElements.isNotEmpty()) {
-        fieldElements.firstNotNullOfOrNull {
-            if (it.fieldName == fieldName) it else null
-        }
-    } else {
-        null
-    }
-
-    return element ?: run {
-        val groupElements = filterIsInstance<GroupFormElement>()
-        if (groupElements.isNotEmpty()) {
-            groupElements.firstNotNullOfOrNull {
-                it.elements.getFormElement(fieldName)
-            }
-        } else {
-            null
         }
     }
 }
