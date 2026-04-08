@@ -1,0 +1,20 @@
+{
+    "category": "Analysis",
+    "description": "TODO",
+    "formal_name": "ShowInteractiveViewshedWithAnalysisOverlay",
+    "ignore": false,
+    "images": [
+        "show-interactive-viewshed-with-analysis-overlay.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/components/ShowInteractiveViewshedWithAnalysisOverlayViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ShowInteractiveViewshedWithAnalysisOverlayScreen.kt"
+    ],
+    "title": "Show interactive viewshed with analysis overlay"
+}

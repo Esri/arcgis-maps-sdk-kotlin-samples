@@ -1,0 +1,4 @@
+<resources>
+    <string name="show_interactive_viewshed_with_analysis_overlay_app_name">Show interactive viewshed with analysis overlay</string>
+    <string name="elevation_data_filename">arran.tif</string>
+</resources>
