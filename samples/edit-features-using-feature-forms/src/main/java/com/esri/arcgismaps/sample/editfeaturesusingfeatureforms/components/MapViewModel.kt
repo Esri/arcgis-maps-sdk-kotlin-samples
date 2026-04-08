@@ -17,6 +17,7 @@
 package com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,6 +33,7 @@ import com.arcgismaps.mapping.featureforms.FormElement
 import com.arcgismaps.mapping.featureforms.GroupFormElement
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.toolkit.featureforms.FeatureFormState
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
@@ -53,8 +55,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val map = ArcGISMap(portalItem)
 
     // keep track of the selected feature form
-    private val _featureForm = MutableStateFlow<FeatureForm?>(null)
-    val featureForm: StateFlow<FeatureForm?> = _featureForm.asStateFlow()
+    private val _featureFormState = mutableStateOf<FeatureFormState?>(null)
+    val featureFormState: FeatureFormState?
+        get() = _featureFormState.value
 
     // keep track of the list of validation errors
     private val _errors = MutableStateFlow<List<ErrorInfo>>(listOf())
@@ -78,7 +81,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * @param onEditsCompleted Invoked when edits are applied successfully
      */
     fun applyEdits(onEditsCompleted: () -> Unit) {
-        val featureForm = _featureForm.value
+        val featureForm = featureFormState?.activeFeatureForm
             ?: return messageDialogVM.showMessageDialog("Feature form state is not configured")
 
         // update the state flow with the list of validation errors found
@@ -161,13 +164,19 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * Unselects the feature from the layer and resets the [featureFormState].
+     */
+    fun clearSelection() {
+        val featureForm = featureFormState?.activeFeatureForm
+        (featureForm?.feature?.featureTable?.layer as FeatureLayer).clearSelection()
+        _featureFormState.value = null
+    }
+
+    /**
      * Discard edits and unselects feature from the layer
      */
-    fun rollbackEdits() {
-        // discard local edits to the feature form
-        _featureForm.value?.discardEdits()
-        // unselect the feature
-        (_featureForm.value?.feature?.featureTable?.layer as FeatureLayer).clearSelection()
+    suspend fun rollbackEdits() {
+        featureFormState?.discardEdits()
         // reset the validation errors
         _errors.value = listOf()
     }
@@ -194,7 +203,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                             // select the feature
                             layer.selectFeature(feature)
                             // set the UI to an editing state with the FeatureForm
-                            _featureForm.value = featureForm
+                            _featureFormState.value = FeatureFormState(
+                                featureForm = featureForm,
+                                coroutineScope = viewModelScope
+                            )
                         }
                     }
                 } catch (e: Exception) {

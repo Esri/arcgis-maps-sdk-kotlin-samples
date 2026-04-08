@@ -29,25 +29,19 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arcgismaps.toolkit.featureforms.FeatureForm
+import com.arcgismaps.toolkit.featureforms.FeatureFormEditingEvent
 import com.arcgismaps.toolkit.featureforms.FeatureFormState
 import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
 import com.arcgismaps.toolkit.featureforms.theme.FeatureFormDefaults
@@ -79,17 +74,29 @@ import kotlinx.coroutines.launch
 fun MainScreen(mapViewModel: MapViewModel) {
 
     val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-
     // the feature form the currently selected feature
-    val featureForm by mapViewModel.featureForm.collectAsState()
+    val featureFormState = mapViewModel.featureFormState
+
     // the validation errors found when the edits are applied
     val formValidationErrors by mapViewModel.errors.collectAsState()
 
     // boolean trackers for save and discard edits dialogs
     var showSaveEditsDialog by remember { mutableStateOf(false) }
     var showDiscardEditsDialog by remember { mutableStateOf(false) }
+
+    // The bottom sheet state used to control the visibility of the feature form
+    val sheetState = rememberModalBottomSheetState(
+        confirmValueChange = { sheetValue ->
+            if (sheetValue != SheetValue.Hidden) return@rememberModalBottomSheetState true
+            if (featureFormState?.hasEdits() == true) {
+                // if there are unsaved edits, show the discard edits dialog
+                showDiscardEditsDialog = true
+                false
+            } else {
+                true
+            }
+        }
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -105,41 +112,54 @@ fun MainScreen(mapViewModel: MapViewModel) {
             onSingleTapConfirmed = { mapViewModel.onSingleTapConfirmed(it) }
         )
 
-        // update bottom sheet visibility when a feature is selected
-        LaunchedEffect(featureForm) {
-            showBottomSheet = featureForm != null
-        }
-
-        if (showBottomSheet && featureForm != null) {
+        if (featureFormState != null) {
             // display feature form bottom sheet
             ModalBottomSheet(
                 onDismissRequest = {
-                    showBottomSheet = false
-                    showDiscardEditsDialog = true
+                    // clear the selected feature when the bottom sheet is dismissed
+                    mapViewModel.clearSelection()
                 },
                 sheetState = sheetState
             ) {
-                // top bar to manage save or discard edits
-                TopFormBar(
-                    onClose = { showDiscardEditsDialog = true },
-                    onSave = {
-                        showSaveEditsDialog = true
-                        mapViewModel.applyEdits {
-                            scope.launch {
-                                sheetState.hide()
-                                showBottomSheet = false
-                                showSaveEditsDialog = false
-                            }
-                        }
-                    })
                 // display the selected feature form using the Toolkit component
                 FeatureForm(
-                    featureFormState = FeatureFormState(featureForm!!, scope),
+                    featureFormState = featureFormState,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 20.dp)
                         .navigationBarsPadding(),
+                    showCloseIcon = true,
                     validationErrorVisibility = ValidationErrorVisibility.Automatic,
+                    onDismiss = {
+                        // if there are edits, show the discard edits dialog, otherwise hide the
+                        // bottom sheet
+                        if (featureFormState.hasEdits()) {
+                            showDiscardEditsDialog = true
+                        } else {
+                            scope.launch {
+                                sheetState.hide()
+                                mapViewModel.clearSelection()
+                            }
+                        }
+                    },
+                    onEditingEvent = { event ->
+                        when (event) {
+                            is FeatureFormEditingEvent.SavedEdits -> {
+                                // when the save edits event is received, attempt to apply edits
+                                showSaveEditsDialog = true
+                                mapViewModel.applyEdits {
+                                    showSaveEditsDialog = false
+                                }
+                            }
+
+                            is FeatureFormEditingEvent.DiscardedEdits -> {
+                                // when the discard edits event is received, roll back any edits
+                                scope.launch {
+                                    mapViewModel.rollbackEdits()
+                                }
+                            }
+                        }
+                    },
                     colorScheme = FeatureFormDefaults.colorScheme(
                         groupElementColors = FeatureFormDefaults.groupElementColors(
                             outlineColor = MaterialTheme.colorScheme.secondary,
@@ -160,13 +180,13 @@ fun MainScreen(mapViewModel: MapViewModel) {
         }
     }
 
-    if (showSaveEditsDialog && formValidationErrors.isNotEmpty() && showBottomSheet) {
+    if (showSaveEditsDialog && formValidationErrors.isNotEmpty()) {
         // validation errors found, cancel the commit and show validation errors
         ValidationErrorsDialog(errors = formValidationErrors) {
             showSaveEditsDialog = false
             mapViewModel.cancelCommit()
         }
-    } else if (showSaveEditsDialog && showBottomSheet) {
+    } else if (showSaveEditsDialog) {
         // no validation errors found, show dialog when committing edits
         SaveFormDialog()
     }
@@ -174,16 +194,14 @@ fun MainScreen(mapViewModel: MapViewModel) {
     if (showDiscardEditsDialog) {
         DiscardEditsDialog(
             onConfirm = {
-                mapViewModel.rollbackEdits()
                 scope.launch {
+                    mapViewModel.rollbackEdits()
                     sheetState.hide()
                     showDiscardEditsDialog = false
-                    showBottomSheet = false
                 }
             },
             onCancel = {
                 showDiscardEditsDialog = false
-                showBottomSheet = true
             }
         )
     }
@@ -221,42 +239,6 @@ fun DiscardEditsDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
             Text(text = stringResource(R.string.all_changes_will_be_lost))
         }
     )
-}
-
-@Composable
-fun TopFormBar(
-    onClose: () -> Unit = {},
-    onSave: () -> Unit = {},
-) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onClose) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close Feature Editor"
-                )
-            }
-            Text(
-                text = "Edit feature",
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
-            )
-            IconButton(onClick = onSave) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Save Feature",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-        HorizontalDivider()
-    }
 }
 
 @Composable
@@ -325,6 +307,13 @@ private fun ValidationErrorsDialog(errors: List<ErrorInfo>, onDismissRequest: ()
     )
 }
 
+/**
+ * Extension function to check if there are unsaved edits in the feature form.
+ */
+private fun FeatureFormState.hasEdits(): Boolean {
+    return this.activeFeatureForm.hasEdits.value
+}
+
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -344,10 +333,4 @@ fun ValidationErrorsPreview() {
 @Composable
 fun DiscardEditsDialogPreview() {
     SampleAppTheme { DiscardEditsDialog(onConfirm = {}) {} }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TopFormBarPreview() {
-    SampleAppTheme { TopFormBar() }
 }
