@@ -65,7 +65,7 @@ fun ApplyMapAlgebraScreen(sampleName: String) {
                         .padding(12.dp),
                     color = MaterialTheme.colorScheme.surface
                 ) {
-                    if (viewModel.resultsRasterLayer == null || viewModel.isPerformingAnalysis) {
+                    if (!viewModel.hasMapAlgebraResults || viewModel.isPerformingAnalysis) {
                         FilledTonalButton(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { viewModel.categorizeElevation() },

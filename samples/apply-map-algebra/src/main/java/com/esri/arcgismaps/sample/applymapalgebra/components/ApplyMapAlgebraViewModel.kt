@@ -64,8 +64,8 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
             )
         }
 
-    // The raster layer created from the map algebra results (categorization)
-    var resultsRasterLayer by mutableStateOf<RasterLayer?>(null)
+    // True after a map algebra results layer has been created and added to the map.
+    var hasMapAlgebraResults by mutableStateOf(false)
         private set
 
     // UI state for running analysis
@@ -78,7 +78,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
 
     // Show the results option only after processing creates the output raster.
     val availableLayerNames: List<String>
-        get() = if (resultsRasterLayer == null) {
+        get() = if (!hasMapAlgebraResults) {
             listOf(ORIGINAL_ELEVATION_LAYER_NAME)
         } else {
             listOf(ORIGINAL_ELEVATION_LAYER_NAME, MAP_ALGEBRA_RESULTS_LAYER_NAME)
@@ -191,15 +191,10 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                     opacity = 0.5f
                 }
 
-                // Load the result layer on the main thread and add to the map's operational layers.
+                // Load the result layer and add to the map's operational layers.
                 resultLayer.load().onSuccess {
-                    // Keep only one results layer in the map and show the latest output.
-                    resultsRasterLayer?.let { existingLayer ->
-                        arcGISMap.operationalLayers.remove(existingLayer)
-                    }
                     arcGISMap.operationalLayers += resultLayer
-
-                    resultsRasterLayer = resultLayer
+                    hasMapAlgebraResults = true
                     selectRasterLayer(MAP_ALGEBRA_RESULTS_LAYER_NAME)
                 }.onFailure { throwable ->
                     messageDialogVM.showMessageDialog(
