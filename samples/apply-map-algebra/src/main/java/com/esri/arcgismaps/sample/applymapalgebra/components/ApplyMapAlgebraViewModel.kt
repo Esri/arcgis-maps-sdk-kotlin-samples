@@ -132,6 +132,10 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /**
+     * Runs map algebra on the source elevation raster and creates the
+     * "Map algebra results" layer used by the sample's layer switcher.
+     */
     fun categorizeElevation() {
         // Ensure we have a raster to analyze
         if (!File(elevationRasterPath).exists()) {
