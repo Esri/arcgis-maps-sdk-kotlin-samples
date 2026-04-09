@@ -140,20 +140,19 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                         isBottomSheetVisible = false
                     }
                 )
-
-                BottomSheet(isVisible = isBottomSheetVisible) {
-                    TraceOptions(
-                        hintText = hintText ?: "Trace Options",
-                        isTraceButtonEnabled = canPerformTrace,
-                        utilityTraceType = selectedTraceType,
-                        pointType = selectedPointType,
-                        traceState = traceState,
-                        onTraceSelected = mapViewModel::traceUtilityNetwork,
-                        onPointTypeChanged = mapViewModel::updatePointType,
-                        onTraceTypeSelected = mapViewModel::updateTraceType,
-                        onResetSelected = mapViewModel::reset
-                    )
-                }
+            }
+            BottomSheet(isVisible = isBottomSheetVisible) {
+                TraceOptions(
+                    hintText = hintText ?: "Trace Options",
+                    isTraceButtonEnabled = canPerformTrace,
+                    utilityTraceType = selectedTraceType,
+                    pointType = selectedPointType,
+                    traceState = traceState,
+                    onTraceSelected = mapViewModel::traceUtilityNetwork,
+                    onPointTypeChanged = mapViewModel::updatePointType,
+                    onTraceTypeSelected = mapViewModel::updateTraceType,
+                    onResetSelected = mapViewModel::reset
+                )
             }
 
             // Displays dialog to select a terminal configuration when required
@@ -248,8 +247,7 @@ fun TraceOptions(
         modifier = Modifier
             .wrapContentSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(12.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

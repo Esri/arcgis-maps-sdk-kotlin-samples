@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.sampleslib.components
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -33,6 +34,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilledTonalIconButton
@@ -40,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +68,7 @@ fun BottomSheet(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
             .systemBarsPadding()
     ) {
         AnimatedVisibility(
@@ -75,6 +80,9 @@ fun BottomSheet(
             SampleAppTheme {
                 Surface {
                     Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .animateContentSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {

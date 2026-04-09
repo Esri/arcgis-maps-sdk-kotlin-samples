@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.HorizontalDivider
@@ -72,17 +71,15 @@ fun ClusterInfoContent(
             }
         }
 
-        LazyColumn {
-            items(clusterInfoList.size) { index ->
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = Color.LightGray
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 30.dp, vertical = 16.dp),
-                    text = clusterInfoList[index]
-                )
-            }
+        clusterInfoList.forEach { annotatedString ->
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 12.dp),
+                color = Color.LightGray
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 30.dp, vertical = 16.dp),
+                text = annotatedString
+            )
         }
         Spacer(modifier = Modifier.size(24.dp))
     }
