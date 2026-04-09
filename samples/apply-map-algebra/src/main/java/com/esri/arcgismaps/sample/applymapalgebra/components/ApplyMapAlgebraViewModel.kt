@@ -29,9 +29,12 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.RasterLayer
+import com.arcgismaps.mapping.symbology.raster.ColorRamp
+import com.arcgismaps.mapping.symbology.raster.Colormap
 import com.arcgismaps.mapping.symbology.raster.ColormapRenderer
 import com.arcgismaps.mapping.symbology.raster.StretchRenderer
 import com.arcgismaps.mapping.symbology.raster.MinMaxStretchParameters
+import com.arcgismaps.mapping.symbology.raster.PresetColorRampType
 import com.arcgismaps.raster.Raster
 import com.esri.arcgismaps.sample.applymapalgebra.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
@@ -106,11 +109,12 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 elevationLayer.load().onSuccess {
                     // Create a stretch renderer to visualize elevation values
                     val stretchParams = MinMaxStretchParameters(minValues = listOf(0.0), maxValues = listOf(874.0))
+                    val colorRamp = ColorRamp.create(PresetColorRampType.Surface, size = 256)
                     val stretchRenderer = StretchRenderer(
                         parameters = stretchParams,
                         gammas = listOf(1.0),
                         estimateStatistics = false,
-                        colorRamp = null
+                        colorRamp = colorRamp
                     )
                     elevationLayer.renderer = stretchRenderer
                     elevationLayer.opacity = 0.5f
@@ -157,12 +161,12 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
 
                 // Mask out values below sea level before classifying the terrain.
                 val continuousFieldFunction = ContinuousFieldFunction.create(elevationField)
-                val masked = continuousFieldFunction.mask(
+                val elevationFieldFunction = continuousFieldFunction.mask(
                     selection = continuousFieldFunction.isGreaterThanOrEqualTo(0.0f)
                 )
 
                 // Group the elevation values into 10-meter bins.
-                val tenMeterBin = (masked.div(10f)).floor().times(10f).toDiscreteFieldFunction()
+                val tenMeterBin = (elevationFieldFunction.div(10f)).floor().times(10f).toDiscreteFieldFunction()
 
                 // Build the three geomorphological categories used by the sample.
                 val isRaisedShoreline = tenMeterBin.isGreaterThanOrEqualTo(0).and(tenMeterBin.isLessThan(10))
@@ -171,9 +175,9 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
 
                 // Replace each matching range with a category value and evaluate the output raster.
                 val geomorphicFn = tenMeterBin
-                    .replaceIf(isRaisedShoreline, 0)
-                    .replaceIf(isIceCovered, 1)
-                    .replaceIf(isIceFreeHighGround, 2)
+                    .replaceIf(isRaisedShoreline, 1)
+                    .replaceIf(isIceCovered, 2)
+                    .replaceIf(isIceFreeHighGround, 3)
                 val discreteField = geomorphicFn.evaluate().getOrThrow()
 
                 // Export the processed raster and load it back as a RasterLayer.
@@ -184,12 +188,14 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 val resultRaster = Raster.createWithPath(exportedFiles.first())
 
                 // Apply a 3-color palette to emulate categorized output in this template.
-                val colors = listOf(
-                    Color.fromRgba(82, 158, 235, 255), // Raised shoreline - blue
-                    Color.fromRgba(102, 204, 204, 255), // Ice covered - teal
-                    Color.fromRgba(140, 100, 65, 255), // Ice-free high ground - brown
+                val colormap = Colormap.create(
+                    mapOf(
+                        1 to Color.fromRgba(82, 158, 235, 255), // Raised shoreline - blue
+                        2 to Color.fromRgba(102, 204, 204, 255), // Ice covered - teal
+                        3 to Color.fromRgba(140, 100, 65, 255), // Ice-free high ground - brown
+                    )
                 )
-                val colormapRenderer = ColormapRenderer(colors = colors)
+                val colormapRenderer = ColormapRenderer(colormap)
 
                 // Create a RasterLayer from the result Raster and apply the colormap renderer
                 val resultLayer = RasterLayer(resultRaster).apply {
