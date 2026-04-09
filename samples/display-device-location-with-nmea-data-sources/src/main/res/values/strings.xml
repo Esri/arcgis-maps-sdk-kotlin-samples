@@ -5,5 +5,5 @@
     <string name="satellite_count">Satellite Count: </string>
     <string name="system">System: </string>
     <string name="satellite_ids">Satellite IDs: </string>
-    <string name="unavailable">Unavailable\t</string>
+    <string name="unavailable">Unavailable</string>
 </resources>

@@ -197,7 +197,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                 val horizontalAccuracyText = if (horizontalAccuracy.isFinite()) {
                     "${DecimalFormat(".##").format(horizontalAccuracy)}m"
                 } else {
-                    "Unavailable"
+                    getString(R.string.unavailable)
                 }
                 sb.append("Horizontal-accuracy: $horizontalAccuracyText, ")
                 sb.append(when (positionSource) {
