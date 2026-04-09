@@ -1,18 +1,47 @@
 {
     "category": "Analysis",
-    "description": "TODO",
+    "description": "Apply map algebra to an elevation raster to floor, mask, and categorize the elevation values into discrete integer-based categories.",
     "formal_name": "ApplyMapAlgebra",
     "ignore": false,
     "images": [
         "apply-map-algebra.png"
     ],
-    "keywords": [],
+    "keywords": [
+        "elevation",
+        "map algebra",
+        "raster",
+        "spatial analysis",
+        "terrain",
+        "BooleanFieldFunction",
+        "ColorRamp",
+        "Colormap",
+        "ColormapRenderer",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "DiscreteField",
+        "DiscreteFieldFunction",
+        "Raster",
+        "RasterLayer",
+        "StretchRenderer"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [],
+    "relevant_apis": [
+        "BooleanFieldFunction",
+        "ColorRamp",
+        "Colormap",
+        "ColormapRenderer",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "DiscreteField",
+        "DiscreteFieldFunction",
+        "Raster",
+        "RasterLayer",
+        "StretchRenderer"
+    ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/components/ApplyMapAlgebraViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/screens/ApplyMapAlgebraScreen.kt"
     ],
