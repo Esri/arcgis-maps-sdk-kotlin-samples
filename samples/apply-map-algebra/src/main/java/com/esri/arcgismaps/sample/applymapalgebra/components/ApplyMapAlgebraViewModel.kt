@@ -182,7 +182,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 // Apply a 3-color palette to emulate categorized output in this template.
                 val colors = listOf(
                     Color.fromRgba(82, 158, 235, 255), // Raised shoreline - blue
-                    Color.fromRgba(102, 204, 204, 255), // Ice covered - cyan
+                    Color.fromRgba(102, 204, 204, 255), // Ice covered - teal
                     Color.fromRgba(140, 100, 65, 255), // Ice-free high ground - brown
                 )
                 val colormapRenderer = ColormapRenderer(colors = colors)
