@@ -43,6 +43,12 @@ import kotlin.io.path.createTempDirectory
 private const val ORIGINAL_ELEVATION_LAYER_NAME = "Original elevation"
 private const val MAP_ALGEBRA_RESULTS_LAYER_NAME = "Map algebra results"
 
+/**
+ * ViewModel for the Apply map algebra sample.
+ *
+ * The sample starts by showing the original elevation raster. After the user runs
+ * categorization, it adds a results layer and lets the user switch between the two layers.
+ */
 class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
 
     // Path where sample data would be provisioned if available.
@@ -52,6 +58,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
+    // Local raster expected by the sample workflow.
     private val elevationRasterPath = provisionPath + File.separator + "arran.tif"
 
     // The map displayed by the MapView.
@@ -64,7 +71,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
             )
         }
 
-    // True after a map algebra results layer has been created and added to the map.
+    // Controls whether the UI should show the layer switcher.
     var hasMapAlgebraResults by mutableStateOf(false)
         private set
 
@@ -88,7 +95,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // Load the map and the source raster layer asynchronously and apply a basic renderer
+        // Load the source elevation raster at startup so users see the original layer first.
         viewModelScope.launch {
             if (File(elevationRasterPath).exists()) {
                 val elevationLayer = RasterLayer(Raster.createWithPath(elevationRasterPath)).apply {
@@ -96,7 +103,6 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 arcGISMap.operationalLayers += elevationLayer
                 selectedRasterLayerName = ORIGINAL_ELEVATION_LAYER_NAME
-                // Load the elevation raster layer and set a stretch renderer
                 elevationLayer.load().onSuccess {
                     // Create a stretch renderer to visualize elevation values
                     val stretchParams = MinMaxStretchParameters(minValues = listOf(0.0), maxValues = listOf(874.0))
@@ -107,7 +113,6 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                         colorRamp = null
                     )
                     elevationLayer.renderer = stretchRenderer
-                    // make the elevation slightly transparent so result layers can be seen when added
                     elevationLayer.opacity = 0.5f
                 }.onFailure { throwable ->
                     messageDialogVM.showMessageDialog(
@@ -137,8 +142,6 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
             return
         }
 
-
-        // Launch the analysis in the viewModelScope so it survives configuration changes.
         viewModelScope.launch {
             isPerformingAnalysis = true
             try {
