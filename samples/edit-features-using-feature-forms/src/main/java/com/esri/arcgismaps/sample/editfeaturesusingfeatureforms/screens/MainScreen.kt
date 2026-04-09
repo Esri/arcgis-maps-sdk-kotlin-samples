@@ -19,16 +19,12 @@ package com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -42,7 +38,6 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -62,7 +56,6 @@ import com.arcgismaps.toolkit.featureforms.ValidationErrorVisibility
 import com.arcgismaps.toolkit.featureforms.theme.FeatureFormDefaults
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.R
-import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.ErrorInfo
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -76,9 +69,6 @@ fun MainScreen(mapViewModel: MapViewModel) {
     val scope = rememberCoroutineScope()
     // the feature form the currently selected feature
     val featureFormState = mapViewModel.featureFormState
-
-    // the validation errors found when the edits are applied
-    val formValidationErrors by mapViewModel.errors.collectAsState()
 
     // boolean trackers for save and discard edits dialogs
     var showSaveEditsDialog by remember { mutableStateOf(false) }
@@ -152,12 +142,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
                                 }
                             }
 
-                            is FeatureFormEditingEvent.DiscardedEdits -> {
-                                // when the discard edits event is received, roll back any edits
-                                scope.launch {
-                                    mapViewModel.rollbackEdits()
-                                }
-                            }
+                            else -> {}
                         }
                     },
                     colorScheme = FeatureFormDefaults.colorScheme(
@@ -180,13 +165,7 @@ fun MainScreen(mapViewModel: MapViewModel) {
         }
     }
 
-    if (showSaveEditsDialog && formValidationErrors.isNotEmpty()) {
-        // validation errors found, cancel the commit and show validation errors
-        ValidationErrorsDialog(errors = formValidationErrors) {
-            showSaveEditsDialog = false
-            mapViewModel.cancelCommit()
-        }
-    } else if (showSaveEditsDialog) {
+    if (showSaveEditsDialog) {
         // no validation errors found, show dialog when committing edits
         SaveFormDialog()
     }
@@ -195,8 +174,9 @@ fun MainScreen(mapViewModel: MapViewModel) {
         DiscardEditsDialog(
             onConfirm = {
                 scope.launch {
-                    mapViewModel.rollbackEdits()
+                    featureFormState?.discardEdits()
                     sheetState.hide()
+                    mapViewModel.clearSelection()
                     showDiscardEditsDialog = false
                 }
             },
@@ -259,54 +239,6 @@ private fun SaveFormDialog() {
     }
 }
 
-@Composable
-private fun ValidationErrorsDialog(errors: List<ErrorInfo>, onDismissRequest: () -> Unit) {
-    // show all the validation errors in a dialog
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        modifier = Modifier.heightIn(max = 600.dp),
-        confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(onClick = onDismissRequest) {
-                    Text(text = stringResource(R.string.view))
-                }
-            }
-        },
-        title = {
-            Column {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Form Validation Errors",
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
-                )
-            }
-        },
-        text = {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(15.dp)) {
-                    Text(
-                        text = stringResource(R.string.attributes_failed, errors.count()),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(errors.count()) { index ->
-                            Text(
-                                text = "${errors[index].fieldName}: ${errors[index].error::class.simpleName.toString()}",
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    )
-}
-
 /**
  * Extension function to check if there are unsaved edits in the feature form.
  */
@@ -319,13 +251,6 @@ private fun FeatureFormState.hasEdits(): Boolean {
 @Composable
 fun SavePreview() {
     SampleAppTheme { SaveFormDialog() }
-}
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ValidationErrorsPreview() {
-    SampleAppTheme { ValidationErrorsDialog(listOf()) { } }
 }
 
 @Preview(showBackground = true)
