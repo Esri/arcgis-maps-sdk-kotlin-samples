@@ -29,17 +29,17 @@ When the sample opens, it displays the source elevation raster. Tap the **Catego
 
 ## Relevant API
 
-- BooleanFieldFunction
-- Colormap
-- ColormapRenderer
-- ColorRamp
-- ContinuousField
-- ContinuousFieldFunction
-- DiscreteField
-- DiscreteFieldFunction
-- Raster
-- RasterLayer
-- StretchRenderer
+* BooleanFieldFunction
+* Colormap
+* ColormapRenderer
+* ColorRamp
+* ContinuousField
+* ContinuousFieldFunction
+* DiscreteField
+* DiscreteFieldFunction
+* Raster
+* RasterLayer
+* StretchRenderer
 
 ## About the data
 
