@@ -1,3 +1,4 @@
 <resources>
     <string name="show_device_location_using_indoor_positioning_app_name">Show device location using indoor positioning</string>
+    <string name="unavailable">Unavailable</string>
 </resources>
