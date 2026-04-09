@@ -90,42 +90,35 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
     init {
         // Load the map and the source raster layer asynchronously and apply a basic renderer
         viewModelScope.launch {
-            val elevationLayer = if (File(elevationRasterPath).exists()) {
-                RasterLayer(Raster.createWithPath(elevationRasterPath)).apply {
+            if (File(elevationRasterPath).exists()) {
+                val elevationLayer = RasterLayer(Raster.createWithPath(elevationRasterPath)).apply {
                     name = ORIGINAL_ELEVATION_LAYER_NAME
                 }
+                arcGISMap.operationalLayers += elevationLayer
+                selectedRasterLayerName = ORIGINAL_ELEVATION_LAYER_NAME
+                // Load the elevation raster layer and set a stretch renderer
+                elevationLayer.load().onSuccess {
+                    // Create a stretch renderer to visualize elevation values
+                    val stretchParams = MinMaxStretchParameters(minValues = listOf(0.0), maxValues = listOf(874.0))
+                    val stretchRenderer = StretchRenderer(
+                        parameters = stretchParams,
+                        gammas = listOf(1.0),
+                        estimateStatistics = false,
+                        colorRamp = null
+                    )
+                    elevationLayer.renderer = stretchRenderer
+                    // make the elevation slightly transparent so result layers can be seen when added
+                    elevationLayer.opacity = 0.5f
+                }.onFailure { throwable ->
+                    messageDialogVM.showMessageDialog(
+                        title = "Failed to load elevation raster",
+                        description = throwable.message.toString()
+                    )
+                }
             } else {
-                null
-            }
-
-            if (elevationLayer == null) {
                 messageDialogVM.showMessageDialog(
                     title = "Elevation raster not found",
                     description = "Place arran.tif into the sample's provisioned folder: $provisionPath"
-                )
-            } else {
-                arcGISMap.operationalLayers += elevationLayer
-                selectedRasterLayerName = ORIGINAL_ELEVATION_LAYER_NAME
-            }
-
-            // Load the elevation raster layer if it exists and set a stretch renderer
-            elevationLayer?.load()?.onSuccess {
-                // Create a stretch renderer to visualize elevation values
-                val stretchParams = MinMaxStretchParameters(minValues = listOf(0.0), maxValues = listOf(874.0))
-                val stretchRenderer = StretchRenderer(
-                    parameters = stretchParams,
-                    gammas = listOf(1.0),
-                    estimateStatistics = false,
-                    colorRamp = null
-                )
-                elevationLayer.renderer = stretchRenderer
-                // make the elevation slightly transparent so result layers can be seen when added
-                elevationLayer.opacity = 0.5f
-            }?.onFailure { throwable ->
-                // Show a message but allow the sample to continue (user may still run analysis if they supply their own raster)
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load elevation raster",
-                    description = throwable.message.toString()
                 )
             }
 
@@ -230,13 +223,12 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
      * Helper to toggle visibility between the original elevation raster and the results raster.
      */
     fun selectRasterLayer(layerName: String) {
-        val rasterLayers = arcGISMap.operationalLayers.filterIsInstance<RasterLayer>()
-        rasterLayers.forEach { layer ->
-            layer.isVisible = layer.name == layerName
-        }
-
-        if (rasterLayers.any { it.name == layerName }) {
-            selectedRasterLayerName = layerName
-        }
+        arcGISMap.operationalLayers
+            .filterIsInstance<RasterLayer>()
+            .forEach { layer ->
+                val isSelected = layer.name == layerName
+                layer.isVisible = isSelected
+                if (isSelected) selectedRasterLayerName = layerName
+            }
     }
 }
