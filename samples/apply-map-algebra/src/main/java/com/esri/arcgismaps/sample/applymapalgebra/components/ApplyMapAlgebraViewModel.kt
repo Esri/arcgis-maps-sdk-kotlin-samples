@@ -99,38 +99,38 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         // Load the source elevation raster at startup so users see the original layer first.
-        viewModelScope.launch {
-            if (File(elevationRasterPath).exists()) {
-                val elevationLayer = RasterLayer(Raster.createWithPath(elevationRasterPath)).apply {
-                    name = ORIGINAL_ELEVATION_LAYER_NAME
-                }
-                arcGISMap.operationalLayers += elevationLayer
-                selectedRasterLayerName = ORIGINAL_ELEVATION_LAYER_NAME
-                elevationLayer.load().onSuccess {
-                    // Create a stretch renderer to visualize elevation values
-                    val stretchParams = MinMaxStretchParameters(minValues = listOf(0.0), maxValues = listOf(874.0))
-                    val colorRamp = ColorRamp.create(PresetColorRampType.Surface, size = 256)
-                    val stretchRenderer = StretchRenderer(
-                        parameters = stretchParams,
-                        gammas = listOf(1.0),
-                        estimateStatistics = false,
-                        colorRamp = colorRamp
-                    )
-                    elevationLayer.renderer = stretchRenderer
-                    elevationLayer.opacity = 0.5f
-                }.onFailure { throwable ->
-                    messageDialogVM.showMessageDialog(
-                        title = "Failed to load elevation raster",
-                        description = throwable.message.toString()
-                    )
-                }
-            } else {
-                messageDialogVM.showMessageDialog(
-                    title = "Elevation raster not found",
-                    description = "Place arran.tif into the sample's provisioned folder: $provisionPath"
-                )
+        if (File(elevationRasterPath).exists()) {
+            val elevationLayer = RasterLayer(Raster.createWithPath(elevationRasterPath)).apply {
+                name = ORIGINAL_ELEVATION_LAYER_NAME
             }
+            arcGISMap.operationalLayers += elevationLayer
+            selectedRasterLayerName = ORIGINAL_ELEVATION_LAYER_NAME
+            // Create a stretch renderer to visualize elevation values
+            val stretchParams = MinMaxStretchParameters(minValues = listOf(0.0), maxValues = listOf(874.0))
+            val colorRamp = ColorRamp.create(PresetColorRampType.Surface, size = 256)
+            val stretchRenderer = StretchRenderer(
+                parameters = stretchParams,
+                gammas = listOf(1.0),
+                estimateStatistics = false,
+                colorRamp = colorRamp
+            )
+            // Load the layer and apply the renderer
+            viewModelScope.launch {
+                elevationLayer.load()
+                    .onSuccess {
+                        elevationLayer.renderer = stretchRenderer
+                        elevationLayer.opacity = 0.5f
+                    }
+                    .onFailure { messageDialogVM.showMessageDialog(it) }
+            }
+        } else {
+            messageDialogVM.showMessageDialog(
+                title = "Elevation raster not found",
+                description = "Place arran.tif into the sample's provisioned folder: $provisionPath"
+            )
+        }
 
+        viewModelScope.launch {
             // Load the map
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
