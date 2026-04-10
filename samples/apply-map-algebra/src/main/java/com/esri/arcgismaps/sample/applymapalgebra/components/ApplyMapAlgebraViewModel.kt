@@ -25,6 +25,7 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.analysis.ContinuousField
 import com.arcgismaps.analysis.ContinuousFieldFunction
+import com.arcgismaps.analysis.floor
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
@@ -168,7 +169,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 )
 
                 // Group the elevation values into 10-meter bins.
-                val tenMeterBin = ((elevationFieldFunction / 10f).floor() * 10f).toDiscreteFieldFunction()
+                val tenMeterBin = floor((elevationFieldFunction / 10f) * 10f).toDiscreteFieldFunction()
 
                 // Build the three geomorphological categories used by the sample.
                 val isRaisedShoreline = tenMeterBin.isGreaterThanOrEqualTo(0) and tenMeterBin.isLessThan(10)
