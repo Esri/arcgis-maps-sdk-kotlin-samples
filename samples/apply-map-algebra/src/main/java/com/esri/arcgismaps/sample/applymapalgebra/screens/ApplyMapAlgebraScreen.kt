@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.applymapalgebra.components.ApplyMapAlgebraViewModel
@@ -51,6 +52,15 @@ fun ApplyMapAlgebraScreen(sampleName: String) {
             Column(modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)) {
+
+                Text(
+                    text = "Raster data copyright Scottish Government and SEPA (2014)",
+                    style = MaterialTheme.typography.labelSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp, horizontal = 12.dp)
+                )
 
                 MapView(
                     modifier = Modifier
