@@ -49,8 +49,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,6 +62,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.SampleViewerTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import androidx.core.net.toUri
+import java.util.Calendar
 
 /**
  * Showcase information about the application.
@@ -109,7 +110,7 @@ private fun AboutIcon() {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val size = (LocalConfiguration.current.screenWidthDp * 0.20).dp
+        val size = LocalWindowInfo.current.containerDpSize.width * 0.20f
         Image(
             modifier = Modifier.size(size),
             painter = painterResource(com.esri.arcgismaps.sample.sampleslib.R.drawable.arcgis_maps_sdks_64),
@@ -133,9 +134,10 @@ private fun TitleAndCopyrightSection() {
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleMedium
         )
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = stringResource(R.string.copyright_text),
+            text = stringResource(R.string.copyright_text, currentYear),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelMedium
         )
