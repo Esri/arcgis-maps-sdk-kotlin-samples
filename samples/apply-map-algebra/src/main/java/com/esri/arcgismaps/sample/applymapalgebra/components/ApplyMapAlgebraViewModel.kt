@@ -169,7 +169,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 )
 
                 // Group the elevation values into 10-meter bins.
-                val tenMeterBin = floor((elevationFieldFunction / 10f) * 10f).toDiscreteFieldFunction()
+                val tenMeterBin = (floor(elevationFieldFunction / 10f) * 10f).toDiscreteFieldFunction()
 
                 // Build the three geomorphological categories used by the sample.
                 val isRaisedShoreline = tenMeterBin.isGreaterThanOrEqualTo(0) and tenMeterBin.isLessThan(10)

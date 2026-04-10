@@ -17,7 +17,7 @@ When the sample opens, it displays the source elevation raster. Tap the **Catego
 1. Create a `ContinuousField` from a raster file.
 2. Create a `ContinuousFieldFunction` from the continuous field and mask values below sea level.
 3. Round elevation values down to the lowest 10-meter interval with map algebra operators
-   `(continuousFieldFunction / 10f).floor() * 10f`, and then convert the result to a `DiscreteFieldFunction` with
+   `floor(continuousFieldFunction / 10f) * 10f`, and then convert the result to a `DiscreteFieldFunction` with
    `.toDiscreteFieldFunction`.
 4. Create `BooleanFieldFunction`s for each category by defining a range with map algebra operators such as
    `isGreaterThanOrEqualTo`, `and`, and `isLessThan`.
