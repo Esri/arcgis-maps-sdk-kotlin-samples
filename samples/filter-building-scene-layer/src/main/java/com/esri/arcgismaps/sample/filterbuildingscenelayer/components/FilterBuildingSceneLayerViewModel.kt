@@ -89,7 +89,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
 
                         // The top-level sublayer groups will be the categories
                         buildingSceneLayer.sublayers.find { sublayer ->
-                            sublayer.name == "Full Model"
+                            sublayer.modelName == "FullModel"
                         }?.let { buildingSublayer ->
                             buildingSublayer as BuildingGroupSublayer
                             categories.addAll(buildingSublayer.sublayers.sortedBy { it.name })

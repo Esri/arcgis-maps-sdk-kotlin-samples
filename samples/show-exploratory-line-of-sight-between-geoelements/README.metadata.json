@@ -1,0 +1,33 @@
+{
+    "category": "Analysis",
+    "description": "Show an exploratory line of sight between two moving objects.",
+    "formal_name": "ShowExploratoryLineOfSightBetweenGeoelements",
+    "ignore": false,
+    "images": [
+        "show-exploratory-line-of-sight-between-geoelements.png"
+    ],
+    "keywords": [
+        "3D",
+        "exploratory line of sight",
+        "geoview-compose",
+        "visibility",
+        "visibility analysis",
+        "AnalysisOverlay",
+        "ExploratoryGeoElementLineOfSight",
+        "ExploratoryLineOfSightTargetVisibility"
+    ],
+    "language": "kotlin",
+    "redirect_from": ["/kotlin/sample-code/show-line-of-sight-between-geoelements/"],
+    "relevant_apis": [
+        "AnalysisOverlay",
+        "ExploratoryGeoElementLineOfSight",
+        "ExploratoryLineOfSightTargetVisibility"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/components/SceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showexploratorylineofsightbetweengeoelements/screens/MainScreen.kt"
+    ],
+    "title": "Show exploratory line of sight between geoelements"
+}
