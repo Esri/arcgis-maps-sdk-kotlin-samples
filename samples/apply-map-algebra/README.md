@@ -45,6 +45,10 @@ When the sample opens, it displays the source elevation raster. Tap the **Catego
 
 The sample uses a [10m resolution digital terrain elevation raster of the Isle of Arran, Scotland](https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271) (Data Copyright Scottish Government and SEPA (2014)).
 
+## Additional information
+
+This sample requires an ArcGIS Maps SDK Analysis extension license key. Without this license, the map algebra analysis will fail at runtime.
+
 ## Tags
 
 elevation, map algebra, raster, spatial analysis, terrain
