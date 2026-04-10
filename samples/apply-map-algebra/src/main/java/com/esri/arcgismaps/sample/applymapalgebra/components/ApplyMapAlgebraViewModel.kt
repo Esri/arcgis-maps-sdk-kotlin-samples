@@ -107,7 +107,10 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
             selectedRasterLayerName = ORIGINAL_ELEVATION_LAYER_NAME
             // Create a stretch renderer to visualize elevation values
             val stretchParams = MinMaxStretchParameters(minValues = listOf(0.0), maxValues = listOf(874.0))
-            val colorRamp = ColorRamp.create(PresetColorRampType.Surface, size = 256)
+            val colorRamp = ColorRamp.create(
+                type = PresetColorRampType.Surface,
+                size = 256
+            )
             val stretchRenderer = StretchRenderer(
                 parameters = stretchParams,
                 gammas = listOf(1.0),
@@ -143,11 +146,10 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
     fun categorizeElevation() {
         // Ensure we have a raster to analyze
         if (!File(elevationRasterPath).exists()) {
-            messageDialogVM.showMessageDialog(
+            return messageDialogVM.showMessageDialog(
                 title = "Elevation raster not found",
                 description = "Place arran.tif into the sample's provisioned folder: $provisionPath"
             )
-            return
         }
 
         viewModelScope.launch {
@@ -182,8 +184,8 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
 
                 // Export the processed raster and load it back as a RasterLayer.
                 val exportedFiles = discreteField.exportToFiles(
-                    createTempDirectory().absolutePathString(),
-                    "geomorphicCategorization"
+                    outputDirectory = createTempDirectory().absolutePathString(),
+                    filenamesPrefix = "geomorphicCategorization"
                 ).getOrThrow()
                 val resultRaster = Raster.createWithPath(exportedFiles.first())
 
