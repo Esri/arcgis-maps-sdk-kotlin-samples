@@ -209,12 +209,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                     arcGISMap.operationalLayers += resultLayer
                     hasMapAlgebraResults = true
                     selectRasterLayer(MAP_ALGEBRA_RESULTS_LAYER_NAME)
-                }.onFailure { throwable ->
-                    messageDialogVM.showMessageDialog(
-                        title = "Error creating results",
-                        description = throwable.message.toString()
-                    )
-                }
+                }.getOrThrow()
             } catch (throwable: Throwable) {
                 messageDialogVM.showMessageDialog(
                     title = "Error during analysis",
