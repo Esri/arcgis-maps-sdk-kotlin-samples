@@ -166,11 +166,11 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 )
 
                 // Group the elevation values into 10-meter bins.
-                val tenMeterBin = (elevationFieldFunction.div(10f)).floor().times(10f).toDiscreteFieldFunction()
+                val tenMeterBin = ((elevationFieldFunction / 10f).floor() * 10f).toDiscreteFieldFunction()
 
                 // Build the three geomorphological categories used by the sample.
-                val isRaisedShoreline = tenMeterBin.isGreaterThanOrEqualTo(0).and(tenMeterBin.isLessThan(10))
-                val isIceCovered = tenMeterBin.isGreaterThanOrEqualTo(10).and(tenMeterBin.isLessThan(600))
+                val isRaisedShoreline = tenMeterBin.isGreaterThanOrEqualTo(0) and tenMeterBin.isLessThan(10)
+                val isIceCovered = tenMeterBin.isGreaterThanOrEqualTo(10) and tenMeterBin.isLessThan(600)
                 val isIceFreeHighGround = tenMeterBin.isGreaterThanOrEqualTo(600)
 
                 // Replace each matching range with a category value and evaluate the output raster.
