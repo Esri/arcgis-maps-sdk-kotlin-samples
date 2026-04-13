@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.mapping.view.OrbitLocationCameraController
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -64,6 +65,13 @@ fun MainScreen(sampleName: String) {
                         .fillMaxSize()
                         .padding(it)
                 ) {
+
+                    val cameraController = remember {
+                        OrbitLocationCameraController(
+                            targetPoint = sceneViewModel.initLocation,
+                            distance = 5000.0
+                        )
+                    }
                     // composable function that wraps the SceneView
                     SceneView(
                         modifier = Modifier
@@ -71,7 +79,7 @@ fun MainScreen(sampleName: String) {
                             .weight(1f),
                         arcGISScene = sceneViewModel.scene,
                         onDown = { isBottomSheetVisible = false },
-                        cameraController = sceneViewModel.cameraController,
+                        cameraController = cameraController,
                         analysisOverlays = listOf(sceneViewModel.analysisOverlay)
                     )
                 }

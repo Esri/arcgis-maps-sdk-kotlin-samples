@@ -171,26 +171,26 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 // Group the elevation values into 10-meter bins.
                 val tenMeterBin = (floor(elevationFieldFunction / 10f) * 10f).toDiscreteFieldFunction()
 
-                // Build the three geomorphological categories used by the sample.
+                // Build the three geomorphic categories used by the sample.
                 val isRaisedShoreline = tenMeterBin.isGreaterThanOrEqualTo(0) and tenMeterBin.isLessThan(10)
                 val isIceCovered = tenMeterBin.isGreaterThanOrEqualTo(10) and tenMeterBin.isLessThan(600)
                 val isIceFreeHighGround = tenMeterBin.isGreaterThanOrEqualTo(600)
 
-                // Replace each matching range with a category value and evaluate the output raster.
-                val geomorphicFn = tenMeterBin
+                // Create and evaluate a function that replaces each matching range with a category value.
+                val geomorphicCategoryFieldFunction = tenMeterBin
                     .replaceIf(isRaisedShoreline, 1)
                     .replaceIf(isIceCovered, 2)
                     .replaceIf(isIceFreeHighGround, 3)
-                val discreteField = geomorphicFn.evaluate().getOrThrow()
+                val geomorphicCategoryField = geomorphicCategoryFieldFunction.evaluate().getOrThrow()
 
-                // Export the processed raster and load it back as a RasterLayer.
-                val exportedFiles = discreteField.exportToFiles(
+                // Export the processed data and read it back as a Raster.
+                val exportedFiles = geomorphicCategoryField.exportToFiles(
                     outputDirectory = createTempDirectory().absolutePathString(),
                     filenamesPrefix = "geomorphicCategorization"
                 ).getOrThrow()
                 val resultRaster = Raster.createWithPath(exportedFiles.first())
 
-                // Apply a 3-color palette to emulate categorized output in this template.
+                // Create a colormap renderer for the geomorphic categories.
                 val colormap = Colormap.create(
                     mapOf(
                         1 to Color.fromRgba(82, 158, 235, 255), // Raised shoreline - blue
@@ -200,7 +200,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 )
                 val colormapRenderer = ColormapRenderer(colormap)
 
-                // Create a RasterLayer from the result Raster and apply the colormap renderer
+                // Create a RasterLayer from the result Raster and apply the colormap renderer.
                 val resultLayer = RasterLayer(resultRaster).apply {
                     name = MAP_ALGEBRA_RESULTS_LAYER_NAME
                     renderer = colormapRenderer
