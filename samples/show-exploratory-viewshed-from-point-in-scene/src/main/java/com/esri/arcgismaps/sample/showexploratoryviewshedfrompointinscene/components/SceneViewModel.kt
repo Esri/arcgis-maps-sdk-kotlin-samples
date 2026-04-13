@@ -31,7 +31,6 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
-import com.arcgismaps.mapping.view.OrbitLocationCameraController
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.R
 
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -45,7 +44,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     private val initMinDistance = 0.0
     private val initMaxDistance = 1500.0
 
-    private val initLocation = Point(
+    val initLocation = Point(
         x = -4.50,
         y = 48.4,
         z = 1000.0
@@ -56,10 +55,6 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
         heading = 0.0,
         pitch = 55.0,
         roll = 0.0
-    )
-    val cameraController = OrbitLocationCameraController(
-        targetPoint = initLocation,
-        distance = 5000.0
     )
     var scene by mutableStateOf(ArcGISScene(BasemapStyle.ArcGISNavigationNight))
     var analysisOverlay by mutableStateOf(AnalysisOverlay())
