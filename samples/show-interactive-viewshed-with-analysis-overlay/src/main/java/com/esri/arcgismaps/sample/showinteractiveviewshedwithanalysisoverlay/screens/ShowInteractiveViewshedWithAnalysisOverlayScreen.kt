@@ -16,8 +16,9 @@
 
 package com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.screens
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -25,9 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ShowInteractiveViewshedWithAnalysisOverlayViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ShowInteractiveViewshedWithAnalysisOverlayViewModel
 
 /**
  * Main screen layout for the sample app
@@ -38,27 +39,51 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
-            Box {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it),
-                ) {
-                    MapView(
+            BoxWithConstraints {
+                if (maxWidth < maxHeight) {
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .weight(1f),
-                        arcGISMap = viewModel.arcGISMap,
-                        analysisOverlays = listOf(viewModel.analysisOverlay),
-                        graphicsOverlays = listOf(viewModel.graphicsOverlay)
-                    )
-                    // display list of options to modify viewshed parameters
-                    ViewshedParametersScreen(
-                        onTargetHeightChanged = viewModel::setTargetHeight,
-                        onMaxRadiusChanged = viewModel::setMaxRadius,
-                        onFieldOfViewChanged = viewModel::setFieldOfView,
-                        onHeadingChanged = viewModel::setHeading,
-                    )
+                            .padding(it),
+                    ) {
+                        MapView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
+                            arcGISMap = viewModel.arcGISMap,
+                            analysisOverlays = listOf(viewModel.analysisOverlay),
+                            graphicsOverlays = listOf(viewModel.graphicsOverlay)
+                        )
+                        // display list of options to modify viewshed parameters
+                        ViewshedParametersScreen(
+                            onTargetHeightChanged = viewModel::setTargetHeight,
+                            onMaxRadiusChanged = viewModel::setMaxRadius,
+                            onFieldOfViewChanged = viewModel::setFieldOfView,
+                            onHeadingChanged = viewModel::setHeading,
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
+                    ) {
+                        MapView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
+                            arcGISMap = viewModel.arcGISMap,
+                            analysisOverlays = listOf(viewModel.analysisOverlay),
+                            graphicsOverlays = listOf(viewModel.graphicsOverlay)
+                        )
+                        // display list of options to modify viewshed parameters
+                        ViewshedParametersScreen(
+                            onTargetHeightChanged = viewModel::setTargetHeight,
+                            onMaxRadiusChanged = viewModel::setMaxRadius,
+                            onFieldOfViewChanged = viewModel::setFieldOfView,
+                            onHeadingChanged = viewModel::setHeading,
+                        )
+                    }
                 }
             }
 
