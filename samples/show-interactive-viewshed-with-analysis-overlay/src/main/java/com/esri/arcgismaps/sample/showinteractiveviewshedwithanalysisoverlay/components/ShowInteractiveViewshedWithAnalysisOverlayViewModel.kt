@@ -49,7 +49,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-            initialViewpoint = Viewpoint(55.610000, -5.200346, 50000.0)
+            initialViewpoint = Viewpoint(55.610000, -5.200346, 100000.0)
         }
     )
     var analysisOverlay by mutableStateOf(AnalysisOverlay())
