@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun ViewshedParametersScreen(
+    onObserverElevationChanged: (Float) -> Unit = {},
     onTargetHeightChanged: (Float) -> Unit = {},
     onMaxRadiusChanged: (Float) -> Unit = {},
     onFieldOfViewChanged: (Float) -> Unit = {},
@@ -27,6 +28,7 @@ fun ViewshedParametersScreen(
 ) {
     Column {
         // sliders
+        ObserverElevationSlider(onObserverElevationChanged)
         TargetHeightSlider(onTargetHeightChanged)
         MaxRadiusSlider(onMaxRadiusChanged)
         FieldOfViewSlider(onFieldOfViewChanged)
@@ -35,9 +37,20 @@ fun ViewshedParametersScreen(
 }
 
 @Composable
+private fun ObserverElevationSlider(onObserverElevationChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Observer Elevation",
+        initialSliderValue = 20f,
+        sliderRangeValue = 2f..200f,
+        units = " m",
+        functionChanged = onObserverElevationChanged
+    )
+}
+
+@Composable
 private fun TargetHeightSlider(onTargetHeightChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Target Height:",
+        title = "Target Height",
         initialSliderValue = 20f,
         sliderRangeValue = 2f..1000f,
         units = " m",
@@ -48,7 +61,7 @@ private fun TargetHeightSlider(onTargetHeightChanged: (Float) -> Unit) {
 @Composable
 private fun MaxRadiusSlider(onMaxRadiusChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Maximum Radius:",
+        title = "Maximum Radius",
         initialSliderValue = 8000f,
         sliderRangeValue = 2500f..20000f,
         units = " m",
@@ -59,7 +72,7 @@ private fun MaxRadiusSlider(onMaxRadiusChanged: (Float) -> Unit) {
 @Composable
 private fun FieldOfViewSlider(onFieldOfViewChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Field of View:",
+        title = "Field of View",
         initialSliderValue = 150f,
         sliderRangeValue = 5f..360f,
         units = "°",
@@ -70,7 +83,7 @@ private fun FieldOfViewSlider(onFieldOfViewChanged: (Float) -> Unit) {
 @Composable
 private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Heading:",
+        title = "Heading",
         initialSliderValue = 10f,
         sliderRangeValue = 0f..360f,
         units = "°",

@@ -111,6 +111,12 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
     }
 
+    fun setObserverElevation(observerElevation: Float) {
+        val oldPos = viewshedParameters.observerPosition
+        val observerPosition = Point(oldPos!!.x, oldPos!!.y, observerElevation.toDouble(), oldPos!!.spatialReference)
+        syncObserverPosition(observerPosition)
+    }
+
     fun setTargetHeight(targetHeight: Float) {
         viewshedParameters.targetHeight = targetHeight.toDouble()
     }
@@ -125,5 +131,13 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     fun setHeading(sliderHeading: Float) {
         viewshedParameters.heading = sliderHeading.toDouble()
+    }
+
+    private fun syncObserverPosition(observerPosition: Point) {
+        // Update the observer graphic geometry to the current observer position
+        observerGraphic.geometry = observerPosition
+
+        // Update the viewshed parameters to the current observer position, which triggers analysis
+        viewshedParameters.observerPosition = observerPosition
     }
 }

@@ -32,12 +32,12 @@ fun ViewshedSlider(
     }
     Row {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(130.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(140.dp),
             text = title,
             fontSize = 15.sp
         )
         Slider(
-            modifier = Modifier.width(200.dp),
+            modifier = Modifier.width(190.dp),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
