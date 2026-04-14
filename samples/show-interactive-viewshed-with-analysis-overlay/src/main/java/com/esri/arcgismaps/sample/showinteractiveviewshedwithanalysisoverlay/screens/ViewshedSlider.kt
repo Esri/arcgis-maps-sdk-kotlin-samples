@@ -12,7 +12,9 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /**
  * Custom slider implementation to be used by various viewshed slider options
@@ -22,6 +24,7 @@ fun ViewshedSlider(
     title: String,
     initialSliderValue: Float,
     sliderRangeValue: ClosedFloatingPointRange<Float>,
+    units: String,
     functionChanged: (Float) -> Unit
 ) {
     var sliderValue by remember {
@@ -29,11 +32,12 @@ fun ViewshedSlider(
     }
     Row {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = title
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(130.dp),
+            text = title,
+            fontSize = 15.sp
         )
         Slider(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.width(200.dp),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -43,8 +47,10 @@ fun ViewshedSlider(
             valueRange = sliderRangeValue
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(60.dp),
+            text = sliderValue.toInt().toString() + units,
+            fontSize = 15.sp,
+            textAlign = TextAlign.Right
         )
     }
 }

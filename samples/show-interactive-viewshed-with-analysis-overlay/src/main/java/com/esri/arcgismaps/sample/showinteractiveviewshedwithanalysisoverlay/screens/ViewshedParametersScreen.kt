@@ -37,9 +37,10 @@ fun ViewshedParametersScreen(
 @Composable
 private fun TargetHeightSlider(onTargetHeightChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Target Height",
+        title = "Target Height:",
         initialSliderValue = 20f,
         sliderRangeValue = 2f..1000f,
+        units = " m",
         functionChanged = onTargetHeightChanged
     )
 }
@@ -47,9 +48,10 @@ private fun TargetHeightSlider(onTargetHeightChanged: (Float) -> Unit) {
 @Composable
 private fun MaxRadiusSlider(onMaxRadiusChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Maximum Radius",
+        title = "Maximum Radius:",
         initialSliderValue = 8000f,
         sliderRangeValue = 2500f..20000f,
+        units = " m",
         functionChanged = onMaxRadiusChanged
     )
 }
@@ -57,9 +59,10 @@ private fun MaxRadiusSlider(onMaxRadiusChanged: (Float) -> Unit) {
 @Composable
 private fun FieldOfViewSlider(onFieldOfViewChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Field of View",
+        title = "Field of View:",
         initialSliderValue = 150f,
         sliderRangeValue = 5f..360f,
+        units = "°",
         functionChanged = onFieldOfViewChanged
     )
 }
@@ -67,9 +70,10 @@ private fun FieldOfViewSlider(onFieldOfViewChanged: (Float) -> Unit) {
 @Composable
 private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
     ViewshedSlider(
-        title = "Heading",
+        title = "Heading:",
         initialSliderValue = 10f,
         sliderRangeValue = 0f..360f,
+        units = "°",
         functionChanged = onHeadingChanged
     )
 }
