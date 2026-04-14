@@ -55,6 +55,8 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     var analysisOverlay by mutableStateOf(AnalysisOverlay())
     var graphicsOverlay by mutableStateOf(GraphicsOverlay())
 
+    val viewshedParameters by mutableStateOf(ViewshedParameters())
+
     val observerSymbol = SimpleMarkerSymbol(
         SimpleMarkerSymbolStyle.Circle,
         Color.fromRgba(0, 94, 255, 255),
@@ -71,12 +73,18 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     private val filePath = provisionPath + app.getString(R.string.elevation_data_filename)
 
-    val viewshedParameters = ViewshedParameters()
-
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
+        val initObserverPosition =
+            Point(-579246.504, 7479619.947, 20.0, SpatialReference.webMercator())
+        viewshedParameters.observerPosition = initObserverPosition
+        viewshedParameters.targetHeight = 20.0
+        viewshedParameters.maxRadius = 8000.0
+        viewshedParameters.fieldOfView = 150.0
+        viewshedParameters.heading = 10.0
+
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
 
@@ -84,17 +92,8 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
             val continuousField = ContinuousField.createFromFiles(filePaths, 0).getOrThrow() //TODO: is getOrThrow appropriate?
             val continuousFieldFunction = ContinuousFieldFunction.create(continuousField)
 
-            val initObserverPosition =
-                Point(-579246.504, 7479619.947, 20.0, SpatialReference.webMercator())
-
             observerGraphic = Graphic(initObserverPosition, observerSymbol)
             graphicsOverlay.graphics.add(observerGraphic)
-
-            viewshedParameters.observerPosition = initObserverPosition
-            viewshedParameters.targetHeight = 20.0
-            viewshedParameters.maxRadius = 8000.0
-            viewshedParameters.fieldOfView = 150.0
-            viewshedParameters.heading = 10.0
 
             val viewshedFunction = ViewshedFunction(continuousFieldFunction, viewshedParameters)
             val discreteViewshed = viewshedFunction.toDiscreteFieldFunction()

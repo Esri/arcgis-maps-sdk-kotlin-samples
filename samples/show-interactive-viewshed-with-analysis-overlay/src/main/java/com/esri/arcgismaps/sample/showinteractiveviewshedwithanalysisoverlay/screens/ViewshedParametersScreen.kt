@@ -17,9 +17,11 @@ package com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.sc
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import com.arcgismaps.analysis.visibility.ViewshedParameters
 
 @Composable
 fun ViewshedParametersScreen(
+    viewshedParameters: ViewshedParameters,
     onObserverElevationChanged: (Float) -> Unit = {},
     onTargetHeightChanged: (Float) -> Unit = {},
     onMaxRadiusChanged: (Float) -> Unit = {},
@@ -28,19 +30,19 @@ fun ViewshedParametersScreen(
 ) {
     Column {
         // sliders
-        ObserverElevationSlider(onObserverElevationChanged)
-        TargetHeightSlider(onTargetHeightChanged)
-        MaxRadiusSlider(onMaxRadiusChanged)
-        FieldOfViewSlider(onFieldOfViewChanged)
-        HeadingSlider(onHeadingChanged)
+        ObserverElevationSlider(viewshedParameters.observerPosition!!.z!!.toFloat(), onObserverElevationChanged)
+        TargetHeightSlider(viewshedParameters.targetHeight.toFloat(), onTargetHeightChanged)
+        MaxRadiusSlider(viewshedParameters.maxRadius!!.toFloat(), onMaxRadiusChanged)
+        FieldOfViewSlider(viewshedParameters.fieldOfView.toFloat(), onFieldOfViewChanged)
+        HeadingSlider(viewshedParameters.heading.toFloat(), onHeadingChanged)
     }
 }
 
 @Composable
-private fun ObserverElevationSlider(onObserverElevationChanged: (Float) -> Unit) {
+private fun ObserverElevationSlider(initialValue: Float, onObserverElevationChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Observer Elevation",
-        initialSliderValue = 20f,
+        initialSliderValue = initialValue,
         sliderRangeValue = 2f..200f,
         units = " m",
         functionChanged = onObserverElevationChanged
@@ -48,10 +50,10 @@ private fun ObserverElevationSlider(onObserverElevationChanged: (Float) -> Unit)
 }
 
 @Composable
-private fun TargetHeightSlider(onTargetHeightChanged: (Float) -> Unit) {
+private fun TargetHeightSlider(initialValue: Float, onTargetHeightChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Target Height",
-        initialSliderValue = 20f,
+        initialSliderValue = initialValue,
         sliderRangeValue = 2f..1000f,
         units = " m",
         functionChanged = onTargetHeightChanged
@@ -59,10 +61,10 @@ private fun TargetHeightSlider(onTargetHeightChanged: (Float) -> Unit) {
 }
 
 @Composable
-private fun MaxRadiusSlider(onMaxRadiusChanged: (Float) -> Unit) {
+private fun MaxRadiusSlider(initialValue: Float, onMaxRadiusChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Maximum Radius",
-        initialSliderValue = 8000f,
+        initialSliderValue = initialValue,
         sliderRangeValue = 2500f..20000f,
         units = " m",
         functionChanged = onMaxRadiusChanged
@@ -70,10 +72,10 @@ private fun MaxRadiusSlider(onMaxRadiusChanged: (Float) -> Unit) {
 }
 
 @Composable
-private fun FieldOfViewSlider(onFieldOfViewChanged: (Float) -> Unit) {
+private fun FieldOfViewSlider(initialValue: Float, onFieldOfViewChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Field of View",
-        initialSliderValue = 150f,
+        initialSliderValue = initialValue,
         sliderRangeValue = 5f..360f,
         units = "°",
         functionChanged = onFieldOfViewChanged
@@ -81,10 +83,10 @@ private fun FieldOfViewSlider(onFieldOfViewChanged: (Float) -> Unit) {
 }
 
 @Composable
-private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
+private fun HeadingSlider(initialValue: Float, onHeadingChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Heading",
-        initialSliderValue = 10f,
+        initialSliderValue = initialValue,
         sliderRangeValue = 0f..360f,
         units = "°",
         functionChanged = onHeadingChanged
