@@ -128,8 +128,13 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         viewshedParameters.fieldOfView = fieldOfView.toDouble()
     }
 
-    fun setHeading(sliderHeading: Float) {
-        viewshedParameters.heading = sliderHeading.toDouble()
+    fun setHeading(heading: Float) {
+        viewshedParameters.heading = heading.toDouble()
+    }
+
+    fun setElevationSamplingInterval(elevationSamplingInterval: Double) {
+        //TODO: should this translate 0.0 to null?
+        viewshedParameters.elevationSamplingInterval = elevationSamplingInterval
     }
 
     private fun syncObserverPosition(observerPosition: Point) {

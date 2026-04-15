@@ -62,6 +62,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                             onMaxRadiusChanged = viewModel::setMaxRadius,
                             onFieldOfViewChanged = viewModel::setFieldOfView,
                             onHeadingChanged = viewModel::setHeading,
+                            onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval
                         )
                     }
                 } else {
@@ -86,6 +87,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                             onMaxRadiusChanged = viewModel::setMaxRadius,
                             onFieldOfViewChanged = viewModel::setFieldOfView,
                             onHeadingChanged = viewModel::setHeading,
+                            onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval
                         )
                     }
                 }

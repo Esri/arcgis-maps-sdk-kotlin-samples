@@ -16,17 +16,30 @@
 package com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.arcgismaps.analysis.visibility.ViewshedParameters
 
 @Composable
 fun ViewshedParametersScreen(
     viewshedParameters: ViewshedParameters,
-    onObserverElevationChanged: (Float) -> Unit = {},
-    onTargetHeightChanged: (Float) -> Unit = {},
-    onMaxRadiusChanged: (Float) -> Unit = {},
-    onFieldOfViewChanged: (Float) -> Unit = {},
-    onHeadingChanged: (Float) -> Unit = {},
+    onObserverElevationChanged: (Float) -> Unit,
+    onTargetHeightChanged: (Float) -> Unit,
+    onMaxRadiusChanged: (Float) -> Unit,
+    onFieldOfViewChanged: (Float) -> Unit,
+    onHeadingChanged: (Float) -> Unit,
+    onElevationSamplingIntervalChanged: (Double) -> Unit
 ) {
     Column {
         // sliders
@@ -35,6 +48,7 @@ fun ViewshedParametersScreen(
         MaxRadiusSlider(viewshedParameters.maxRadius!!.toFloat(), onMaxRadiusChanged)
         FieldOfViewSlider(viewshedParameters.fieldOfView.toFloat(), onFieldOfViewChanged)
         HeadingSlider(viewshedParameters.heading.toFloat(), onHeadingChanged)
+        ElevationSamplingIntervalButtons(viewshedParameters.elevationSamplingInterval, onElevationSamplingIntervalChanged)
     }
 }
 
@@ -91,4 +105,38 @@ private fun HeadingSlider(initialValue: Float, onHeadingChanged: (Float) -> Unit
         units = "°",
         functionChanged = onHeadingChanged
     )
+}
+
+@Composable
+private fun ElevationSamplingIntervalButtons(initialValue: Double?, onElevationSamplingIntervalChanged: (Double) -> Unit) {
+    //TODO: should this display null rather than 0?
+    val radioOptions = listOf("0", "10", "20")
+    val initialIndex = when (initialValue) {
+        10.0 -> 1
+        20.0 -> 2
+        else -> 0
+    }
+    val selectedOption = remember { mutableStateOf(radioOptions[initialIndex]) }
+    Row(Modifier.selectableGroup()) {
+        Text(
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp/*, end = 10.dp*/).width(230.dp),
+            text = "Elevation Sampling Interval (m)",
+            fontSize = 15.sp
+        )
+        radioOptions.forEach { text ->
+            RadioButton(
+                selected = (text == selectedOption.value),
+                onClick = {
+                    selectedOption.value = text
+                    onElevationSamplingIntervalChanged(text.toDouble())
+                }
+            )
+            Text(
+                modifier = Modifier.padding(top = 10.dp/*, end = 10.dp*/),
+                text = text,
+                fontSize = 15.sp,
+                textAlign = TextAlign.Left
+            )
+        }
+    }
 }

@@ -37,7 +37,7 @@ fun ViewshedSlider(
             fontSize = 15.sp
         )
         Slider(
-            modifier = Modifier.width(190.dp),
+            modifier = Modifier.width(180.dp),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -47,7 +47,7 @@ fun ViewshedSlider(
             valueRange = sliderRangeValue
         )
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(60.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(70.dp),
             text = sliderValue.toInt().toString() + units,
             fontSize = 15.sp,
             textAlign = TextAlign.Right
