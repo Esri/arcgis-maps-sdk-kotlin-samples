@@ -20,10 +20,15 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -52,6 +57,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                             .fillMaxSize()
                             .padding(it),
                     ) {
+                        RasterDataCopyrightText()
                         MapView(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -88,25 +94,32 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                             .fillMaxSize()
                             .padding(it),
                     ) {
-                        MapView(
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .weight(1f),
-                            arcGISMap = viewModel.arcGISMap,
-                            mapViewProxy = mapViewProxy,
-                            mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
-                            analysisOverlays = listOf(viewModel.analysisOverlay),
-                            graphicsOverlays = listOf(viewModel.graphicsOverlay),
-                            onSingleTapConfirmed = { event ->
-                                viewModel.onTap(event.mapPoint)
-                            },
-                            onLongPress = { event ->
-                                viewModel.onLongPress(event)
-                            },
-                            onPan = { event ->
-                                viewModel.onPan(event, mapViewProxy)
-                            }
-                        )
+                        ) {
+                            RasterDataCopyrightText()
+                            MapView(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f),
+                                arcGISMap = viewModel.arcGISMap,
+                                mapViewProxy = mapViewProxy,
+                                mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
+                                analysisOverlays = listOf(viewModel.analysisOverlay),
+                                graphicsOverlays = listOf(viewModel.graphicsOverlay),
+                                onSingleTapConfirmed = { event ->
+                                    viewModel.onTap(event.mapPoint)
+                                },
+                                onLongPress = { event ->
+                                    viewModel.onLongPress(event)
+                                },
+                                onPan = { event ->
+                                    viewModel.onPan(event, mapViewProxy)
+                                }
+                            )
+                        }
                         // display list of options to modify viewshed parameters
                         ViewshedParametersScreen(
                             viewModel.viewshedParameters,
@@ -117,6 +130,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                             onHeadingChanged = viewModel::setHeading,
                             onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval
                         )
+
                     }
                 }
             }
@@ -131,5 +145,17 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                 }
             }
         }
+    )
+}
+
+@Composable
+fun RasterDataCopyrightText() {
+    Text(
+        text = "Raster data copyright Scottish Government and SEPA (2014)",
+        style = MaterialTheme.typography.labelSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp, horizontal = 12.dp)
     )
 }
