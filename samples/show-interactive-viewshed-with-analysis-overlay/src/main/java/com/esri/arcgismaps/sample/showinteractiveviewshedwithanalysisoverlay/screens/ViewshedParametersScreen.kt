@@ -109,7 +109,6 @@ private fun HeadingSlider(initialValue: Float, onHeadingChanged: (Float) -> Unit
 
 @Composable
 private fun ElevationSamplingIntervalButtons(initialValue: Double?, onElevationSamplingIntervalChanged: (Double) -> Unit) {
-    //TODO: should this display null rather than 0?
     val radioOptions = listOf("0", "10", "20")
     val initialIndex = when (initialValue) {
         10.0 -> 1
@@ -117,10 +116,12 @@ private fun ElevationSamplingIntervalButtons(initialValue: Double?, onElevationS
         else -> 0
     }
     val selectedOption = remember { mutableStateOf(radioOptions[initialIndex]) }
-    Row(Modifier.selectableGroup()) {
+    Row(
+        Modifier.selectableGroup()
+    ) {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp/*, end = 10.dp*/).width(230.dp),
-            text = "Elevation Sampling Interval (m)",
+            modifier = Modifier.padding(start = 10.dp, top = 10.dp).width(200.dp),
+            text = "Elevation Sampling Interval(m)",
             fontSize = 15.sp
         )
         radioOptions.forEach { text ->
@@ -132,7 +133,7 @@ private fun ElevationSamplingIntervalButtons(initialValue: Double?, onElevationS
                 }
             )
             Text(
-                modifier = Modifier.padding(top = 10.dp/*, end = 10.dp*/),
+                modifier = Modifier.padding(top = 10.dp, end = 10.dp),
                 text = text,
                 fontSize = 15.sp,
                 textAlign = TextAlign.Left

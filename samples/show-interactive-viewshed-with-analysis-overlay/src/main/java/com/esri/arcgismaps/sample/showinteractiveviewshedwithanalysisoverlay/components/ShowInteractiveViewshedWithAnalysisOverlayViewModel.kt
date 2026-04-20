@@ -46,7 +46,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISImagery).apply {
             initialViewpoint = Viewpoint(55.610000, -5.200346, 100000.0)
@@ -112,7 +111,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     fun setObserverElevation(observerElevation: Float) {
         val oldPos = viewshedParameters.observerPosition
-        val observerPosition = Point(oldPos!!.x, oldPos!!.y, observerElevation.toDouble(), oldPos!!.spatialReference)
+        val observerPosition = Point(oldPos!!.x, oldPos.y, observerElevation.toDouble(), oldPos.spatialReference)
         syncObserverPosition(observerPosition)
     }
 
@@ -133,8 +132,10 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     }
 
     fun setElevationSamplingInterval(elevationSamplingInterval: Double) {
-        //TODO: should this translate 0.0 to null?
-        viewshedParameters.elevationSamplingInterval = elevationSamplingInterval
+        viewshedParameters.elevationSamplingInterval = when (elevationSamplingInterval) {
+            0.0 -> null
+            else -> elevationSamplingInterval
+        }
     }
 
     private fun syncObserverPosition(observerPosition: Point) {
