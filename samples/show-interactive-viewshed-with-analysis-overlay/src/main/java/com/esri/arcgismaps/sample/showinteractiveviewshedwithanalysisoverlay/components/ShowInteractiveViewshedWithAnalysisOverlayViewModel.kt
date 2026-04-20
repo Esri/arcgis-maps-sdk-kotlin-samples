@@ -40,6 +40,10 @@ import com.arcgismaps.mapping.symbology.raster.ColormapRenderer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.LongPressEvent
+import com.arcgismaps.mapping.view.PanChangeEvent
+import com.arcgismaps.mapping.view.PanChangeEvent.PanStatus
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
 import kotlinx.coroutines.launch
@@ -58,11 +62,13 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     val observerSymbol = SimpleMarkerSymbol(
         SimpleMarkerSymbolStyle.Circle,
-        Color.fromRgba(0, 94, 255, 255),
+        Color.blue,
         10.0f
     )
 
     lateinit var observerGraphic: Graphic
+
+    var isDragging = false
 
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(
@@ -139,8 +145,28 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     }
 
     fun onTap(mapPoint: Point?) {
+        setNewObserverPosition(mapPoint)
+    }
+
+    fun onLongPress(event: LongPressEvent) {
+        observerSymbol.color = Color.yellow
+        isDragging = true
+        setNewObserverPosition(event.mapPoint)
+    }
+
+    fun onPan(event: PanChangeEvent, mapViewProxy: MapViewProxy) {
+        if (isDragging) {
+            setNewObserverPosition(mapViewProxy.screenToLocationOrNull(event.screenCoordinate))
+            if (event.status == PanStatus.End) {
+                observerSymbol.color = Color.blue
+                isDragging = false
+            }
+        }
+    }
+
+    private fun setNewObserverPosition(mapPoint: Point?) {
         if (mapPoint != null) {
-            val observerPosition = when(viewshedParameters.observerPosition?.z) {
+            val observerPosition = when (viewshedParameters.observerPosition?.z) {
                 null -> Point(mapPoint.x, mapPoint.y)
                 else -> Point(mapPoint.x, mapPoint.y, viewshedParameters.observerPosition?.z)
             }

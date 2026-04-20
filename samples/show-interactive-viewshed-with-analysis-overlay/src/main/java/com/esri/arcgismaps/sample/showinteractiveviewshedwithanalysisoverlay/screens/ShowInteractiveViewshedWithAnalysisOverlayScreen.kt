@@ -25,7 +25,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ShowInteractiveViewshedWithAnalysisOverlayViewModel
@@ -36,6 +38,10 @@ import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.com
 @Composable
 fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
     val viewModel: ShowInteractiveViewshedWithAnalysisOverlayViewModel = viewModel()
+
+    // Create a MapViewProxy, used to convert screen points to map points
+    val mapViewProxy = MapViewProxy()
+
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -51,10 +57,18 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                                 .fillMaxSize()
                                 .weight(1f),
                             arcGISMap = viewModel.arcGISMap,
+                            mapViewProxy = mapViewProxy,
+                            mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
                             analysisOverlays = listOf(viewModel.analysisOverlay),
                             graphicsOverlays = listOf(viewModel.graphicsOverlay),
                             onSingleTapConfirmed = { event ->
                                 viewModel.onTap(event.mapPoint)
+                            },
+                            onLongPress = { event ->
+                                viewModel.onLongPress(event)
+                            },
+                            onPan = { event ->
+                                viewModel.onPan(event, mapViewProxy)
                             }
                         )
                         // display list of options to modify viewshed parameters
@@ -79,10 +93,18 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                                 .fillMaxSize()
                                 .weight(1f),
                             arcGISMap = viewModel.arcGISMap,
+                            mapViewProxy = mapViewProxy,
+                            mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
                             analysisOverlays = listOf(viewModel.analysisOverlay),
                             graphicsOverlays = listOf(viewModel.graphicsOverlay),
                             onSingleTapConfirmed = { event ->
                                 viewModel.onTap(event.mapPoint)
+                            },
+                            onLongPress = { event ->
+                                viewModel.onLongPress(event)
+                            },
+                            onPan = { event ->
+                                viewModel.onPan(event, mapViewProxy)
                             }
                         )
                         // display list of options to modify viewshed parameters
