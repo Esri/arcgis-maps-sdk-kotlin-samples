@@ -52,7 +52,10 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                                 .weight(1f),
                             arcGISMap = viewModel.arcGISMap,
                             analysisOverlays = listOf(viewModel.analysisOverlay),
-                            graphicsOverlays = listOf(viewModel.graphicsOverlay)
+                            graphicsOverlays = listOf(viewModel.graphicsOverlay),
+                            onSingleTapConfirmed = { event ->
+                                viewModel.onTap(event.mapPoint)
+                            }
                         )
                         // display list of options to modify viewshed parameters
                         ViewshedParametersScreen(
@@ -77,7 +80,10 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                                 .weight(1f),
                             arcGISMap = viewModel.arcGISMap,
                             analysisOverlays = listOf(viewModel.analysisOverlay),
-                            graphicsOverlays = listOf(viewModel.graphicsOverlay)
+                            graphicsOverlays = listOf(viewModel.graphicsOverlay),
+                            onSingleTapConfirmed = { event ->
+                                viewModel.onTap(event.mapPoint)
+                            }
                         )
                         // display list of options to modify viewshed parameters
                         ViewshedParametersScreen(

@@ -111,7 +111,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     fun setObserverElevation(observerElevation: Float) {
         val oldPos = viewshedParameters.observerPosition
-        val observerPosition = Point(oldPos!!.x, oldPos.y, observerElevation.toDouble(), oldPos.spatialReference)
+        val observerPosition = Point(oldPos!!.x, oldPos.y, observerElevation.toDouble())
         syncObserverPosition(observerPosition)
     }
 
@@ -135,6 +135,16 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         viewshedParameters.elevationSamplingInterval = when (elevationSamplingInterval) {
             0.0 -> null
             else -> elevationSamplingInterval
+        }
+    }
+
+    fun onTap(mapPoint: Point?) {
+        if (mapPoint != null) {
+            val observerPosition = when(viewshedParameters.observerPosition?.z) {
+                null -> Point(mapPoint.x, mapPoint.y)
+                else -> Point(mapPoint.x, mapPoint.y, viewshedParameters.observerPosition?.z)
+            }
+            syncObserverPosition(observerPosition)
         }
     }
 
