@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 class AddSceneLayerFromServiceViewModel(app: Application) : AndroidViewModel(app) {
     // URL of the Portland buildings scene server
     private val portlandBuildingsSceneLayerUrl =
-        "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Portland/SceneServer"
+        "https://basemaps3d.arcgis.com/arcgis/rest/services/Esri3D_Buildings_v1/SceneServer"
 
     // URL of the world elevation tiled elevation source
     private val worldElevationServiceUrl =
@@ -53,9 +53,9 @@ class AddSceneLayerFromServiceViewModel(app: Application) : AndroidViewModel(app
     // Camera location point (Portland, OR)
     private val cameraLocation: Point by lazy {
         Point(
-            x = -122.66949,
-            y = 45.51869,
-            z = 227.0,
+            x = -122.670,
+            y = 45.517,
+            z = 175.0,
             spatialReference = SpatialReference.wgs84()
         )
     }
@@ -64,8 +64,8 @@ class AddSceneLayerFromServiceViewModel(app: Application) : AndroidViewModel(app
     private val camera: Camera by lazy {
         Camera(
             locationPoint = cameraLocation,
-            heading = 219.0,
-            pitch = 82.0,
+            heading = 215.0,
+            pitch = 75.0,
             roll = 0.0
         )
     }

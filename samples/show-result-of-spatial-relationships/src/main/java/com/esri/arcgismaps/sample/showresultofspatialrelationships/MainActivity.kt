@@ -260,9 +260,4 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         Log.e(localClassName, message)
         Snackbar.make(mapView, message, Snackbar.LENGTH_SHORT).show()
     }
-
-    private val Color.Companion.blue: Color
-        get() {
-            return fromRgba(0, 0, 255, 255)
-        }
 }

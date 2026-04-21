@@ -657,8 +657,3 @@ private fun getAuthChallengeHandler(): ArcGISAuthenticationChallengeHandler {
         }
     }
 }
-
-private val Color.Companion.blue: Color
-    get() {
-        return fromRgba(0, 0, 255, 255)
-    }

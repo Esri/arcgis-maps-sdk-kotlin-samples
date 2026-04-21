@@ -1,0 +1,39 @@
+{
+    "category": "Visualization",
+    "description": "Use a custom dictionary style created from a web style or local style file (.stylx) to symbolize features using a variety of attribute values.",
+    "formal_name": "StyleFeaturesWithCustomDictionary",
+    "ignore": false,
+    "images": [
+        "style-features-with-custom-dictionary.png"
+    ],
+    "keywords": [
+        "dictionary",
+        "military",
+        "portal",
+        "portal item",
+        "renderer",
+        "style",
+        "stylx",
+        "unique value",
+        "visualization",
+        "DictionaryRenderer",
+        "DictionarySymbolStyle",
+        "Portal",
+        "PortalItem"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "DictionaryRenderer",
+        "DictionarySymbolStyle",
+        "Portal",
+        "PortalItem"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/stylefeatureswithcustomdictionary/components/StyleFeaturesWithCustomDictionaryViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylefeatureswithcustomdictionary/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylefeatureswithcustomdictionary/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylefeatureswithcustomdictionary/screens/StyleFeaturesWithCustomDictionaryScreen.kt"
+    ],
+    "title": "Style features with custom dictionary"
+}

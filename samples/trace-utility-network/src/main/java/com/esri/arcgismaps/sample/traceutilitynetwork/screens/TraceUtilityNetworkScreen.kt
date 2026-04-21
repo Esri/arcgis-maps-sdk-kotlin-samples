@@ -37,13 +37,13 @@ import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -140,20 +140,19 @@ fun TraceUtilityNetworkScreen(sampleName: String) {
                         isBottomSheetVisible = false
                     }
                 )
-
-                BottomSheet(isVisible = isBottomSheetVisible) {
-                    TraceOptions(
-                        hintText = hintText ?: "Trace Options",
-                        isTraceButtonEnabled = canPerformTrace,
-                        utilityTraceType = selectedTraceType,
-                        pointType = selectedPointType,
-                        traceState = traceState,
-                        onTraceSelected = mapViewModel::traceUtilityNetwork,
-                        onPointTypeChanged = mapViewModel::updatePointType,
-                        onTraceTypeSelected = mapViewModel::updateTraceType,
-                        onResetSelected = mapViewModel::reset
-                    )
-                }
+            }
+            BottomSheet(isVisible = isBottomSheetVisible) {
+                TraceOptions(
+                    hintText = hintText ?: "Trace Options",
+                    isTraceButtonEnabled = canPerformTrace,
+                    utilityTraceType = selectedTraceType,
+                    pointType = selectedPointType,
+                    traceState = traceState,
+                    onTraceSelected = mapViewModel::traceUtilityNetwork,
+                    onPointTypeChanged = mapViewModel::updatePointType,
+                    onTraceTypeSelected = mapViewModel::updateTraceType,
+                    onResetSelected = mapViewModel::reset
+                )
             }
 
             // Displays dialog to select a terminal configuration when required
@@ -248,8 +247,7 @@ fun TraceOptions(
         modifier = Modifier
             .wrapContentSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(12.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -318,7 +316,7 @@ fun ExposedDropdownMenuBoxWithTraceTypes(
     ) {
         TextField(
             modifier = Modifier
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth(),
             label = { Text("Trace Type") },
             value = selectedTraceName,

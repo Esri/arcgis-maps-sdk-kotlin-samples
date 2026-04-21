@@ -1,0 +1,36 @@
+{
+  "category": "Layers",
+  "description": "Add a layer to a local scene to visualize and interact with 3D building models developed using Building Information Modeling (BIM) tools.",
+  "formal_name": "AddBuildingSceneLayer",
+  "ignore": false,
+  "images": [
+    "add-building-scene-layer.png"
+  ],
+  "keywords": [
+    "3D",
+    "buildings",
+    "elevation",
+    "layers",
+    "scene",
+    "surface",
+    "ArcGISTiledElevationSource",
+    "BuildingSceneLayer",
+    "BuildingSublayer",
+    "LocalSceneView",
+    "Scene"
+  ],
+  "language": "kotlin",
+  "redirect_from": "",
+  "relevant_apis": [
+    "ArcGISTiledElevationSource",
+    "BuildingSceneLayer",
+    "BuildingSublayer",
+    "LocalSceneView",
+    "Scene"
+  ],
+  "snippets": [
+    "src/main/java/com/esri/arcgismaps/sample/addbuildingscenelayer/MainActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/addbuildingscenelayer/screens/AddBuildingSceneLayerScreen.kt"
+  ],
+  "title": "Add building scene layer"
+}

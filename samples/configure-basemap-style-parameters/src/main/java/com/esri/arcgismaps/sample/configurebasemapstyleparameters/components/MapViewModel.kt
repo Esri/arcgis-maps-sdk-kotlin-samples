@@ -104,6 +104,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         // set a new basemap with the chosen style parameters
-        map.setBasemap(Basemap(BasemapStyle.OsmLightGray, basemapStyleParameters))
+        map.setBasemap(Basemap(BasemapStyle.ArcGISLightGray, basemapStyleParameters))
     }
 }

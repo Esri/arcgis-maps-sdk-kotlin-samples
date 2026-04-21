@@ -1,0 +1,39 @@
+{
+    "category": "Scenes",
+    "description": "This sample demonstrates how to keep the viewpoints of two GeoViews (a 2D MapView and a 3D SceneView) synchronized with each other.",
+    "formal_name": "MatchViewpointOfGeoViews",
+    "ignore": false,
+    "images": [
+        "match-viewpoint-of-geo-views.png"
+    ],
+    "keywords": [
+        "3D",
+        "automatic refresh",
+        "event",
+        "event handler",
+        "events",
+        "extent",
+        "interaction",
+        "interactions",
+        "pan",
+        "zoom",
+        "GeoView",
+        "MapView",
+        "SceneView",
+        "Viewpoint"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "GeoView",
+        "MapView",
+        "SceneView",
+        "Viewpoint"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/matchviewpointofgeoviews/screens/MatchViewpointOfGeoViewsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/matchviewpointofgeoviews/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/matchviewpointofgeoviews/screens/MatchViewpointOfGeoViewsScreen.kt"
+    ],
+    "title": "Match viewpoint of geo views"
+}

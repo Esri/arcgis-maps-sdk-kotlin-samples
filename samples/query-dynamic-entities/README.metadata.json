@@ -1,0 +1,47 @@
+{
+    "category": "Search and Query",
+    "description": "Find dynamic entities from a data source that match a query.",
+    "formal_name": "QueryDynamicEntities",
+    "ignore": false,
+    "images": [
+        "query-dynamic-entities.png"
+    ],
+    "keywords": [
+        "data",
+        "dynamic",
+        "entity",
+        "live",
+        "query",
+        "real-time",
+        "search",
+        "stream",
+        "track",
+        "DynamicEntity",
+        "DynamicEntityChangedInfo",
+        "DynamicEntityDataSource",
+        "DynamicEntityLayer",
+        "DynamicEntityObservation",
+        "DynamicEntityObservationInfo",
+        "DynamicEntityQueryParameters",
+        "DynamicEntityQueryResult"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "DynamicEntity",
+        "DynamicEntityChangedInfo",
+        "DynamicEntityDataSource",
+        "DynamicEntityLayer",
+        "DynamicEntityObservation",
+        "DynamicEntityObservationInfo",
+        "DynamicEntityQueryParameters",
+        "DynamicEntityQueryResult"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/components/QueryDynamicEntitiesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/querydynamicentities/screens/QueryDynamicEntitiesScreen.kt"
+    ],
+    "title": "Query dynamic entities"
+}

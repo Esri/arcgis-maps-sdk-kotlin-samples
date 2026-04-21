@@ -1,0 +1,43 @@
+{
+    "category": "Visualization",
+    "description": "Show various kinds of 3D symbols in a scene.",
+    "formal_name": "StylePointWithSceneSymbol",
+    "ignore": false,
+    "images": [
+        "style-point-with-scene-symbol.png"
+    ],
+    "keywords": [
+        "3D",
+        "cone",
+        "cube",
+        "cylinder",
+        "diamond",
+        "geometry",
+        "graphic",
+        "graphics overlay",
+        "pyramid",
+        "scene",
+        "shape",
+        "sphere",
+        "symbol",
+        "tetrahedron",
+        "tube",
+        "visualization",
+        "SceneSymbolAnchorPosition",
+        "SimpleMarkerSceneSymbol",
+        "SimpleMarkerSceneSymbolStyle"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "SceneSymbolAnchorPosition",
+        "SimpleMarkerSceneSymbol",
+        "SimpleMarkerSceneSymbolStyle"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithscenesymbol/components/StylePointWithSceneSymbolViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithscenesymbol/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/stylepointwithscenesymbol/screens/StylePointWithSceneSymbolScreen.kt"
+    ],
+    "title": "Style point with scene symbol"
+}

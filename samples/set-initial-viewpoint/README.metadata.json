@@ -1,0 +1,35 @@
+{
+    "category": "Maps",
+    "description": "Display the map at an initial viewpoint representing a bounding geometry.",
+    "formal_name": "SetInitialViewpoint",
+    "ignore": false,
+    "images": [
+        "set-initial-viewpoint.png"
+    ],
+    "keywords": [
+        "envelope",
+        "extent",
+        "initial viewpoint",
+        "zoom",
+        "ArcGISMap",
+        "Envelope",
+        "MapView",
+        "SpatialReference",
+        "Viewpoint"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISMap",
+        "Envelope",
+        "MapView",
+        "SpatialReference",
+        "Viewpoint"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/setinitialviewpoint/components/SetInitialViewpointViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setinitialviewpoint/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/setinitialviewpoint/screens/SetInitialViewpointScreen.kt"
+    ],
+    "title": "Set initial viewpoint"
+}

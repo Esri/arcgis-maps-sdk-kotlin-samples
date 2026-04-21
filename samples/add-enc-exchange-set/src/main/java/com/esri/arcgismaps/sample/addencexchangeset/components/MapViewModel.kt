@@ -111,7 +111,7 @@ private fun EncExchangeSet.extentOrNull(): Envelope? {
 
         if (extent != null && dataset.extent != null) {
             // Update the combined extent of the exchange set if geometry engine returns non-null
-            extent = GeometryEngine.combineExtentsOrNull(extent!!, dataset.extent!!) ?: extent
+            extent = GeometryEngine.combineExtentsOrNull(extent, dataset.extent!!) ?: extent
         }
     }
     return extent

@@ -58,16 +58,6 @@ import com.esri.arcgismaps.sample.rendermultilayersymbols.databinding.RenderMult
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-private val Color.Companion.blue: Color
-    get() {
-        return fromRgba(0, 0, 255, 255)
-    }
-
-private val Color.Companion.magenta: Color
-    get() {
-        return fromRgba(255, 0, 255, 255)
-    }
-
 // define offset used to keep a consistent distance between symbols in the same column
 private const val OFFSET = 20.0
 

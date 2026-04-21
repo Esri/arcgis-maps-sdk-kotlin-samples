@@ -20,7 +20,7 @@
         "Surface"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": ["kotlin/sample-code/add-scene-layer-with-elevation/"],
     "relevant_apis": [
         "ArcGISScene",
         "ArcGISSceneLayer",

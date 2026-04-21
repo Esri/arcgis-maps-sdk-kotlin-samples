@@ -222,7 +222,3 @@ class BrowseOgcApiFeatureServiceViewModel(app: Application) : AndroidViewModel(a
     }
 
 }
-
-// Extension property to provide blue color for ArcGISMaps Color class
-val Color.Companion.blue: Color
-    get() = fromRgba(0, 0, 255, 255)

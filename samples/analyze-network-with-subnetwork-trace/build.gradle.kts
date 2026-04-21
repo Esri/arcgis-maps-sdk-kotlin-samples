@@ -20,4 +20,5 @@ android {
 
 dependencies {
     // Only module specific dependencies needed here
+    implementation(libs.kotlin.reflect)
 }

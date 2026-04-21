@@ -1,0 +1,37 @@
+{
+    "category": "Analysis",
+    "description": "Calculate a viewshed using a geoprocessing service, in this case showing what parts of a landscape are visible from points on mountainous terrain.",
+    "formal_name": "ShowViewshedCalculatedFromGeoprocessingTask",
+    "ignore": false,
+    "images": [
+        "show-viewshed-calculated-from-geoprocessing-task.png"
+    ],
+    "keywords": [
+        "geoprocessing",
+        "heat map",
+        "heatmap",
+        "viewshed",
+        "FeatureCollectionTable",
+        "GeoprocessingFeatures",
+        "GeoprocessingJob",
+        "GeoprocessingParameters",
+        "GeoprocessingResult",
+        "GeoprocessingTask"
+    ],
+    "language": "kotlin",
+    "redirect_from": ["/kotlin/sample-code/show-viewshed-from-point-on-map/"],
+    "relevant_apis": [
+        "FeatureCollectionTable",
+        "GeoprocessingFeatures",
+        "GeoprocessingJob",
+        "GeoprocessingParameters",
+        "GeoprocessingResult",
+        "GeoprocessingTask"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedcalculatedfromgeoprocessingtask/components/MapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedcalculatedfromgeoprocessingtask/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showviewshedcalculatedfromgeoprocessingtask/screens/MainScreen.kt"
+    ],
+    "title": "Show viewshed calculated from geoprocessing task"
+}
