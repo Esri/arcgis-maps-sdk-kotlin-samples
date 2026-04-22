@@ -23,8 +23,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -168,8 +166,7 @@ var isBottomSheetVisible by remember { mutableStateOf(false) }
                 onDismissRequest = { isBottomSheetVisible = false },
             ) {
                 Column(modifier = Modifier
-                    .fillMaxHeight(0.4f)
-                    .verticalScroll(rememberScrollState()),
+                    .fillMaxHeight(0.4f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     FloorSelector()

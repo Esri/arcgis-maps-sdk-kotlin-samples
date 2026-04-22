@@ -50,7 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -169,7 +169,7 @@ fun DirectionManeuversSheet(
     Column(
         modifier = Modifier
             // Use 1/2 screen height to display sheet
-            .height((LocalConfiguration.current.screenHeightDp * 0.5).dp)
+            .height(LocalWindowInfo.current.containerDpSize.height * 0.5f)
             .background(MaterialTheme.colorScheme.background)
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),

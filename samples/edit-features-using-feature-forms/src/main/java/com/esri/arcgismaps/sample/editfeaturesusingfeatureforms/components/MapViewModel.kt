@@ -23,23 +23,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.ServiceFeatureTable
-import com.arcgismaps.exceptions.FeatureFormValidationException
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.featureforms.FeatureForm
 import com.arcgismaps.mapping.featureforms.FeatureFormDefinition
-import com.arcgismaps.mapping.featureforms.FieldFormElement
-import com.arcgismaps.mapping.featureforms.FormElement
-import com.arcgismaps.mapping.featureforms.GroupFormElement
 import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.featureforms.FeatureFormState
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.editfeaturesusingfeatureforms.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -58,10 +51,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val _featureFormState = mutableStateOf<FeatureFormState?>(null)
     val featureFormState: FeatureFormState?
         get() = _featureFormState.value
-
-    // keep track of the list of validation errors
-    private val _errors = MutableStateFlow<List<ErrorInfo>>(listOf())
-    val errors: StateFlow<List<ErrorInfo>> = _errors.asStateFlow()
 
     // create a ViewModel to handle dialog interactions
     val messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
@@ -84,83 +73,37 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         val featureForm = featureFormState?.activeFeatureForm
             ?: return messageDialogVM.showMessageDialog("Feature form state is not configured")
 
-        // update the state flow with the list of validation errors found
-        _errors.value = validateFormInputEdits(featureForm)
-        // if there are no errors then update the feature
-        if (_errors.value.isEmpty()) {
-            val serviceFeatureTable = featureForm.feature.featureTable as? ServiceFeatureTable
-                ?: return messageDialogVM.showMessageDialog("Cannot save feature edit without a ServiceFeatureTable")
+        val serviceFeatureTable = featureForm.feature.featureTable as? ServiceFeatureTable
+            ?: return messageDialogVM.showMessageDialog("Cannot save feature edit without a ServiceFeatureTable")
 
-            viewModelScope.launch {
-                // commits changes of the edited feature to the database
-                featureForm.finishEditing().onSuccess {
-                    serviceFeatureTable.serviceGeodatabase?.let { database ->
-                        if (database.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
-                            // applies all local edits in the tables to the service
-                            database.applyEdits().onFailure {
-                                return@onFailure messageDialogVM.showMessageDialog(
-                                    title = it.message.toString(),
-                                    description = it.cause.toString()
-                                )
-                            }
-                        } else {
-                            // uploads any changes to the local table to the feature service
-                            serviceFeatureTable.applyEdits().onFailure {
-                                return@onFailure messageDialogVM.showMessageDialog(
-                                    title = it.message.toString(),
-                                    description = it.cause.toString()
-                                )
-                            }
-                        }
+        viewModelScope.launch {
+            // commits changes of the edited feature to the database
+            serviceFeatureTable.serviceGeodatabase?.let { database ->
+                if (database.serviceInfo?.canUseServiceGeodatabaseApplyEdits == true) {
+                    // applies all local edits in the tables to the service
+                    database.applyEdits().onFailure {
+                        return@onFailure messageDialogVM.showMessageDialog(
+                            title = it.message.toString(),
+                            description = it.cause.toString()
+                        )
                     }
-                    // resets the attributes and geometry to the values in the data source
-                    featureForm.feature.refresh()
-                    // unselect the feature after the edits have been saved
-                    (featureForm.feature.featureTable?.layer as FeatureLayer).clearSelection()
-                    // dismiss dialog when edits are completed
-                    onEditsCompleted()
-                }.onFailure {
-                    return@onFailure messageDialogVM.showMessageDialog(
-                        title = it.message.toString(),
-                        description = it.cause.toString()
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * Performs validation checks on the given [featureForm] with local edits.
-     * Return a list of [ErrorInfo] if errors are found, if not, empty list is returned.
-     */
-    private fun validateFormInputEdits(featureForm: FeatureForm): List<ErrorInfo> {
-        val errors = mutableListOf<ErrorInfo>()
-        // If an element is editable or derives its value from an arcade expression,
-        // its errors must be corrected before submitting the form
-        featureForm.validationErrors.value.forEach { entry ->
-            entry.value.forEach { error ->
-                featureForm.elements.getFormElement(entry.key)?.let { formElement ->
-                    // Ignore validation on non-editable and non-visible elements
-                    if (formElement.isEditable.value || formElement.hasValueExpression) {
-                        errors.add(
-                            ErrorInfo(
-                                fieldName = formElement.label,
-                                error = error as FeatureFormValidationException
-                            )
+                } else {
+                    // uploads any changes to the local table to the feature service
+                    serviceFeatureTable.applyEdits().onFailure {
+                        return@onFailure messageDialogVM.showMessageDialog(
+                            title = it.message.toString(),
+                            description = it.cause.toString()
                         )
                     }
                 }
             }
+            // resets the attributes and geometry to the values in the data source
+            featureForm.feature.refresh()
+            // unselect the feature after the edits have been saved
+            (featureForm.feature.featureTable?.layer as FeatureLayer).clearSelection()
+            // dismiss dialog when edits are completed
+            onEditsCompleted()
         }
-        return errors
-    }
-
-    /**
-     * Cancels the commit by resetting the validation errors.
-     */
-    fun cancelCommit() {
-        // reset the validation errors
-        _errors.value = listOf()
     }
 
     /**
@@ -170,15 +113,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         val featureForm = featureFormState?.activeFeatureForm
         (featureForm?.feature?.featureTable?.layer as FeatureLayer).clearSelection()
         _featureFormState.value = null
-    }
-
-    /**
-     * Discard edits and unselects feature from the layer
-     */
-    suspend fun rollbackEdits() {
-        featureFormState?.discardEdits()
-        // reset the validation errors
-        _errors.value = listOf()
     }
 
     /**
@@ -219,34 +153,3 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
-
-/**
- * Returns the [FieldFormElement] with the given [fieldName] in the [FeatureForm]. If none exists
- * null is returned.
- */
-fun List<FormElement>.getFormElement(fieldName: String): FieldFormElement? {
-    val fieldElements = filterIsInstance<FieldFormElement>()
-    val element = if (fieldElements.isNotEmpty()) {
-        fieldElements.firstNotNullOfOrNull {
-            if (it.fieldName == fieldName) it else null
-        }
-    } else {
-        null
-    }
-
-    return element ?: run {
-        val groupElements = filterIsInstance<GroupFormElement>()
-        if (groupElements.isNotEmpty()) {
-            groupElements.firstNotNullOfOrNull {
-                it.elements.getFormElement(fieldName)
-            }
-        } else {
-            null
-        }
-    }
-}
-
-/**
- * Class that provides a validation error [error] for the field with name [fieldName].
- */
-data class ErrorInfo(val fieldName: String, val error: FeatureFormValidationException)
