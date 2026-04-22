@@ -38,7 +38,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ShowInteractiveViewshedWithAnalysisOverlayViewModel
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
@@ -52,6 +52,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
         content = {
             BoxWithConstraints {
                 if (maxWidth < maxHeight) {
+                    // Portrait orientation, display MapView above the UI controls in a Column
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -77,7 +78,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                                 viewModel.onPan(event, mapViewProxy)
                             }
                         )
-                        // display list of options to modify viewshed parameters
+                        // Display UI controls to modify viewshed parameters
                         ViewshedParametersScreen(
                             viewModel.viewshedParameters,
                             onObserverElevationChanged = viewModel::setObserverElevation,
@@ -89,6 +90,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                         )
                     }
                 } else {
+                    // Landscape orientation, display MapView alongside the UI controls in a Row
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
@@ -120,7 +122,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                                 }
                             )
                         }
-                        // display list of options to modify viewshed parameters
+                        // Display UI controls to modify viewshed parameters
                         ViewshedParametersScreen(
                             viewModel.viewshedParameters,
                             onObserverElevationChanged = viewModel::setObserverElevation,
@@ -135,6 +137,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
                 }
             }
 
+            // Display a dialog if the sample encounters an error
             viewModel.messageDialogVM.apply {
                 if (dialogStatus) {
                     MessageDialog(
@@ -148,6 +151,9 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
     )
 }
 
+/**
+ * Display copyright text for the raster data we are using.
+ */
 @Composable
 fun RasterDataCopyrightText() {
     Text(

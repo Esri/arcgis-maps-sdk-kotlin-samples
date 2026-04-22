@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * Custom slider implementation to be used by various viewshed slider options
+ * Custom slider implementation, used for several viewshed parameter controls.
  */
 @Composable
 fun ViewshedSlider(
@@ -40,7 +40,7 @@ fun ViewshedSlider(
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
-                // update view model viewshed value
+                // Update view model viewshed parameter value
                 functionChanged(sliderValue)
             },
             valueRange = sliderRangeValue

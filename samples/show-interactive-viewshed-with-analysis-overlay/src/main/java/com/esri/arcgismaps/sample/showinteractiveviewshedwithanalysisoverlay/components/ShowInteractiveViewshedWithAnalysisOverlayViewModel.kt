@@ -68,14 +68,15 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     lateinit var observerGraphic: Graphic
 
-    var isDragging = false
+    // Indicates if observer position is currently being dragged across the map
+    private var isDragging = false
 
+    // Location of file containing elevation data
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(
             R.string.show_interactive_viewshed_with_analysis_overlay_app_name
         ) + File.separator
     }
-
     private val filePath = provisionPath + app.getString(R.string.elevation_data_filename)
 
     // Create a message dialog view model for handling error messages
@@ -94,22 +95,24 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
 
+            // Display a symbol to mark the observer position
+            observerGraphic = Graphic(initObserverPosition, observerSymbol)
+            graphicsOverlay.graphics.add(observerGraphic)
+
             // Create a ContinuousField from a raster file containing elevation data
             val filePaths = listOf(filePath)
-            val continuousField = ContinuousField.createFromFiles(filePaths, 10).getOrThrow()
+            val continuousField = ContinuousField.createFromFiles(filePaths, 0).getOrThrow()
 
             // Create a ContinuousFieldFunction from the ContinuousField
             val continuousFieldFunction = ContinuousFieldFunction.create(continuousField)
-
-            observerGraphic = Graphic(initObserverPosition, observerSymbol)
-            graphicsOverlay.graphics.add(observerGraphic)
 
             // Create a ViewshedFunction using the ContinuousFieldFunction and ViewshedParameters,
             // then convert it to a DiscreteFieldFunction
             val viewshedFunction = ViewshedFunction(continuousFieldFunction, viewshedParameters)
             val discreteViewshed = viewshedFunction.toDiscreteFieldFunction()
 
-            // Create a ColormapRenderer from a Colormap with colors that represent visible and non-visible results
+            // Create a ColormapRenderer from a Colormap with colors that represent visible and
+            // non-visible results
             val areaNotVisibleColor = Color.gray
             val areaVisibleColor = Color.fromRgba(136, 204, 132, 100) // translucent green
             val colors = listOf(areaNotVisibleColor, areaVisibleColor)
@@ -123,28 +126,46 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
     }
 
+    /**
+     * Set a new observer elevation.
+     */
     fun setObserverElevation(observerElevation: Float) {
         val oldPos = viewshedParameters.observerPosition
         val observerPosition = Point(oldPos!!.x, oldPos.y, observerElevation.toDouble())
         syncObserverPosition(observerPosition)
     }
 
+    /**
+     * Set a new target height.
+     */
     fun setTargetHeight(targetHeight: Float) {
         viewshedParameters.targetHeight = targetHeight.toDouble()
     }
 
+    /**
+     * Set a new maximum radius.
+     */
     fun setMaxRadius(maxRadius: Float) {
         viewshedParameters.maxRadius = maxRadius.toDouble()
     }
 
+    /**
+     * Set a new field of view.
+     */
     fun setFieldOfView(fieldOfView: Float) {
         viewshedParameters.fieldOfView = fieldOfView.toDouble()
     }
 
+    /**
+     * Set a new heading.
+     */
     fun setHeading(heading: Float) {
         viewshedParameters.heading = heading.toDouble()
     }
 
+    /**
+     * Set a new elevation sampling interval.
+     */
     fun setElevationSamplingInterval(elevationSamplingInterval: Double) {
         viewshedParameters.elevationSamplingInterval = when (elevationSamplingInterval) {
             0.0 -> null
@@ -152,16 +173,27 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
     }
 
+    /**
+     * Sets the observer position to the given [mapPoint].
+     */
     fun onTap(mapPoint: Point?) {
         setNewObserverPosition(mapPoint)
     }
 
+    /**
+     * Acts on a long press [event] by setting the observer position to the location of the long
+     * press and allowing it to be dragged across the map.
+     */
     fun onLongPress(event: LongPressEvent) {
         observerSymbol.color = Color.yellow
         isDragging = true
         setNewObserverPosition(event.mapPoint)
     }
 
+    /**
+     * Acts on a pan [event]. If the observer position is currently being dragged, the new position
+     * is set to match the current screen coordinate. Dragging is terminated when panning ends.
+     */
     fun onPan(event: PanChangeEvent, mapViewProxy: MapViewProxy) {
         if (isDragging) {
             setNewObserverPosition(mapViewProxy.screenToLocationOrNull(event.screenCoordinate))
@@ -172,6 +204,9 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
     }
 
+    /**
+     * Sets the observer position to the given [mapPoint].
+     */
     private fun setNewObserverPosition(mapPoint: Point?) {
         if (mapPoint != null) {
             val observerPosition = when (viewshedParameters.observerPosition?.z) {
@@ -182,6 +217,10 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
     }
 
+    /**
+     * Synchronises setting of a new [observerPosition]. This needs to be set in the
+     * [viewshedParameters] and also as the geometry of the [observerGraphic].
+     */
     private fun syncObserverPosition(observerPosition: Point) {
         // Update the observer graphic geometry to the current observer position
         observerGraphic.geometry = observerPosition

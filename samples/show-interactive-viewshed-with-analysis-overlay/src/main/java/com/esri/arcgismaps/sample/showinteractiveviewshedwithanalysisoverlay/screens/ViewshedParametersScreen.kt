@@ -31,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arcgismaps.analysis.visibility.ViewshedParameters
 
+/**
+ * Screen containing UI controls to modify the viewshed parameters.
+ */
 @Composable
 fun ViewshedParametersScreen(
     viewshedParameters: ViewshedParameters,
@@ -42,13 +45,18 @@ fun ViewshedParametersScreen(
     onElevationSamplingIntervalChanged: (Double) -> Unit
 ) {
     Column {
-        // sliders
-        ObserverElevationSlider(viewshedParameters.observerPosition!!.z!!.toFloat(), onObserverElevationChanged)
+        ObserverElevationSlider(
+            viewshedParameters.observerPosition!!.z!!.toFloat(),
+            onObserverElevationChanged
+        )
         TargetHeightSlider(viewshedParameters.targetHeight.toFloat(), onTargetHeightChanged)
         MaxRadiusSlider(viewshedParameters.maxRadius!!.toFloat(), onMaxRadiusChanged)
         FieldOfViewSlider(viewshedParameters.fieldOfView.toFloat(), onFieldOfViewChanged)
         HeadingSlider(viewshedParameters.heading.toFloat(), onHeadingChanged)
-        ElevationSamplingIntervalButtons(viewshedParameters.elevationSamplingInterval, onElevationSamplingIntervalChanged)
+        ElevationSamplingIntervalButtons(
+            viewshedParameters.elevationSamplingInterval,
+            onElevationSamplingIntervalChanged
+        )
     }
 }
 
@@ -107,8 +115,14 @@ private fun HeadingSlider(initialValue: Float, onHeadingChanged: (Float) -> Unit
     )
 }
 
+/**
+ * Use radio buttons to allow one of 3 values to be selected for Elevation Sampling Interval.
+ */
 @Composable
-private fun ElevationSamplingIntervalButtons(initialValue: Double?, onElevationSamplingIntervalChanged: (Double) -> Unit) {
+private fun ElevationSamplingIntervalButtons(
+    initialValue: Double?,
+    onElevationSamplingIntervalChanged: (Double) -> Unit
+) {
     val radioOptions = listOf("0", "10", "20")
     val initialIndex = when (initialValue) {
         10.0 -> 1
@@ -120,7 +134,9 @@ private fun ElevationSamplingIntervalButtons(initialValue: Double?, onElevationS
         Modifier.selectableGroup()
     ) {
         Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp).width(200.dp),
+            modifier = Modifier
+                .padding(start = 10.dp, top = 10.dp)
+                .width(200.dp),
             text = "Elevation Sampling Interval(m)",
             fontSize = 15.sp
         )
