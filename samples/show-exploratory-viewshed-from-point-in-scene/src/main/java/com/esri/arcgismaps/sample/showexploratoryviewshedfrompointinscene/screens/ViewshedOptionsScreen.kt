@@ -20,6 +20,9 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,32 +34,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
-/**
- * Viewshed options screen for sliders and checkboxes
- */
 @Composable
-fun ViewshedOptionsScreen(
+fun ViewshedSlidersContent(
     onHeadingChanged: (Float) -> Unit = {},
     onPitchChanged: (Float) -> Unit = {},
     onHorizontalAngleChanged: (Float) -> Unit = {},
     onVerticalAngleChanged: (Float) -> Unit = {},
     onMinDistanceChanged: (Float) -> Unit = {},
-    onMaxDistanceChanged: (Float) -> Unit = {},
-    isFrustumVisible: (Boolean) -> Unit = {},
-    isAnalysisVisible: (Boolean) -> Unit = {}
+    onMaxDistanceChanged: (Float) -> Unit = {}
 ) {
     Column {
-        // sliders
         HeadingSlider(onHeadingChanged)
         PitchSlider(onPitchChanged)
         HorizontalAngleSlider(onHorizontalAngleChanged)
         VerticalAngleSlider(onVerticalAngleChanged)
         MinimumDistanceSlider(onMinDistanceChanged)
         MaximumDistanceSlider(onMaxDistanceChanged)
-        // checkbox
-        Row {
-            FrustumCheckBox(isFrustumVisible)
-            AnalysisCheckBox(isAnalysisVisible)
+    }
+}
+
+@Composable
+fun ViewshedSceneOptionsContent(
+    isFrustumVisible: (Boolean) -> Unit = {},
+    isAnalysisVisible: (Boolean) -> Unit = {},
+    onSetViewpointToAnalysisExtent: () -> Unit = {}
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        FrustumCheckBox(isFrustumVisible)
+        AnalysisCheckBox(isAnalysisVisible)
+        Button(
+            onClick = onSetViewpointToAnalysisExtent,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Set viewpoint to analysis extent")
         }
     }
 }
@@ -154,15 +166,3 @@ fun AnalysisCheckBox(isAnalysisVisible: (Boolean) -> Unit) {
         Text(modifier = Modifier.padding(top = 10.dp), text = "Analysis Overlay")
     }
 }
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun PreviewViewshedOptions() {
-    SampleAppTheme {
-        Surface {
-            ViewshedOptionsScreen()
-        }
-    }
-}
-

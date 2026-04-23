@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.arcgismaps.analysis.interactive.ExploratoryLocationViewshed
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISScene
@@ -31,7 +32,10 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Camera
+import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.R
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
 
@@ -43,6 +47,9 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     private val initVerticalAngle = 90.0
     private val initMinDistance = 0.0
     private val initMaxDistance = 1500.0
+
+    private var currentHeading = initHeading
+    private var currentPitch = initPitch
 
     val initLocation = Point(
         x = -4.50,
@@ -102,6 +109,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     }
 
     fun setHeading(sliderHeading: Float) {
+        currentHeading = sliderHeading.toDouble()
         viewShed.heading = sliderHeading.toDouble()
     }
 
@@ -123,6 +131,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     }
 
     fun setPitch(sliderValue: Float) {
+        currentPitch = sliderValue.toDouble()
         viewShed.pitch = sliderValue.toDouble()
     }
 
@@ -132,6 +141,24 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
 
     fun analysisVisibility(checkedValue: Boolean) {
         viewShed.isVisible = checkedValue
+    }
+
+    /**
+     * Animates the camera to a meaningful overview centered on the viewshed analysis location.
+     */
+    fun setViewpointToAnalysisExtent(sceneViewProxy: SceneViewProxy) {
+        viewModelScope.launch {
+            sceneViewProxy.setViewpointCameraAnimated(
+                camera = Camera(
+                    lookAtPoint = viewShed.location,
+                    distance = viewShed.maxDistance ?: initMaxDistance,
+                    heading = viewShed.heading,
+                    pitch = viewShed.pitch,
+                    roll = 0.0
+                ),
+                duration = 2.seconds
+            )
+        }
     }
 }
 

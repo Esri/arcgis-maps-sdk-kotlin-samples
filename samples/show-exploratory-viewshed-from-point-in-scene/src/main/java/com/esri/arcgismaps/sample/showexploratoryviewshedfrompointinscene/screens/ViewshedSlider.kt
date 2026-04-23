@@ -1,9 +1,9 @@
 package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 /**
  * Custom slider implementation to be used by various viewshed slider options
@@ -27,13 +26,16 @@ fun ViewshedSlider(
     var sliderValue by remember {
         mutableFloatStateOf(initialSliderValue)
     }
-    Row {
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).width(150.dp),
-            text = title
-        )
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = title)
+            Text(text = sliderValue.toInt().toString())
+        }
         Slider(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             value = sliderValue,
             onValueChange = {
                 sliderValue = it
@@ -41,10 +43,6 @@ fun ViewshedSlider(
                 functionChanged(sliderValue)
             },
             valueRange = sliderRangeValue
-        )
-        Text(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp).size(40.dp),
-            text = sliderValue.toInt().toString()
         )
     }
 }

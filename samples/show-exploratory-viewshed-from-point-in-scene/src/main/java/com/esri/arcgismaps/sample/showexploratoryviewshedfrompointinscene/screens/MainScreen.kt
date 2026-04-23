@@ -16,91 +16,85 @@
 
 package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.OrbitLocationCameraController
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
+import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.AdaptiveThreePane
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.SceneViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
 fun MainScreen(sampleName: String) {
-    var isBottomSheetVisible by remember { mutableStateOf(true) }
     // create a ViewModel to handle SceneView interactions
     val sceneViewModel: SceneViewModel = viewModel()
+    val sceneViewProxy = remember { SceneViewProxy() }
+    val coroutineScope = rememberCoroutineScope()
+    val cameraController = remember {
+        OrbitLocationCameraController(
+            targetPoint = sceneViewModel.initLocation,
+            distance = 5000.0
+        )
+    }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
-        floatingActionButton = {
-            if (!isBottomSheetVisible) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 36.dp, end = 24.dp),
-                    onClick = { isBottomSheetVisible = true }
-                ) { Icon(Icons.Filled.Settings, contentDescription = "Viewshed options") }
-            }
-        },
-        content = {
-            Box {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-
-                    val cameraController = remember {
-                        OrbitLocationCameraController(
-                            targetPoint = sceneViewModel.initLocation,
-                            distance = 5000.0
-                        )
-                    }
+        content = { paddingValues ->
+            AdaptiveThreePane(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                supportingPaneTitle = "Viewshed Options",
+                floatingPaneTitle = "Scene Options",
+                mainPane = { _, _ ->
                     // composable function that wraps the SceneView
                     SceneView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
+                        modifier = Modifier.fillMaxSize(),
                         arcGISScene = sceneViewModel.scene,
-                        onDown = { isBottomSheetVisible = false },
+                        sceneViewProxy = sceneViewProxy,
                         cameraController = cameraController,
                         analysisOverlays = listOf(sceneViewModel.analysisOverlay)
                     )
+                },
+                supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
+                    ViewshedSlidersContent(
+                        onHeadingChanged = sceneViewModel::setHeading,
+                        onPitchChanged = sceneViewModel::setPitch,
+                        onHorizontalAngleChanged = sceneViewModel::setHorizontalAngleSlider,
+                        onVerticalAngleChanged = sceneViewModel::setVerticalAngleSlider,
+                        onMinDistanceChanged = sceneViewModel::setMinimumDistanceSlider,
+                        onMaxDistanceChanged = sceneViewModel::setMaximumDistanceSlider,
+                    )
+
+                    OutlinedButton(onClick = toggleFloatingPane) {
+                        Text(if (isFloatingPaneVisible) "Hide scene options" else "Open scene options")
+                    }
+                },
+                floatingPane = {
+                    ViewshedSceneOptionsContent(
+                        isFrustumVisible = sceneViewModel::frustumVisibility,
+                        isAnalysisVisible = sceneViewModel::analysisVisibility,
+                        onSetViewpointToAnalysisExtent = {
+                            coroutineScope.launch {
+                                sceneViewModel.setViewpointToAnalysisExtent(sceneViewProxy)
+                            }
+                        }
+                    )
                 }
-            }
-            BottomSheet(
-                sheetTitle = "Viewshed Options",
-                isVisible = isBottomSheetVisible,
-                onDismissRequest = { isBottomSheetVisible = false }
-            ) {
-                // display list of options to modify viewshed properties
-                ViewshedOptionsScreen(
-                    onHeadingChanged = sceneViewModel::setHeading,
-                    onPitchChanged = sceneViewModel::setPitch,
-                    onHorizontalAngleChanged = sceneViewModel::setHorizontalAngleSlider,
-                    onVerticalAngleChanged = sceneViewModel::setVerticalAngleSlider,
-                    onMinDistanceChanged = sceneViewModel::setMinimumDistanceSlider,
-                    onMaxDistanceChanged = sceneViewModel::setMaximumDistanceSlider,
-                    isFrustumVisible = sceneViewModel::frustumVisibility,
-                    isAnalysisVisible = sceneViewModel::analysisVisibility
-                )
-            }
+            )
         }
     )
 }
