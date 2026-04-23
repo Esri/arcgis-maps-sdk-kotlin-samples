@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.sampleslib.components
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -48,12 +49,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDragHandle
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -81,13 +84,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.snapshotFlow
@@ -98,7 +100,7 @@ import kotlin.math.roundToInt
 
 /**
  * Reusable adaptive scaffold for samples that need three layers of UI:
- * - a main content pane (typically a map or scene),
+ * - a main content pane (typically a GeoView),
  * - a supporting pane (tools, lists, settings),
  * - an optional floating pane for quick controls.
  *
@@ -137,7 +139,7 @@ fun AdaptiveThreePane(
     val hapticFeedback = LocalHapticFeedback.current
 
     var isSupportingPaneOpen by rememberSaveable { mutableStateOf(config.supportingPaneInitiallyOpen) }
-    var isFloatingPaneVisible by rememberSaveable { mutableStateOf(false) }
+    var isFloatingPaneVisible by rememberSaveable { mutableStateOf(config.floatingPaneInitiallyVisible) }
     val scope = rememberCoroutineScope()
 
     var lastRestorableAnchorIndex by rememberSaveable {
@@ -340,7 +342,7 @@ fun AdaptiveThreePane(
                             exit = fadeOut(),
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
-                                .padding(16.dp),
+                                .padding(bottom = 36.dp, end = 24.dp),
                         ) {
                             FloatingActionButton(onClick = ::openSupportingPane) {
                                 Icon(
@@ -509,7 +511,7 @@ private fun DraggableFloatingContainer(
 /**
  * Visual card shell for floating controls.
  *
- * This is intentionally style-forward for samples: soft glassy background,
+ * This is intentionally style-forward for samples: soft background,
  * compact header, and a clear dismiss action.
  *
  * @param title Header text shown in the floating widget card.
@@ -527,29 +529,16 @@ private fun FloatingWidgetCard(
     Box(
         modifier = modifier
             .widthIn(max = 320.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .border(
-                width = 0.5.dp,
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
-                shape = RoundedCornerShape(16.dp),
-            ),
+            .clip(RoundedCornerShape(16.dp)),
     ) {
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.85f),
-                            MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.75f),
-                        )
-                    )
-                )
-                .blur(12.dp),
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.97f))
         )
 
         Column(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
@@ -565,11 +554,11 @@ private fun FloatingWidgetCard(
                         imageVector = Icons.Default.DragIndicator,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(24.dp),
                     )
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
@@ -580,7 +569,7 @@ private fun FloatingWidgetCard(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Dismiss $title",
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(24.dp),
                     )
                 }
             }
@@ -607,6 +596,7 @@ private const val WIDE_CLOSE_PROPORTION_THRESHOLD = 0.80f
  */
 data class ThreePaneConfig(
     val supportingPaneInitiallyOpen: Boolean = true,
+    val floatingPaneInitiallyVisible: Boolean = false,
     val floatingPane: FloatingPaneConfig = FloatingPaneConfig(),
     val compactSupportingPaneHeightRatio: Float = 0.5f,
 )
@@ -623,4 +613,265 @@ data class FloatingPaneConfig(
     val initialYFraction: Float = 0.05f,
     val draggable: Boolean = true,
 )
+
+@Composable
+private fun AdaptiveThreePanePreviewContent(config: ThreePaneConfig = ThreePaneConfig()) {
+    SamplePreviewSurface {
+        AdaptiveThreePane(
+            modifier = Modifier.fillMaxSize(),
+            config = config,
+            supportingPaneTitle = "Supporting pane title",
+            floatingPaneTitle = "Floating pane title",
+            mainPane = { isSupportingPaneVisible, isFloatingPaneVisible ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f))
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                                shape = RoundedCornerShape(12.dp)
+                            ),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Main pane: GeoView",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Primary content area",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Supporting visible: $isSupportingPaneVisible",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "Floating visible: $isFloatingPaneVisible",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            },
+            supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
+                PreviewCard {
+                    Text(
+                        text = "M3 UI components like Sliders, Segmented buttons, DropDown controls live here.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        if (isFloatingPaneVisible) {
+                            Button(onClick = toggleFloatingPane) {
+                                Text("Close floating pane")
+                            }
+                        } else {
+                            OutlinedButton(onClick = toggleFloatingPane) {
+                                Text("Show floating pane")
+                            }
+                        }
+                    }
+                }
+            },
+            floatingPane = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Quick action shortcuts:",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(text = "• Reset viewpoint")
+                    Text(text = "• Toggle labels")
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun PreviewCard(
+    title: String = "GeoView/Sample controls:",
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(12.dp),
+            )
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        content()
+    }
+}
+
+@Preview(
+    name = "Pane preview - main only day",
+    widthDp = 411,
+    heightDp = 891,
+    showBackground = true,
+)
+@Preview(
+    name = "Pane preview - main only night",
+    widthDp = 411,
+    heightDp = 891,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun AdaptiveThreePaneMainOnlyPreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(supportingPaneInitiallyOpen = false),
+    )
+}
+
+@Preview(
+    name = "Pane preview - supporting open",
+    widthDp = 411,
+    heightDp = 891,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun AdaptiveThreePaneSupportingPanePreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(supportingPaneInitiallyOpen = true),
+    )
+}
+
+@Preview(
+    name = "Pane preview - floating visible",
+    widthDp = 891,
+    heightDp = 411,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun AdaptiveThreePaneFloatingPanePreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(
+            supportingPaneInitiallyOpen = true,
+            floatingPaneInitiallyVisible = true
+        ),
+    )
+}
+
+@Preview(
+    name = "Phone portrait - compact 50%",
+    widthDp = 411,
+    heightDp = 891,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun AdaptiveThreePanePhonePortraitPreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(
+            supportingPaneInitiallyOpen = true,
+            compactSupportingPaneHeightRatio = 0.5f,
+        ),
+    )
+}
+
+@Preview(
+    name = "Phone landscape - compact 35%",
+    widthDp = 891,
+    heightDp = 411,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun AdaptiveThreePanePhoneLandscapePreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(
+            supportingPaneInitiallyOpen = true,
+            compactSupportingPaneHeightRatio = 0.35f
+        ),
+    )
+}
+
+@Preview(
+    name = "Tablet portrait - supporting open",
+    widthDp = 800,
+    heightDp = 1280,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun AdaptiveThreePaneTabletPortraitPreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(
+            supportingPaneInitiallyOpen = true,
+            compactSupportingPaneHeightRatio = 0.6f
+        ),
+    )
+}
+
+@Preview(
+    name = "Tablet landscape - floating visible",
+    widthDp = 1280,
+    heightDp = 800,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun AdaptiveThreePaneTabletLandscapePreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(
+            supportingPaneInitiallyOpen = true,
+            floatingPaneInitiallyVisible = true
+        ),
+    )
+}
+
+@Preview(
+    name = "Compact ratio 65%",
+    widthDp = 411,
+    heightDp = 891,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun AdaptiveThreePaneCompactRatioPreview() {
+    AdaptiveThreePanePreviewContent(
+        config = ThreePaneConfig(
+            supportingPaneInitiallyOpen = true,
+            compactSupportingPaneHeightRatio = 0.65f
+        )
+    )
+}
 
