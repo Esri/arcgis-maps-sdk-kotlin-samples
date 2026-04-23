@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
 /**
@@ -19,13 +15,10 @@ import androidx.compose.ui.Modifier
 @Composable
 fun ViewshedSlider(
     title: String,
-    initialSliderValue: Float,
+    sliderValue: Float,
     sliderRangeValue: ClosedFloatingPointRange<Float>,
-    functionChanged: (Float) -> Unit
+    onSliderValueChanged: (Float) -> Unit
 ) {
-    var sliderValue by remember {
-        mutableFloatStateOf(initialSliderValue)
-    }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -37,11 +30,7 @@ fun ViewshedSlider(
         Slider(
             modifier = Modifier.fillMaxWidth(),
             value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                // update view model viewshed value
-                functionChanged(sliderValue)
-            },
+            onValueChange = onSliderValueChanged,
             valueRange = sliderRangeValue
         )
     }

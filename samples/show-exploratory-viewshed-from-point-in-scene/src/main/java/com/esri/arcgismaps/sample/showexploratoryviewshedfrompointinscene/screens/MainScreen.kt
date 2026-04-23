@@ -22,17 +22,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.mapping.view.OrbitLocationCameraController
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.AdaptiveThreePane
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.SceneViewModel
-import kotlinx.coroutines.launch
 
 /**
  * Main screen layout for the sample app
@@ -41,14 +37,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle SceneView interactions
     val sceneViewModel: SceneViewModel = viewModel()
-    val sceneViewProxy = remember { SceneViewProxy() }
-    val coroutineScope = rememberCoroutineScope()
-    val cameraController = remember {
-        OrbitLocationCameraController(
-            targetPoint = sceneViewModel.initLocation,
-            distance = 5000.0
-        )
-    }
+    val viewshedUiState = sceneViewModel.viewshedUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
@@ -64,13 +53,13 @@ fun MainScreen(sampleName: String) {
                     SceneView(
                         modifier = Modifier.fillMaxSize(),
                         arcGISScene = sceneViewModel.scene,
-                        sceneViewProxy = sceneViewProxy,
-                        cameraController = cameraController,
+                        sceneViewProxy = sceneViewModel.sceneViewProxy,
                         analysisOverlays = listOf(sceneViewModel.analysisOverlay)
                     )
                 },
                 supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
                     ViewshedSlidersContent(
+                        viewshedUiState = viewshedUiState.value,
                         onHeadingChanged = sceneViewModel::setHeading,
                         onPitchChanged = sceneViewModel::setPitch,
                         onHorizontalAngleChanged = sceneViewModel::setHorizontalAngleSlider,
@@ -78,20 +67,17 @@ fun MainScreen(sampleName: String) {
                         onMinDistanceChanged = sceneViewModel::setMinimumDistanceSlider,
                         onMaxDistanceChanged = sceneViewModel::setMaximumDistanceSlider,
                     )
-
                     OutlinedButton(onClick = toggleFloatingPane) {
                         Text(if (isFloatingPaneVisible) "Hide scene options" else "Open scene options")
                     }
                 },
                 floatingPane = {
                     ViewshedSceneOptionsContent(
+                        viewshedUiState = viewshedUiState.value,
                         isFrustumVisible = sceneViewModel::frustumVisibility,
                         isAnalysisVisible = sceneViewModel::analysisVisibility,
-                        onSetViewpointToAnalysisExtent = {
-                            coroutineScope.launch {
-                                sceneViewModel.setViewpointToAnalysisExtent(sceneViewProxy)
-                            }
-                        }
+                        onSetViewpointToAnalysisExtent = sceneViewModel::setViewpointToAnalysisExtent,
+                        onResetViewshedOptions = sceneViewModel::resetViewshedOptions
                     )
                 }
             )

@@ -16,26 +16,21 @@
 
 package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
-import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.ViewshedUiState
 
 @Composable
 fun ViewshedSlidersContent(
+    viewshedUiState: ViewshedUiState,
     onHeadingChanged: (Float) -> Unit = {},
     onPitchChanged: (Float) -> Unit = {},
     onHorizontalAngleChanged: (Float) -> Unit = {},
@@ -44,124 +39,119 @@ fun ViewshedSlidersContent(
     onMaxDistanceChanged: (Float) -> Unit = {}
 ) {
     Column {
-        HeadingSlider(onHeadingChanged)
-        PitchSlider(onPitchChanged)
-        HorizontalAngleSlider(onHorizontalAngleChanged)
-        VerticalAngleSlider(onVerticalAngleChanged)
-        MinimumDistanceSlider(onMinDistanceChanged)
-        MaximumDistanceSlider(onMaxDistanceChanged)
+        HeadingSlider(viewshedUiState.heading, onHeadingChanged)
+        PitchSlider(viewshedUiState.pitch, onPitchChanged)
+        HorizontalAngleSlider(viewshedUiState.horizontalAngle, onHorizontalAngleChanged)
+        VerticalAngleSlider(viewshedUiState.verticalAngle, onVerticalAngleChanged)
+        MinimumDistanceSlider(viewshedUiState.minDistance, onMinDistanceChanged)
+        MaximumDistanceSlider(viewshedUiState.maxDistance, onMaxDistanceChanged)
     }
 }
 
 @Composable
 fun ViewshedSceneOptionsContent(
+    viewshedUiState: ViewshedUiState,
     isFrustumVisible: (Boolean) -> Unit = {},
     isAnalysisVisible: (Boolean) -> Unit = {},
-    onSetViewpointToAnalysisExtent: () -> Unit = {}
+    onSetViewpointToAnalysisExtent: () -> Unit = {},
+    onResetViewshedOptions: () -> Unit = {}
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        FrustumCheckBox(isFrustumVisible)
-        AnalysisCheckBox(isAnalysisVisible)
-        Button(
-            onClick = onSetViewpointToAnalysisExtent,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Set viewpoint to analysis extent")
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        FrustumCheckBox(viewshedUiState.isFrustumVisible, isFrustumVisible)
+        AnalysisCheckBox(viewshedUiState.isAnalysisVisible, isAnalysisVisible)
+        OutlinedButton(onClick = onSetViewpointToAnalysisExtent) {
+            Text("Align camera with viewshed")
         }
+        OutlinedButton(onClick = onResetViewshedOptions) {
+            Text("Reset viewshed options")
+        }
+
     }
 }
 
 @Composable
-private fun HeadingSlider(onHeadingChanged: (Float) -> Unit) {
+private fun HeadingSlider(heading: Float, onHeadingChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Heading",
-        initialSliderValue = 82f,
+        sliderValue = heading,
         sliderRangeValue = 0f..360f,
-        functionChanged = onHeadingChanged
+        onSliderValueChanged = onHeadingChanged
     )
 }
 
 @Composable
-private fun PitchSlider(onPitchChanged: (Float) -> Unit) {
+private fun PitchSlider(pitch: Float, onPitchChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Pitch",
-        initialSliderValue = 60f,
+        sliderValue = pitch,
         sliderRangeValue = 0f..180f,
-        functionChanged = onPitchChanged
+        onSliderValueChanged = onPitchChanged
     )
 }
 
 @Composable
-private fun HorizontalAngleSlider(onHorizontalAngleChanged: (Float) -> Unit) {
+private fun HorizontalAngleSlider(horizontalAngle: Float, onHorizontalAngleChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Horizontal Angle",
-        initialSliderValue = 75f,
+        sliderValue = horizontalAngle,
         sliderRangeValue = 1f..120f,
-        functionChanged = onHorizontalAngleChanged
+        onSliderValueChanged = onHorizontalAngleChanged
     )
 }
 
 @Composable
-private fun VerticalAngleSlider(onVerticalAngleChanged: (Float) -> Unit) {
+private fun VerticalAngleSlider(verticalAngle: Float, onVerticalAngleChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Vertical Angle",
-        initialSliderValue = 90f,
+        sliderValue = verticalAngle,
         sliderRangeValue = 1f..120f,
-        functionChanged = onVerticalAngleChanged
+        onSliderValueChanged = onVerticalAngleChanged
     )
 }
 
 @Composable
-private fun MinimumDistanceSlider(onMinDistanceChanged: (Float) -> Unit) {
+private fun MinimumDistanceSlider(minDistance: Float, onMinDistanceChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Minimum Distance",
-        initialSliderValue = 0f,
+        sliderValue = minDistance,
         sliderRangeValue = 0f..8999f,
-        functionChanged = onMinDistanceChanged
+        onSliderValueChanged = onMinDistanceChanged
     )
 }
 
 @Composable
-private fun MaximumDistanceSlider(onMaxDistanceChanged: (Float) -> Unit) {
+private fun MaximumDistanceSlider(maxDistance: Float, onMaxDistanceChanged: (Float) -> Unit) {
     ViewshedSlider(
         title = "Maximum Distance",
-        initialSliderValue = 1500f,
+        sliderValue = maxDistance,
         sliderRangeValue = 0f..9999f,
-        functionChanged = onMaxDistanceChanged
+        onSliderValueChanged = onMaxDistanceChanged
     )
 }
 
 @Composable
-fun FrustumCheckBox(isFrustumVisible: (Boolean) -> Unit) {
-    // set the state of the checkbox
-    val checkedState = remember { mutableStateOf(true) }
-    // display a row and create a checkbox and text in a row
+fun FrustumCheckBox(
+    isChecked: Boolean,
+    isFrustumVisible: (Boolean) -> Unit
+) {
     Row {
         Checkbox(
-            checked = checkedState.value,
-            onCheckedChange = {
-                checkedState.value = it
-                isFrustumVisible(checkedState.value)
-            },
+            checked = isChecked,
+            onCheckedChange = isFrustumVisible,
         )
         Text(modifier = Modifier.padding(top = 10.dp), text = "Frustum Outline")
     }
 }
 
 @Composable
-fun AnalysisCheckBox(isAnalysisVisible: (Boolean) -> Unit) {
-    // set the state of the checkbox
-    val checkedState = remember { mutableStateOf(true) }
-    // display a row and create a checkbox and text in a row
+fun AnalysisCheckBox(
+    isChecked: Boolean,
+    isAnalysisVisible: (Boolean) -> Unit
+) {
     Row {
         Checkbox(
-            checked = checkedState.value,
-            onCheckedChange = {
-                checkedState.value = it
-                isAnalysisVisible(checkedState.value)
-            },
+            checked = isChecked,
+            onCheckedChange = isAnalysisVisible,
         )
         Text(modifier = Modifier.padding(top = 10.dp), text = "Analysis Overlay")
     }
