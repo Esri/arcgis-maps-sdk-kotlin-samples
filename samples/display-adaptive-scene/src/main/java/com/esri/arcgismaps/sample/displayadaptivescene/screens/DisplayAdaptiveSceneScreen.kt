@@ -53,7 +53,7 @@ import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
 import com.esri.arcgismaps.sample.displayadaptivescene.components.AdaptiveSceneUiState
 import com.esri.arcgismaps.sample.displayadaptivescene.components.DisplayAdaptiveSceneViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.AdaptiveThreePaneTemplate
+import com.esri.arcgismaps.sample.sampleslib.components.AdaptiveThreePane
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlin.math.roundToInt
@@ -151,7 +151,7 @@ private fun DisplayAdaptiveSceneContent(
         )
     }
 
-    AdaptiveThreePaneTemplate(
+    AdaptiveThreePane(
         modifier = modifier,
         supportingPaneTitle = "Scene Controls",
         floatingPaneTitle = "Camera Widget",
