@@ -19,11 +19,14 @@ package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.scree
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.ViewshedUiState
@@ -31,12 +34,14 @@ import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.compon
 @Composable
 fun ViewshedSlidersContent(
     viewshedUiState: ViewshedUiState,
+    isFloatingPaneVisible: Boolean,
     onHeadingChanged: (Float) -> Unit = {},
     onPitchChanged: (Float) -> Unit = {},
     onHorizontalAngleChanged: (Float) -> Unit = {},
     onVerticalAngleChanged: (Float) -> Unit = {},
     onMinDistanceChanged: (Float) -> Unit = {},
-    onMaxDistanceChanged: (Float) -> Unit = {}
+    onMaxDistanceChanged: (Float) -> Unit = {},
+    onToggleFloatingPane: () -> Unit = {},
 ) {
     Column {
         HeadingSlider(viewshedUiState.heading, onHeadingChanged)
@@ -45,6 +50,17 @@ fun ViewshedSlidersContent(
         VerticalAngleSlider(viewshedUiState.verticalAngle, onVerticalAngleChanged)
         MinimumDistanceSlider(viewshedUiState.minDistance, onMinDistanceChanged)
         MaximumDistanceSlider(viewshedUiState.maxDistance, onMaxDistanceChanged)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp), horizontalArrangement = Arrangement.Center
+        ) {
+            if (isFloatingPaneVisible) {
+                Button(onClick = onToggleFloatingPane) { Text("Hide scene options") }
+            } else {
+                OutlinedButton(onClick = onToggleFloatingPane) { Text("Show scene options") }
+            }
+        }
     }
 }
 
@@ -59,13 +75,18 @@ fun ViewshedSceneOptionsContent(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FrustumCheckBox(viewshedUiState.isFrustumVisible, isFrustumVisible)
         AnalysisCheckBox(viewshedUiState.isAnalysisVisible, isAnalysisVisible)
-        OutlinedButton(onClick = onSetViewpointToAnalysisExtent) {
-            Text("Align camera with viewshed")
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedButton(onClick = onSetViewpointToAnalysisExtent) {
+                Text("Align camera with viewshed")
+            }
+            OutlinedButton(onClick = onResetViewshedOptions) {
+                Text("Reset viewshed options")
+            }
         }
-        OutlinedButton(onClick = onResetViewshedOptions) {
-            Text("Reset viewshed options")
-        }
-
     }
 }
 
@@ -90,7 +111,10 @@ private fun PitchSlider(pitch: Float, onPitchChanged: (Float) -> Unit) {
 }
 
 @Composable
-private fun HorizontalAngleSlider(horizontalAngle: Float, onHorizontalAngleChanged: (Float) -> Unit) {
+private fun HorizontalAngleSlider(
+    horizontalAngle: Float,
+    onHorizontalAngleChanged: (Float) -> Unit
+) {
     ViewshedSlider(
         title = "Horizontal Angle",
         sliderValue = horizontalAngle,

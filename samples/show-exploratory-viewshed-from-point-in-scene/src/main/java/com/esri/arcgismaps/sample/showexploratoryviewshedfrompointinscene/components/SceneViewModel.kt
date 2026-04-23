@@ -72,8 +72,8 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
 
     private val initialCamera = Camera(
         lookAtPoint = initLocation,
-        distance = 3e3,
-        heading = 40.0,
+        distance = 3500.0,
+        heading = 50.0,
         pitch = 70.0,
         roll = 0.0
     )

@@ -27,8 +27,6 @@ internal fun Project.configureAndroidCompose(
             implementation(libs.findLibrary("androidx-compose-material3-adaptive").get())
             implementation(libs.findLibrary("androidx-compose-material3-adaptiveLayout").get())
             implementation(libs.findLibrary("androidx-compose-material3-adaptiveNavigation").get())
-            implementation(libs.findLibrary("androidx-compose-material3-windowSizeClass").get())
-            implementation(libs.findLibrary("android-material").get())
             implementation(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
             implementation(libs.findLibrary("androidx-compose-ui-tooling-preview").get())
             implementation(libs.findLibrary("androidx-concurrent-futures").get())

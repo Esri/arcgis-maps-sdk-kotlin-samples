@@ -89,10 +89,13 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.snapshotFlow
+import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
@@ -137,6 +140,7 @@ fun AdaptiveThreePane(
 ) {
     val windowAdaptiveInfo = currentWindowAdaptiveInfo(supportLargeAndXLargeWidth = true)
     val hapticFeedback = LocalHapticFeedback.current
+    val isInPreview = LocalInspectionMode.current
 
     var isSupportingPaneOpen by rememberSaveable { mutableStateOf(config.supportingPaneInitiallyOpen) }
     var isFloatingPaneVisible by rememberSaveable { mutableStateOf(config.floatingPaneInitiallyVisible) }
@@ -319,7 +323,14 @@ fun AdaptiveThreePane(
                     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                         val mainPaneWidthPx = constraints.maxWidth
                         val mainPaneHeightPx = constraints.maxHeight
-                        mainPane(isSupportingPaneVisible, isFloatingPaneVisible)
+                        if (isInPreview) {
+                            PreviewMainPanePlaceholder(
+                                isSupportingPaneVisible = isSupportingPaneVisible,
+                                isFloatingPaneVisible = isFloatingPaneVisible,
+                            )
+                        } else {
+                            mainPane(isSupportingPaneVisible, isFloatingPaneVisible)
+                        }
                         if (floatingPane != null) {
                             AnimatedVisibility(
                                 visible = isFloatingPaneVisible,
@@ -394,6 +405,61 @@ fun AdaptiveThreePane(
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun PreviewMainPanePlaceholder(
+    isSupportingPaneVisible: Boolean,
+    isFloatingPaneVisible: Boolean,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f))
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(12.dp)
+                ),
+        ) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Main pane: GeoView",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Primary content area",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Supporting visible: $isSupportingPaneVisible",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "Floating visible: $isFloatingPaneVisible",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }
 
@@ -622,55 +688,12 @@ private fun AdaptiveThreePanePreviewContent(config: ThreePaneConfig = ThreePaneC
             config = config,
             supportingPaneTitle = "Supporting pane title",
             floatingPaneTitle = "Floating pane title",
-            mainPane = { isSupportingPaneVisible, isFloatingPaneVisible ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f))
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.outlineVariant,
-                                shape = RoundedCornerShape(12.dp)
-                            ),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "Main pane: GeoView",
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = "Primary content area",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = "Supporting visible: $isSupportingPaneVisible",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = "Floating visible: $isFloatingPaneVisible",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
+            mainPane = { _, _ ->
+                // Shows a placeholder GeoView preview instead
+                SceneView(
+                    modifier = Modifier.fillMaxSize(),
+                    arcGISScene = ArcGISScene(),
+                )
             },
             supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
                 PreviewCard {
@@ -693,9 +716,7 @@ private fun AdaptiveThreePanePreviewContent(config: ThreePaneConfig = ThreePaneC
             },
             floatingPane = {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
+                    modifier = Modifier.padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
