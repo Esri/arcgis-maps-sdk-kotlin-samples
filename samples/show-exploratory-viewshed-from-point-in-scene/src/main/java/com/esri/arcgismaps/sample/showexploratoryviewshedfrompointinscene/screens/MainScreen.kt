@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -58,7 +59,9 @@ fun MainScreen() {
         onResetViewshedOptions = sceneViewModel::resetViewshedOptions,
         mainPaneContent = {
             SceneView(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .animateContentSize(),
                 arcGISScene = sceneViewModel.scene,
                 sceneViewProxy = sceneViewModel.sceneViewProxy,
                 analysisOverlays = listOf(sceneViewModel.analysisOverlay)

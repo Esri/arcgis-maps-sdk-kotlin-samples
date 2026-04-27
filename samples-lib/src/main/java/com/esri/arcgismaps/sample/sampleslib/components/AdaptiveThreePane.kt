@@ -19,6 +19,7 @@ package com.esri.arcgismaps.sample.sampleslib.components
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -320,7 +321,11 @@ fun AdaptiveThreePane(
                 .onSizeChanged { scaffoldWidthPx = it.width },
             mainPane = {
                 AnimatedPane(modifier = Modifier.fillMaxSize()) {
-                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .animateContentSize()
+                    ) {
                         val mainPaneWidthPx = constraints.maxWidth
                         val mainPaneHeightPx = constraints.maxHeight
                         if (isInPreview) {
@@ -595,7 +600,8 @@ private fun FloatingWidgetCard(
     Box(
         modifier = modifier
             .widthIn(max = 320.dp)
-            .clip(RoundedCornerShape(16.dp)),
+            .clip(RoundedCornerShape(16.dp))
+            .animateContentSize()
     ) {
         Box(
             modifier = Modifier
