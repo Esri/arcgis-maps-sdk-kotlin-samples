@@ -1,0 +1,19 @@
+{
+    "category": "Analysis",
+    "description": "TODO",
+    "formal_name": "ShowLineOfSightAnalysisInMap",
+    "ignore": false,
+    "images": [
+        "show-line-of-sight-analysis-in-map.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/components/ShowLineOfSightAnalysisInMapViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/screens/ShowLineOfSightAnalysisInMapScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/MainActivity.kt"
+    ],
+    "title": "Show line of sight analysis in map"
+}
