@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedButton
@@ -34,7 +33,7 @@ import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.compon
 
 
 @Composable
-fun ViewshedSceneOptionsContent(
+fun ViewshedFloatingContent(
     viewshedUiState: ViewshedUiState,
     onFrustumVisibilityChanged: (Boolean) -> Unit = {},
     onAnalysisVisibilityChanged: (Boolean) -> Unit = {},

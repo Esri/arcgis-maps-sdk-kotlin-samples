@@ -109,7 +109,7 @@ private fun MainScreenScaffold(
                     )
                 },
                 floatingPane = {
-                    ViewshedSceneOptionsContent(
+                    ViewshedFloatingContent(
                         viewshedUiState = viewshedUiState,
                         onFrustumVisibilityChanged = onFrustumVisibilityChanged,
                         onAnalysisVisibilityChanged = onAnalysisVisibilityChanged,
