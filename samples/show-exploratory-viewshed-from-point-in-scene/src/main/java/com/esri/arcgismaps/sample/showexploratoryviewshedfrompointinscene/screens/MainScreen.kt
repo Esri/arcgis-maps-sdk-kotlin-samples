@@ -49,12 +49,12 @@ fun MainScreen() {
         viewshedUiState = viewshedUiState,
         onHeadingChanged = sceneViewModel::setHeading,
         onPitchChanged = sceneViewModel::setPitch,
-        onHorizontalAngleChanged = sceneViewModel::setHorizontalAngleSlider,
-        onVerticalAngleChanged = sceneViewModel::setVerticalAngleSlider,
-        onMinDistanceChanged = sceneViewModel::setMinimumDistanceSlider,
-        onMaxDistanceChanged = sceneViewModel::setMaximumDistanceSlider,
-        isFrustumVisible = sceneViewModel::frustumVisibility,
-        isAnalysisVisible = sceneViewModel::analysisVisibility,
+        onHorizontalAngleChanged = sceneViewModel::setHorizontalAngle,
+        onVerticalAngleChanged = sceneViewModel::setVerticalAngle,
+        onMinDistanceChanged = sceneViewModel::setMinimumDistance,
+        onMaxDistanceChanged = sceneViewModel::setMaximumDistance,
+        onFrustumVisibilityChanged = sceneViewModel::setFrustumVisibility,
+        onAnalysisVisibilityChanged = sceneViewModel::setAnalysisVisibility,
         onSetViewpointToAnalysisExtent = sceneViewModel::setViewpointToAnalysisExtent,
         onResetViewshedOptions = sceneViewModel::resetViewshedOptions,
         mainPaneContent = {
@@ -79,8 +79,8 @@ private fun MainScreenScaffold(
     onVerticalAngleChanged: (Float) -> Unit = {},
     onMinDistanceChanged: (Float) -> Unit = {},
     onMaxDistanceChanged: (Float) -> Unit = {},
-    isFrustumVisible: (Boolean) -> Unit = {},
-    isAnalysisVisible: (Boolean) -> Unit = {},
+    onFrustumVisibilityChanged: (Boolean) -> Unit = {},
+    onAnalysisVisibilityChanged: (Boolean) -> Unit = {},
     onSetViewpointToAnalysisExtent: () -> Unit = {},
     onResetViewshedOptions: () -> Unit = {},
     mainPaneContent: @Composable BoxScope.() -> Unit,
@@ -96,7 +96,7 @@ private fun MainScreenScaffold(
                 floatingPaneTitle = "Scene Options",
                 mainPane = { _, _ -> mainPaneContent() },
                 supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
-                    ViewshedSlidersContent(
+                    ViewshedSupportingContent(
                         viewshedUiState = viewshedUiState,
                         isFloatingPaneVisible = isFloatingPaneVisible,
                         onHeadingChanged = onHeadingChanged,
@@ -111,8 +111,8 @@ private fun MainScreenScaffold(
                 floatingPane = {
                     ViewshedSceneOptionsContent(
                         viewshedUiState = viewshedUiState,
-                        isFrustumVisible = isFrustumVisible,
-                        isAnalysisVisible = isAnalysisVisible,
+                        onFrustumVisibilityChanged = onFrustumVisibilityChanged,
+                        onAnalysisVisibilityChanged = onAnalysisVisibilityChanged,
                         onSetViewpointToAnalysisExtent = onSetViewpointToAnalysisExtent,
                         onResetViewshedOptions = onResetViewshedOptions,
                     )

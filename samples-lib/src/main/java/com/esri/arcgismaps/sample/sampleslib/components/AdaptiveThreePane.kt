@@ -663,6 +663,7 @@ private const val WIDE_CLOSE_PROPORTION_THRESHOLD = 0.80f
  * User-facing knobs for the adaptive three-pane.
  *
  * @property supportingPaneInitiallyOpen Whether the supporting pane starts open on first composition.
+ * @property floatingPaneInitiallyVisible Whether the floating pane is visible on first composition.
  * @property floatingPane Configuration for initial position and drag behavior of the floating pane.
  * @property compactSupportingPaneHeightRatio Height ratio used for supporting pane when compact-stacked.
  */
