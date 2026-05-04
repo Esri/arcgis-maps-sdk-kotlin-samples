@@ -31,7 +31,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.ViewshedUiState
 
-
 @Composable
 fun ViewshedFloatingContent(
     viewshedUiState: ViewshedUiState,
@@ -57,7 +56,6 @@ fun ViewshedFloatingContent(
         }
     }
 }
-
 
 @Composable
 private fun FrustumCheckbox(
