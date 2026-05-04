@@ -25,17 +25,32 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
+    private val initVisibilityFilter = true
+    private val initLineOfSightUiState = LineOfSightUiState(
+        visibilityFilter = initVisibilityFilter
+    )
+
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
         }
     )
 
+    private val _lineOfSightUiState = MutableStateFlow(initLineOfSightUiState)
+    val lineOfSightUiState = _lineOfSightUiState.asStateFlow()
+
+    fun setVisibilityFilter(value: Boolean) {
+        _lineOfSightUiState.update { it.copy(visibilityFilter = value) } // update UI state
+    }
+
     // Create a message dialog view model for handling error messages
+    // TODO: do we need this? test it for load failure
     val messageDialogVM = MessageDialogViewModel()
 
     init {
@@ -44,3 +59,7 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
         }
     }
 }
+
+data class LineOfSightUiState(
+    val visibilityFilter: Boolean
+)

@@ -16,51 +16,75 @@
 
 package com.esri.arcgismaps.sample.showlineofsightanalysisinmap.screens
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.sampleslib.components.AdaptiveThreePane
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.ShowLineOfSightAnalysisInMapViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
+import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.R
+import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.LineOfSightUiState
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun ShowLineOfSightAnalysisInMapScreen(sampleName: String) {
-    val mapViewModel: ShowLineOfSightAnalysisInMapViewModel = viewModel()
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap
-                )
-                // TODO: Add UI components in this Column ...
-            }
+fun ShowLineOfSightAnalysisInMapScreen() {
+    val viewModel: ShowLineOfSightAnalysisInMapViewModel = viewModel()
+    val uiState by viewModel.lineOfSightUiState.collectAsStateWithLifecycle()
 
-            mapViewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
-            }
+    MainScreenScaffold(
+        uiState = uiState,
+        onVisibilityFilterChanged = viewModel::setVisibilityFilter,
+        mainPaneContent = {
+            MapView(
+                modifier = Modifier.fillMaxSize(),
+                arcGISMap = viewModel.arcGISMap
+            )
         }
     )
+}
+
+@Composable
+private fun MainScreenScaffold(
+    uiState: LineOfSightUiState,
+    onVisibilityFilterChanged: (Boolean) -> Unit = {},
+    mainPaneContent: @Composable BoxScope.() -> Unit,
+) {
+    Scaffold(
+        topBar = { SampleTopAppBar(title = stringResource(R.string.show_line_of_sight_analysis_in_map_app_name)) },
+        content = { paddingValues ->
+            AdaptiveThreePane(
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                supportingPaneTitle = "Line of Sight Options",
+                mainPane = { _, _ -> mainPaneContent() },
+                supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
+                    LineOfSightSupportingContent(uiState, onVisibilityFilterChanged)
+                }
+            )
+        }
+    )
+}
+
+@SampleDeviceLightDarkPreview
+@Composable
+fun MainScreenPreview() {
+    SamplePreviewSurface {
+        MainScreenScaffold(
+            uiState = LineOfSightUiState(
+                visibilityFilter = true
+            ),
+            mainPaneContent = {} // empty placeholder — no ArcGIS objects needed
+        )
+    }
 }

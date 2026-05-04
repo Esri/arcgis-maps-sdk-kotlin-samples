@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
+import com.esri.arcgismaps.sample.sampleslib.BuildConfig
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.screens.ShowLineOfSightAnalysisInMapScreen
 
@@ -45,9 +46,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun ShowLineOfSightAnalysisInMapApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
-            ShowLineOfSightAnalysisInMapScreen(
-                sampleName = getString(R.string.show_line_of_sight_analysis_in_map_app_name)
-            )
+            ShowLineOfSightAnalysisInMapScreen()
         }
     }
 }
