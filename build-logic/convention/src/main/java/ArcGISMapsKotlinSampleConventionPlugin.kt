@@ -11,7 +11,7 @@ class ArcGISMapsKotlinSampleConventionPlugin : Plugin<Project> {
             dependencies {
                 dependencies {
                     // if a "build" property is set from the command line like: "-D build=300.X.X-XXXX"
-                    val buildVersion = System.getProperty("build")
+                    val buildVersion = System.getProperty("build")?.takeUnless { it.isBlank() }
                     // Override version in libs.versions.toml file
                     if (buildVersion != null) {
                         implementation("com.esri:arcgis-maps-kotlin:$buildVersion")

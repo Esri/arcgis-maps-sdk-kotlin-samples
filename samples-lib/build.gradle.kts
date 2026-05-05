@@ -36,7 +36,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    val buildVersion = System.getProperty("build")
+    val buildVersion = System.getProperty("build")?.takeUnless { it.isBlank() }
     // Override version in libs.versions.toml file
     if (buildVersion != null) {
         implementation("com.esri:arcgis-maps-kotlin:${buildVersion}")

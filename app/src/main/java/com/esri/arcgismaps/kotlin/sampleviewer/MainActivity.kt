@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.esri.arcgismaps.kotlin.sampleviewer.model.lazySetArcGISLicense
 import com.esri.arcgismaps.kotlin.sampleviewer.navigation.NavGraph
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -34,6 +35,7 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lazySetArcGISLicense()
         enableEdgeToEdge()
         setContent {
             SampleAppTheme {

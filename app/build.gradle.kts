@@ -22,7 +22,6 @@ android {
 
     defaultConfig {
         applicationId = "com.esri.arcgismaps.kotlin.sampleviewer"
-        buildConfigField("String", "ARCGIS_VERSION", "\"${System.getProperty("build") ?: libs.versions.arcgisMapsKotlinVersion.get()}\"")
     }
 
     // Optional input to apply the external signing configuration for the sample viewer
@@ -47,11 +46,6 @@ android {
 
     buildTypes {
         release {
-            ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
-            }
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // If signing.properties file not found, gradle will build an unsigned APK.
             // For release builds, provide the required "signingPropsFilePath" for a signed APK, using:
             // ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties
