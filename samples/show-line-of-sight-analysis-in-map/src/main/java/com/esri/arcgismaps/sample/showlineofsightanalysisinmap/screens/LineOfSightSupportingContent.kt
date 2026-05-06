@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.showlineofsightanalysisinmap.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.LineOfSightUiState
 
 @Composable
@@ -33,7 +35,7 @@ fun LineOfSightSupportingContent(
     lineOfSightUiState: LineOfSightUiState,
     onVisibilityFilterChanged: (Boolean) -> Unit = {}
 ) {
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         VisibilityFilterCheckbox(lineOfSightUiState.visibilityFilter, onVisibilityFilterChanged)
     }
 }
