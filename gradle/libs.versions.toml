@@ -22,7 +22,7 @@ ksp = "2.3.4"
 commonsIoVersion = "2.21.0"
 
 ### Compose versions
-composeBom = "2025.12.00"
+composeBom = "2026.03.01"
 activityCompose = "1.12.2"
 material = "1.13.0"
 navigationCompose = "2.9.6"
@@ -82,6 +82,9 @@ androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "l
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive" }
+androidx-compose-material3-adaptiveLayout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout" }
+androidx-compose-material3-adaptiveNavigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExt"}
 

@@ -12,7 +12,9 @@ Note: This analysis is a form of "exploratory analysis", which means the results
 
 ## How to use the sample
 
-Use the sliders to change the properties (heading, pitch, etc.), of the exploratory viewshed and see them updated in real time.
+1. Use the supporting pane sliders to change heading, pitch, horizontal and vertical angles, and minimum/maximum distances.
+2. Open the scene options floating pane to toggle frustum outline and analysis overlay visibility.
+3. Use scene option actions to align the camera with the viewshed or reset all viewshed options.
 
 ## How it works
 
