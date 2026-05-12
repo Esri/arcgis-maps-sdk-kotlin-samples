@@ -1,0 +1,154 @@
+/* Copyright 2026 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.ViewshedUiState
+
+@Composable
+fun ViewshedSupportingContent(
+    viewshedUiState: ViewshedUiState,
+    isFloatingPaneVisible: Boolean,
+    onHeadingChanged: (Float) -> Unit = {},
+    onPitchChanged: (Float) -> Unit = {},
+    onHorizontalAngleChanged: (Float) -> Unit = {},
+    onVerticalAngleChanged: (Float) -> Unit = {},
+    onMinDistanceChanged: (Float) -> Unit = {},
+    onMaxDistanceChanged: (Float) -> Unit = {},
+    onToggleFloatingPane: () -> Unit = {},
+) {
+    Column {
+        HeadingSlider(viewshedUiState.heading, onHeadingChanged)
+        PitchSlider(viewshedUiState.pitch, onPitchChanged)
+        HorizontalAngleSlider(viewshedUiState.horizontalAngle, onHorizontalAngleChanged)
+        VerticalAngleSlider(viewshedUiState.verticalAngle, onVerticalAngleChanged)
+        MinimumDistanceSlider(viewshedUiState.minDistance, onMinDistanceChanged)
+        MaximumDistanceSlider(viewshedUiState.maxDistance, onMaxDistanceChanged)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp), horizontalArrangement = Arrangement.Center
+        ) {
+            if (isFloatingPaneVisible) {
+                Button(onClick = onToggleFloatingPane) { Text("Hide scene options") }
+            } else {
+                OutlinedButton(onClick = onToggleFloatingPane) { Text("Show scene options") }
+            }
+        }
+    }
+}
+
+/**
+ * Custom slider implementation to be used by various viewshed slider options
+ */
+@Composable
+fun ViewshedSlider(
+    title: String,
+    sliderValue: Float,
+    sliderRangeValue: ClosedFloatingPointRange<Float>,
+    onSliderValueChanged: (Float) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = title)
+            Text(text = sliderValue.toInt().toString())
+        }
+        Slider(
+            modifier = Modifier.fillMaxWidth(),
+            value = sliderValue,
+            onValueChange = onSliderValueChanged,
+            valueRange = sliderRangeValue
+        )
+    }
+}
+
+@Composable
+private fun HeadingSlider(heading: Float, onHeadingChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Heading",
+        sliderValue = heading,
+        sliderRangeValue = 0f..360f,
+        onSliderValueChanged = onHeadingChanged
+    )
+}
+
+@Composable
+private fun PitchSlider(pitch: Float, onPitchChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Pitch",
+        sliderValue = pitch,
+        sliderRangeValue = 0f..180f,
+        onSliderValueChanged = onPitchChanged
+    )
+}
+
+@Composable
+private fun HorizontalAngleSlider(
+    horizontalAngle: Float,
+    onHorizontalAngleChanged: (Float) -> Unit
+) {
+    ViewshedSlider(
+        title = "Horizontal Angle",
+        sliderValue = horizontalAngle,
+        sliderRangeValue = 1f..120f,
+        onSliderValueChanged = onHorizontalAngleChanged
+    )
+}
+
+@Composable
+private fun VerticalAngleSlider(verticalAngle: Float, onVerticalAngleChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Vertical Angle",
+        sliderValue = verticalAngle,
+        sliderRangeValue = 1f..120f,
+        onSliderValueChanged = onVerticalAngleChanged
+    )
+}
+
+@Composable
+private fun MinimumDistanceSlider(minDistance: Float, onMinDistanceChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Minimum Distance",
+        sliderValue = minDistance,
+        sliderRangeValue = 0f..8999f,
+        onSliderValueChanged = onMinDistanceChanged
+    )
+}
+
+@Composable
+private fun MaximumDistanceSlider(maxDistance: Float, onMaxDistanceChanged: (Float) -> Unit) {
+    ViewshedSlider(
+        title = "Maximum Distance",
+        sliderValue = maxDistance,
+        sliderRangeValue = 0f..9999f,
+        onSliderValueChanged = onMaxDistanceChanged
+    )
+}

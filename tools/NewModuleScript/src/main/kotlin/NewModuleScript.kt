@@ -28,6 +28,10 @@ import kotlin.system.exitProcess
 /**
  * This Kotlin file creates a new sample and configures it as a new library module in Android Studio.
  * The IntelliJ project creates an .jar artifact which is used to create new samples.
+ * To generare jar file:
+ * ./gradlew clean generateNewModuleScriptArtifact
+ * To update jar artifact in tools:
+ * cp build/dist/NewModuleScript.jar ../NewModuleScript.jar
  */
 fun main() {
     run()
@@ -58,8 +62,8 @@ fun run() {
     sampleNameCamelCase = sampleName.trim().toUpperCamelCase()
 
     // Get the sample category
-    println("Choose the sample category: \n1:  Analysis \n2:  Augmented Reality \n3:  Cloud and Portal \n4:  Layers \n5:  Edit and Manage Data \n6:  Maps \n7:  Scenes \n8:  Routing and Logistics \n9:  Utility Networks \n10: Search and Query \n11: Visualization")
-    print("Enter a number (1-11) to sample category: ")
+    println("Choose the sample category: \n1:  Analysis \n2:  Augmented Reality \n3:  Cloud and Portal \n4:  Layers \n5:  Edit and Manage Data \n6:  Maps \n7:  Scenes \n8:  Routing and Logistics \n9:  Utility Networks \n10: Search and Query \n11: Visualization \n12: Accessibility")
+    print("Enter a number (1-12) to sample category: ")
     sampleCategory = getSampleCategory(scanner.nextLine().trim().toIntOrNull())
 
     // Get the sample template type
@@ -83,7 +87,7 @@ fun run() {
 }
 
 private fun getSampleCategory(i: Int?): String {
-    if (i == null || i > 11 || i < 1) {
+    if (i == null || i > 12 || i < 1) {
         exitProgram(Exception("Invalid category input"))
     }
     when (i) {
@@ -98,6 +102,7 @@ private fun getSampleCategory(i: Int?): String {
         9 -> return "Utility Networks"
         10 -> return "Search and Query"
         11 -> return "Visualization"
+        12 -> return "Accessibility"
     }
     return ""
 }

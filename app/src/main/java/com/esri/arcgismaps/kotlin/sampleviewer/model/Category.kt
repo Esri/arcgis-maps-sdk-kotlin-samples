@@ -29,6 +29,11 @@ data class Category(
     companion object {
         val SAMPLE_CATEGORIES = listOf(
             Category(
+                SampleCategory.ACCESSIBILITY,
+                R.drawable.ic_accessibility,
+                R.drawable.accessibility_background
+            ),
+            Category(
                 SampleCategory.ANALYSIS,
                 R.drawable.ic_analysis,
                 R.drawable.analysis_background,
