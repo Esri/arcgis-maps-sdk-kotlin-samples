@@ -46,7 +46,6 @@ import com.arcgismaps.mapping.symbology.SimpleLineSymbol
 import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
-import com.arcgismaps.mapping.view.AnalysisOverlay
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
@@ -75,7 +74,6 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
             initialViewpoint = Viewpoint(targetPosition, 150000.0)
         }
     )
-    var analysisOverlay by mutableStateOf(AnalysisOverlay())
     var targetGraphicsOverlay by mutableStateOf(GraphicsOverlay())
     var observersGraphicsOverlay by mutableStateOf(GraphicsOverlay())
     var resultsGraphicsOverlay by mutableStateOf(GraphicsOverlay())

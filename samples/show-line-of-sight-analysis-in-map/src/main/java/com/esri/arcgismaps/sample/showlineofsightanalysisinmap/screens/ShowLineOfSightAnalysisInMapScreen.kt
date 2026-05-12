@@ -70,7 +70,6 @@ fun ShowLineOfSightAnalysisInMapScreen() {
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = viewModel.arcGISMap,
                     mapViewProxy = mapViewProxy,
-                    analysisOverlays = listOf(viewModel.analysisOverlay),
                     graphicsOverlays = listOf(
                         viewModel.resultsGraphicsOverlay,
                         viewModel.observersGraphicsOverlay,
