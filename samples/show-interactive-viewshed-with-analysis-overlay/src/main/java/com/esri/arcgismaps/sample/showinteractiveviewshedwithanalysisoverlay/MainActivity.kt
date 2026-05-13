@@ -19,9 +19,9 @@ package com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -35,19 +35,13 @@ class MainActivity : ComponentActivity() {
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
+        enableEdgeToEdge()
         setContent {
             SampleAppTheme {
-                ShowInteractiveViewshedWithAnalysisOverlayApp()
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    ShowInteractiveViewshedWithAnalysisOverlayScreen()
+                }
             }
-        }
-    }
-
-    @Composable
-    private fun ShowInteractiveViewshedWithAnalysisOverlayApp() {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            ShowInteractiveViewshedWithAnalysisOverlayScreen(
-                sampleName = getString(R.string.show_interactive_viewshed_with_analysis_overlay_app_name)
-            )
         }
     }
 }

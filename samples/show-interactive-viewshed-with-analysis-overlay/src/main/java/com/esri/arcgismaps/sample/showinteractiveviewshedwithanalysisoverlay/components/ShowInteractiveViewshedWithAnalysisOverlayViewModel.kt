@@ -44,29 +44,55 @@ import com.arcgismaps.mapping.view.LongPressEvent
 import com.arcgismaps.mapping.view.PanChangeEvent
 import com.arcgismaps.mapping.view.PanChangeEvent.PanStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
 class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : AndroidViewModel(app) {
+    // Initialize and keep track of UI state
+    private val initObserverElevation = 20.0
+    private val initTargetHeight = 20.0
+    private val initMaxRadius = 8000.0
+    private val initFieldOfView = 150.0
+    private val initHeading = 10.0
+    private val initElevationSamplingInterval = 0.0
+
+    private val initViewshedUiState = ViewshedUiState(
+        observerElevation = initObserverElevation,
+        targetHeight = initTargetHeight,
+        maxRadius = initMaxRadius,
+        fieldOfView = initFieldOfView,
+        heading = initHeading,
+        elevationSamplingInterval = initElevationSamplingInterval
+    )
+
+    private val _viewshedUiState = MutableStateFlow(initViewshedUiState)
+    val viewshedUiState = _viewshedUiState.asStateFlow()
+
+    // Initialize and keep track of the ArcGISMap & the overlays it uses
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-            initialViewpoint = Viewpoint(55.610000, -5.200346, 100000.0)
+            initialViewpoint = Viewpoint(55.610000, -5.200346, 150000.0)
         }
     )
     var analysisOverlay by mutableStateOf(AnalysisOverlay())
     var graphicsOverlay by mutableStateOf(GraphicsOverlay())
 
-    val viewshedParameters by mutableStateOf(ViewshedParameters())
+    // Create and keep track of ViewshedParameters
+    private val viewshedParameters by mutableStateOf(ViewshedParameters())
 
-    val observerSymbol = SimpleMarkerSymbol(
+    // Setup initial observer position, and a symbol and Graphic to draw at the observer position
+    private val initialObserverPosition =
+        Point(-579246.504, 7479619.947, initObserverElevation, SpatialReference.webMercator())
+    private val observerSymbol = SimpleMarkerSymbol(
         SimpleMarkerSymbolStyle.Circle,
         Color.blue,
         10.0f
     )
-
-    lateinit var observerGraphic: Graphic
+    private val observerGraphic = Graphic(initialObserverPosition, observerSymbol)
 
     // Indicates if observer position is currently being dragged across the map
     private var isDragging = false
@@ -79,24 +105,19 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     }
     private val filePath = provisionPath + app.getString(R.string.elevation_data_filename)
 
-    // Create a message dialog view model for handling error messages
-    val messageDialogVM = MessageDialogViewModel()
-
     init {
-        // Configure ViewshedParameters, passing in a Point as the observer position for the viewshed
-        val initObserverPosition =
-            Point(-579246.504, 7479619.947, 20.0, SpatialReference.webMercator())
-        viewshedParameters.observerPosition = initObserverPosition
-        viewshedParameters.targetHeight = 20.0
-        viewshedParameters.maxRadius = 8000.0
-        viewshedParameters.fieldOfView = 150.0
-        viewshedParameters.heading = 10.0
+        // Configure the ViewshedParameters
+        viewshedParameters.observerPosition = initialObserverPosition
+        viewshedParameters.targetHeight = initTargetHeight
+        viewshedParameters.maxRadius = initMaxRadius
+        viewshedParameters.fieldOfView = initFieldOfView
+        viewshedParameters.heading = initHeading
 
         viewModelScope.launch {
-            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            // Load the map
+            arcGISMap.load().getOrThrow()
 
             // Display a symbol to mark the observer position
-            observerGraphic = Graphic(initObserverPosition, observerSymbol)
             graphicsOverlay.graphics.add(observerGraphic)
 
             // Create a ContinuousField from a raster file containing elevation data
@@ -127,50 +148,56 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     }
 
     /**
-     * Set a new observer elevation.
+     * Sets a new observer elevation.
      */
     fun setObserverElevation(observerElevation: Float) {
         val oldPos = viewshedParameters.observerPosition
         val observerPosition = Point(oldPos!!.x, oldPos.y, observerElevation.toDouble())
         syncObserverPosition(observerPosition)
+        _viewshedUiState.update { it.copy(observerElevation = observerElevation.toDouble()) }
     }
 
     /**
-     * Set a new target height.
+     * Sets a new target height.
      */
     fun setTargetHeight(targetHeight: Float) {
         viewshedParameters.targetHeight = targetHeight.toDouble()
+        _viewshedUiState.update { it.copy(targetHeight = targetHeight.toDouble()) }
     }
 
     /**
-     * Set a new maximum radius.
+     * Sets a new maximum radius.
      */
     fun setMaxRadius(maxRadius: Float) {
         viewshedParameters.maxRadius = maxRadius.toDouble()
+        _viewshedUiState.update { it.copy(maxRadius = maxRadius.toDouble()) }
     }
 
     /**
-     * Set a new field of view.
+     * Sets a new field of view.
      */
     fun setFieldOfView(fieldOfView: Float) {
         viewshedParameters.fieldOfView = fieldOfView.toDouble()
+        _viewshedUiState.update { it.copy(fieldOfView = fieldOfView.toDouble()) }
     }
 
     /**
-     * Set a new heading.
+     * Sets a new heading.
      */
     fun setHeading(heading: Float) {
         viewshedParameters.heading = heading.toDouble()
+        _viewshedUiState.update { it.copy(heading = heading.toDouble()) }
     }
 
     /**
-     * Set a new elevation sampling interval.
+     * Sets a new elevation sampling interval.
      */
     fun setElevationSamplingInterval(elevationSamplingInterval: Double) {
         viewshedParameters.elevationSamplingInterval = when (elevationSamplingInterval) {
             0.0 -> null
             else -> elevationSamplingInterval
         }
+        _viewshedUiState.update { it.copy(elevationSamplingInterval = elevationSamplingInterval) }
     }
 
     /**
@@ -218,7 +245,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     }
 
     /**
-     * Synchronises setting of a new [observerPosition]. This needs to be set in the
+     * Synchronizes setting of a new [observerPosition]. This needs to be set in the
      * [viewshedParameters] and also as the geometry of the [observerGraphic].
      */
     private fun syncObserverPosition(observerPosition: Point) {
@@ -229,3 +256,12 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         viewshedParameters.observerPosition = observerPosition
     }
 }
+
+data class ViewshedUiState(
+    val observerElevation: Double,
+    val targetHeight: Double,
+    val maxRadius: Double,
+    val fieldOfView: Double,
+    val heading: Double,
+    val elevationSamplingInterval: Double
+)

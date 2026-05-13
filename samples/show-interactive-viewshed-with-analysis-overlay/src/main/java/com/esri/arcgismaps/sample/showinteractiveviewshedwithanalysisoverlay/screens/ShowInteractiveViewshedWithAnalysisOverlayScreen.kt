@@ -16,9 +16,8 @@
 
 package com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.screens
 
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,127 +25,99 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
-import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
+import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
+import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ShowInteractiveViewshedWithAnalysisOverlayViewModel
+import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ViewshedUiState
 
 /**
  * Main screen layout for the sample app.
  */
 @Composable
-fun ShowInteractiveViewshedWithAnalysisOverlayScreen(sampleName: String) {
+fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
     val viewModel: ShowInteractiveViewshedWithAnalysisOverlayViewModel = viewModel()
+    val uiState by viewModel.viewshedUiState.collectAsStateWithLifecycle()
 
     // Create a MapViewProxy, used to convert screen points to map points
     val mapViewProxy = MapViewProxy()
 
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        content = {
-            BoxWithConstraints {
-                if (maxWidth < maxHeight) {
-                    // Portrait orientation, display MapView above the UI controls in a Column
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it),
-                    ) {
-                        RasterDataCopyrightText()
-                        MapView(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f),
-                            arcGISMap = viewModel.arcGISMap,
-                            mapViewProxy = mapViewProxy,
-                            mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
-                            analysisOverlays = listOf(viewModel.analysisOverlay),
-                            graphicsOverlays = listOf(viewModel.graphicsOverlay),
-                            onSingleTapConfirmed = { event ->
-                                viewModel.onTap(event.mapPoint)
-                            },
-                            onLongPress = { event ->
-                                viewModel.onLongPress(event)
-                            },
-                            onPan = { event ->
-                                viewModel.onPan(event, mapViewProxy)
-                            }
-                        )
-                        // Display UI controls to modify viewshed parameters
-                        ViewshedParametersScreen(
-                            viewModel.viewshedParameters,
-                            onObserverElevationChanged = viewModel::setObserverElevation,
-                            onTargetHeightChanged = viewModel::setTargetHeight,
-                            onMaxRadiusChanged = viewModel::setMaxRadius,
-                            onFieldOfViewChanged = viewModel::setFieldOfView,
-                            onHeadingChanged = viewModel::setHeading,
-                            onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval
-                        )
+    MainScreenScaffold(
+        uiState = uiState,
+        onObserverElevationChanged = viewModel::setObserverElevation,
+        onTargetHeightChanged = viewModel::setTargetHeight,
+        onMaxRadiusChanged = viewModel::setMaxRadius,
+        onFieldOfViewChanged = viewModel::setFieldOfView,
+        onHeadingChanged = viewModel::setHeading,
+        onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval,
+        mainPaneContent = {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                RasterDataCopyrightText()
+                MapView(
+                    arcGISMap = viewModel.arcGISMap,
+                    mapViewProxy = mapViewProxy,
+                    mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
+                    analysisOverlays = listOf(viewModel.analysisOverlay),
+                    graphicsOverlays = listOf(viewModel.graphicsOverlay),
+                    onSingleTapConfirmed = { event ->
+                        viewModel.onTap(event.mapPoint)
+                    },
+                    onLongPress = { event ->
+                        viewModel.onLongPress(event)
+                    },
+                    onPan = { event ->
+                        viewModel.onPan(event, mapViewProxy)
                     }
-                } else {
-                    // Landscape orientation, display MapView alongside the UI controls in a Row
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f),
-                        ) {
-                            RasterDataCopyrightText()
-                            MapView(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .weight(1f),
-                                arcGISMap = viewModel.arcGISMap,
-                                mapViewProxy = mapViewProxy,
-                                mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
-                                analysisOverlays = listOf(viewModel.analysisOverlay),
-                                graphicsOverlays = listOf(viewModel.graphicsOverlay),
-                                onSingleTapConfirmed = { event ->
-                                    viewModel.onTap(event.mapPoint)
-                                },
-                                onLongPress = { event ->
-                                    viewModel.onLongPress(event)
-                                },
-                                onPan = { event ->
-                                    viewModel.onPan(event, mapViewProxy)
-                                }
-                            )
-                        }
-                        // Display UI controls to modify viewshed parameters
-                        ViewshedParametersScreen(
-                            viewModel.viewshedParameters,
-                            onObserverElevationChanged = viewModel::setObserverElevation,
-                            onTargetHeightChanged = viewModel::setTargetHeight,
-                            onMaxRadiusChanged = viewModel::setMaxRadius,
-                            onFieldOfViewChanged = viewModel::setFieldOfView,
-                            onHeadingChanged = viewModel::setHeading,
-                            onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval
-                        )
-
-                    }
-                }
+                )
             }
+        }
+    )
+}
 
-            // Display a dialog if the sample encounters an error
-            viewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
+@Composable
+private fun MainScreenScaffold(
+    uiState: ViewshedUiState,
+    onObserverElevationChanged: (Float) -> Unit = {},
+    onTargetHeightChanged: (Float) -> Unit = {},
+    onMaxRadiusChanged: (Float) -> Unit = {},
+    onFieldOfViewChanged: (Float) -> Unit = {},
+    onHeadingChanged: (Float) -> Unit = {},
+    onElevationSamplingIntervalChanged: (Double) -> Unit = {},
+    mainPaneContent: @Composable BoxScope.() -> Unit,
+) {
+    Scaffold(
+        topBar = { SampleTopAppBar(title = stringResource(R.string.show_interactive_viewshed_with_analysis_overlay_app_name)) },
+        content = { paddingValues ->
+            AdaptiveThreePane(
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                supportingPaneTitle = "Viewshed Parameters",
+                mainPane = { _, _ -> mainPaneContent() },
+                supportingPane = { _, _ ->
+                    ViewshedSupportingContent(
+                        uiState = uiState,
+                        onObserverElevationChanged = onObserverElevationChanged,
+                        onTargetHeightChanged = onTargetHeightChanged,
+                        onMaxRadiusChanged = onMaxRadiusChanged,
+                        onFieldOfViewChanged = onFieldOfViewChanged,
+                        onHeadingChanged = onHeadingChanged,
+                        onElevationSamplingIntervalChanged = onElevationSamplingIntervalChanged
                     )
                 }
-            }
+            )
         }
     )
 }
@@ -164,4 +135,22 @@ fun RasterDataCopyrightText() {
             .fillMaxWidth()
             .padding(vertical = 6.dp, horizontal = 12.dp)
     )
+}
+
+@SampleDeviceLightDarkPreview
+@Composable
+fun MainScreenPreview() {
+    SamplePreviewSurface {
+        MainScreenScaffold(
+            uiState = ViewshedUiState(
+                observerElevation = 20.0,
+                targetHeight = 20.0,
+                maxRadius = 8000.0,
+                fieldOfView = 150.0,
+                heading = 10.0,
+                elevationSamplingInterval = 0.0
+            ),
+            mainPaneContent = {}
+        )
+    }
 }
