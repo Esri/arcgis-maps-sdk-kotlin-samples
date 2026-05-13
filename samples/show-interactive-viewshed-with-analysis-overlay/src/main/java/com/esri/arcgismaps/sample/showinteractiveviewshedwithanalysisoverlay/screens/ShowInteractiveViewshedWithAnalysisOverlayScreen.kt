@@ -65,6 +65,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
             ) {
                 RasterDataCopyrightText()
                 MapView(
+                    modifier = Modifier.fillMaxSize(),
                     arcGISMap = viewModel.arcGISMap,
                     mapViewProxy = viewModel.mapViewProxy,
                     mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),

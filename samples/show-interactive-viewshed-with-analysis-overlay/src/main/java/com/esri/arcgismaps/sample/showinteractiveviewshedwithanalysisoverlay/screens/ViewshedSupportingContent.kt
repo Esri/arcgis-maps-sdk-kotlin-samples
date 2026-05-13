@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
@@ -161,17 +162,23 @@ private fun ElevationSamplingIntervalButtons(
         Text(text = "Elevation Sampling Interval (m)")
         Row(Modifier.selectableGroup()) {
             radioOptions.forEach { text ->
-                RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = {
-                        onElevationSamplingIntervalChanged(text.toDouble())
-                    }
-                )
-                Text(
-                    modifier = Modifier.padding(top = 10.dp, end = 10.dp),
-                    text = text,
-                    textAlign = TextAlign.Left
-                )
+                Row(
+                    Modifier.selectable(
+                        selected = true,
+                        onClick = { onElevationSamplingIntervalChanged(text.toDouble()) })
+                ) {
+                    RadioButton(
+                        selected = (text == selectedOption),
+                        onClick = {
+                            onElevationSamplingIntervalChanged(text.toDouble())
+                        }
+                    )
+                    Text(
+                        modifier = Modifier.padding(top = 10.dp, end = 10.dp),
+                        text = text,
+                        textAlign = TextAlign.Left
+                    )
+                }
             }
         }
     }
