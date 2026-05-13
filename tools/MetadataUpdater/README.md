@@ -29,7 +29,7 @@ When recreating single metadata files, if any of the following entries are not p
 * category
 * provision_from
 * provision_to
-* redirect_from
+* redirect_from (Don't remove this entry altogether. Rather, set its value to "".)
 
 ### How it works
 
