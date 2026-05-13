@@ -26,7 +26,6 @@
         "ViewshedParameters"
     ],
     "language": "kotlin",
-    "redirect_from": "",
     "relevant_apis": [
         "AnalysisOverlay",
         "Colormap",
@@ -41,9 +40,8 @@
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/components/ShowInteractiveViewshedWithAnalysisOverlayViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ViewshedParametersScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ViewshedSlider.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ShowInteractiveViewshedWithAnalysisOverlayScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ShowInteractiveViewshedWithAnalysisOverlayScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ViewshedSupportingContent.kt"
     ],
     "title": "Show interactive viewshed with analysis overlay"
 }

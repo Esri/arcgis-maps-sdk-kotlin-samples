@@ -6,7 +6,7 @@ Perform an interactive viewshed analysis to determine visible and non-visible ar
 
 ## Use case
 
-A viewshed analysis calculates the visible and non-visible areas from an observer's location, based on factors such as elevation and topographic features. For example, an interactive viewshed analysis can be used to identify which areas can be seen from a helicopter moving along a given flight path for monitoring wildfires while taking parameters such as height, field of view, and heading into account to give immediate visual feedback. A user could further extend their viewshed analysis calculations by using map algebra to e.g. only return viewshed results in geographical areas not covered in forest if they have an additional land cover raster dataset.
+A viewshed analysis calculates the visible and non-visible areas from an observer's location, based on factors such as elevation and topographic features. For example, an interactive viewshed analysis can be used to identify which areas can be seen from a helicopter moving along a given flight path for monitoring wildfires while taking parameters such as height, field of view, and heading into account to give immediate visual feedback. A user could further extend their viewshed analysis calculations by using map algebra, for example to only return viewshed results in geographical areas not covered in forest if they have an additional land cover raster dataset.
 
 Note: This analysis is a form of "data-driven analysis", which means the analysis is calculated at the resolution of the data rather than the resolution of the display.
 
@@ -20,7 +20,7 @@ The sample loads with a viewshed analysis initialized from an elevation raster c
 2. Add a `GraphicsOverlay` to draw the observer point and an `AnalysisOverlay` to the map view.
 3. Create a `ContinuousField` from a raster file containing elevation data.
 4. Create a `ContinuousFieldFunction` from the `ContinuousField`.
-5. Create and configure `ViewshedParameters`, passing in an `ArcGISPoint` as the observer position for the viewshed.
+5. Create and configure `ViewshedParameters`, passing in a `Point` as the observer position for the viewshed.
 6. Create a `ViewshedFunction` using the `ContinuousFieldFunction` and `ViewshedParameters`, then convert it to a `DiscreteFieldFunction`.
 7. Create a `ColormapRenderer` from a `Colormap` with colors that represent visible and non-visible results.
 8. Create a `FieldAnalysis` from the `DiscreteFieldFunction` and `ColormapRenderer`, then add it to the `AnalysisOverlay`'s collection of analysis objects to display the results. As parameter values change, the result is recalculated and redrawn automatically.
