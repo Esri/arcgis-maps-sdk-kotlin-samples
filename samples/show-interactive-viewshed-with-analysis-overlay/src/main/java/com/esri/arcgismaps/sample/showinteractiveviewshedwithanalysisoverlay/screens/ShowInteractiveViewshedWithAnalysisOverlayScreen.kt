@@ -34,7 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -51,9 +51,6 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
     val viewModel: ShowInteractiveViewshedWithAnalysisOverlayViewModel = viewModel()
     val uiState by viewModel.viewshedUiState.collectAsStateWithLifecycle()
 
-    // Create a MapViewProxy, used to convert screen points to map points
-    val mapViewProxy = MapViewProxy()
-
     MainScreenScaffold(
         uiState = uiState,
         onObserverElevationChanged = viewModel::setObserverElevation,
@@ -69,7 +66,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
                 RasterDataCopyrightText()
                 MapView(
                     arcGISMap = viewModel.arcGISMap,
-                    mapViewProxy = mapViewProxy,
+                    mapViewProxy = viewModel.mapViewProxy,
                     mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
                     analysisOverlays = listOf(viewModel.analysisOverlay),
                     graphicsOverlays = listOf(viewModel.graphicsOverlay),
@@ -80,9 +77,19 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
                         viewModel.onLongPress(event)
                     },
                     onPan = { event ->
-                        viewModel.onPan(event, mapViewProxy)
+                        viewModel.onPan(event, viewModel.mapViewProxy)
                     }
                 )
+                // Show a message dialog if the viewmodel reported an error
+                viewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
         }
     )

@@ -44,6 +44,7 @@ import com.arcgismaps.mapping.view.LongPressEvent
 import com.arcgismaps.mapping.view.PanChangeEvent
 import com.arcgismaps.mapping.view.PanChangeEvent.PanStatus
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,6 +72,9 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     private val _viewshedUiState = MutableStateFlow(initViewshedUiState)
     val viewshedUiState = _viewshedUiState.asStateFlow()
+
+    // Create a MapViewProxy, used to convert screen points to map points
+    val mapViewProxy = MapViewProxy()
 
     // Initialize and keep track of the ArcGISMap & the overlays it uses
     val arcGISMap by mutableStateOf(
@@ -105,6 +109,9 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     }
     private val filePath = provisionPath + app.getString(R.string.elevation_data_filename)
 
+    // Used to surface errors to the Compose UI
+    val messageDialogVM = MessageDialogViewModel()
+
     init {
         // Configure the ViewshedParameters
         viewshedParameters.observerPosition = initialObserverPosition
@@ -114,36 +121,35 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         viewshedParameters.heading = initHeading
 
         viewModelScope.launch {
-            // Load the map
-            arcGISMap.load().getOrThrow()
-
             // Display a symbol to mark the observer position
             graphicsOverlay.graphics.add(observerGraphic)
 
             // Create a ContinuousField from a raster file containing elevation data
             val filePaths = listOf(filePath)
-            val continuousField = ContinuousField.createFromFiles(filePaths, 0).getOrThrow()
+            ContinuousField.createFromFiles(filePaths, 0).onFailure {
+                messageDialogVM.showMessageDialog(it)
+            }.onSuccess { continuousField ->
+                // Create a ContinuousFieldFunction from the ContinuousField
+                val continuousFieldFunction = ContinuousFieldFunction.create(continuousField)
 
-            // Create a ContinuousFieldFunction from the ContinuousField
-            val continuousFieldFunction = ContinuousFieldFunction.create(continuousField)
+                // Create a ViewshedFunction using the ContinuousFieldFunction and ViewshedParameters,
+                // then convert it to a DiscreteFieldFunction
+                val viewshedFunction = ViewshedFunction(continuousFieldFunction, viewshedParameters)
+                val discreteViewshed = viewshedFunction.toDiscreteFieldFunction()
 
-            // Create a ViewshedFunction using the ContinuousFieldFunction and ViewshedParameters,
-            // then convert it to a DiscreteFieldFunction
-            val viewshedFunction = ViewshedFunction(continuousFieldFunction, viewshedParameters)
-            val discreteViewshed = viewshedFunction.toDiscreteFieldFunction()
+                // Create a ColormapRenderer from a Colormap with colors that represent visible and
+                // non-visible results
+                val areaNotVisibleColor = Color.gray
+                val areaVisibleColor = Color.fromRgba(136, 204, 132, 100) // translucent green
+                val colors = listOf(areaNotVisibleColor, areaVisibleColor)
+                val colormap = Colormap.create(colors)
+                val colormapRenderer = ColormapRenderer(colormap)
 
-            // Create a ColormapRenderer from a Colormap with colors that represent visible and
-            // non-visible results
-            val areaNotVisibleColor = Color.gray
-            val areaVisibleColor = Color.fromRgba(136, 204, 132, 100) // translucent green
-            val colors = listOf(areaNotVisibleColor, areaVisibleColor)
-            val colormap = Colormap.create(colors)
-            val colormapRenderer = ColormapRenderer(colormap)
-
-            // Create a FieldAnalysis from the DiscreteFieldFunction and ColormapRenderer, then add
-            // it to the AnalysisOverlay's collection of analysis objects to display the results
-            val analysis = FieldAnalysis(discreteViewshed, colormapRenderer)
-            analysisOverlay.analyses.add(analysis)
+                // Create a FieldAnalysis from the DiscreteFieldFunction and ColormapRenderer, then add
+                // it to the AnalysisOverlay's collection of analysis objects to display the results
+                val analysis = FieldAnalysis(discreteViewshed, colormapRenderer)
+                analysisOverlay.analyses.add(analysis)
+            }
         }
     }
 
