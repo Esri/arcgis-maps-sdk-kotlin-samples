@@ -26,6 +26,7 @@
         "ViewshedParameters"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "relevant_apis": [
         "AnalysisOverlay",
         "Colormap",
