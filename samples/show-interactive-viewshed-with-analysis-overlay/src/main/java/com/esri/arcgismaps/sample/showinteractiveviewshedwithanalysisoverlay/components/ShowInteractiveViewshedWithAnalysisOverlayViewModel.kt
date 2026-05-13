@@ -158,7 +158,8 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
      */
     fun setObserverElevation(observerElevation: Float) {
         val oldPos = viewshedParameters.observerPosition
-        val observerPosition = Point(oldPos!!.x, oldPos.y, observerElevation.toDouble())
+        val observerPosition =
+            Point(oldPos!!.x, oldPos.y, observerElevation.toDouble(), oldPos.spatialReference)
         syncObserverPosition(observerPosition)
         _viewshedUiState.update { it.copy(observerElevation = observerElevation.toDouble()) }
     }
@@ -243,8 +244,13 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     private fun setNewObserverPosition(mapPoint: Point?) {
         if (mapPoint != null) {
             val observerPosition = when (viewshedParameters.observerPosition?.z) {
-                null -> Point(mapPoint.x, mapPoint.y)
-                else -> Point(mapPoint.x, mapPoint.y, viewshedParameters.observerPosition?.z)
+                null -> Point(mapPoint.x, mapPoint.y, mapPoint.spatialReference)
+                else -> Point(
+                    mapPoint.x,
+                    mapPoint.y,
+                    viewshedParameters.observerPosition?.z!!,
+                    mapPoint.spatialReference
+                )
             }
             syncObserverPosition(observerPosition)
         }
