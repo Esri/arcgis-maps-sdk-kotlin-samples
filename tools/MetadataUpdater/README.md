@@ -44,6 +44,6 @@ To update all sample metadata files in a directory:
   * To get the screenshot, traverse the immediate files inside the sample directory, looking for a file with the `.png` extension.
   * To get the language and snippets, search recursively through the directory for files with the extension `.java` or `.kt`, ignoring the `/build/` directory.
 6. Create a dictionary. For each of the required metadata keys, create a key with a string title and a corresponding class field as its value.
-  * If `category` tag is missing/empty for a sample, the script shall set them to `"TODO"`.
-  * If `redirect_from` tag is missing sample for a sample, the script shall set them to use an empty string.
+  * If `category` tag is missing/empty for a sample, the script shall set it as `"TODO"`.
+  * If `redirect_from` tag is missing for a sample, the script shall set it as an empty `""` string.
 7. Dump the dictionary to a json file.

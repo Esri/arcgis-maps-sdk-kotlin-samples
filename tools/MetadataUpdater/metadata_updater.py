@@ -19,7 +19,7 @@ def check_special_char(string: str) -> bool:
     return True
 
 
-def parse_head(head_string: str) -> (str, str):
+def parse_head(head_string: str) -> tuple[str, str]:
     """
     Parse the `Title` section of README file and get the title and description.
 
