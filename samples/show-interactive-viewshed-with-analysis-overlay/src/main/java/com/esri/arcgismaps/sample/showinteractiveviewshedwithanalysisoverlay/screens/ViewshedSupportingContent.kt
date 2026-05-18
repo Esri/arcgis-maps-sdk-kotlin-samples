@@ -164,7 +164,7 @@ private fun ElevationSamplingIntervalButtons(
             radioOptions.forEach { text ->
                 Row(
                     Modifier.selectable(
-                        selected = true,
+                        selected = (text == selectedOption),
                         onClick = { onElevationSamplingIntervalChanged(text.toDouble()) })
                 ) {
                     RadioButton(
