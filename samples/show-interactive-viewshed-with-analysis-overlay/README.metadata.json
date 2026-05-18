@@ -41,8 +41,8 @@
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/components/ShowInteractiveViewshedWithAnalysisOverlayViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ViewshedSupportingContent.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ShowInteractiveViewshedWithAnalysisOverlayScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ShowInteractiveViewshedWithAnalysisOverlayScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ViewshedSupportingContent.kt"
     ],
     "title": "Show interactive viewshed with analysis overlay"
 }
