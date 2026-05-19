@@ -1,0 +1,19 @@
+{
+    "category": "Accessibility",
+    "description": "TODO",
+    "formal_name": "ShowContrastResponsiveGeoView",
+    "ignore": false,
+    "images": [
+        "show-contrast-responsive-geoview.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/components/ShowContrastResponsiveGeoViewViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/MainActivity.kt"
+    ],
+    "title": "Show contrast responsive GeoView"
+}
