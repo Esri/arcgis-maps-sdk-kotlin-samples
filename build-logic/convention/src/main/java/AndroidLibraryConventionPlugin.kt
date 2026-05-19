@@ -1,4 +1,4 @@
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.esri.arcgismaps.kotlin.build_logic.convention.configureKotlinAndroid
 import com.esri.arcgismaps.kotlin.build_logic.convention.implementation
 import com.esri.arcgismaps.kotlin.build_logic.convention.libs
@@ -12,7 +12,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("com.android.library")
-                apply("org.jetbrains.kotlin.android")
             }
 
             extensions.configure<LibraryExtension> {
