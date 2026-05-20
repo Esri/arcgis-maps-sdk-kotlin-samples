@@ -160,7 +160,10 @@ private fun ElevationSamplingIntervalButtons(
     val selectedOption = radioOptions[initialIndex]
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = "Elevation Sampling Interval (m)")
-        Row(Modifier.selectableGroup()) {
+        Row(
+            Modifier.fillMaxWidth().selectableGroup(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
             radioOptions.forEach { text ->
                 Row(
                     Modifier.selectable(
