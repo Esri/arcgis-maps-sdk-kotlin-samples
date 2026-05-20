@@ -70,9 +70,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
         onHeadingChanged = viewModel::setHeading,
         onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval,
         mainPaneContent = {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 RasterDataCopyrightText()
                 MapView(
                     modifier = Modifier.fillMaxSize(),

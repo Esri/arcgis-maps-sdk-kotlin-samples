@@ -164,11 +164,16 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
      * Sets a new observer elevation.
      */
     fun setObserverElevation(observerElevation: Float) {
-        val oldPos = viewshedParameters.observerPosition
-        val observerPosition =
-            Point(oldPos!!.x, oldPos.y, observerElevation.toDouble(), oldPos.spatialReference)
-        syncObserverPosition(observerPosition)
-        _viewshedUiState.update { it.copy(observerElevation = observerElevation.toDouble()) }
+        viewshedParameters.observerPosition?.let { oldPos ->
+            val observerPosition = Point(
+                x = oldPos.x,
+                y = oldPos.y,
+                z = observerElevation.toDouble(),
+                spatialReference = oldPos.spatialReference
+            )
+            syncObserverPosition(observerPosition)
+            _viewshedUiState.update { it.copy(observerElevation = observerElevation.toDouble()) }
+        }
     }
 
     /**
@@ -252,16 +257,18 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
      */
     private fun setNewObserverPosition(mapPoint: Point?) {
         if (mapPoint != null) {
-            val observerPosition = when (viewshedParameters.observerPosition?.z) {
-                null -> Point(mapPoint.x, mapPoint.y, mapPoint.spatialReference)
-                else -> Point(
-                    mapPoint.x,
-                    mapPoint.y,
-                    viewshedParameters.observerPosition?.z!!,
-                    mapPoint.spatialReference
-                )
+            viewshedParameters.observerPosition?.let { oldPos ->
+                val observerPosition = when (oldPos.z) {
+                    null -> Point(x = mapPoint.x, y = mapPoint.y, mapPoint.spatialReference)
+                    else -> Point(
+                        x = mapPoint.x,
+                        y = mapPoint.y,
+                        z = oldPos.z!!,
+                        mapPoint.spatialReference
+                    )
+                }
+                syncObserverPosition(observerPosition)
             }
-            syncObserverPosition(observerPosition)
         }
     }
 
