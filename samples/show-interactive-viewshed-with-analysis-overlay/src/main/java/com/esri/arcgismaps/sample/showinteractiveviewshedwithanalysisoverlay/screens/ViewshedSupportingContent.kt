@@ -46,15 +46,15 @@ fun ViewshedSupportingContent(
 ) {
     Column {
         ObserverElevationSlider(
-            uiState.observerElevation.toFloat(),
+            sliderValue = uiState.observerElevation.toFloat(),
             onObserverElevationChanged
         )
-        TargetHeightSlider(uiState.targetHeight.toFloat(), onTargetHeightChanged)
-        MaxRadiusSlider(uiState.maxRadius.toFloat(), onMaxRadiusChanged)
-        FieldOfViewSlider(uiState.fieldOfView.toFloat(), onFieldOfViewChanged)
-        HeadingSlider(uiState.heading.toFloat(), onHeadingChanged)
+        TargetHeightSlider(sliderValue = uiState.targetHeight.toFloat(), onTargetHeightChanged)
+        MaxRadiusSlider(sliderValue = uiState.maxRadius.toFloat(), onMaxRadiusChanged)
+        FieldOfViewSlider(sliderValue = uiState.fieldOfView.toFloat(), onFieldOfViewChanged)
+        HeadingSlider(sliderValue = uiState.heading.toFloat(), onHeadingChanged)
         ElevationSamplingIntervalButtons(
-            uiState.elevationSamplingInterval,
+            initialValue = uiState.elevationSamplingInterval,
             onElevationSamplingIntervalChanged
         )
     }
