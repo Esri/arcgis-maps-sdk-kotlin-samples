@@ -42,6 +42,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePa
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ShowInteractiveViewshedWithAnalysisOverlayViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ViewshedUiState
+import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ViewshedUiState.Companion.initialViewshedUiState
 
 /**
  * Main screen layout for the sample app.
@@ -145,14 +146,7 @@ fun RasterDataCopyrightText() {
 fun MainScreenPreview() {
     SamplePreviewSurface {
         MainScreenScaffold(
-            uiState = ViewshedUiState(
-                observerElevation = 20.0,
-                targetHeight = 20.0,
-                maxRadius = 8000.0,
-                fieldOfView = 150.0,
-                heading = 10.0,
-                elevationSamplingInterval = 0.0
-            ),
+            uiState = initialViewshedUiState,
             mainPaneContent = {}
         )
     }

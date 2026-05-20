@@ -47,6 +47,7 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
+import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ViewshedUiState.Companion.initialViewshedUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -55,23 +56,7 @@ import java.io.File
 
 class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : AndroidViewModel(app) {
     // Initialize and keep track of UI state
-    private val initObserverElevation = 20.0
-    private val initTargetHeight = 20.0
-    private val initMaxRadius = 8000.0
-    private val initFieldOfView = 150.0
-    private val initHeading = 10.0
-    private val initElevationSamplingInterval = 0.0
-
-    private val initViewshedUiState = ViewshedUiState(
-        observerElevation = initObserverElevation,
-        targetHeight = initTargetHeight,
-        maxRadius = initMaxRadius,
-        fieldOfView = initFieldOfView,
-        heading = initHeading,
-        elevationSamplingInterval = initElevationSamplingInterval
-    )
-
-    private val _viewshedUiState = MutableStateFlow(initViewshedUiState)
+    private val _viewshedUiState = MutableStateFlow(initialViewshedUiState)
     val viewshedUiState = _viewshedUiState.asStateFlow()
 
     // Create a MapViewProxy, used to convert screen points to map points
@@ -90,8 +75,12 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     private val viewshedParameters by mutableStateOf(ViewshedParameters())
 
     // Setup initial observer position, and a symbol and Graphic to draw at the observer position
-    private val initialObserverPosition =
-        Point(-579246.504, 7479619.947, initObserverElevation, SpatialReference.webMercator())
+    private val initialObserverPosition = Point(
+        x = -579246.504,
+        y = 7479619.947,
+        z = initialViewshedUiState.observerElevation,
+        SpatialReference.webMercator()
+    )
     private val observerSymbol = SimpleMarkerSymbol(
         SimpleMarkerSymbolStyle.Circle,
         Color.blue,
@@ -114,12 +103,14 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        // Configure the ViewshedParameters
-        viewshedParameters.observerPosition = initialObserverPosition
-        viewshedParameters.targetHeight = initTargetHeight
-        viewshedParameters.maxRadius = initMaxRadius
-        viewshedParameters.fieldOfView = initFieldOfView
-        viewshedParameters.heading = initHeading
+        // Configure the ViewshedParameters using initial values from the UI state
+        viewshedParameters.apply {
+            observerPosition = initialObserverPosition
+            targetHeight = initialViewshedUiState.targetHeight
+            maxRadius = initialViewshedUiState.maxRadius
+            fieldOfView = initialViewshedUiState.fieldOfView
+            heading = initialViewshedUiState.heading
+        }
 
         viewModelScope.launch {
             // Display a symbol to mark the observer position
@@ -277,4 +268,16 @@ data class ViewshedUiState(
     val fieldOfView: Double,
     val heading: Double,
     val elevationSamplingInterval: Double
-)
+) {
+    companion object {
+        // Initial viewshed parameters to drive the UI on launch
+        val initialViewshedUiState = ViewshedUiState(
+            observerElevation = 20.0,
+            targetHeight = 20.0,
+            maxRadius = 8000.0,
+            fieldOfView = 150.0,
+            heading = 10.0,
+            elevationSamplingInterval = 0.0
+        )
+    }
+}
