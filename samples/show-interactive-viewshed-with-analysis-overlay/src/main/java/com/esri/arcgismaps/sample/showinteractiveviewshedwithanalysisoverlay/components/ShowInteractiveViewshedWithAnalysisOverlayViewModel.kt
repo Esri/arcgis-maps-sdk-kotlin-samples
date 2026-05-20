@@ -48,7 +48,9 @@ import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ViewshedUiState.Companion.initialViewshedUiState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -90,6 +92,10 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     // Indicates if observer position is currently being dragged across the map
     var isDragging by mutableStateOf(false)
+
+    // Keep track of haptic feedback events, used when dragging the observer position
+    private val _dragHapticEvents = MutableSharedFlow<DragHapticEvent>(extraBufferCapacity = 1)
+    val dragHapticEvents = _dragHapticEvents.asSharedFlow()
 
     // Location of file containing elevation data
     private val provisionPath: String by lazy {
@@ -213,6 +219,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     fun onLongPress(event: LongPressEvent) {
         observerGraphic.isSelected = true
         isDragging = true
+        _dragHapticEvents.tryEmit(DragHapticEvent.Start)
         setNewObserverPosition(event.mapPoint)
     }
 
@@ -226,6 +233,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
             if (event.status == PanStatus.End) {
                 observerGraphic.isSelected = false
                 isDragging = false
+                _dragHapticEvents.tryEmit(DragHapticEvent.End)
             }
         }
     }
@@ -280,4 +288,9 @@ data class ViewshedUiState(
             elevationSamplingInterval = 0.0
         )
     }
+}
+
+enum class DragHapticEvent {
+    Start,
+    End,
 }

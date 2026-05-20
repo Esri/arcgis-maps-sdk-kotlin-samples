@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.screens
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,9 +43,11 @@ import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
+import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.DragHapticEvent
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ShowInteractiveViewshedWithAnalysisOverlayViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ViewshedUiState
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.components.ViewshedUiState.Companion.initialViewshedUiState
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Main screen layout for the sample app.
@@ -51,6 +56,10 @@ import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.com
 fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
     val viewModel: ShowInteractiveViewshedWithAnalysisOverlayViewModel = viewModel()
     val uiState by viewModel.viewshedUiState.collectAsStateWithLifecycle()
+
+    // Set up a LaunchedEffect to perform haptic feedback whenever a drag of the observer position
+    // starts or ends
+    InteractiveViewshedHapticFeedback(viewModel.dragHapticEvents)
 
     MainScreenScaffold(
         uiState = uiState,
@@ -139,6 +148,21 @@ fun RasterDataCopyrightText() {
             .fillMaxWidth()
             .padding(vertical = 6.dp, horizontal = 12.dp)
     )
+}
+
+@Composable
+fun InteractiveViewshedHapticFeedback(dragHapticEvents: Flow<DragHapticEvent>) {
+    val view = LocalView.current
+    LaunchedEffect(dragHapticEvents, view) {
+        // Perform haptic feedback whenever a drag of the observer position starts or ends
+        dragHapticEvents.collect { event ->
+            val hapticFeedbackConstant = when (event) {
+                DragHapticEvent.Start -> HapticFeedbackConstants.LONG_PRESS
+                DragHapticEvent.End -> HapticFeedbackConstants.CONTEXT_CLICK
+            }
+            view.performHapticFeedback(hapticFeedbackConstant)
+        }
+    }
 }
 
 @SampleDeviceLightDarkPreview
