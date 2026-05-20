@@ -43,6 +43,7 @@ import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.LongPressEvent
 import com.arcgismaps.mapping.view.PanChangeEvent
 import com.arcgismaps.mapping.view.PanChangeEvent.PanStatus
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showinteractiveviewshedwithanalysisoverlay.R
@@ -208,10 +209,10 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     }
 
     /**
-     * Sets the observer position to the given [mapPoint].
+     * Sets the observer position to the location of the given tap [event].
      */
-    fun onTap(mapPoint: Point?) {
-        setNewObserverPosition(mapPoint)
+    fun onTap(event: SingleTapConfirmedEvent) {
+        setNewObserverPosition(event.mapPoint)
     }
 
     /**
@@ -228,7 +229,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
      * Acts on a pan [event]. If the observer position is currently being dragged, the new position
      * is set to match the current screen coordinate. Dragging is terminated when panning ends.
      */
-    fun onPan(event: PanChangeEvent, mapViewProxy: MapViewProxy) {
+    fun onPan(event: PanChangeEvent) {
         if (isDragging) {
             setNewObserverPosition(mapViewProxy.screenToLocationOrNull(event.screenCoordinate))
             if (event.status == PanStatus.End) {

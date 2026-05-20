@@ -72,15 +72,9 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
                         MapViewInteractionOptions(isEnabled = !viewModel.isDragging),
                     analysisOverlays = listOf(viewModel.analysisOverlay),
                     graphicsOverlays = listOf(viewModel.graphicsOverlay),
-                    onSingleTapConfirmed = { event ->
-                        viewModel.onTap(event.mapPoint)
-                    },
-                    onLongPress = { event ->
-                        viewModel.onLongPress(event)
-                    },
-                    onPan = { event ->
-                        viewModel.onPan(event, viewModel.mapViewProxy)
-                    }
+                    onSingleTapConfirmed = viewModel::onTap,
+                    onLongPress = viewModel::onLongPress,
+                    onPan = viewModel::onPan,
                 )
                 // Show a message dialog if the viewmodel reported an error
                 viewModel.messageDialogVM.apply {
