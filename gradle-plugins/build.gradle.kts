@@ -7,6 +7,13 @@ plugins {
     `kotlin-dsl`
 }
 
+tasks {
+    validatePlugins {
+        enableStricterValidation = true
+        failOnWarning = true
+    }
+}
+
 gradlePlugin {
     plugins {
         create("copyCodeFiles") {

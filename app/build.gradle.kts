@@ -62,7 +62,6 @@ android {
 
     buildFeatures {
         buildConfig = true
-        compose = true
         dataBinding = true
     }
 }
@@ -87,6 +86,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.http)
     implementation(libs.androidx.compose.material.icons.extended)
-    annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 }
