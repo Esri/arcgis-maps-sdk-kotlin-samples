@@ -99,7 +99,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
     private val observerGraphic = Graphic(initialObserverPosition, observerSymbol)
 
     // Indicates if observer position is currently being dragged across the map
-    private var isDragging = false
+    var isDragging by mutableStateOf(false)
 
     // Location of file containing elevation data
     private val provisionPath: String by lazy {

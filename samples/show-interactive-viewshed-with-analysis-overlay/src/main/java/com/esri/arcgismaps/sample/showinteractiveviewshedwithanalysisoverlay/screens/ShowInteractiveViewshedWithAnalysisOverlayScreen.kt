@@ -68,7 +68,8 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = viewModel.arcGISMap,
                     mapViewProxy = viewModel.mapViewProxy,
-                    mapViewInteractionOptions = MapViewInteractionOptions(isPanEnabled = false),
+                    mapViewInteractionOptions =
+                        MapViewInteractionOptions(isEnabled = !viewModel.isDragging),
                     analysisOverlays = listOf(viewModel.analysisOverlay),
                     graphicsOverlays = listOf(viewModel.graphicsOverlay),
                     onSingleTapConfirmed = { event ->
