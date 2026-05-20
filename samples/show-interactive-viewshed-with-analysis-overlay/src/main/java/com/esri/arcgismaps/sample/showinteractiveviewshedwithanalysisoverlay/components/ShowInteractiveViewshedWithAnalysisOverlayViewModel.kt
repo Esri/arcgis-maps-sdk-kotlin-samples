@@ -220,7 +220,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
      * press and allowing it to be dragged across the map.
      */
     fun onLongPress(event: LongPressEvent) {
-        observerSymbol.color = Color.yellow
+        observerGraphic.isSelected = true
         isDragging = true
         setNewObserverPosition(event.mapPoint)
     }
@@ -233,7 +233,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         if (isDragging) {
             setNewObserverPosition(mapViewProxy.screenToLocationOrNull(event.screenCoordinate))
             if (event.status == PanStatus.End) {
-                observerSymbol.color = Color.blue
+                observerGraphic.isSelected = false
                 isDragging = false
             }
         }
