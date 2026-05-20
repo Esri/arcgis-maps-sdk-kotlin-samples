@@ -71,7 +71,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
         onElevationSamplingIntervalChanged = viewModel::setElevationSamplingInterval,
         mainPaneContent = {
             Column(modifier = Modifier.fillMaxSize()) {
-                RasterDataCopyrightText()
+                DisplayMessagesAboutMap()
                 MapView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = viewModel.arcGISMap,
@@ -134,17 +134,22 @@ private fun MainScreenScaffold(
 }
 
 /**
- * Display copyright text for the raster data we are using.
+ * Display messages about the map: copyright text for the raster data we are using, and instructions
+ * for changing the observer position.
  */
 @Composable
-fun RasterDataCopyrightText() {
+fun DisplayMessagesAboutMap() {
     Text(
         text = "Raster data copyright Scottish Government and SEPA (2014)",
         style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp, horizontal = 12.dp)
+        modifier = Modifier.fillMaxWidth()
+    )
+    Text(
+        text = "Tap on map, or long-press and drag, to change observer position",
+        style = MaterialTheme.typography.labelSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
     )
 }
 
