@@ -43,7 +43,7 @@ import kotlin.time.Duration.Companion.seconds
 class SceneViewModel(private val application: Application) : AndroidViewModel(application) {
 
     // initialize location viewshed parameters
-    private var viewShed: ExploratoryLocationViewshed
+    private var viewshed: ExploratoryLocationViewshed
     private val initHeading = 82.0
     private val initPitch = 60.0
     private val initHorizontalAngle = 75.0
@@ -102,7 +102,7 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
         }
 
         // create viewshed from the initial location
-        viewShed = ExploratoryLocationViewshed(
+        viewshed = ExploratoryLocationViewshed(
             location = initLocation,
             heading = initHeading,
             pitch = initPitch,
@@ -121,53 +121,53 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
         }
         // add the viewshed to the analysisOverlay of the  scene view
         analysisOverlay.apply {
-            analyses.add(viewShed)
+            analyses.add(viewshed)
             isVisible = initAnalysisVisible
         }
     }
 
     fun setHeading(sliderHeading: Float) {
-        viewShed.heading = sliderHeading.toDouble()
+        viewshed.heading = sliderHeading.toDouble()
         _viewshedUiState.update { it.copy(heading = sliderHeading) }
     }
 
-    fun setMaximumDistanceSlider(sliderValue: Float) {
-        viewShed.maxDistance = sliderValue.toDouble()
+    fun setMaximumDistance(sliderValue: Float) {
+        viewshed.maxDistance = sliderValue.toDouble()
         _viewshedUiState.update { it.copy(maxDistance = sliderValue) }
     }
 
-    fun setMinimumDistanceSlider(sliderValue: Float) {
-        viewShed.minDistance = sliderValue.toDouble()
+    fun setMinimumDistance(sliderValue: Float) {
+        viewshed.minDistance = sliderValue.toDouble()
         _viewshedUiState.update { it.copy(minDistance = sliderValue) }
     }
 
-    fun setVerticalAngleSlider(sliderValue: Float) {
-        viewShed.verticalAngle = sliderValue.toDouble()
+    fun setVerticalAngle(sliderValue: Float) {
+        viewshed.verticalAngle = sliderValue.toDouble()
         _viewshedUiState.update { it.copy(verticalAngle = sliderValue) }
     }
 
-    fun setHorizontalAngleSlider(sliderValue: Float) {
-        viewShed.horizontalAngle = sliderValue.toDouble()
+    fun setHorizontalAngle(sliderValue: Float) {
+        viewshed.horizontalAngle = sliderValue.toDouble()
         _viewshedUiState.update { it.copy(horizontalAngle = sliderValue) }
     }
 
     fun setPitch(sliderValue: Float) {
-        viewShed.pitch = sliderValue.toDouble()
+        viewshed.pitch = sliderValue.toDouble()
         _viewshedUiState.update { it.copy(pitch = sliderValue) }
     }
 
-    fun frustumVisibility(checkedValue: Boolean) {
-        viewShed.frustumOutlineVisible = checkedValue
+    fun setFrustumVisibility(checkedValue: Boolean) {
+        viewshed.frustumOutlineVisible = checkedValue
         _viewshedUiState.update { it.copy(isFrustumVisible = checkedValue) }
     }
 
-    fun analysisVisibility(checkedValue: Boolean) {
-        viewShed.isVisible = checkedValue
+    fun setAnalysisVisibility(checkedValue: Boolean) {
+        viewshed.isVisible = checkedValue
         _viewshedUiState.update { it.copy(isAnalysisVisible = checkedValue) }
     }
 
     fun resetViewshedOptions() {
-        viewShed.apply {
+        viewshed.apply {
             heading = initHeading
             pitch = initPitch
             horizontalAngle = initHorizontalAngle
@@ -193,10 +193,10 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
         viewModelScope.launch {
             sceneViewProxy.setViewpointCameraAnimated(
                 camera = Camera(
-                    lookAtPoint = viewShed.location,
-                    distance = viewShed.maxDistance ?: initMaxDistance,
-                    heading = viewShed.heading,
-                    pitch = viewShed.pitch,
+                    lookAtPoint = viewshed.location,
+                    distance = viewshed.maxDistance ?: initMaxDistance,
+                    heading = viewshed.heading,
+                    pitch = viewshed.pitch,
                     roll = 0.0
                 ),
                 duration = 2.seconds

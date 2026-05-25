@@ -5,6 +5,11 @@ plugins {
     `kotlin-dsl`
 }
 
+tasks.validatePlugins {
+    enableStricterValidation = true
+    failOnWarning = true
+}
+
 group = "com.esri.arcgismaps.kotlin.build_logic.convention"
 
 java {

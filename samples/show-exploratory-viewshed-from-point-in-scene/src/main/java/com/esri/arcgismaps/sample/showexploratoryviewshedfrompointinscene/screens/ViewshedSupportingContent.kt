@@ -1,4 +1,4 @@
-/* Copyright 2023 Esri
+/* Copyright 2026 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.ViewshedUiState
 
 @Composable
-fun ViewshedSlidersContent(
+fun ViewshedSupportingContent(
     viewshedUiState: ViewshedUiState,
     isFloatingPaneVisible: Boolean,
     onHeadingChanged: (Float) -> Unit = {},
@@ -64,29 +63,30 @@ fun ViewshedSlidersContent(
     }
 }
 
+/**
+ * Custom slider implementation to be used by various viewshed slider options
+ */
 @Composable
-fun ViewshedSceneOptionsContent(
-    viewshedUiState: ViewshedUiState,
-    isFrustumVisible: (Boolean) -> Unit = {},
-    isAnalysisVisible: (Boolean) -> Unit = {},
-    onSetViewpointToAnalysisExtent: () -> Unit = {},
-    onResetViewshedOptions: () -> Unit = {}
+fun ViewshedSlider(
+    title: String,
+    sliderValue: Float,
+    sliderRangeValue: ClosedFloatingPointRange<Float>,
+    onSliderValueChanged: (Float) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        FrustumCheckBox(viewshedUiState.isFrustumVisible, isFrustumVisible)
-        AnalysisCheckBox(viewshedUiState.isAnalysisVisible, isAnalysisVisible)
-        Column(
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            OutlinedButton(onClick = onSetViewpointToAnalysisExtent) {
-                Text("Align camera with viewshed")
-            }
-            OutlinedButton(onClick = onResetViewshedOptions) {
-                Text("Reset viewshed options")
-            }
+            Text(text = title)
+            Text(text = sliderValue.toInt().toString())
         }
+        Slider(
+            modifier = Modifier.fillMaxWidth(),
+            value = sliderValue,
+            onValueChange = onSliderValueChanged,
+            valueRange = sliderRangeValue
+        )
     }
 }
 
@@ -151,32 +151,4 @@ private fun MaximumDistanceSlider(maxDistance: Float, onMaxDistanceChanged: (Flo
         sliderRangeValue = 0f..9999f,
         onSliderValueChanged = onMaxDistanceChanged
     )
-}
-
-@Composable
-fun FrustumCheckBox(
-    isChecked: Boolean,
-    isFrustumVisible: (Boolean) -> Unit
-) {
-    Row {
-        Checkbox(
-            checked = isChecked,
-            onCheckedChange = isFrustumVisible,
-        )
-        Text(modifier = Modifier.padding(top = 10.dp), text = "Frustum Outline")
-    }
-}
-
-@Composable
-fun AnalysisCheckBox(
-    isChecked: Boolean,
-    isAnalysisVisible: (Boolean) -> Unit
-) {
-    Row {
-        Checkbox(
-            checked = isChecked,
-            onCheckedChange = isAnalysisVisible,
-        )
-        Text(modifier = Modifier.padding(top = 10.dp), text = "Analysis Overlay")
-    }
 }

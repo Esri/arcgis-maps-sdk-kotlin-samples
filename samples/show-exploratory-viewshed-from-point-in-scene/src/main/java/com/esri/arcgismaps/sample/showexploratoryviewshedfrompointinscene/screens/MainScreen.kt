@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.esri.arcgismaps.sample.sampleslib.components.AdaptiveThreePane
+import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -49,12 +49,12 @@ fun MainScreen() {
         viewshedUiState = viewshedUiState,
         onHeadingChanged = sceneViewModel::setHeading,
         onPitchChanged = sceneViewModel::setPitch,
-        onHorizontalAngleChanged = sceneViewModel::setHorizontalAngleSlider,
-        onVerticalAngleChanged = sceneViewModel::setVerticalAngleSlider,
-        onMinDistanceChanged = sceneViewModel::setMinimumDistanceSlider,
-        onMaxDistanceChanged = sceneViewModel::setMaximumDistanceSlider,
-        isFrustumVisible = sceneViewModel::frustumVisibility,
-        isAnalysisVisible = sceneViewModel::analysisVisibility,
+        onHorizontalAngleChanged = sceneViewModel::setHorizontalAngle,
+        onVerticalAngleChanged = sceneViewModel::setVerticalAngle,
+        onMinDistanceChanged = sceneViewModel::setMinimumDistance,
+        onMaxDistanceChanged = sceneViewModel::setMaximumDistance,
+        onFrustumVisibilityChanged = sceneViewModel::setFrustumVisibility,
+        onAnalysisVisibilityChanged = sceneViewModel::setAnalysisVisibility,
         onSetViewpointToAnalysisExtent = sceneViewModel::setViewpointToAnalysisExtent,
         onResetViewshedOptions = sceneViewModel::resetViewshedOptions,
         mainPaneContent = {
@@ -79,8 +79,8 @@ private fun MainScreenScaffold(
     onVerticalAngleChanged: (Float) -> Unit = {},
     onMinDistanceChanged: (Float) -> Unit = {},
     onMaxDistanceChanged: (Float) -> Unit = {},
-    isFrustumVisible: (Boolean) -> Unit = {},
-    isAnalysisVisible: (Boolean) -> Unit = {},
+    onFrustumVisibilityChanged: (Boolean) -> Unit = {},
+    onAnalysisVisibilityChanged: (Boolean) -> Unit = {},
     onSetViewpointToAnalysisExtent: () -> Unit = {},
     onResetViewshedOptions: () -> Unit = {},
     mainPaneContent: @Composable BoxScope.() -> Unit,
@@ -96,7 +96,7 @@ private fun MainScreenScaffold(
                 floatingPaneTitle = "Scene Options",
                 mainPane = { _, _ -> mainPaneContent() },
                 supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
-                    ViewshedSlidersContent(
+                    ViewshedSupportingContent(
                         viewshedUiState = viewshedUiState,
                         isFloatingPaneVisible = isFloatingPaneVisible,
                         onHeadingChanged = onHeadingChanged,
@@ -109,10 +109,10 @@ private fun MainScreenScaffold(
                     )
                 },
                 floatingPane = {
-                    ViewshedSceneOptionsContent(
+                    ViewshedFloatingContent(
                         viewshedUiState = viewshedUiState,
-                        isFrustumVisible = isFrustumVisible,
-                        isAnalysisVisible = isAnalysisVisible,
+                        onFrustumVisibilityChanged = onFrustumVisibilityChanged,
+                        onAnalysisVisibilityChanged = onAnalysisVisibilityChanged,
                         onSetViewpointToAnalysisExtent = onSetViewpointToAnalysisExtent,
                         onResetViewshedOptions = onResetViewshedOptions,
                     )
@@ -141,5 +141,3 @@ fun MainScreenPreview() {
         )
     }
 }
-
-
