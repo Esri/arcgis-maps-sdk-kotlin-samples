@@ -38,14 +38,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
-import com.esri.arcgismaps.sample.sampleslib.components.AdaptiveThreePane
-import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.ShowLineOfSightAnalysisInMapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import com.esri.arcgismaps.sample.sampleslib.components.ThreePaneConfig
+import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
+import com.esri.arcgismaps.sample.sampleslib.components.adaptive.ThreePaneConfig
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.R
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.LineOfSightUiState
+import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.ShowLineOfSightAnalysisInMapViewModel
 
 /**
  * Main screen layout for the sample app
