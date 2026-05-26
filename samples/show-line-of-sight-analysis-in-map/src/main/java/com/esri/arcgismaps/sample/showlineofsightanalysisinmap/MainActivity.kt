@@ -21,7 +21,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.BuildConfig
@@ -38,15 +37,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SampleAppTheme {
-                ShowLineOfSightAnalysisInMapApp()
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    ShowLineOfSightAnalysisInMapScreen()
+                }
             }
-        }
-    }
-
-    @Composable
-    private fun ShowLineOfSightAnalysisInMapApp() {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            ShowLineOfSightAnalysisInMapScreen()
         }
     }
 }

@@ -31,11 +31,11 @@ import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.LineOf
 
 @Composable
 fun LineOfSightSupportingContent(
-    lineOfSightUiState: LineOfSightUiState,
+    uiState: LineOfSightUiState,
     onVisibilityFilterChanged: (Boolean) -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        VisibilityFilterCheckbox(lineOfSightUiState.visibilityFilter, onVisibilityFilterChanged)
+        VisibilityFilterCheckbox(uiState.visibilityFilter, onVisibilityFilterChanged)
     }
 }
 

@@ -50,7 +50,9 @@ import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.R
+import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.LineOfSightUiState.Companion.initialLineOfSightUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -59,19 +61,18 @@ import java.io.File
 
 class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel(app) {
     // Initialize and keep track of UI state
-    private val initVisibilityFilter = false
-    private val initLineOfSightUiState = LineOfSightUiState(
-        visibilityFilter = initVisibilityFilter
-    )
-    private val _lineOfSightUiState = MutableStateFlow(initLineOfSightUiState)
+    private val _lineOfSightUiState = MutableStateFlow(initialLineOfSightUiState)
     val lineOfSightUiState = _lineOfSightUiState.asStateFlow()
+
+    // Create a MapViewProxy, used for identifyGraphicsOverlays and to convert screen points to map points
+    val mapViewProxy = MapViewProxy()
 
     // Initialize and keep track of the ArcGISMap & the overlays it uses
     private val targetPosition =
-        Point(-577955.365, 7484288.220, 5.0, SpatialReference.webMercator())
+        Point(x = -577955.365, y = 7484288.220, z = 5.0, SpatialReference.webMercator())
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISHillshadeDark).apply {
-            initialViewpoint = Viewpoint(targetPosition, 150000.0)
+            initialViewpoint = Viewpoint(center = targetPosition, scale = 150000.0)
         }
     )
     var targetGraphicsOverlay by mutableStateOf(GraphicsOverlay())
@@ -139,11 +140,11 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
         ),
     )
 
+    // Used to surface errors to the Compose UI
+    val messageDialogVM = MessageDialogViewModel()
+
     init {
         viewModelScope.launch {
-            // Load the map
-            arcGISMap.load().getOrThrow()
-
             // Create a graphic to mark the target position and add it to a graphics overlay
             val beaconDrawable = ContextCompat.getDrawable(app, R.drawable.beacon) as BitmapDrawable
             val beaconSymbol = PictureMarkerSymbol.createWithImage(beaconDrawable)
@@ -151,63 +152,76 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
                 width = 24f
                 height = 24f
             }
-            val targetGraphic = Graphic(targetPosition, beaconSymbol)
+            val targetGraphic = Graphic(geometry = targetPosition, symbol = beaconSymbol)
             targetGraphicsOverlay.graphics.add(targetGraphic)
 
             // Create a graphic for each observer and add them to a graphics overlay
             for ((index, observer) in observers.withIndex()) {
-                val graphic = Graphic(observer.position, observer.symbol)
+                val graphic = Graphic(geometry = observer.position, symbol = observer.symbol)
                 graphic.attributes["observerIndex"] = index
                 observersGraphicsOverlay.graphics.add(graphic)
             }
 
             // Create a ContinuousField from a raster file containing elevation data
             val filePaths = listOf(filePath)
-            val continuousField = ContinuousField.createFromFiles(filePaths, 0).getOrThrow()
+            ContinuousField.createFromFiles(filePaths, band = 0)
+                .onFailure {
+                    messageDialogVM.showMessageDialog(it)
+                }.onSuccess { continuousField ->
+                    // Create line of sight positions for target and observers
+                    val targetPositions = listOf(
+                        LineOfSightPosition(targetPosition, HeightOrigin.Relative)
+                    )
+                    val observerPositions = observers.map { observer ->
+                        LineOfSightPosition(observer.position, HeightOrigin.Relative)
+                    }
 
-            // Create line of sight positions for target and observers
-            val targetPositions = listOf(
-                LineOfSightPosition(targetPosition, HeightOrigin.Relative)
-            )
-            val observerPositions = observers.map { observer ->
-                LineOfSightPosition(observer.position, HeightOrigin.Relative)
-            }
+                    // Create the line of sight parameters with the observer and target positions
+                    val parameters = LineOfSightParameters()
+                    parameters.observerTargetPairs =
+                        ObserverTargetPairs(observerPositions, targetPositions)
 
-            // Create the line of sight parameters with the observer and target positions
-            val parameters = LineOfSightParameters()
-            parameters.observerTargetPairs = ObserverTargetPairs(observerPositions, targetPositions)
+                    // Create a LineOfSightFunction from the continuous field and line of sight parameters
+                    val lineOfSightFunction = LineOfSightFunction(elevation = continuousField, parameters)
 
-            // Create a LineOfSightFunction from the continuous field and line of sight parameters
-            val lineOfSightFunction = LineOfSightFunction(continuousField, parameters)
+                    // Evaluate the function to get LineOfSight results
+                    lineOfSightFunction.evaluate()
+                        .onFailure {
+                            messageDialogVM.showMessageDialog(it)
+                        }.onSuccess { results ->
+                            // Store the results by observer
+                            for ((index, result) in results.withIndex()) {
+                                lineOfSightResults[observers[index]] = result
+                            }
 
-            // Evaluate the function to get LineOfSight results
-            val results = lineOfSightFunction.evaluate().getOrThrow()
+                            // Add the line of sight results to a graphics overlay
+                            for (result in results) {
+                                // Use LineOfSight.targetVisibility to determine if the observer
+                                // position has a direct line of sight to the target position
+                                val targetVisibility = result.targetVisibility
 
-            // Store the results by observer
-            for ((index, result) in results.withIndex()) {
-                lineOfSightResults[observers[index]] = result
-            }
+                                // Add the visible line segment if it exists
+                                if (result.visibleLine != null) {
+                                    val graphic = Graphic(
+                                            geometry = result.visibleLine,
+                                            symbol = visibleLineSymbol
+                                        )
+                                    graphic.attributes["targetVisibility"] = targetVisibility
+                                    resultsGraphicsOverlay.graphics.add(graphic)
+                                }
 
-            // Add the line of sight results to a graphics overlay
-            for (result in results) {
-                // Use LineOfSight.targetVisibility to determine if the observer position has a
-                // direct line of sight to the target position
-                val targetVisibility = result.targetVisibility
-
-                // Add the visible line segment if it exists
-                if (result.visibleLine != null) {
-                    val graphic = Graphic(geometry = result.visibleLine, symbol = visibleLineSymbol)
-                    graphic.attributes["targetVisibility"] = targetVisibility
-                    resultsGraphicsOverlay.graphics.add(graphic)
+                                // Add the not visible line segment if it exists
+                                if (result.notVisibleLine != null) {
+                                    val graphic = Graphic(
+                                        geometry = result.notVisibleLine,
+                                        symbol = notVisibleLineSymbol
+                                    )
+                                    graphic.attributes["targetVisibility"] = targetVisibility
+                                    resultsGraphicsOverlay.graphics.add(graphic)
+                                }
+                            }
+                        }
                 }
-
-                // Add the not visible line segment if it exists
-                if (result.notVisibleLine != null) {
-                    val graphic = Graphic(geometry = result.notVisibleLine, symbol = notVisibleLineSymbol)
-                    graphic.attributes["targetVisibility"] = targetVisibility
-                    resultsGraphicsOverlay.graphics.add(graphic)
-                }
-            }
         }
     }
 
@@ -229,7 +243,7 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
     /**
      * Handle a tap at the given [singleTapConfirmedEvent].
      */
-    fun onTap(singleTapConfirmedEvent: SingleTapConfirmedEvent, mapViewProxy: MapViewProxy) {
+    fun onTap(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
             // Dismiss any existing callout
             selectedObserverGraphic = null
@@ -237,7 +251,7 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
             // Identify graphic(s) at the tap position
             mapViewProxy.identifyGraphicsOverlays(
                 singleTapConfirmedEvent.screenCoordinate,
-                10.dp
+                tolerance = 10.dp
             ).onSuccess { resultsList ->
                 if (resultsList.isNotEmpty()) {
                     // Find the first (if any) result from the graphics overlay containing observers
@@ -250,8 +264,7 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
                             val observerGraphic = graphics.first()
 
                             // Get the observer, using the index retrieved from the graphic attributes
-                            val observer =
-                                observers[observerGraphic.attributes["observerIndex"] as Int]
+                            val observer = observers[observerGraphic.attributes["observerIndex"] as Int]
 
                             // Get the line of sight result for the observer
                             val lineOfSightResult = lineOfSightResults[observer]
@@ -279,8 +292,8 @@ fun LineOfSight.detail(): String? {
     // result)
     if (notVisibleLine == null && visibleLine == null) return ""
 
-    // Calculate the length of the visible line, which is the unobstructed distance from the observer
-    // to the target
+    // Calculate the length of the visible line, which is the unobstructed distance from the
+    // observer to the target
     val visibleLength = if (visibleLine == null) 0 else GeometryEngine.lengthGeodetic(
         geometry = visibleLine!!,
         lengthUnit = LinearUnit.meters,
@@ -299,7 +312,14 @@ fun LineOfSight.detail(): String? {
 
 data class LineOfSightUiState(
     val visibilityFilter: Boolean
-)
+) {
+    companion object {
+        // Initial values to drive the UI on launch
+        val initialLineOfSightUiState = LineOfSightUiState(
+            visibilityFilter = false
+        )
+    }
+}
 
 data class Observer(
     val name: String,
@@ -308,5 +328,5 @@ data class Observer(
     val y: Double
 ) {
     val position = Point(x, y, SpatialReference.webMercator())
-    val symbol = SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Triangle, color, 15f)
+    val symbol = SimpleMarkerSymbol(style = SimpleMarkerSymbolStyle.Triangle, color, size = 15f)
 }

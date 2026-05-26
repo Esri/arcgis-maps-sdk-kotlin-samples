@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
@@ -45,39 +44,33 @@ import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePa
 import com.esri.arcgismaps.sample.sampleslib.components.adaptive.ThreePaneConfig
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.R
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.LineOfSightUiState
+import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.LineOfSightUiState.Companion.initialLineOfSightUiState
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.components.ShowLineOfSightAnalysisInMapViewModel
 
 /**
- * Main screen layout for the sample app
+ * Main screen layout for the sample app.
  */
 @Composable
 fun ShowLineOfSightAnalysisInMapScreen() {
     val viewModel: ShowLineOfSightAnalysisInMapViewModel = viewModel()
     val uiState by viewModel.lineOfSightUiState.collectAsStateWithLifecycle()
 
-    // Create a MapViewProxy, used fro identifyGraphicsOverlays and to convert screen points to map points
-    val mapViewProxy = MapViewProxy()
-
     MainScreenScaffold(
         uiState = uiState,
         onVisibilityFilterChanged = viewModel::setVisibilityFilter,
         mainPaneContent = {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 RasterDataCopyrightText()
                 MapView(
                     modifier = Modifier.fillMaxSize(),
                     arcGISMap = viewModel.arcGISMap,
-                    mapViewProxy = mapViewProxy,
+                    mapViewProxy = viewModel.mapViewProxy,
                     graphicsOverlays = listOf(
                         viewModel.resultsGraphicsOverlay,
                         viewModel.observersGraphicsOverlay,
                         viewModel.targetGraphicsOverlay
                     ),
-                    onSingleTapConfirmed = { event ->
-                        viewModel.onTap(event, mapViewProxy)
-                    },
+                    onSingleTapConfirmed = viewModel::onTap,
                     content = {
                         // Show a callout only when an observer has been selected
                         viewModel.selectedObserverGraphic?.let { graphic ->
@@ -85,7 +78,7 @@ fun ShowLineOfSightAnalysisInMapScreen() {
                                 geoElement = graphic,
                                 modifier = Modifier.sizeIn(maxWidth = 250.dp),
                                 shapes = CalloutDefaults.shapes(
-                                    calloutContentPadding = PaddingValues(4.dp)
+                                    calloutContentPadding = PaddingValues(all = 4.dp)
                                 ),
                                 colorScheme = CalloutDefaults.colors(
                                     backgroundColor = MaterialTheme.colorScheme.background,
@@ -125,7 +118,7 @@ private fun MainScreenScaffold(
         topBar = { SampleTopAppBar(title = stringResource(R.string.show_line_of_sight_analysis_in_map_app_name)) },
         content = { paddingValues ->
             AdaptiveThreePane(
-                Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
                 supportingPaneTitle = "Line of Sight Options",
                 config = ThreePaneConfig(compactSupportingPaneHeightRatio = 0.25f),
                 mainPane = { _, _ -> mainPaneContent() },
@@ -146,9 +139,7 @@ fun RasterDataCopyrightText() {
         text = "Raster data copyright Scottish Government and SEPA (2014)",
         style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp, horizontal = 12.dp)
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -157,10 +148,8 @@ fun RasterDataCopyrightText() {
 fun MainScreenPreview() {
     SamplePreviewSurface {
         MainScreenScaffold(
-            uiState = LineOfSightUiState(
-                visibilityFilter = true
-            ),
-            mainPaneContent = {} // empty placeholder — no ArcGIS objects needed
+            uiState = initialLineOfSightUiState,
+            mainPaneContent = {}
         )
     }
 }
