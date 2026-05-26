@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -103,6 +104,16 @@ fun ShowLineOfSightAnalysisInMapScreen() {
                         }
                     }
                 )
+                // Show a message dialog if the viewmodel reported an error
+                viewModel.messageDialogVM.apply {
+                    if (dialogStatus) {
+                        MessageDialog(
+                            title = messageTitle,
+                            description = messageDescription,
+                            onDismissRequest = ::dismissDialog
+                        )
+                    }
+                }
             }
         }
     )
