@@ -63,7 +63,6 @@ fun ShowLineOfSightAnalysisInMapScreen() {
             Column(modifier = Modifier.fillMaxSize()) {
                 RasterDataCopyrightText()
                 MapView(
-                    modifier = Modifier.fillMaxSize(),
                     arcGISMap = viewModel.arcGISMap,
                     mapViewProxy = viewModel.mapViewProxy,
                     graphicsOverlays = listOf(

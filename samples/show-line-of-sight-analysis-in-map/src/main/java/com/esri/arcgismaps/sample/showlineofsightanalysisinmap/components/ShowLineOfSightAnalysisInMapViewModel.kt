@@ -301,15 +301,16 @@ fun LineOfSight.detail(): String? {
             curveType = GeodeticCurveType.Geodesic
         )
     } ?: 0.0
+    val formattedVisibleLength = "%.3f".format(visibleLength)
 
     // If there is no not-visible line, the target is fully visible from the observer; return a
     // message with the length of the visible line
     if (notVisibleLine == null) {
-        return "Target visible from observer over $visibleLength meters."
+        return "Target visible from observer over $formattedVisibleLength meters."
     }
 
     // Otherwise, the target is not fully visible; return a message with the unobstructed length
-    return "Target not visible from observer. Obstructed after $visibleLength meters."
+    return "Target not visible from observer. Obstructed after $formattedVisibleLength meters."
 }
 
 data class LineOfSightUiState(
