@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ fun LineOfSightSupportingContent(
     onVisibilityFilterChanged: (Boolean) -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Tap an observer to see information about it.")
         VisibilityFilterCheckbox(uiState.visibilityFilter, onVisibilityFilterChanged)
     }
 }
@@ -55,9 +57,10 @@ private fun VisibilityFilterCheckbox(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(
+            modifier = Modifier.padding(all = 6.dp),
             checked = isChecked,
             onCheckedChange = null,
         )
-        Text(text = "Only observers with line of sight")
+        Text(text = "Show results only where target is visible")
     }
 }
