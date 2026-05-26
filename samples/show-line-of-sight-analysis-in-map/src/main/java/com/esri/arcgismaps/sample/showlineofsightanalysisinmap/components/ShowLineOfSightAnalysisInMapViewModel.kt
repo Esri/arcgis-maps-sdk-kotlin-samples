@@ -64,7 +64,7 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
     private val _lineOfSightUiState = MutableStateFlow(initialLineOfSightUiState)
     val lineOfSightUiState = _lineOfSightUiState.asStateFlow()
 
-    // Create a MapViewProxy, used for identifyGraphicsOverlays and to convert screen points to map points
+    // Create a MapViewProxy, used for identifyGraphicsOverlays
     val mapViewProxy = MapViewProxy()
 
     // Initialize and keep track of the ArcGISMap & the overlays it uses
