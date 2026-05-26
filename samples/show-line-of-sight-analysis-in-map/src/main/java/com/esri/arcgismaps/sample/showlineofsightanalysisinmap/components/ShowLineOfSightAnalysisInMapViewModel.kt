@@ -86,7 +86,7 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
 
     // Location of file containing elevation data
     private val provisionPath: String by lazy {
-        app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(
+        app.getExternalFilesDir(null)?.path + File.separator + app.getString(
             R.string.show_line_of_sight_analysis_in_map_app_name
         ) + File.separator
     }
