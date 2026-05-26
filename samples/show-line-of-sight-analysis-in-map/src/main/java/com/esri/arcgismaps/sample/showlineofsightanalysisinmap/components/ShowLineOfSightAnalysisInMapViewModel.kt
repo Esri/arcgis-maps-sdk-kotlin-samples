@@ -294,11 +294,13 @@ fun LineOfSight.detail(): String? {
 
     // Calculate the length of the visible line, which is the unobstructed distance from the
     // observer to the target
-    val visibleLength = if (visibleLine == null) 0 else GeometryEngine.lengthGeodetic(
-        geometry = visibleLine!!,
-        lengthUnit = LinearUnit.meters,
-        curveType = GeodeticCurveType.Geodesic
-    )
+    val visibleLength = visibleLine?.let {
+        GeometryEngine.lengthGeodetic(
+            geometry = it,
+            lengthUnit = LinearUnit.meters,
+            curveType = GeodeticCurveType.Geodesic
+        )
+    } ?: 0.0
 
     // If there is no not-visible line, the target is fully visible from the observer; return a
     // message with the length of the visible line
