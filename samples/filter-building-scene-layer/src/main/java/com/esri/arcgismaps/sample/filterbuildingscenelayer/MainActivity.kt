@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.filterbuildingscenelayer
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         ArcGISEnvironment.applicationContext = this
 
+        enableEdgeToEdge()
         setContent {
             SampleAppTheme {
                 FilterBuildingSceneLayerApp()

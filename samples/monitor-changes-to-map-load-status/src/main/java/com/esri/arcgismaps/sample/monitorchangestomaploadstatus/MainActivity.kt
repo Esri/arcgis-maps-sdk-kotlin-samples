@@ -18,6 +18,7 @@ package com.esri.arcgismaps.sample.monitorchangestomaploadstatus
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
         // authentication with an API key or named user is
         // required to access basemaps and other location services
         ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+        enableEdgeToEdge()
         setContent {
             SampleAppTheme {
                 MonitorChangesToMapLoadStatusApp()

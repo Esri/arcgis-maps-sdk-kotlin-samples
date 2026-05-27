@@ -37,9 +37,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -62,6 +59,7 @@ import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.stylegraphicswithsymbols.BuildConfig
 
@@ -173,15 +171,8 @@ private fun SearchFloatingActionButton(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun HomeCategoryTopAppBar(navigateToAboutScreen: () -> Unit) {
-    TopAppBar(
-        title = {
-            Text(text = stringResource(R.string.home_screen_title))
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
+    SampleTopAppBar(
+        title = stringResource(R.string.home_screen_title),
         actions = {
             IconButton(onClick = navigateToAboutScreen) {
                 Icon(
