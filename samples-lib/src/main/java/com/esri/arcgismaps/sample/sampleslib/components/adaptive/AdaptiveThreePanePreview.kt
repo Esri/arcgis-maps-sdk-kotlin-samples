@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.sampleslib.components.adaptive
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
@@ -175,141 +173,4 @@ internal fun PreviewCard(
         )
         content()
     }
-}
-
-
-@Preview(
-    name = "Pane preview - main only day",
-    widthDp = 411,
-    heightDp = 891,
-    showBackground = true,
-)
-@Preview(
-    name = "Pane preview - main only night",
-    widthDp = 411,
-    heightDp = 891,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun AdaptiveThreePaneMainOnlyPreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(supportingPaneInitiallyOpen = false),
-    )
-}
-
-@Preview(
-    name = "Pane preview - supporting open",
-    widthDp = 411,
-    heightDp = 891,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun AdaptiveThreePaneSupportingPanePreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(supportingPaneInitiallyOpen = true),
-    )
-}
-
-@Preview(
-    name = "Pane preview - floating visible",
-    widthDp = 891,
-    heightDp = 411,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-private fun AdaptiveThreePaneFloatingPanePreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(
-            supportingPaneInitiallyOpen = true,
-            floatingPaneInitiallyVisible = true
-        ),
-    )
-}
-
-@Preview(
-    name = "Phone portrait - compact 50%",
-    widthDp = 411,
-    heightDp = 891,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun AdaptiveThreePanePhonePortraitPreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(
-            supportingPaneInitiallyOpen = true,
-            compactSupportingPaneHeightRatio = 0.5f,
-        ),
-    )
-}
-
-@Preview(
-    name = "Phone landscape - compact 35%",
-    widthDp = 891,
-    heightDp = 411,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-private fun AdaptiveThreePanePhoneLandscapePreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(
-            supportingPaneInitiallyOpen = true,
-            compactSupportingPaneHeightRatio = 0.35f
-        ),
-    )
-}
-
-@Preview(
-    name = "Tablet portrait - supporting open",
-    widthDp = 800,
-    heightDp = 1280,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun AdaptiveThreePaneTabletPortraitPreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(
-            supportingPaneInitiallyOpen = true,
-            compactSupportingPaneHeightRatio = 0.6f
-        ),
-    )
-}
-
-@Preview(
-    name = "Tablet landscape - floating visible",
-    widthDp = 1280,
-    heightDp = 800,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun AdaptiveThreePaneTabletLandscapePreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(
-            supportingPaneInitiallyOpen = true,
-            floatingPaneInitiallyVisible = true
-        ),
-    )
-}
-
-@Preview(
-    name = "Compact ratio 65%",
-    widthDp = 411,
-    heightDp = 891,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun AdaptiveThreePaneCompactRatioPreview() {
-    AdaptiveThreePanePreviewContent(
-        config = ThreePaneConfig(
-            supportingPaneInitiallyOpen = true,
-            compactSupportingPaneHeightRatio = 0.65f
-        )
-    )
 }

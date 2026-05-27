@@ -24,9 +24,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.ArcGISScene
+import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.Viewpoint
-import com.arcgismaps.mapping.layers.Layer
 import com.arcgismaps.portal.Portal
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,109 +34,85 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the ShowContrastResponsiveGeoView sample.
+ *
+ * Owns the selected effective contrast appearance, to keep the map and scene synchronized to the contrast web-map type.
+ */
 class ShowContrastResponsiveGeoViewViewModel(app: Application) : AndroidViewModel(app) {
-    private val portal = Portal.arcGISOnline(Portal.Connection.Anonymous)
-    private var appearanceUpdateToken = 0
 
-    var arcGISMap by mutableStateOf(createWebMap(contrastProfileFor(ContrastAppearance.Light)))
+    var arcGISMap by mutableStateOf(ArcGISMap())
         private set
 
-    var arcGISScene by mutableStateOf(createScene())
+    var arcGISScene by mutableStateOf(ArcGISScene())
         private set
 
-    private val _contrastUiState = MutableStateFlow(
-        ContrastUiState()
-    )
+    private val portal = Portal.arcGISOnline(connection = Portal.Connection.Anonymous)
+
+    private val _contrastUiState = MutableStateFlow(ContrastUiState.defaultState)
     val contrastUiState = _contrastUiState.asStateFlow()
 
     val messageDialogVM = MessageDialogViewModel()
-    private var appliedAppearance: ContrastAppearance? = null
 
     init {
-        updateGeoViewAppearance(ContrastAppearance.Light)
+        applyGeoViewContrastBasemap(contrast = _contrastUiState.value.contrastAppearance)
     }
 
-    fun updateContrastMode(mode: ContrastMode) {
-        _contrastUiState.update { currentState ->
-            currentState.copy(contrastMode = mode)
-        }
+    /**
+     * Ensures the selected [contrast] is in sync with both GeoViews.
+     */
+    fun syncGeoViewContrast(contrast: ContrastAppearance) {
+        if (_contrastUiState.value.contrastAppearance == contrast) return
+        applyGeoViewContrastBasemap(contrast)
     }
 
-    fun updateManualAppearance(appearance: ContrastAppearance) {
-        _contrastUiState.update { currentState ->
-            currentState.copy(manualAppearance = appearance)
-        }
-    }
-
-    fun updateGeoViewType(geoViewType: GeoViewType) {
-        _contrastUiState.update { currentState ->
-            currentState.copy(geoViewType = geoViewType)
-        }
-    }
-
-    fun updateReferenceLayerVisibility(isVisible: Boolean) {
-        _contrastUiState.update { currentState ->
-            currentState.copy(referenceLayersVisible = isVisible)
-        }
-
-        applyReferenceLayerVisibility(arcGISMap, isVisible)
-        applyReferenceLayerVisibility(arcGISScene, isVisible)
-        refreshAvailableLayers()
-    }
-
-    fun updateGeoViewAppearance(appearance: ContrastAppearance) {
-        if (appliedAppearance == appearance) return
-
-        val sourceProfile = contrastProfileFor(appearance)
-        val updateToken = ++appearanceUpdateToken
-        val referenceLayersVisible = _contrastUiState.value.referenceLayersVisible
-
-        appliedAppearance = appearance
-        arcGISMap = createWebMap(sourceProfile)
-        arcGISScene = createScene()
+    /**
+     * Applies the contrast-specific web map to both GeoViews.
+     */
+    private fun applyGeoViewContrastBasemap(contrast: ContrastAppearance) {
+        updateContrastAppearance(contrast = contrast)
+        val isVisible = _contrastUiState.value.isReferenceLayersEnabled
+        val webMapItemId = contrastWebMapFor(contrast)
+        arcGISMap = createArcGISMap(webMapItemId)
 
         viewModelScope.launch {
-            arcGISMap.load().onSuccess {
-                if (updateToken != appearanceUpdateToken) return@launch
-
-                applyReferenceLayerVisibility(arcGISMap, referenceLayersVisible)
-
-                arcGISMap.basemap.value?.clone()?.let { basemap ->
-                    basemap.referenceLayers.forEach { layer ->
-                        layer.isVisible = referenceLayersVisible
-                    }
-                    arcGISScene.setBasemap(basemap)
-                }
-
-                refreshAvailableLayers()
-
-                arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
-            }.onFailure { error ->
-                if (updateToken == appearanceUpdateToken) {
-                    messageDialogVM.showMessageDialog(error)
-                }
+            arcGISMap.load().getOrElse { messageDialogVM.showMessageDialog(it) }
+            arcGISMap.basemap.value?.clone()?.let { basemap ->
+                arcGISScene = createArcGISScene(basemap)
+                arcGISScene.load().getOrElse { messageDialogVM.showMessageDialog(it) }
+                applyReferenceLayersVisibility(geoModel = arcGISMap, isVisible = isVisible)
+                applyReferenceLayersVisibility(geoModel = arcGISScene, isVisible = isVisible)
             }
         }
     }
 
-    private fun createWebMap(profile: ContrastProfile): ArcGISMap {
+    /**
+     * Returns the map for the MapView using a contrast [webMapItemId].
+     */
+    private fun createArcGISMap(webMapItemId: String): ArcGISMap {
         return ArcGISMap(
             item = PortalItem(
                 portal = portal,
-                itemId = profile.webMapItemId
+                itemId = webMapItemId
             )
         ).apply {
             initialViewpoint = sampleViewpoint
         }
     }
 
-    private fun createScene(): ArcGISScene {
-        return ArcGISScene().apply {
+    /**
+     * Returns the scene that adopts the loaded web map's basemap after the map finishes loading.
+     */
+    private fun createArcGISScene(basemap: Basemap): ArcGISScene {
+        return ArcGISScene(basemap = basemap).apply {
             initialViewpoint = sampleViewpoint
         }
     }
 
-    private fun applyReferenceLayerVisibility(geoModel: Any, isVisible: Boolean) {
+    /**
+     * Applies the current reference-layers [isVisible] flag to either [geoModel].
+     */
+    private fun applyReferenceLayersVisibility(geoModel: Any, isVisible: Boolean) {
         val referenceLayers = when (geoModel) {
             is ArcGISMap -> geoModel.basemap.value?.referenceLayers
             is ArcGISScene -> geoModel.basemap.value?.referenceLayers
@@ -148,98 +124,105 @@ class ShowContrastResponsiveGeoViewViewModel(app: Application) : AndroidViewMode
         }
     }
 
-    private fun refreshAvailableLayers() {
-        val basemap = arcGISMap.basemap.value ?: return
+    /**
+     * Updates whether the sample resolves the [mode] automatically or uses the manual picker.
+     */
+    fun updateContrastMode(mode: ContrastMode) {
         _contrastUiState.update { currentState ->
-            currentState.copy(
-                availableLayers = buildList {
-                    basemap.baseLayers.forEach { layer ->
-                        add(layer.toBasemapLayerInfo(BasemapLayerRole.Base))
-                    }
-                    basemap.referenceLayers.forEach { layer ->
-                        add(layer.toBasemapLayerInfo(BasemapLayerRole.Reference))
-                    }
-                }
-            )
+            currentState.copy(contrastMode = mode)
         }
+    }
+
+    /**
+     * Updates the [contrast] appearance while the sample is in manual mode.
+     */
+    fun updateContrastAppearance(contrast: ContrastAppearance) {
+        _contrastUiState.update { currentState ->
+            currentState.copy(contrastAppearance = contrast)
+        }
+    }
+
+
+    /**
+     * Update to switch the [geoViewType] between the 2D map and 3D scene implementations.
+     */
+    fun updateGeoViewType(geoViewType: GeoViewType) {
+        _contrastUiState.update { currentState ->
+            currentState.copy(geoViewType = geoViewType)
+        }
+    }
+
+    /**
+     * Update reference layers using [isVisible] flag for both GeoViews.
+     */
+    fun updateReferenceLayerVisibility(isVisible: Boolean) {
+        _contrastUiState.update { currentState ->
+            currentState.copy(isReferenceLayersEnabled = isVisible)
+        }
+        applyReferenceLayersVisibility(geoModel = arcGISMap, isVisible = isVisible)
+        applyReferenceLayersVisibility(geoModel = arcGISScene, isVisible = isVisible)
     }
 }
 
+/**
+ * UI states for the controls in the supporting pane to configure the GeoViews.
+ */
 data class ContrastUiState(
-    val contrastMode: ContrastMode = ContrastMode.Automatic,
-    val manualAppearance: ContrastAppearance = ContrastAppearance.HighContrastLight,
-    val geoViewType: GeoViewType = GeoViewType.Map,
-    val referenceLayersVisible: Boolean = true,
-    val availableLayers: List<BasemapLayerInfo> = emptyList()
-)
-
-data class BasemapLayerInfo(
-    val name: String,
-    val role: BasemapLayerRole,
-    val isVisible: Boolean
-)
-
-enum class BasemapLayerRole {
-    Base,
-    Reference
+    val contrastMode: ContrastMode,
+    val contrastAppearance: ContrastAppearance,
+    val geoViewType: GeoViewType,
+    val isReferenceLayersEnabled: Boolean
+) {
+    companion object {
+        val defaultState = ContrastUiState(
+            contrastMode = ContrastMode.Automatic,
+            contrastAppearance = ContrastAppearance.HighContrastLight,
+            geoViewType = GeoViewType.MapView,
+            isReferenceLayersEnabled = true
+        )
+    }
 }
 
+/**
+ * State to track whether appearance comes from device settings or the manual picker.
+ */
 enum class ContrastMode {
+
     Automatic,
     Manual
 }
 
+/**
+ * State to track the GeoView implementation currently displayed.
+ */
 enum class GeoViewType {
-    Map,
-    Scene
+    MapView,
+    SceneView
 }
 
+/**
+ * State to track the four contrast appearance variants.
+ */
 enum class ContrastAppearance {
     Light,
-    Dark,
     HighContrastLight,
+    Dark,
     HighContrastDark
 }
 
-private val sampleViewpoint = Viewpoint(34.056295, -117.195800, 2_000_000.0)
-data class ContrastProfile(
-    val title: String,
-    val webMapItemId: String
-)
+/**
+ * Default viewpoint used for both the map and scene.
+ */
+private val sampleViewpoint = Viewpoint(34.05, -117.19, 2e6)
 
-private val regularLightProfile = ContrastProfile(
-    title = "Regular light",
-    webMapItemId = "979c6cc89af9449cbeb5342a439c6a76"
-)
-
-private val regularDarkProfile = ContrastProfile(
-    title = "Regular dark",
-    webMapItemId = "1970c1995b8f44749f4b9b6e81b5ba45"
-)
-
-private val enhancedContrastLightProfile = ContrastProfile(
-    title = "High contrast light",
-    webMapItemId = "084291b0ecad4588b8c8853898d72445"
-)
-
-private val enhancedContrastDarkProfile = ContrastProfile(
-    title = "High contrast dark",
-    webMapItemId = "3e23478909194c54992eaaee78b5f754"
-)
-
-private fun contrastProfileFor(appearance: ContrastAppearance): ContrastProfile {
-    return when (appearance) {
-        ContrastAppearance.Light -> regularLightProfile
-        ContrastAppearance.Dark -> regularDarkProfile
-        ContrastAppearance.HighContrastLight -> enhancedContrastLightProfile
-        ContrastAppearance.HighContrastDark -> enhancedContrastDarkProfile
+/**
+ * Maps the selected appearance to the contrast accessibility web-maps used by the sample.
+ */
+private fun contrastWebMapFor(contrast: ContrastAppearance): String {
+    return when (contrast) {
+        ContrastAppearance.Light -> "979c6cc89af9449cbeb5342a439c6a76"
+        ContrastAppearance.Dark -> "358ec1e175ea41c3bf5c68f0da11ae2b"
+        ContrastAppearance.HighContrastLight -> "084291b0ecad4588b8c8853898d72445"
+        ContrastAppearance.HighContrastDark -> "3e23478909194c54992eaaee78b5f754"
     }
-}
-
-private fun Layer.toBasemapLayerInfo(role: BasemapLayerRole): BasemapLayerInfo {
-    return BasemapLayerInfo(
-        name = name.ifBlank { id.ifBlank { "Unnamed layer" } },
-        role = role,
-        isVisible = isVisible
-    )
 }

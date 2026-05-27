@@ -18,34 +18,59 @@ package com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components
 
 import android.app.UiModeManager
 import android.content.Context
+import android.content.res.Configuration
 import android.database.ContentObserver
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 
+/**
+ * Device keys used by Android versions that expose high contrast through accessibility settings.
+ */
 private val highTextContrastSettings = listOf(
     "high_text_contrast_enabled",
     "accessibility_high_text_contrast_enabled"
 )
 
+/**
+ * Snapshot of the device appearance settings that influence automatic contrast selection.
+ *
+ * The sample uses these values to resolve one of four contrast-specific web maps
+ * without changing the surrounding sample app theme.
+ */
 data class DeviceContrastSettings(
     val isDarkTheme: Boolean,
     val isHighContrastEnabled: Boolean
 )
 
+/**
+ * Remembers the current device appearance settings and updates
+ * when the device theme or accessibility contrast preferences change.
+ *
+ * On Android 14 and later, contrast changes come from [UiModeManager].
+ * On earlier versions, fall back to the secure high-text-contrast settings from Android accessibility.
+ */
 @Composable
 fun rememberDeviceContrastSettings(): DeviceContrastSettings {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
     var settings by remember(context) {
         mutableStateOf(currentDeviceContrastSettings(context))
+    }
+
+    LaunchedEffect(context, configuration) {
+        settings = currentDeviceContrastSettings(context)
     }
 
     DisposableEffect(context) {
@@ -55,18 +80,22 @@ fun rememberDeviceContrastSettings(): DeviceContrastSettings {
                 settings = currentDeviceContrastSettings(context)
             }
 
-            override fun onChange(selfChange: Boolean, uri: android.net.Uri?) {
+            override fun onChange(selfChange: Boolean, uri: Uri?) {
                 settings = currentDeviceContrastSettings(context)
             }
         }
 
         val uiModeUri = Settings.Secure.getUriFor("ui_night_mode")
-        context.contentResolver.registerContentObserver(uiModeUri, false, observer)
+        context.contentResolver.registerContentObserver(
+            /* uri = */ uiModeUri,
+            /* notifyForDescendants = */ false,
+            /* observer = */ observer
+        )
         highTextContrastSettings.forEach { key ->
             context.contentResolver.registerContentObserver(
-                Settings.Secure.getUriFor(key),
-                false,
-                observer
+                /* uri = */ Settings.Secure.getUriFor(key),
+                /* notifyForDescendants = */ false,
+                /* observer = */ observer
             )
         }
 
@@ -93,6 +122,9 @@ fun rememberDeviceContrastSettings(): DeviceContrastSettings {
     return settings
 }
 
+/**
+ * Returns the current theme and contrast preferences from the device.
+ */
 private fun currentDeviceContrastSettings(context: Context): DeviceContrastSettings {
     return DeviceContrastSettings(
         isDarkTheme = isDarkThemeEnabled(context),
@@ -100,11 +132,17 @@ private fun currentDeviceContrastSettings(context: Context): DeviceContrastSetti
     )
 }
 
+/**
+ * Returns `true` when the current configuration resolves to night mode.
+ */
 private fun isDarkThemeEnabled(context: Context): Boolean {
-    val uiMode = context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
-    return uiMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
+    val uiMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    return uiMode == Configuration.UI_MODE_NIGHT_YES
 }
 
+/**
+ * Resolves the active high-contrast preference using the API based on Android version.
+ */
 private fun isHighContrastEnabled(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         val uiModeManager = context.getSystemService(UiModeManager::class.java)

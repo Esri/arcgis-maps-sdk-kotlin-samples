@@ -1,19 +1,41 @@
 {
     "category": "Accessibility",
-    "description": "TODO",
+    "description": "Display a `MapView` or `SceneView` that switches between authored light, dark, and high-contrast web maps.",
     "formal_name": "ShowContrastResponsiveGeoView",
     "ignore": false,
     "images": [
         "show-contrast-responsive-geoview.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "accessibility",
+        "basemap",
+        "contrast",
+        "dark",
+        "geoview",
+        "light",
+        "living atlas",
+        "web map",
+        "ArcGISMap",
+        "ArcGISScene",
+        "Basemap",
+        "MapView",
+        "SceneView"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "ArcGISMap",
+        "ArcGISScene",
+        "Basemap",
+        "MapView",
+        "SceneView"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/components/ShowContrastResponsiveGeoViewViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewSupportingPane.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/components/DeviceContrastSettings.kt"
     ],
     "title": "Show contrast responsive GeoView"
 }
