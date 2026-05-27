@@ -33,9 +33,9 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/components/ShowContrastResponsiveGeoViewViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/components/DeviceContrastSettings.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewSupportingPane.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewSupportingPane.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/components/DeviceContrastSettings.kt"
     ],
     "title": "Show contrast responsive GeoView"
 }
