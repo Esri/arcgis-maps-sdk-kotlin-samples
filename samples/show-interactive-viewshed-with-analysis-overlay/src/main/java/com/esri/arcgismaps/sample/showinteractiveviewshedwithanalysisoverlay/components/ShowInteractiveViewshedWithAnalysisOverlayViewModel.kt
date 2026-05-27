@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.io.path.Path
 
 class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : AndroidViewModel(app) {
     // Initialize and keep track of UI state
@@ -101,11 +102,11 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
     // Location of file containing elevation data
     private val provisionPath: String by lazy {
-        app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(
+        app.getExternalFilesDir(null)?.path + File.separator + app.getString(
             R.string.show_interactive_viewshed_with_analysis_overlay_app_name
-        ) + File.separator
+        )
     }
-    private val filePath = provisionPath + app.getString(R.string.elevation_data_filename)
+    private val filePath = Path(provisionPath, app.getString(R.string.elevation_data_filename))
 
     // Used to surface errors to the Compose UI
     val messageDialogVM = MessageDialogViewModel()
@@ -125,7 +126,7 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
             graphicsOverlay.graphics.add(observerGraphic)
 
             // Create a ContinuousField from a raster file containing elevation data
-            val filePaths = listOf(filePath)
+            val filePaths = listOf(filePath.toString())
             ContinuousField.createFromFiles(filePaths = filePaths, band = 0)
                 .onFailure {
                     messageDialogVM.showMessageDialog(it)
