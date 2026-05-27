@@ -35,7 +35,7 @@ Switch to manual mode to choose Light, Dark, High contrast light, or High contra
 
 ## About the data
 
-This sample uses four ArcGIS Living Atlas web maps authored for regular light, regular dark, high-contrast light, and high-contrast dark presentation states. The manual mode uses those authored web maps directly instead of recoloring a single basemap at runtime.
+This sample uses four ArcGIS Living Atlas web maps authored for regular light, regular dark, high-contrast light, and high-contrast dark presentation states.
 
 * [Enhanced Contrast Map](https://www.arcgis.com/home/item.html?id=084291b0ecad4588b8c8853898d72445)
 * [Enhanced Contrast Dark Map](https://www.arcgis.com/home/item.html?id=3e23478909194c54992eaaee78b5f754)

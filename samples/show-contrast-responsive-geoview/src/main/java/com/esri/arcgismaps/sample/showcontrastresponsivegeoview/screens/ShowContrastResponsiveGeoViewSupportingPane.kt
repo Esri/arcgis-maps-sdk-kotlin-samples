@@ -16,6 +16,7 @@
 
 package com.esri.arcgismaps.sample.showcontrastresponsivegeoview.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -84,16 +85,21 @@ internal fun ShowContrastResponsiveGeoViewSupportingPane(
         }
     }
 
-    if (contrastUiState.contrastMode == ContrastMode.Manual) {
-        HorizontalDivider()
-        SelectionSection(title = "Manual GeoView contrast") {
-            ContrastAppearance.entries.forEach { appearance ->
-                SelectionRow(
-                    title = appearance.displayName,
-                    description = appearance.description,
-                    selected = contrastUiState.contrastAppearance == appearance,
-                    onClick = { onManualContrastChanged(appearance) }
-                )
+    AnimatedVisibility(visible = contrastUiState.contrastMode == ContrastMode.Manual) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            HorizontalDivider()
+            SelectionSection(title = "Manual GeoView contrast") {
+                ContrastAppearance.entries.forEach { appearance ->
+                    SelectionRow(
+                        title = appearance.displayName,
+                        description = appearance.description,
+                        selected = contrastUiState.contrastAppearance == appearance,
+                        onClick = { onManualContrastChanged(appearance) }
+                    )
+                }
             }
         }
     }
