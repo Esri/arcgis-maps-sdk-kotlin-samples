@@ -110,7 +110,7 @@ private fun MainScreenScaffold(
     mainPaneContent: @Composable BoxScope.() -> Unit
 ) {
     Scaffold(
-        topBar = { SampleTopAppBar(title = stringResource(R.string.show_contrast_responsive_geoview_app_name)) },
+        topBar = { SampleTopAppBar(title = stringResource(R.string.show_contrast_responsive_geo_view_app_name)) },
         content = { paddingValues ->
             AdaptiveThreePane(
                 modifier = Modifier

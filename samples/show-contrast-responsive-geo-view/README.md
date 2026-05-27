@@ -1,8 +1,8 @@
-# Show contrast responsive GeoView
+# Show contrast responsive geo view
 
 Display a `MapView` or `SceneView` that switches between authored light, dark, and high-contrast web maps.
 
-![Image of Show contrast responsive GeoView](show-contrast-responsive-geoview.png)
+![Image of Show contrast responsive geo view](show-contrast-responsive-geo-view.png)
 
 ## Use case
 
@@ -21,8 +21,8 @@ Switch to manual mode to choose Light, Dark, High contrast light, or High contra
 3. In manual mode, use the appearance selected in the supporting pane.
 4. In automatic mode, resolve the appearance from the device's current light, dark, and high-contrast settings. This sample uses a custom `rememberDeviceContrastSettings()` Composable.
 5. Map the resolved appearance to an ArcGIS Online `PortalItem` and create an `ArcGISMap` from that web map.
-6. After the web map loads, retrieve and clone its `Basemap`, then use that cloned basemap to create an `ArcGISScene` so both GeoViews use the same authored cartography.
-7. Apply the current reference-layer visibility setting to the basemap's labels and boundary layers in both GeoViews.
+6. After the web map loads, retrieve and clone its `Basemap`, then use that cloned basemap to create an `ArcGISScene` so both geo views use the same authored cartography.
+7. Apply the current reference-layer visibility setting to the basemap's labels and boundary layers in both geo views.
 8. On Android, automatic mode responds to system light and dark theme changes and to high-contrast settings. Android 14 and later uses `UiModeManager`, while earlier versions read the accessibility high-text-contrast setting.
 
 ## Relevant API
@@ -50,4 +50,4 @@ For more background on the cartographic approach behind the enhanced contrast ba
 
 ## Tags
 
-accessibility, basemap, contrast, dark, geoview, light, living atlas, web map
+accessibility, basemap, contrast, dark, light, living atlas, web map

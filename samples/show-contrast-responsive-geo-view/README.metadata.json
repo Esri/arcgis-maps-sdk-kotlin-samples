@@ -1,17 +1,16 @@
 {
     "category": "Accessibility",
     "description": "Display a `MapView` or `SceneView` that switches between authored light, dark, and high-contrast web maps.",
-    "formal_name": "ShowContrastResponsiveGeoview",
+    "formal_name": "ShowContrastResponsiveGeoView",
     "ignore": false,
     "images": [
-        "show-contrast-responsive-geoview.png"
+        "show-contrast-responsive-geo-view.png"
     ],
     "keywords": [
         "accessibility",
         "basemap",
         "contrast",
         "dark",
-        "geoview",
         "light",
         "living atlas",
         "web map",
@@ -37,5 +36,5 @@
         "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/showcontrastresponsivegeoview/screens/ShowContrastResponsiveGeoViewSupportingPane.kt"
     ],
-    "title": "Show contrast responsive GeoView"
+    "title": "Show contrast responsive geo view"
 }
