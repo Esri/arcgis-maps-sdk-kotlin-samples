@@ -1,6 +1,6 @@
 {
     "category": "Accessibility",
-    "description": "Display a map view or scene view that switches between authored light, dark, and high-contrast web maps.",
+    "description": "Display a map view that updates between authored light, dark, and high-contrast basemaps.",
     "formal_name": "UpdateBasemapForContrastAccessibility",
     "ignore": false,
     "images": [
@@ -22,27 +22,22 @@
         "readability",
         "vision",
         "visual impairment",
-        "web map",
         "Basemap",
-        "Map",
-        "MapView",
-        "Scene",
-        "SceneView"
+        "BasemapStyle",
+        "Map"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
         "Basemap",
-        "Map",
-        "MapView",
-        "Scene",
-        "SceneView"
+        "BasemapStyle",
+        "Map"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/components/UpdateBasemapForContrastAccessibilityViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/screens/UpdateBasemapForContrastAccessibilityScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/screens/UpdateBasemapForContrastAccessibilitySupportingPane.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/screens/UpdateBasemapForContrastAccessibilityScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/components/DeviceContrastSettings.kt"
     ],
     "title": "Update basemap for contrast accessibility"
