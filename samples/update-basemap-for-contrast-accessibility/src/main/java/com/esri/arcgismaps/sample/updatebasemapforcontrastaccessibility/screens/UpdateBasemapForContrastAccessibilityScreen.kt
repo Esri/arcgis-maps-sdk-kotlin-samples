@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showcontrastresponsivegeoview.screens
+package com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.screens
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.BoxScope
@@ -29,28 +29,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.R
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.ContrastAppearance
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.ContrastMode
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.ContrastUiState
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.DeviceContrastSettings
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.GeoViewType
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.ShowContrastResponsiveGeoViewViewModel
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.rememberDeviceContrastSettings
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.R
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.ContrastAppearance
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.ContrastMode
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.ContrastUiState
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.DeviceContrastSettings
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.UpdateBasemapForContrastAccessibilityViewModel
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.rememberDeviceContrastSettings
 
 /**
- * Main composable screen for the ShowContrastResponsiveGeoView sample.
+ * Main composable screen for the UpdateBasemapForContrastAccessibility sample.
  * It owns the ViewModel and passes stateless UI data into the scaffold.
  */
 @Composable
-fun ShowContrastResponsiveGeoViewScreen() {
-    val viewModel: ShowContrastResponsiveGeoViewViewModel = viewModel()
+fun UpdateBasemapForContrastAccessibilityScreen() {
+    val viewModel: UpdateBasemapForContrastAccessibilityViewModel = viewModel()
     val contrastUiState by viewModel.contrastUiState.collectAsStateWithLifecycle()
     val deviceContrastSettings = rememberDeviceContrastSettings()
     val automaticAppearance = deviceContrastSettings.toAppearance()
@@ -67,25 +65,14 @@ fun ShowContrastResponsiveGeoViewScreen() {
         contrastUiState = contrastUiState,
         onContrastModeChanged = viewModel::updateContrastMode,
         onManualContrastChanged = viewModel::syncGeoViewContrast,
-        onGeoViewTypeChanged = viewModel::updateGeoViewType,
         onReferenceLayerVisibilityChanged = viewModel::updateReferenceLayerVisibility,
         mainPaneContent = {
-            when (contrastUiState.geoViewType) {
-                GeoViewType.MapView ->
-                    MapView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .animateContentSize(),
-                        arcGISMap = viewModel.arcGISMap
-                    )
-
-                GeoViewType.SceneView -> SceneView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .animateContentSize(),
-                    arcGISScene = viewModel.arcGISScene
-                )
-            }
+            MapView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .animateContentSize(),
+                arcGISMap = viewModel.arcGISMap
+            )
         }
     )
 
@@ -105,12 +92,11 @@ private fun MainScreenScaffold(
     contrastUiState: ContrastUiState,
     onContrastModeChanged: (ContrastMode) -> Unit = {},
     onManualContrastChanged: (ContrastAppearance) -> Unit = {},
-    onGeoViewTypeChanged: (GeoViewType) -> Unit = {},
     onReferenceLayerVisibilityChanged: (Boolean) -> Unit = {},
     mainPaneContent: @Composable BoxScope.() -> Unit
 ) {
     Scaffold(
-        topBar = { SampleTopAppBar(title = stringResource(R.string.show_contrast_responsive_geo_view_app_name)) },
+        topBar = { SampleTopAppBar(title = stringResource(R.string.update_basemap_for_contrast_accessibility_app_name)) },
         content = { paddingValues ->
             AdaptiveThreePane(
                 modifier = Modifier
@@ -119,11 +105,10 @@ private fun MainScreenScaffold(
                 supportingPaneTitle = "Contrast options",
                 mainPane = { _, _ -> mainPaneContent() },
                 supportingPane = { _, _ ->
-                    ShowContrastResponsiveGeoViewSupportingPane(
+                    UpdateBasemapForContrastAccessibilitySupportingPane(
                         contrastUiState = contrastUiState,
                         onContrastModeChanged = onContrastModeChanged,
                         onManualContrastChanged = onManualContrastChanged,
-                        onGeoViewTypeChanged = onGeoViewTypeChanged,
                         onReferenceLayerVisibilityChanged = onReferenceLayerVisibilityChanged
                     )
                 }

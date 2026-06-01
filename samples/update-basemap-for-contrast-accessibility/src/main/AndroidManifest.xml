@@ -6,7 +6,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/show_contrast_responsive_geo_view_app_name">
+            android:label="@string/update_basemap_for_contrast_accessibility_app_name">
             
         </activity>
     </application>

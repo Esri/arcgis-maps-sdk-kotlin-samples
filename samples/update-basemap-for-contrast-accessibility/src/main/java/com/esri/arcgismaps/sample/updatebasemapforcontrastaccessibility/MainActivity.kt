@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showcontrastresponsivegeoview
+package com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,7 +25,7 @@ import androidx.compose.material3.Surface
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.screens.ShowContrastResponsiveGeoViewScreen
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.screens.UpdateBasemapForContrastAccessibilityScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SampleAppTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    ShowContrastResponsiveGeoViewScreen()
+                    UpdateBasemapForContrastAccessibilityScreen()
                 }
             }
         }

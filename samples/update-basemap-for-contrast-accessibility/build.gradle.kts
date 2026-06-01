@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.showcontrastresponsivegeoview"
+    namespace = "com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility"
     buildFeatures {
         buildConfig = true
     }

@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components
+package com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components
 
 import android.app.UiModeManager
 import android.content.Context

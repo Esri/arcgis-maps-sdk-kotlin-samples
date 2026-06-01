@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.showcontrastresponsivegeoview.screens
+package com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -23,11 +23,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -36,33 +34,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.ContrastAppearance
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.ContrastMode
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.ContrastUiState
-import com.esri.arcgismaps.sample.showcontrastresponsivegeoview.components.GeoViewType
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.ContrastAppearance
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.ContrastMode
+import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.ContrastUiState
 
 /**
  * Shows the sample controls and appearance that drives the current GeoView.
  */
 @Composable
-internal fun ShowContrastResponsiveGeoViewSupportingPane(
+internal fun UpdateBasemapForContrastAccessibilitySupportingPane(
     contrastUiState: ContrastUiState,
     onContrastModeChanged: (ContrastMode) -> Unit,
     onManualContrastChanged: (ContrastAppearance) -> Unit,
-    onGeoViewTypeChanged: (GeoViewType) -> Unit,
     onReferenceLayerVisibilityChanged: (Boolean) -> Unit
 ) {
-    SelectionSection(title = "Select GeoView") {
-        GeoViewToggleRow(
-            options = GeoViewType.entries,
-            selectedOption = contrastUiState.geoViewType,
-            optionLabel = GeoViewType::displayName,
-            onOptionSelected = onGeoViewTypeChanged
-        )
-    }
-
-    HorizontalDivider()
-
     ReferenceLayerToggleRow(
         referenceLayersVisible = contrastUiState.isReferenceLayersEnabled,
         onReferenceLayerVisibilityChanged = onReferenceLayerVisibilityChanged
@@ -100,34 +85,6 @@ internal fun ShowContrastResponsiveGeoViewSupportingPane(
                         onClick = { onManualContrastChanged(appearance) }
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun GeoViewToggleRow(
-    options: List<GeoViewType>,
-    selectedOption: GeoViewType,
-    optionLabel: (GeoViewType) -> String,
-    onOptionSelected: (GeoViewType) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        options.forEach { option ->
-            val selected = selectedOption == option
-            if (selected) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = { onOptionSelected(option) }
-                ) { Text(optionLabel(option)) }
-            } else {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = { onOptionSelected(option) }
-                ) { Text(optionLabel(option)) }
             }
         }
     }
@@ -224,12 +181,6 @@ private val ContrastMode.displayName: String
     get() = when (this) {
         ContrastMode.Automatic -> "Automatic"
         ContrastMode.Manual -> "Manual"
-    }
-
-private val GeoViewType.displayName: String
-    get() = when (this) {
-        GeoViewType.MapView -> "MapView"
-        GeoViewType.SceneView -> "SceneView"
     }
 
 private val ContrastAppearance.displayName: String
