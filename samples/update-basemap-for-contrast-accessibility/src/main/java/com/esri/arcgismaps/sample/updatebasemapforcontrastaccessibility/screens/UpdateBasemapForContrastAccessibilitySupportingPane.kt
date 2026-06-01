@@ -39,7 +39,7 @@ import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.componen
 import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components.ContrastUiState
 
 /**
- * Shows the sample controls and appearance that drives the current GeoView.
+ * Shows the sample controls and appearance that drives the displayed MapView.
  */
 @Composable
 internal fun UpdateBasemapForContrastAccessibilitySupportingPane(
@@ -60,9 +60,9 @@ internal fun UpdateBasemapForContrastAccessibilitySupportingPane(
             SelectionRow(
                 title = mode.displayName,
                 description = if (mode == ContrastMode.Automatic) {
-                    "Use device light, dark, and high-contrast settings to auto-select web map."
+                    "Use device light, dark, and high-contrast settings to auto-select basemap."
                 } else {
-                    "Choose one of the four web maps manually."
+                    "Choose one of the four basemaps manually."
                 },
                 selected = contrastUiState.contrastMode == mode,
                 onClick = { onContrastModeChanged(mode) }
@@ -76,7 +76,7 @@ internal fun UpdateBasemapForContrastAccessibilitySupportingPane(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             HorizontalDivider()
-            SelectionSection(title = "Manual GeoView contrast") {
+            SelectionSection(title = "Manual contrast") {
                 ContrastAppearance.entries.forEach { appearance ->
                     SelectionRow(
                         title = appearance.displayName,
@@ -193,8 +193,8 @@ private val ContrastAppearance.displayName: String
 
 private val ContrastAppearance.description: String
     get() = when (this) {
-        ContrastAppearance.Light -> "Regular light web map for regular light theme."
-        ContrastAppearance.Dark -> "Regular dark web map for regular dark theme."
-        ContrastAppearance.HighContrastLight -> "High-contrast light web map for enhanced light theme."
-        ContrastAppearance.HighContrastDark -> "High-contrast dark web map for enhanced dark theme."
+        ContrastAppearance.Light -> "Regular light basemap for regular light theme."
+        ContrastAppearance.Dark -> "Regular dark basemap for regular dark theme."
+        ContrastAppearance.HighContrastLight -> "High-contrast light basemap for enhanced light theme."
+        ContrastAppearance.HighContrastDark -> "High-contrast dark basemap for enhanced dark theme."
     }

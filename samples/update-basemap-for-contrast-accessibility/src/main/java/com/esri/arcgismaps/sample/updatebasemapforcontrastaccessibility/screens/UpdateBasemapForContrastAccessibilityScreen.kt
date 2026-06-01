@@ -58,13 +58,13 @@ fun UpdateBasemapForContrastAccessibilityScreen() {
     }
 
     LaunchedEffect(effectiveAppearance) {
-        viewModel.syncGeoViewContrast(effectiveAppearance)
+        viewModel.syncContrast(effectiveAppearance)
     }
 
     MainScreenScaffold(
         contrastUiState = contrastUiState,
         onContrastModeChanged = viewModel::updateContrastMode,
-        onManualContrastChanged = viewModel::syncGeoViewContrast,
+        onManualContrastChanged = viewModel::syncContrast,
         onReferenceLayerVisibilityChanged = viewModel::updateReferenceLayerVisibility,
         mainPaneContent = {
             MapView(

@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for the UpdateBasemapForContrastAccessibility sample.
  *
- * Owns the selected effective contrast appearance, to keep the map and scene synchronized to the contrast web-map type.
+ * Owns the selected effective contrast appearance, to keep the map synchronized to the contrast basemap type.
  */
 class UpdateBasemapForContrastAccessibilityViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -48,21 +48,21 @@ class UpdateBasemapForContrastAccessibilityViewModel(app: Application) : Android
     val messageDialogVM = MessageDialogViewModel()
 
     init {
-        applyGeoViewContrastBasemap(contrast = _contrastUiState.value.contrastAppearance)
+        applyContrastBasemap(contrast = _contrastUiState.value.contrastAppearance)
     }
 
     /**
-     * Ensures the selected [contrast] is in sync with both GeoViews.
+     * Ensures the selected [contrast] is in sync with the MapView.
      */
-    fun syncGeoViewContrast(contrast: ContrastAppearance) {
+    fun syncContrast(contrast: ContrastAppearance) {
         if (_contrastUiState.value.contrastAppearance == contrast) return
-        applyGeoViewContrastBasemap(contrast)
+        applyContrastBasemap(contrast)
     }
 
     /**
-     * Applies the contrast-specific web map to both GeoViews.
+     * Applies the contrast-specific basemap to the MapView.
      */
-    private fun applyGeoViewContrastBasemap(contrast: ContrastAppearance) {
+    private fun applyContrastBasemap(contrast: ContrastAppearance) {
         updateContrastAppearance(contrast = contrast)
         val isVisible = _contrastUiState.value.isReferenceLayersEnabled
         arcGISMap = ArcGISMap(contrastBasemapFor(contrast)).apply {
@@ -103,7 +103,7 @@ class UpdateBasemapForContrastAccessibilityViewModel(app: Application) : Android
     }
 
     /**
-     * Update reference layers using [isVisible] flag for both GeoViews.
+     * Update reference layers using [isVisible].
      */
     fun updateReferenceLayerVisibility(isVisible: Boolean) {
         _contrastUiState.update { currentState ->
@@ -114,7 +114,7 @@ class UpdateBasemapForContrastAccessibilityViewModel(app: Application) : Android
 }
 
 /**
- * UI states for the controls in the supporting pane to configure the GeoViews.
+ * UI states for the controls in the supporting pane to configure the displayed MapView.
  */
 data class ContrastUiState(
     val contrastMode: ContrastMode,
@@ -149,12 +149,12 @@ enum class ContrastAppearance {
 }
 
 /**
- * Default viewpoint used for both the map and scene.
+ * Default viewpoint used for the map.
  */
 private val sampleViewpoint = Viewpoint(34.05, -117.19, 2e6)
 
 /**
- * Maps the selected appearance to the contrast accessibility web-maps used by the sample.
+ * Maps the selected appearance to the contrast accessibility basemaps used by the sample.
  */
 private fun contrastBasemapFor(contrast: ContrastAppearance): Basemap {
     return when (contrast) {

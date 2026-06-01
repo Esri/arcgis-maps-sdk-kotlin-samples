@@ -46,7 +46,7 @@ private val highTextContrastSettings = listOf(
 /**
  * Snapshot of the device appearance settings that influence automatic contrast selection.
  *
- * The sample uses these values to resolve one of four contrast-specific web maps
+ * The sample uses these values to resolve one of four contrast-specific basemaps
  * without changing the surrounding sample app theme.
  */
 data class DeviceContrastSettings(
