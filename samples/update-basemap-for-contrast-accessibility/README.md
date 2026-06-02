@@ -48,4 +48,4 @@ On Android, automatic mode responds to system light and dark theme changes and t
 
 ## Tags
 
-accessibility, accessible, basemap, colorblind, contrast, dark, enhanced, high, inclusive, legibility, light, living atlas, readability, vision, visual impairment
+accessibility, accessible, basemap, colorblind, contrast, dark, enhanced, high, inclusive, legibility, light, living atlas, readability, vision, visual impairment, wcag
