@@ -47,8 +47,9 @@ import com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.componen
  * It owns the ViewModel and passes stateless UI data into the scaffold.
  */
 @Composable
-fun UpdateBasemapForContrastAccessibilityScreen() {
-    val viewModel: UpdateBasemapForContrastAccessibilityViewModel = viewModel()
+fun UpdateBasemapForContrastAccessibilityScreen(
+    viewModel: UpdateBasemapForContrastAccessibilityViewModel = viewModel()
+) {
     val contrastUiState by viewModel.contrastUiState.collectAsStateWithLifecycle()
     val deviceContrastSettings = rememberDeviceContrastSettings()
     val automaticAppearance = deviceContrastSettings.toAppearance()
