@@ -1,0 +1,45 @@
+{
+    "category": "Accessibility",
+    "description": "Display a map view that updates between authored light, dark, and high-contrast basemaps.",
+    "formal_name": "UpdateBasemapForContrastAccessibility",
+    "ignore": false,
+    "images": [
+        "update-basemap-for-contrast-accessibility.png"
+    ],
+    "keywords": [
+        "accessibility",
+        "accessible",
+        "basemap",
+        "colorblind",
+        "contrast",
+        "dark",
+        "enhanced",
+        "high",
+        "inclusive",
+        "legibility",
+        "light",
+        "living atlas",
+        "readability",
+        "vision",
+        "visual impairment",
+        "wcag",
+        "Basemap",
+        "BasemapStyle",
+        "Map"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Basemap",
+        "BasemapStyle",
+        "Map"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/components/UpdateBasemapForContrastAccessibilityViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/screens/UpdateBasemapForContrastAccessibilitySupportingPane.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/screens/UpdateBasemapForContrastAccessibilityScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatebasemapforcontrastaccessibility/components/DeviceContrastSettings.kt"
+    ],
+    "title": "Update basemap for contrast accessibility"
+}
