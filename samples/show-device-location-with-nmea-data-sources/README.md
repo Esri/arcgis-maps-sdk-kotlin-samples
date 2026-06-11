@@ -1,14 +1,14 @@
 # Show device location with NMEA data sources
 
-This sample demonstrates how to parse NMEA sentences and use the results to show device location on the map.
+Parse NMEA sentences and use the results to show device location on the map.
 
 ![Image of show device location with nmea data sources](show-device-location-with-nmea-data-sources.png)
 
 ## Use case
 
-NMEA sentences can be retrieved from GPS receivers and parsed into a series of coordinates with additional information. Devices without a built-in GPS receiver can retrieve NMEA sentences by using a separate GPS dongle, commonly connected via bluetooth or through a serial port.
+NMEA sentences can be retrieved from an MFi GNSS/GPS accessory and parsed into a series of coordinates with additional information.
 
-The NMEA location data source allows for detailed interrogation of the information coming from the GPS receiver. For example, allowing you to report the number of satellites in view.
+The NMEA location data source allows for detailed interrogation of the information coming from a GNSS accessory. For example, allowing you to report the number of satellites in view, accuracy of the location, etc.
 
 ## How to use the sample
 
@@ -23,16 +23,21 @@ Click floating button "Play" to parse the provided NMEA sentences into a locatio
 
 ## Relevant API
 
+* Location
 * LocationDisplay
 * NmeaLocationDataSource
 * NmeaSatelliteInfo
 
 ## About the data
 
-This sample reads lines from a local file to simulate the feed of data into the `NmeaLocationDataSource`. This simulated data source provides NMEA data periodically, and allows the sample to be used on devices without a GPS dongle that produces NMEA data.
+This sample reads lines from a local file to simulate the feed of data into the `NmeaLocationDataSource`. This simulated data source provides NMEA data periodically and allows the sample to be used without a GNSS accessory.
 
-The route taken in this sample features a [one minute driving trip around Redlands, CA](https://arcgis.com/home/item.html?id=d5bad9f4fee9483791e405880fb466da).
+The route taken in this sample features a [2-minute driving trip around Redlands, CA](https://arcgis.com/home/item.html?id=d5bad9f4fee9483791e405880fb466da).
+
+## Additional information
+
+Please refer to the [ArcGIS Field Maps documentation](https://doc.arcgis.com/en/field-maps/latest/prepare-maps/high-accuracy-data-collection.htm) for model and firmware requirements.
 
 ## Tags
 
-GPS, history, navigation, NMEA, real-time, trace
+accessory, Bluetooth, GNSS, GPS, history, navigation, NMEA, real-time, trace
