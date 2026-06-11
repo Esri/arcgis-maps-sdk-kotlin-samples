@@ -1,10 +1,10 @@
 {
     "category": "Maps",
     "description": "This sample demonstrates how to parse NMEA sentences and use the results to show device location on the map.",
-    "formal_name": "DisplayDeviceLocationWithNmeaDataSources",
+    "formal_name": "ShowDeviceLocationWithNmeaDataSources",
     "ignore": false,
     "images": [
-        "display-device-location-with-nmea-data-sources.png"
+        "show-device-location-with-nmea-data-sources.png"
     ],
     "keywords": [
         "GPS",
@@ -25,8 +25,8 @@
         "NmeaSatelliteInfo"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithnmeadatasources/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaydevicelocationwithnmeadatasources/DownloadActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationwithnmeadatasources/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationwithnmeadatasources/DownloadActivity.kt"
     ],
-    "title": "Display device location with NMEA data sources"
+    "title": "Show device location with NMEA data sources"
 }

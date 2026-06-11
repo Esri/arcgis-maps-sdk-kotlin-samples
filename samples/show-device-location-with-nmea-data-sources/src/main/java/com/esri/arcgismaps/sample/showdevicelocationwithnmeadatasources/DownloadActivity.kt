@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources
+package com.esri.arcgismaps.sample.showdevicelocationwithnmeadatasources
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,7 +26,7 @@ class DownloadActivity : DownloaderActivity() {
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the app name of the sample
-            getString(R.string.display_device_location_with_nmea_data_sources_app_name),
+            getString(R.string.show_device_location_with_nmea_data_sources_app_name),
             listOf(
                 // ArcGIS Portal item containing the Redlands.nmea
                 // which features a vehicle driving around southern Redlands, CA.

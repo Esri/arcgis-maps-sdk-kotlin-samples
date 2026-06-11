@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources
+package com.esri.arcgismaps.sample.showdevicelocationwithnmeadatasources
 
 import android.os.Bundle
 import android.util.Log
@@ -35,7 +35,7 @@ import com.arcgismaps.location.NmeaLocationDataSource
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
-import com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources.databinding.DisplayDeviceLocationWithNmeaDataSourcesActivityMainBinding
+import com.esri.arcgismaps.sample.showdevicelocationwithnmeadatasources.databinding.ShowDeviceLocationWithNmeaDataSourcesActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -49,7 +49,7 @@ private const val METERS_TO_FEET = 3.28084
 class MainActivity : EdgeToEdgeCompatActivity() {
 
     private val provisionPath: String by lazy {
-        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.display_device_location_with_nmea_data_sources_app_name)
+        getExternalFilesDir(null)?.path.toString() + File.separator + getString(R.string.show_device_location_with_nmea_data_sources_app_name)
     }
 
     // create a new NMEA location data source
@@ -66,8 +66,8 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     private var locationIndex = 0
 
     // set up data binding for the activity
-    private val activityMainBinding: DisplayDeviceLocationWithNmeaDataSourcesActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.display_device_location_with_nmea_data_sources_activity_main)
+    private val activityMainBinding: ShowDeviceLocationWithNmeaDataSourcesActivityMainBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.show_device_location_with_nmea_data_sources_activity_main)
     }
 
     private val mapView by lazy {
