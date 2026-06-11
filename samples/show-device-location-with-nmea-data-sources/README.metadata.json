@@ -22,7 +22,7 @@
         "NmeaSatelliteInfo"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": ["/kotlin/sample-code/display-device-location-with-nmea-data-sources/"],
     "relevant_apis": [
         "Location",
         "LocationDisplay",
