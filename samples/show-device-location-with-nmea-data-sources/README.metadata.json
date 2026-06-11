@@ -1,18 +1,22 @@
 {
     "category": "Maps",
-    "description": "This sample demonstrates how to parse NMEA sentences and use the results to show device location on the map.",
+    "description": "Parse NMEA sentences and use the results to show device location on the map.",
     "formal_name": "ShowDeviceLocationWithNmeaDataSources",
     "ignore": false,
     "images": [
         "show-device-location-with-nmea-data-sources.png"
     ],
     "keywords": [
+        "Bluetooth",
+        "GNSS",
         "GPS",
         "NMEA",
+        "accessory",
         "history",
         "navigation",
         "real-time",
         "trace",
+        "Location",
         "LocationDisplay",
         "NmeaLocationDataSource",
         "NmeaSatelliteInfo"
@@ -20,6 +24,7 @@
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
+        "Location",
         "LocationDisplay",
         "NmeaLocationDataSource",
         "NmeaSatelliteInfo"
