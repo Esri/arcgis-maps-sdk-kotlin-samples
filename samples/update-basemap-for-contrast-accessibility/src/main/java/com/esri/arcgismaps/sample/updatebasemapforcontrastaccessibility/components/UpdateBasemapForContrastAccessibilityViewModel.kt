@@ -17,11 +17,9 @@
 package com.esri.arcgismaps.sample.updatebasemapforcontrastaccessibility.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
@@ -39,8 +37,9 @@ import kotlinx.coroutines.launch
  */
 class UpdateBasemapForContrastAccessibilityViewModel(app: Application) : AndroidViewModel(app) {
 
-    var arcGISMap by mutableStateOf(ArcGISMap())
-        private set
+    val arcGISMap = ArcGISMap(spatialReference = SpatialReference.webMercator()).apply {
+        initialViewpoint = Viewpoint(34.05, -117.19, 2e6)
+    }
 
     private val _contrastUiState = MutableStateFlow(ContrastUiState.defaultState)
     val contrastUiState = _contrastUiState.asStateFlow()
@@ -65,9 +64,7 @@ class UpdateBasemapForContrastAccessibilityViewModel(app: Application) : Android
     private fun applyContrastBasemap(contrast: ContrastAppearance) {
         updateContrastAppearance(contrast = contrast)
         val isVisible = _contrastUiState.value.isReferenceLayersEnabled
-        arcGISMap = ArcGISMap(contrastBasemapFor(contrast)).apply {
-            initialViewpoint = sampleViewpoint
-        }
+        arcGISMap.setBasemap(contrastBasemapFor(contrast))
 
         viewModelScope.launch {
             arcGISMap.load().getOrElse { messageDialogVM.showMessageDialog(it) }
@@ -147,11 +144,6 @@ enum class ContrastAppearance {
     Dark,
     HighContrastDark
 }
-
-/**
- * Default viewpoint used for the map.
- */
-private val sampleViewpoint = Viewpoint(34.05, -117.19, 2e6)
 
 /**
  * Maps the selected appearance to the contrast accessibility basemaps used by the sample.
