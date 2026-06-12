@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.configureelectronicnavigationalcharts.screens.MainScreen
+import com.esri.arcgismaps.sample.configureelectronicnavigationalcharts.screens.ConfigureElectronicNavigationalChartsScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
-            MainScreen(
+            ConfigureElectronicNavigationalChartsScreen(
                 sampleName = getString(R.string.configure_electronic_navigational_charts_app_name)
             )
         }
