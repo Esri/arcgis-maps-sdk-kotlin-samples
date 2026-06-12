@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.addencexchangeset.components
+package com.esri.arcgismaps.sample.configureelectronicnavigationalcharts.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -31,7 +31,7 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.EncLayer
-import com.esri.arcgismaps.sample.addencexchangeset.R
+import com.esri.arcgismaps.sample.configureelectronicnavigationalcharts.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.io.File
@@ -40,7 +40,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() +
                 File.separator +
-                application.getString(R.string.add_enc_exchange_set_app_name)
+                application.getString(R.string.configure_electronic_navigational_charts_app_name)
     }
 
     // Paths to ENC data and hydrology resources

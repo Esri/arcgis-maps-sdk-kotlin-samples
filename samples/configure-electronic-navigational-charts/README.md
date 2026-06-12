@@ -1,8 +1,8 @@
-# Add ENC exchange set
+# Configure electronic navigational charts
 
 Display nautical charts per the ENC specification.
 
-![Image showing the add ENC exchange set app](add-enc-exchange-set.png)
+![Image showing the configure electronic navigational charts app](configure-electronic-navigational-charts.png)
 
 ## Use case
 
