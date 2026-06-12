@@ -10,7 +10,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.displaydevicelocationwithnmeadatasources"
+    namespace = "com.esri.arcgismaps.sample.showdevicelocationwithnmeadatasources"
     // For view based samples
     buildFeatures {
         dataBinding = true
