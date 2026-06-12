@@ -20,7 +20,7 @@ Switch to manual mode to choose Light, Dark, High contrast light, or High contra
 2. Resolve which contrast appearance should be active based on the current mode and device settings.
    * In manual mode, use the appearance selected in the supporting pane.
    * In automatic mode, resolve the appearance from the device's current light, dark, and high-contrast settings. This sample uses a custom `rememberDeviceContrastSettings()` Composable.
-3. Map the resolved appearance to an ArcGIS Online `Basemap` or a `BasemapStyle` and create a `Map`.
+3. Map the resolved appearance to an ArcGIS Online `Basemap` or a `BasemapStyle` and update the map's `basemap`.
 4. Apply the current reference-layer visibility setting to the basemap's labels and boundary layers.
 
 ## Relevant API
@@ -48,4 +48,4 @@ On Android, automatic mode responds to system light and dark theme changes and t
 
 ## Tags
 
-accessibility, accessible, basemap, colorblind, contrast, dark, enhanced, high, inclusive, legibility, light, living atlas, readability, vision, visual impairment, wcag
+accessibility, accessible, basemap, colorblind, contrast, dark, enhanced, high, inclusive, legibility, light, living atlas, readability, vision, visual impairment, WCAG
