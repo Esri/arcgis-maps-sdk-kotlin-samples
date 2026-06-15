@@ -31,6 +31,11 @@
         "IdentifyLayerResult"
     ],
     "language": "kotlin",
+    "provision_from": [
+        "https://www.arcgis.com/home/item.html?id=9d2987a825c646468b3ce7512fb76e2d",
+        "https://developers.arcgis.com/downloads/"
+    ],
+    "provision_to": [],
     "redirect_from": [
         "/kotlin/sample-code/add-enc-exchange-set/"
     ],
@@ -48,8 +53,8 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/components/ConfigureElectronicNavigationalChartsScreenViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/screens/ConfigureElectronicNavigationalChartsScreen.kt"
     ],
     "title": "Configure electronic navigational charts"
