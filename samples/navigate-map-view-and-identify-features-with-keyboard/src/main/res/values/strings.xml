@@ -1,3 +1,5 @@
 <resources>
     <string name="navigate_map_view_and_identify_features_with_keyboard_app_name">Navigate map view and identify features with keyboard</string>
+    <string name="navigate_map_view_and_identify_features_with_keyboard_instructions">Pan and zoom to bring restaurants into the area of interest. Press 1-9 for details, Esc to dismiss.</string>
+    <string name="navigate_map_view_and_identify_features_with_keyboard_overflow">Too many features in the area. Zoom in to see fewer.</string>
 </resources>
