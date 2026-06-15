@@ -75,7 +75,10 @@ fun ConfigureElectronicNavigationalChartsScreen(sampleName: String) {
                         .weight(1f),
                     arcGISMap = mapViewModel.arcGISMap,
                     mapViewProxy = mapViewModel.mapViewProxy,
-                    onSingleTapConfirmed = mapViewModel::identify
+                    onSingleTapConfirmed = { tapEvent ->
+                        tapLocation = tapEvent.mapPoint
+                        mapViewModel.identify(tapEvent)
+                    }
                 ) {
                     selectedEncFeature?.let { encFeature ->
                         tapLocation?.let { location ->

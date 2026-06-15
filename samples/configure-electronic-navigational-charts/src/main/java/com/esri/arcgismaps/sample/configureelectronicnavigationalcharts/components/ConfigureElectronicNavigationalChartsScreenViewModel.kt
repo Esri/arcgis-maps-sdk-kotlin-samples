@@ -43,7 +43,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
-class ConfigureElectronicNavigationalChartsScreenViewModel(application: Application) : AndroidViewModel(application) {
+class ConfigureElectronicNavigationalChartsScreenViewModel(application: Application) :
+    AndroidViewModel(application) {
     private val provisionPath: String by lazy {
         application.getExternalFilesDir(null)?.path.toString() +
                 File.separator +
@@ -91,7 +92,7 @@ class ConfigureElectronicNavigationalChartsScreenViewModel(application: Applicat
 
                 // Set the map to the oceans basemap style, and initial viewpoint
                 arcGISMap = ArcGISMap(BasemapStyle.ArcGISOceans).apply {
-                    initialViewpoint = Viewpoint( -32.5,60.95,67e3)
+                    initialViewpoint = Viewpoint(-32.5, 60.95, 67e3)
                 }
 
                 encExchangeSet.datasets.forEach { encDataset ->
@@ -125,28 +126,29 @@ class ConfigureElectronicNavigationalChartsScreenViewModel(application: Applicat
      * Identifies the ENC feature at the tapped screen coordinate and selects it for display.
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+        arcGISMap.operationalLayers.filterIsInstance<EncLayer>().forEach { encLayer ->
+            encLayer.clearSelection()
+        }
         viewModelScope.launch {
-            arcGISMap.operationalLayers.filterIsInstance<EncLayer>().forEach { encLayer ->
-                encLayer.clearSelection()
-            }
-            _selectedEncFeature.value = null
-
             mapViewProxy.identifyLayers(singleTapConfirmedEvent.screenCoordinate, 10.dp)
                 .onSuccess { identifyResults ->
-                    val encIdentifyResult = identifyResults.firstOrNull { identifyResult ->
-                        identifyResult.layerContent is EncLayer &&
-                                identifyResult.geoElements.any { geoElement -> geoElement is EncFeature }
+                    val encIdentifyResult = identifyResults.firstOrNull {
+                        it.geoElements.filterIsInstance<EncFeature>().isNotEmpty()
                     }
                     val encLayer = encIdentifyResult?.layerContent as? EncLayer
                     val encFeature = encIdentifyResult?.geoElements
                         ?.filterIsInstance<EncFeature>()
                         ?.firstOrNull()
-
                     if (encLayer != null && encFeature != null) {
                         encLayer.selectFeature(encFeature)
                         _selectedEncFeature.value = encFeature
+                    } else {
+                        _selectedEncFeature.value = null
                     }
-                }.onFailure { error -> messageDialogVM.showMessageDialog(error) }
+                }.onFailure { error ->
+                    _selectedEncFeature.value = null
+                    messageDialogVM.showMessageDialog(error)
+                }
         }
     }
 

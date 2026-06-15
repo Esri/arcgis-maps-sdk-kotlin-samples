@@ -1,6 +1,6 @@
 {
     "category": "Layers",
-    "description": "Display nautical charts per the ENC specification.",
+    "description": "Display and configure electronic navigational charts per ENC specification.",
     "formal_name": "ConfigureElectronicNavigationalCharts",
     "ignore": false,
     "images": [
@@ -8,35 +8,49 @@
     ],
     "keywords": [
         "ENC",
-        "data",
-        "geoview-compose",
-        "hydrographic",
+        "IHO",
+        "S-52",
+        "S-57",
+        "hydrography",
+        "identify",
         "layers",
         "maritime",
         "nautical chart",
+        "select",
+        "settings",
+        "symbology",
         "EncCell",
         "EncDataset",
+        "EncDisplaySettings",
+        "EncEnvironmentSettings",
         "EncExchangeSet",
-        "EncLayer"
+        "EncLayer",
+        "EncMarinerSettings",
+        "EncTextGroupVisibilitySettings",
+        "EncTextGroupVisibilitySettings",
+        "IdentifyLayerResult"
     ],
     "language": "kotlin",
-    "provision_from": [
-        "https://www.arcgis.com/home/item.html?id=9d2987a825c646468b3ce7512fb76e2d",
-        "https://www.arcgis.com/home/item.html?id=5028bf3513ff4c38b28822d010a4937c"
+    "redirect_from": [
+        "/kotlin/sample-code/add-enc-exchange-set/"
     ],
-    "provision_to": [],
-    "redirect_from": ["/kotlin/sample-code/add-enc-exchange-set/"],
     "relevant_apis": [
         "EncCell",
         "EncDataset",
+        "EncDisplaySettings",
+        "EncEnvironmentSettings",
         "EncExchangeSet",
-        "EncLayer"
+        "EncLayer",
+        "EncMarinerSettings",
+        "EncTextGroupVisibilitySettings",
+        "EncTextGroupVisibilitySettings",
+        "IdentifyLayerResult"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/components/MapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/components/ConfigureElectronicNavigationalChartsScreenViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/screens/MainScreen.kt"
+        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/configureelectronicnavigationalcharts/screens/ConfigureElectronicNavigationalChartsScreen.kt"
     ],
     "title": "Configure electronic navigational charts"
 }
