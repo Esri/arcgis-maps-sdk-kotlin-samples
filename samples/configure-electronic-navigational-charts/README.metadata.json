@@ -47,7 +47,6 @@
         "EncLayer",
         "EncMarinerSettings",
         "EncTextGroupVisibilitySettings",
-        "EncTextGroupVisibilitySettings",
         "IdentifyLayerResult"
     ],
     "snippets": [
