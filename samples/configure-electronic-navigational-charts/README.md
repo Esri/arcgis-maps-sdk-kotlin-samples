@@ -39,7 +39,6 @@ When opened, the sample displays an electronic navigational chart. Tap on the ma
 * EncLayer
 * EncMarinerSettings
 * EncTextGroupVisibilitySettings
-* EncTextGroupVisibilitySettings
 * IdentifyLayerResult
 
 ## Offline data

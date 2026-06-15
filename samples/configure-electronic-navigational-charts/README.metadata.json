@@ -27,7 +27,6 @@
         "EncLayer",
         "EncMarinerSettings",
         "EncTextGroupVisibilitySettings",
-        "EncTextGroupVisibilitySettings",
         "IdentifyLayerResult"
     ],
     "language": "kotlin",
