@@ -16,32 +16,28 @@
 
 package com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.screens
 
-import androidx.compose.foundation.background
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -49,15 +45,27 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.Color
+import com.arcgismaps.geometry.GeometryEngine
+import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.LoadStatus
+import com.arcgismaps.mapping.view.DrawStatus
+import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.mapping.view.SelectionProperties
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.R
+import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.AREA_OF_INTEREST_SIZE
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel
+import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.OrderedFeature
+import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.selectionHalo
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import kotlinx.coroutines.flow.first
 
 /**
  * Main screen layout for the sample app
@@ -66,97 +74,105 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
     mapViewModel: NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel = viewModel()
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val areaOfInterestSize = with(LocalDensity.current) { 200.toDp() }
+    val loadStatus by mapViewModel.arcGISMap.loadStatus.collectAsStateWithLifecycle()
+    val drawStatus by mapViewModel.mapViewDrawStatus.collectAsStateWithLifecycle()
+    val areaOfInterestSize = with(LocalDensity.current) { AREA_OF_INTEREST_SIZE.toDp() }
+    val selectedOrderedFeature = mapViewModel.selectedFeatureIndex
+        ?.let(mapViewModel.orderedFeatures::getOrNull)
 
+    val sampleHostView = LocalView.current
+    // Await the ArcGISMap and MapView to be fully loaded and drawn
+    // then request focus on the MapView to enable keyboard navigation.
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        snapshotFlow { loadStatus }
+            .first { it is LoadStatus.Loaded }
+
+        snapshotFlow { drawStatus }
+            .first { it == DrawStatus.Completed }
+
+        sampleHostView.findDescendantMapView()?.requestFocus()
     }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = stringResource(R.string.navigate_map_view_and_identify_features_with_keyboard_app_name)) },
         content = { padding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .focusRequester(focusRequester)
-                    .focusable()
-                    .onPreviewKeyEvent { keyEvent ->
-                        if (keyEvent.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
-
-                        when (keyEvent.key) {
-                            Key.Escape -> {
-                                mapViewModel.dismissCallout()
-                                true
-                            }
-                            else -> {
-                                numberKeyToFeatureIndex(keyEvent.key)?.let { index ->
-                                    mapViewModel.showCalloutForFeatureIndex(index)
-                                    true
-                                } ?: false
-                            }
-                        }
-                    }
             ) {
-                MapView(
+                // Box containing the MapView and centered area of interest indicator.
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .onSizeChanged(mapViewModel::updateMapViewSize),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    mapViewProxy = mapViewModel.mapViewProxy,
-                    graphicsOverlays = listOf(mapViewModel.labelsOverlay),
-                    selectionProperties = mapViewModel.selectionProperties,
-                    onDrawStatusChanged = mapViewModel::handleDrawStatusChanged,
-                    onNavigationChanged = mapViewModel::handleNavigationChanged,
-                    content = {
-                        mapViewModel.calloutState?.let { calloutState ->
-                            Callout(
-                                modifier = Modifier.widthIn(max = 250.dp),
-                                location = calloutState.location,
-                                shapes = CalloutDefaults.shapes(
-                                    calloutContentPadding = PaddingValues(8.dp)
-                                ),
-                                colorScheme = CalloutDefaults.colors(
-                                    backgroundColor = MaterialTheme.colorScheme.background,
-                                    borderColor = MaterialTheme.colorScheme.outline
-                                )
-                            ) {
-                                Column {
-                                    Text(
-                                        text = calloutState.title,
-                                        style = MaterialTheme.typography.titleSmall
-                                    )
-                                    Spacer(modifier = Modifier.size(4.dp))
-                                    Text(
-                                        text = calloutState.details,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
+                        .weight(1f)
+                        .animateContentSize()
+                        .onPreviewKeyEvent { keyEvent ->
+                            if (keyEvent.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+
+                            when (keyEvent.key) {
+                                Key.C -> {
+                                    // Dismiss the callout when C is pressed, if displayed.
+                                    mapViewModel.dismissCallout()
+                                    true
+                                }
+
+                                else -> {
+                                    // Show callout for the feature corresponding to number keys 1-9.
+                                    numberKeyToFeatureIndex(keyEvent.key)?.let { index ->
+                                        mapViewModel.showCalloutForFeatureIndex(index)
+                                        true
+                                    } ?: false
                                 }
                             }
                         }
-                    }
-                )
-
-                SampleInstructions(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp),
-                    isOverflowMessageVisible = mapViewModel.isOverflowMessageVisible
-                )
-
-                if (mapViewModel.calloutState == null) {
-                    Box(
+                ) {
+                    MapView(
                         modifier = Modifier
-                            .align(Alignment.Center)
-                            .size(areaOfInterestSize)
-                            .border(
-                                width = 2.dp,
-                                color = Color(0xFF1F2328),
-                                shape = RoundedCornerShape(4.dp)
-                            )
+                            .fillMaxSize()
+                            .onSizeChanged(mapViewModel::updateMapViewSize),
+                        canFocus = true,
+                        arcGISMap = mapViewModel.arcGISMap,
+                        mapViewProxy = mapViewModel.mapViewProxy,
+                        graphicsOverlays = listOf(mapViewModel.labelsOverlay),
+                        selectionProperties = SelectionProperties(color = Color.selectionHalo),
+                        onDrawStatusChanged = mapViewModel::handleDrawStatusChanged,
+                        onNavigationChanged = mapViewModel::handleNavigationChanged,
+                        content = {
+                            selectedOrderedFeature?.let { orderedFeature ->
+                                Callout(location = orderedFeature.point) {
+                                    Column {
+                                        Text(
+                                            text = orderedFeature.name ?: "Restaurant",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                        Spacer(modifier = Modifier.size(4.dp))
+                                        Text(
+                                            text = formatFeatureDetails(orderedFeature),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     )
+
+                    if (selectedOrderedFeature == null) {
+                        // Area of interest rounded box indicator for feature selection.
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(areaOfInterestSize)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                        )
+                    }
                 }
+                // Bottom text instructions for the sample.
+                SampleInstructions(isOverflowMessageVisible = mapViewModel.isOverflowMessageVisible)
             }
 
             mapViewModel.messageDialogVM.apply {
@@ -177,34 +193,58 @@ private fun SampleInstructions(
     modifier: Modifier = Modifier,
     isOverflowMessageVisible: Boolean
 ) {
-    Surface(
-        modifier = modifier.widthIn(max = 320.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-        tonalElevation = 3.dp,
-        shadowElevation = 2.dp
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+            .animateContentSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
+        Text(
+            text = "Pan and zoom to bring restaurants into the area of interest. Press 1-9 for details, C to close Callout.",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        if (isOverflowMessageVisible) {
             Text(
-                text = stringResource(R.string.navigate_map_view_and_identify_features_with_keyboard_instructions),
-                style = MaterialTheme.typography.bodyMedium
+                text = "Too many features in the area. Zoom in to see fewer.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error
             )
-            if (isOverflowMessageVisible) {
-                Spacer(modifier = Modifier.size(8.dp))
-                Text(
-                    text = stringResource(R.string.navigate_map_view_and_identify_features_with_keyboard_overflow),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
         }
     }
 }
 
+/**
+ * Recursively search the view hierarchy for a [MapView] instance.
+ */
+private fun View.findDescendantMapView(): MapView? {
+    if (this is MapView) return this
+    if (this !is ViewGroup) return null
+    for (index in 0 until childCount) {
+        getChildAt(index).findDescendantMapView()?.let { return it }
+    }
+    return null
+}
+
+/**
+ * Format the feature's point geometry as latitude and longitude in WGS84
+ * as multi-line string displayed in the Callout.
+ */
+private fun formatFeatureDetails(orderedFeature: OrderedFeature): String {
+    val wgs84Point = GeometryEngine.projectOrNull(
+        geometry = orderedFeature.point,
+        spatialReference = SpatialReference.wgs84()
+    ) ?: return ""
+
+    return buildString {
+        appendLine("Lat: ${"%.6f".format(wgs84Point.y)}")
+        append("Lon: ${"%.6f".format(wgs84Point.x)}")
+    }
+}
+
+/**
+ * Maps number keys 1-9 to feature indices 0-8. Returns null for non-number keys.
+ */
 private fun numberKeyToFeatureIndex(key: Key): Int? = when (key) {
     Key.One, Key.NumPad1 -> 0
     Key.Two, Key.NumPad2 -> 1
