@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.addencexchangeset
+package com.esri.arcgismaps.sample.configureelectronicnavigationalcharts
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,7 +26,7 @@ class DownloadActivity : DownloaderActivity() {
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the app name of the sample
-            getString(R.string.add_enc_exchange_set_app_name),
+            getString(R.string.configure_electronic_navigational_charts_app_name),
             listOf(
                 // ArcGIS Portal item containing ENC hydrography resources
                 "https://www.arcgis.com/home/item.html?id=5028bf3513ff4c38b28822d010a4937c",

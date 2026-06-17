@@ -11,7 +11,7 @@ secrets {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.addencexchangeset"
+    namespace = "com.esri.arcgismaps.sample.configureelectronicnavigationalcharts"
     // For view based samples
     buildFeatures {
         buildConfig = true

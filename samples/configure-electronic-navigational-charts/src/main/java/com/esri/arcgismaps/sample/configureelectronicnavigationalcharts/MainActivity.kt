@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.addencexchangeset
+package com.esri.arcgismaps.sample.configureelectronicnavigationalcharts
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.addencexchangeset.screens.MainScreen
+import com.esri.arcgismaps.sample.configureelectronicnavigationalcharts.screens.ConfigureElectronicNavigationalChartsScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -49,8 +49,8 @@ class MainActivity : ComponentActivity() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
-            MainScreen(
-                sampleName = getString(R.string.add_enc_exchange_set_app_name)
+            ConfigureElectronicNavigationalChartsScreen(
+                sampleName = getString(R.string.configure_electronic_navigational_charts_app_name)
             )
         }
     }
