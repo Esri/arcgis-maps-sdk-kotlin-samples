@@ -226,7 +226,8 @@ class ShowLineOfSightAnalysisInMapViewModel(app: Application) : AndroidViewModel
     }
 
     /**
-     * Set the visibility filter to [value], showing or hiding the results graphics as appropriate.
+     * Set the visibility filter to [value]. A value of `false` causes all results to be shown,
+     * whereas `true` causes results for which the target is not visible to be hidden.
      */
     fun setVisibilityFilter(value: Boolean) {
         // Update UI state
