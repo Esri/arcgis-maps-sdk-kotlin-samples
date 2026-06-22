@@ -18,15 +18,15 @@ The sample loads with a map centered on the Isle of Arran, Scotland, and runs a 
 
 1. Create an `ArcGISMap` and set it on a `MapView`.
 2. Create three `GraphicsOverlay`s as follows:
-   * Add a `Graphic` for the target to one of them.
-   * Add a `Graphic` for each observer to another. Observers are in a separate `GraphicsOverlay` to allow us to detect when an observer graphic is tapped.
-   * The third `GraphicsOverlay` will be used to display the line of sight result graphics.
+   * One overlay to hold the target's `Graphic`.
+   * One overlay to display a `Graphic` for each observer. Observers are in a separate `GraphicsOverlay` to allow us to detect when an observer graphic is tapped.
+   * One overlay to display the line of sight result graphics.
 3. Create a `ContinuousField` from a raster file containing elevation data.
-4. Create lists of `LineOfSightPosition` for targets (we have just one) and observers.
+4. For each target (we have just one), create a list of `LineOfSightPosition` for the target and observers.
 5. Configure `LineOfSightParameters` with `ObserverTargetPairs` created from the lists of observer and target line of sight positions.
 6. Create a `LineOfSightFunction` from the continuous field and line of sight parameters.
 7. Evaluate the function to get `LineOfSight` results.
-8. Create a `Graphic` from each result, using the geometry of the result's `visibleLine` or `notVisibleLine` result, and an appropriate symbol.
+8. Create `Graphic`s from each result, using the geometry of the result's `visibleLine` and/or `notVisibleLine` properties, and appropriate symbols.
 9. Use `LineOfSight.targetVisibility` to determine if the observer position has a direct line of sight to the target position.
 10. Get the length of the visible line result with `GeometryEngine.lengthGeodetic` to report result details.
 
