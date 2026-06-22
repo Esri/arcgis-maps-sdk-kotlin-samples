@@ -1,0 +1,37 @@
+{
+    "category": "Maps",
+    "description": "Parse NMEA sentences and use the results to show device location on the map.",
+    "formal_name": "ShowDeviceLocationWithNmeaDataSources",
+    "ignore": false,
+    "images": [
+        "show-device-location-with-nmea-data-sources.png"
+    ],
+    "keywords": [
+        "Bluetooth",
+        "GNSS",
+        "GPS",
+        "NMEA",
+        "accessory",
+        "history",
+        "navigation",
+        "real-time",
+        "trace",
+        "Location",
+        "LocationDisplay",
+        "NmeaLocationDataSource",
+        "NmeaSatelliteInfo"
+    ],
+    "language": "kotlin",
+    "redirect_from": ["/kotlin/sample-code/display-device-location-with-nmea-data-sources/"],
+    "relevant_apis": [
+        "Location",
+        "LocationDisplay",
+        "NmeaLocationDataSource",
+        "NmeaSatelliteInfo"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationwithnmeadatasources/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showdevicelocationwithnmeadatasources/DownloadActivity.kt"
+    ],
+    "title": "Show device location with NMEA data sources"
+}

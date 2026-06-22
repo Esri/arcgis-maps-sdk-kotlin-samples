@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
+import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 
 @Composable
 internal fun PreviewMainPanePlaceholder(
@@ -96,7 +97,7 @@ internal fun PreviewMainPanePlaceholder(
 
 @Composable
 internal fun AdaptiveThreePanePreviewContent(config: ThreePaneConfig = ThreePaneConfig()) {
-    _root_ide_package_.com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface {
+    SamplePreviewSurface {
         AdaptiveThreePane(
             modifier = Modifier.fillMaxSize(),
             config = config,
