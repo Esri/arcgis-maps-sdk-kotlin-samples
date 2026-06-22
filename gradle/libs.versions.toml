@@ -44,7 +44,7 @@ coroutinesTest = "1.10.2"
 versionCode = "3001000"
 versionName = "300.1.0"
 minSdk = "28"
-targetSdk = "36"
+targetSdk = "37"
 
 ### Third party libraries
 arcore = "1.54.0"
