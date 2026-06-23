@@ -67,13 +67,13 @@ android {
 }
 
 dependencies {
-    for (sampleFile in file("../samples").listFiles()!!) {
-        if (sampleFile.isDirectory &&
-            sampleFile.listFiles()?.find { it.name.equals("build.gradle.kts") } != null
-        ) {
-            implementation(project(":samples:" + sampleFile.name))
+    rootProject.subprojects
+        .asSequence()
+        .filter { it.path.startsWith(":samples:") }
+        .sortedBy { it.path }
+        .forEach { sampleProject ->
+            implementation(project(sampleProject.path))
         }
-    }
     implementation(project(":samples-lib"))
     implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
     implementation(libs.kotlinx.serialization.json)
