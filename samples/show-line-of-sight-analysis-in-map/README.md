@@ -18,9 +18,9 @@ The sample loads with a map centered on the Isle of Arran, Scotland, and runs a 
 
 1. Create an `ArcGISMap` and set it on a `MapView`.
 2. Create three `GraphicsOverlay`s as follows:
-    - One overlay to hold the target's `Graphic`.
-    - One overlay to display a `Graphic` for each observer. Observers are in a separate `GraphicsOverlay` to allow us to detect when an observer graphic is tapped.
-    - One overlay to display the line of sight result graphics.
+    * One overlay to hold the target's `Graphic`.
+    * One overlay to display a `Graphic` for each observer. Observers are in a separate `GraphicsOverlay` to allow us to detect when an observer graphic is tapped.
+    * One overlay to display the line of sight result graphics.
 3. Create a `ContinuousField` from a raster file containing elevation data.
 4. For each target (we have just one), create a list of `LineOfSightPosition` for the target and observers.
 5. Configure `LineOfSightParameters` with `ObserverTargetPairs` created from the lists of observer and target line of sight positions.
