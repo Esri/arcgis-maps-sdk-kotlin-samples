@@ -51,17 +51,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.Color
-import com.arcgismaps.geometry.GeometryEngine
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.view.DrawStatus
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SelectionProperties
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.R
-import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.AREA_OF_INTEREST_SIZE
+import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.areaOfInterestSize
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel
-import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.OrderedFeature
+import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.numberKeyToFeatureIndex
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.selectionHalo
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -76,7 +74,7 @@ fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
 ) {
     val loadStatus by mapViewModel.arcGISMap.loadStatus.collectAsStateWithLifecycle()
     val drawStatus by mapViewModel.mapViewDrawStatus.collectAsStateWithLifecycle()
-    val areaOfInterestSize = with(LocalDensity.current) { AREA_OF_INTEREST_SIZE.toDp() }
+    val areaOfInterestSize = with(LocalDensity.current) { areaOfInterestSize.toDp() }
     val selectedOrderedFeature = mapViewModel.selectedFeatureIndex
         ?.let(mapViewModel.orderedFeatures::getOrNull)
 
@@ -120,8 +118,12 @@ fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
                                 else -> {
                                     // Show callout for the feature corresponding to number keys 1-9.
                                     numberKeyToFeatureIndex(keyEvent.key)?.let { index ->
-                                        mapViewModel.showCalloutForFeatureIndex(index)
-                                        true
+                                        if (index in mapViewModel.orderedFeatures.indices) {
+                                            mapViewModel.showCalloutForFeatureIndex(index)
+                                            true
+                                        } else {
+                                            false
+                                        }
                                     } ?: false
                                 }
                             }
@@ -130,14 +132,14 @@ fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
                     MapView(
                         modifier = Modifier
                             .fillMaxSize()
-                            .onSizeChanged(mapViewModel::updateMapViewSize),
+                            .onSizeChanged(mapViewModel::updateMapViewSizeAndIdentify),
                         canFocus = true,
                         arcGISMap = mapViewModel.arcGISMap,
                         mapViewProxy = mapViewModel.mapViewProxy,
                         graphicsOverlays = listOf(mapViewModel.labelsOverlay),
                         selectionProperties = SelectionProperties(color = Color.selectionHalo),
                         onDrawStatusChanged = mapViewModel::handleDrawStatusChanged,
-                        onNavigationChanged = mapViewModel::handleNavigationChanged,
+                        onNavigationChanged = mapViewModel::refreshFeaturesAfterNavigation,
                         content = {
                             selectedOrderedFeature?.let { orderedFeature ->
                                 Callout(location = orderedFeature.point) {
@@ -148,7 +150,7 @@ fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
                                         )
                                         Spacer(modifier = Modifier.size(4.dp))
                                         Text(
-                                            text = formatFeatureDetails(orderedFeature),
+                                            text = orderedFeature.formatedFeatureDetails(),
                                             style = MaterialTheme.typography.bodySmall
                                         )
                                     }
@@ -201,7 +203,7 @@ private fun SampleInstructions(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "Pan and zoom to bring restaurants into the area of interest. Press 1-9 for details, C to close Callout.",
+            text = "Pan (Arrow Keys) and zoom (+ and - ) to bring restaurants into the area of interest. Press 1-9 for details, C to close Callout.",
             style = MaterialTheme.typography.bodyMedium
         )
         if (isOverflowMessageVisible) {
@@ -224,36 +226,4 @@ private fun View.findDescendantMapView(): MapView? {
         getChildAt(index).findDescendantMapView()?.let { return it }
     }
     return null
-}
-
-/**
- * Format the feature's point geometry as latitude and longitude in WGS84
- * as multi-line string displayed in the Callout.
- */
-private fun formatFeatureDetails(orderedFeature: OrderedFeature): String {
-    val wgs84Point = GeometryEngine.projectOrNull(
-        geometry = orderedFeature.point,
-        spatialReference = SpatialReference.wgs84()
-    ) ?: return ""
-
-    return buildString {
-        appendLine("Lat: ${"%.6f".format(wgs84Point.y)}")
-        append("Lon: ${"%.6f".format(wgs84Point.x)}")
-    }
-}
-
-/**
- * Maps number keys 1-9 to feature indices 0-8. Returns null for non-number keys.
- */
-private fun numberKeyToFeatureIndex(key: Key): Int? = when (key) {
-    Key.One, Key.NumPad1 -> 0
-    Key.Two, Key.NumPad2 -> 1
-    Key.Three, Key.NumPad3 -> 2
-    Key.Four, Key.NumPad4 -> 3
-    Key.Five, Key.NumPad5 -> 4
-    Key.Six, Key.NumPad6 -> 5
-    Key.Seven, Key.NumPad7 -> 6
-    Key.Eight, Key.NumPad8 -> 7
-    Key.Nine, Key.NumPad9 -> 8
-    else -> null
 }

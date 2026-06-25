@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -60,7 +61,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 // Fixed size for the area of interest used to identify features around the center of the screen.
-const val AREA_OF_INTEREST_SIZE = 400F
+const val areaOfInterestSize = 400F
+
+// Limit the number of selectable features 9 for keyboard navigation (1-9).
+const val maxSelectableFeatures = 9
 
 class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) :
     AndroidViewModel(app) {
@@ -125,9 +129,6 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
         private set
     private val selectableFeatures = mutableStateListOf<OrderedFeature>()
 
-    // Limit the number of selectable features 9 for keyboard navigation (1-9).
-    private val maxSelectableFeatures = 9
-
     // Expose the list of features that can be selected for callout display.
     val orderedFeatures: List<OrderedFeature> get() = selectableFeatures
 
@@ -140,8 +141,6 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
-        }
-        viewModelScope.launch {
             mapViewDrawStatus.first { it == DrawStatus.Completed }
             identifyFeatures()
         }
@@ -150,14 +149,13 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
     /**
      * Update the size of the MapView, used to build the area of interest.
      */
-    fun updateMapViewSize(size: IntSize) {
-        val wasMapViewUnmeasured = mapViewSize == IntSize.Zero
+    fun updateMapViewSizeAndIdentify(size: IntSize) {
+        val shouldIdentify =
+            mapViewSize == IntSize.Zero &&
+                    size != IntSize.Zero &&
+                    _mapViewDrawStatus.value == DrawStatus.Completed
         mapViewSize = size
-        if (
-            wasMapViewUnmeasured &&
-            size != IntSize.Zero &&
-            _mapViewDrawStatus.value == DrawStatus.Completed
-        ) {
+        if (shouldIdentify) {
             identifyFeatures()
         }
     }
@@ -172,7 +170,7 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
     /**
      * Handle changes to the MapView's navigation status, when navigation stops refresh identified features.
      */
-    fun handleNavigationChanged(isNavigating: Boolean) {
+    fun refreshFeaturesAfterNavigation(isNavigating: Boolean) {
         if (!isNavigating) {
             identifyFeatures()
         }
@@ -265,7 +263,7 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
      * Build a fixed size envelope centered on the screen to be used as the area of interest for identifying features.
      */
     private fun buildAreaOfInterestEnvelope(): Envelope? {
-        val halfWidth = AREA_OF_INTEREST_SIZE / 2.0
+        val halfWidth = areaOfInterestSize / 2.0
         val centerX = mapViewSize.width / 2.0
         val centerY = mapViewSize.height / 2.0
         val minPoint = mapViewProxy.screenToLocationOrNull(
@@ -332,7 +330,39 @@ data class OrderedFeature(
     val point: Point,
     val name: String?,
     val screenCoordinate: ScreenCoordinate
-)
+) {
+    /**
+     * Format the feature details (latitude and longitude) for display in the callout.
+     */
+    fun formatedFeatureDetails(): String {
+        val wgs84Point = GeometryEngine.projectOrNull(
+            geometry = point,
+            spatialReference = SpatialReference.wgs84()
+        ) ?: return ""
+
+        return buildString {
+            appendLine("Lat: ${"%.6f".format(wgs84Point.y)}")
+            append("Lon: ${"%.6f".format(wgs84Point.x)}")
+        }
+    }
+}
+
+/**
+ * Maps number keys 1-9 to feature indices 0-8. Returns null for non-number keys.
+ */
+internal fun numberKeyToFeatureIndex(key: Key): Int? = when (key) {
+    Key.One, Key.NumPad1 -> 0
+    Key.Two, Key.NumPad2 -> 1
+    Key.Three, Key.NumPad3 -> 2
+    Key.Four, Key.NumPad4 -> 3
+    Key.Five, Key.NumPad5 -> 4
+    Key.Six, Key.NumPad6 -> 5
+    Key.Seven, Key.NumPad7 -> 6
+    Key.Eight, Key.NumPad8 -> 7
+    Key.Nine, Key.NumPad9 -> 8
+    else -> null
+}
+
 
 private val Color.Companion.restaurantMarkerFill: Color
     get() = fromRgba(11, 79, 138, 255)
