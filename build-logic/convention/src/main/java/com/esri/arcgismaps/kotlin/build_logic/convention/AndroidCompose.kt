@@ -14,15 +14,14 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension) {
             compose = true
         }
 
-        composeOptions.apply {
-            kotlinCompilerExtensionVersion = libs.findVersion("kotlinVersion").get().toString()
-        }
-
         dependencies {
             val composeBom = libs.findLibrary("androidx-compose-bom").get()
             implementation(platform(composeBom))
             implementation(libs.findLibrary("androidx-activity-compose").get())
             implementation(libs.findLibrary("androidx-compose-material3").get())
+            implementation(libs.findLibrary("androidx-compose-material3-adaptive").get())
+            implementation(libs.findLibrary("androidx-compose-material3-adaptiveLayout").get())
+            implementation(libs.findLibrary("androidx-compose-material3-adaptiveNavigation").get())
             implementation(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
             implementation(libs.findLibrary("androidx-compose-ui-tooling-preview").get())
             implementation(libs.findLibrary("androidx-concurrent-futures").get())

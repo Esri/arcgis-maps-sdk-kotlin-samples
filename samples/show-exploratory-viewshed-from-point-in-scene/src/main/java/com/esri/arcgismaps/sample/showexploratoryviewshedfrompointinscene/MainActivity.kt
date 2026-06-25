@@ -39,15 +39,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SampleAppTheme {
-                ViewshedLocationApp()
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    MainScreen()
+                }
             }
-        }
-    }
-
-    @Composable
-    private fun ViewshedLocationApp() {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            MainScreen(sampleName = getString(R.string.show_exploratory_viewshed_from_point_in_scene_app_name))
         }
     }
 }
