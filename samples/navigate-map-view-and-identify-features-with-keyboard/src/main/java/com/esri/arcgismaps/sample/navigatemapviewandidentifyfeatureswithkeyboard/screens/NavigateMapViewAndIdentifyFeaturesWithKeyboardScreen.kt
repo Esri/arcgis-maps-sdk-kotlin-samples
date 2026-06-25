@@ -57,7 +57,7 @@ import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.mapping.view.SelectionProperties
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.R
-import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.areaOfInterestSize
+import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.AREA_OF_INTEREST_SIZE
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.numberKeyToFeatureIndex
 import com.esri.arcgismaps.sample.navigatemapviewandidentifyfeatureswithkeyboard.components.selectionHalo
@@ -74,7 +74,7 @@ fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
 ) {
     val loadStatus by mapViewModel.arcGISMap.loadStatus.collectAsStateWithLifecycle()
     val drawStatus by mapViewModel.mapViewDrawStatus.collectAsStateWithLifecycle()
-    val areaOfInterestSize = with(LocalDensity.current) { areaOfInterestSize.toDp() }
+    val areaOfInterestSize = with(LocalDensity.current) { AREA_OF_INTEREST_SIZE.toDp() }
     val selectedOrderedFeature = mapViewModel.selectedFeatureIndex
         ?.let(mapViewModel.orderedFeatures::getOrNull)
 
@@ -118,12 +118,7 @@ fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
                                 else -> {
                                     // Show callout for the feature corresponding to number keys 1-9.
                                     numberKeyToFeatureIndex(keyEvent.key)?.let { index ->
-                                        if (index in mapViewModel.orderedFeatures.indices) {
-                                            mapViewModel.showCalloutForFeatureIndex(index)
-                                            true
-                                        } else {
-                                            false
-                                        }
+                                        mapViewModel.selectFeatureForCallout(index)
                                     } ?: false
                                 }
                             }
@@ -219,11 +214,8 @@ private fun SampleInstructions(
 /**
  * Recursively search the view hierarchy for a [MapView] instance.
  */
-private fun View.findDescendantMapView(): MapView? {
-    if (this is MapView) return this
-    if (this !is ViewGroup) return null
-    for (index in 0 until childCount) {
-        getChildAt(index).findDescendantMapView()?.let { return it }
-    }
-    return null
+private fun View.findDescendantMapView(): MapView? = when (this) {
+    is MapView -> this
+    is ViewGroup -> (0 until childCount).firstNotNullOfOrNull { getChildAt(it).findDescendantMapView() }
+    else -> null
 }

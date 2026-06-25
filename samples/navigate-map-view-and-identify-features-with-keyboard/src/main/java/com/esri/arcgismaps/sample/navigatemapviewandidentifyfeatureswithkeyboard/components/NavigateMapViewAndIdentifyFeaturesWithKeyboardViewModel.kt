@@ -61,10 +61,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 // Fixed size for the area of interest used to identify features around the center of the screen.
-const val areaOfInterestSize = 400F
+const val AREA_OF_INTEREST_SIZE = 400F
 
 // Limit the number of selectable features 9 for keyboard navigation (1-9).
-const val maxSelectableFeatures = 9
+const val MAX_SELECTABLE_FEATURES = 9
 
 class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) :
     AndroidViewModel(app) {
@@ -179,10 +179,10 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
     /**
      * Show a callout for the feature from selectable features list.
      */
-    fun showCalloutForFeatureIndex(index: Int) {
-        if (index in selectableFeatures.indices) {
-            selectedFeatureIndex = index
-        }
+    fun selectFeatureForCallout(index: Int): Boolean {
+        if (index !in selectableFeatures.indices) return false
+        selectedFeatureIndex = index
+        return true
     }
 
     /**
@@ -242,12 +242,12 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
                 )
 
             // Update state if there are more features than the maximum selectable features.
-            isOverflowMessageVisible = orderedFeatures.size > maxSelectableFeatures
+            isOverflowMessageVisible = orderedFeatures.size > MAX_SELECTABLE_FEATURES
 
             // Update states of the selectable list, selects features, and add labels.
             orderedFeatures.forEachIndexed { index, orderedFeature ->
                 restaurantsLayer.selectFeature(orderedFeature.feature)
-                if (index >= maxSelectableFeatures) return@forEachIndexed
+                if (index >= MAX_SELECTABLE_FEATURES) return@forEachIndexed
                 labelsOverlay.graphics.add(
                     Graphic(
                         geometry = orderedFeature.point,
@@ -263,7 +263,7 @@ class NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel(app: Application) 
      * Build a fixed size envelope centered on the screen to be used as the area of interest for identifying features.
      */
     private fun buildAreaOfInterestEnvelope(): Envelope? {
-        val halfWidth = areaOfInterestSize / 2.0
+        val halfWidth = AREA_OF_INTEREST_SIZE / 2.0
         val centerX = mapViewSize.width / 2.0
         val centerY = mapViewSize.height / 2.0
         val minPoint = mapViewProxy.screenToLocationOrNull(
