@@ -125,9 +125,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         // request notifications permission
         requestNotificationPermission()
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(mapView)
 
         // set up the portal item to take offline

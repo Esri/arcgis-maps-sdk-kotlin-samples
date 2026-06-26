@@ -63,7 +63,6 @@ import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.stylegraphicswithsymbols.BuildConfig
 
 /**
  * The main SampleViewer app screen which showcases the list all sample categories,
@@ -134,9 +133,7 @@ fun HomeCategoryScreen(
  */
 @Composable
 fun CheckAccessToken() {
-    var isDialogDisplayed by remember {
-        mutableStateOf(BuildConfig.ACCESS_TOKEN == "DEFAULT_ACCESS_TOKEN")
-    }
+    var isDialogDisplayed by remember { mutableStateOf(false) }
     if (isDialogDisplayed) {
         MessageDialog(
             title = "Access token",
