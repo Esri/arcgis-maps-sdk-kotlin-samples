@@ -24,8 +24,6 @@ import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene.components.AugmentRealityToShowTabletopSceneViewModel
 import com.esri.arcgismaps.sample.augmentrealitytoshowtabletopscene.screens.DisplaySceneInTabletopARScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme

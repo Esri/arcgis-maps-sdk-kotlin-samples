@@ -23,8 +23,6 @@ import android.widget.Toast
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.data.GeoPackage
 import com.arcgismaps.data.Geodatabase
 import com.arcgismaps.data.ServiceFeatureTable

@@ -19,8 +19,6 @@ package com.esri.arcgismaps.sample.stylegraphicswithrenderer
 import android.os.Bundle
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.AngularUnit
 import com.arcgismaps.geometry.CubicBezierSegment

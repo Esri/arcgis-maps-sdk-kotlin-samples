@@ -32,8 +32,6 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.data.ArcGISFeature
 import com.arcgismaps.data.Attachment
 import com.arcgismaps.data.FeatureRequestMode

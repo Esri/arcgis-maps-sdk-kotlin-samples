@@ -19,8 +19,6 @@ package com.esri.arcgismaps.sample.stylegraphicswithsymbols
 import android.os.Bundle
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon

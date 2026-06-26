@@ -19,8 +19,6 @@ package com.esri.arcgismaps.sample.displaymap
 import android.os.Bundle
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.esri.arcgismaps.sample.displaymap.databinding.DisplayMapActivityMainBinding

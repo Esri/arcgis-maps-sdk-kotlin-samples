@@ -22,8 +22,6 @@ import android.util.Log
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.arcgisservices.LabelingPlacement
 import com.arcgismaps.data.ServiceFeatureTable

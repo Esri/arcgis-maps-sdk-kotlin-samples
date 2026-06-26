@@ -25,7 +25,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
-import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.augmentrealitytonavigateroute.components.SharedRepository
 import com.esri.arcgismaps.sample.augmentrealitytonavigateroute.navigation.AugmentRealityToNavigateRouteNavGraph

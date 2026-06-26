@@ -22,8 +22,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
