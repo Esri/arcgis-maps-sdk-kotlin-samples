@@ -5,24 +5,17 @@ plugins {
     alias(libs.plugins.arcgismaps.android.application.compose)
     alias(libs.plugins.arcgismaps.kotlin.sample)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.gradle.secrets)
     alias(libs.plugins.sample.files.copy)
     alias(libs.plugins.ksp)
 }
 
 tasks.named("preBuild").configure { dependsOn("copyCodeFiles") }
 
-secrets {
-    // this file doesn't contain secrets, it just provides defaults which can be committed into git.
-    defaultPropertiesFileName = "secrets.defaults.properties"
-}
-
 android {
     namespace = "com.esri.arcgismaps.kotlin.sampleviewer"
 
     defaultConfig {
         applicationId = "com.esri.arcgismaps.kotlin.sampleviewer"
-        buildConfigField("String", "ARCGIS_VERSION", "\"${System.getProperty("build") ?: libs.versions.arcgisMapsKotlinVersion.get()}\"")
     }
 
     // Optional input to apply the external signing configuration for the sample viewer
@@ -47,11 +40,6 @@ android {
 
     buildTypes {
         release {
-            ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
-            }
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // If signing.properties file not found, gradle will build an unsigned APK.
             // For release builds, provide the required "signingPropsFilePath" for a signed APK, using:
             // ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties

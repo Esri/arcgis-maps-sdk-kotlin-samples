@@ -18,6 +18,11 @@ class AndroidApplicationConventionPlugin: Plugin<Project> {
                 configureKotlinAndroid(this)
                 compileSdk = libs.findVersion("targetSdk").get().toString().toInt()
                 defaultConfig {
+                    buildConfigField(
+                        type = "String",
+                        name = "ARCGIS_VERSION",
+                        value = "\"${System.getProperty("build") ?: libs.findVersion("arcgisMapsKotlinVersion").get()}\""
+                    )
 
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                     vectorDrawables {
@@ -31,7 +36,9 @@ class AndroidApplicationConventionPlugin: Plugin<Project> {
 
                 buildTypes {
                     release {
-                        isMinifyEnabled = false
+                        // Enable R8 and resource shrinking for release builds.
+                        isMinifyEnabled = true
+                        isShrinkResources = true
                         proguardFiles(
                             getDefaultProguardFile("proguard-android-optimize.txt"),
                             "proguard-rules.pro"

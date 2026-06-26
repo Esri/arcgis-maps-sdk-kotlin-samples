@@ -28,11 +28,12 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
                 buildTypes {
                     release {
+                        // Keep libraries, app module performs the final R8 shrink.
                         isMinifyEnabled = false
-                        proguardFiles(
-                            getDefaultProguardFile("proguard-android-optimize.txt"),
-                            "proguard-rules.pro"
-                        )
+                        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+                        ndk {
+                            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+                        }
                     }
                 }
 

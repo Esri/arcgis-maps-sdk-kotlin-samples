@@ -1,21 +1,47 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
-
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ProGuard configuration for a release build.
+-optimizationpasses 10
+-allowaccessmodification
+-overloadaggressively
+-repackageclasses ''
+-adaptclassstrings
+-adaptresourcefilenames
+-adaptresourcefilecontents
+-renamesourcefileattribute SourceFile
+-keepattributes Exceptions,InnerClasses,Signature,EnclosingMethod,*Annotation*,AnnotationDefault
+-keep,allowoptimization,allowaccessmodification,allowrepackage @androidx.annotation.Keep class * { *; }
+-keepclassmembers,allowoptimization,allowaccessmodification,allowrepackage class * {
+	@androidx.annotation.Keep *;
+}
+-assumevalues class **.BuildConfig {
+	public static final boolean DEBUG return false;
+}
+-maximumremovedandroidloglevel 7
+-assumenosideeffects class android.util.Log {
+	public static int v(...);
+	public static int d(...);
+	public static int i(...);
+	public static int w(...);
+	public static int e(...);
+	public static int wtf(...);
+	public static boolean isLoggable(...);
+}
+-assumenosideeffects class java.io.PrintStream {
+	public void print(...);
+	public void println(...);
+	public java.io.PrintStream printf(...);
+	public java.io.PrintStream format(...);
+}
+-keepclasseswithmembers,allowshrinking,allowoptimization,allowaccessmodification,includedescriptorclasses class * {
+	native <methods>;
+}
+-keepclassmembers,allowoptimization enum * {
+	public static **[] values();
+	public static ** valueOf(java.lang.String);
+}
+-keep,allowshrinking,allowoptimization,allowobfuscation,allowaccessmodification,allowrepackage class * extends java.lang.annotation.Annotation { *; }
+-keep,allowoptimization,allowaccessmodification class com.esri.arcgismaps.sample.**.MainActivity extends android.app.Activity {
+	public <init>();
+}
+-keep,allowoptimization,allowaccessmodification class com.esri.arcgismaps.sample.**.DownloadActivity extends android.app.Activity {
+	public <init>();
+}
