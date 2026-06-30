@@ -37,7 +37,7 @@ fun main() {
     run()
 }
 
-private enum class SampleTemplateTypes { Basic, FAB_DialogOptions, FAB_BottomSheetOptions }
+private enum class SampleTemplateTypes { Basic, FAB_DialogOptions, FAB_BottomSheetOptions, Adaptive }
 
 private var sampleName: String = ""
 private var sampleWithHyphen: String = ""
@@ -67,8 +67,8 @@ fun run() {
     sampleCategory = getSampleCategory(scanner.nextLine().trim().toIntOrNull())
 
     // Get the sample template type
-    println("Choose the sample template type: \n1: Basic \n2: FAB with DialogOptions \n3: FAB with BottomSheetOptions")
-    print("Enter a number (1-3) to sample template type: ")
+    println("Choose the sample template type: \n1: Basic \n2: FAB with DialogOptions \n3: FAB with BottomSheetOptions \n4: Adaptive panes")
+    print("Enter a number (1-4) to sample template type: ")
     sampleTemplateType = getSampleTemplate(scanner.nextLine().trim().toIntOrNull())
 
     // Handles either if JAR file or source code is executed.
@@ -108,13 +108,14 @@ private fun getSampleCategory(i: Int?): String {
 }
 
 private fun getSampleTemplate(i: Int?): SampleTemplateTypes {
-    if (i == null || i > 3 || i < 1) {
+    if (i == null || i > 4 || i < 1) {
         exitProgram(Exception("Invalid category input"))
     }
     when (i) {
         1 -> return SampleTemplateTypes.Basic
         2 -> return SampleTemplateTypes.FAB_DialogOptions
         3 -> return SampleTemplateTypes.FAB_BottomSheetOptions
+        4 -> return SampleTemplateTypes.Adaptive
     }
     return SampleTemplateTypes.Basic
 }
@@ -158,12 +159,14 @@ private fun createFilesAndFolders() {
     }
 
     // Copy Kotlin template files to new sample
-    val mainActivityTemplate = File("$samplesRepoPath/tools/NewModuleScript/MainActivityTemplate.kt")
-    val mapViewModelTemplate = File("$samplesRepoPath/tools/NewModuleScript/MapViewModelTemplate.kt")
+    val mainActivityTemplate = File("$samplesRepoPath/tools/NewModuleScript/templates/MainActivityTemplate.kt")
+    val mapViewModelTemplate = if (sampleTemplateType == SampleTemplateTypes.Adaptive) File("$samplesRepoPath/tools/NewModuleScript/templates/adaptive/MapViewModelTemplate.kt")
+        else File("$samplesRepoPath/tools/NewModuleScript/templates/MapViewModelTemplate.kt")
     val mainScreenTemplate = when (sampleTemplateType) {
-        SampleTemplateTypes.Basic -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenTemplate.kt")
-        SampleTemplateTypes.FAB_DialogOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenDialogTemplate.kt")
-        SampleTemplateTypes.FAB_BottomSheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/MainScreenBottomSheetTemplate.kt")
+        SampleTemplateTypes.Basic -> File("$samplesRepoPath/tools/NewModuleScript/templates/MainScreenTemplate.kt")
+        SampleTemplateTypes.FAB_DialogOptions -> File("$samplesRepoPath/tools/NewModuleScript/templates/MainScreenDialogTemplate.kt")
+        SampleTemplateTypes.FAB_BottomSheetOptions -> File("$samplesRepoPath/tools/NewModuleScript/templates/MainScreenBottomSheetTemplate.kt")
+        SampleTemplateTypes.Adaptive -> File("$samplesRepoPath/tools/NewModuleScript/templates/adaptive/AdaptiveScreenTemplate.kt")
     }
 
     // Perform copy
@@ -188,6 +191,14 @@ private fun createFilesAndFolders() {
     FileUtils.copyFileToDirectory(mainScreenTemplate, componentsDir)
     source = Paths.get("$componentsDir/${mainScreenTemplate.name}")
     Files.move(source, source.resolveSibling("${sampleNameCamelCase}Screen.kt"))
+
+    // copy supporting pane, if enabled
+    if (sampleTemplateType == SampleTemplateTypes.Adaptive){
+        val supportingPaneTemplate = File("$samplesRepoPath/tools/NewModuleScript/templates/adaptive/SupportingPaneTemplate.kt")
+        FileUtils.copyFileToDirectory(supportingPaneTemplate, componentsDir)
+        source = Paths.get("$componentsDir/SupportingPaneTemplate.kt")
+        Files.move(source, source.resolveSibling("${sampleNameCamelCase}SupportingPane.kt"))
+    }
 }
 
 /**
@@ -282,8 +293,19 @@ private fun updateSampleContent() {
     fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
     fileContent = fileContent.replace("MapViewModel", "${sampleNameCamelCase}ViewModel")
     fileContent = fileContent.replace("MainScreen(", "${sampleNameCamelCase}Screen(")
-    fileContent = fileContent.replace("display_composable_map_view_app_name", "${sampleNameUnderscore}_app_name")
+    fileContent = fileContent.replace("DisplayAdaptiveMapSupportingPane", "${sampleNameCamelCase}SupportingPane")
+    fileContent = fileContent.replace("app_name", "${sampleNameUnderscore}_app_name")
     FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
+
+    if (sampleTemplateType == SampleTemplateTypes.Adaptive) {
+        file =
+            File("$samplesRepoPath/samples/$sampleWithHyphen/src/main/java/com/esri/arcgismaps/sample/$sampleWithoutSpaces/screens/${sampleNameCamelCase}SupportingPane.kt")
+        fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
+        fileContent = fileContent.replace("Copyright 2023", "Copyright " + Calendar.getInstance()[Calendar.YEAR])
+        fileContent = fileContent.replace("sample.displaycomposablemapview", "sample.$sampleWithoutSpaces")
+        fileContent = fileContent.replace("DisplayComposableMapViewSupportingPane", "${sampleNameCamelCase}SupportingPane")
+        FileUtils.write(file, fileContent, StandardCharsets.UTF_8)
+    }
 
     //Update AndroidManifest.xml
     file = File("$samplesRepoPath/samples/$sampleWithHyphen/src/main/AndroidManifest.xml")

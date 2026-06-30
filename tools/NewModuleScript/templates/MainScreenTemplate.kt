@@ -23,8 +23,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.displaycomposablemapview.R
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -33,10 +35,12 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String) {
+fun MainScreen(
+    mapViewModel: MapViewModel = viewModel()
+) {
     val mapViewModel: MapViewModel = viewModel()
     Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
+        topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) },
         content = {
             Column(
                 modifier = Modifier
