@@ -295,14 +295,15 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
-            // attempt to identify a graphic at the location the user tapped
-            val graphicsResult = mapViewProxy.identifyGraphicsOverlays(
-                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
-                tolerance = 10.0.dp,
-                returnPopupsOnly = false
-            ).getOrNull()
-
             if (!geometryEditor.isStarted.value) {
+
+                // attempt to identify a graphic at the location the user tapped
+                val graphicsResult = mapViewProxy.identifyGraphicsOverlays(
+                    screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
+                    tolerance = 10.0.dp,
+                    returnPopupsOnly = false
+                ).getOrNull()
+
                 if (graphicsResult != null) {
                     if (graphicsResult.isNotEmpty()) {
                         // get the tapped graphic
