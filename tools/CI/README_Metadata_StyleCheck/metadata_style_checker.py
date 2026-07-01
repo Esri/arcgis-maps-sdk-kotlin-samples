@@ -11,6 +11,7 @@ from pathlib import Path
 # region Global sets
 # A set of category folder names in current sample viewer.
 categories = {
+    'Accessibility',
     'Analysis',
     'Augmented Reality',
     'Cloud and Portal',

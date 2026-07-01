@@ -1,5 +1,6 @@
 package com.esri.arcgismaps.kotlin.build_logic.convention
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -7,16 +8,10 @@ import org.gradle.kotlin.dsl.dependencies
 /**
  * Extension to use compose configurations and dependencies
  */
-internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
-) {
+internal fun Project.configureAndroidCompose(commonExtension: CommonExtension) {
     commonExtension.apply {
-        buildFeatures {
+        buildFeatures.apply {
             compose = true
-        }
-
-        composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("kotlinVersion").get().toString()
         }
 
         dependencies {
@@ -24,6 +19,9 @@ internal fun Project.configureAndroidCompose(
             implementation(platform(composeBom))
             implementation(libs.findLibrary("androidx-activity-compose").get())
             implementation(libs.findLibrary("androidx-compose-material3").get())
+            implementation(libs.findLibrary("androidx-compose-material3-adaptive").get())
+            implementation(libs.findLibrary("androidx-compose-material3-adaptiveLayout").get())
+            implementation(libs.findLibrary("androidx-compose-material3-adaptiveNavigation").get())
             implementation(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
             implementation(libs.findLibrary("androidx-compose-ui-tooling-preview").get())
             implementation(libs.findLibrary("androidx-concurrent-futures").get())
@@ -33,9 +31,7 @@ internal fun Project.configureAndroidCompose(
     }
 }
 
-internal fun Project.configureAndroidComposeTests(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
-) {
+internal fun Project.configureAndroidComposeTests(commonExtension: ApplicationExtension) {
     commonExtension.apply {
         dependencies {
             val composeBom = libs.findLibrary("androidx-compose-bom").get()
