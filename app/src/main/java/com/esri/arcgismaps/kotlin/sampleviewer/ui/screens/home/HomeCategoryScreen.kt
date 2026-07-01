@@ -57,6 +57,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
@@ -133,7 +134,9 @@ fun HomeCategoryScreen(
  */
 @Composable
 fun CheckAccessToken() {
-    var isDialogDisplayed by remember { mutableStateOf(false) }
+    var isDialogDisplayed by remember {
+        mutableStateOf(BuildConfig.ACCESS_TOKEN == "DEFAULT_ACCESS_TOKEN")
+    }
     if (isDialogDisplayed) {
         MessageDialog(
             title = "Access token",
