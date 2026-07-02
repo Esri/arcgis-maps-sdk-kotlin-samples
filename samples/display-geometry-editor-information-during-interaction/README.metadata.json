@@ -13,9 +13,9 @@
         "interaction preview",
         "Geometry",
         "GeometryEditor",
+        "GeometryEditor.interactionPreviewChanged",
         "GeometryEditorInteractionPreview",
         "GeometryEditorInteractionType",
-        "GeometryEditor.interactionPreviewChanged",
         "Graphic",
         "GraphicsOverlay"
     ],
@@ -24,9 +24,9 @@
     "relevant_apis": [
         "Geometry",
         "GeometryEditor",
+        "GeometryEditor.interactionPreviewChanged",
         "GeometryEditorInteractionPreview",
         "GeometryEditorInteractionType",
-        "GeometryEditor.interactionPreviewChanged",
         "Graphic",
         "GraphicsOverlay"
     ],
