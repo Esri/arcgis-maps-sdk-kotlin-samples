@@ -36,5 +36,5 @@
         "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/screens/ButtonMenu.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/screens/DisplayGeometryEditorInformationDuringInteractionScreen.kt"
     ],
-    "title": "Display GeometryEditor information during interaction"
+    "title": "Display geometry editor information during interaction"
 }
