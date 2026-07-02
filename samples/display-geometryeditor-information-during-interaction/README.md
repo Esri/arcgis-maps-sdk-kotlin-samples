@@ -4,8 +4,6 @@ See information about the previewed geometry during an interaction using the geo
 
 ![Image of geometry editor with rotation and scaling selection handles visible](display-geometryeditor-information-during-interaction.png)
 
-TODO - update image
-
 ## Use case
 
 A field worker can see information about the geometry being created or edited during an editing interaction. This information can be used provide feedback to the user about the geometry so that they can see the effects of their interaction on the geometry as the interaction progresses.

@@ -54,7 +54,7 @@ import java.util.Locale
 import kotlin.math.atan2
 
 class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Application) : AndroidViewModel(app) {
-    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISNavigationNight).apply {
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
             initialViewpoint = Viewpoint(
                 center = Point(x = -13045202.018086127, y = 4035612.571361517, SpatialReference.webMercator()),
                 scale = 40000.0
@@ -146,6 +146,10 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         }
     }
 
+    /**
+     * Calculates the transformation information based on the current interaction preview and
+     * updates the state flow.
+     */
     private fun calculateTransformationInformation(interactionPreview: GeometryEditorInteractionPreview?) {
         _interactionTransformationFlow.value = interactionPreview?.let {
             // for each type of interaction, create a TransformationInformation object with the relevant data
@@ -175,6 +179,10 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         }
     }
 
+    /**
+     * Calculates the scale factors based on the current interaction preview and
+     * returns a string representation of the scale factors.
+     */
     private fun calculateScaleFactors(preview: GeometryEditorInteractionPreview): String? {
         // get the extent of the existing geometry excluding the current interaction
         val geometryExtent = geometryEditor.geometry.value?.extent
@@ -194,6 +202,10 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         }
     }
 
+    /**
+     * Calculates the rotation angle based on the current interaction preview and
+     * returns a string representation of the rotation angle in degrees.
+     */
     fun calculateRotation(interactionPreview: GeometryEditorInteractionPreview): String? {
         if (interactionPreview.interactionType is GeometryEditorInteractionType.Rotate) {
             // Get the original geometry for comparison
@@ -239,7 +251,8 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
                 val dot = vector1X * vector2X + vector1Y * vector2Y
 
                 val angle = atan2(cross, dot) * (180.0 / Math.PI) // Convert to degrees
-                return "Rotation Angle (degrees): ${String.format(Locale.getDefault(),"%.2f", angle)}"
+                val clockwiseNormalized = ((-angle % 360) + 360) % 360
+                return "Rotation Angle (degrees): ${String.format(Locale.getDefault(),"%.2f", clockwiseNormalized)}"
             }
         }
         return null
