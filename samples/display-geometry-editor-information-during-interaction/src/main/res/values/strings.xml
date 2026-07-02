@@ -1,5 +1,5 @@
 <resources>
-    <string name="display_geometryeditor_information_during_interaction_app_name">Display GeometryEditor information during interaction</string>
+    <string name="display_geometry_editor_information_during_interaction_app_name">Display GeometryEditor information during interaction</string>
     <string name="tap_on_geometry_to_interact">Tap on a geometry to rotate, scale, or move it</string>
     <string name="transform_drag_handles">"Rotate, scale, or move the geometry by dragging the handles"</string>
 </resources>

@@ -2,7 +2,7 @@
 
 See information about the previewed geometry during an interaction using the geometry editor.
 
-![Image of geometry editor with rotation and scaling selection handles visible](display-geometryeditor-information-during-interaction.png)
+![Image of geometry editor with rotation and scaling selection handles visible](display-geometry-editor-information-during-interaction.png)
 
 ## Use case
 

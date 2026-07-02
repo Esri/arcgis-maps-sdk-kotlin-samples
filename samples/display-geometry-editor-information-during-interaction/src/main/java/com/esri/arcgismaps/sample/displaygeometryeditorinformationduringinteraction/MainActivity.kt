@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
     private fun DisplayGeometryEditorInformationDuringInteractionApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
             DisplayGeometryEditorInformationDuringInteractionScreen(
-                sampleName = getString(R.string.display_geometryeditor_information_during_interaction_app_name)
+                sampleName = getString(R.string.display_geometry_editor_information_during_interaction_app_name)
             )
         }
     }
