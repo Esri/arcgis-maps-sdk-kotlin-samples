@@ -20,8 +20,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
+import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
 import kotlinx.serialization.Serializable
 
 /**
@@ -128,9 +130,13 @@ data class Sample(
  * Starts the sample activity.
  */
 suspend fun Sample.start(context: Context) {
-    // Revoke previously configured ArcGISEnvironment settings like ApiKeys/OAuth tokens/Credentials
+    // Revoke previously configured ArcGISEnvironment settings OAuth tokens/Credentials
     AuthenticatorState().signOut()
-    ArcGISEnvironment.apiKey = null
+
+    // Authentication with an API key or named user is
+    // required to access basemaps and other location services
+    ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+
     // Obtain and launch the sample activity
     val className = Class.forName(mainActivity) as Class<*>
     val sampleLauncherActivity = context.getActivityOrNull() ?: return

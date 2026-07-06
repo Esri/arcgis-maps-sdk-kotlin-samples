@@ -21,9 +21,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
-import com.esri.arcgismaps.sample.sampleslib.BuildConfig
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.showlineofsightanalysisinmap.screens.ShowLineOfSightAnalysisInMapScreen
 
@@ -31,9 +28,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
         setContent {
             SampleAppTheme {
