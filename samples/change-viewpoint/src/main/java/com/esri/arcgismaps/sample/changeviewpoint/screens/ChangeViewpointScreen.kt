@@ -16,7 +16,6 @@
 
 package com.esri.arcgismaps.sample.changeviewpoint.screens
 
-import android.provider.Settings.Global.getString
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,24 +26,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.PolylineBuilder
-import com.arcgismaps.geometry.SpatialReference
-import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.changeviewpoint.R
 import com.esri.arcgismaps.sample.changeviewpoint.components.ChangeViewpointViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
+
 
 /**
  * Main screen layout for the sample app
