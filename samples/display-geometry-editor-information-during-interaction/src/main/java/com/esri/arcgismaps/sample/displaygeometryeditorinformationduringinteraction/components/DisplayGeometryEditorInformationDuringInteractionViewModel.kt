@@ -240,19 +240,21 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
             }
 
             // Calculate the rotation angle if both original and preview points are available and different from each other.
-            if (originalPoint!! != previewPoint!!) {
-                val vector1X = originalPoint.x - center.x
-                val vector2X = previewPoint.x - center.x
-                val vector1Y = originalPoint.y - center.y
-                val vector2Y = previewPoint.y - center.y
+            val op = originalPoint ?: return null
+            val pp = previewPoint ?: return null
+            if (op == pp) return null
 
-                val cross = vector1X * vector2Y - vector1Y * vector2X
-                val dot = vector1X * vector2X + vector1Y * vector2Y
+            val vector1X = op.x - center.x
+            val vector2X = pp.x - center.x
+            val vector1Y = op.y - center.y
+            val vector2Y = pp.y - center.y
 
-                val angle = atan2(cross, dot) * (180.0 / Math.PI) // Convert to degrees
-                val clockwiseNormalized = ((-angle % 360) + 360) % 360
-                return "Rotation Angle (degrees): ${String.format(Locale.getDefault(),"%.2f", clockwiseNormalized)}"
-            }
+            val cross = vector1X * vector2Y - vector1Y * vector2X
+            val dot = vector1X * vector2X + vector1Y * vector2Y
+
+            val angle = atan2(cross, dot) * (180.0 / Math.PI) // Convert to degrees
+            val clockwiseNormalized = ((-angle % 360) + 360) % 360
+            return "Rotation Angle (degrees): ${String.format(Locale.getDefault(),"%.2f", clockwiseNormalized)}"
         }
         return null
     }
