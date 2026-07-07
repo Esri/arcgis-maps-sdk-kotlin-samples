@@ -25,7 +25,7 @@ Use the buttons in the settings view to undo or redo changes made to the geometr
         * The `interactionElement` can be used to determine the element being interacted with (`GeometryEditorVertex`, `GeometryEditorPart`, `GeometryEditorGeometry`).
 4. Start the `GeometryEditor` using `GeometryEditor.start(Geometry)` to edit the geometry of one of the graphics.
     * To identify the `Graphic`, use `MapViewProxy.identifyGraphicsOverlays(...)` and take the first result.
-6. Call `GeometryEditor.stop()` to finish the editing session, and use the geometry returned from this method to update the existing `Graphics.geometry`.
+5. Call `GeometryEditor.stop()` to finish the editing session, and use the geometry returned from this method to update the existing `Graphics.geometry`.
 
 ## Relevant API
 
