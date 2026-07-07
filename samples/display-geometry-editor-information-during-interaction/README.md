@@ -20,12 +20,11 @@ Use the buttons in the settings view to undo or redo changes made to the geometr
 2. Create a `MapView` with MapView using `MapView(mapViewProxy = MapViewProxy, geometryEditor = GeometryEditor, ...)`.
 3. Add an event handler to listen to `GeometryEditor.interactionPreviewChanged`.
     * This event can be used to get information on the state of the geometry during an interaction with the `GeometryEditorInteractionPreview` parameter.
-        * The `PreviewGeometry` represents the geometry's state at that moment.
-        * The `InteractionType` can be used to determine the type of interaction that is occurring (`create`, `move`, `rotate`, `scale`).
-        * The `InteractionElement` can be used to determine the element being interacted with (`GeometryEditorVertex`, `GeometryEditorPart`, `GeometryEditorGeometry`).
+        * The `previewGeometry` represents the geometry's state at that moment.
+        * The `interactionType` can be used to determine the type of interaction that is occurring (`create`, `move`, `rotate`, `scale`).
+        * The `interactionElement` can be used to determine the element being interacted with (`GeometryEditorVertex`, `GeometryEditorPart`, `GeometryEditorGeometry`).
 4. Start the `GeometryEditor` using `GeometryEditor.start(Geometry)` to edit the geometry of one of the graphics.
-    * To identify the `Graphic` use `MapView.IdentifyGraphicsOverlayAsync(...)` and get the first result.
-5. Check to see if undo and redo are possible during an editing session using `GeometryEditor.canUndo` and `GeometryEditor.canRedo`. If it's possible, use `GeometryEditor.undo()` and `GeometryEditor.redo()`.
+    * To identify the `Graphic`, use `MapViewProxy.identifyGraphicsOverlays(...)` and take the first result.
 6. Call `GeometryEditor.stop()` to finish the editing session, and use the geometry returned from this method to update the existing `Graphics.geometry`.
 
 ## Relevant API
@@ -40,7 +39,7 @@ Use the buttons in the settings view to undo or redo changes made to the geometr
 
 ## Additional information
 
-The `GeometryEditor.InteractionPreviewChanged` event fires continuously during an interaction, therefore it's not recommended to use it as a trigger for resource intensive actions.
+The `GeometryEditor.interactionPreviewChanged` event fires continuously during an interaction, therefore it's not recommended to use it as a trigger for resource intensive actions.
 
 ## Tags
 

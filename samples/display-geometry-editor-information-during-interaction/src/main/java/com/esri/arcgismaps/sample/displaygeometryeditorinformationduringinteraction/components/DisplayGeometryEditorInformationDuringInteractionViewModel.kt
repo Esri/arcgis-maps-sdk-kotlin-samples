@@ -214,10 +214,9 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
             }
 
             // this is still nullable tho - make this better
-            val originalGeometry = geometryEditor.geometry.value!!
+            val originalGeometry = geometryEditor.geometry.value ?: return null
             // Get the center point of the original geometry.
-            val center = geometryEditor.geometry.value?.extent?.center!!
-
+            val center = originalGeometry.extent?.center ?: return null
             // Create variables to hold the original and preview points for rotation calculation.
             var originalPoint: Point?
             var previewPoint: Point?
