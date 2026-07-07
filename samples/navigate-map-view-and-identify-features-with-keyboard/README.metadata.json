@@ -1,0 +1,43 @@
+{
+    "category": "Accessibility",
+    "description": "Perform all map navigation operations using only the keyboard.",
+    "formal_name": "NavigateMapViewAndIdentifyFeaturesWithKeyboard",
+    "ignore": false,
+    "images": [
+        "navigate-map-view-and-identify-features-with-keyboard.png"
+    ],
+    "keywords": [
+        "WCAG",
+        "accessibility",
+        "accessible",
+        "identify",
+        "inclusive",
+        "input",
+        "interaction",
+        "keyboard",
+        "navigation",
+        "selection",
+        "Envelope",
+        "FeatureLayer",
+        "Graphic",
+        "GraphicsOverlay",
+        "Map",
+        "MapView"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Envelope",
+        "FeatureLayer",
+        "Graphic",
+        "GraphicsOverlay",
+        "Map",
+        "MapView"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/navigatemapviewandidentifyfeatureswithkeyboard/components/NavigateMapViewAndIdentifyFeaturesWithKeyboardViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigatemapviewandidentifyfeatureswithkeyboard/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/navigatemapviewandidentifyfeatureswithkeyboard/screens/NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen.kt"
+    ],
+    "title": "Navigate map view and identify features with keyboard"
+}

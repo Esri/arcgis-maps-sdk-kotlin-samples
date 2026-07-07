@@ -25,7 +25,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
-import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.components.SharedRepository
 import com.esri.arcgismaps.sample.augmentrealitytoshowhiddeninfrastructure.navigation.AugmentRealityToShowHiddenInfrastructureNavGraph
@@ -54,9 +53,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         ArcGISEnvironment.applicationContext = applicationContext
 
         val hasNonDefaultAPIKey = BuildConfig.GOOGLE_API_KEY != "DEFAULT_GOOGLE_API_KEY"

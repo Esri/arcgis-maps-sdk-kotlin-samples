@@ -26,7 +26,7 @@ android {
     }
 
     // Optional input to apply the external signing configuration for the sample viewer
-    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=300.0.0
+    // Example: ./gradlew assembleRelease -PsigningPropsFilePath=absolute-file-path/signing.properties -D build=300.1.0
     val signingPropsFilePath = project.findProperty("signingPropsFilePath").toString()
     val signingPropsFile = rootProject.file(signingPropsFilePath)
 
@@ -62,19 +62,18 @@ android {
 
     buildFeatures {
         buildConfig = true
-        compose = true
         dataBinding = true
     }
 }
 
 dependencies {
-    for (sampleFile in file("../samples").listFiles()!!) {
-        if (sampleFile.isDirectory &&
-            sampleFile.listFiles()?.find { it.name.equals("build.gradle.kts") } != null
-        ) {
-            implementation(project(":samples:" + sampleFile.name))
+    rootProject.subprojects
+        .asSequence()
+        .filter { it.path.startsWith(":samples:") }
+        .sortedBy { it.path }
+        .forEach { sampleProject ->
+            implementation(project(sampleProject.path))
         }
-    }
     implementation(project(":samples-lib"))
     implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
     implementation(libs.kotlinx.serialization.json)
@@ -87,6 +86,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.http)
     implementation(libs.androidx.compose.material.icons.extended)
-    annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 }

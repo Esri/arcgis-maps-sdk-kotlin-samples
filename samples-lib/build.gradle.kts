@@ -3,18 +3,11 @@ import com.esri.arcgismaps.kotlin.build_logic.convention.implementation
 plugins {
     alias(libs.plugins.arcgismaps.android.library)
     alias(libs.plugins.arcgismaps.android.library.compose)
-    alias(libs.plugins.gradle.secrets)
-}
-
-secrets {
-    // this file doesn't contain secrets, it just provides defaults which can be committed into git.
-    defaultPropertiesFileName = "secrets.defaults.properties"
 }
 
 android {
     namespace = "com.esri.arcgismaps.sample.sampleslib"
     buildFeatures {
-        buildConfig = true
         dataBinding = true
     }
 }
@@ -45,6 +38,7 @@ dependencies {
         implementation(libs.arcgis.maps.kotlin)
         implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
     }
+    implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
 }
 
 
