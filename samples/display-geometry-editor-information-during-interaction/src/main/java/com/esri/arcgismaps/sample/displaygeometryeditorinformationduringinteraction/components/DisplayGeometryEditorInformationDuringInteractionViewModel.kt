@@ -211,7 +211,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
             // Get the original geometry for comparison
             val originalGeometry = geometryEditor.geometry.value ?: return null
             // Get the center point of the original geometry.
-            val center = originalGeometry.extent?.center ?: return null
+            val center = originalGeometry.extent.center
             // Create variables to hold the original and preview points for rotation calculation.
             var originalPoint: Point?
             var previewPoint: Point?
