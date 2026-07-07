@@ -6,7 +6,7 @@ See information about the previewed geometry during an interaction using the geo
 
 ## Use case
 
-A field worker can see information about the geometry being created or edited during an editing interaction. This information can be used provide feedback to the user about the geometry so that they can see the effects of their interaction on the geometry as the interaction progresses.
+The geometry editor can provide information about the geometry being created or edited during an interaction. This information can be used to give feedback to the user to show the effect of the interaction on the geometry.
 
 ## How to use the sample
 
@@ -24,11 +24,7 @@ Use the buttons in the settings view to undo or redo changes made to the geometr
         * The `InteractionType` can be used to determine the type of interaction that is occurring (`create`, `move`, `rotate`, `scale`).
         * The `InteractionElement` can be used to determine the element being interacted with (`GeometryEditorVertex`, `GeometryEditorPart`, `GeometryEditorGeometry`).
 4. Start the `GeometryEditor` using `GeometryEditor.start(Geometry)` to edit the geometry of one of the graphics.
-    * To retrieve the geometry of the graphic that is being used to visualize it, follow these steps:
-        * Use `MapViewProxy.identifyGraphicsOverlays(...)` to identify graphics at the location of a tap.
-        * Find the desired `IdentifyGraphicsOverlayResult` in the list returned by `MapViewProxy.identifyGraphicsOverlays(...)`.
-        * Find the desired graphic in the `IdentifyGraphicsOverlayResult.graphics` list.
-        * Access the geometry associated with the `Graphic` using `Graphic.geometry` - this will be used in the `GeometryEditor.start(Geometry)` method.
+    * To identify the `Graphic` use `MapView.IdentifyGraphicsOverlayAsync(...)` and get the first result.
 5. Check to see if undo and redo are possible during an editing session using `GeometryEditor.canUndo` and `GeometryEditor.canRedo`. If it's possible, use `GeometryEditor.undo()` and `GeometryEditor.redo()`.
 6. Call `GeometryEditor.stop()` to finish the editing session, and use the geometry returned from this method to update the existing `Graphics.geometry`.
 
