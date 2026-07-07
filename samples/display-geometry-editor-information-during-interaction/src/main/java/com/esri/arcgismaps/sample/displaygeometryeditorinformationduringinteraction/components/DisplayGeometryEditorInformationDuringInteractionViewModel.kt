@@ -209,11 +209,6 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
     fun calculateRotation(interactionPreview: GeometryEditorInteractionPreview): String? {
         if (interactionPreview.interactionType is GeometryEditorInteractionType.Rotate) {
             // Get the original geometry for comparison
-            if (geometryEditor.geometry.value == null) {
-                return null
-            }
-
-            // this is still nullable tho - make this better
             val originalGeometry = geometryEditor.geometry.value ?: return null
             // Get the center point of the original geometry.
             val center = originalGeometry.extent?.center ?: return null
