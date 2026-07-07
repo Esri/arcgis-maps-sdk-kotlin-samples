@@ -33,8 +33,6 @@ import androidx.core.text.bold
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -95,9 +93,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(mapView)
 
         mapView.apply {

@@ -19,28 +19,34 @@ package com.esri.arcgismaps.sample.displaycomposablemapview.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.displaycomposablemapview.R
 import com.esri.arcgismaps.sample.displaycomposablemapview.components.MapViewModel
-import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.SampleDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -48,17 +54,18 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String) {
-    val mapViewModel: MapViewModel = viewModel()
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
+fun MainScreen(
+    mapViewModel: MapViewModel = viewModel()
+) {
+    var isDialogOptionsVisible by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
+        topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) },
         floatingActionButton = {
-            if (!isBottomSheetVisible) {
+            if (!isDialogOptionsVisible) {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
-                    onClick = { isBottomSheetVisible = true }
+                    onClick = { isDialogOptionsVisible = true }
                 ) { Icon(Icons.Filled.Settings, contentDescription = "Show options") }
             }
         },
@@ -72,19 +79,15 @@ fun MainScreen(sampleName: String) {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    onVisibleAreaChanged = { isBottomSheetVisible = false }
+                    arcGISMap = mapViewModel.arcGISMap
                 )
             }
 
-            BottomSheet(
-                isVisible = isBottomSheetVisible,
-                sheetTitle = "Bottom sheet options",
-                onDismissRequest = { isBottomSheetVisible = false }
-            ) {
-                SampleOptions(
+            if (isDialogOptionsVisible) {
+                DialogOptions(
                     // isCurrentOptionEnabled = ...,
-                    // onOptionToggled = { ... },
+                    // onOptionToggled = { ... }
+                    onDismissRequest = { isDialogOptionsVisible = false }
                 )
             }
 
@@ -102,30 +105,28 @@ fun MainScreen(sampleName: String) {
 }
 
 @Composable
-fun SampleOptions() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun DialogOptions(
+    onDismissRequest: () -> Unit
+) {
+    SampleDialog(onDismissRequest = onDismissRequest) {
+        Text("Sample options: ", style = MaterialTheme.typography.titleMedium)
         DropDownMenuBox(
             textFieldValue = "<selected-option>",
             textFieldLabel = "Select an option",
             dropDownItemList = emptyList(),
             onIndexSelected = { }
         )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            OutlinedButton(onClick = onDismissRequest) { Text("Dismiss") }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun BottomSheetPreview() {
+fun DialogOptionsPreview() {
     SamplePreviewSurface {
-        BottomSheet(
-            isVisible = true,
-            sheetTitle = "Bottom sheet options",
-        ) {
-            SampleOptions()
-        }
+        DialogOptions { }
     }
 }

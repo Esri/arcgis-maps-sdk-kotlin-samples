@@ -21,8 +21,6 @@ import android.view.View
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.PolylineBuilder
 import com.arcgismaps.geometry.SpatialReference
@@ -48,9 +46,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         // add the MapView to the lifecycle
         lifecycle.addObserver(mapView)
         // create and add a map with a imagery basemap style

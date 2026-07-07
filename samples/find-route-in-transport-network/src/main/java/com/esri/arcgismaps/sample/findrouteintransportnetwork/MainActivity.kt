@@ -23,7 +23,6 @@ import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Envelope
@@ -97,9 +96,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         // some parts of the API require an Android Context to properly interact with Android system
         // features, such as LocationProvider and application resources
         ArcGISEnvironment.applicationContext = applicationContext
