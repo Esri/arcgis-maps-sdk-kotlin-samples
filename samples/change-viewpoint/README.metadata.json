@@ -1,19 +1,36 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Set the map view to a new viewpoint",
     "formal_name": "ChangeViewpoint",
     "ignore": false,
     "images": [
         "change-viewpoint.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "animate",
+        "center",
+        "scale",
+        "view",
+        "zoom",
+        "ArcGISMap",
+        "Geometry",
+        "MapViewProxy",
+        "Point",
+        "Viewpoint"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "ArcGISMap",
+        "Geometry",
+        "MapViewProxy",
+        "Point",
+        "Viewpoint"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/components/ChangeViewpointViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/screens/ChangeViewpointScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/screens/ChangeViewpointScreen.kt"
     ],
     "title": "Change Viewpoint"
 }
