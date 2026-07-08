@@ -13,7 +13,7 @@ point.
 
 The map opens centered on London with an imagery basemap. Tap "Geometry" to jump the viewpoint to a
 polyline extent near Westminster, tao "Center" to instantly center the map on Waterloo at a set
-scale, or tap "Animate" to smoothly pan back to London over seven seconds. 
+scale, or tap "Animate" to smoothly pan back to London over seven seconds.
 
 ## How it works
 

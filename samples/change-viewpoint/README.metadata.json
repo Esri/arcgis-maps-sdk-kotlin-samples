@@ -32,5 +32,5 @@
     "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/MainActivity.kt",
     "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/screens/ChangeViewpointScreen.kt"
   ],
-  "title": "Change Viewpoint"
+  "title": "Change viewpoint"
 }
