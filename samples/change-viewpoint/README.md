@@ -1,4 +1,4 @@
-# Change Viewpoint
+# Change viewpoint
 
 Set the map view to a new viewpoint
 
@@ -8,6 +8,12 @@ Set the map view to a new viewpoint
 
 Navigate programmatically to a specific location on the map, allowing you to zoom in on a particular
 point.
+
+## How to use the sample
+
+The map opens centered on London with an imagery basemap. Tap "Geometry" to jump the viewpoint to a
+polyline extent near Westminster, tao "Center" to instantly center the map on Waterloo at a set
+scale, or tap "Animate" to smoothly pan back to London over seven seconds. 
 
 ## How it works
 
