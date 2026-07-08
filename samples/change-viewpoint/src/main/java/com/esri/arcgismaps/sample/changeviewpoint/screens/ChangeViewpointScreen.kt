@@ -36,7 +36,6 @@ import com.esri.arcgismaps.sample.changeviewpoint.components.ChangeViewpointView
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
-
 /**
  * Main screen layout for the sample app
  */
@@ -44,21 +43,21 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun ChangeViewpointScreen(sampleName: String) {
     val mapViewModel: ChangeViewpointViewModel = viewModel()
 
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) }
-    ) { paddingValues ->
+    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            //Mapview
             MapView(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f),
                 arcGISMap = mapViewModel.arcGISMap,
-                mapViewProxy = mapViewModel.mapViewProxy
+                graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                mapViewProxy = mapViewModel.mapViewProxy,
+                onMapScaleChanged = mapViewModel::onMapScaleChanged,
+                onVisibleAreaChanged = mapViewModel::onVisibleAreaChanged
             )
 
             Row(
@@ -67,20 +66,19 @@ fun ChangeViewpointScreen(sampleName: String) {
                     .padding(all = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = { mapViewModel.onGeometryClicked() }) {
+                Button(onClick = mapViewModel::onGeometryClicked) {
                     Text(text = stringResource(R.string.geometry))
                 }
 
-                Button(onClick = { mapViewModel.onCenterClicked() }) {
-                    Text(text = stringResource(R.string.center))
+                Button(onClick = mapViewModel::onCenterClicked) {
+                    Text(text = stringResource(R.string.center_and_scale))
                 }
 
-                Button(onClick = { mapViewModel.onAnimateClicked() }) {
-                    Text(text = stringResource((R.string.animate)))
+                Button(onClick = mapViewModel::onAnimateClicked) {
+                    Text(text = stringResource(R.string.animate))
                 }
             }
         }
-
         mapViewModel.messageDialogVM.apply {
             if (dialogStatus) {
                 MessageDialog(

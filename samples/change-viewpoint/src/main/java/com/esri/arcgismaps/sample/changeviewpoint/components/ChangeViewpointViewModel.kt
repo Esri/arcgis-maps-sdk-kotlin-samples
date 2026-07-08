@@ -19,83 +19,146 @@ package com.esri.arcgismaps.sample.changeviewpoint.components
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcgismaps.Color
+import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.geometry.PolylineBuilder
+import com.arcgismaps.geometry.Polygon
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.symbology.SimpleFillSymbol
+import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.changeviewpoint.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
 
-    val viewpointScale = 5000.0
+    private val londonEastViewpoint = Viewpoint(
+        center = Point(
+            x = 0.1275,
+            y = 51.5072,
+            spatialReference = SpatialReference.wgs84()
+        ),
+        scale = 4e4
+    )
 
-    private val startPoint = Point(
-        x = -14093.0,
-        y = 6711377.0,
-        spatialReference = SpatialReference.webMercator()
-    )
-    val arcGISMap by mutableStateOf(
-        value = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-            initialViewpoint = Viewpoint(center = startPoint, scale = viewpointScale)
-        }
-    )
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
+        initialViewpoint = londonEastViewpoint
+    }
+
+    val graphicsOverlay = GraphicsOverlay()
 
     val mapViewProxy = MapViewProxy()
+
+    private var visibleArea: Polygon? by mutableStateOf(null)
+
+    private var currentMapScale: Double? by mutableStateOf(null)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
     init {
+        // Create the geometry from JSON and the simple fill symbol for the graphic
+        val griffithParkPolygon = Geometry.fromJsonOrNull(
+            json = app.resources.openRawResource(R.raw.griffith_park_geometry_json)
+                .bufferedReader()
+                .use { it.readText() }
+        ) as? Polygon
+
+        val fillSymbol = SimpleFillSymbol(
+            style = SimpleFillSymbolStyle.Solid,
+            color = Color.fromRgba(r = 0, g = 128, b = 0, a = 179)
+        )
+
+        // Create the graphic using the geometry and symbol, and add it to the graphics overlay
+        griffithParkPolygon?.let { polygon ->
+            val griffithParkGraphic = Graphic(
+                geometry = polygon,
+                symbol = fillSymbol
+            )
+            graphicsOverlay.graphics.add(griffithParkGraphic)
+        }
+
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
         }
     }
 
-    //function for when "Geometry"button is clicked
+    /**
+     * Track the current visible area for animated viewpoint logic.
+     */
+    fun onVisibleAreaChanged(newVisibleArea: Polygon) {
+        visibleArea = newVisibleArea
+    }
 
+    /**
+     * Track current map scale for animated viewpoint logic.
+     */
+    fun onMapScaleChanged(scale: Double) {
+        currentMapScale = scale
+    }
+
+    /**
+     * Function for when "Geometry" button is clicked
+     */
     fun onGeometryClicked() {
-        val points = PolylineBuilder(SpatialReference.webMercator()).apply {
-            addPoint(Point(x = -13823.0, y = 6710390.0))
-            addPoint(Point(x = -13823.0, y = 6710150.0))
-            addPoint(Point(x = -14680.0, y = 6710390.0))
-            addPoint(Point(x = -14680.0, y = 6710150.0))
-        }
-        val geometry = points.toGeometry()
+        val polygon = graphicsOverlay.graphics[0].geometry ?: return messageDialogVM.showMessageDialog(
+            title = "Failed to parse geometry",
+            description = "The sample polygon JSON could not be parsed."
+        )
+
         viewModelScope.launch {
-            mapViewProxy.setViewpointGeometry(boundingGeometry = geometry)
+            mapViewProxy.setViewpointGeometry(
+                boundingGeometry = polygon,
+                paddingInDips = 50.0
+            )
         }
     }
 
-    //function for when "Center" button is clicked
+    /**
+     * Function for when "Center" button is clicked
+     */
     fun onCenterClicked() {
-        val point = Point(
-            x = -12153.0,
-            y = 6710527.0,
-            spatialReference = SpatialReference.webMercator()
-        )
+        val center = londonEastViewpoint.targetGeometry.extent.center
+        val scale = londonEastViewpoint.targetScale
         viewModelScope.launch {
-            mapViewProxy.setViewpointCenter(point, viewpointScale)
+            mapViewProxy.setViewpointCenter(
+                center = center,
+                scale = scale
+            )
         }
     }
 
-    //function for when "Animate" button is clicked
+    /**
+     * Function for when "Animate" button is clicked
+     */
     fun onAnimateClicked() {
-        val point = Point(
-            x = -14093.0,
-            y = 6711377.0,
-            spatialReference = SpatialReference.webMercator()
-        )
-        val viewpoint = Viewpoint(center = point, scale = viewpointScale)
+        val center = visibleArea?.extent?.center ?: return
+        val scale = currentMapScale ?: return
 
         viewModelScope.launch {
-            mapViewProxy.setViewpointAnimated(viewpoint = viewpoint, duration = 7.seconds)
+            val finishedWithoutInterruption = mapViewProxy.setViewpointAnimated(
+                viewpoint = Viewpoint(center = center, scale = scale / 2),
+                duration = 5.seconds
+            ).getOrElse {
+                messageDialogVM.showMessageDialog(it)
+                false
+            }
+            if (finishedWithoutInterruption) {
+                mapViewProxy.setViewpointAnimated(
+                    viewpoint = Viewpoint(center = center, scale = scale),
+                    duration = 5.seconds
+                )
+            }
         }
     }
 }
