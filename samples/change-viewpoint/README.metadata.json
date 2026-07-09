@@ -9,6 +9,9 @@
   "keywords": [
     "animate",
     "center",
+    "extent",
+    "pan",
+    "rotate",
     "scale",
     "view",
     "zoom",
