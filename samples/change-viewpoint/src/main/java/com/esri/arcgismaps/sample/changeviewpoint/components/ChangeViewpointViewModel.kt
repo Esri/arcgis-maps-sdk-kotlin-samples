@@ -75,7 +75,7 @@ class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
     init {
         // Create the geometry from JSON and the simple fill symbol for the graphic
         val griffithParkPolygon = Geometry.fromJsonOrNull(
-            json = app.resources.openRawResource(R.raw.griffith_park_geometry_json)
+            json = app.resources.openRawResource(R.raw.griffith_park_geometry)
                 .bufferedReader()
                 .use { it.readText() }
         ) as? Polygon
@@ -119,8 +119,7 @@ class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
      * Sets the viewpoint using a bounding geometry from the [graphicsOverlay].
      */
     fun onGeometrySelected() {
-        val polygon =
-            graphicsOverlay.graphics.firstOrNull()?.geometry ?: return
+        val polygon = graphicsOverlay.graphics.firstOrNull()?.geometry ?: return
 
         viewModelScope.launch {
             mapViewProxy.setViewpointGeometry(
