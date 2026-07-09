@@ -1,6 +1,6 @@
 # Change viewpoint
 
-Set the map view to a new viewpoint
+Set the map view to a new viewpoint.
 
 ![Change viewpoint sample](change-viewpoint.png)
 
