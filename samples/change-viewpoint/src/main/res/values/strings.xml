@@ -1,5 +1,5 @@
 <resources>
-    <string name="change_viewpoint_app_name">Change Viewpoint</string>
+    <string name="change_viewpoint_app_name">Change viewpoint</string>
     <string name="animate">Animate</string>
     <string name="center_and_scale">Center &amp; Scale</string>
     <string name="geometry">Geometry</string>

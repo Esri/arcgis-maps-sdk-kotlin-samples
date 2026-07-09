@@ -66,15 +66,15 @@ fun ChangeViewpointScreen(sampleName: String) {
                     .padding(all = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = mapViewModel::onGeometryClicked) {
+                Button(onClick = mapViewModel::onGeometrySelected) {
                     Text(text = stringResource(R.string.geometry))
                 }
 
-                Button(onClick = mapViewModel::onCenterClicked) {
+                Button(onClick = mapViewModel::onCenterSelected) {
                     Text(text = stringResource(R.string.center_and_scale))
                 }
 
-                Button(onClick = mapViewModel::onAnimateClicked) {
+                Button(onClick = mapViewModel::onAnimateSelected) {
                     Text(text = stringResource(R.string.animate))
                 }
             }

@@ -42,7 +42,8 @@ import kotlin.time.Duration.Companion.seconds
 
 class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val londonEastViewpoint = Viewpoint(
+    //Create a viewpoint for London, England with a center point and scale
+    private val londonViewpoint = Viewpoint(
         center = Point(
             x = 0.1275,
             y = 51.5072,
@@ -51,16 +52,21 @@ class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
         scale = 4e4
     )
 
+    // Create an ArcGISMap with a basemap style and set the initial viewpoint
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
-        initialViewpoint = londonEastViewpoint
+        initialViewpoint = londonViewpoint
     }
 
+    // Create a graphics overlay to display the polygon geometry graphic
     val graphicsOverlay = GraphicsOverlay()
 
+    // Create a MapviewProxy to interact viewpoint changes with the MapView
     val mapViewProxy = MapViewProxy()
 
-    private var visibleArea: Polygon? by mutableStateOf(null)
+    // Track the current visible area for animated viewpoint
+    private var currentVisibleArea: Polygon? by mutableStateOf(null)
 
+    // Track the current map scale for animated viewpoint
     private var currentMapScale: Double? by mutableStateOf(null)
 
     // Create a message dialog view model for handling error messages
@@ -74,18 +80,20 @@ class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
                 .use { it.readText() }
         ) as? Polygon
 
-        val fillSymbol = SimpleFillSymbol(
-            style = SimpleFillSymbolStyle.Solid,
-            color = Color.fromRgba(r = 0, g = 128, b = 0, a = 179)
-        )
+        if (griffithParkPolygon != null) {
+            val fillSymbol = SimpleFillSymbol(
+                style = SimpleFillSymbolStyle.Solid,
+                color = Color.fromRgba(r = 0, g = 128, b = 0, a = 179)
+            )
 
-        // Create the graphic using the geometry and symbol, and add it to the graphics overlay
-        griffithParkPolygon?.let { polygon ->
+            // Create the graphic using the geometry and symbol, and add it to the graphics overlay
             val griffithParkGraphic = Graphic(
-                geometry = polygon,
+                geometry = griffithParkPolygon,
                 symbol = fillSymbol
             )
             graphicsOverlay.graphics.add(griffithParkGraphic)
+        } else {
+            messageDialogVM.showMessageDialog("Failed to create geometry from JSON file.")
         }
 
         viewModelScope.launch {
@@ -94,27 +102,25 @@ class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Track the current visible area for animated viewpoint logic.
+     * Track the current visible area for animated viewpoint.
      */
     fun onVisibleAreaChanged(newVisibleArea: Polygon) {
-        visibleArea = newVisibleArea
+        currentVisibleArea = newVisibleArea
     }
 
     /**
-     * Track current map scale for animated viewpoint logic.
+     * Track current map scale for animated viewpoint.
      */
     fun onMapScaleChanged(scale: Double) {
         currentMapScale = scale
     }
 
     /**
-     * Function for when "Geometry" button is clicked
+     * Sets the viewpoint using a bounding geometry from the [graphicsOverlay].
      */
-    fun onGeometryClicked() {
-        val polygon = graphicsOverlay.graphics[0].geometry ?: return messageDialogVM.showMessageDialog(
-            title = "Failed to parse geometry",
-            description = "The sample polygon JSON could not be parsed."
-        )
+    fun onGeometrySelected() {
+        val polygon =
+            graphicsOverlay.graphics.firstOrNull()?.geometry ?: return
 
         viewModelScope.launch {
             mapViewProxy.setViewpointGeometry(
@@ -125,11 +131,11 @@ class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Function for when "Center" button is clicked
+     * Sets the viewpoint using center point and scale from the [londonViewpoint].
      */
-    fun onCenterClicked() {
-        val center = londonEastViewpoint.targetGeometry.extent.center
-        val scale = londonEastViewpoint.targetScale
+    fun onCenterSelected() {
+        val center = londonViewpoint.targetGeometry.extent.center
+        val scale = londonViewpoint.targetScale
         viewModelScope.launch {
             mapViewProxy.setViewpointCenter(
                 center = center,
@@ -139,21 +145,23 @@ class ChangeViewpointViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Function for when "Animate" button is clicked
+     * Animates the viewpoint to zoom in and out over duration, using current visible area and map scale
      */
-    fun onAnimateClicked() {
-        val center = visibleArea?.extent?.center ?: return
+    fun onAnimateSelected() {
+        val center = currentVisibleArea?.extent?.center ?: return
         val scale = currentMapScale ?: return
 
         viewModelScope.launch {
-            val finishedWithoutInterruption = mapViewProxy.setViewpointAnimated(
+            // Zoom in to the current visible area by half the current scale
+            val isAnimationComplete = mapViewProxy.setViewpointAnimated(
                 viewpoint = Viewpoint(center = center, scale = scale / 2),
                 duration = 5.seconds
             ).getOrElse {
                 messageDialogVM.showMessageDialog(it)
                 false
             }
-            if (finishedWithoutInterruption) {
+            // Once complete, zoom back out to the original scale
+            if (isAnimationComplete) {
                 mapViewProxy.setViewpointAnimated(
                     viewpoint = Viewpoint(center = center, scale = scale),
                     duration = 5.seconds
