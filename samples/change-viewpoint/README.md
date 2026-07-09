@@ -6,13 +6,11 @@ Set the map view to a new viewpoint.
 
 ## Use case
 
-Navigate programmatically to a specific location on the map, allowing you to zoom in on a particular
-point.
+Navigate programmatically to a specific location on the map, allowing you to zoom in on a particular point.
 
 ## How to use the sample
 
-The map view has several methods for setting its current viewpoint. Select a viewpoint from the UI
-to see the viewpoint changed using that method.
+The map view has several methods for setting its current viewpoint. Select a viewpoint from the UI to see the viewpoint changed using that method.
 
 ## How it works
 
@@ -32,8 +30,7 @@ to see the viewpoint changed using that method.
 
 ## Additional information
 
-See the various "setViewpoint" methods on `MapViewProxy` and
-`SceneViewProxy` [here](https://developers.arcgis.com/kotlin/toolkit-api-reference/arcgis-maps-kotlin-toolkit/com.arcgismaps.toolkit.geoviewcompose/-map-view-proxy/index.html).
+See the various "setViewpoint" methods on `MapViewProxy` and `SceneViewProxy` [here](https://developers.arcgis.com/kotlin/toolkit-api-reference/arcgis-maps-kotlin-toolkit/com.arcgismaps.toolkit.geoviewcompose/-map-view-proxy/index.html).
 
 ## Tags
 
