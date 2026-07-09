@@ -53,27 +53,32 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.atan2
 
-class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Application) : AndroidViewModel(app) {
+class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Application) :
+    AndroidViewModel(app) {
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-            initialViewpoint = Viewpoint(
-                center = Point(x = -13045202.018086127, y = 4035612.571361517, SpatialReference.webMercator()),
-                scale = 40000.0
-            )
-        }
+        initialViewpoint = Viewpoint(
+            center = Point(
+                x = -13045202.018086127,
+                y = 4035612.571361517,
+                SpatialReference.webMercator()
+            ),
+            scale = 40000.0
+        )
+    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
+    // Create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
     val mapViewProxy = MapViewProxy()
 
-    // create a graphic to hold graphics identified on tap
-    private var identifiedGraphic: Graphic?= null
+    // Create a graphic to hold graphics identified on tap
+    private var identifiedGraphic: Graphic? = null
 
-    // create a graphics overlay
+    // Create a graphics overlay
     val graphicsOverlay = GraphicsOverlay()
 
-    // create a geometry editor
+    // Create a geometry editor
     val geometryEditor = GeometryEditor().apply {
         tool = VertexTool().apply {
             configuration.apply {
@@ -83,7 +88,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
                 allowVertexSelection = false
                 allowPartCreation = false
             }
-        }  as GeometryEditorTool
+        } as GeometryEditorTool
     }
 
     private val polygonLineSymbol = SimpleLineSymbol(
@@ -96,7 +101,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         color = Color.fromRgba(r = 255, g = 0, b = 0, a = 100),
         outline = polygonLineSymbol
     )
-    private val polylineSymbol =  SimpleLineSymbol(
+    private val polylineSymbol = SimpleLineSymbol(
         style = SimpleLineSymbolStyle.Solid,
         color = Color.blue,
         width = 2f
@@ -107,7 +112,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         size = 10f
     )
 
-    // state flow of rotation angle, scale factors, or coordinates, for presentation in UI
+    // State flow of rotation angle, scale factors, or coordinates, for presentation in UI
     private val _interactionTransformationFlow = MutableStateFlow<String?>(null)
     val interactionTransformationFlow = _interactionTransformationFlow.asStateFlow()
 
@@ -120,7 +125,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
                     description = error.message.toString()
                 )
             }.onSuccess {
-                // create graphics for the initial geometries and add them to the graphics overlay
+                // Create graphics for the initial geometries and add them to the graphics overlay
                 graphicsOverlay.graphics.addAll(
                     listOf(
                         Graphic(
@@ -138,8 +143,12 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
                     )
                 )
 
-                geometryEditor.interactionPreviewChanged.collect {
-                    calculateTransformationInformation(it.interactionPreview)
+                geometryEditor.interactionPreviewChanged.collect { interactionPreviewChanged ->
+                    interactionPreviewChanged.interactionPreview?.let { interactionPreview ->
+                        _interactionTransformationFlow.value =
+                            buildInteractionPreviewFormattedMessage(interactionPreview)
+                    }
+
                 }
 
             }
@@ -150,32 +159,26 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
      * Calculates the transformation information based on the current interaction preview and
      * updates the state flow.
      */
-    private fun calculateTransformationInformation(interactionPreview: GeometryEditorInteractionPreview?) {
-        _interactionTransformationFlow.value = interactionPreview?.let {
-            // for each type of interaction, create a TransformationInformation object with the relevant data
-            when (it.interactionType) {
-                is GeometryEditorInteractionType.Rotate -> {
-                    calculateRotation(it)
-                }
-
-                is GeometryEditorInteractionType.Scale -> {
-                    calculateScaleFactors(it)
-                }
-
-                is GeometryEditorInteractionType.Move -> {
-                    // Get the center point of the preview geometry.
-                    it.previewGeometry.extent.center.let { centerPoint ->
-                        "Center (X, Y): ${
-                            String.format(Locale.getDefault(),
-                                "%.2f",
-                                centerPoint.x
-                            )
-                        }, ${String.format(Locale.getDefault(),"%.2f", centerPoint.y)}"
-                    }
-                }
-
-                else -> null
+    private fun buildInteractionPreviewFormattedMessage(interactionPreview: GeometryEditorInteractionPreview): String? {
+        // For each type of interaction, create a TransformationInformation object with the relevant data
+        when (interactionPreview.interactionType) {
+            is GeometryEditorInteractionType.Rotate -> {
+                return calculateRotation(interactionPreview)
             }
+
+            is GeometryEditorInteractionType.Scale -> {
+                return calculateScaleFactors(interactionPreview)
+            }
+
+            is GeometryEditorInteractionType.Move -> {
+                // Get the center point of the preview geometry.
+                val centerPoint = interactionPreview.previewGeometry.extent.center
+                return "Center (X, Y): " +
+                        "${String.format(Locale.getDefault(), "%.2f", centerPoint.x)}, " +
+                        String.format(Locale.getDefault(), "%.2f", centerPoint.y)
+            }
+
+            else -> return null
         }
     }
 
@@ -184,7 +187,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
      * returns a string representation of the scale factors.
      */
     private fun calculateScaleFactors(preview: GeometryEditorInteractionPreview): String? {
-        // get the extent of the existing geometry excluding the current interaction
+        // Get the extent of the existing geometry excluding the current interaction
         val geometryExtent = geometryEditor.geometry.value?.extent
         val previewExtent = preview.previewGeometry.extent
         return if (
@@ -192,11 +195,17 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
             geometryExtent.width != 0.0 &&
             geometryExtent.height != 0.0
         ) {
-            // calculate the scale factors using the two extents
+            // Calculate the scale factors using the two extents
             val scaleX = previewExtent.width.div(geometryExtent.width)
             val scaleY = previewExtent.height.div(geometryExtent.height)
 
-            "Scale Factor (X,Y): ${String.format(Locale.getDefault(),"%.2f", scaleX)}, ${String.format(Locale.getDefault(),"%.2f", scaleY)}"
+            "Scale Factor (X,Y): ${
+                String.format(
+                    Locale.getDefault(),
+                    "%.2f",
+                    scaleX
+                )
+            }, ${String.format(Locale.getDefault(), "%.2f", scaleY)}"
         } else {
             null
         }
@@ -219,12 +228,15 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
             // Determine the type of geometry being previewed and extract the relevant points for rotation calculation.
             when (val previewGeom = interactionPreview.previewGeometry) {
                 is Polyline, is Polygon -> {
-                    originalPoint = (originalGeometry as Multipart).parts[0].points.firstOrNull { point -> point != center }
-                    previewPoint = previewGeom.parts[0].points.firstOrNull { point -> point != center }
+                    originalPoint =
+                        (originalGeometry as Multipart).parts[0].points.firstOrNull { point -> point != center }
+                    previewPoint =
+                        previewGeom.parts[0].points.firstOrNull { point -> point != center }
                 }
 
                 is Multipoint -> {
-                    originalPoint = (originalGeometry as Multipoint).points.firstOrNull { point -> point != center }
+                    originalPoint =
+                        (originalGeometry as Multipoint).points.firstOrNull { point -> point != center }
                     previewPoint = previewGeom.points.firstOrNull { point -> point != center }
                 }
 
@@ -249,7 +261,13 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
 
             val angle = atan2(cross, dot) * (180.0 / Math.PI) // Convert to degrees
             val clockwiseNormalized = ((-angle % 360) + 360) % 360
-            return "Rotation Angle (degrees): ${String.format(Locale.getDefault(),"%.2f", clockwiseNormalized)}"
+            return "Rotation Angle (degrees): ${
+                String.format(
+                    Locale.getDefault(),
+                    "%.2f",
+                    clockwiseNormalized
+                )
+            }"
         }
         return null
     }
@@ -259,11 +277,11 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
      * Stops the GeometryEditor and updates the identified graphic.
      */
     fun stopEditor() {
-        // check if there was a previously identified graphic
+        // Check if there was a previously identified graphic
         identifiedGraphic?.let { graphic ->
-            // update the identified graphic geometry
+            // Update the identified graphic geometry
             graphic.geometry = geometryEditor.stop()
-            // set the original graphic to visible again
+            // Set the original graphic to visible again
             graphic.isVisible = true
         }
     }
@@ -273,7 +291,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
      */
     fun discardEdits() {
         geometryEditor.stop()
-        // update previously identified graphic to be visible again
+        // Update previously identified graphic to be visible again
         identifiedGraphic?.let { graphic ->
             graphic.isVisible = true
         }
@@ -306,7 +324,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         viewModelScope.launch {
             if (!geometryEditor.isStarted.value) {
 
-                // attempt to identify a graphic at the location the user tapped
+                // Attempt to identify a graphic at the location the user tapped
                 val graphicsResult = mapViewProxy.identifyGraphicsOverlays(
                     screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
                     tolerance = 10.0.dp,
@@ -315,9 +333,9 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
 
                 if (graphicsResult != null) {
                     if (graphicsResult.isNotEmpty()) {
-                        // get the tapped graphic
+                        // Get the tapped graphic
                         identifiedGraphic = graphicsResult.first().graphics.first()
-                        // start the geometry editor with the identified graphic
+                        // Start the geometry editor with the identified graphic
                         identifiedGraphic?.let { graphic ->
                             graphic.geometry?.let { geometry ->
                                 geometryEditor.start(geometry)
