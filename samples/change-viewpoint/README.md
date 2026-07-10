@@ -2,45 +2,36 @@
 
 Set the map view to a new viewpoint.
 
-![Image of change viewpoint](change-viewpoint.png)
+![Change viewpoint sample](change-viewpoint.png)
 
 ## Use case
 
-Programmatically navigate to a specified location in the map or scene. Use this to focus on a particular point or area of interest.
+Navigate programmatically to a specific location on the map, allowing you to zoom in on a particular point.
 
 ## How to use the sample
 
-Select a viewpoint option to see the map view move to that location.
+The map view has several methods for setting its current viewpoint. Select a viewpoint from the UI to see the viewpoint changed using that method.
 
 ## How it works
 
-1. Create a new `ArcGISMap` object and set it to the `MapView` object.
-2. Change the map's `Viewpoint` using one of the available methods:
-    * Use `MapView.setViewpointAnimated(...)` to pan to a viewpoint over the specified length of time.
-    * Use `MapView.setViewpointCenter(...)` to center the viewpoint on a `Point` and set a distance from the ground using a scale.
-    * Use `MapView.setViewpointGeometry(...)` to set the viewpoint to a given `Geometry`.
+1. Create a new `ArcGISMap` object and pass it to the `MapView` composable's `arcGISMap` parameter.
+2. Change the map's `Viewpoint` by calling one of the available methods via `MapViewProxy`:
+    * Use `MapViewProxy.setViewpointAnimted()` to pan to a viewpoint over a specified `Duration`.
+    * Use `MapViewProxy.setViewpointCenter()` to center the viewpoint on a `Point`.
+    * Use `MapViewProxy.setViewpointGeometry()` to set a viewpoint on a given `Geometry`
 
 ## Relevant API
 
 * ArcGISMap
 * Geometry
-* MapView
+* MapViewProxy
 * Point
 * Viewpoint
 
 ## Additional information
 
-Below are multiple ways to set a viewpoint:
-
-```kotlin
-mapView.setViewpoint(...)
-mapView.setViewpointCenter(...)
-mapView.setViewpointGeometry(...)
-mapView.setViewpointRotation(...)
-mapView.setViewpointScale(...)
-mapView.setViewpointAnimated(...)
-```
+See the various "setViewpoint" methods on `MapViewProxy` and `SceneViewProxy` [here](https://developers.arcgis.com/kotlin/toolkit-api-reference/arcgis-maps-kotlin-toolkit/com.arcgismaps.toolkit.geoviewcompose/-map-view-proxy/index.html).
 
 ## Tags
 
-animate, extent, pan, rotate, scale, view, zoom
+animate, center, extent, pan, rotate, scale, view, zoom

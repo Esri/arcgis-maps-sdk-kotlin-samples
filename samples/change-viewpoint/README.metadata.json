@@ -8,6 +8,7 @@
   ],
   "keywords": [
     "animate",
+    "center",
     "extent",
     "pan",
     "rotate",
@@ -16,23 +17,23 @@
     "zoom",
     "ArcGISMap",
     "Geometry",
-    "MapView",
+    "MapViewProxy",
     "Point",
     "Viewpoint"
   ],
   "language": "kotlin",
-  "redirect_from": [
-    "/android/latest/sample-code/change-viewpoint.htm"
-  ],
+  "redirect_from": "",
   "relevant_apis": [
     "ArcGISMap",
     "Geometry",
-    "MapView",
+    "MapViewProxy",
     "Point",
     "Viewpoint"
   ],
   "snippets": [
-    "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/MainActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/components/ChangeViewpointViewModel.kt",
+    "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/MainActivity.kt",
+    "src/main/java/com/esri/arcgismaps/sample/changeviewpoint/screens/ChangeViewpointScreen.kt"
   ],
   "title": "Change viewpoint"
 }
