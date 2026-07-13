@@ -52,7 +52,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 @Composable
 fun DisplayGeometryEditorInformationDuringInteractionScreen(sampleName: String) {
     val mapViewModel: DisplayGeometryEditorInformationDuringInteractionViewModel = viewModel()
-    val transformationInfo by mapViewModel.interactionTransformationFlow.collectAsStateWithLifecycle()
+    val transformationInfo by mapViewModel.interactionTransformationMessage.collectAsStateWithLifecycle()
     val editorStarted by mapViewModel.geometryEditor.isStarted.collectAsStateWithLifecycle()
     val canUndo by mapViewModel.geometryEditor.canUndo.collectAsStateWithLifecycle()
     val canRedo by mapViewModel.geometryEditor.canRedo.collectAsStateWithLifecycle()
@@ -69,6 +69,7 @@ fun DisplayGeometryEditorInformationDuringInteractionScreen(sampleName: String) 
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 MapView(
                     modifier = Modifier
@@ -130,7 +131,7 @@ fun ButtonMenuOptions(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .padding(4.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         IconButton(
