@@ -33,7 +33,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/components/DisplayGeometryEditorInformationDuringInteractionViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/screens/ButtonMenu.kt",
         "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/screens/DisplayGeometryEditorInformationDuringInteractionScreen.kt"
     ],
     "title": "Display geometry editor information during interaction"

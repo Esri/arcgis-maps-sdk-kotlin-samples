@@ -22,7 +22,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.geometry.Geometry
-import com.arcgismaps.geometry.Multipart
 import com.arcgismaps.geometry.Multipoint
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.Polygon
@@ -43,7 +42,6 @@ import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditor
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorInteractionPreview
 import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorInteractionType
-import com.arcgismaps.mapping.view.geometryeditor.GeometryEditorTool
 import com.arcgismaps.mapping.view.geometryeditor.VertexTool
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
@@ -51,29 +49,36 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlin.math.PI
 import kotlin.math.atan2
 
-class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Application) : AndroidViewModel(app) {
+class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Application) :
+    AndroidViewModel(app) {
+
+    // Create a map with an initial viewpoint of Redlands, CA.
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISStreets).apply {
-            initialViewpoint = Viewpoint(
-                center = Point(x = -13045202.018086127, y = 4035612.571361517, SpatialReference.webMercator()),
-                scale = 40000.0
-            )
-        }
+        initialViewpoint = Viewpoint(
+            center = Point(
+                x = -13.045e6, y = 4.0356e6,
+                spatialReference = SpatialReference.webMercator()
+            ),
+            scale = 4e4
+        )
+    }
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    // create a MapViewProxy that will be used to identify features in the MapView and set the viewpoint
+    // Create a MapViewProxy that will be used to identify features in the MapView
     val mapViewProxy = MapViewProxy()
 
-    // create a graphic to hold graphics identified on tap
-    private var identifiedGraphic: Graphic?= null
+    // Track graphics identified on tap
+    private var identifiedGraphic: Graphic? = null
 
-    // create a graphics overlay
+    // Create a graphics overlay
     val graphicsOverlay = GraphicsOverlay()
 
-    // create a geometry editor
+    // Create a geometry editor
     val geometryEditor = GeometryEditor().apply {
         tool = VertexTool().apply {
             configuration.apply {
@@ -83,7 +88,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
                 allowVertexSelection = false
                 allowPartCreation = false
             }
-        }  as GeometryEditorTool
+        }
     }
 
     private val polygonLineSymbol = SimpleLineSymbol(
@@ -96,7 +101,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         color = Color.fromRgba(r = 255, g = 0, b = 0, a = 100),
         outline = polygonLineSymbol
     )
-    private val polylineSymbol =  SimpleLineSymbol(
+    private val polylineSymbol = SimpleLineSymbol(
         style = SimpleLineSymbolStyle.Solid,
         color = Color.blue,
         width = 2f
@@ -107,20 +112,14 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         size = 10f
     )
 
-    // state flow of rotation angle, scale factors, or coordinates, for presentation in UI
-    private val _interactionTransformationFlow = MutableStateFlow<String?>(null)
-    val interactionTransformationFlow = _interactionTransformationFlow.asStateFlow()
+    // State flow string message of rotation angle, scale factors, or coordinates, for presentation in UI
+    private val _interactionTransformationMessage = MutableStateFlow<String?>(null)
+    val interactionTransformationMessage = _interactionTransformationMessage.asStateFlow()
 
     init {
         viewModelScope.launch {
-
-            arcGISMap.load().onFailure { error ->
-                messageDialogVM.showMessageDialog(
-                    title = "Failed to load map",
-                    description = error.message.toString()
-                )
-            }.onSuccess {
-                // create graphics for the initial geometries and add them to the graphics overlay
+            arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }.onSuccess {
+                // Create graphics for the initial geometries and add them to the graphics overlay
                 graphicsOverlay.graphics.addAll(
                     listOf(
                         Graphic(
@@ -138,120 +137,15 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
                     )
                 )
 
-                geometryEditor.interactionPreviewChanged.collect {
-                    calculateTransformationInformation(it.interactionPreview)
-                }
-
-            }
-        }
-    }
-
-    /**
-     * Calculates the transformation information based on the current interaction preview and
-     * updates the state flow.
-     */
-    private fun calculateTransformationInformation(interactionPreview: GeometryEditorInteractionPreview?) {
-        _interactionTransformationFlow.value = interactionPreview?.let {
-            // for each type of interaction, create a TransformationInformation object with the relevant data
-            when (it.interactionType) {
-                is GeometryEditorInteractionType.Rotate -> {
-                    calculateRotation(it)
-                }
-
-                is GeometryEditorInteractionType.Scale -> {
-                    calculateScaleFactors(it)
-                }
-
-                is GeometryEditorInteractionType.Move -> {
-                    // Get the center point of the preview geometry.
-                    it.previewGeometry.extent.center.let { centerPoint ->
-                        "Center (X, Y): ${
-                            String.format(Locale.getDefault(),
-                                "%.2f",
-                                centerPoint.x
-                            )
-                        }, ${String.format(Locale.getDefault(),"%.2f", centerPoint.y)}"
-                    }
-                }
-
-                else -> null
-            }
-        }
-    }
-
-    /**
-     * Calculates the scale factors based on the current interaction preview and
-     * returns a string representation of the scale factors.
-     */
-    private fun calculateScaleFactors(preview: GeometryEditorInteractionPreview): String? {
-        // get the extent of the existing geometry excluding the current interaction
-        val geometryExtent = geometryEditor.geometry.value?.extent
-        val previewExtent = preview.previewGeometry.extent
-        return if (
-            geometryExtent != null &&
-            geometryExtent.width != 0.0 &&
-            geometryExtent.height != 0.0
-        ) {
-            // calculate the scale factors using the two extents
-            val scaleX = previewExtent.width.div(geometryExtent.width)
-            val scaleY = previewExtent.height.div(geometryExtent.height)
-
-            "Scale Factor (X,Y): ${String.format(Locale.getDefault(),"%.2f", scaleX)}, ${String.format(Locale.getDefault(),"%.2f", scaleY)}"
-        } else {
-            null
-        }
-    }
-
-    /**
-     * Calculates the rotation angle based on the current interaction preview and
-     * returns a string representation of the rotation angle in degrees.
-     */
-    fun calculateRotation(interactionPreview: GeometryEditorInteractionPreview): String? {
-        if (interactionPreview.interactionType is GeometryEditorInteractionType.Rotate) {
-            // Get the original geometry for comparison
-            val originalGeometry = geometryEditor.geometry.value ?: return null
-            // Get the center point of the original geometry.
-            val center = originalGeometry.extent.center
-            // Create variables to hold the original and preview points for rotation calculation.
-            var originalPoint: Point?
-            var previewPoint: Point?
-
-            // Determine the type of geometry being previewed and extract the relevant points for rotation calculation.
-            when (val previewGeom = interactionPreview.previewGeometry) {
-                is Polyline, is Polygon -> {
-                    originalPoint = (originalGeometry as Multipart).parts[0].points.firstOrNull { point -> point != center }
-                    previewPoint = previewGeom.parts[0].points.firstOrNull { point -> point != center }
-                }
-
-                is Multipoint -> {
-                    originalPoint = (originalGeometry as Multipoint).points.firstOrNull { point -> point != center }
-                    previewPoint = previewGeom.points.firstOrNull { point -> point != center }
-                }
-
-                else -> {
-                    // Not expecting any other geometry types in this sample.
-                    throw IllegalArgumentException("Unexpected geometry type: $previewGeom")
+                // Update the transformation information in the formatted message whenever the
+                // interaction preview changes in the geometry editor
+                geometryEditor.interactionPreviewChanged.collect { interactionPreviewChanged ->
+                    val interactionMessage = interactionPreviewChanged.interactionPreview
+                        ?.toFormattedMessage(geometryEditor.geometry.value)
+                    _interactionTransformationMessage.value = interactionMessage
                 }
             }
-
-            // Calculate the rotation angle if both original and preview points are available and different from each other.
-            val op = originalPoint ?: return null
-            val pp = previewPoint ?: return null
-            if (op == pp) return null
-
-            val vector1X = op.x - center.x
-            val vector2X = pp.x - center.x
-            val vector1Y = op.y - center.y
-            val vector2Y = pp.y - center.y
-
-            val cross = vector1X * vector2Y - vector1Y * vector2X
-            val dot = vector1X * vector2X + vector1Y * vector2Y
-
-            val angle = atan2(cross, dot) * (180.0 / Math.PI) // Convert to degrees
-            val clockwiseNormalized = ((-angle % 360) + 360) % 360
-            return "Rotation Angle (degrees): ${String.format(Locale.getDefault(),"%.2f", clockwiseNormalized)}"
         }
-        return null
     }
 
 
@@ -259,11 +153,11 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
      * Stops the GeometryEditor and updates the identified graphic.
      */
     fun stopEditor() {
-        // check if there was a previously identified graphic
+        // Check if there was a previously identified graphic
         identifiedGraphic?.let { graphic ->
-            // update the identified graphic geometry
+            // Update the identified graphic geometry
             graphic.geometry = geometryEditor.stop()
-            // set the original graphic to visible again
+            // Set the original graphic to visible again
             graphic.isVisible = true
         }
     }
@@ -273,7 +167,7 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
      */
     fun discardEdits() {
         geometryEditor.stop()
-        // update previously identified graphic to be visible again
+        // Update previously identified graphic to be visible again
         identifiedGraphic?.let { graphic ->
             graphic.isVisible = true
         }
@@ -299,14 +193,13 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
 
     /**
      * Identifies the graphic at the tapped screen coordinate in the provided [singleTapConfirmedEvent]
-     * and starts the GeometryEditor using the identified graphic's geometry. Hide the BottomSheet on
-     * [singleTapConfirmedEvent].
+     * and starts the GeometryEditor using the identified graphic's geometry.
      */
     fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         viewModelScope.launch {
             if (!geometryEditor.isStarted.value) {
 
-                // attempt to identify a graphic at the location the user tapped
+                // Attempt to identify a graphic at the location the user tapped
                 val graphicsResult = mapViewProxy.identifyGraphicsOverlays(
                     screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
                     tolerance = 10.0.dp,
@@ -315,9 +208,9 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
 
                 if (graphicsResult != null) {
                     if (graphicsResult.isNotEmpty()) {
-                        // get the tapped graphic
+                        // Get the tapped graphic
                         identifiedGraphic = graphicsResult.first().graphics.first()
-                        // start the geometry editor with the identified graphic
+                        // Start the geometry editor with the identified graphic
                         identifiedGraphic?.let { graphic ->
                             graphic.geometry?.let { geometry ->
                                 geometryEditor.start(geometry)
@@ -330,24 +223,106 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
             }
         }
     }
+}
 
-    // json formatted strings for initial geometries
-    private val redlandsPolygonJson = """{ "rings": [[[-13046991.222211758,4034618.5047884779],
+/**
+ * Converts the transformation information to a formatted string using the editor interaction preview, type, or [geometry].
+ */
+private fun GeometryEditorInteractionPreview.toFormattedMessage(geometry: Geometry?): String? {
+    return when (interactionType) {
+        is GeometryEditorInteractionType.Rotate -> buildRotationMessage(geometry)
+        is GeometryEditorInteractionType.Scale -> buildScaleMessage(geometry)
+        is GeometryEditorInteractionType.Move -> buildMoveMessage()
+        else -> null
+    }
+}
+
+/**
+ * Calculates the rotation angle based on the current interaction preview and
+ * returns a string representation of the rotation angle in degrees.
+ */
+private fun GeometryEditorInteractionPreview.buildRotationMessage(geometry: Geometry?): String? {
+    val sourceGeometry = geometry ?: return null
+    val center = sourceGeometry.extent.center
+    val originalPoint = sourceGeometry.firstRotationReferencePoint(center) ?: return null
+    val previewPoint = previewGeometry.firstRotationReferencePoint(center) ?: return null
+    if (originalPoint == previewPoint) return null
+
+    val vector1X = originalPoint.x - center.x
+    val vector2X = previewPoint.x - center.x
+    val vector1Y = originalPoint.y - center.y
+    val vector2Y = previewPoint.y - center.y
+
+    val cross = vector1X * vector2Y - vector1Y * vector2X
+    val dot = vector1X * vector2X + vector1Y * vector2Y
+    val angle = atan2(cross, dot) * (180.0 / PI)
+    val clockwiseNormalized = ((-angle % 360) + 360) % 360
+
+    return "Rotation Angle (degrees): ${clockwiseNormalized.toDisplayString()}"
+}
+
+/**
+ * Calculates the scale factors based on the current interaction preview and
+ * returns a string representation of the scale factors.
+ */
+private fun GeometryEditorInteractionPreview.buildScaleMessage(geometry: Geometry?): String? {
+    val geometryExtent = geometry?.extent ?: return null
+    if (geometryExtent.width == 0.0 || geometryExtent.height == 0.0) return null
+    val previewExtent = previewGeometry.extent
+
+    return formatValuePair(
+        label = "Scale Factor (X, Y)",
+        first = previewExtent.width / geometryExtent.width,
+        second = previewExtent.height / geometryExtent.height
+    )
+}
+
+/**
+ * Calculates the center point of the current interaction preview to
+ * return a formatted message for move interactions.
+ */
+private fun GeometryEditorInteractionPreview.buildMoveMessage(): String {
+    return formatValuePair(
+        label = "Center (X, Y)",
+        first = previewGeometry.extent.center.x,
+        second = previewGeometry.extent.center.y
+    )
+}
+
+/**
+ * Returns the first point in the geometry that is not the [center] point.
+ */
+private fun Geometry.firstRotationReferencePoint(center: Point): Point? {
+    return when (this) {
+        is Polyline, is Polygon -> parts[0].points.firstOrNull { point -> point != center }
+        is Multipoint -> points.firstOrNull { point -> point != center }
+        else -> null
+    }
+}
+
+private fun formatValuePair(label: String, first: Double, second: Double): String {
+    return "$label: ${first.toDisplayString()}, ${second.toDisplayString()}"
+}
+
+private fun Double.toDisplayString(): String {
+    return String.format(Locale.getDefault(), "%.2f", this)
+}
+
+// JSON formatted strings for displayed geometries.
+private const val redlandsPolygonJson = """{ "rings": [[[-13046991.222211758,4034618.5047884779],
             [-13046991.222211758,4035962.0723415823],
             [-13045677.652220398,4035962.0723415823],
             [-13045677.652220398,4034618.5047884779],
             [-13046991.222211758,4034618.5047884779]]],
             "spatialReference":{"wkid":3857}}"""
-    private val redlandsPolylineJson = """{ "paths": [[[-13044533.805088846,4034221.5100018946],
+private const val redlandsPolylineJson = """{ "paths": [[[-13044533.805088846,4034221.5100018946],
             [-13043597.938505623,4034197.1337576872],
             [-13043597.938505623,4035135.572073034],
             [-13044522.634505576,4035170.5449295067]]],
             "spatialReference":{"wkid":3857}}"""
-    private val redlandsMultipointJson = """{ "points": [[-13045283.292102993,4035739.1925106063],
+private const val redlandsMultipointJson = """{ "points": [[-13045283.292102993,4035739.1925106063],
             [-13045314.922186911,4036533.8852012255],
             [-13044798.24723932,4036138.7808295386],
             [-13044354.514637273,4035719.3623426706],
             [-13044281.57229173,4036473.0999132735]],
             "spatialReference":{"wkid":3857}}"""
-
-}
