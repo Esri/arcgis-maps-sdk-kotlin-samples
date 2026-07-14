@@ -39,7 +39,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
     val arcGISMap by mutableStateOf(
         ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
             initialViewpoint = Viewpoint(39.8, -98.6, 10e7)
