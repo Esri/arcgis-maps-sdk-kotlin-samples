@@ -53,11 +53,13 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun AddFeatureLayersScreen(
     mapViewModel: AddFeatureLayersViewModel = viewModel()
 ) {
+    //tracks whether the bottom sheet options panel is open
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = stringResource(R.string.add_feature_layers_app_name)) },
         floatingActionButton = {
+            //Only show FAB when the bottom sheet is closed
             if (!isBottomSheetVisible) {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 36.dp, end = 12.dp),
@@ -87,7 +89,8 @@ fun AddFeatureLayersScreen(
                 onDismissRequest = { isBottomSheetVisible = false }
             ) {
                 SampleOptions(
-                    selectedFeaturelayerSource = mapViewModel.selectedFeatureLayerSource,
+                    selectedFeatureLayerSource = mapViewModel.selectedFeatureLayerSource,
+                    // Forward the tapped dropdown index to the ViewModel
                     onOptionSelected = mapViewModel::onFeatureLayerSourceSelected
                 )
             }
@@ -107,7 +110,7 @@ fun AddFeatureLayersScreen(
 
 @Composable
 fun SampleOptions(
-    selectedFeaturelayerSource: AddFeatureLayersViewModel.FeatureLayerSource? = null,
+    selectedFeatureLayerSource: AddFeatureLayersViewModel.FeatureLayerSource? = null,
     onOptionSelected: (Int) -> Unit = {}
 ) {
     Column(
@@ -115,8 +118,10 @@ fun SampleOptions(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         DropDownMenuBox(
-            textFieldValue = selectedFeaturelayerSource?.label ?: "Select a source",
+            //show current selected layer ot a placeholder if none is selected
+            textFieldValue = selectedFeatureLayerSource?.label ?: "Select a source",
             textFieldLabel = "Select a feature layer source",
+            //populating the dropdown
             dropDownItemList = AddFeatureLayersViewModel.FeatureLayerSource.entries.map { it.label },
             onIndexSelected = { index -> onOptionSelected(index) }
         )
