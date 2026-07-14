@@ -26,17 +26,17 @@
   "redirect_from": "",
   "relevant_apis": [
     "FeatureLayer",
-    "Geodatabase",
     "GeoPackageFeatureTable",
+    "Geodatabase",
     "PortalItem",
     "ServiceFeatureTable",
     "ShapefileFeatureTable"
   ],
   "snippets": [
     "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/components/AddFeatureLayersViewModel.kt",
-    "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/screens/AddFeatureLayersScreen.kt",
+    "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/DownloadActivity.kt",
     "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/MainActivity.kt",
-    "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/DownloadActivity.kt"
+    "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/screens/AddFeatureLayersScreen.kt"
   ],
   "title": "Add feature layers"
 }

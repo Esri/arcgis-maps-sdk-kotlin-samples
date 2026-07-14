@@ -18,7 +18,7 @@ Tap the floating action button on the bottom right and select from the various s
 
 1. Create a new `ArcGISMap` object and pass it to the `MapView` composable's `arcGISMap` parameter.
 2. Load a Feature Layer Using a URL:
-    * Create a `ServiceFeatureTable` using the service URL. 
+    * Create a `ServiceFeatureTable` using the service URL.
     * Create a `FeatureLayer` from the feature table.
     * Define a `Viewpoint` to set the initial map location.
 3. Load a feature layer using a portal item:
