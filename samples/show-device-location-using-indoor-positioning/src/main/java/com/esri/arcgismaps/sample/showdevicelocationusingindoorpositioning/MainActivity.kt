@@ -36,7 +36,7 @@ import com.arcgismaps.location.LocationDataSourceStatus
 import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
-import com.arcgismaps.mapping.layers.FeatureLayer
+import com.arcgismaps.mapping.floor.FloorManager
 import com.arcgismaps.portal.Portal
 import com.esri.arcgismaps.sample.showdevicelocationusingindoorpositioning.databinding.ShowDeviceLocationUsingIndoorPositioningActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
@@ -64,6 +64,9 @@ class MainActivity : EdgeToEdgeCompatActivity() {
 
     // keep track of the current floor in an indoor map, null if using GPS
     private var currentFloor: Int? = null
+
+    // manages floor visibility for the floor-aware map.
+    private var floorManager: FloorManager? = null
 
     // provides an indoor or outdoor position based on device sensor data (radio, GPS, motion sensors).
     private var indoorsLocationDataSource: IndoorsLocationDataSource? = null
@@ -114,6 +117,16 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         mapView.map = map
         lifecycleScope.launch {
             map.load().onSuccess {
+                val mapFloorManager = map.floorManager
+                    ?: return@launch showError("Map is not floor-aware")
+                mapFloorManager.load().onSuccess {
+                    floorManager = mapFloorManager
+                    mapFloorManager.levels.forEach { level ->
+                        level.isVisible = level.verticalOrder == 0
+                    }
+                }.onFailure {
+                    return@launch showError("Error loading floor manager: ${it.message}")
+                }
                 // gets indoor positioning definition from the IPS-aware map
                 // and uses it to set the IndoorsLocationDataSource.
                 map.indoorPositioningDefinition?.let { indoorPositioningDefinition ->
@@ -122,7 +135,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
 
             }.onFailure {
                 // if map load failed, show the error
-                showError("Error Loading Map: {it.message}")
+                showError("Error Loading Map: ${it.message}")
             }
         }
     }
@@ -147,7 +160,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
      */
     private fun startLocationDisplay() {
         val locationDisplay = mapView.locationDisplay.apply {
-            setAutoPanMode(LocationDisplayAutoPanMode.Navigation)
+            setAutoPanMode(LocationDisplayAutoPanMode.CompassNavigation)
             dataSource = indoorsLocationDataSource
                 ?: return showError("Error setting the IndoorsLocationDataSource value.")
         }
@@ -163,35 +176,22 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                 // get the location properties of the LocationDataSource
                 val locationProperties = location.additionalSourceProperties
                 // retrieve information about the location of the device
-                val floor = locationProperties["floor"]?.toString() ?: ""
+                val floor = locationProperties["floor"] as? Int
+                val floorLevelId = locationProperties["floorLevelID"]?.toString()
                 val positionSource = locationProperties["positionSource"]?.toString() ?: ""
                 val transmitterCount = locationProperties["transmitterCount"]?.toString() ?: ""
                 val satelliteCount = locationProperties["satelliteCount"]?.toString() ?: ""
 
                 // check if current floor hasn't been set or if the floor has changed
-                if (floor.isNotEmpty()) {
-                    val newFloor = floor.toInt()
-                    if (currentFloor == null || currentFloor != newFloor) {
-                        currentFloor = newFloor
-                        // update layer's definition express with the current floor
-                        mapView.map?.operationalLayers?.forEach { layer ->
-                            val name = layer.name
-                            if (layer is FeatureLayer && name in listOf(
-                                    "Details",
-                                    "Units",
-                                    "Levels"
-                                )
-                            ) {
-                                layer.definitionExpression = "VERTICAL_ORDER = $currentFloor"
-                            }
-                        }
+                if (floor != null && floorLevelId != null) {
+                    currentFloor = floor
+                    floorManager?.levels?.forEach { level ->
+                        level.isVisible = level.id == floorLevelId
                     }
-                } else {
-                    showError("Floors is empty.")
                 }
                 // set up the message with floor properties to be displayed to the textView
                 val sb = StringBuilder()
-                sb.append("Floor: $floor, ")
+                sb.append("Floor: ${floor ?: getString(R.string.unavailable)}, ")
                 sb.append("Position-source: $positionSource, ")
                 val horizontalAccuracy = location.horizontalAccuracy
                 val horizontalAccuracyText = if (horizontalAccuracy.isFinite()) {
@@ -202,8 +202,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                 sb.append("Horizontal-accuracy: $horizontalAccuracyText, ")
                 sb.append(when (positionSource) {
                         Location.SourceProperties.Values.POSITION_SOURCE_GNSS -> "Satellite-count: $satelliteCount"
-                        "BLE" -> "Transmitter-count: $transmitterCount"
-                        else -> ""
+                        else -> "Transmitter-count: $transmitterCount"
                     }
                 )
                 textView.text = sb.toString()
@@ -239,7 +238,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
             // if location permissions accepted, start setting up IndoorsLocationDataSource
             setUpMap()
         } else {
