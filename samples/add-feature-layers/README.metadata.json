@@ -1,15 +1,37 @@
 {
     "category": "Layers",
-    "description": "TODO",
+    "description": "Add feature layers from various data sources",
     "formal_name": "AddFeatureLayers",
     "ignore": false,
     "images": [
         "add-feature-layers.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "feature",
+        "geodatabase",
+        "geopackage",
+        "layers",
+        "portal",
+        "service",
+        "shapefile",
+        "table",
+        "FeatureLayer",
+        "GeoPackageFeatureTable",
+        "Geodatabase",
+        "PortalItem",
+        "ServiceFeatureTable",
+        "ShapefileFeatureTable"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "FeatureLayer",
+        "GeoPackageFeatureTable",
+        "Geodatabase",
+        "PortalItem",
+        "ServiceFeatureTable",
+        "ShapefileFeatureTable"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/components/AddFeatureLayersViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/screens/AddFeatureLayersScreen.kt",
