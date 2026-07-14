@@ -1,6 +1,6 @@
 {
   "category": "Layers",
-  "description": "Add feature layers from various data sources",
+  "description": "Add feature layers from various data sources.",
   "formal_name": "AddFeatureLayers",
   "ignore": false,
   "images": [
@@ -26,8 +26,8 @@
   "redirect_from": "",
   "relevant_apis": [
     "FeatureLayer",
-    "GeoPackageFeatureTable",
     "Geodatabase",
+    "GeoPackageFeatureTable",
     "PortalItem",
     "ServiceFeatureTable",
     "ShapefileFeatureTable"

@@ -1,6 +1,6 @@
 # Add feature layers
 
-Add feature layers from various data sources
+Add feature layers from various data sources.
 
 ![Add feature layers](add-feature-layers.png)
 
