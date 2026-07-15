@@ -98,7 +98,11 @@ private fun MainScreenScaffold(
     mainPaneContent: @Composable BoxScope.() -> Unit
 ) {
     Scaffold(
-        topBar = { SampleTopAppBar(title = stringResource(R.string.analyze_terrain_suitability_from_slope_and_aspect_app_name)) },
+        topBar = {
+            SampleTopAppBar(
+                title = stringResource(R.string.analyze_terrain_suitability_from_slope_and_aspect_app_name)
+            )
+        },
         content = { paddingValues ->
             AdaptiveThreePane(
                 modifier = Modifier

@@ -23,10 +23,9 @@ class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         downloadAndStartSample(
-            Intent(this, MainActivity::class.java),
-            // get the app name of the sample
-            getString(R.string.analyze_terrain_suitability_from_slope_and_aspect_app_name),
-            listOf(
+            mainActivity = Intent(this, MainActivity::class.java),
+            sampleName = getString(R.string.analyze_terrain_suitability_from_slope_and_aspect_app_name),
+            provisionURLs = listOf(
                 "https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271"
             )
         )
