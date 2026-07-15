@@ -72,14 +72,14 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
     private val filePath = provisionPath + "arran.tif"
 
     // Field functions used in map algebra
-    lateinit var elevationFieldFunction: ContinuousFieldFunction
-    lateinit var slopeFunction: ContinuousFieldFunction
-    lateinit var aspectFunction: ContinuousFieldFunction
-    lateinit var aboveSeaLevelSelection: BooleanFieldFunction
+    private lateinit var elevationFieldFunction: ContinuousFieldFunction
+    private lateinit var slopeFunction: ContinuousFieldFunction
+    private lateinit var aspectFunction: ContinuousFieldFunction
+    private lateinit var aboveSeaLevelSelection: BooleanFieldFunction
 
     // FieldAnalysis objects for the two analysis scenarios
-    var shelteredSlopesAnalysis: FieldAnalysis? = null
-    var exposedSlopesAnalysis: FieldAnalysis? = null
+    private var shelteredSlopesAnalysis: FieldAnalysis? = null
+    private var exposedSlopesAnalysis: FieldAnalysis? = null
 
     init {
         viewModelScope.launch {
