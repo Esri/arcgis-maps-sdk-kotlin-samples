@@ -1,21 +1,45 @@
 {
     "category": "Analysis",
-    "description": "TODO",
+    "description": "Analyze terrain suitability from an elevation raster by deriving slope and aspect.",
     "formal_name": "AnalyzeTerrainSuitabilityFromSlopeAndAspect",
     "ignore": false,
     "images": [
         "analyze-terrain-suitability-from-slope-and-aspect.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "aspect",
+        "elevation",
+        "field analysis",
+        "map algebra",
+        "raster",
+        "slope",
+        "spatial reference",
+        "terrain",
+        "AnalysisOverlay",
+        "BooleanFieldFunction",
+        "Colormap",
+        "ColormapRenderer",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "FieldAnalysis"
+    ],
     "language": "kotlin",
     "redirect_from": "",
-    "relevant_apis": [ ],
+    "relevant_apis": [
+        "AnalysisOverlay",
+        "BooleanFieldFunction",
+        "Colormap",
+        "ColormapRenderer",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "FieldAnalysis"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/components/AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/screens/AnalyzeTerrainSuitabilityFromSlopeAndAspectScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/screens/AnalyzeTerrainSuitabilityFromSlopeAndAspectSupportingPane.kt",
         "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/DownloadActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/screens/AnalyzeTerrainSuitabilityFromSlopeAndAspectScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/screens/AnalyzeTerrainSuitabilityFromSlopeAndAspectSupportingPane.kt"
     ],
     "title": "Analyze terrain suitability from slope and aspect"
 }
