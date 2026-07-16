@@ -1,0 +1,39 @@
+{
+    "category": "Edit and Manage Data",
+    "description": "See information about the previewed geometry during an interaction using the geometry editor.",
+    "formal_name": "DisplayGeometryEditorInformationDuringInteraction",
+    "ignore": false,
+    "images": [
+        "display-geometry-editor-information-during-interaction.png"
+    ],
+    "keywords": [
+        "draw",
+        "edit",
+        "geometry editor",
+        "interaction preview",
+        "Geometry",
+        "GeometryEditor",
+        "GeometryEditor.interactionPreviewChanged",
+        "GeometryEditorInteractionPreview",
+        "GeometryEditorInteractionType",
+        "Graphic",
+        "GraphicsOverlay"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "Geometry",
+        "GeometryEditor",
+        "GeometryEditor.interactionPreviewChanged",
+        "GeometryEditorInteractionPreview",
+        "GeometryEditorInteractionType",
+        "Graphic",
+        "GraphicsOverlay"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/components/DisplayGeometryEditorInformationDuringInteractionViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displaygeometryeditorinformationduringinteraction/screens/DisplayGeometryEditorInformationDuringInteractionScreen.kt"
+    ],
+    "title": "Display geometry editor information during interaction"
+}
