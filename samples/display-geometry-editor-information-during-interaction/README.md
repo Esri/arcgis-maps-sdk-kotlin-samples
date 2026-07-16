@@ -17,7 +17,7 @@ Use the buttons in the settings view to undo or redo changes made to the geometr
 ## How it works
 
 1. Create a `MapViewProxy` for interacting with the composable `MapView`.
-2. Create a `MapView` with MapView using `MapView(mapViewProxy = MapViewProxy, geometryEditor = GeometryEditor, ...)`.
+2. Create a composable `MapView` and pass in the `mapViewProxy` and `geometryEditor` (for example, `MapView(mapViewProxy = mapViewProxy, geometryEditor = geometryEditor, ...)`).
 3. Add an event handler to listen to `GeometryEditor.interactionPreviewChanged`.
     * This event can be used to get information on the state of the geometry during an interaction with the `GeometryEditorInteractionPreview` parameter.
         * The `previewGeometry` represents the geometry's state at that moment.
