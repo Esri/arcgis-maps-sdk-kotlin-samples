@@ -148,7 +148,6 @@ class DisplayGeometryEditorInformationDuringInteractionViewModel(app: Applicatio
         }
     }
 
-
     /**
      * Stops the GeometryEditor and updates the identified graphic.
      */
