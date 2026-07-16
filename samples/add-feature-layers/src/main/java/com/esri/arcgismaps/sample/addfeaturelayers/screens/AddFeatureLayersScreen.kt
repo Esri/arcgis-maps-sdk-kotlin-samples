@@ -53,8 +53,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun AddFeatureLayersScreen(
     mapViewModel: AddFeatureLayersViewModel = viewModel()
 ) {
-    //tracks whether the bottom sheet options panel is open
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    // Track the visibility of the bottom sheet
+    var isBottomSheetVisible by remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = { SampleTopAppBar(title = stringResource(R.string.add_feature_layers_app_name)) },
@@ -67,31 +67,25 @@ fun AddFeatureLayersScreen(
                 ) { Icon(Icons.Filled.Add, contentDescription = "Show options") }
             }
         },
-        content = {
-            Column(
+        content = { innerPadding ->
+            MapView(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
-            ) {
-                MapView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    arcGISMap = mapViewModel.arcGISMap,
-                    mapViewProxy = mapViewModel.mapViewProxy,
-                    onVisibleAreaChanged = { isBottomSheetVisible = false }
-                )
-            }
+                    .padding(innerPadding),
+                arcGISMap = mapViewModel.arcGISMap,
+                mapViewProxy = mapViewModel.mapViewProxy,
+                onDown = { isBottomSheetVisible = false }
+            )
 
             BottomSheet(
                 isVisible = isBottomSheetVisible,
                 sheetTitle = "Feature layer source",
                 onDismissRequest = { isBottomSheetVisible = false }
             ) {
-                SampleOptions(
+                FeatureLayerSourceMenuSelector(
                     selectedFeatureLayerSource = mapViewModel.selectedFeatureLayerSource,
                     // Forward the tapped dropdown index to the ViewModel
-                    onOptionSelected = mapViewModel::onFeatureLayerSourceSelected
+                    onFeatureLayerSourceSelected = mapViewModel::onFeatureLayerSourceSelected
                 )
             }
 
@@ -109,23 +103,19 @@ fun AddFeatureLayersScreen(
 }
 
 @Composable
-fun SampleOptions(
-    selectedFeatureLayerSource: AddFeatureLayersViewModel.FeatureLayerSource? = null,
-    onOptionSelected: (Int) -> Unit = {}
+fun FeatureLayerSourceMenuSelector(
+    selectedFeatureLayerSource: AddFeatureLayersViewModel.FeatureLayerSource = AddFeatureLayersViewModel.FeatureLayerSource.SERVICE_FEATURE_TABLE,
+    onFeatureLayerSourceSelected: (AddFeatureLayersViewModel.FeatureLayerSource) -> Unit = {}
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        DropDownMenuBox(
-            //show current selected layer ot a placeholder if none is selected
-            textFieldValue = selectedFeatureLayerSource?.label ?: "Select a source",
-            textFieldLabel = "Select a feature layer source",
-            //populating the dropdown
-            dropDownItemList = AddFeatureLayersViewModel.FeatureLayerSource.entries.map { it.label },
-            onIndexSelected = { index -> onOptionSelected(index) }
-        )
-    }
+    DropDownMenuBox(
+        //show current selected layer ot a placeholder if none is selected
+        textFieldValue = selectedFeatureLayerSource.label,
+        textFieldLabel = "Select a feature layer source",
+        //populating the dropdown
+        dropDownItemList = AddFeatureLayersViewModel.FeatureLayerSource.entries.map { it.label },
+        onIndexSelected = { index -> onFeatureLayerSourceSelected(AddFeatureLayersViewModel.FeatureLayerSource.entries[index]) }
+    )
+
 }
 
 @Preview(showBackground = true)
@@ -135,9 +125,9 @@ fun BottomSheetPreview() {
     SamplePreviewSurface {
         BottomSheet(
             isVisible = true,
-            sheetTitle = "Bottom sheet options",
+            sheetTitle = "Feature layer source",
         ) {
-            //SampleOptions()
+            FeatureLayerSourceMenuSelector(AddFeatureLayersViewModel.FeatureLayerSource.GEOPACKAGE)
         }
     }
 }

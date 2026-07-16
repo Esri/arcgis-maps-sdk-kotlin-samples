@@ -23,9 +23,8 @@ import com.esri.arcgismaps.sample.sampleslib.DownloaderActivity
 class DownloadActivity : DownloaderActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /* download the mobile map package, shapefile and geopackage needed for this sample
-        and then launch MainActivity once all downloads complete
-         */
+        // Download the mobile map package, shapefile and geopackage needed for this sample
+        // and then launch MainActivity once all downloads complete
         downloadAndStartSample(
             Intent(this, MainActivity::class.java),
             // get the app name of the sample

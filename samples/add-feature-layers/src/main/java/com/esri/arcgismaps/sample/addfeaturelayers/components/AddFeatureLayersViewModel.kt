@@ -38,12 +38,8 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 
-class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
-    val arcGISMap by mutableStateOf(
-        ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
-            initialViewpoint = Viewpoint(latitude = 39.8, longitude = -98.6, scale = 10e7)
-        }
-    )
+class AddFeatureLayersViewModel(val app: Application) : AndroidViewModel(app) {
+    val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
 
     val mapViewProxy = MapViewProxy()
 
@@ -51,38 +47,31 @@ class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
         app.getExternalFilesDir(null)?.path.toString() + File.separator + app.getString(R.string.add_feature_layers_app_name)
     }
 
-    /*
-        the feature layer source currently selected in the dropdown, exposed
-        read-only so the screen can display it but not mutate it directly
-     */
-    var selectedFeatureLayerSource by mutableStateOf<FeatureLayerSource?>(null)
+    // Keep track of the current selected feature layer source
+    var selectedFeatureLayerSource by mutableStateOf<FeatureLayerSource>(FeatureLayerSource.SERVICE_FEATURE_TABLE)
         private set
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
-    enum class FeatureLayerSource(val label: String) {
-        SERVICE_FEATURE_TABLE(label = "Service feature table"),
-        PORTAL_ITEM(label = "Portal item"),
-        GEODATABASE(label = "Geodatabase"),
-        GEOPACKAGE(label = "GeoPackage"),
-        SHAPEFILE(label = "Shapefile")
-    }
 
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
+            onFeatureLayerSourceSelected(source = selectedFeatureLayerSource, forceReload = true)
         }
     }
 
-    //Called when the user picks an item from the dropdown menu
-    fun onFeatureLayerSourceSelected(index: Int) {
-        val source = FeatureLayerSource.entries.getOrNull(index) ?: return
-        if(source ==selectedFeatureLayerSource) return
+    /**
+     *  Update the current [selectedFeatureLayerSource] and to load the corresponding
+     *  [FeatureLayerSource].
+     */
+    fun onFeatureLayerSourceSelected(source: FeatureLayerSource, forceReload: Boolean = false) {
+        if (!forceReload && source == selectedFeatureLayerSource) return
         selectedFeatureLayerSource = source
 
         viewModelScope.launch {
-            when(source) {
+            when(selectedFeatureLayerSource) {
                 FeatureLayerSource.SERVICE_FEATURE_TABLE -> loadFeatureServiceURL()
                 FeatureLayerSource.PORTAL_ITEM -> loadPortalItem()
                 FeatureLayerSource.GEODATABASE -> loadGeodatabase()
@@ -92,7 +81,10 @@ class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    // Replaces the map's operational layer with the given layer and then animates to the given viewpoint
+    /**
+     * Replace the map's operational layers with the loaded [layer] and animate to the given
+     * [viewpoint].
+     */
     private suspend fun setFeatureLayer(layer: FeatureLayer, viewpoint: Viewpoint) {
         arcGISMap.operationalLayers.apply {
             clear()
@@ -101,27 +93,39 @@ class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
         mapViewProxy.setViewpointAnimated(viewpoint)
     }
 
-    /* Load a feature layer with a URL */
+    /**
+     *  Load a feature layer using a [ServiceFeatureTable] URL.
+     */
     private suspend fun loadFeatureServiceURL() {
-        //Initialize the service feature table using a URL
+        // Create a service feature table from a given URI
         val serviceFeatureTable = ServiceFeatureTable(
-            uri = getApplication<Application>().getString(R.string.add_feature_layers_sample_service_url)
+            uri = app.getString(R.string.add_feature_layers_sample_service_url)
         )
-        // create a feature layer with the feature table
-        val featureLayer = FeatureLayer.createWithFeatureTable(serviceFeatureTable)
-        //Viewpoint centered on Naperville, IL
-        val viewpoint = Viewpoint(latitude = 41.70, longitude = -88.20, scale = 120000.0)
-        setFeatureLayer(featureLayer, viewpoint)
+
+        // Load to create a feature layer and a viewpoint to set on map
+        serviceFeatureTable.load().onSuccess {
+            // Create a feature layer with the feature table
+            val featureLayer = FeatureLayer.createWithFeatureTable(serviceFeatureTable)
+            //Viewpoint centered on Naperville, IL
+            val viewpoint = Viewpoint(latitude = 41.70, longitude = -88.20, scale = 120000.0)
+            setFeatureLayer(featureLayer, viewpoint)
+        }
     }
 
-    /* Load a feature layer with a portal item */
+    /**
+     * Load a feature layer from an online [PortalItem].
+     */
     private suspend fun loadPortalItem() {
         //Connect to the public ArcGIS online portal
-        val portal = Portal(url = "https://www.arcgis.com")
-        val portalItem = PortalItem(portal = portal, itemId = "1759fd3e8a324358a0c58d9a687a8578")
+        val portalItem = PortalItem(
+            portal = Portal.arcGISOnline(connection = Portal.Connection.Anonymous),
+            itemId = "1759fd3e8a324358a0c58d9a687a8578"
+        )
+
+        // Load to create a feature layer and a viewpoint to set on map
         portalItem.load().onSuccess {
             val featureLayer = FeatureLayer.createWithItem(portalItem)
-            //viewpoint centered on Portland, OR
+            // Viewpoint centered on Portland, OR
             val viewpoint = Viewpoint(latitude = 45.5266, longitude = -122.6219, scale = 2500.0)
             setFeatureLayer(featureLayer, viewpoint)
         }.onFailure {
@@ -129,25 +133,26 @@ class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /* Load a feature layer from a local mobile geodatabase file. */
+    /**
+     * Load a feature layer from a local mobile [Geodatabase] file.
+     */
     private suspend fun loadGeodatabase() {
-        //Locate the .geodatabase file downloaded to the device by DownloadActivity
+        // Locate the .geodatabase file
         val geodatabaseFile = File(
             provisionPath,
-            getApplication<Application>().getString(R.string.geodatabase_la_trails)
+            "LA_Trails.geodatabase"
         )
+
+        // Create the geodatabase from the local path
         val geodatabase = Geodatabase(geodatabaseFile.path)
+
+        // Load to create a feature layer and a viewpoint to set on map
         geodatabase.load().onSuccess {
             //Get the "Trailheads" feature table from the geodatabase
             val geodatabaseFeatureTable = geodatabase.getFeatureTable(tableName = "Trailheads")
-            if (geodatabaseFeatureTable == null) {
-                messageDialogVM.showMessageDialog(
-                    IllegalStateException("Feature table name not found in geodatabase")
-                )
-                return@onSuccess
-            }
+                ?: return@onSuccess messageDialogVM.showMessageDialog("Trailheads feature table name not found in geodatabase")
             val featureLayer = FeatureLayer.createWithFeatureTable(geodatabaseFeatureTable)
-            //viewpoint centered on Malibu, CA
+            // Viewpoint centered on Malibu, CA
             val viewpoint = Viewpoint(latitude = 34.0772, longitude = -118.7989, scale = 600000.0)
             setFeatureLayer(featureLayer, viewpoint)
         }.onFailure {
@@ -155,7 +160,9 @@ class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /* Load a feature layer from a local GeoPackage file. */
+    /**
+     * Load a feature layer from a local [GeoPackage] file.
+     */
     private suspend fun loadGeopackage() {
         //locate the .gpkg file
         val geopackageFile = File(provisionPath, "AuroraCO.gpkg")
@@ -171,7 +178,9 @@ class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /* Load a feature layer from a local shapefile. */
+    /**
+     *  Load a feature layer from a local shapefile.
+     */
     private suspend fun loadShapefile() {
         val shapefileFile = File(
             provisionPath,
@@ -189,5 +198,16 @@ class AddFeatureLayersViewModel(app: Application) : AndroidViewModel(app) {
         }.onFailure {
             messageDialogVM.showMessageDialog(it)
         }
+    }
+
+    /**
+     *  UI selector options to drive updates [onFeatureLayerSourceSelected] in the view model.
+     */
+    enum class FeatureLayerSource(val label: String) {
+        SERVICE_FEATURE_TABLE(label = "Service feature table"),
+        PORTAL_ITEM(label = "Portal item"),
+        GEODATABASE(label = "Geodatabase"),
+        GEOPACKAGE(label = "GeoPackage"),
+        SHAPEFILE(label = "Shapefile")
     }
 }
