@@ -17,26 +17,24 @@ Tap the floating action button on the bottom right and select from the various s
 ## How it works
 
 1. Create a new `ArcGISMap` object and pass it to the `MapView` composable's `arcGISMap` parameter.
-2. Load a Feature Layer Using a URL:
+2. Load a feature layer with a service feature table:
     * Create a `ServiceFeatureTable` using the service URL.
     * Create a `FeatureLayer` from the feature table.
-    * Define a `Viewpoint` to set the initial map location.
-3. Load a feature layer using a portal item:
+3. Load a feature layer with a portal item:
     * Create a `PortalItem` with the portal and item ID.
     * Create a `FeatureLayer` from the portal item and ID.
-    * Define a `Viewpoint` to set the initial map location.
 4. Load a feature layer with a geodatabase:
     * Initialize and load a `Geodatabse` using a file name.
-    * Retrieve the required feature table from the geodatabase.
+    * Retrieve the feature table from the geodatabase with the feature table's name.
     * Create a `FeatureLayer` from the feature table.
-5. Load a feature layer with geopackage:
+5. Load a feature layer with a geopackage:
     * Initialize and load the geopackage using a file name.
-    * Get a `GeoPackageFeatureTable` from the geopackage.
+    * Get the first `GeoPackageFeatureTable` from the `geoPackageFeatureTables` list.
     * Create a `FeatureLayer` from the feature table.
-6. Load a feature layer from a shapefile:
+6. Load a feature layer with a shapefile:
     * Create a `ShapefileFeatureTable` using the file path.
     * Create and load a `FeatureLayer` from the table.
-7. In all cases, the selected feature layer is added to the map's `OperationalLayers` and displayed using the defined viewpoint.
+7. In all cases, the selected feature layer is added to the map's operational layers.
 
 ## Relevant API
 

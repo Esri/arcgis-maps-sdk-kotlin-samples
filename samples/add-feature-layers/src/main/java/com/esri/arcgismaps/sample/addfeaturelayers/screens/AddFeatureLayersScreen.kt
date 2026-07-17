@@ -101,14 +101,13 @@ fun AddFeatureLayersScreen(
 
 @Composable
 fun FeatureLayerSourceMenuSelector(
-    selectedFeatureLayerSource: AddFeatureLayersViewModel.FeatureLayerSource = AddFeatureLayersViewModel.FeatureLayerSource.SERVICE_FEATURE_TABLE,
+    selectedFeatureLayerSource: AddFeatureLayersViewModel.FeatureLayerSource,
     onFeatureLayerSourceSelected: (AddFeatureLayersViewModel.FeatureLayerSource) -> Unit = {}
 ) {
     DropDownMenuBox(
-        //show current selected layer ot a placeholder if none is selected
         textFieldValue = selectedFeatureLayerSource.label,
         textFieldLabel = "Select a feature layer source",
-        //populating the dropdown
+        // Populate the selector to map a list of each entry from the view model enum.
         dropDownItemList = AddFeatureLayersViewModel.FeatureLayerSource.entries.map { it.label },
         onIndexSelected = { index -> onFeatureLayerSourceSelected(AddFeatureLayersViewModel.FeatureLayerSource.entries[index]) }
     )

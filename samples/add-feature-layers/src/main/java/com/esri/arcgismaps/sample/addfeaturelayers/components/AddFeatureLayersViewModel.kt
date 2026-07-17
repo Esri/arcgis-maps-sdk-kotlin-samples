@@ -58,7 +58,7 @@ class AddFeatureLayersViewModel(val app: Application) : AndroidViewModel(app) {
     init {
         viewModelScope.launch {
             arcGISMap.load().onFailure { messageDialogVM.showMessageDialog(it) }
-            onFeatureLayerSourceSelected(source = selectedFeatureLayerSource, forceReload = true)
+            onFeatureLayerSourceSelected(source = selectedFeatureLayerSource)
         }
     }
 
@@ -66,8 +66,9 @@ class AddFeatureLayersViewModel(val app: Application) : AndroidViewModel(app) {
      *  Update the current [selectedFeatureLayerSource] and to load the corresponding
      *  [FeatureLayerSource].
      */
-    fun onFeatureLayerSourceSelected(source: FeatureLayerSource, forceReload: Boolean = false) {
-        if (!forceReload && source == selectedFeatureLayerSource) return
+    fun onFeatureLayerSourceSelected(source: FeatureLayerSource) {
+        if (source == selectedFeatureLayerSource && arcGISMap.operationalLayers.isNotEmpty())
+            return
         selectedFeatureLayerSource = source
 
         viewModelScope.launch {
@@ -148,7 +149,7 @@ class AddFeatureLayersViewModel(val app: Application) : AndroidViewModel(app) {
 
         // Load to create a feature layer and a viewpoint to set on map
         geodatabase.load().onSuccess {
-            //Get the "Trailheads" feature table from the geodatabase
+            // Get the "Trailheads" feature table from the geodatabase
             val geodatabaseFeatureTable = geodatabase.getFeatureTable(tableName = "Trailheads")
                 ?: return@onSuccess messageDialogVM.showMessageDialog("Trailheads feature table name not found in geodatabase")
             val featureLayer = FeatureLayer.createWithFeatureTable(geodatabaseFeatureTable)
@@ -164,13 +165,15 @@ class AddFeatureLayersViewModel(val app: Application) : AndroidViewModel(app) {
      * Load a feature layer from a local [GeoPackage] file.
      */
     private suspend fun loadGeopackage() {
-        //locate the .gpkg file
+        // Locate the .gpkg file
         val geopackageFile = File(provisionPath, "AuroraCO.gpkg")
         val geoPackage = GeoPackage(geopackageFile.path)
+
+        // Load to create a feature layer and a viewpoint to set on map
         geoPackage.load().onSuccess {
             val geoPackageFeatureTable = geoPackage.geoPackageFeatureTables.first()
             val featureLayer = FeatureLayer.createWithFeatureTable(geoPackageFeatureTable)
-            // viewpoint centered on Denver, CO
+            // Viewpoint centered on Denver, CO
             val viewpoint = Viewpoint(latitude = 39.7294, longitude = -104.8319, scale = 500000.0)
             setFeatureLayer(featureLayer, viewpoint)
         }.onFailure {
@@ -187,6 +190,8 @@ class AddFeatureLayersViewModel(val app: Application) : AndroidViewModel(app) {
             "ScottishWildlifeTrust_ReserveBoundaries_20201102.shp"
         )
         val shapefileFeatureTable = ShapefileFeatureTable(shapefileFile.path)
+
+        // Load to create a feature layer and a viewpoint to set on map
         shapefileFeatureTable.load().onSuccess {
             val featureLayer = FeatureLayer.createWithFeatureTable(shapefileFeatureTable)
             val viewpoint = Viewpoint(
