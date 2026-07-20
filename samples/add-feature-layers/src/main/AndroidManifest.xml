@@ -3,19 +3,21 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application><activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/add_feature_layers_app_name">
-            
-        </activity>
+    <application>
         <activity
-            android:name=".MainActivity"
+            android:name=".DownloadActivity"
             android:exported="true"
             android:label="@string/add_feature_layers_app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/add_feature_layers_app_name">
+
         </activity>
     </application>
 
