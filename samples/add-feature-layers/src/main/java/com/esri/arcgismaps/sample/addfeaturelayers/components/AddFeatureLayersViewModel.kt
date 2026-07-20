@@ -37,7 +37,9 @@ import com.esri.arcgismaps.sample.addfeaturelayers.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.io.File
-
+/**
+* ViewModel that loads a [FeatureLayer] from various sources and adds it to the ArcGISMap.
+  */
 class AddFeatureLayersViewModel(val app: Application) : AndroidViewModel(app) {
     val arcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic)
 
