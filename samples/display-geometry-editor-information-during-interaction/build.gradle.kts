@@ -3,9 +3,8 @@ plugins {
     alias(libs.plugins.arcgismaps.android.library.compose)
     alias(libs.plugins.arcgismaps.kotlin.sample)
 }
-
 android {
-    namespace = "com.esri.arcgismaps.sample.addfeaturelayers"
+    namespace = "com.esri.arcgismaps.sample.displaygeometryeditorinformationduringinteraction"
 }
 
 dependencies {
