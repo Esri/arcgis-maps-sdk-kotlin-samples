@@ -44,7 +44,7 @@ internal fun AnalyzeTerrainSuitabilityFromSlopeAndAspectSupportingPane(
     onSelectionChange: (ScenarioOption) -> Unit
 ) {
     Text(
-        text = "Sheltered vs Exposed Terrain Suitability",
+        text = "Sheltered vs exposed terrain suitability",
         style = MaterialTheme.typography.titleMedium
     )
     ScenarioOption.entries.forEach { mode ->
@@ -56,7 +56,7 @@ internal fun AnalyzeTerrainSuitabilityFromSlopeAndAspectSupportingPane(
                 }
 
                 ScenarioOption.Exposed -> {
-                    "Steep, upland west- through north-facing slopes"
+                    "Steep, upland slopes facing west through north"
                 }
             },
             selected = slopeAspectUiState.scenarioOption == mode,
@@ -110,7 +110,7 @@ private fun SelectionRow(
 }
 
 /**
- * Display copyright text for the raster data we are using.
+ * Displays copyright text for the sample's source raster.
  */
 @Composable
 fun RasterDataCopyrightText() {

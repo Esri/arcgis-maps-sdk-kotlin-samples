@@ -43,7 +43,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
-class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : AndroidViewModel(app) {
+class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) :
+    AndroidViewModel(app) {
     // Create a state flow to hold the UI state for the supporting pane controls
     private val _slopeAspectUiState = MutableStateFlow(SlopeAspectUiState.defaultState)
 
@@ -53,12 +54,13 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
     // Create a MapViewProxy, used to set viewpoint
     val mapViewProxy = MapViewProxy()
 
-    // Initialize and keep track of the ArcGISMap & the AnalysisOverlay it uses
+    // Initialize and keep track of the ArcGISMap & the AnalysisOverlay
     val arcGISMap = ArcGISMap(SpatialReference(wkid = 32630)) // UTM30N spatial reference
-    var analysisOverlay by mutableStateOf(AnalysisOverlay())
+    val analysisOverlay = AnalysisOverlay()
 
     // Indicates when the progress indicator should be displayed
     var displayProgressIndicator by mutableStateOf(false)
+        private set
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -71,13 +73,7 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
     }
     private val filePath = provisionPath + "arran.tif"
 
-    // Field functions used in map algebra
-    private lateinit var elevationFieldFunction: ContinuousFieldFunction
-    private lateinit var slopeFunction: ContinuousFieldFunction
-    private lateinit var aspectFunction: ContinuousFieldFunction
-    private lateinit var aboveSeaLevelSelection: BooleanFieldFunction
-
-    // FieldAnalysis objects for the two analysis scenarios
+    // FieldAnalysis objects for Sheltered and Exposed analysis scenarios
     private var shelteredSlopesAnalysis: FieldAnalysis? = null
     private var exposedSlopesAnalysis: FieldAnalysis? = null
 
@@ -85,52 +81,66 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
         viewModelScope.launch {
             // Create a ContinuousField from a raster file containing elevation data and project it
             // to the UTM30N spatial reference
-            val filePaths = listOf(filePath)
-            ContinuousField.createFromFiles(filePaths, band = 0, SpatialReference(wkid = 32630))
-                .onFailure {
-                    messageDialogVM.showMessageDialog(it)
-                }.onSuccess { continuousField ->
-                    // Center the MapView on the data we have
-                    mapViewProxy.setViewpointCenter(continuousField.extent.center, scale = 200000.0)
+            ContinuousField.createFromFiles(
+                filePaths = listOf(filePath),
+                band = 0,
+                spatialReference = SpatialReference(wkid = 32630)
+            ).onFailure {
+                messageDialogVM.showMessageDialog(it)
+            }.onSuccess { continuousField ->
+                // Center the MapView on the data we have
+                mapViewProxy.setViewpointCenter(
+                    center = continuousField.extent.center,
+                    scale = 200000.0
+                )
 
-                    // Create the continuous field function for the elevation data
-                    elevationFieldFunction = ContinuousFieldFunction.create(continuousField)
+                // Create the continuous field function for the elevation data
+                val elevationFieldFunction =
+                    ContinuousFieldFunction.create(result = continuousField)
 
-                    // Derive slope and aspect from the elevation field
-                    slopeFunction = elevationFieldFunction.slope()
-                    aspectFunction = elevationFieldFunction.aspect()
+                // Derive slope and aspect from the elevation field
+                val slopeFunction = elevationFieldFunction.slope()
+                val aspectFunction = elevationFieldFunction.aspect()
 
-                    // Keep only land areas above sea level
-                    aboveSeaLevelSelection = elevationFieldFunction.isGreaterThanOrEqualTo(0f)
+                // Keep only land areas above sea level
+                val aboveSeaLevelSelection = elevationFieldFunction.isGreaterThanOrEqualTo(0f)
 
-                    // Create FieldAnalysis objects for the 2 scenarios to be shown
-                    shelteredSlopesAnalysis = createScenarioAnalysis(
-                        slopeMin = 0f, // flat terrain
-                        slopeMax = 20f, // moderate slopes
-                        aspectStart = 112.5f, // east-south-east facing aspect
-                        aspectEnd = 247.5f, // west-south-west facing aspect
-                        elevationMin = 0f,
-                        elevationMax = 300f, // avoid higher elevations
-                        color = Color.fromRgba(r = 0, g = 180, b = 0, a = 255)
-                    )
-                    exposedSlopesAnalysis = createScenarioAnalysis(
-                        slopeMin = 20f, // moderate slopes
-                        slopeMax = 80f, // very steep slopes
-                        aspectStart = 202.5f, // south-south-west facing aspect
-                        aspectEnd = 67.5f, // east-north-east facing aspect
-                        elevationMin = 300f,
-                        elevationMax = 850f, // higher elevations more exposed
-                        color = Color.fromRgba(r = 180, g = 0, b = 180, a = 255)
-                    )
+                // Create FieldAnalysis objects for the 2 scenarios to be shown
+                shelteredSlopesAnalysis = createScenarioAnalysis(
+                    slopeFunction = slopeFunction,
+                    aspectFunction = aspectFunction,
+                    elevationFieldFunction = elevationFieldFunction,
+                    aboveSeaLevelSelection = aboveSeaLevelSelection,
+                    slopeMin = 0f, // flat terrain
+                    slopeMax = 20f, // moderate slopes
+                    aspectStart = 112.5f, // east-south-east facing aspect
+                    aspectEnd = 247.5f, // west-south-west facing aspect
+                    elevationMin = 0f,
+                    elevationMax = 300f, // avoid higher elevations
+                    color = Color.fromRgba(r = 0, g = 180, b = 0, a = 255)
+                )
+                exposedSlopesAnalysis = createScenarioAnalysis(
+                    slopeFunction = slopeFunction,
+                    aspectFunction = aspectFunction,
+                    elevationFieldFunction = elevationFieldFunction,
+                    aboveSeaLevelSelection = aboveSeaLevelSelection,
+                    slopeMin = 20f, // moderate slopes
+                    slopeMax = 80f, // very steep slopes
+                    aspectStart = 202.5f, // south-south-west facing aspect
+                    aspectEnd = 67.5f, // east-north-east facing aspect
+                    elevationMin = 300f,
+                    elevationMax = 850f, // higher elevations more exposed
+                    color = Color.fromRgba(r = 180, g = 0, b = 180, a = 255)
+                )
 
-                    // Display the progress indicator and make the initially selected scenario
-                    // visible; calculation of the analysis starts when it is made visible
-                    displayProgressIndicator = true
-                    shelteredSlopesAnalysis?.isVisible =
-                        _slopeAspectUiState.value.scenarioOption == ScenarioOption.Sheltered
-                    exposedSlopesAnalysis?.isVisible =
-                        _slopeAspectUiState.value.scenarioOption == ScenarioOption.Exposed
+                // Display the progress indicator and make the initially selected scenario
+                // visible; calculation of the analysis starts when it is made visible
+                displayProgressIndicator = true
+                _slopeAspectUiState.value.scenarioOption.let { selectedOption ->
+                    shelteredSlopesAnalysis?.isVisible = selectedOption == ScenarioOption.Sheltered
+                    exposedSlopesAnalysis?.isVisible = selectedOption == ScenarioOption.Exposed
                 }
+            }
         }
     }
 
@@ -140,6 +150,10 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
      * won't be displayed yet.
      */
     private fun createScenarioAnalysis(
+        slopeFunction: ContinuousFieldFunction,
+        aspectFunction: ContinuousFieldFunction,
+        elevationFieldFunction: ContinuousFieldFunction,
+        aboveSeaLevelSelection: BooleanFieldFunction,
         slopeMin: Float,
         slopeMax: Float,
         aspectStart: Float,
@@ -150,6 +164,10 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
     ): FieldAnalysis {
         // Create a BooleanFieldFunction for the scenario
         val scenarioFieldFunction = createScenarioFieldFunction(
+            slopeFunction = slopeFunction,
+            aspectFunction = aspectFunction,
+            elevationFieldFunction = elevationFieldFunction,
+            aboveSeaLevelSelection = aboveSeaLevelSelection,
             slopeMin = slopeMin,
             slopeMax = slopeMax,
             aspectStart = aspectStart,
@@ -160,13 +178,15 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
 
         // Create a colormap and renderer to display the results; white for areas that don't match
         // the scenario results, and the given color for those that do
-        val colormap = Colormap.create(
-            listOf(Color.white, color)
+        val colormapRenderer = ColormapRenderer(
+            colormap = Colormap.create(colors = listOf(Color.white, color))
         )
-        val colormapRenderer = ColormapRenderer(colormap)
 
         // Create the FieldAnalysis, set its visibility to false, and add it to the AnalysisOverlay
-        val analysis = FieldAnalysis(scenarioFieldFunction, colormapRenderer)
+        val analysis = FieldAnalysis(
+            booleanFieldFunction = scenarioFieldFunction,
+            colormapRenderer = colormapRenderer
+        )
         analysis.isVisible = false
         analysisOverlay.analyses.add(analysis)
         return analysis
@@ -177,6 +197,10 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
      * ranges.
      */
     private fun createScenarioFieldFunction(
+        slopeFunction: ContinuousFieldFunction,
+        aspectFunction: ContinuousFieldFunction,
+        elevationFieldFunction: ContinuousFieldFunction,
+        aboveSeaLevelSelection: BooleanFieldFunction,
         slopeMin: Float,
         slopeMax: Float,
         aspectStart: Float,
@@ -187,24 +211,35 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
         // Create BooleanFieldFunctions for slope, aspect and elevation that assign pixels a value
         // of 1 when within the range of values provided for the scenario, and 0 when outside the
         // range. Note that `and` and `or` functions can be called using the infix notation.
-        val slopeRangeMask =
-            slopeFunction.isGreaterThanOrEqualTo(slopeMin) and
-                    slopeFunction.isLessThanOrEqualTo(slopeMax)
+        val slopeMinMask = slopeFunction.isGreaterThanOrEqualTo(slopeMin)
+        val slopeMaxMask = slopeFunction.isLessThanOrEqualTo(slopeMax)
+        val slopeRangeMask = slopeMinMask and slopeMaxMask
+
+        val elevationMinMask = elevationFieldFunction.isGreaterThanOrEqualTo(elevationMin)
+        val elevationMaxMask = elevationFieldFunction.isLessThanOrEqualTo(elevationMax)
+        val elevationRangeMask = elevationMinMask and elevationMaxMask
 
         // Handle the case where the aspect range crosses the 0-degree line (e.g. 225 to 45 degrees)
-        val aspectRangeMask =
-            if (aspectStart <= aspectEnd)
-                aspectFunction.isGreaterThanOrEqualTo(aspectStart) and aspectFunction.isLessThanOrEqualTo(aspectEnd)
-            else (aspectFunction.isGreaterThanOrEqualTo(aspectStart) and aspectFunction.isLessThan(360f)) or
-                (aspectFunction.isGreaterThanOrEqualTo(0f) and aspectFunction.isLessThanOrEqualTo(aspectEnd))
+        val aspectRangeMask = if (aspectStart <= aspectEnd) {
+            val aspectMinMask = aspectFunction.isGreaterThanOrEqualTo(aspectStart)
+            val aspectMaxMask = aspectFunction.isLessThanOrEqualTo(aspectEnd)
+            aspectMinMask and aspectMaxMask
+        } else {
+            val upperAspectMinMask = aspectFunction.isGreaterThanOrEqualTo(aspectStart)
+            val upperAspectMaxMask = aspectFunction.isLessThan(360f)
+            val upperAspectBandMask = upperAspectMinMask and upperAspectMaxMask
 
-        val elevationRangeMask =
-            elevationFieldFunction.isGreaterThanOrEqualTo(elevationMin) and
-                    elevationFieldFunction.isLessThanOrEqualTo(elevationMax)
+            val lowerAspectMinMask = aspectFunction.isGreaterThanOrEqualTo(0f)
+            val lowerAspectMaxMask = aspectFunction.isLessThanOrEqualTo(aspectEnd)
+            val lowerAspectBandMask = lowerAspectMinMask and lowerAspectMaxMask
+
+            upperAspectBandMask or lowerAspectBandMask
+        }
 
         // Combine the slope, aspect, and elevation masks with the land-only aboveSeaLevelSelection
         // to create a final BooleanFieldFunction for the scenario
-        return (slopeRangeMask and aspectRangeMask and elevationRangeMask).mask(aboveSeaLevelSelection)
+        val scenarioRangeMask = slopeRangeMask and aspectRangeMask and elevationRangeMask
+        return scenarioRangeMask.mask(aboveSeaLevelSelection)
     }
 
     /**
@@ -216,7 +251,7 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
             ScenarioOption.Sheltered -> shelteredSlopesAnalysis
             ScenarioOption.Exposed -> exposedSlopesAnalysis
         }
-        if (event.analysis.equals(currentScenarioAnalysis)) {
+        if (event.analysis == currentScenarioAnalysis) {
             displayProgressIndicator = event.analysisViewStatus == AnalysisViewStatus.Updating
         }
     }
@@ -230,17 +265,15 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) : A
             currentState.copy(scenarioOption = selectedScenarioOption)
         }
 
-        // Update visibility of the FieldAnalysis objects, so only the newly selected one is visible
-        shelteredSlopesAnalysis?.isVisible =
-            _slopeAspectUiState.value.scenarioOption == ScenarioOption.Sheltered
-        exposedSlopesAnalysis?.isVisible =
-            _slopeAspectUiState.value.scenarioOption == ScenarioOption.Exposed
+        // Keep only the selected scenario analysis visible.
+        _slopeAspectUiState.value.scenarioOption.let { selectedOption ->
+            shelteredSlopesAnalysis?.isVisible = selectedOption == ScenarioOption.Sheltered
+            exposedSlopesAnalysis?.isVisible = selectedOption == ScenarioOption.Exposed
+        }
     }
 }
 
-data class SlopeAspectUiState(
-    val scenarioOption: ScenarioOption
-) {
+data class SlopeAspectUiState(val scenarioOption: ScenarioOption) {
     companion object {
         val defaultState = SlopeAspectUiState(
             scenarioOption = ScenarioOption.Sheltered

@@ -70,7 +70,7 @@ fun AnalyzeTerrainSuitabilityFromSlopeAndAspectScreen(
             )
             if (viewModel.displayProgressIndicator) {
                 Row(
-                    Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
