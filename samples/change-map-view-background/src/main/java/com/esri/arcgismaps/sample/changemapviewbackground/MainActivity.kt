@@ -22,10 +22,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 import com.esri.arcgismaps.sample.changemapviewbackground.screens.ChangeMapViewBackgroundScreen
-import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
