@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.addfeaturelayers
+package com.esri.arcgismaps.sample.displaygeometryeditorinformationduringinteraction
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,8 +22,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.addfeaturelayers.screens.AddFeatureLayersScreen
+import com.esri.arcgismaps.sample.displaygeometryeditorinformationduringinteraction.screens.DisplayGeometryEditorInformationDuringInteractionScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -32,10 +33,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SampleAppTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    AddFeatureLayersScreen()
-                }
+                DisplayGeometryEditorInformationDuringInteractionApp()
             }
+        }
+    }
+
+    @Composable
+    private fun DisplayGeometryEditorInformationDuringInteractionApp() {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            DisplayGeometryEditorInformationDuringInteractionScreen(
+                sampleName = getString(R.string.display_geometry_editor_information_during_interaction_app_name)
+            )
         }
     }
 }
