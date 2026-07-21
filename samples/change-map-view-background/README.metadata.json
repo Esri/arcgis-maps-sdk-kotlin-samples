@@ -1,0 +1,19 @@
+{
+    "category": "Maps",
+    "description": "TODO",
+    "formal_name": "ChangeMapViewBackground",
+    "ignore": false,
+    "images": [
+        "change-map-view-background.png"
+    ],
+    "keywords": [ ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [ ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/components/ChangeMapViewBackgroundViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/screens/ChangeMapViewBackgroundScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/MainActivity.kt"
+    ],
+    "title": "Change map view background"
+}
