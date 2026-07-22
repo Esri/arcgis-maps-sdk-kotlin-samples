@@ -29,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.changemapviewbackground.R
-import com.esri.arcgismaps.sample.changemapviewbackground.components.AdaptiveUiState
+import com.esri.arcgismaps.sample.changemapviewbackground.components.ChangeMapViewBackgroundUiState
 import com.esri.arcgismaps.sample.changemapviewbackground.components.ChangeMapViewBackgroundViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
@@ -45,10 +45,11 @@ import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePa
 fun ChangeMapViewBackgroundScreen(
     viewModel: ChangeMapViewBackgroundViewModel = viewModel()
 ) {
-    val adaptiveUiState = viewModel.adaptiveUiState.collectAsStateWithLifecycle().value
+    val changeMapViewBackgroundUiState =
+        viewModel.changeMapViewBackgroundUiState.collectAsStateWithLifecycle().value
 
     MainScreenScaffold(
-        adaptiveUiState = adaptiveUiState,
+        adaptiveUiState = changeMapViewBackgroundUiState,
         onColorChange = viewModel::updateColor,
         onLineColorChange = viewModel::updateLineColor,
         onLineWidthChange = viewModel::updateLineWidth,
@@ -77,7 +78,7 @@ fun ChangeMapViewBackgroundScreen(
 
 @Composable
 private fun MainScreenScaffold(
-    adaptiveUiState: AdaptiveUiState,
+    adaptiveUiState: ChangeMapViewBackgroundUiState,
     onColorChange: (Color) -> Unit = {},
     onLineColorChange: (Color) -> Unit = {},
     onLineWidthChange: (Float) -> Unit = {},
@@ -112,7 +113,7 @@ private fun MainScreenScaffold(
 fun MainScreenPreview() {
     SamplePreviewSurface {
         MainScreenScaffold(
-            adaptiveUiState = AdaptiveUiState.defaultState,
+            adaptiveUiState = ChangeMapViewBackgroundUiState.defaultState,
             mainPaneContent = {}
         )
     }

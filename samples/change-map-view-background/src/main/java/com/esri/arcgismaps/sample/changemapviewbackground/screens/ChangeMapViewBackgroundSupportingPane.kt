@@ -18,19 +18,19 @@ package com.esri.arcgismaps.sample.changemapviewbackground.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -42,15 +42,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.esri.arcgismaps.sample.changemapviewbackground.components.AdaptiveUiState
+import com.esri.arcgismaps.sample.changemapviewbackground.components.ChangeMapViewBackgroundUiState
 import com.esri.arcgismaps.sample.changemapviewbackground.components.ChangeMapViewBackgroundViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.ColorPickerPanel
+import com.esri.arcgismaps.sample.sampleslib.components.ColorPickerSwatch
 
 /**
  * Supporting pane content for the sample. Lets the user configure the MapView's
@@ -59,7 +59,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.ColorPickerPanel
  */
 @Composable
 internal fun ChangeMapViewBackgroundSupportingPane(
-    adaptiveUiState: AdaptiveUiState,
+    adaptiveUiState: ChangeMapViewBackgroundUiState,
     onColorChange: (Color) -> Unit,
     onLineColorChange: (Color) -> Unit,
     onLineWidthChange: (Float) -> Unit,
@@ -89,18 +89,24 @@ internal fun ChangeMapViewBackgroundSupportingPane(
             ColorSwatchRow(
                 title = "Color",
                 color = adaptiveUiState.color,
+                isExpanded = activePicker == ColorPickerTarget.Color,
                 onClick = {
-                    activePicker = if (activePicker == ColorPickerTarget.Color) null else ColorPickerTarget.Color
+                    activePicker =
+                        if (activePicker == ColorPickerTarget.Color) null else ColorPickerTarget.Color
                 }
             )
 
             AnimatedVisibility(visible = activePicker == ColorPickerTarget.Color) {
-                ColorPickerInlineContent(
-                    title = "Color",
+                ColorPickerPanel(
                     color = adaptiveUiState.color,
-                    opacity = false,
                     onColorChange = onColorChange,
-                    onClose = { activePicker = null }
+                    supportsOpacity = false,
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 4.dp,
+                        bottom = 8.dp
+                    )
                 )
             }
 
@@ -109,18 +115,24 @@ internal fun ChangeMapViewBackgroundSupportingPane(
             ColorSwatchRow(
                 title = "Line Color",
                 color = adaptiveUiState.lineColor,
+                isExpanded = activePicker == ColorPickerTarget.LineColor,
                 onClick = {
-                    activePicker = if (activePicker == ColorPickerTarget.LineColor) null else ColorPickerTarget.LineColor
+                    activePicker =
+                        if (activePicker == ColorPickerTarget.LineColor) null else ColorPickerTarget.LineColor
                 }
             )
 
             AnimatedVisibility(visible = activePicker == ColorPickerTarget.LineColor) {
-                ColorPickerInlineContent(
-                    title = "Line Color",
+                ColorPickerPanel(
                     color = adaptiveUiState.lineColor,
-                    opacity = true,
                     onColorChange = onLineColorChange,
-                    onClose = { activePicker = null }
+                    supportsOpacity = true,
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 4.dp,
+                        bottom = 8.dp
+                    )
                 )
             }
 
@@ -146,41 +158,27 @@ internal fun ChangeMapViewBackgroundSupportingPane(
 }
 
 @Composable
-private fun ColorPickerInlineContent(
-    title: String,
-    color: Color,
-    opacity: Boolean,
-    onColorChange: (Color) -> Unit,
-    onClose: () -> Unit
-) {
-    ColorPickerPanel(
-        title = title,
-        color = color,
-        onColorChange = onColorChange,
-        supportsOpacity = opacity,
-        showContainer = false,
-        showHeader = false,
-        showHexValue = false,
-        showPreview = false,
-        onClose = onClose,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp)
-    )
-}
-@Composable
 private fun RowDivider() {
     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 }
 
 /**
- * A titled row showing the current color as a tappable swatch. Tapping it invokes [onClick],
- * which the caller uses to present a color picker.
+ * A titled row showing the current color as a tappable swatch, plus a chevron
+ * that rotates 180 degrees when [isExpanded] is true. Tapping the row invokes
+ * [onClick], which the caller uses to expand/collapse the inline color picker.
  */
 @Composable
 private fun ColorSwatchRow(
     title: String,
     color: Color,
+    isExpanded: Boolean,
     onClick: () -> Unit
 ) {
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "colorSwatchChevronRotation"
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,48 +191,23 @@ private fun ColorSwatchRow(
             text = title,
             style = MaterialTheme.typography.bodyLarge
         )
-        ColorSwatch(color = color)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ColorPickerSwatch(color = color)
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = if (isExpanded) "Collapse" else "Expand",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .size(20.dp)
+                    .rotate(chevronRotation)
+            )
+        }
     }
 }
 
-/**
- * A small swatch styled like a color-picker icon: an outer rainbow ring
- * with the currently selected color filled in the center.
- */
-@Composable
-private fun ColorSwatch(
-    color: Color,
-    size: androidx.compose.ui.unit.Dp = 24.dp
-) {
-    val rainbowBrush = remember {
-        Brush.sweepGradient(
-            listOf(
-                Color.Red,
-                Color.Green,
-                Color.Blue
-            )
-        )
-    }
-    Box(
-        modifier = Modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(rainbowBrush),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(size * 0.65f)
-                .clip(CircleShape)
-                .background(color)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = CircleShape
-                )
-        )
-    }
-}
 
 /**
  * A titled row with a slider for adjusting a numeric value. The label and

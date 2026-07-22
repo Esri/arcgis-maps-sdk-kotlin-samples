@@ -18,7 +18,6 @@ package com.esri.arcgismaps.sample.changemapviewbackground.components
 
 import android.app.Application
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
@@ -26,6 +25,7 @@ import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.view.BackgroundGrid
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import com.esri.arcgismaps.sample.sampleslib.components.toArcGISColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -49,10 +49,11 @@ class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app)
     }
 
     // Create a state flow to hold the UI state for the supporting pane controls
-    private val _adaptiveUiState = MutableStateFlow(AdaptiveUiState.defaultState)
+    private val _changeMapViewBackgroundUiState =
+        MutableStateFlow(ChangeMapViewBackgroundUiState.defaultState)
 
     // Expose the state flow as read-only for the UI
-    val adaptiveUiState = _adaptiveUiState.asStateFlow()
+    val changeMapViewBackgroundUiState = _changeMapViewBackgroundUiState.asStateFlow()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -68,7 +69,7 @@ class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app)
      * Updates the background grid's fill color.
      */
     fun updateColor(color: Color) {
-        _adaptiveUiState.update { currentState ->
+        _changeMapViewBackgroundUiState.update { currentState ->
             currentState.copy(color = color)
         }
         backgroundGrid.color = color.toArcGISColor()
@@ -78,7 +79,7 @@ class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app)
      * Updates the background grid's line color.
      */
     fun updateLineColor(color: Color) {
-        _adaptiveUiState.update { currentState ->
+        _changeMapViewBackgroundUiState.update { currentState ->
             currentState.copy(lineColor = color)
         }
         backgroundGrid.lineColor = color.toArcGISColor()
@@ -88,7 +89,7 @@ class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app)
      * Updates the background grid's line width, in device-independent pixels (DIP).
      */
     fun updateLineWidth(lineWidth: Float) {
-        _adaptiveUiState.update { currentState ->
+        _changeMapViewBackgroundUiState.update { currentState ->
             currentState.copy(lineWidth = lineWidth)
         }
         backgroundGrid.lineWidth = lineWidth
@@ -98,7 +99,7 @@ class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app)
      * Updates the size of each grid square, in device-independent pixels (DIP).
      */
     fun updateSize(size: Float) {
-        _adaptiveUiState.update { currentState ->
+        _changeMapViewBackgroundUiState.update { currentState ->
             currentState.copy(size = size)
         }
         backgroundGrid.size = size
@@ -119,33 +120,18 @@ class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app)
 /**
  * Central UI state for the sample's controls.
  */
-data class AdaptiveUiState(
+data class ChangeMapViewBackgroundUiState(
     val color: Color,
     val lineColor: Color,
     val lineWidth: Float,
     val size: Float
 ) {
     companion object {
-        val defaultState = AdaptiveUiState(
+        val defaultState = ChangeMapViewBackgroundUiState(
             color = Color.Black,
             lineColor = Color.White,
             lineWidth = 2f,
             size = 32f
         )
     }
-}
-
-/**
- * Converts a Compose [Color] to the ArcGIS Maps SDK's [ArcGISColor], since
- * BackgroundGrid.color/lineColor are typed as com.arcgismaps.Color rather
- * than androidx.compose.ui.graphics.Color.
- */
-private fun Color.toArcGISColor(): ArcGISColor {
-    val argb = toArgb()
-    return ArcGISColor.fromRgba(
-        (argb shr 16) and 0xFF, // r
-        (argb shr 8) and 0xFF,  // g
-        argb and 0xFF,          // b
-        (argb shr 24) and 0xFF  // a
-    )
 }
