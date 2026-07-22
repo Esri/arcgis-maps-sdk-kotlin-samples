@@ -36,6 +36,7 @@ import com.arcgismaps.LoadStatus
 import com.arcgismaps.data.CodedValue
 import com.arcgismaps.data.CodedValueDomain
 import com.arcgismaps.data.ServiceGeodatabase
+import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallenge
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeHandler
 import com.arcgismaps.httpcore.authentication.ArcGISAuthenticationChallengeResponse
 import com.arcgismaps.httpcore.authentication.TokenCredential
@@ -229,9 +230,8 @@ class MainActivity : EdgeToEdgeCompatActivity() {
      */
     private fun getAuthenticationChallengeHandler(): ArcGISAuthenticationChallengeHandler {
         return ArcGISAuthenticationChallengeHandler { challenge ->
-            val result: Result<TokenCredential> = runBlocking {
+            val result: Result<TokenCredential> =
                 TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
-            }
             if (result.getOrNull() != null) {
                 val credential = result.getOrNull()
                 return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse

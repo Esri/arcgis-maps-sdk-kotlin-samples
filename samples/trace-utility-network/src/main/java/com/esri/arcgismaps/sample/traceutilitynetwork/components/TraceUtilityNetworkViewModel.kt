@@ -156,9 +156,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      */
     private fun getAuthenticationChallengeHandler(): ArcGISAuthenticationChallengeHandler {
         return ArcGISAuthenticationChallengeHandler { challenge ->
-            val result: Result<TokenCredential> = runBlocking {
+            val result: Result<TokenCredential> =
                 TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
-            }
             if (result.getOrNull() != null) {
                 val credential = result.getOrNull()
                 return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse.ContinueWithCredential(

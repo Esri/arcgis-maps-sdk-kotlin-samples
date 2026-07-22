@@ -27,6 +27,7 @@ import kotlinx.coroutines.withTimeout
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Parameterized test to run all [SampleScenario]s in the [SampleScenarioRegistry].
@@ -59,7 +60,7 @@ class SampleScenarioTests(private val scenario: SampleScenario) {
         ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
         ActivityScenario.launch<Activity>(intent).use { sampleScenario ->
             for (step in scenario.steps) {
-                withTimeout(scenario.timeoutMs) {
+                withTimeout(scenario.timeoutMs.milliseconds) {
                     lateinit var activity: Activity
                     sampleScenario.onActivity { activity = it }
                     step.action(sampleScope, activity)

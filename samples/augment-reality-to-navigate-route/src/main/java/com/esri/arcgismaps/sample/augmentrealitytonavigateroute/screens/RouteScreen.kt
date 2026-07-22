@@ -70,7 +70,7 @@ fun RouteScreen(
                 arcGISMap = routeViewModel.arcGISMap,
                 locationDisplay = locationDisplay,
                 graphicsOverlays = routeViewModel.graphicsOverlays,
-                onSingleTapConfirmed = { tap -> tap.mapPoint?.let { it -> routeViewModel.addRoutePoint(it) } })
+                onSingleTapConfirmed = { tap -> tap.mapPoint?.let { routeViewModel.addRoutePoint(it) } })
             if (routeViewModel.statusText.value != "") {
                 // Add directions text box at the top of the screen
                 Box(

@@ -45,6 +45,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(app) {
     private val basemap = Basemap(BasemapStyle.ArcGISHumanGeography)
@@ -160,7 +161,7 @@ class AugmentRealityToCollectDataViewModel(app: Application) : AndroidViewModel(
     private fun periodicallyPollVpsAvailability(){
         viewModelScope.launch {
             viewpointCameraLocationFlow
-                .sample(10_000)
+                .sample(10_000.milliseconds)
                 .collect { location ->
                     worldScaleSceneViewProxy.checkVpsAvailability(location.y, location.x).onSuccess {
                         isVpsAvailable = it == WorldScaleVpsAvailability.Available

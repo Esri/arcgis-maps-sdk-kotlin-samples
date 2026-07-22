@@ -643,9 +643,8 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
  */
 private fun getAuthChallengeHandler(): ArcGISAuthenticationChallengeHandler {
     return ArcGISAuthenticationChallengeHandler { challenge ->
-        val result: Result<TokenCredential> = runBlocking {
+        val result: Result<TokenCredential> =
             TokenCredential.create(challenge.requestUrl, USERNAME, PASSWORD, 0)
-        }
         if (result.getOrNull() != null) {
             val credential = result.getOrNull()
             return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse
