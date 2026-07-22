@@ -174,9 +174,9 @@ private fun ColorSwatchRow(
     isExpanded: Boolean,
     onClick: () -> Unit
 ) {
-    val chevronRotation by animateFloatAsState(
+    val arrowRotation by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
-        label = "colorSwatchChevronRotation"
+        label = "colorSwatchArrowRotation"
     )
 
     Row(
@@ -202,7 +202,7 @@ private fun ColorSwatchRow(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .size(20.dp)
-                    .rotate(chevronRotation)
+                    .rotate(arrowRotation)
             )
         }
     }
