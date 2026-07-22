@@ -1,4 +1,4 @@
-# ArcGIS Maps SDK Kotlin Samples 
+# ArcGIS Maps SDK Kotlin Samples
 
 [![Link: ArcGIS Developers home](https://img.shields.io/badge/ArcGIS%20Developers%20Home-633b9b?style=flat-square)](https://developers.arcgis.com)
 [![Link: Documentation](https://img.shields.io/badge/Documentation-633b9b?style=flat-square)](https://developers.arcgis.com/kotlin/)
