@@ -214,7 +214,7 @@ class EditGeometriesWithProgrammaticReticleToolViewModel(app: Application) : And
 
     /**
      * Performs different actions based on the editor's current hovered and picked up element, as
-     * well as whether vertex creation is allowed. The behaviour is as follows:
+     * well as whether vertex creation is allowed. The behavior is as follows:
      * - If the editor is stopped, starts it with a new geometry with the currently-selected geometry type
      * - Otherwise, if there is a picked up element, places it under the reticle
      * - Otherwise, if a vertex or mid-vertex is hovered over, picks it up

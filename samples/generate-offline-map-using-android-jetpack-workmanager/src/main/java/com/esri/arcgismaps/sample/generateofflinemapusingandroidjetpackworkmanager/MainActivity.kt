@@ -152,7 +152,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
 
         // add the graphic to the graphics overlay when it is created
         graphicsOverlay.graphics.add(downloadArea)
-        // create and add a map with with portal item
+        // create and add a map with portal item
         val map = ArcGISMap(portalItem)
         // apply mapview assignments
         mapView.apply {
@@ -317,9 +317,9 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                                 progressDialog.dismiss()
                             }
                         }
-                        // if the work failed or was cancelled
+                        // if the work failed or was canceled
                         WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
-                            // show an error message based on if it was cancelled or failed
+                            // show an error message based on if it was canceled or failed
                             if (workInfo.state == WorkInfo.State.FAILED) {
                                 showMessage("Error generating offline map")
                             } else {
@@ -392,7 +392,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
 
     /**
      * Creates a progress dialog to show the OfflineMapJob worker progress. It cancels all the
-     * running workers when the dialog is cancelled
+     * running workers when the dialog is canceled
      */
     private fun createProgressDialog(): MaterialAlertDialogBuilder {
         // build and return a new alert dialog

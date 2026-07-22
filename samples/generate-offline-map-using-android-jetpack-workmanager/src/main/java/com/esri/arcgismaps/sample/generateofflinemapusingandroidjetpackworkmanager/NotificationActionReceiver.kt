@@ -11,7 +11,7 @@ import androidx.work.WorkManager
 class NotificationActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        // retrieve the data name or return if the context if null
+        // retrieve the data name or return if the context is null
         val extraName = context?.getString(R.string.notification_action) ?: return
         // get the actual data from the intent
         val action = intent?.getStringExtra(extraName) ?: "none"

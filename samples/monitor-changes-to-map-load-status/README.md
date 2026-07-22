@@ -17,7 +17,7 @@ Click on the button to reload the ArcGISMap. The load status of the ArcGISMap wi
 The `LoadStatus` is `Loaded` when any of the following criteria are met:
 
 * The map has a valid spatial reference.
-* The map has an an initial viewpoint.
+* The map has an initial viewpoint.
 * One of the map's predefined layers has been created.
 
 ## Relevant API

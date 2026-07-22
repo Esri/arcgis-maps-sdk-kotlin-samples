@@ -300,7 +300,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
      * Adds labels for a given field name to a layer with a given name.
      */
     private fun addLabels(layerName: String, fieldName: String, textColor: Color) {
-        // Create a expression for the label using the given field name
+        // Create an expression for the label using the given field name
         val expression = SimpleLabelExpression(simpleExpression = "[$fieldName]")
         // Create a symbol for label's text using the given color
         val symbol = TextSymbol().apply {
@@ -375,7 +375,7 @@ class ValidateUtilityNetworkTopologyViewModel(application: Application) :
 
     /**
      * Identify a single feature from the [screenCoordinate], check if belongs to the
-     * device or line layer, get the coded-value domain from it's field to allow editing.
+     * device or line layer, get the coded-value domain from its field to allow editing.
      */
     fun identifyFeatureAt(
         screenCoordinate: ScreenCoordinate,

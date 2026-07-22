@@ -112,7 +112,7 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
         }
     }
 
-    // Get the overview and full model sublayers for the seggmented choice button
+    // Get the overview and full model sublayers for the segmented choice button
     LaunchedEffect(Unit) {
         buildingSceneLayer.load().onSuccess {
             val sublayers = buildingSceneLayer.sublayers
