@@ -68,7 +68,6 @@ import com.esri.arcgismaps.sample.validateutilitynetworktopology.components.Vali
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 class ValidateUtilityNetworkTopologyViewModel(application: Application) :
