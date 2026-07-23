@@ -49,6 +49,7 @@ import com.arcgismaps.mapping.view.SceneViewingMode
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
@@ -174,6 +175,15 @@ fun AddBuildingSceneLayerScreen(
                         fullModelSublayer?.isVisible = true
                         overviewSublayer?.isVisible = false
                     }
+                }
+            }
+            messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
                 }
             }
         }
