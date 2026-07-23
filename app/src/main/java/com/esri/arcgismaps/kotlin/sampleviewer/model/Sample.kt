@@ -135,7 +135,7 @@ suspend fun Sample.start(context: Context) {
 
     // Authentication with an API key or named user is
     // required to access basemaps and other location services
-    ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+    // ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
     // Obtain and launch the sample activity
     val className = Class.forName(mainActivity) as Class<*>

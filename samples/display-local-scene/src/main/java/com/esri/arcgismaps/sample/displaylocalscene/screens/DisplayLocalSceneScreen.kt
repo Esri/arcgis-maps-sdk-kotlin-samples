@@ -102,8 +102,7 @@ fun DisplayLocalSceneScreen(
                 LocalSceneView(
                     modifier = Modifier.fillMaxSize(),
                     scene = arcGISScene,
-                    onCriticalErrorChanged = messageDialogVM::showMessageDialog,
-                    onGeoModelErrorChanged = messageDialogVM::showMessageDialog
+                    onCriticalErrorChanged = messageDialogVM::showMessageDialog
                 )
             }
 

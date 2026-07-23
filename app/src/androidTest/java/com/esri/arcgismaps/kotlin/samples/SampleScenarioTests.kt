@@ -58,7 +58,7 @@ class SampleScenarioTests(private val scenario: SampleScenario) {
         val sampleScope = SampleScenarioTestScope(scenario.activityClass)
         // Authentication with an API key required to access basemaps and other location services
         // for the below sample scenario tests.
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
+        // ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         val intent = Intent(
             sampleScope.instrumentation.targetContext,
             scenario.activityClass
