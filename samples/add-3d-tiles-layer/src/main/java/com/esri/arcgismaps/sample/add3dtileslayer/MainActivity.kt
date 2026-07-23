@@ -23,6 +23,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.add3dtileslayer.screens.MainScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
@@ -30,7 +31,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // Application context needed render EGM96 vertical coordinates within scene
+        ArcGISEnvironment.applicationContext = this
         enableEdgeToEdge()
         setContent {
             SampleAppTheme {
