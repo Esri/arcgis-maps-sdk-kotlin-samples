@@ -1,7 +1,7 @@
 # Change map view background
 Customize map view's background by changing its grid properties.
 
-![Image of change map view background](change-map-view-background-settings.png)
+![Image of change map view background](change-map-view-background.png)
 
 ## Use case
 
