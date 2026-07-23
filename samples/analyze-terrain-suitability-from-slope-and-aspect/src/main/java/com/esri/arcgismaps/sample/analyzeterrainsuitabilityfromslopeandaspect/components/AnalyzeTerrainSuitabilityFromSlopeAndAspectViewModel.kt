@@ -247,12 +247,19 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) :
      * current scenario analysis is Updating and hides it when not Updating.
      */
     fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
-        val currentScenarioAnalysis = when (adaptiveUiState.value.scenarioOption) {
-            ScenarioOption.Sheltered -> shelteredSlopesAnalysis
-            ScenarioOption.Exposed -> exposedSlopesAnalysis
-        }
-        if (event.analysis == currentScenarioAnalysis) {
-            displayProgressIndicator = event.analysisViewStatus == AnalysisViewStatus.Updating
+        displayProgressIndicator = when (event.analysisViewStatus){
+            is AnalysisViewStatus.Error -> {
+                messageDialogVM.showMessageDialog(
+                    throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
+                )
+                false
+            }
+            AnalysisViewStatus.UpToDate -> {
+                false
+            }
+            AnalysisViewStatus.Updating -> {
+                true
+            }
         }
     }
 
