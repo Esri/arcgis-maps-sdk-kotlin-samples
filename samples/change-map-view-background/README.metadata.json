@@ -1,19 +1,31 @@
 {
     "category": "Maps",
-    "description": "TODO",
+    "description": "Customize map view's background by changing its grid properties.",
     "formal_name": "ChangeMapViewBackground",
     "ignore": false,
     "images": [
         "change-map-view-background.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "background",
+        "grid",
+        "map",
+        "BackgroundGrid",
+        "Map",
+        "MapView"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "BackgroundGrid",
+        "Map",
+        "MapView"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/components/ChangeMapViewBackgroundViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/screens/ChangeMapViewBackgroundScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/screens/ChangeMapViewBackgroundSupportingPane.kt"
     ],
     "title": "Change map view background"
 }
