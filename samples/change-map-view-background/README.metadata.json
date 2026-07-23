@@ -24,8 +24,8 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/components/ChangeMapViewBackgroundViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/screens/ChangeMapViewBackgroundScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/screens/ChangeMapViewBackgroundSupportingPane.kt"
+        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/screens/ChangeMapViewBackgroundSupportingPane.kt",
+        "src/main/java/com/esri/arcgismaps/sample/changemapviewbackground/screens/ChangeMapViewBackgroundScreen.kt"
     ],
     "title": "Change map view background"
 }
