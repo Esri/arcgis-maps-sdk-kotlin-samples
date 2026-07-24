@@ -112,7 +112,7 @@ class FilterBuildingSceneLayerViewModel(app: Application) : AndroidViewModel(app
                 buildingSceneLayer.activeFilter = null
                 return
             }
-            // Build a building filter to show the selected floor and an xray view of the floors below.
+            // Build a building filter to show the selected floor and a xray view of the floors below.
             // Floors above the selected floor are not shown at all.
             val buildingFilter = BuildingFilter(
                 name = "Floor filter",

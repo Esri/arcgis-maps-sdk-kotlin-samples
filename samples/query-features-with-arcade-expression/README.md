@@ -17,7 +17,7 @@ Tap on any neighborhood to see the number of crimes in the last 60 days in a Tex
 1. Create a `PortalItem` using the URL and ID.
 2. Create an `ArcGISMap` using the portal item.
 3. Create a `MapViewProxy` to handle user interaction with the map view.
-4. Provide behaviour for the `MapView`'s `onSingleTapConfirmed` parameter to react to taps on the map.
+4. Provide behavior for the `MapView`'s `onSingleTapConfirmed` parameter to react to taps on the map.
 5. Identify the visible layer where it is tapped using `mapViewProxy.identify()` and get the feature from the result.
 6. Create the following `ArcadeExpression`:
 

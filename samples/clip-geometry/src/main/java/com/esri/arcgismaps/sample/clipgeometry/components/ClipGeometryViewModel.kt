@@ -146,21 +146,21 @@ class ClipGeometryViewModel(application: Application) : AndroidViewModel(applica
         // create a dotted red outline symbol
         val redOutline = SimpleLineSymbol(SimpleLineSymbolStyle.Dot, Color.red, 3f)
 
-        // create a envelope outside Colorado
+        // create an envelope outside Colorado
         val outsideEnvelope = Envelope(
             Point(-11858344.321294, 5147942.225174),
             Point(-12201990.219681, 5297071.577304)
         )
         val outside = Graphic(outsideEnvelope, redOutline)
 
-        // create a envelope intersecting Colorado
+        // create an envelope intersecting Colorado
         val intersectingEnvelope = Envelope(
             Point(-11962086.479298, 4566553.881363),
             Point(-12260345.183558, 4332053.378376)
         )
         val intersecting = Graphic(intersectingEnvelope, redOutline)
 
-        // create a envelope inside Colorado
+        // create an envelope inside Colorado
         val insideEnvelope = Envelope(
             Point(-11655182.595204, 4741618.772994),
             Point(-11431488.567009, 4593570.068343)
