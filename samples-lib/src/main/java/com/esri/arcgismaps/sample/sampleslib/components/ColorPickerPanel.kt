@@ -1,13 +1,20 @@
 package com.esri.arcgismaps.sample.sampleslib.components
 
+import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,60 +25,103 @@ import com.arcgismaps.Color as ArcGISColor
 
 /**
  * A self-contained ARGB color picker panel using inline sliders.
+ * Supports sRGB color space.
  */
 @Composable
 fun ColorPickerPanel(
-    color: Color,
-    onColorChange: (Color) -> Unit,
     modifier: Modifier = Modifier,
+    color: Color = Color.Cyan,
+    title: String = "Color Picker",
+    onColorChange: (Color) -> Unit,
     supportsOpacity: Boolean = true,
 ) {
-    val r = (color.red * 255f).roundToInt()
-    val g = (color.green * 255f).roundToInt()
-    val b = (color.blue * 255f).roundToInt()
+    //removing roundToInt() as it's needed only when displaying the value to the user, not for the actual color value.
+    val r = color.red * 255f
+    val g = color.green * 255f
+    val b = color.blue * 255f
 
-    Column(modifier = modifier) {
+    var isExpanded by remember { mutableStateOf(false) }
 
-        // Use regular Material sliders for RGB channels while keeping live updates.
-        LabeledSlider(
-            label = "RED",
-            value = r.toFloat(),
-            valueRange = 0f..255f,
-            valueText = r.toString(),
-            onValueChange = { newR -> onColorChange(color.copy(red = newR.roundToInt() / 255f)) }
-        )
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "colorSwatchArrowRotation"
+    )
 
-        Spacer(Modifier.height(12.dp))
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .animateContentSize()
+            .clickable(onClick = { isExpanded = !isExpanded })
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (!isExpanded) {
+                        ColorPickerSwatch(color = color)
+                    }
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        contentDescription = if (isExpanded) "Collapse color picker" else "Expand color picker",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.rotate(arrowRotation)
+                    )
+                }
+            }
+            if (isExpanded) {
+                ColorPickerSwatch(color = color, size = 48.dp)
+            }
+            if (isExpanded) {
+                // Use regular Material sliders for RGB channels while keeping live updates.
+                LabeledSlider(
+                    label = "RED",
+                    value = r,
+                    valueRange = 0f..255f,
+                    valueText = r.roundToInt().toString(),
+                    onValueChange = { newR -> onColorChange(color.copy(red = newR.roundToInt() / 255f)) }
+                )
 
-        LabeledSlider(
-            label = "GREEN",
-            value = g.toFloat(),
-            valueRange = 0f..255f,
-            valueText = g.toString(),
-            onValueChange = { newG -> onColorChange(color.copy(green = newG.roundToInt() / 255f)) }
-        )
+                LabeledSlider(
+                    label = "GREEN",
+                    value = g,
+                    valueRange = 0f..255f,
+                    valueText = g.roundToInt().toString(),
+                    onValueChange = { newG -> onColorChange(color.copy(green = newG.roundToInt() / 255f)) }
+                )
 
-        Spacer(Modifier.height(12.dp))
+                LabeledSlider(
+                    label = "BLUE",
+                    value = b,
+                    valueRange = 0f..255f,
+                    valueText = b.roundToInt().toString(),
+                    onValueChange = { newB -> onColorChange(color.copy(blue = newB.roundToInt() / 255f)) }
+                )
 
-        LabeledSlider(
-            label = "BLUE",
-            value = b.toFloat(),
-            valueRange = 0f..255f,
-            valueText = b.toString(),
-            onValueChange = { newB -> onColorChange(color.copy(blue = newB.roundToInt() / 255f)) }
-        )
-
-        if (supportsOpacity) {
-            Spacer(Modifier.height(12.dp))
-            LabeledSlider(
-                label = "OPACITY",
-                value = color.alpha,
-                valueRange = 0f..1f,
-                valueText = "${(color.alpha * 100).roundToInt()}%",
-                onValueChange = { newAlpha -> onColorChange(color.copy(alpha = newAlpha)) }
-            )
+                if (supportsOpacity) {
+                    Spacer(Modifier.height(12.dp))
+                    LabeledSlider(
+                        label = "OPACITY",
+                        value = color.alpha,
+                        valueRange = 0f..1f,
+                        valueText = "${(color.alpha * 100).roundToInt()}%",
+                        onValueChange = { newAlpha -> onColorChange(color.copy(alpha = newAlpha)) }
+                    )
+                }
+            }
         }
-
     }
 }
 
@@ -148,16 +198,19 @@ fun Color.toArcGISColor(): ArcGISColor {
 }
 
 
-@Preview(showBackground = true, backgroundColor = 0xFF1A1A1A, widthDp = 360)
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun ColorPickerPanelPreview() {
-    var color by remember { mutableStateOf(Color(0xFF00826C).copy(alpha = 0.65f)) }
-
-    MaterialTheme {
-        ColorPickerPanel(
-            color = color,
-            onColorChange = { color = it },
-            modifier = Modifier.padding(16.dp)
-        )
+    var currentColor by remember { mutableStateOf(Color(0xFF00826C).copy(alpha = 0.65f)) }
+    SamplePreviewSurface {
+        Box(Modifier.fillMaxSize()) {
+            ColorPickerPanel(
+                modifier = Modifier.align(Alignment.Center),
+                title = "Compose color picker",
+                color = currentColor,
+                onColorChange = { newColor -> currentColor = newColor }
+            )
+        }
     }
 }
