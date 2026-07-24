@@ -75,30 +75,20 @@ internal fun ChangeMapViewBackgroundSupportingPane(
                 color = adaptiveUiState.color,
                 onColorChange = onColorChange,
                 supportsOpacity = false,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 12.dp,
-                    bottom = 8.dp
-                )
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            RowDivider()
+            HorizontalDivider()
 
             ColorPickerPanel(
                 title = "Line Color",
                 color = adaptiveUiState.lineColor,
                 onColorChange = onLineColorChange,
                 supportsOpacity = true,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 12.dp,
-                    bottom = 8.dp
-                )
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            RowDivider()
+            HorizontalDivider()
 
             SliderRow(
                 title = "Line Width",
@@ -107,7 +97,7 @@ internal fun ChangeMapViewBackgroundSupportingPane(
                 onValueChange = onLineWidthChange
             )
 
-            RowDivider()
+            HorizontalDivider()
 
             SliderRow(
                 title = "Grid Size",
@@ -117,11 +107,6 @@ internal fun ChangeMapViewBackgroundSupportingPane(
             )
         }
     }
-}
-
-@Composable
-private fun RowDivider() {
-    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 }
 
 /**

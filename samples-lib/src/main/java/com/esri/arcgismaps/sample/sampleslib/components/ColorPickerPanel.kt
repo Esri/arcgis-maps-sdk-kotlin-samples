@@ -35,7 +35,6 @@ fun ColorPickerPanel(
     onColorChange: (Color) -> Unit,
     supportsOpacity: Boolean = true,
 ) {
-    //removing roundToInt() as it's needed only when displaying the value to the user, not for the actual color value.
     val r = color.red * 255f
     val g = color.green * 255f
     val b = color.blue * 255f
