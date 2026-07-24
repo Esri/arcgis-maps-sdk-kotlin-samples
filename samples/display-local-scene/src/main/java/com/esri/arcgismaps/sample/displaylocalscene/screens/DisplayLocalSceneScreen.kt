@@ -34,13 +34,18 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.SceneViewingMode
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun DisplayLocalSceneScreen(sampleName: String) {
+fun DisplayLocalSceneScreen(
+    sampleName: String,
+    messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -77,7 +82,8 @@ fun DisplayLocalSceneScreen(sampleName: String) {
                                     x = 19455578.6821,
                                     y = -5056336.2227,
                                     z = 1699.3366,
-                                    spatialReference = SpatialReference.webMercator()),
+                                    spatialReference = SpatialReference.webMercator()
+                                ),
                                 heading = 338.7410,
                                 pitch = 40.3763,
                                 roll = 0.0,
@@ -96,8 +102,19 @@ fun DisplayLocalSceneScreen(sampleName: String) {
 
                 LocalSceneView(
                     modifier = Modifier.fillMaxSize(),
-                    scene = arcGISScene
+                    scene = arcGISScene,
+                    onGeoModelErrorChanged = messageDialogVM::showMessageDialog,
+                    onCriticalErrorChanged = messageDialogVM::showMessageDialog
                 )
+            }
+            messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
             }
         }
     )

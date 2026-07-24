@@ -24,11 +24,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.toolkit.geoviewcompose.MapView
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
@@ -36,10 +36,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
-
+        val messageDialogVM = MessageDialogViewModel()
         enableEdgeToEdge()
         setContent {
             SampleAppTheme {
@@ -50,8 +47,18 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(it),
-                        arcGISMap = map
+                        arcGISMap = map,
+                        onGeoModelErrorChanged = messageDialogVM::showMessageDialog
                     )
+                    messageDialogVM.apply {
+                        if (dialogStatus) {
+                            MessageDialog(
+                                title = messageTitle,
+                                description = messageDescription,
+                                onDismissRequest = ::dismissDialog
+                            )
+                        }
+                    }
                 }
             }
         }
