@@ -87,7 +87,7 @@ class ApplyDictionaryRendererToGraphicsOverlayViewModel(private val app: Applica
                 graphics.addAll(pointGraphics)
             }
 
-            // Sets the camera to look a the graphics in the graphics overlay
+            // Sets the camera to look at the graphics in the graphics overlay
             graphicsOverlay.extent?.let { extent ->
                 sceneViewProxy.setViewpointCamera(
                     camera = Camera(

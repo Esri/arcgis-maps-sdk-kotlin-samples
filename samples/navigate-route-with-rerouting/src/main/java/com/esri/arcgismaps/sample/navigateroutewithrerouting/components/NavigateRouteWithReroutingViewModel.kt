@@ -80,7 +80,7 @@ class NavigateRouteWithReroutingViewModel(application: Application) :
     // Graphics overlay to display the route ahead and traveled graphics
     val graphicsOverlay = GraphicsOverlay()
 
-    // Keep track of the the location display job when navigation is enabled
+    // Keep track of the location display job when navigation is enabled
     private var locationDisplayJob: Job? = null
 
     // Default location display object, which is updated by rememberLocationDisplay

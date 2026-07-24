@@ -114,7 +114,7 @@ class QueryFeaturesWithArcadeExpressionViewModel(application: Application) :
         // update the marker location to where the user tapped on the map
         markerGraphic.geometry = point
         viewModelScope.launch {
-            // centre the viewpoint on where the user tapped on the map
+            // center the viewpoint on where the user tapped on the map
             mapViewProxy.setViewpointCenter(point)
 
             // evaluate an Arcade expression on the tapped screen coordinate

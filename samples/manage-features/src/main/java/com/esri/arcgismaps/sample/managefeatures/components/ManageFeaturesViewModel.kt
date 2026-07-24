@@ -126,7 +126,7 @@ class ManageFeaturesViewModel(application: Application) : AndroidViewModel(appli
     }
 
     /**
-     * Directs the behaviour of tap's on the map view.
+     * Directs the behavior of tap's on the map view.
      */
     fun onTap(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
         if (damageLayer?.loadStatus?.value != LoadStatus.Loaded) {

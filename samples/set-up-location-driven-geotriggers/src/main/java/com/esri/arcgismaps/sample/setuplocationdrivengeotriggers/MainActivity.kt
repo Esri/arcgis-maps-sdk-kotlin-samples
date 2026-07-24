@@ -70,7 +70,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         activityMainBinding.sectionButton
     }
 
-    // recycler list view to show the the points of interest
+    // recycler list view to show the points of interest
     private val poiListView by lazy {
         activityMainBinding.poiListView
     }

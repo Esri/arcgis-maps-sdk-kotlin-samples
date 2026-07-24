@@ -267,7 +267,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
      * symbol will be placed at the [locationPoint].
      */
     private fun createStopSymbol(stopNumber: Int, locationPoint: Point?) {
-        // create a orange pin PictureMarkerSymbol
+        // create an orange pin PictureMarkerSymbol
         val pinSymbol = PictureMarkerSymbol.createWithImage(
             ContextCompat.getDrawable(
                 this,

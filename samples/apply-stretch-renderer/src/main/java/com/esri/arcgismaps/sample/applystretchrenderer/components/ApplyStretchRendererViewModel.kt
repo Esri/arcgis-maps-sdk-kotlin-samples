@@ -127,28 +127,28 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
         updateRenderer()
     }
 
-    /** Update MinMax minimum value (clamped to 0..(max-1)). */
+    /** Update MinMax minimum value (clamped to 0...(max-1)). */
     fun updateMinValue(value: Double) {
         val max = _maxValue.value
         _minValue.value = value.coerceIn(DEFAULT_MIN, max - 1.0)
         updateRenderer()
     }
 
-    /** Update MinMax maximum value (clamped to (min+1)..255). */
+    /** Update MinMax maximum value (clamped to (min+1)...255). */
     fun updateMaxValue(value: Double) {
         val min = _minValue.value
         _maxValue.value = value.coerceIn(min + 1.0, 255.0)
         updateRenderer()
     }
 
-    /** Update Percent Clip minimum percent (clamped to 0..percentMax). */
+    /** Update Percent Clip minimum percent (clamped to 0...percentMax). */
     fun updatePercentMin(value: Double) {
         val max = _percentMax.value
         _percentMin.value = value.coerceIn(DEFAULT_MIN, max)
         updateRenderer()
     }
 
-    /** Update Percent Clip maximum percent (clamped to percentMin..100). */
+    /** Update Percent Clip maximum percent (clamped to percentMin...100). */
     fun updatePercentMax(value: Double) {
         val min = _percentMin.value
         _percentMax.value = value.coerceIn(min, 100.0)

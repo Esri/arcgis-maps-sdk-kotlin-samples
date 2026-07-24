@@ -301,7 +301,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             else -> addressTextView.text = getString(R.string.tap_on_pin_to_select_address)
         }
 
-        // get the envelop to set the viewpoint
+        // get the envelope to set the viewpoint
         val envelope = graphicsOverlay.extent ?: return showError("Geocode result extent is null")
         // animate viewpoint to geocode result's extent
         lifecycleScope.launch {
