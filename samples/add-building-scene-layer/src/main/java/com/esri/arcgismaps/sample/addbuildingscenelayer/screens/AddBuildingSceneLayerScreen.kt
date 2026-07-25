@@ -143,8 +143,7 @@ fun AddBuildingSceneLayerScreen(
                         .weight(1f),
                     localSceneViewProxy = localSceneViewProxy,
                     scene = arcGISScene,
-                    onCriticalErrorChanged = messageDialogVM::showMessageDialog,
-                    onGeoModelErrorChanged = messageDialogVM::showMessageDialog
+                    onCriticalErrorChanged = messageDialogVM::showMessageDialog
                 )
 
                 var selectedIndex by remember { mutableIntStateOf(0) }

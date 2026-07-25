@@ -157,8 +157,7 @@ var isBottomSheetVisible by remember { mutableStateOf(false) }
                             }
                         }
                     },
-                    onCriticalErrorChanged = viewModel.messageDialogVM::showMessageDialog,
-                    onGeoModelErrorChanged = viewModel.messageDialogVM::showMessageDialog
+                    onCriticalErrorChanged = viewModel.messageDialogVM::showMessageDialog
                 )
             }
 
