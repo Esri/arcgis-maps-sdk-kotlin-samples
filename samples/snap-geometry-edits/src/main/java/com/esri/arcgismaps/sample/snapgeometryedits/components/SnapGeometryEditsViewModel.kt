@@ -50,7 +50,7 @@ class SnapGeometryEditsViewModel(
     // create a map using the URL of the web map
     val map = ArcGISMap(application.getString(R.string.web_map))
 
-    // create a graphic, graphic overlay, and geometry editorenc
+    // create a graphic, graphic overlay, and geometry editor
     private var identifiedGraphic = Graphic()
     val graphicsOverlay = GraphicsOverlay()
     val geometryEditor = GeometryEditor()
@@ -117,14 +117,14 @@ class SnapGeometryEditsViewModel(
     }
 
     /**
-     * Synchronises the snap source collection with the map's operational layers, sets the bottom
+     * Synchronizes the snap source collection with the map's operational layers, sets the bottom
      * sheet UI, and shows it to configure snapping.
      */
     fun showBottomSheet() {
         if (geometryEditor.snapSettings.sourceSettings.isEmpty()) {
             // sync the snap source collection
             geometryEditor.snapSettings.syncSourceSettings()
-            // initialise the snap source lists used for the bottom sheet
+            // initialize the snap source lists used for the bottom sheet
             geometryEditor.snapSettings.sourceSettings.forEach { snapSource ->
                 snapSourceCheckedState.add(snapSource.isEnabled)
             }

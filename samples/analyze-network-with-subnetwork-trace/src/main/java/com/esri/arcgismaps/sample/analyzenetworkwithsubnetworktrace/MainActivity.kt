@@ -63,7 +63,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : EdgeToEdgeCompatActivity() {
 
@@ -229,9 +228,8 @@ class MainActivity : EdgeToEdgeCompatActivity() {
      */
     private fun getAuthenticationChallengeHandler(): ArcGISAuthenticationChallengeHandler {
         return ArcGISAuthenticationChallengeHandler { challenge ->
-            val result: Result<TokenCredential> = runBlocking {
+            val result: Result<TokenCredential> =
                 TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
-            }
             if (result.getOrNull() != null) {
                 val credential = result.getOrNull()
                 return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse

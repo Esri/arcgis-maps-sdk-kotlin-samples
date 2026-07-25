@@ -60,7 +60,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToLong
 
 class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(application) {
@@ -156,9 +155,8 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
      */
     private fun getAuthenticationChallengeHandler(): ArcGISAuthenticationChallengeHandler {
         return ArcGISAuthenticationChallengeHandler { challenge ->
-            val result: Result<TokenCredential> = runBlocking {
+            val result: Result<TokenCredential> =
                 TokenCredential.create(challenge.requestUrl, "viewer01", "I68VGU^nMurF", 0)
-            }
             if (result.getOrNull() != null) {
                 val credential = result.getOrNull()
                 return@ArcGISAuthenticationChallengeHandler ArcGISAuthenticationChallengeResponse.ContinueWithCredential(

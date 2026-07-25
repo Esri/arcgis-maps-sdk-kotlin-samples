@@ -34,4 +34,4 @@ This sample uses the GeoView-Compose Toolkit module to be able to implement a co
 
 ## Tags
 
-geoview-compose, mmpk, mobile map package, offline, tookit
+geoview-compose, mmpk, mobile map package, offline, toolkit

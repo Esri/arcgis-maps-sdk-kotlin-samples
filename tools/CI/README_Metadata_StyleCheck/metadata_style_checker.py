@@ -307,8 +307,8 @@ def compare_one_metadata(folder_path: str):
     if json_data['description'] in sub_special_char(single_updater.description):
         single_updater.description = json_data['description']
     # The special rule to ignore the order of src filenames.
-    # If the original json has all the filenames, then it is good.
-    if sorted(json_data['snippets']) == single_updater.snippets:
+    # If the original json contains the same snippet paths, preserve its order.
+    if sorted(json_data['snippets']) == sorted(single_updater.snippets):
         single_updater.snippets = json_data['snippets']
 
     new = single_updater.flush_to_json_string()

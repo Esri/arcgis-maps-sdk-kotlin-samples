@@ -168,7 +168,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             val view = convertView ?: mLayoutInflater.inflate(layoutResourceId, parent, false)
             val dropdownItemTV = view.findViewById<TextView>(android.R.id.text1)
 
-            // bind the long name of the floor to it's respective text view
+            // bind the long name of the floor to its respective text view
             dropdownItemTV.text = floorLevels[position].longName
             return view
         }

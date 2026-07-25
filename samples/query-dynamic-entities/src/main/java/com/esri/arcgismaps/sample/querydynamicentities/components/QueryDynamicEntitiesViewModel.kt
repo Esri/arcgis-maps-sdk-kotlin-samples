@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.time.Duration.Companion.milliseconds
 
 class QueryDynamicEntitiesViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -326,7 +327,7 @@ private class PlaneFeedProvider : CustomDynamicEntityDataSource.EntityFeedProvid
                             )
                         )
                     }
-                    delay(1000)
+                    delay(1000.milliseconds)
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e

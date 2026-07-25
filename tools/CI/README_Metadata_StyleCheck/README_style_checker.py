@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from ast import Tuple
 import os
 import re
 import typing
@@ -9,28 +8,22 @@ import argparse
 # region Global sets
 # A set of words that get omitted during letter-case checks.
 exception_proper_nouns = {
-    'Arcade'
-    'WmsLayer',
+    'Arcade',
+    'Android',
     'ArcGIS Online',
+    'ArcGIS Pro',
+    'Jetpack',
+    'MapView',
     'OAuth',
     'Web Mercator',
-    'ArcGIS Pro',
-    'GeoPackage',
-    'loadStatus',
-    'Integrated Windows Authentication',
-    'GeoElement',
-    'Network Link',
-    'Network Link Control',
-    'Open Street Map',
-    'OpenStreetMap',
-    'Play a KML Tour'
+    'WorkManager'
 }
 
 # endregion
 
 
 # region Static functions
-def parse_head(head_string: str) -> (str, str):
+def parse_head(head_string: str) -> typing.Tuple[str, str]:
     """
     Parse the head of README and get title and description.
 

@@ -79,7 +79,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         lifecycle.addObserver(mapView)
 
         mapView.apply {
-            // add a map with a imagery basemap style
+            // add a map with an imagery basemap style
             map = ArcGISMap(BasemapStyle.ArcGISImagery)
             // add a graphics overlay to the map for showing where the user tapped
             graphicsOverlays.add(graphicsOverlay)
