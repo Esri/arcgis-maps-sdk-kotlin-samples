@@ -46,7 +46,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             resources.getString(R.string.elevation_image_service)
         )
 
-        // create a scene with a imagery basemap style
+        // create a scene with an imagery basemap style
         val imageryScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
             // add the elevation source to the base surface
             baseSurface.elevationSources.add(elevationSource)

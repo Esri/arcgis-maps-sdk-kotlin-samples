@@ -10,7 +10,7 @@ A field worker can create new features in a utility network by editing and snapp
 
 ## How to use the sample
 
-To edit a geometry, tap a point geometry to be edited in the map to select it. Then edit the geometry by tapping the button to start the geometry edito with the reticle tool.
+To edit a geometry, tap a point geometry to be edited in the map to select it. Then edit the geometry by tapping the button to start the geometry editor with the reticle tool.
 
 Snap sources can be enabled and disabled. Snapping will not occur when `SnapRuleBehavior.RulesPreventSnapping` even when the source is enabled.
 

@@ -150,7 +150,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 worldElevation.load()
                 usCensus.load()
             }.onFailure {
-                // login was cancelled or failed to authenticate
+                // login was canceled or failed to authenticate
                 messageDialogVM.showMessageDialog(
                     application.getString(R.string.createAndSaveMap_failedToLoadPortal),
                     it.message.toString()

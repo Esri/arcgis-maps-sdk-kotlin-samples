@@ -47,6 +47,17 @@ def read_json(filenames_json_data):
     return [filename for filename in filenames_json_data]
 
 
+def is_sample_doc_path(path: str) -> bool:
+    normalized_path = os.path.normpath(path)
+    path_parts = normalized_path.split(os.path.sep)
+
+    if not path_parts or path_parts[0] != 'samples':
+        return False
+
+    filename = os.path.basename(normalized_path).lower()
+    return filename == 'readme.md' or filename == 'readme.metadata.json'
+
+
 def load_json_file(path: str):
     try:
         json_file = open(path, 'r')
@@ -88,14 +99,13 @@ def main():
             print("Note: This file has since been deleted. No style check will be performed on: " + f)
             continue
         
+        if not is_sample_doc_path(f):
+            continue
+
         # Get filename and folder name of the changed sample.
         filename = os.path.basename(f)
         dir_path = os.path.dirname(f)
         l_name = filename.lower()
-
-        # Changed file is not a README or metadata file, omit.
-        if l_name != 'readme.md' and l_name != 'readme.metadata.json':
-            continue
 
         # Print debug information for current sample.
         if dir_path not in samples_set:
@@ -115,8 +125,8 @@ def main():
             # Run the linter on markdown file.
             return_code += run_mdl(f)
 
-        # Run the other Python checks on the whole sample folder.
-        if dir_path not in samples_set:
+        # Run the other Python checks on sample folders only.
+        if dir_path and dir_path not in samples_set:
             samples_set.add(dir_path)
             return_code += run_style_check(dir_path)
 

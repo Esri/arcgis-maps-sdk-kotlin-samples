@@ -48,7 +48,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
- * Composable component to display an determinate loading dialog along for an ArcGIS Job
+ * Composable component to display a determinate loading dialog along for an ArcGIS Job
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

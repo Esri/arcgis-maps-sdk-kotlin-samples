@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun MainScreen(sampleName: String) {
-    // coroutineScope that will be cancelled when this call leaves the composition
+    // coroutineScope that will be canceled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
     // get the application property that will be used to construct MapViewModel
     val sampleApplication = LocalContext.current.applicationContext as Application
