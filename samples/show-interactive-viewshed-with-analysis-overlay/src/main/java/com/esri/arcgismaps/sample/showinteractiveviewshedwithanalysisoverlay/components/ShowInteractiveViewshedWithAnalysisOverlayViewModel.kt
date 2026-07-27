@@ -38,6 +38,8 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.raster.Colormap
 import com.arcgismaps.mapping.symbology.raster.ColormapRenderer
 import com.arcgismaps.mapping.view.AnalysisOverlay
+import com.arcgismaps.mapping.view.AnalysisViewStatus
+import com.arcgismaps.mapping.view.GeoView
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.LongPressEvent
@@ -283,6 +285,17 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
 
         // Update the viewshed parameters to the current observer position, which triggers analysis
         viewshedParameters.observerPosition = observerPosition
+    }
+
+    /**
+     * Display dialog if there is an error with analysis.
+     */
+    fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
+        if (event.analysisViewStatus is AnalysisViewStatus.Error) {
+            messageDialogVM.showMessageDialog(
+                throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
+            )
+        }
     }
 }
 
