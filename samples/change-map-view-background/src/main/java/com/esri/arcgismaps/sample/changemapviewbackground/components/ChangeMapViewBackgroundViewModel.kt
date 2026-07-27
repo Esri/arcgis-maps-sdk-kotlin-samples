@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.arcgismaps.Color as ArcGISColor
 
 class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app) {
 
