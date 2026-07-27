@@ -64,7 +64,7 @@ fun ColorPickerPanel(
     )
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .animateContentSize()
             .clickable(onClick = { isExpanded = !isExpanded })
             .then(modifier)
