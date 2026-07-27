@@ -94,7 +94,8 @@ fun ConfigureSceneEnvironmentScreen(sampleName: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f),
-                scene = viewModel.arcGISScene
+                scene = viewModel.arcGISScene,
+                onCriticalErrorChanged = viewModel.messageDialogVM::showMessageDialog
             )
 
             // The dialog with the scene environment controls
