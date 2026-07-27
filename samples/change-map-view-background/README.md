@@ -10,14 +10,14 @@ A background grid defines the default color and grid for display behind a map or
 
 ## How to use the sample
 
-Tap the floating action bar on the bottom right to open the settings view. Tap the color next to "Color" and "Line Color" rows to change the background color and the grid's line color respectively. Use the sliders to change the grid line width and grid size.
+Tap the floating action bar on the bottom right to open the settings UI. Tap the color next to "Color" and "Line Color" rows to change the background color and the grid's line color respectively. Use the sliders to change the grid line width and grid size.
 
 ## How it works
 
-1. Create a `Map` object.
+1. Create an `ArcGISMap` object.
 2. Display the map in a `MapView`.
-3. Set the `backgroundGrid` on the `MapView` using the view modifier.
-4. Update the background grid properties from the settings view. The following `BackgroundGrid` properties are updated:
+3. Apply the `backgroundGrid` on the `MapView` using the composable.
+4. Update the background grid properties from the settings pane. The following `BackgroundGrid` properties are updated:
     * `backgroundColor`: fill color
     * `lineColor`: color of background grid lines
     * `lineWidth`: width (in points) of background grid lines

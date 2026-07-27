@@ -56,18 +56,15 @@ internal fun ChangeMapViewBackgroundSupportingPane(
 
     Text(
         text = "BACKGROUND GRID",
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        letterSpacing = 0.5.sp,
-        modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+        style = MaterialTheme.typography.labelMedium
     )
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .animateContentSize(),
-        shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        shape = RoundedCornerShape(16.dp),
+        tonalElevation = 12.dp
     ) {
         Column {
             ColorPickerPanel(

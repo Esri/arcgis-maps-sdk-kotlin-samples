@@ -1,3 +1,19 @@
+/* Copyright 2026 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.esri.arcgismaps.sample.sampleslib.components
 
 import android.content.res.Configuration
@@ -25,6 +41,7 @@ import com.arcgismaps.Color as ArcGISColor
 
 /**
  * A self-contained ARGB color picker panel using inline sliders.
+ * This composable expands for slider configurations and collapses for [color] preview state.
  * Supports sRGB color space.
  */
 @Composable
@@ -48,9 +65,9 @@ fun ColorPickerPanel(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
             .animateContentSize()
             .clickable(onClick = { isExpanded = !isExpanded })
+            .then(modifier)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -110,7 +127,6 @@ fun ColorPickerPanel(
                 )
 
                 if (supportsOpacity) {
-                    Spacer(Modifier.height(12.dp))
                     LabeledSlider(
                         label = "OPACITY",
                         value = color.alpha,
@@ -125,8 +141,7 @@ fun ColorPickerPanel(
 }
 
 /**
- * A titled slider whose current value is shown alongside the label, formatted however the
- * caller needs (a plain integer for RGB channels, a percentage for opacity, etc.).
+ * A slider that shows its current value beside the label.
  */
 @Composable
 private fun LabeledSlider(
@@ -166,7 +181,7 @@ private fun LabeledSlider(
  * Reusable circular swatch that previews a selected color next to picker controls.
  */
 @Composable
-fun ColorPickerSwatch(
+private fun ColorPickerSwatch(
     color: Color,
     modifier: Modifier = Modifier,
     size: Dp = 24.dp,
@@ -180,19 +195,18 @@ fun ColorPickerSwatch(
 }
 
 /**
- * Converts a Compose [Color] to the ArcGIS Maps SDK's [ArcGISColor]. Public so any sample
- * using [ColorPickerPanel] to let the user choose a color for an ArcGIS API type (symbols,
- * renderers, BackgroundGrid, etc.) can reuse this instead of writing its own conversion -
- * ArcGIS SDK color properties are typically typed as com.arcgismaps.Color, not
- * androidx.compose.ui.graphics.Color.
+ * Converts a Compose Color object into an ArcGIS Maps SDK Color instance.
+ *
+ * Samples using [ColorPickerPanel] can use this conversion for ArcGIS Color values in
+ * symbols, renderers, BackgroundGrid, and similar APIs.
  */
 fun Color.toArcGISColor(): ArcGISColor {
     val argb = toArgb()
     return ArcGISColor.fromRgba(
-        (argb shr 16) and 0xFF, // r
-        (argb shr 8) and 0xFF,  // g
-        argb and 0xFF,          // b
-        (argb shr 24) and 0xFF  // a
+        r = (argb shr 16) and 0xFF, // r
+        g = (argb shr 8) and 0xFF,  // g
+        b = argb and 0xFF,          // b
+        a = (argb shr 24) and 0xFF  // a
     )
 }
 

@@ -42,10 +42,10 @@ class ChangeMapViewBackgroundViewModel(app: Application) : AndroidViewModel(app)
     // The background grid drawn behind the map's content. Mutating its properties
     // updates the MapView immediately since it's the same instance passed to MapView.
     val backgroundGrid = BackgroundGrid().apply {
-        color = ArcGISColor.black
-        lineColor = ArcGISColor.white
-        lineWidth = 2f
-        size = 32f
+        color = ChangeMapViewBackgroundUiState.defaultState.color.toArcGISColor()
+        lineColor = ChangeMapViewBackgroundUiState.defaultState.lineColor.toArcGISColor()
+        lineWidth = ChangeMapViewBackgroundUiState.defaultState.lineWidth
+        size = ChangeMapViewBackgroundUiState.defaultState.size
     }
 
     // Create a state flow to hold the UI state for the supporting pane controls
