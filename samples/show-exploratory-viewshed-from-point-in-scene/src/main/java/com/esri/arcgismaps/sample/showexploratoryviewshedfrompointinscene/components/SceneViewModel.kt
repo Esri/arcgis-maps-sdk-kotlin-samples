@@ -31,8 +31,11 @@ import com.arcgismaps.mapping.Surface
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.AnalysisOverlay
+import com.arcgismaps.mapping.view.AnalysisViewStatus
 import com.arcgismaps.mapping.view.Camera
+import com.arcgismaps.mapping.view.GeoView
 import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -85,6 +88,8 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
 
     val sceneViewProxy = SceneViewProxy()
 
+    // Message dialog view model to display errors
+    val messageDialogVM = MessageDialogViewModel()
 
     init {
         // create a surface for elevation data
@@ -200,6 +205,17 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
                     roll = 0.0
                 ),
                 duration = 2.seconds
+            )
+        }
+    }
+
+    /**
+     * Display dialog if there is an error with analysis.
+     */
+    fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
+        if (event.analysisViewStatus is AnalysisViewStatus.Error) {
+            messageDialogVM.showMessageDialog(
+                throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
             )
         }
     }
