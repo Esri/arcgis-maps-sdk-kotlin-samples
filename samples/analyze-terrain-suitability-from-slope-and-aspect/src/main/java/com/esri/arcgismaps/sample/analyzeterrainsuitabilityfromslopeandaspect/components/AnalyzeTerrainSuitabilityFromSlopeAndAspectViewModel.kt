@@ -245,6 +245,7 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) :
     /**
      * An AnalysisViewStatus listener that displays the progress indicator when the status of the
      * current scenario analysis is Updating and hides it when not Updating.
+     * Also displays details of any error that occurs when the analysis is displayed.
      */
     fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
         displayProgressIndicator = when (event.analysisViewStatus){

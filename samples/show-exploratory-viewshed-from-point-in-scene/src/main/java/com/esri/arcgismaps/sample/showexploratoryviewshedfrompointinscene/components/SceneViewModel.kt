@@ -91,7 +91,6 @@ class SceneViewModel(private val application: Application) : AndroidViewModel(ap
     // Message dialog view model to display errors
     val messageDialogVM = MessageDialogViewModel()
 
-
     init {
         // create a surface for elevation data
         val surface = Surface().apply {
