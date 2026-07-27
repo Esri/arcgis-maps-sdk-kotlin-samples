@@ -279,7 +279,7 @@ private fun formatTimeFromSeconds(seconds: Float): String {
     return localTime.format(timeOfDayFormatter)
 }
 
-/** Maps ArcGIS [Color] values (0..255 channels) to Compose [ComposeColor] (0f..1f channels). */
+/** Maps ArcGIS [Color] values (0..255 channels) to Compose [ComposeColor] (0f...1f channels). */
 private fun Color.toComposeColor(): ComposeColor = ComposeColor(
     red = red / 255f,
     green = green / 255f,

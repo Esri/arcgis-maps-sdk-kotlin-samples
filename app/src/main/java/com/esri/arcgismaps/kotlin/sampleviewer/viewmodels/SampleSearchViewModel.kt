@@ -43,7 +43,7 @@ class SampleSearchViewModel(private val application: Application) : AndroidViewM
     var searchSuggestions = MutableStateFlow<List<Pair<String, Boolean>>>(emptyList())
         private set
 
-    // Keep track of the scope where DB is queried, so it can be cancelled
+    // Keep track of the scope where DB is queried, so it can be canceled
     // on subsequent searchQuery.
     private var databaseQueryJob: Job? = null
 

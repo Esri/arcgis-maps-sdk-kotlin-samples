@@ -83,7 +83,7 @@ class NavigateRouteViewModel(application: Application) : AndroidViewModel(applic
     // passed to the composable MapView to set the mapViewProxy
     val mapViewProxy = MapViewProxy()
 
-    // keep track of the the location display job when navigation is enabled
+    // keep track of the location display job when navigation is enabled
     private var locationDisplayJob: Job? = null
 
     // default location display object, which is updated by rememberLocationDisplay

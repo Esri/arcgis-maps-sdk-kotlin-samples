@@ -112,7 +112,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             haloColor = Color.white
             haloWidth = 2f
         }
-        // create a arcade label expression for the label text
+        // create an arcade label expression for the label text
         val arcadeLabelExpression =
             ArcadeLabelExpression(
                 "\$feature.NAME + \" (\" + left(\$feature.PARTY,1) " +

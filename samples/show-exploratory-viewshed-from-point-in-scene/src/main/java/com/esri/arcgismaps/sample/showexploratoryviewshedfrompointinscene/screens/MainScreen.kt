@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
 import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
@@ -64,8 +65,19 @@ fun MainScreen() {
                     .animateContentSize(),
                 arcGISScene = sceneViewModel.scene,
                 sceneViewProxy = sceneViewModel.sceneViewProxy,
-                analysisOverlays = listOf(sceneViewModel.analysisOverlay)
+                analysisOverlays = listOf(sceneViewModel.analysisOverlay),
+                onAnalysisViewStatusChanged = sceneViewModel::analysisViewStatusListener
             )
+            // Show a message dialog if the viewmodel reported an error
+            sceneViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
+            }
         }
     )
 }

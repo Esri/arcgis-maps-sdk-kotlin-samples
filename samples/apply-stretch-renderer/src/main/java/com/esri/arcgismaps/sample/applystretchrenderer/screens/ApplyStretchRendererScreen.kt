@@ -229,7 +229,7 @@ fun PercentClipSettings(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Percent Clip Parameters", style = MaterialTheme.typography.titleMedium)
 
-        // Percent min slider (0 .. percentMax)
+        // Percent min slider (0 ... percentMax)
         Text(text = " Min %: ${range.start.toInt()}  Max %: ${range.endInclusive.toInt()}")
         RangeSlider(
             value = range,
@@ -263,7 +263,7 @@ fun StdDevSettings(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Standard Deviation Parameters", style = MaterialTheme.typography.titleMedium)
 
-        // Factor slider (0.25 .. 4.0)
+        // Factor slider (0.25 ... 4.0)
         Text(text = "Factor: %.2f".format(stdDevFactor))
         Slider(
             value = stdDevFactor.toFloat(),

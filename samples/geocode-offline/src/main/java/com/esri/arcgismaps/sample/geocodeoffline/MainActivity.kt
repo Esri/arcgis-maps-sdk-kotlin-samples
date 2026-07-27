@@ -246,7 +246,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
         graphicsOverlay.graphics.add(resultLocationGraphic)
         descriptionTV.text = geocodeResultList[0].label
 
-        // get the envelop to set the viewpoint
+        // get the envelope to set the viewpoint
         val envelope = graphicsOverlay.extent ?: return showError("Geocode result extent is null")
         // animate viewpoint to geocode result's extent
         lifecycleScope.launch {

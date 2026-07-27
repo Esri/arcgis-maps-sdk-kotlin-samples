@@ -83,6 +83,7 @@ fun ShowInteractiveViewshedWithAnalysisOverlayScreen() {
                     onSingleTapConfirmed = viewModel::onTap,
                     onLongPress = viewModel::onLongPress,
                     onPan = viewModel::onPan,
+                    onAnalysisViewStatusChanged = viewModel::analysisViewStatusListener
                 )
                 // Show a message dialog if the viewmodel reported an error
                 viewModel.messageDialogVM.apply {

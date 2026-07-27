@@ -25,6 +25,7 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Tests for the [DefaultSampleInfoRepository] to verify it correctly loads sample info
@@ -54,7 +55,7 @@ class SampleInfoRepositoryTest {
 
         // Wait for the repository flow to be populated.
         // The StateFlow emits an initial empty list, await until it emits the expected count.
-        val sampleViewerCount = withTimeout(10_000) {
+        val sampleViewerCount = withTimeout(10_000.milliseconds) {
             DefaultSampleInfoRepository.getAllSamples()
                 .first { samples -> samples.size >= jsonCount }
                 .size

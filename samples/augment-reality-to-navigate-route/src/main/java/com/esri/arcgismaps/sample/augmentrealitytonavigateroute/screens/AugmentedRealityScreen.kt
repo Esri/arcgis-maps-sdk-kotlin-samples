@@ -97,7 +97,7 @@ fun AugmentedRealityScreen(
     var displayCalibrationView by remember { mutableStateOf(false) }
     var initializationStatus by rememberWorldScaleSceneViewStatus()
 
-    // Initialize the world scale tracking mode based on whether a google API key is provided
+    // Initialize the world scale tracking mode based on whether a Google API key is provided
     val initialWorldScaleTrackingMode = when {
         SharedRepository.hasNonDefaultAPIKey -> { WorldScaleTrackingMode.Geospatial() }
         else -> { WorldScaleTrackingMode.World() }
