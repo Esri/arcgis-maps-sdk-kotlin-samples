@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import com.arcgismaps.exceptions.ArcGISException
+import com.arcgismaps.exceptions.CriticalRenderingException
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
@@ -98,7 +99,7 @@ class MessageDialogViewModel : ViewModel() {
         private set
 
     /**
-     * Displays an message dialog
+     * Displays a message dialog
      */
     fun showMessageDialog(title: String, description: String = "") {
         messageTitle = title
@@ -106,17 +107,34 @@ class MessageDialogViewModel : ViewModel() {
         dialogStatus = true
     }
 
-    fun showMessageDialog(throwable: Throwable) {
+    fun showMessageDialog(throwable: Throwable?) {
+        throwable ?: return
+        when (throwable) {
+            is CriticalRenderingException -> showMessageDialog(throwable)
+            is ArcGISException -> showMessageDialog(throwable)
+            else -> {
+                showMessageDialog(
+                    title = throwable.message.toString(),
+                    description = throwable.cause.toString()
+                )
+            }
+        }
+    }
+
+    /**
+     * See [platform error codes](https://developers.arcgis.com/kotlin/reference/platform-error-codes/).
+     */
+    fun showMessageDialog(exception: ArcGISException) {
         showMessageDialog(
-            title = throwable.message.toString(),
-            description = throwable.cause.toString()
+            title = "ArcGIS Maps SDK error",
+            description = exception.message
         )
     }
 
-    fun showMessageDialog(exception: ArcGISException) {
+    fun showMessageDialog(exception: CriticalRenderingException) {
         showMessageDialog(
-            title = exception.message,
-            description = exception.additionalInformation.toString() + "\n" + exception.cause.toString()
+            title = "GeoView critical rendering error",
+            description = exception.message
         )
     }
 
