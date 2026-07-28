@@ -34,13 +34,18 @@ import com.arcgismaps.mapping.layers.ArcGISSceneLayer
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.SceneViewingMode
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun DisplayLocalSceneScreen(sampleName: String) {
+fun DisplayLocalSceneScreen(
+    sampleName: String,
+    messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+) {
     Scaffold(
         topBar = { SampleTopAppBar(title = sampleName) },
         content = {
@@ -96,8 +101,19 @@ fun DisplayLocalSceneScreen(sampleName: String) {
 
                 LocalSceneView(
                     modifier = Modifier.fillMaxSize(),
-                    scene = arcGISScene
+                    scene = arcGISScene,
+                    onCriticalErrorChanged = messageDialogVM::showMessageDialog
                 )
+            }
+
+            messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
+                }
             }
         }
     )

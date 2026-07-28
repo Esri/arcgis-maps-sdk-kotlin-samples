@@ -160,7 +160,7 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
         // For each point in each part of the densified polyline
         pipePolyline.parts.forEach { part ->
             part.points.forEach { point ->
-                // Create a line from the 3D pipe vertex to a pont offset by the elevation offset
+                // Create a line from the 3D pipe vertex to a point offset by the elevation offset
                 val offsetPoint = GeometryEngine.createWithZ(
                     point,
                     point.z?.minus(elevationOffset)

@@ -53,7 +53,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var connectionStatusString by mutableStateOf("")
         private set
 
-    // Set connection status string in he UI.
+    // Set connection status string in the UI.
     private fun updateConnectionStatusString(connectionStatus: String) {
         connectionStatusString = connectionStatus
     }
@@ -147,7 +147,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         private set
 
     // Keep track of the Coroutine Scope where observations on being collected on, so that it can
-    // be cancelled on subsequent identifies.
+    // be canceled on subsequent identifies.
     private var observationsJob: Job? = null
 
     /**

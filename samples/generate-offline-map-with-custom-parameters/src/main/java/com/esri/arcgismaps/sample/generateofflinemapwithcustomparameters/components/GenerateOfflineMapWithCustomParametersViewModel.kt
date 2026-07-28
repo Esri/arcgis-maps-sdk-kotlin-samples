@@ -214,7 +214,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
                             it.queryOption = GenerateLayerQueryOption.UseFilter
                         }
                     }
-                    // Start a an offline map job from the task and parameters
+                    // Start an offline map job from the task and parameters
                     createOfflineMapJob(offlineMapTask, generateOfflineMapParameters, parameterOverrides)
                 }
         }
@@ -363,7 +363,7 @@ class GenerateOfflineMapWithCustomParametersViewModel(private val application: A
     }
 
     /**
-     * Helper function to get a feature layer by it's name.
+     * Helper function to get a feature layer by its name.
      */
     private fun getFeatureLayer(layerName: String): FeatureLayer? {
         return arcGISMap.operationalLayers.find { it.name == layerName } as? FeatureLayer

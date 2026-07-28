@@ -45,10 +45,13 @@ import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
 import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
 import com.arcgismaps.mapping.symbology.SimpleRenderer
 import com.arcgismaps.mapping.view.AnalysisOverlay
+import com.arcgismaps.mapping.view.AnalysisViewStatus
 import com.arcgismaps.mapping.view.Camera
+import com.arcgismaps.mapping.view.GeoView
 import com.arcgismaps.mapping.view.Graphic
 import com.arcgismaps.mapping.view.GraphicsOverlay
 import com.arcgismaps.mapping.view.SurfacePlacement
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,6 +62,9 @@ import java.io.File
 import kotlin.concurrent.timer
 
 class SceneViewModel(private var application: Application) : AndroidViewModel(application) {
+
+    // Message dialog view model to display errors
+    val messageDialogVM = MessageDialogViewModel()
 
     // Keep track of target visibility status string state.
     var targetVisibilityString by mutableStateOf("")
@@ -275,4 +281,14 @@ class SceneViewModel(private var application: Application) : AndroidViewModel(ap
         }
     }
 
+    /**
+     * Display dialog if there is an error with analysis.
+     */
+    fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
+        if (event.analysisViewStatus is AnalysisViewStatus.Error) {
+            messageDialogVM.showMessageDialog(
+                throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
+            )
+        }
+    }
 }
