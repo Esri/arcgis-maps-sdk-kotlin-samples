@@ -45,7 +45,7 @@ gradlePlugin {
         }
         register("androidApplication") {
             id = "arcgismaps.android.application"
-            implementationClass = "AndroidApplicationConventionPluginDoesNotExist"
+            implementationClass = "AndroidApplicationConventionPlugin"
         }
         register("androidLibraryCompose") {
             id = "arcgismaps.android.library.compose"
