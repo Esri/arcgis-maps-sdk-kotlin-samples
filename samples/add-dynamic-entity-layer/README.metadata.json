@@ -19,8 +19,8 @@
         "toolkit",
         "track",
         "ArcGISStreamService",
+        "ArcGISStreamServiceFilter",
         "DynamicEntity",
-        "DynamicEntityFilter",
         "DynamicEntityLayer",
         "DynamicEntityPurgeOptions",
         "TrackDisplayProperties"
@@ -29,8 +29,8 @@
     "redirect_from": "",
     "relevant_apis": [
         "ArcGISStreamService",
+        "ArcGISStreamServiceFilter",
         "DynamicEntity",
-        "DynamicEntityFilter",
         "DynamicEntityLayer",
         "DynamicEntityPurgeOptions",
         "TrackDisplayProperties"
