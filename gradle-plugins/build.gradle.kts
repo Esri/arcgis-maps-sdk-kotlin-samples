@@ -19,7 +19,7 @@ gradlePlugin {
         create("copyCodeFiles") {
             id = "com.arcgismaps.sampleFiles.copy"
             version = "1.0"
-            implementationClass = "com.arcgismaps.CopySampleFilesTask"
+            implementationClass = "com.arcgismaps.DoesNotExistTask"
         }
     }
 }

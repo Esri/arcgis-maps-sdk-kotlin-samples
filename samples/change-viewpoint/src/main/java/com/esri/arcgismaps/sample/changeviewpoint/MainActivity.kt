@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity() {
             SampleAppTheme {
                 ChangeViewpointApp()
             }
-            triggerCanaryWarning()
         }
     }
 
@@ -47,13 +46,6 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-}
-
-@Deprecated("CI canary warning", level = DeprecationLevel.WARNING)
-private fun deprecatedCanary() = Unit
-
-private fun triggerCanaryWarning() {
-    deprecatedCanary() // should emit deprecation warning at call site
 }
 
 @Preview(showBackground = true)
