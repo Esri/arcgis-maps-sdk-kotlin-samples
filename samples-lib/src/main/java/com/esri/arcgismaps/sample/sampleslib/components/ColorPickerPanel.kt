@@ -45,7 +45,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,23 +64,13 @@ fun ColorPickerPanel(
     title: String = "Color Picker",
     onColorChange: (Color) -> Unit,
     supportsOpacity: Boolean = true,
-    isExpanded: Boolean? = null,
-    onExpandedChange: ((Boolean) -> Unit)? = null,
 ) {
     val r = color.red * 255f
     val g = color.green * 255f
     val b = color.blue * 255f
     val combinedRgb = color.copy(alpha = 1f)
 
-    var internalExpanded by remember { mutableStateOf(false) }
-    val expanded = isExpanded ?: internalExpanded
-
-    fun setExpanded(value: Boolean) {
-        if (isExpanded == null) {
-            internalExpanded = value
-        }
-        onExpandedChange?.invoke(value)
-    }
+    var expanded by remember { mutableStateOf(false) }
 
     val arrowRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
@@ -91,7 +80,7 @@ fun ColorPickerPanel(
     Box(
         modifier = Modifier
             .animateContentSize()
-            .clickable(onClick = { setExpanded(!expanded) })
+            .clickable(onClick = { expanded = !expanded })
             .then(modifier)
     ) {
         Column(
@@ -269,15 +258,12 @@ private fun ColorPickerSwatch(
  * Samples using [ColorPickerPanel] can use this conversion for ArcGIS Color values in
  * symbols, renderers, BackgroundGrid, and similar APIs.
  */
-fun Color.toArcGISColor(): ArcGISColor {
-    val argb = toArgb()
-    return ArcGISColor.fromRgba(
-        r = (argb shr 16) and 0xFF, // r
-        g = (argb shr 8) and 0xFF,  // g
-        b = argb and 0xFF,          // b
-        a = (argb shr 24) and 0xFF  // a
-    )
-}
+fun Color.toArcGISColor(): ArcGISColor = ArcGISColor.fromRgba(
+    r = (red * 255).roundToInt(),
+    g = (green * 255).roundToInt(),
+    b = (blue * 255).roundToInt(),
+    a = (alpha * 255).roundToInt()
+)
 
 
 @Preview(showBackground = true)

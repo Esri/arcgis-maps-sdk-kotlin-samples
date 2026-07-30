@@ -29,10 +29,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -40,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.changemapviewbackground.components.ChangeMapViewBackgroundUiState
 import com.esri.arcgismaps.sample.changemapviewbackground.components.ChangeMapViewBackgroundViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.ColorPickerPanel
-
-private enum class ExpandedPicker { Color, LineColor }
 
 /**
  * Supporting pane content for the sample. Lets the user configure the MapView's
@@ -56,8 +50,6 @@ internal fun ChangeMapViewBackgroundSupportingPane(
     onLineWidthChange: (Float) -> Unit,
     onSizeChange: (Float) -> Unit
 ) {
-    var expandedPicker by remember { mutableStateOf<ExpandedPicker?>(null) }
-
     // This content is in a scrollable ColumnScope, so Composables can be added without
     // the Column wrapper.
 
@@ -79,10 +71,6 @@ internal fun ChangeMapViewBackgroundSupportingPane(
                 color = adaptiveUiState.color,
                 onColorChange = onColorChange,
                 supportsOpacity = false,
-                isExpanded = expandedPicker == ExpandedPicker.Color,
-                onExpandedChange = { expanded ->
-                    expandedPicker = if (expanded) ExpandedPicker.Color else null
-                },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
@@ -93,10 +81,6 @@ internal fun ChangeMapViewBackgroundSupportingPane(
                 color = adaptiveUiState.lineColor,
                 onColorChange = onLineColorChange,
                 supportsOpacity = true,
-                isExpanded = expandedPicker == ExpandedPicker.LineColor,
-                onExpandedChange = { expanded ->
-                    expandedPicker = if (expanded) ExpandedPicker.LineColor else null
-                },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
