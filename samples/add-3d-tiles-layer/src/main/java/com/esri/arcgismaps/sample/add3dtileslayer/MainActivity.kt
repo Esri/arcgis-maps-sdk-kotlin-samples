@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Application context needed render EGM96 vertical coordinates within scene
+        // Application context needed to render EGM96 vertical coordinates within scene
         ArcGISEnvironment.applicationContext = this
         enableEdgeToEdge()
         setContent {
