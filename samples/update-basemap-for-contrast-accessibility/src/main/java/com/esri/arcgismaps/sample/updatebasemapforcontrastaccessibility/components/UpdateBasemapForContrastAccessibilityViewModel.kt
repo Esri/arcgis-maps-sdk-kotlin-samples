@@ -46,10 +46,6 @@ class UpdateBasemapForContrastAccessibilityViewModel(app: Application) : Android
 
     val messageDialogVM = MessageDialogViewModel()
 
-    init {
-        applyContrastBasemap(contrast = _contrastUiState.value.contrastAppearance)
-    }
-
     /**
      * Ensures the selected [contrast] is in sync with the MapView.
      */
