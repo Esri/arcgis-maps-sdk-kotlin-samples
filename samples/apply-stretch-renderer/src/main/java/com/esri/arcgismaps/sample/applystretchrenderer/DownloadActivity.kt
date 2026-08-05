@@ -26,7 +26,9 @@ class DownloadActivity : DownloaderActivity() {
             Intent(this, MainActivity::class.java),
             getString(R.string.apply_stretch_renderer_app_name),
             listOf(
-                "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"
+//                "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd" // Shasta.tif
+//                "https://www.arcgis.com/home/item.html?id=caeef9aa78534760b07158bb8e068462" // shasta-elevation
+                "https://www.arcgis.com/home/item.html?id=cc68728b5904403ba637e1f1cd2995ae" // ShastaBW.tif
             )
         )
     }

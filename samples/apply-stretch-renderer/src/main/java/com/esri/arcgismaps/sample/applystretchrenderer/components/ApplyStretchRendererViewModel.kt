@@ -23,8 +23,10 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.RasterLayer
+import com.arcgismaps.mapping.symbology.raster.ColorRamp
 import com.arcgismaps.mapping.symbology.raster.MinMaxStretchParameters
 import com.arcgismaps.mapping.symbology.raster.PercentClipStretchParameters
+import com.arcgismaps.mapping.symbology.raster.PresetColorRampType
 import com.arcgismaps.mapping.symbology.raster.StandardDeviationStretchParameters
 import com.arcgismaps.mapping.symbology.raster.StretchParameters
 import com.arcgismaps.mapping.symbology.raster.StretchRenderer
@@ -65,7 +67,8 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
 
     // The raster data (raster-file/Shasta.tif) should be downloaded to external storage on launch
     private val raster by lazy {
-        val rasterFile = File(provisionPath, "raster-file${File.separator}Shasta.tif")
+//        val rasterFile = File(provisionPath, "raster-file${File.separator}Shasta.tif")
+        val rasterFile = File(provisionPath, "ShastaBW.tif")
         Raster.createWithPath(rasterFile.path)
     }
 
@@ -187,11 +190,13 @@ class ApplyStretchRendererViewModel(private val app: Application) : AndroidViewM
                 )
             }
         }
+        val colorRamp = ColorRamp.create(type = PresetColorRampType.DemLight, size = 1000)
         rasterLayer.renderer = StretchRenderer(
             parameters = parameters,
             gammas = emptyList(),
             estimateStatistics = true,
-            colorRamp = null
+//            colorRamp = null
+            colorRamp = colorRamp
         )
     }
 
