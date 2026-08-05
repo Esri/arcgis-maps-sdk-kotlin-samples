@@ -16,91 +16,140 @@
 
 package com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.mapping.view.OrbitLocationCameraController
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.esri.arcgismaps.sample.sampleslib.components.BottomSheet
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
+import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPreview
+import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.R
 import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.SceneViewModel
+import com.esri.arcgismaps.sample.showexploratoryviewshedfrompointinscene.components.ViewshedUiState
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun MainScreen(sampleName: String) {
-    var isBottomSheetVisible by remember { mutableStateOf(true) }
+fun MainScreen() {
     // create a ViewModel to handle SceneView interactions
     val sceneViewModel: SceneViewModel = viewModel()
+    val viewshedUiState by sceneViewModel.viewshedUiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = { SampleTopAppBar(title = sampleName) },
-        floatingActionButton = {
-            if (!isBottomSheetVisible) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 36.dp, end = 24.dp),
-                    onClick = { isBottomSheetVisible = true }
-                ) { Icon(Icons.Filled.Settings, contentDescription = "Viewshed options") }
-            }
-        },
-        content = {
-            Box {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-
-                    val cameraController = remember {
-                        OrbitLocationCameraController(
-                            targetPoint = sceneViewModel.initLocation,
-                            distance = 5000.0
-                        )
-                    }
-                    // composable function that wraps the SceneView
-                    SceneView(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
-                        arcGISScene = sceneViewModel.scene,
-                        onDown = { isBottomSheetVisible = false },
-                        cameraController = cameraController,
-                        analysisOverlays = listOf(sceneViewModel.analysisOverlay)
+    MainScreenScaffold(
+        viewshedUiState = viewshedUiState,
+        onHeadingChanged = sceneViewModel::setHeading,
+        onPitchChanged = sceneViewModel::setPitch,
+        onHorizontalAngleChanged = sceneViewModel::setHorizontalAngle,
+        onVerticalAngleChanged = sceneViewModel::setVerticalAngle,
+        onMinDistanceChanged = sceneViewModel::setMinimumDistance,
+        onMaxDistanceChanged = sceneViewModel::setMaximumDistance,
+        onFrustumVisibilityChanged = sceneViewModel::setFrustumVisibility,
+        onAnalysisVisibilityChanged = sceneViewModel::setAnalysisVisibility,
+        onSetViewpointToAnalysisExtent = sceneViewModel::setViewpointToAnalysisExtent,
+        onResetViewshedOptions = sceneViewModel::resetViewshedOptions,
+        mainPaneContent = {
+            SceneView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .animateContentSize(),
+                arcGISScene = sceneViewModel.scene,
+                sceneViewProxy = sceneViewModel.sceneViewProxy,
+                analysisOverlays = listOf(sceneViewModel.analysisOverlay),
+                onAnalysisViewStatusChanged = sceneViewModel::analysisViewStatusListener
+            )
+            // Show a message dialog if the viewmodel reported an error
+            sceneViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
                     )
                 }
             }
-            BottomSheet(
-                sheetTitle = "Viewshed Options",
-                isVisible = isBottomSheetVisible,
-                onDismissRequest = { isBottomSheetVisible = false }
-            ) {
-                // display list of options to modify viewshed properties
-                ViewshedOptionsScreen(
-                    onHeadingChanged = sceneViewModel::setHeading,
-                    onPitchChanged = sceneViewModel::setPitch,
-                    onHorizontalAngleChanged = sceneViewModel::setHorizontalAngleSlider,
-                    onVerticalAngleChanged = sceneViewModel::setVerticalAngleSlider,
-                    onMinDistanceChanged = sceneViewModel::setMinimumDistanceSlider,
-                    onMaxDistanceChanged = sceneViewModel::setMaximumDistanceSlider,
-                    isFrustumVisible = sceneViewModel::frustumVisibility,
-                    isAnalysisVisible = sceneViewModel::analysisVisibility
-                )
-            }
         }
     )
+}
+
+@Composable
+private fun MainScreenScaffold(
+    viewshedUiState: ViewshedUiState,
+    onHeadingChanged: (Float) -> Unit = {},
+    onPitchChanged: (Float) -> Unit = {},
+    onHorizontalAngleChanged: (Float) -> Unit = {},
+    onVerticalAngleChanged: (Float) -> Unit = {},
+    onMinDistanceChanged: (Float) -> Unit = {},
+    onMaxDistanceChanged: (Float) -> Unit = {},
+    onFrustumVisibilityChanged: (Boolean) -> Unit = {},
+    onAnalysisVisibilityChanged: (Boolean) -> Unit = {},
+    onSetViewpointToAnalysisExtent: () -> Unit = {},
+    onResetViewshedOptions: () -> Unit = {},
+    mainPaneContent: @Composable BoxScope.() -> Unit,
+) {
+    Scaffold(
+        topBar = { SampleTopAppBar(title = stringResource(R.string.show_exploratory_viewshed_from_point_in_scene_app_name)) },
+        content = { paddingValues ->
+            AdaptiveThreePane(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                supportingPaneTitle = "Viewshed Options",
+                floatingPaneTitle = "Scene Options",
+                mainPane = { _, _ -> mainPaneContent() },
+                supportingPane = { isFloatingPaneVisible, toggleFloatingPane ->
+                    ViewshedSupportingContent(
+                        viewshedUiState = viewshedUiState,
+                        isFloatingPaneVisible = isFloatingPaneVisible,
+                        onHeadingChanged = onHeadingChanged,
+                        onPitchChanged = onPitchChanged,
+                        onHorizontalAngleChanged = onHorizontalAngleChanged,
+                        onVerticalAngleChanged = onVerticalAngleChanged,
+                        onMinDistanceChanged = onMinDistanceChanged,
+                        onMaxDistanceChanged = onMaxDistanceChanged,
+                        onToggleFloatingPane = toggleFloatingPane
+                    )
+                },
+                floatingPane = {
+                    ViewshedFloatingContent(
+                        viewshedUiState = viewshedUiState,
+                        onFrustumVisibilityChanged = onFrustumVisibilityChanged,
+                        onAnalysisVisibilityChanged = onAnalysisVisibilityChanged,
+                        onSetViewpointToAnalysisExtent = onSetViewpointToAnalysisExtent,
+                        onResetViewshedOptions = onResetViewshedOptions,
+                    )
+                }
+            )
+        }
+    )
+}
+
+@SampleDeviceLightDarkPreview
+@Composable
+fun MainScreenPreview() {
+    SamplePreviewSurface {
+        MainScreenScaffold(
+            viewshedUiState = ViewshedUiState(
+                heading = 82f,
+                pitch = 60f,
+                horizontalAngle = 75f,
+                verticalAngle = 90f,
+                minDistance = 0f,
+                maxDistance = 1500f,
+                isFrustumVisible = true,
+                isAnalysisVisible = true,
+            ),
+            mainPaneContent = {},
+        )
+    }
 }

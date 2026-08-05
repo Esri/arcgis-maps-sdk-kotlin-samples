@@ -19,14 +19,18 @@ package com.esri.arcgismaps.kotlin.samples
 import android.app.Activity
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
+import com.arcgismaps.ApiKey
+import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.kotlin.samples.scenario.SampleScenario
 import com.esri.arcgismaps.kotlin.samples.scenario.SampleScenarioRegistry
 import com.esri.arcgismaps.kotlin.samples.scenario.SampleScenarioTestScope
+import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Parameterized test to run all [SampleScenario]s in the [SampleScenarioRegistry].
@@ -53,13 +57,16 @@ class SampleScenarioTests(private val scenario: SampleScenario) {
     @Test
     fun testSampleScenario() = runBlocking {
         val sampleScope = SampleScenarioTestScope(scenario.activityClass)
+        // Authentication with an API key required to access basemaps and other location services
+        // for the below sample scenario tests.
+        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         val intent = Intent(
             sampleScope.instrumentation.targetContext,
             scenario.activityClass
         ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
         ActivityScenario.launch<Activity>(intent).use { sampleScenario ->
             for (step in scenario.steps) {
-                withTimeout(scenario.timeoutMs) {
+                withTimeout(scenario.timeoutMs.milliseconds) {
                     lateinit var activity: Activity
                     sampleScenario.onActivity { activity = it }
                     step.action(sampleScope, activity)

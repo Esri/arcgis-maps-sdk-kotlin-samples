@@ -19,8 +19,6 @@ package com.esri.arcgismaps.sample.displayscene
 import android.os.Bundle
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
@@ -41,9 +39,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(sceneView)
 
         // create an elevation source, and add this to the base surface of the scene
@@ -51,7 +46,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             resources.getString(R.string.elevation_image_service)
         )
 
-        // create a scene with a imagery basemap style
+        // create a scene with an imagery basemap style
         val imageryScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
             // add the elevation source to the base surface
             baseSurface.elevationSources.add(elevationSource)

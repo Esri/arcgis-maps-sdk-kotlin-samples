@@ -62,6 +62,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Main screen layout for the sample app
@@ -123,7 +124,7 @@ var isBottomSheetVisible by remember { mutableStateOf(false) }
 
                             // only show identify progress if it has been more than one second
                             val identifyInProgress = coroutineScope.launch {
-                                delay(1000)
+                                delay(1000.milliseconds)
                                 showIdentifyProgress = true
                             }
 
@@ -156,7 +157,8 @@ var isBottomSheetVisible by remember { mutableStateOf(false) }
                                 viewModel.messageDialogVM.showMessageDialog(throwable)
                             }
                         }
-                    }
+                    },
+                    onCriticalErrorChanged = viewModel.messageDialogVM::showMessageDialog
                 )
             }
 

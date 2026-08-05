@@ -38,7 +38,7 @@ When the app
    1. The worker is killed and the download/notifications stop.
    2. The worker is restarted upon next launch.
 
-### Notification behaviour
+### Notification behavior
 
 1. Progress push notification are posted when the `OfflineJobWorker` is running.
 2. Once the worker is done, either a "Completed" or "Failed" notification is posted.
@@ -59,7 +59,7 @@ The map used in this sample shows the [stormwater network](https://arcgisruntime
 ## Additional information
 
 The creation of the offline map can be fine-tuned using [parameter overrides for feature layers](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-overrides), or by using [local basemaps](https://github.com/Esri/arcgis-runtime-samples-android/tree/master/java/generate-offline-map-with-local-basemap)
-to achieve more customised results.
+to achieve more customized results.
 
 ## Tags
 

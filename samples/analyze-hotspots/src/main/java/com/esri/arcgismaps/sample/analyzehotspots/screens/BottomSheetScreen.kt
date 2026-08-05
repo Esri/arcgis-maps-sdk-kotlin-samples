@@ -48,7 +48,7 @@ fun DateRangeSelectorLayout(
     onRunAnalysisClicked: (Long?, Long?) -> Unit,
     bottomSheetState: SheetState,
 ) {
-    // coroutineScope that will be cancelled when this call leaves the composition
+    // coroutineScope that will be canceled when this call leaves the composition
     val scope = rememberCoroutineScope()
 
     // From: Dec 31st, 1997

@@ -1,4 +1,4 @@
-# ArcGIS Maps SDK Kotlin Samples 
+# ArcGIS Maps SDK Kotlin Samples
 
 [![Link: ArcGIS Developers home](https://img.shields.io/badge/ArcGIS%20Developers%20Home-633b9b?style=flat-square)](https://developers.arcgis.com)
 [![Link: Documentation](https://img.shields.io/badge/Documentation-633b9b?style=flat-square)](https://developers.arcgis.com/kotlin/)
@@ -11,11 +11,11 @@
 
 ## Overview
 
-ArcGIS Maps SDK for Kotlin v300.0.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps Kotlin SDK](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
+ArcGIS Maps SDK for Kotlin v300.1.0 samples.  The `main` branch of this repository contains sample app modules for the latest available version of the [ArcGIS Maps Kotlin SDK](https://developers.arcgis.com/kotlin/). Samples released under older versions can be found through the [git tags](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/tags).  Please read our [wiki](https://github.com/Esri/arcgis-maps-sdk-kotlin-samples/wiki) for help with working with this repository.
 
 ## Prerequisites
 
-* The samples are building with `targetSdk 36`
+* The samples are building with `targetSdk 37`
 * [Android Studio](http://developer.android.com/sdk/index.html)
 * [An ArcGIS Developers API key](https://developers.arcgis.com/kotlin/get-started/#3-get-an-api-key)
 

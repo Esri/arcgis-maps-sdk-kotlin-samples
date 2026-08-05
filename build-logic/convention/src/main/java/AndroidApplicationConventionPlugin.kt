@@ -11,7 +11,6 @@ class AndroidApplicationConventionPlugin: Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("com.android.application")
-                apply("org.jetbrains.kotlin.android")
             }
 
             extensions.configure<ApplicationExtension> {
@@ -46,7 +45,9 @@ class AndroidApplicationConventionPlugin: Plugin<Project> {
                 }
 
                 // Add the custom assets directory to the app module's assets build.
-                sourceSets["main"].assets.srcDirs(layout.buildDirectory.dir("sampleAssets/"))
+                sourceSets["main"].assets.directories.add(
+                    layout.buildDirectory.dir("sampleAssets").get().asFile.path
+                )
             }
         }
     }

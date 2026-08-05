@@ -48,7 +48,7 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleTypography
 @Composable
 fun MainScreen(sampleName: String) {
 
-    // coroutineScope that will be cancelled when this call leaves the composition
+    // coroutineScope that will be canceled when this call leaves the composition
     val sampleCoroutineScope = rememberCoroutineScope()
     // get the application context
     val application = LocalContext.current.applicationContext as Application

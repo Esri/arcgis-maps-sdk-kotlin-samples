@@ -1,0 +1,48 @@
+{
+    "category": "Analysis",
+    "description": "Perform an interactive viewshed analysis to determine visible and non-visible areas from a given observer position.",
+    "formal_name": "ShowInteractiveViewshedWithAnalysisOverlay",
+    "ignore": false,
+    "images": [
+        "show-interactive-viewshed-with-analysis-overlay.png"
+    ],
+    "keywords": [
+        "analysis overlay",
+        "elevation",
+        "field analysis",
+        "interactive",
+        "raster",
+        "spatial analysis",
+        "terrain",
+        "viewshed",
+        "visibility",
+        "AnalysisOverlay",
+        "Colormap",
+        "ColormapRenderer",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "FieldAnalysis",
+        "ViewshedFunction",
+        "ViewshedParameters"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "AnalysisOverlay",
+        "Colormap",
+        "ColormapRenderer",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "FieldAnalysis",
+        "ViewshedFunction",
+        "ViewshedParameters"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/components/ShowInteractiveViewshedWithAnalysisOverlayViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ShowInteractiveViewshedWithAnalysisOverlayScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ViewshedSupportingContent.kt"
+    ],
+    "title": "Show interactive viewshed with analysis overlay"
+}

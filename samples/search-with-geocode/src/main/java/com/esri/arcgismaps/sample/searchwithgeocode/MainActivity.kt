@@ -33,8 +33,6 @@ import androidx.core.text.bold
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.geometry.Geometry
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -95,9 +93,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(mapView)
 
         mapView.apply {
@@ -306,7 +301,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             else -> addressTextView.text = getString(R.string.tap_on_pin_to_select_address)
         }
 
-        // get the envelop to set the viewpoint
+        // get the envelope to set the viewpoint
         val envelope = graphicsOverlay.extent ?: return showError("Geocode result extent is null")
         // animate viewpoint to geocode result's extent
         lifecycleScope.launch {

@@ -86,7 +86,7 @@ fun AugmentRealityToCollectDataScreen(sampleName: String) {
     val context = LocalContext.current
 
     val hasNonDefaultAPIKey = BuildConfig.GOOGLE_API_KEY != "DEFAULT_GOOGLE_API_KEY"
-    // Initialize the world scale tracking mode based on whether a google API key is provided
+    // Initialize the world scale tracking mode based on whether a Google API key is provided
     val worldScaleTrackingMode = remember {
         when {
             hasNonDefaultAPIKey -> { WorldScaleTrackingMode.Geospatial() }

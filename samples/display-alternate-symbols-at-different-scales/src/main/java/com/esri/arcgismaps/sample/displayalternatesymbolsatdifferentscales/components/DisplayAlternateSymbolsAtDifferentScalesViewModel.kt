@@ -49,7 +49,7 @@ class DisplayAlternateSymbolsAtDifferentScalesViewModel(app: Application) : Andr
         )
     )
 
-    // Map initialized to the a viewpoint and feature layer.
+    // Map initialized to the viewpoint and feature layer.
     val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISTopographic).apply {
         val center = Point(
             x = -13631200.0,

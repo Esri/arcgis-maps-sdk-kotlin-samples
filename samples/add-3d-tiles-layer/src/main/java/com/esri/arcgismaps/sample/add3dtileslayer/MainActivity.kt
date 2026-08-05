@@ -23,7 +23,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.esri.arcgismaps.sample.add3dtileslayer.screens.MainScreen
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
@@ -32,10 +31,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
-
+        // Application context needed to render EGM96 vertical coordinates within scene
+        ArcGISEnvironment.applicationContext = this
         enableEdgeToEdge()
         setContent {
             SampleAppTheme {

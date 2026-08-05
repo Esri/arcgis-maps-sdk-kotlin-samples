@@ -29,8 +29,6 @@ import androidx.annotation.LayoutRes
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.mapping.floor.FloorLevel
@@ -58,9 +56,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(mapView)
 
         // load the portal and create a map from the portal item
@@ -173,7 +168,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             val view = convertView ?: mLayoutInflater.inflate(layoutResourceId, parent, false)
             val dropdownItemTV = view.findViewById<TextView>(android.R.id.text1)
 
-            // bind the long name of the floor to it's respective text view
+            // bind the long name of the floor to its respective text view
             dropdownItemTV.text = floorLevels[position].longName
             return view
         }

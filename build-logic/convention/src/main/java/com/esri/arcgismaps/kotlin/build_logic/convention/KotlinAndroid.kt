@@ -11,18 +11,17 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
  * Extension to use Android Kotlin configurations and dependencies
  */
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    commonExtension: CommonExtension,
 ) {
     commonExtension.apply {
         compileSdk = libs.findVersion("targetSdk").get().toString().toInt()
 
-        defaultConfig {
-            buildConfigField("String", "ACCESS_TOKEN", project.properties["ACCESS_TOKEN"].toString())
+        defaultConfig.apply {
             manifestPlaceholders["GOOGLE_API_KEY"] = project.properties["GOOGLE_API_KEY"].toString()
             minSdk = libs.findVersion("minSdk").get().toString().toInt()
         }
 
-        compileOptions {
+        compileOptions.apply {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
         }

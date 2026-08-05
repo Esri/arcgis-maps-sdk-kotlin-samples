@@ -22,8 +22,6 @@ import android.widget.ArrayAdapter
 import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISScene
@@ -123,9 +121,6 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(sceneView)
 
         // create and add a scene with an imagery basemap style
@@ -161,7 +156,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
             sceneView.setViewpointCamera(defaultCamera)
             // copy the airplane model assets to the cache directory if needed
             copyAssetsToCache(assetFiles, cacheDir, false)
-            // load the airplane model file and update the the airplane3DGraphic
+            // load the airplane model file and update the airplane3DGraphic
             loadModel(getString(R.string.bristol_model_file), airplane3DGraphic)
         }
 
@@ -230,7 +225,7 @@ class MainActivity : EdgeToEdgeCompatActivity() {
                 if (!outFile.exists() || overwrite) {
                     // create an input stream to the asset
                     assetManager.open(assetName).use { inputStream ->
-                        // create an file output stream to the output file
+                        // create a file output stream to the output file
                         FileOutputStream(outFile).use { outputStream ->
                             // copy the input file stream to the output file stream
                             inputStream.copyTo(outputStream)

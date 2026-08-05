@@ -23,8 +23,6 @@ import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ApiKey
-import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
@@ -78,13 +76,10 @@ class MainActivity : EdgeToEdgeCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // authentication with an API key or named user is
-        // required to access basemaps and other location services
-        ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
         lifecycle.addObserver(mapView)
 
         mapView.apply {
-            // add a map with a imagery basemap style
+            // add a map with an imagery basemap style
             map = ArcGISMap(BasemapStyle.ArcGISImagery)
             // add a graphics overlay to the map for showing where the user tapped
             graphicsOverlays.add(graphicsOverlay)

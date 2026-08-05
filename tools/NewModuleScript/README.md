@@ -18,3 +18,12 @@ The script uses the sample `Display Map` as a template to create a new sample. H
 ## How to use the script
 
 Refer to the `README.md` at `arcgis-maps-sdk-kotlin-samples/tools/`.
+
+## How to update the jar
+
+```log
+ # To generare jar file:
+ ./gradlew clean generateNewModuleScriptArtifact
+ # To update jar artifact in tools:
+ cp build/dist/NewModuleScript.jar ../NewModuleScript.jar
+```

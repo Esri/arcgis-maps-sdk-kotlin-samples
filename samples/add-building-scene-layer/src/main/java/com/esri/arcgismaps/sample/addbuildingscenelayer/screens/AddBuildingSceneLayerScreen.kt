@@ -49,13 +49,18 @@ import com.arcgismaps.mapping.view.SceneViewingMode
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneView
 import com.arcgismaps.toolkit.geoviewcompose.LocalSceneViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.LoadingDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 
 /**
  * Main screen layout for the sample app
  */
 @Composable
-fun AddBuildingSceneLayerScreen(sampleName: String) {
+fun AddBuildingSceneLayerScreen(
+    sampleName: String,
+    messageDialogVM: MessageDialogViewModel = MessageDialogViewModel()
+) {
     // A boolean value to indicate if the building scene layer is loaded
     var isLoaded by remember { mutableStateOf(false) }
 
@@ -112,7 +117,7 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
         }
     }
 
-    // Get the overview and full model sublayers for the seggmented choice button
+    // Get the overview and full model sublayers for the segmented choice button
     LaunchedEffect(Unit) {
         buildingSceneLayer.load().onSuccess {
             val sublayers = buildingSceneLayer.sublayers
@@ -137,7 +142,8 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
                         .fillMaxSize()
                         .weight(1f),
                     localSceneViewProxy = localSceneViewProxy,
-                    scene = arcGISScene
+                    scene = arcGISScene,
+                    onCriticalErrorChanged = messageDialogVM::showMessageDialog
                 )
 
                 var selectedIndex by remember { mutableIntStateOf(0) }
@@ -168,6 +174,15 @@ fun AddBuildingSceneLayerScreen(sampleName: String) {
                         fullModelSublayer?.isVisible = true
                         overviewSublayer?.isVisible = false
                     }
+                }
+            }
+            messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
                 }
             }
         }

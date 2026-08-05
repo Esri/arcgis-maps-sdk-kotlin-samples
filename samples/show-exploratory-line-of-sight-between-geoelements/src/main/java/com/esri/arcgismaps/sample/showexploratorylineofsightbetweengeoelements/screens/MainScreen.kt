@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.showexploratorylineofsightbetweengeoelements.components.SceneViewModel
 
@@ -84,7 +85,8 @@ fun MainScreen(sampleName: String) {
                         .weight(1f),
                     arcGISScene = sceneViewModel.scene,
                     analysisOverlays = listOf(sceneViewModel.analysisOverlay),
-                    graphicsOverlays = listOf(sceneViewModel.graphicsOverlay)
+                    graphicsOverlays = listOf(sceneViewModel.graphicsOverlay),
+                    onAnalysisViewStatusChanged = sceneViewModel::analysisViewStatusListener
                 )
 
                 // Composable function that holds the slider and the text position value
@@ -108,6 +110,16 @@ fun MainScreen(sampleName: String) {
                         },
                     )
 
+                }
+            }
+            // Display a dialog if the sample encounters an error
+            sceneViewModel.messageDialogVM.apply {
+                if (dialogStatus) {
+                    MessageDialog(
+                        title = messageTitle,
+                        description = messageDescription,
+                        onDismissRequest = ::dismissDialog
+                    )
                 }
             }
         })

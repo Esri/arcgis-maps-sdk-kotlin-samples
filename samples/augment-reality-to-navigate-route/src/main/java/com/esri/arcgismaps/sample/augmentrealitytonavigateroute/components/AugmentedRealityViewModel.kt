@@ -58,6 +58,7 @@ import java.lang.Math.toDegrees
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.time.Duration.Companion.milliseconds
 
 class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -425,7 +426,7 @@ class AugmentedRealityViewModel(app: Application) : AndroidViewModel(app) {
                     val scaleFactor = 1 + 0.2 * kotlin.math.sin(2 * kotlin.math.PI * progress)
                     symbol.height = 1 * scaleFactor
                     symbol.depth = 2 * scaleFactor
-                    delay(frameDelay)
+                    delay(frameDelay.milliseconds)
                 }
             }
         }

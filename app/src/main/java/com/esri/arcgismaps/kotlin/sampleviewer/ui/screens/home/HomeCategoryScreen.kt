@@ -57,13 +57,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
 import com.esri.arcgismaps.kotlin.sampleviewer.R
 import com.esri.arcgismaps.kotlin.sampleviewer.model.Category
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.components.CategoryCard
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.stylegraphicswithsymbols.BuildConfig
 
 /**
  * The main SampleViewer app screen which showcases the list all sample categories,

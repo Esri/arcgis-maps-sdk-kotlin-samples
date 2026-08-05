@@ -29,6 +29,7 @@ import kotlinx.serialization.encoding.Encoder
  */
 @Serializable
 enum class SampleCategory(val text: String) {
+    ACCESSIBILITY("Accessibility"),
     ANALYSIS("Analysis"),
     AUGMENTED_REALITY("Augmented Reality"),
     CLOUD_AND_PORTAL("Cloud and Portal"),

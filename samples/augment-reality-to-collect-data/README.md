@@ -10,7 +10,7 @@ You can use AR to quickly photograph an object and automatically determine the o
 
 ## How to use the sample
 
-Before you start, ensure the device has good satellite visibility (ie. no trees or ceilings overhead) or, if using `WorldScaleTrackingMode.Geospatial`, that the device is outside in an area with VPS availability. This sample will indicate whether the device has VPS availability when in Geospatial tracking mode.
+Before you start, ensure the device has good satellite visibility (i.e. no trees or ceilings overhead) or, if using `WorldScaleTrackingMode.Geospatial`, that the device is outside in an area with VPS availability. This sample will indicate whether the device has VPS availability when in Geospatial tracking mode.
 
 When you tap, a yellow diamond will appear at the tapped location. You can move around to visually verify that the tapped point is in the correct physical location. When you're satisfied, tap the '+' button to record the feature.
 
@@ -42,7 +42,7 @@ This sample requires a device that is compatible with [ARCore](https://developer
 
 The `onSingleTapConfirmed` lambda parameter to the `WorldScaleSceneView` passes a `mapPoint` parameter when it is able to determine the real-world location of the tapped point. On devices that support [ARCore's Depth API](https://developers.google.com/ar/develop/depth#device_compatibility), this point is represents the closest visible object to the device at the tapped screen point in the camera feed. On devices that do not support the Depth API, ARCore will attempt to perform a [hit test](https://developers.google.com/ar/develop/hit-test) against any planes that were detected in the scene at that location. If no planes are detected, then `mapPoint` will be null.
 
-Note that the `WorldScaleSceneViewProxy` also supports converting screen coordinates to scene points using `WorldScaleSceneViewProxy.screenToBaseSurface()` and `WorldScaleSceneViewProxy.screenToLocation()`. However, these methods will test the screen coordinate against virtual objects in the scene, so real-world objects that do not have geometry (ie. a mesh) will not be used for the calculation. Therefore, `screenToBaseSurface()` and `screenToLocation()` should only be used where the developer is sure that the data contains geometry for the real-world object in the camera feed.
+Note that the `WorldScaleSceneViewProxy` also supports converting screen coordinates to scene points using `WorldScaleSceneViewProxy.screenToBaseSurface()` and `WorldScaleSceneViewProxy.screenToLocation()`. However, these methods will test the screen coordinate against virtual objects in the scene, so real-world objects that do not have geometry (i.e. a mesh) will not be used for the calculation. Therefore, `screenToBaseSurface()` and `screenToLocation()` should only be used where the developer is sure that the data contains geometry for the real-world object in the camera feed.
 
 This sample uses the `onSingleTapConfirmed` lambda, as it is the only way to get accurate positions for features present in the real-world but not present in the scene, such as trees.
 
