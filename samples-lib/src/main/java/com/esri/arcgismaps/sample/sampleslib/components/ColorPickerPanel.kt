@@ -1,0 +1,284 @@
+/* Copyright 2026 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.esri.arcgismaps.sample.sampleslib.components
+
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import kotlin.math.max
+import kotlin.math.roundToInt
+import com.arcgismaps.Color as ArcGISColor
+
+/**
+ * A self-contained ARGB color picker panel using inline sliders.
+ * This composable expands for slider configurations and collapses for [color] preview state.
+ * Supports sRGB color space.
+ */
+@Composable
+fun ColorPickerPanel(
+    modifier: Modifier = Modifier,
+    color: Color = Color.Cyan,
+    title: String = "Color Picker",
+    onColorChange: (Color) -> Unit,
+    supportsOpacity: Boolean = true,
+) {
+    val r = color.red * 255f
+    val g = color.green * 255f
+    val b = color.blue * 255f
+    val combinedRgb = color.copy(alpha = 1f)
+
+    var expanded by remember { mutableStateOf(false) }
+
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        label = "colorSwatchArrowRotation"
+    )
+
+    Box(
+        modifier = Modifier
+            .animateContentSize()
+            .clickable(onClick = { expanded = !expanded })
+            .then(modifier)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    AnimatedVisibility(visible = !expanded) {
+                        ColorPickerSwatch(color = color)
+                    }
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        contentDescription = if (expanded) "Collapse color picker" else "Expand color picker",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.rotate(arrowRotation)
+                    )
+                }
+            }
+            AnimatedVisibility(visible = expanded) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ColorPickerSwatch(color = color, size = 48.dp)
+
+                    // Use regular Material sliders for RGB channels while keeping live updates.
+                    LabeledSlider(
+                        label = "RED",
+                        value = r,
+                        valueRange = 0f..255f,
+                        valueText = r.roundToInt().toString(),
+                        onValueChange = { newR -> onColorChange(color.copy(red = newR.roundToInt() / 255f)) },
+                        thumbColor = combinedRgb,
+                        trackGradientColors = listOf(
+                            color.copy(red = 0f, alpha = 1f),
+                            color.copy(red = 1f, alpha = 1f)
+                        )
+                    )
+
+                    LabeledSlider(
+                        label = "GREEN",
+                        value = g,
+                        valueRange = 0f..255f,
+                        valueText = g.roundToInt().toString(),
+                        onValueChange = { newG -> onColorChange(color.copy(green = newG.roundToInt() / 255f)) },
+                        thumbColor = combinedRgb,
+                        trackGradientColors = listOf(
+                            color.copy(green = 0f, alpha = 1f),
+                            color.copy(green = 1f, alpha = 1f)
+                        )
+                    )
+
+                    LabeledSlider(
+                        label = "BLUE",
+                        value = b,
+                        valueRange = 0f..255f,
+                        valueText = b.roundToInt().toString(),
+                        onValueChange = { newB -> onColorChange(color.copy(blue = newB.roundToInt() / 255f)) },
+                        thumbColor = combinedRgb,
+                        trackGradientColors = listOf(
+                            color.copy(blue = 0f, alpha = 1f),
+                            color.copy(blue = 1f, alpha = 1f)
+                        )
+                    )
+
+                    if (supportsOpacity) {
+                        LabeledSlider(
+                            label = "OPACITY",
+                            value = color.alpha,
+                            valueRange = 0f..1f,
+                            valueText = "${(color.alpha * 100).roundToInt()}%",
+                            onValueChange = { newAlpha -> onColorChange(color.copy(alpha = newAlpha)) },
+                            thumbColor = color.copy(alpha = max(color.alpha, 0.35f)),
+                            trackGradientColors = listOf(
+                                color.copy(alpha = 0f),
+                                color.copy(alpha = 1f)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * A slider that shows its current value beside the label.
+ */
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun LabeledSlider(
+    label: String,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    valueText: String,
+    onValueChange: (Float) -> Unit,
+    thumbColor: Color = MaterialTheme.colorScheme.primary,
+    trackGradientColors: List<Color>,
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium
+            )
+            Text(
+                text = valueText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            colors = SliderDefaults.colors(
+                thumbColor = thumbColor,
+                activeTrackColor = Color.Transparent,
+                inactiveTrackColor = Color.Transparent
+            ),
+            track = { sliderState ->
+                SliderDefaults.Track(
+                    sliderState = sliderState,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Brush.horizontalGradient(trackGradientColors)),
+                    colors = SliderDefaults.colors(
+                        activeTrackColor = Color.Transparent,
+                        inactiveTrackColor = Color.Transparent
+                    )
+                )
+            }
+        )
+    }
+}
+
+/**
+ * Reusable circular swatch that previews a selected color next to picker controls.
+ */
+@Composable
+private fun ColorPickerSwatch(
+    color: Color,
+    modifier: Modifier = Modifier,
+    size: Dp = 24.dp,
+) {
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(color)
+    )
+}
+
+/**
+ * Converts a Compose Color object into an ArcGIS Maps SDK Color instance.
+ *
+ * Samples using [ColorPickerPanel] can use this conversion for ArcGIS Color values in
+ * symbols, renderers, BackgroundGrid, and similar APIs.
+ */
+fun Color.toArcGISColor(): ArcGISColor = ArcGISColor.fromRgba(
+    r = (red * 255).roundToInt(),
+    g = (green * 255).roundToInt(),
+    b = (blue * 255).roundToInt(),
+    a = (alpha * 255).roundToInt()
+)
+
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun ColorPickerPanelPreview() {
+    var currentColor by remember { mutableStateOf(Color(0xFF00826C).copy(alpha = 0.65f)) }
+    SamplePreviewSurface {
+        Box(Modifier.fillMaxSize()) {
+            ColorPickerPanel(
+                modifier = Modifier.align(Alignment.Center),
+                title = "Compose color picker",
+                color = currentColor,
+                onColorChange = { newColor -> currentColor = newColor }
+            )
+        }
+    }
+}
