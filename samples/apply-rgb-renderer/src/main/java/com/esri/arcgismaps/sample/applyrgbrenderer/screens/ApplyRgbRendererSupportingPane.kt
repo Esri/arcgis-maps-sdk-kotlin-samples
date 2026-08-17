@@ -26,10 +26,6 @@ import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.esri.arcgismaps.sample.applyrgbrenderer.components.RgbRendererUiState
@@ -50,58 +46,66 @@ internal fun ApplyRgbRendererSupportingPane(
     onStdDevFactorChange: (Double) -> Unit,
     onResetAllChanges: () -> Unit
 ) {
-    Text(
-        text = "Choose stretch type and configure parameters.",
-        style = MaterialTheme.typography.titleMedium
-    )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Choose stretch type and configure parameters:",
+            style = MaterialTheme.typography.titleMedium
+        )
 
-    // Stretch type dropdown
-    val stretchTypeOptions = listOf("MinMax", "Percent Clip", "Std Deviation")
-    DropDownMenuBox(
-        textFieldValue = when (uiState.stretchType) {
-            StretchType.MinMax -> stretchTypeOptions[0]
-            StretchType.PercentClip -> stretchTypeOptions[1]
-            StretchType.StandardDeviation -> stretchTypeOptions[2]
-        },
-        textFieldLabel = "Stretch Type",
-        dropDownItemList = stretchTypeOptions,
-        onIndexSelected = { index ->
-            onStretchTypeChange(when (index) {
-                0 -> StretchType.MinMax
-                1 -> StretchType.PercentClip
-                else -> StretchType.StandardDeviation
-            })
-        }
-    )
+        // Stretch type dropdown
+        val stretchTypeOptions = listOf("MinMax", "Percent Clip", "Std Deviation")
+        DropDownMenuBox(
+            textFieldValue = when (uiState.stretchType) {
+                StretchType.MinMax -> stretchTypeOptions[0]
+                StretchType.PercentClip -> stretchTypeOptions[1]
+                StretchType.StandardDeviation -> stretchTypeOptions[2]
+            },
+            textFieldLabel = "Stretch Type",
+            dropDownItemList = stretchTypeOptions,
+            onIndexSelected = { index ->
+                onStretchTypeChange(
+                    when (index) {
+                        0 -> StretchType.MinMax
+                        1 -> StretchType.PercentClip
+                        else -> StretchType.StandardDeviation
+                    }
+                )
+            }
+        )
 
-    when (uiState.stretchType) {
-        StretchType.MinMax -> {
-            MinMaxSettings(
-                minValue = uiState.minMaxMinValue,
-                maxValue = uiState.minMaxMaxValue,
-                onMinValueChange = onMinMaxMinValueChange,
-                onMaxValueChange = onMinMaxMaxValueChange
-            )
-        }
+        when (uiState.stretchType) {
+            StretchType.MinMax -> {
+                MinMaxSettings(
+                    minValue = uiState.minMaxMinValue,
+                    maxValue = uiState.minMaxMaxValue,
+                    onMinValueChange = onMinMaxMinValueChange,
+                    onMaxValueChange = onMinMaxMaxValueChange
+                )
+            }
 
-        StretchType.PercentClip -> {
-            PercentClipSettings(
-                minValue = uiState.percentClipMinValue,
-                maxValue = uiState.percentClipMaxValue,
-                onMinValueChange = onPercentClipMinValueChange,
-                onMaxValueChange = onPercentClipMaxValueChange
-            )
-        }
+            StretchType.PercentClip -> {
+                PercentClipSettings(
+                    minValue = uiState.percentClipMinValue,
+                    maxValue = uiState.percentClipMaxValue,
+                    onMinValueChange = onPercentClipMinValueChange,
+                    onMaxValueChange = onPercentClipMaxValueChange
+                )
+            }
 
-        StretchType.StandardDeviation -> {
-            StdDevSettings(
-                stdDevFactor = uiState.stdDevFactor,
-                onStdDevFactorChange = onStdDevFactorChange
-            )
+            StretchType.StandardDeviation -> {
+                StdDevSettings(
+                    stdDevFactor = uiState.stdDevFactor,
+                    onStdDevFactorChange = onStdDevFactorChange
+                )
+            }
         }
-    }
-    Button(onClick = onResetAllChanges) {
-        Text("Reset all changes")
+        Button(
+            onClick = onResetAllChanges
+        ) {
+            Text("Reset all changes")
+        }
     }
 }
 
@@ -114,7 +118,7 @@ fun MinMaxSettings(
     onMaxValueChange: (Double) -> Unit,
     valueRange: ClosedFloatingPointRange<Float> = 0f..255f
 ) {
-    var range by remember { mutableStateOf(minValue.toFloat()..maxValue.toFloat()) }
+    var range = minValue.toFloat()..maxValue.toFloat()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Min-Max Parameters", style = MaterialTheme.typography.titleMedium)

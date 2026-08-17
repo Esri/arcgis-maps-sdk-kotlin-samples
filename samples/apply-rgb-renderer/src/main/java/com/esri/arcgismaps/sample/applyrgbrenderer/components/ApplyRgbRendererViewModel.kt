@@ -19,9 +19,7 @@ package com.esri.arcgismaps.sample.applyrgbrenderer.components
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.RasterLayer
@@ -98,23 +96,23 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
             StretchType.MinMax -> {
                 // apply the values to the renderer
                 MinMaxStretchParameters(
-                    minValues = listOf(_minValue.value),
-                    maxValues = listOf(_maxValue.value)
+                    minValues = listOf(uiState.value.minMaxMinValue),
+                    maxValues = listOf(uiState.value.minMaxMaxValue)
                 )
             }
 
             StretchType.PercentClip -> {
                 // apply the values to the renderer
                 PercentClipStretchParameters(
-                    min = _percentMin.value,
-                    max = _percentMax.value
+                    min = uiState.value.percentClipMinValue,
+                    max = uiState.value.percentClipMaxValue
                 )
             }
 
             StretchType.StandardDeviation -> {
                 // apply the value to the renderer
                 StandardDeviationStretchParameters(
-                    factor = _stdDeviationFactor.value
+                    factor = uiState.value.stdDevFactor
                 )
             }
         }
@@ -133,7 +131,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         _uiState.update { currentState ->
             currentState.copy(stretchType = stretchType)
         }
-        //TODO: update the StretchParameters
+        updateRenderer()
     }
 
     /**
@@ -143,7 +141,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         _uiState.update { currentState ->
             currentState.copy(minMaxMinValue = minMaxMinValue)
         }
-        //TODO: update the StretchParameters
+        updateRenderer()
     }
 
     /**
@@ -153,7 +151,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         _uiState.update { currentState ->
             currentState.copy(minMaxMaxValue = minMaxMaxValue)
         }
-        //TODO: update the StretchParameters
+        updateRenderer()
     }
 
     /**
@@ -163,7 +161,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         _uiState.update { currentState ->
             currentState.copy(percentClipMinValue = percentClipMinValue)
         }
-        //TODO: update the StretchParameters
+        updateRenderer()
     }
 
     /**
@@ -173,7 +171,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         _uiState.update { currentState ->
             currentState.copy(percentClipMaxValue = percentClipMaxValue)
         }
-        //TODO: update the StretchParameters
+        updateRenderer()
     }
 
     /**
@@ -183,7 +181,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         _uiState.update { currentState ->
             currentState.copy(stdDevFactor = stdDevFactor)
         }
-        //TODO: update the StretchParameters
+        updateRenderer()
     }
 
     /**
@@ -191,24 +189,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
      */
     fun resetAllChanges() {
         _uiState.value = RgbRendererUiState.defaultState
-        //TODO: update the StretchParameters
-    }
-
-    /**
-     * TODO: Screen triggers the function to reflect an update for UI state and ArcGIS objects in this view model.
-     */
-    fun updateBasemap(selectedBasemap: BasemapOptions) {
-        // Update the UI state:
-        _uiState.update { currentState ->
-            currentState.copy(basemapOptions = selectedBasemap)
-        }
-        // Apply the state change the viewmodel objects:
-        val basemap = Basemap(basemapStyle = selectedBasemap.getBasemapStyle())
-        arcGISMap.setBasemap(basemap = basemap)
-        viewModelScope.launch {
-            basemap.load()
-            applyLayerVisibility(isVisible = _uiState.value.isLayersEnabled)
-        }
+        updateRenderer()
     }
 }
 
