@@ -109,6 +109,7 @@ class MessageDialogViewModel : ViewModel() {
 
     fun showMessageDialog(throwable: Throwable?) {
         throwable ?: return
+        SampleDialogExceptionRelay.publish(throwable)
         when (throwable) {
             is CriticalRenderingException -> showMessageDialog(throwable)
             is ArcGISException -> showMessageDialog(throwable)
@@ -143,5 +144,25 @@ class MessageDialogViewModel : ViewModel() {
      */
     fun dismissDialog() {
         dialogStatus = false
+    }
+}
+
+/**
+ * Process-wide queue for sample dialog exceptions so tests can fail with the original exception.
+ */
+object SampleDialogExceptionRelay {
+    private val pending = ArrayDeque<Throwable>()
+
+    @Synchronized
+    fun publish(throwable: Throwable) {
+        pending.addLast(throwable)
+    }
+
+    @Synchronized
+    fun consume(): Throwable? = if (pending.isEmpty()) null else pending.removeFirst()
+
+    @Synchronized
+    fun clear() {
+        pending.clear()
     }
 }
