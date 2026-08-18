@@ -41,6 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,6 +64,9 @@ fun JobLoadingDialog(
     resumeJobRequest: (Unit) -> Unit = {},
 ) {
     BasicAlertDialog(
+        modifier = Modifier
+            .semantics { testTagsAsResourceId = true }
+            .testTag(SampleComponentTags.JobDialog),
         properties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = false
@@ -97,7 +103,10 @@ fun JobLoadingDialog(
                     )
                     // create the linear progress indicator
                     LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .testTag(SampleComponentTags.JobProgress),
                         progress = { progressAnimation },
                     )
                     // progress percentage text
@@ -113,17 +122,21 @@ fun JobLoadingDialog(
                     // display pause button if enabled
                     if (isPauseJobEnabled) {
                         // pause job button
-                        Button(colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.primary
-                        ), onClick = {
-                            if (!isJobPaused)
-                                pauseJobRequest(Unit)
-                            else
-                                resumeJobRequest(Unit)
+                        Button(
+                            modifier = Modifier.testTag(SampleComponentTags.JobPauseResume),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            onClick = {
+                                if (!isJobPaused)
+                                    pauseJobRequest(Unit)
+                                else
+                                    resumeJobRequest(Unit)
 
-                            isJobPaused = !isJobPaused
-                        }) {
+                                isJobPaused = !isJobPaused
+                            }
+                        ) {
                             if (!isJobPaused) {
                                 Text(text = "Pause Job")
                             } else {
@@ -132,10 +145,12 @@ fun JobLoadingDialog(
                         }
                     }
                     // cancel job button
-                    Button(colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
+                    Button(
+                        modifier = Modifier.testTag(SampleComponentTags.JobCancel),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
                         onClick = { cancelJobRequest(Unit) }) {
                         Text(text = "Cancel Job")
                     }

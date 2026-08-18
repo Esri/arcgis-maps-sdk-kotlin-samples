@@ -24,6 +24,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -80,6 +82,7 @@ private fun MainScreenScaffold(
     mainPaneContent: @Composable BoxScope.() -> Unit
 ) {
     Scaffold(
+        modifier = Modifier.semantics { testTagsAsResourceId = true },
         topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) },
         content = { paddingValues ->
             AdaptiveThreePane(

@@ -24,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.displaycomposablemapview.R
@@ -40,6 +42,7 @@ fun MainScreen(
 ) {
     val mapViewModel: MapViewModel = viewModel()
     Scaffold(
+        modifier = Modifier.semantics { testTagsAsResourceId = true },
         topBar = { SampleTopAppBar(title = stringResource(R.string.app_name)) },
         content = {
             Column(

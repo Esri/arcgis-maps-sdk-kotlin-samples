@@ -27,7 +27,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -43,7 +46,10 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun ChangeViewpointScreen(sampleName: String) {
     val mapViewModel: ChangeViewpointViewModel = viewModel()
 
-    Scaffold(topBar = { SampleTopAppBar(title = sampleName) }) { paddingValues ->
+    Scaffold(
+        modifier = Modifier.semantics { testTagsAsResourceId = true },
+        topBar = { SampleTopAppBar(title = sampleName) },
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,7 +72,10 @@ fun ChangeViewpointScreen(sampleName: String) {
                     .padding(all = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = mapViewModel::onGeometrySelected) {
+                Button(
+                    modifier = Modifier.testTag("change-viewpoint:geometry"),
+                    onClick = mapViewModel::onGeometrySelected,
+                ) {
                     Text(text = stringResource(R.string.geometry))
                 }
 
@@ -74,7 +83,10 @@ fun ChangeViewpointScreen(sampleName: String) {
                     Text(text = stringResource(R.string.center_and_scale))
                 }
 
-                Button(onClick = mapViewModel::onAnimateSelected) {
+                Button(
+                    modifier = Modifier.testTag("change-viewpoint:animate"),
+                    onClick = mapViewModel::onAnimateSelected,
+                ) {
                     Text(text = stringResource(R.string.animate))
                 }
             }

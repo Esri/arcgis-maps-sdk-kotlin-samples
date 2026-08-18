@@ -29,11 +29,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import com.arcgismaps.exceptions.ArcGISException
-import com.arcgismaps.exceptions.CriticalRenderingException
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+
+private const val CRITICAL_RENDERING_EXCEPTION_CLASS_NAME =
+    "com.arcgismaps.exceptions.CriticalRenderingException"
 
 /**
  * Composable component to display a dialog with a message
@@ -49,6 +55,9 @@ fun MessageDialog(
     // display a dialog with a description text
     if (description.isNotEmpty()) {
         AlertDialog(
+            modifier = Modifier
+                .semantics { testTagsAsResourceId = true }
+                .testTag(SampleComponentTags.MessageDialog),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(imageVector = icon, contentDescription = null) },
             title = { Text(title) },
@@ -62,6 +71,9 @@ fun MessageDialog(
     } else {
         // display a dialog without a description text
         AlertDialog(
+            modifier = Modifier
+                .semantics { testTagsAsResourceId = true }
+                .testTag(SampleComponentTags.MessageDialog),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },
             title = { Text(title) },
@@ -110,7 +122,6 @@ class MessageDialogViewModel : ViewModel() {
     fun showMessageDialog(throwable: Throwable?) {
         throwable ?: return
         when (throwable) {
-            is CriticalRenderingException -> showMessageDialog(throwable)
             is ArcGISException -> showMessageDialog(throwable)
             else -> {
                 showMessageDialog(
@@ -126,14 +137,11 @@ class MessageDialogViewModel : ViewModel() {
      */
     fun showMessageDialog(exception: ArcGISException) {
         showMessageDialog(
-            title = "ArcGIS Maps SDK error",
-            description = exception.message
-        )
-    }
-
-    fun showMessageDialog(exception: CriticalRenderingException) {
-        showMessageDialog(
-            title = "GeoView critical rendering error",
+            title = if (exception.javaClass.name == CRITICAL_RENDERING_EXCEPTION_CLASS_NAME) {
+                "GeoView critical rendering error"
+            } else {
+                "ArcGIS Maps SDK error"
+            },
             description = exception.message
         )
     }
