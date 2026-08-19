@@ -25,9 +25,9 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.RasterLayer
 import com.arcgismaps.mapping.symbology.raster.MinMaxStretchParameters
 import com.arcgismaps.mapping.symbology.raster.PercentClipStretchParameters
+import com.arcgismaps.mapping.symbology.raster.RgbRenderer
 import com.arcgismaps.mapping.symbology.raster.StandardDeviationStretchParameters
 import com.arcgismaps.mapping.symbology.raster.StretchParameters
-import com.arcgismaps.mapping.symbology.raster.StretchRenderer
 import com.arcgismaps.raster.Raster
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.applyrgbrenderer.R
@@ -67,7 +67,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         Raster.createWithPath(rasterFile.path)
     }
 
-    // The raster layer to which the stretch renderer will be applied
+    // The raster layer to which the RGB renderer will be applied
     private val rasterLayer = RasterLayer(raster)
 
     init {
@@ -89,12 +89,13 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Construct and apply a StretchRenderer to the raster layer using current UI parameters.
+     * Construct and apply an RgbRenderer to the raster layer using current UI parameters.
      */
     private fun updateRenderer() {
+        // Construct parameters
         val parameters: StretchParameters = when (uiState.value.stretchType) {
             StretchType.MinMax -> {
-                // apply the values to the renderer
+                // Use MinMaxStretchParameters
                 MinMaxStretchParameters(
                     minValues = listOf(uiState.value.minMaxMinValue),
                     maxValues = listOf(uiState.value.minMaxMaxValue)
@@ -102,7 +103,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
             }
 
             StretchType.PercentClip -> {
-                // apply the values to the renderer
+                // Use PercentClipStretchParameters
                 PercentClipStretchParameters(
                     min = uiState.value.percentClipMinValue,
                     max = uiState.value.percentClipMaxValue
@@ -110,17 +111,19 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
             }
 
             StretchType.StandardDeviation -> {
-                // apply the value to the renderer
+                // Use StandardDeviationStretchParameters
                 StandardDeviationStretchParameters(
                     factor = uiState.value.stdDevFactor
                 )
             }
         }
-        rasterLayer.renderer = StretchRenderer(
-            parameters = parameters,
+
+        // Construct and apply an RgbRenderer using the parameters
+        rasterLayer.renderer = RgbRenderer(
+            stretchParameters = parameters,
+            bandIndexes = emptyList(),
             gammas = emptyList(),
-            estimateStatistics = true,
-            colorRamp = null
+            estimateStatistics = true
         )
     }
 
