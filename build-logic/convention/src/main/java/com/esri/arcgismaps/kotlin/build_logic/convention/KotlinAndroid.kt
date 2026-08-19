@@ -4,7 +4,6 @@ import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 /**
@@ -17,7 +16,6 @@ internal fun Project.configureKotlinAndroid(
         compileSdk = libs.findVersion("targetSdk").get().toString().toInt()
 
         defaultConfig.apply {
-            manifestPlaceholders["GOOGLE_API_KEY"] = project.properties["GOOGLE_API_KEY"].toString()
             minSdk = libs.findVersion("minSdk").get().toString().toInt()
         }
 
@@ -36,7 +34,7 @@ internal fun Project.configureKotlinAndroid(
 private fun Project.configureKotlin() {
     configure<KotlinAndroidProjectExtension> {
         jvmToolchain(17)
-        val warningsAsErrors: String? by project
+        val warningsAsErrors = providers.gradleProperty("warningsAsErrors").orNull
         compilerOptions {
             allWarningsAsErrors.set(warningsAsErrors.toBoolean())
             freeCompilerArgs.set(
@@ -44,8 +42,7 @@ private fun Project.configureKotlin() {
                     "-opt-in=kotlin.RequiresOptIn",
                     // Enable experimental coroutines APIs, including Flow
                     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                    "-opt-in=kotlinx.coroutines.FlowPreview",
-                    "-Xcontext-parameters",
+                    "-opt-in=kotlinx.coroutines.FlowPreview"
                 )
             )
         }
