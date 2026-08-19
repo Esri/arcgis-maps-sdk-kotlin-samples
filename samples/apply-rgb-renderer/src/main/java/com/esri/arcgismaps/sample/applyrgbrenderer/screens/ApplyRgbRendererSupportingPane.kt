@@ -57,7 +57,7 @@ internal fun ApplyRgbRendererSupportingPane(
             style = MaterialTheme.typography.titleMedium
         )
 
-        // Stretch type dropdown
+        // Stretch type dropdown menu
         val stretchTypeOptions = listOf("MinMax", "Percent Clip", "Std Deviation")
         DropDownMenuBox(
             textFieldValue = when (uiState.stretchType) {
@@ -78,6 +78,7 @@ internal fun ApplyRgbRendererSupportingPane(
             }
         )
 
+        // Present the parameters that are appropriate for the selected stretch type
         when (uiState.stretchType) {
             StretchType.MinMax -> {
                 MinMaxSettings(
@@ -104,6 +105,8 @@ internal fun ApplyRgbRendererSupportingPane(
                 )
             }
         }
+
+        // A button to reset all parameters to their initial values
         Button(
             onClick = onResetAllChanges
         ) {
@@ -112,66 +115,53 @@ internal fun ApplyRgbRendererSupportingPane(
     }
 }
 
-// UI for Min-Max stretch parameters
+/**
+ * UI for Min-Max stretch parameters.
+ */
 @Composable
 fun MinMaxSettings(
     minValue: Double,
     maxValue: Double,
     onMinValueChange: (Double) -> Unit,
-    onMaxValueChange: (Double) -> Unit,
-    valueRange: ClosedFloatingPointRange<Float> = 0f..255f
+    onMaxValueChange: (Double) -> Unit
 ) {
-    var range = minValue.toFloat()..maxValue.toFloat()
+    val sliderValueRange = 0f..255f
+    var currentValueRange = minValue.toFloat()..maxValue.toFloat()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        // Header line and current min-max values
         Text("Min-Max Parameters", style = MaterialTheme.typography.titleMedium)
+        Text(text = "Min Value: ${minValue.toInt()}  Max Value: ${maxValue.toInt()}")
 
-        Text(text = "Min Value: ${range.start.toInt()}  Max Value: ${range.endInclusive.toInt()}")
-
+        // Range slider allows handles to be dragged to set min and max values
         RangeSlider(
-            value = range,
+            value = currentValueRange,
             onValueChange = { newRange ->
                 if (newRange.start < newRange.endInclusive) {
-                    range = newRange
+                    currentValueRange = newRange
                     onMinValueChange(newRange.start.toDouble())
                     onMaxValueChange(newRange.endInclusive.toDouble())
                 }
 
             },
-            valueRange = valueRange,
+            valueRange = sliderValueRange,
             steps = 254 // steps between 0 and 255
         )
 
+        // Display start and end values underneath each end of the slider
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${valueRange.start.toInt()}")
-            Text(text = "${valueRange.endInclusive.toInt()}")
+            Text(text = "${sliderValueRange.start.toInt()}")
+            Text(text = "${sliderValueRange.endInclusive.toInt()}")
         }
     }
 }
 
-// UI for Standard Deviation stretch parameters
-@Composable
-fun StdDevSettings(
-    stdDevFactor: Double,
-    onStdDevFactorChange: (Double) -> Unit
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Standard Deviation Parameters", style = MaterialTheme.typography.titleMedium)
-
-        // Factor slider (0.25 ... 4.0)
-        Text(text = "Factor: %.2f".format(stdDevFactor))
-        Slider(
-            value = stdDevFactor.toFloat(),
-            onValueChange = { value -> onStdDevFactorChange(value.toDouble()) },
-            valueRange = 0.25f..4.0f
-        )
-    }
-}
-
-// UI for Percent Clip stretch parameters
+/**
+ * UI for Percent Clip stretch parameters.
+ */
 @Composable
 fun PercentClipSettings(
     minValue: Double,
@@ -179,19 +169,60 @@ fun PercentClipSettings(
     onMinValueChange: (Double) -> Unit,
     onMaxValueChange: (Double) -> Unit
 ) {
+    // The full range of the slider is 0..100 %
     val sliderValueRange = 0f..100f
+    // maxValue needs to be subtracted from 100 to get its current position on the slider
     val currentValueRange = minValue.toFloat()..100 - maxValue.toFloat()
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        // Header line and current min-max values
         Text("Percent Clip Parameters", style = MaterialTheme.typography.titleMedium)
         Text(text = " Min %: ${minValue.toInt()}  Max %: ${maxValue.toInt()}")
+
+        // Range slider allows handles to be dragged to set min and max values
         RangeSlider(
             value = currentValueRange,
             onValueChange = { newRange ->
+                // newRange.endInclusive needs to be subtracted from 100 to get the value to pass to
+                // onMaxValueChange
                 onMinValueChange(newRange.start.toDouble())
                 onMaxValueChange(100 - newRange.endInclusive.toDouble())
             },
             valueRange = sliderValueRange,
             steps = 99 // steps between 0 and 100
         )
+    }
+}
+
+/**
+ * UI for Standard Deviation stretch parameters.
+ */
+@Composable
+fun StdDevSettings(
+    stdDevFactor: Double,
+    onStdDevFactorChange: (Double) -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        val sliderValueRange = 0.25f..4.0f
+
+        // Header line and current factor value
+        Text("Standard Deviation Parameters", style = MaterialTheme.typography.titleMedium)
+        Text(text = "Factor: %.2f".format(stdDevFactor))
+
+        // Factor slider (0.25 ... 4.0)
+        Slider(
+            value = stdDevFactor.toFloat(),
+            onValueChange = { value -> onStdDevFactorChange(value.toDouble()) },
+            valueRange = sliderValueRange
+        )
+
+        // Display start and end values underneath each end of the slider
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "%.2f".format(sliderValueRange.start))
+            Text(text = "%.2f".format(sliderValueRange.endInclusive))
+        }
     }
 }
