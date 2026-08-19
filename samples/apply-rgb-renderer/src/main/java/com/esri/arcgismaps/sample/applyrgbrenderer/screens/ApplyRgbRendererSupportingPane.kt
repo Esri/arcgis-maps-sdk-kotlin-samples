@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.applyrgbrenderer.components.RgbRendererUiState
 import com.esri.arcgismaps.sample.applyrgbrenderer.components.StretchType
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
@@ -50,6 +52,7 @@ internal fun ApplyRgbRendererSupportingPane(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
+            modifier = Modifier.padding(12.dp),
             text = "Choose stretch type and configure parameters:",
             style = MaterialTheme.typography.titleMedium
         )
@@ -176,48 +179,19 @@ fun PercentClipSettings(
     onMinValueChange: (Double) -> Unit,
     onMaxValueChange: (Double) -> Unit
 ) {
+    val sliderValueRange = 0f..100f
+    val currentValueRange = minValue.toFloat()..100 - maxValue.toFloat()
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Percent Clip Parameters", style = MaterialTheme.typography.titleMedium)
-
-        PercentClipSlider(
-            title = "Min",
-            sliderValue = minValue,
-            units = " %",
-            onSliderValueChange = onMinValueChange
-        )
-
-        PercentClipSlider(
-            title = "Max",
-            sliderValue = maxValue,
-            units = " %",
-            onSliderValueChange = onMaxValueChange
-        )
-    }
-}
-
-/**
- * Custom slider implementation, used for clip percentages.
- */
-@Composable
-fun PercentClipSlider(
-    title: String,
-    sliderValue: Double,
-    units: String,
-    onSliderValueChange: (Double) -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = title)
-            Text(text = sliderValue.toInt().toString() + units)
-        }
-        Slider(
-            modifier = Modifier.fillMaxWidth(),
-            value = sliderValue.toFloat(),
-            onValueChange = { value -> onSliderValueChange(value.toDouble()) },
-            valueRange = 0f..50f
+        Text(text = " Min %: ${minValue.toInt()}  Max %: ${maxValue.toInt()}")
+        RangeSlider(
+            value = currentValueRange,
+            onValueChange = { newRange ->
+                onMinValueChange(newRange.start.toDouble())
+                onMaxValueChange(100 - newRange.endInclusive.toDouble())
+            },
+            valueRange = sliderValueRange,
+            steps = 99 // steps between 0 and 100
         )
     }
 }
