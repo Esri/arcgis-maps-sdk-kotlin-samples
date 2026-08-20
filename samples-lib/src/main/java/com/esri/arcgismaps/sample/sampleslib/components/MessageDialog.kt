@@ -34,6 +34,10 @@ import androidx.lifecycle.ViewModel
 import com.arcgismaps.exceptions.ArcGISException
 import com.arcgismaps.exceptions.CriticalRenderingException
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * Composable component to display a dialog with a message
@@ -148,21 +152,15 @@ class MessageDialogViewModel : ViewModel() {
 }
 
 /**
- * Process-wide queue for sample dialog exceptions so tests can fail with the original exception.
+ * Emits dialog exceptions so instrumentation can fail with the original exception.
  */
 object SampleDialogExceptionRelay {
-    private val pending = ArrayDeque<Throwable>()
+    private val exceptionEvents = MutableSharedFlow<Throwable>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
-    @Synchronized
-    fun publish(throwable: Throwable) {
-        pending.addLast(throwable)
-    }
+    val exceptions: SharedFlow<Throwable> = exceptionEvents.asSharedFlow()
 
-    @Synchronized
-    fun consume(): Throwable? = if (pending.isEmpty()) null else pending.removeFirst()
-
-    @Synchronized
-    fun clear() {
-        pending.clear()
-    }
+    fun publish(throwable: Throwable) = exceptionEvents.tryEmit(throwable)
 }
