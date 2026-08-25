@@ -97,8 +97,8 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
             StretchType.MinMax -> {
                 // Use MinMaxStretchParameters
                 MinMaxStretchParameters(
-                    minValues = listOf(uiState.value.minMaxMinValue),
-                    maxValues = listOf(uiState.value.minMaxMaxValue)
+                    minValues = uiState.value.minMaxMinValues,
+                    maxValues = uiState.value.minMaxMaxValues
                 )
             }
 
@@ -138,21 +138,17 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Updates the currently selected minMaxMinValue.
+     * Updates the currently selected Min and Max values for the band with the given [index].
      */
-    fun onMinMaxMinValueChange(minMaxMinValue: Double) {
+    fun onMinMaxValuesChange(index: Int, minValue: Double, maxValue: Double) {
         _uiState.update { currentState ->
-            currentState.copy(minMaxMinValue = minMaxMinValue)
-        }
-        updateRenderer()
-    }
-
-    /**
-     * Updates the currently selected minMaxMaxValue.
-     */
-    fun onMinMaxMaxValueChange(minMaxMaxValue: Double) {
-        _uiState.update { currentState ->
-            currentState.copy(minMaxMaxValue = minMaxMaxValue)
+            val minValues: MutableList<Double> = mutableListOf()
+            minValues.addAll(currentState.minMaxMinValues)
+            minValues[index] = minValue
+            val maxValues: MutableList<Double> = mutableListOf()
+            maxValues.addAll(currentState.minMaxMaxValues)
+            maxValues[index] = maxValue
+            currentState.copy(minMaxMinValues = minValues, minMaxMaxValues = maxValues)
         }
         updateRenderer()
     }
@@ -198,8 +194,8 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
 
 data class RgbRendererUiState(
     val stretchType: StretchType,
-    val minMaxMinValue: Double,
-    val minMaxMaxValue: Double,
+    val minMaxMinValues: List<Double>,
+    val minMaxMaxValues: List<Double>,
     val percentClipMinValue: Double,
     val percentClipMaxValue: Double,
     val stdDevFactor: Double
@@ -207,8 +203,8 @@ data class RgbRendererUiState(
     companion object {
         val defaultState = RgbRendererUiState(
             stretchType = StretchType.MinMax,
-            minMaxMinValue = 10.0,
-            minMaxMaxValue = 150.0,
+            minMaxMinValues = listOf(10.0, 10.0, 10.0),
+            minMaxMaxValues = listOf(150.0, 150.0, 150.0),
             percentClipMinValue = 5.0,
             percentClipMaxValue = 5.0,
             stdDevFactor = 0.5

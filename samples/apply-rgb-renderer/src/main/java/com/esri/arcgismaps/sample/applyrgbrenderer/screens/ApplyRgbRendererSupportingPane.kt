@@ -41,8 +41,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 internal fun ApplyRgbRendererSupportingPane(
     uiState: RgbRendererUiState,
     onStretchTypeChange: (StretchType) -> Unit,
-    onMinMaxMinValueChange: (Double) -> Unit,
-    onMinMaxMaxValueChange: (Double) -> Unit,
+    onMinMaxValuesChange: (Int, Double, Double) -> Unit,
     onPercentClipMinValueChange: (Double) -> Unit,
     onPercentClipMaxValueChange: (Double) -> Unit,
     onStdDevFactorChange: (Double) -> Unit,
@@ -82,10 +81,9 @@ internal fun ApplyRgbRendererSupportingPane(
         when (uiState.stretchType) {
             StretchType.MinMax -> {
                 MinMaxSettings(
-                    minValue = uiState.minMaxMinValue,
-                    maxValue = uiState.minMaxMaxValue,
-                    onMinValueChange = onMinMaxMinValueChange,
-                    onMaxValueChange = onMinMaxMaxValueChange
+                    minValues = uiState.minMaxMinValues,
+                    maxValues = uiState.minMaxMaxValues,
+                    onMinMaxValuesChange = onMinMaxValuesChange
                 )
             }
 
@@ -120,43 +118,73 @@ internal fun ApplyRgbRendererSupportingPane(
  */
 @Composable
 fun MinMaxSettings(
-    minValue: Double,
-    maxValue: Double,
-    onMinValueChange: (Double) -> Unit,
-    onMaxValueChange: (Double) -> Unit
+    minValues: List<Double>,
+    maxValues: List<Double>,
+    onMinMaxValuesChange: (Int, Double, Double) -> Unit
 ) {
-    val sliderValueRange = 0f..255f
-    var currentValueRange = minValue.toFloat()..maxValue.toFloat()
-
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        // Header line and current min-max values
-        Text("Min-Max Parameters", style = MaterialTheme.typography.titleMedium)
-        Text(text = "Min Value: ${minValue.toInt()}  Max Value: ${maxValue.toInt()}")
-
-        // Range slider allows handles to be dragged to set min and max values
-        RangeSlider(
-            value = currentValueRange,
-            onValueChange = { newRange ->
-                if (newRange.start < newRange.endInclusive) {
-                    currentValueRange = newRange
-                    onMinValueChange(newRange.start.toDouble())
-                    onMaxValueChange(newRange.endInclusive.toDouble())
-                }
-
-            },
-            valueRange = sliderValueRange,
-            steps = 254 // steps between 0 and 255
+        // Range sliders for red, green and blue bands
+        MinMaxSlider(
+            index = 0,
+            bandName = "RED",
+            minValues = minValues,
+            maxValues = maxValues,
+            onMinMaxValuesChange = onMinMaxValuesChange
+        )
+        MinMaxSlider(
+            index = 1,
+            bandName = "GREEN",
+            minValues = minValues,
+            maxValues = maxValues,
+            onMinMaxValuesChange = onMinMaxValuesChange
+        )
+        MinMaxSlider(
+            index = 2,
+            bandName = "BLUE",
+            minValues = minValues,
+            maxValues = maxValues,
+            onMinMaxValuesChange = onMinMaxValuesChange
         )
 
-        // Display start and end values underneath each end of the slider
+        // Display start and end values underneath each end of the sliders
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${sliderValueRange.start.toInt()}")
-            Text(text = "${sliderValueRange.endInclusive.toInt()}")
+            Text(text = "0")
+            Text(text = "255")
         }
     }
+}
+
+/**
+ * UI for Min-Max values for one band (R, G or B).
+ */
+@Composable
+fun MinMaxSlider(
+    index: Int,
+    bandName: String,
+    minValues: List<Double>,
+    maxValues: List<Double>,
+    onMinMaxValuesChange: (Int, Double, Double) -> Unit
+) {
+    val sliderValueRange = 0f..255f
+    val currentValueRange = minValues[index].toFloat()..maxValues[index].toFloat()
+
+    // Current min-max values
+    Text(text = "$bandName  Min: ${minValues[index].toInt()}  Max: ${maxValues[index].toInt()}")
+
+    // Range slider allows handles to be dragged to set min and max values
+    RangeSlider(
+        value = currentValueRange,
+        onValueChange = { newRange ->
+            if (newRange.start < newRange.endInclusive) {
+                onMinMaxValuesChange(index, newRange.start.toDouble(), newRange.endInclusive.toDouble())
+            }
+        },
+        valueRange = sliderValueRange,
+        steps = 254 // steps between 0 and 255
+    )
 }
 
 /**

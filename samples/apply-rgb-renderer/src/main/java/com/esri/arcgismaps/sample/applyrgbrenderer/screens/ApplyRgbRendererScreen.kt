@@ -51,8 +51,7 @@ fun ApplyRgbRendererScreen(
     MainScreenScaffold(
         uiState = uiState,
         onStretchTypeChange = viewModel::updateStretchType,
-        onMinMaxMinValueChange = viewModel::onMinMaxMinValueChange,
-        onMinMaxMaxValueChange = viewModel::onMinMaxMaxValueChange,
+        onMinMaxValuesChange = viewModel::onMinMaxValuesChange,
         onPercentClipMinValueChange = viewModel::onPercentClipMinValueChange,
         onPercentClipMaxValueChange = viewModel::onPercentClipMaxValueChange,
         onStdDevFactorChange = viewModel::onStdDevFactorChange,
@@ -83,8 +82,7 @@ fun ApplyRgbRendererScreen(
 private fun MainScreenScaffold(
     uiState: RgbRendererUiState,
     onStretchTypeChange: (StretchType) -> Unit = {},
-    onMinMaxMinValueChange: (Double) -> Unit = {},
-    onMinMaxMaxValueChange: (Double) -> Unit = {},
+    onMinMaxValuesChange: (Int, Double, Double) -> Unit = { _, _, _ ->},
     onPercentClipMinValueChange: (Double) -> Unit = {},
     onPercentClipMaxValueChange: (Double) -> Unit = {},
     onStdDevFactorChange: (Double) -> Unit = {},
@@ -104,8 +102,7 @@ private fun MainScreenScaffold(
                     ApplyRgbRendererSupportingPane(
                         uiState = uiState,
                         onStretchTypeChange = onStretchTypeChange,
-                        onMinMaxMinValueChange = onMinMaxMinValueChange,
-                        onMinMaxMaxValueChange = onMinMaxMaxValueChange,
+                        onMinMaxValuesChange = onMinMaxValuesChange,
                         onPercentClipMinValueChange = onPercentClipMinValueChange,
                         onPercentClipMaxValueChange = onPercentClipMaxValueChange,
                         onStdDevFactorChange = onStdDevFactorChange,
