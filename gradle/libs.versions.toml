@@ -18,7 +18,7 @@ roomVersion = "2.8.4"
 ### Kotlin versions
 kotlinVersion = "2.4.10"
 coreKtx = "1.19.0"
-ksp = "2.3.10"
+ksp = "2.3.11"
 commonsIoVersion = "2.22.0"
 
 ### Compose versions
