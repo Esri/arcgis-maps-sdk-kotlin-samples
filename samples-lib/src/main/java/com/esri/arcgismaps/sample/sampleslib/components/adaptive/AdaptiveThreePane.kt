@@ -42,7 +42,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.VerticalDragHandle
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.AdaptStrategy
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
@@ -113,7 +113,7 @@ fun AdaptiveThreePane(
     ) -> Unit,
     floatingPane: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
-    val windowAdaptiveInfo = currentWindowAdaptiveInfo(supportLargeAndXLargeWidth = true)
+    val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
     val hapticFeedback = LocalHapticFeedback.current
     val isInPreview = LocalInspectionMode.current
 
