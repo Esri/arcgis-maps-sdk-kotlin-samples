@@ -43,7 +43,7 @@ coroutinesTest = "1.11.0"
 ### Application Verions
 versionCode = "3002000"
 versionName = "300.2.0"
-minSdk = "28"
+minSdk = "29"
 targetSdk = "37"
 
 ### Third party libraries
