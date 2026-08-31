@@ -1,4 +1,4 @@
-/* Copyright 2023 Esri
+/* Copyright 2026 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,55 +17,25 @@
 package com.esri.arcgismaps.sample.displayscene
 
 import android.os.Bundle
-import com.esri.arcgismaps.sample.sampleslib.EdgeToEdgeCompatActivity
-import androidx.databinding.DataBindingUtil
-import com.arcgismaps.mapping.ArcGISScene
-import com.arcgismaps.mapping.ArcGISTiledElevationSource
-import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.mapping.view.Camera
-import com.esri.arcgismaps.sample.displayscene.databinding.DisplaySceneActivityMainBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.displayscene.screens.DisplaySceneScreen
 
-class MainActivity : EdgeToEdgeCompatActivity() {
-
-    // set up data binding for the activity
-    private val activityMainBinding: DisplaySceneActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.display_scene_activity_main)
-    }
-
-    private val sceneView by lazy {
-        activityMainBinding.sceneView
-    }
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        lifecycle.addObserver(sceneView)
-
-        // create an elevation source, and add this to the base surface of the scene
-        val elevationSource = ArcGISTiledElevationSource(
-            resources.getString(R.string.elevation_image_service)
-        )
-
-        // create a scene with an imagery basemap style
-        val imageryScene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
-            // add the elevation source to the base surface
-            baseSurface.elevationSources.add(elevationSource)
-        }
-
-        // add a camera and initial camera position
-        val camera = Camera(
-            latitude = 28.4,
-            longitude = 83.9,
-            altitude = 10010.0,
-            heading = 10.0,
-            pitch = 80.0,
-            roll = 0.0
-        )
-
-        // apply the scene to the sceneView and set its viewpoint
-        sceneView.apply {
-            scene = imageryScene
-            setViewpointCamera(camera)
+        enableEdgeToEdge()
+        setContent {
+            SampleAppTheme {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    DisplaySceneScreen(sampleName = getString(R.string.display_scene_app_name))
+                }
+            }
         }
     }
 }
