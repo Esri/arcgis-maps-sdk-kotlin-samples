@@ -1,19 +1,24 @@
 {
     "category": "Maps",
-    "description": "TODO",
-    "formal_name": "DynamicBasemapGallery",
+    "description": "Dynamic base map gallery",
+    "formal_name": "DynamicBaseMapGallery",
     "ignore": false,
     "images": [
         "dynamic-basemap-gallery.png"
     ],
-    "keywords": [ ],
+    "keywords": [
+        "basemapgallery map",
+        "basemapgallery"
+    ],
     "language": "kotlin",
-    "redirect_from": "",
-    "relevant_apis": [ ],
+    "redirect_from": "TODO",
+    "relevant_apis": [
+        "basemapgallery"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/dynamicbasemapgallery/components/DynamicBasemapGalleryViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/dynamicbasemapgallery/screens/DynamicBasemapGalleryScreen.kt",
-        "src/main/java/com/esri/arcgismaps/sample/dynamicbasemapgallery/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/dynamicbasemapgallery/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/dynamicbasemapgallery/screens/DynamicBasemapGalleryScreen.kt"
     ],
-    "title": "Dynamic basemap gallery"
+    "title": "Dynamic base map gallery"
 }
