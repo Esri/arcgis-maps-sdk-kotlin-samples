@@ -18,6 +18,7 @@ When loaded, the sample will display a scene. Pan and zoom to explore the scene.
 2. Create an `ArcGISTiledElevationSource` object and add it to a `Surface`, then set the surface as the scene's base surface.
 3. Create a `Camera` and use it with a bounding geometry to create a `Viewpoint`, then set it as the scene's initial viewpoint.
 4. Create a `SceneView` and pass it to the scene to display.
+
 ## Relevant API
 
 * ArcGISScene
