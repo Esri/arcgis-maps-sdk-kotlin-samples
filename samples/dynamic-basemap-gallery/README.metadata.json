@@ -1,7 +1,7 @@
 {
     "category": "Maps",
     "description": "Dynamic base map gallery",
-    "formal_name": "DynamicBaseMapGallery",
+    "formal_name": "DynamicBasemapGallery",
     "ignore": false,
     "images": [
         "dynamic-basemap-gallery.png"
