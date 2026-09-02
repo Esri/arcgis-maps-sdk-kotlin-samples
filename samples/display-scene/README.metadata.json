@@ -28,7 +28,9 @@
         "SceneView"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/displayscene/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displayscene/components/DisplaySceneViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscene/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/displayscene/screens/DisplaySceneScreen.kt"
     ],
     "title": "Display scene"
 }
