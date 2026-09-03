@@ -88,6 +88,7 @@ class DynamicBasemapGalleryViewModel(app: Application) : AndroidViewModel(app) {
                     stylesInfo.forEach { basemapStyleInfo ->
                         basemapGalleryItems.add(BasemapGalleryItem(basemapStyleInfo))
                     }
+                    selectedBasemapStyleInfo = stylesInfo.firstOrNull { it.style == BasemapStyle.ArcGISImagery }
                 } else {
                     messageDialogVM.showMessageDialog(
                         title = "No basemap styles available",
@@ -104,10 +105,13 @@ class DynamicBasemapGalleryViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onDoneClicked(
-        item: BasemapGalleryItem,
-        languageInfo: BasemapStyleLanguageInfo,
+        item: BasemapGalleryItem?,
+        languageInfo: BasemapStyleLanguageInfo?,
         worldview: Worldview?
     ) {
+        // Nothing was selected, so there is nothing to update
+        if (item == null) return
+
         when (val tag = item.tag) {
             is BasemapStyleInfo -> {
                 selectedBasemapStyleInfo = tag
