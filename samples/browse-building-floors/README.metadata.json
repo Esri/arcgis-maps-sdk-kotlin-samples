@@ -17,10 +17,11 @@
         "level",
         "site",
         "story",
+        "toolkit",
         "FloorManager"
     ],
     "language": "kotlin",
-    "redirect_from": "",
+    "redirect_from": "TODO",
     "relevant_apis": [
         "FloorManager"
     ],
