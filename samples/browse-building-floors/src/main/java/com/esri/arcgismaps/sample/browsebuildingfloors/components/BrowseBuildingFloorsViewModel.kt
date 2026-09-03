@@ -39,7 +39,7 @@ class BrowseBuildingFloorsViewModel(app: Application) : AndroidViewModel(app) {
     )
 
 
-    // Initial Map to hold a portalItem
+    // Create the map using the portal item
     val arcGISMap = ArcGISMap(portalItem)
 
     // FloorFilterState to hold the current filter info
