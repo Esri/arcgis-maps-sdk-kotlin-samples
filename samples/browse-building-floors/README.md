@@ -33,4 +33,4 @@ This sample uses the [FloorFilter toolkit component](https://github.com/Esri/arc
 
 ## Tags
 
-toolkit, building, facility, floor, floor-aware, floors, ground floor, indoor, level, site, story
+building, facility, floor, floor-aware, floors, ground floor, indoor, level, site, story, toolkit
