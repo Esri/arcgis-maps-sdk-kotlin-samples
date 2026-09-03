@@ -21,8 +21,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.browsebuildingfloors.R
@@ -35,9 +38,7 @@ import com.arcgismaps.toolkit.indoors.FloorFilter
  * Main screen layout for the sample app
  */
 @Composable
-fun BrowseBuildingFloorsScreen(
-    mapViewModel: BrowseBuildingFloorsViewModel = viewModel()
-) {
+fun BrowseBuildingFloorsScreen() {
     val mapViewModel: BrowseBuildingFloorsViewModel = viewModel()
     Scaffold(
         topBar = { SampleTopAppBar(title = stringResource(R.string.browse_building_floors_app_name)) },
@@ -51,7 +52,12 @@ fun BrowseBuildingFloorsScreen(
                     arcGISMap = mapViewModel.arcGISMap,
                     modifier = Modifier.fillMaxSize(),
                 )
-                FloorFilter(floorFilterState = mapViewModel.floorFilterState)
+                Box(modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 36.dp, end = 12.dp)
+                ){
+                    FloorFilter(floorFilterState = mapViewModel.floorFilterState)
+                }
             }
 
             mapViewModel.messageDialogVM.apply {

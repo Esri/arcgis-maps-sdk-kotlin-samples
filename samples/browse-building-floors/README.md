@@ -29,8 +29,8 @@ This sample uses a [floor-aware web map](https://www.arcgis.com/home/item.html?i
 
 ## Additional information
 
-The API also supports browsing different sites and facilities in addition to building floors.
+This sample uses the [FloorFilter toolkit component](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/indoors). For information about setting up the toolkit visit the [developer guide doc](https://developers.arcgis.com/kotlin/toolkit/).
 
 ## Tags
 
-building, facility, floor, floor-aware, floors, ground floor, indoor, level, site, story
+toolkit, building, facility, floor, floor-aware, floors, ground floor, indoor, level, site, story

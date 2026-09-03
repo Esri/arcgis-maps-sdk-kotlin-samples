@@ -10,5 +10,5 @@ android {
 
 dependencies {
     // Only module specific dependencies needed here
-    implementation(libs.arcgis.maps.kotlin.toolkit.indoor)
+    implementation(libs.arcgis.maps.kotlin.toolkit.indoors)
 }

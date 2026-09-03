@@ -32,26 +32,18 @@ import kotlinx.coroutines.launch
 
 class BrowseBuildingFloorsViewModel(app: Application) : AndroidViewModel(app) {
 
-    // Load the portal and create a map from the portal item
+    // Create a portal item using a floor-aware web map.
     val portalItem = PortalItem(
-        Portal("https://www.arcgis.com/"),
-        "f133a698536f44c8884ad81f80b6cfc7"
+        portal = Portal("https://www.arcgis.com/"),
+        itemId = "f133a698536f44c8884ad81f80b6cfc7"
     )
 
 
     // Initial Map to hold a portalItem
-    val arcGISMap by mutableStateOf(
-        value = ArcGISMap(portalItem)
-    )
+    val arcGISMap = ArcGISMap(portalItem)
 
     // FloorFilterState to hold the current filter info
-    val floorFilterState = FloorFilterState(
-        geoModel = arcGISMap,
-        uiProperties = UIProperties().apply {
-            maxDisplayLevels = 4
-            closeButtonPosition = ButtonPosition.Bottom
-        }
-    )
+    val floorFilterState = FloorFilterState(geoModel = arcGISMap)
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
