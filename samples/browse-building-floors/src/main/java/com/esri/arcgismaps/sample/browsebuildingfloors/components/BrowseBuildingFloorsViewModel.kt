@@ -31,7 +31,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
 class BrowseBuildingFloorsViewModel(app: Application) : AndroidViewModel(app) {
-    //TODO - delete mutable state when the map does not change or the screen does not need to observe changes
 
     // Load the portal and create a map from the portal item
     val portalItem = PortalItem(
