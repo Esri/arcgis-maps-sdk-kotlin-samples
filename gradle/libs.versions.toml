@@ -98,7 +98,7 @@ arcgis-maps-kotlin-toolkit-featureforms = { group = "com.esri", name = "arcgis-m
 arcgis-maps-kotlin-toolkit-popup = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-popup" }
 arcgis-maps-kotlin-toolkit-scalebar = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-scalebar" }
 arcgis-maps-kotlin-toolkit-basemapgallery = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-basemapgallery" }
-arcgis-maps-kotlin-toolkit-indoor = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-indoors"}
+arcgis-maps-kotlin-toolkit-indoors = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-indoors"}
 
 ### Third party libraries
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
