@@ -19,7 +19,7 @@ def check_special_char(string: str) -> bool:
     return True
 
 
-def parse_head(head_string: str) -> (str, str):
+def parse_head(head_string: str) -> tuple[str, str]:
     """
     Parse the `Title` section of README file and get the title and description.
 
@@ -71,6 +71,20 @@ def get_folder_name_from_path(path: str) -> str:
     return os.path.normpath(path).split(os.path.sep)[-1]
 
 
+def normalize_redirect_from(redirect_from: typing.Any) -> typing.Union[str, typing.List[str]]:
+    """
+    Normalize the redirect_from field while preserving the supported output shapes.
+
+    :param redirect_from: The redirect_from value loaded from JSON.
+    :return: The normalized redirect_from value.
+    """
+    if isinstance(redirect_from, str):
+        return redirect_from
+    if isinstance(redirect_from, list):
+        return redirect_from
+    raise TypeError('redirect_from must be a string or a list of strings.')
+
+
 class MetadataUpdater:
 
     def __init__(self, folder_path: str, single_update: bool = False):
@@ -85,7 +99,9 @@ class MetadataUpdater:
         self.images = []            # Populate from folder paths.
         self.keywords = []          # Populate from README.
         self.language = ''          # Populate from folder paths.
-        self.redirect_from = []     # Populate from json.
+        self.provision_from = None  # Preserve from json when present.
+        self.provision_to = None    # Preserve from json when present.
+        self.redirect_from = None   # Preserve from json when present.
         self.relevant_apis = []     # Populate from README.
         self.snippets = []          # Populate from folder paths.
         self.title = ''             # Populate from README.
@@ -142,29 +158,21 @@ class MetadataUpdater:
 
     def populate_from_json(self) -> None:
         """
-        Read 'category' and 'redirect_from'
-        fields from json, as they should not be changed.
+        Read metadata fields from json that should be preserved.
         """
         try:
-            json_file = open(self.json_path, 'r')
-            json_data = json.load(json_file)
+            with open(self.json_path, 'r') as json_file:
+                json_data = json.load(json_file)
         except Exception as err:
             print(f'Error reading JSON - {self.json_path} - {err}')
             raise err
-        else:
-            json_file.close()
 
         keys = json_data.keys()
-        for key in ['category']:
+        for key in ['category', 'ignore', 'provision_from', 'provision_to']:
             if key in keys:
                 setattr(self, key, json_data[key])
         if 'redirect_from' in keys:
-            if isinstance(json_data['redirect_from'], str):
-                self.redirect_from = [json_data['redirect_from']]
-            elif isinstance(json_data['redirect_from'], typing.List):
-                self.redirect_from = json_data['redirect_from']
-            else:
-                print(f'No redirect_from in - {self.json_path}, abort.')
+            self.redirect_from = normalize_redirect_from(json_data['redirect_from'])
 
     def populate_from_readme(self) -> None:
         """
@@ -241,10 +249,16 @@ class MetadataUpdater:
         data["keywords"] = self.keywords
         data["language"] = self.language
 
-        if self.redirect_from and self.redirect_from[0] is not '':
+        if self.provision_from is not None:
+            data["provision_from"] = self.provision_from
+
+        if self.provision_to is not None:
+            data["provision_to"] = self.provision_to
+
+        if self.redirect_from is not None:
             data["redirect_from"] = self.redirect_from
         elif self.single_update:
-            data["redirect_from"] = "TODO"
+            data["redirect_from"] = ""
 
         data["relevant_apis"] = self.relevant_apis
         data["snippets"] = self.snippets
@@ -300,8 +314,7 @@ def main():
     elif args.single:
         update_1_sample(args.single)
     else:
-        update_1_sample()
-        print('Invalid arguments, abort.')
+        parser.error('Invalid arguments. Use -m for a directory of samples or -s for a single sample directory.')
 
 
 if __name__ == '__main__':
