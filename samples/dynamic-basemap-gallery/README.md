@@ -2,7 +2,7 @@
 
 Dynamic base map gallery
 
-![Image of cut geometry](cut-geometry.png)
+![Image of dynamic basemap gallery](dynamic-basemap-gallery.png)
 
 ## Use case
 

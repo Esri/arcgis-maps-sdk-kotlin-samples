@@ -73,9 +73,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun DynamicBasemapGalleryScreen(
-    mapViewModel: DynamicBasemapGalleryViewModel = viewModel()
-) {
+fun DynamicBasemapGalleryScreen() {
     val mapViewModel: DynamicBasemapGalleryViewModel = viewModel()
 
     // Controls whether the basemap gallery popup is shown
@@ -112,8 +110,10 @@ fun DynamicBasemapGalleryScreen(
         // Display menu
         if (showBasemapGallery) {
             // Default the pending selection to the actual gallery item for the basemap style
-            // currently applied to the map, so it can be highlighted when the gallery opens
-            var pendingItem by remember {
+            // currently applied to the map, so it can be highlighted when the gallery opens.
+            // Keyed on selectedBasemapStyleInfo so it re-syncs once the basemap style service
+            // finishes loading, in case the gallery was opened before that completed.
+            var pendingItem by remember(mapViewModel.selectedBasemapStyleInfo) {
                 mutableStateOf(
                     mapViewModel.basemapGalleryItems.firstOrNull { item ->
                         (item.tag as? BasemapStyleInfo)?.style == mapViewModel.selectedBasemapStyleInfo?.style
@@ -251,6 +251,7 @@ private fun BasemapGalleryItemCard(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
+            .background(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
             .clickable(onClick = onClick)
             .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -270,18 +271,11 @@ private fun BasemapGalleryItemCard(
                     modifier = Modifier.fillMaxSize()
                 )
             }
-            if (selected) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.4f))
-                )
-            }
         }
         Text(
             text = item.title,
             style = MaterialTheme.typography.labelSmall,
-            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+            color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
             maxLines = 2,
             modifier = Modifier.padding(top = 4.dp)
