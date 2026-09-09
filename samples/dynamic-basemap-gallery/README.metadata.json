@@ -14,7 +14,9 @@
     "redirect_from": [
         "TODO"
     ],
-    "relevant_apis": "",
+    "relevant_apis": [
+        "basemapgallery"
+    ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/dynamicbasemapgallery/components/DynamicBasemapGalleryViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/dynamicbasemapgallery/MainActivity.kt",
