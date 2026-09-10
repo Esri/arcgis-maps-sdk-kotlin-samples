@@ -35,7 +35,7 @@ Toggle on the "Allow Camera Distance Interaction" switch to allow zooming in and
 4. Set the minimum and maximum angle of heading and pitch, and minimum and maximum distance for the camera.
 5. Set the distance from which the camera is offset from the plane using `setTargetOffsets(x:y:z:duration:)` or the properties.
 6. use isAutoPitchEnabled to make camera follow plane pitch in cockpit view
-7. use isCameraDistanceInteractive to enable/disable finger interactions 
+7. use isCameraDistanceInteractive to enable/disable finger interactions
 8. Animate the camera to the cockpit using `moveToCockpitView()`.
 
 ## Relevant API
