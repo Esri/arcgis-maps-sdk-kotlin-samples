@@ -1,0 +1,31 @@
+{
+    "category": "Scenes",
+    "description": "Fix the camera to point at and rotate around a target object.",
+    "formal_name": "OrbitCameraAroundObject",
+    "ignore": false,
+    "images": [
+        "orbit-camera-around-object.png"
+    ],
+    "keywords": [
+        "3D",
+        "camera",
+        "object",
+        "orbit",
+        "rotate",
+        "scene",
+        "OrbitGeoElementCameraController"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "OrbitGeoElementCameraController"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/components/OrbitCameraAroundObjectViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/DownloadActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/screens/OrbitCameraAroundObjectScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/screens/OrbitCameraAroundObjectSupportingPane.kt"
+    ],
+    "title": "Orbit camera around object"
+}
