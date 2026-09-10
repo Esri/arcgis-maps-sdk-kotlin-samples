@@ -38,7 +38,6 @@ class BrowseBuildingFloorsViewModel(app: Application) : AndroidViewModel(app) {
         itemId = "f133a698536f44c8884ad81f80b6cfc7"
     )
 
-
     // Create the map using the portal item
     val arcGISMap = ArcGISMap(portalItem)
 
