@@ -120,8 +120,8 @@ fun DynamicBasemapGalleryScreen() {
                     }
                 )
             }
-            var pendingLanguage by remember { mutableStateOf(mapViewModel.selectedLanguage) }
-            var pendingWorldview by remember { mutableStateOf(mapViewModel.selectedWorldview) }
+            var pendingLanguage by remember(mapViewModel.selectedLanguage) { mutableStateOf(mapViewModel.selectedLanguage) }
+            var pendingWorldview by remember(mapViewModel.selectedWorldview) { mutableStateOf(mapViewModel.selectedWorldview) }
 
             Dialog(onDismissRequest = { showBasemapGallery = false }) {
                 Column(
