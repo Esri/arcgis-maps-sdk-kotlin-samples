@@ -17,6 +17,7 @@
         "level",
         "site",
         "story",
+        "toolkit",
         "FloorManager"
     ],
     "language": "kotlin",
@@ -25,7 +26,9 @@
         "FloorManager"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/browsebuildingfloors/MainActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/browsebuildingfloors/components/BrowseBuildingFloorsViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/browsebuildingfloors/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/browsebuildingfloors/screens/BrowseBuildingFloorsScreen.kt"
     ],
     "title": "Browse building floors"
 }

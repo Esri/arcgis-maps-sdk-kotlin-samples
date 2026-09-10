@@ -14,17 +14,10 @@ Use the spinner to browse different floor levels in the facility. Only the selec
 
 ## How it works
 
-1. Create a `PortalItem` using the `itemId` of the floor-aware web map.
-2. Set the `MapView` to display the `PortalItem`.
-3. Wait for the map to load and retrieve the map's floor manager from `MapView.Map.FloorManager`.
-4. Wait for the floor manager to load using `FloorManager.load()` to retrieve the floor-aware data.
-5. Set all floors to not visible `FloorManager.levels[floor-number].isVisible = false`.
-6. Set only the selected floor to visible using `FloorManager.levels[floor-number].isVisible = true`.
-* **Note:** Manually set the default floor level to the first floor using `floorLevel.verticalOrder`.
-
-```kotlin
-floorManager.levels.first { floorLevel ->  floorLevel.verticalOrder == 0 }
-```
+1. Create a `PortalItem` using the `itemId` of the floor-aware web map, and use it to create an `ArcGISMap`.
+2. Create a `FloorFilterState`, passing it the map as its `geoModel`, and configure its `UIProperties` (e.g. `maxDisplayLevels`, `closeButtonPosition`).
+3. Display the map in a `MapView`.
+4. Display a `FloorFilter` composable over the `MapView`, passing it the `FloorFilterState`, to let the user browse and switch between the map's floors.
 
 ## Relevant API
 
@@ -36,8 +29,8 @@ This sample uses a [floor-aware web map](https://www.arcgis.com/home/item.html?i
 
 ## Additional information
 
-The API also supports browsing different sites and facilities in addition to building floors.
+This sample uses the [FloorFilter toolkit component](https://github.com/Esri/arcgis-maps-sdk-kotlin-toolkit/tree/main/toolkit/indoors). For information about setting up the toolkit visit the [developer guide doc](https://developers.arcgis.com/kotlin/toolkit/).
 
 ## Tags
 
-building, facility, floor, floor-aware, floors, ground floor, indoor, level, site, story
+building, facility, floor, floor-aware, floors, ground floor, indoor, level, site, story, toolkit
