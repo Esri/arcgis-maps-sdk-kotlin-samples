@@ -214,34 +214,45 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
     }
 
     /**
-     * Moves the camera into a first-person cockpit view inside the plane.
+     * Animates the camera into a first-person cockpit view inside the plane.
      *
-     * Locks [orbitCameraController]'s pitch to look straight ahead, and disables distance interaction so the camera stays
-     * anchored at the cockpit position.
+     * Locks [orbitCameraController]'s pitch to look straight ahead, disables distance
+     * interaction so the camera stays anchored at the cockpit position, and moves the target
+     * offset to the cockpit location before zooming the camera in, so the pivot is never wrong
+     * while the camera is close to the plane.
      */
     private suspend fun moveToCockpitView() {
         orbitCameraController.apply {
             isCameraDistanceInteractive = false
+            isAutoPitchEnabled = true
+            // Move the pivot to the cockpit location first, while the camera is still far away,
+            // so the shift is a subtle pan rather than a jarring jump once the camera is close.
+            setTargetOffsets(x = 0.0, y = -200.0, z = 110.0, duration = 1.0F)
+                .onFailure { messageDialogVM.showMessageDialog(it) }
+            // Now that the pivot is in place, zoom the camera in to the cockpit.
+            moveCamera(
+                distanceDelta = 1.0 - cameraDistance.value,
+                headingDelta = 0.0 - cameraHeadingOffset.value,
+                pitchDelta = 90.0 - cameraPitchOffset.value,
+                duration = 1.0F
+            ).onFailure { messageDialogVM.showMessageDialog(it) }
+            // Narrow the distance/pitch bounds only after the camera has animated into place, so
+            // the animation isn't cut short by an instant clamp to the cockpit's tight range.
             minCameraDistance = 0.0
             maxCameraDistance = 10.0
             minCameraPitchOffset = 90.0
             maxCameraPitchOffset = 90.0
-            isAutoPitchEnabled = true
-            setCameraDistance(1.0)
-            setCameraHeadingOffset(0.0)
-            setCameraPitchOffset(90.0)
-            setTargetOffsets(x = 0.0, y = -200.0, z = 110.0, duration = 1.0F)
-                .onFailure { messageDialogVM.showMessageDialog(it) }
         }
         _orbitCameraUiState.update { it.copy(heading = 0F, allowCameraDistanceInteraction = false) }
     }
 
     /**
-     * Moves the camera into an orbiting view centered on the plane.
+     * Animates the camera into an orbiting view centered on the plane.
      *
-     * Restores [orbitCameraController]'s full pitch range and maximum distance, and sets
-     * distance interaction according to the current [OrbitCameraUiState.allowCameraDistanceInteraction]
-     * setting.
+     * Restores [orbitCameraController]'s full pitch range and maximum distance, sets distance
+     * interaction according to the current [OrbitCameraUiState.allowCameraDistanceInteraction]
+     * setting, and pulls the camera back before recentering the target offset, so the pivot
+     * shift happens while the camera is already far from the plane.
      */
     private suspend fun moveToCenterView() {
         orbitCameraController.apply {
@@ -251,9 +262,15 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
             minCameraDistance = 0.0
             isAutoPitchEnabled = false
             isCameraDistanceInteractive = _orbitCameraUiState.value.allowCameraDistanceInteraction
-            setCameraDistance(1000.0)
-            setCameraHeadingOffset(0.0)
-            setTargetOffsets(x = 0.0, y = 0.0, z = 20.0, duration = 1.0F)
+            // Pull the camera back first, while it's still anchored on the cockpit pivot.
+            moveCamera(
+                distanceDelta = 1000.0 - cameraDistance.value,
+                headingDelta = 0.0 - cameraHeadingOffset.value,
+                pitchDelta = 0.0,
+                duration = 1.0F
+            ).onFailure { messageDialogVM.showMessageDialog(it) }
+            // Now that the camera is far away, recenter the pivot — a subtle pan at this distance.
+            setTargetOffsets(x = 0.0, y = 0.0, z = 20.0, duration = 0.5F)
                 .onFailure { messageDialogVM.showMessageDialog(it) }
         }
         _orbitCameraUiState.update { it.copy(heading = 0F) }
