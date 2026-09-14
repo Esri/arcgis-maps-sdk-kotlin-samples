@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
 import com.esri.arcgismaps.sample.orbitcameraaroundobject.R
-import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.AdaptiveUiState
+import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.OrbitCameraUiState
 import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.OrbitCameraAroundObjectViewModel
 import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.ViewMode
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
@@ -44,10 +44,10 @@ import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePa
 fun OrbitCameraAroundObjectScreen(
     viewModel: OrbitCameraAroundObjectViewModel = viewModel()
 ) {
-    val adaptiveUiState = viewModel.adaptiveUiState.collectAsStateWithLifecycle().value
+    val orbitCameraUiState = viewModel.orbitCameraUiState.collectAsStateWithLifecycle().value
 
     MainScreenScaffold(
-        adaptiveUiState = adaptiveUiState,
+        orbitCameraUiState = orbitCameraUiState,
         setCameraHeading =  viewModel::setCameraHeading,
         setCameraPitch = viewModel::setPlanePitch,
         switchViewMode = viewModel::switchViewMode,
@@ -57,7 +57,7 @@ fun OrbitCameraAroundObjectScreen(
                 arcGISScene = viewModel.arcGISScene,
                 sceneViewProxy = viewModel.sceneViewProxy,
                 cameraController = viewModel.orbitCameraController,
-                graphicsOverlays = viewModel.graphicsOverlays,
+                graphicsOverlays = viewModel.graphicsOverlays
             )
         }
     )
@@ -75,7 +75,7 @@ fun OrbitCameraAroundObjectScreen(
 
 @Composable
 private fun MainScreenScaffold(
-    adaptiveUiState: AdaptiveUiState,
+    orbitCameraUiState: OrbitCameraUiState,
     setCameraHeading: (Float) -> Unit = {},
     setCameraPitch: (Float) -> Unit = {},
     switchViewMode: (ViewMode) -> Unit = {},
@@ -89,14 +89,14 @@ private fun MainScreenScaffold(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
-                supportingPaneTitle = "options",
+                supportingPaneTitle = "Settings",
                 mainPane = { _, _ -> mainPaneContent() },
                 supportingPane = { _, _ ->
                     OrbitCameraAroundObjectSupportingPane(
-                        adaptiveUiState = adaptiveUiState,
+                        orbitCameraUiState = orbitCameraUiState,
                         setCameraHeading =  setCameraHeading,
                         setCameraPitch = setCameraPitch,
-                        switchViewMode = switchViewMode,
+                        cameraMode = switchViewMode,
                         setInteraction = setInteraction,
                     )
                 }
@@ -110,7 +110,7 @@ private fun MainScreenScaffold(
 fun MainScreenPreview() {
     SamplePreviewSurface {
         MainScreenScaffold(
-            adaptiveUiState = AdaptiveUiState.defaultState,
+            orbitCameraUiState = OrbitCameraUiState.defaultState,
             mainPaneContent = {}
         )
     }

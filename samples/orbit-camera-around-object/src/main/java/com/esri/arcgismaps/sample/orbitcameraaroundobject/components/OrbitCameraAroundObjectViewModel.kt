@@ -137,10 +137,10 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
     }
 
     // Create a state flow to hold the UI state for the supporting pane controls
-    private val _adaptiveUiState = MutableStateFlow(AdaptiveUiState.defaultState)
+    private val _orbitCameraUiState = MutableStateFlow(OrbitCameraUiState.defaultState)
 
     // Expose the state flow as read-only for the UI
-    val adaptiveUiState = _adaptiveUiState.asStateFlow()
+    val orbitCameraUiState = _orbitCameraUiState.asStateFlow()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -181,7 +181,7 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
     // Adjust Camera Heading
     fun setCameraHeading(sliderValue : Float){
         orbitCameraController.setCameraHeadingOffset(sliderValue.toDouble())
-        _adaptiveUiState.update { it.copy(heading = sliderValue) }
+        _orbitCameraUiState.update { it.copy(heading = sliderValue) }
     }
 
     // Adjust Plane Pitch
@@ -189,13 +189,13 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
         // Update the plane's PITCH attribute, which rotates the graphic (via the renderer's
         // pitch expression) and, when isAutoPitchEnabled is true, the orbit camera along with it.
         planeGraphic.attributes["PITCH"] = sliderValue.toDouble()
-        _adaptiveUiState.update { it.copy(pitch = sliderValue) }
+        _orbitCameraUiState.update { it.copy(pitch = sliderValue) }
     }
 
 
     // Switch View Mode
     fun switchViewMode(viewMode: ViewMode){
-        _adaptiveUiState.update { it.copy(viewMode = viewMode) }
+        _orbitCameraUiState.update { it.copy(viewMode = viewMode) }
         viewModelScope.launch {
             // Wait for both scene and Symbol to load before change view
             arcGISScene.load().onFailure {
@@ -207,13 +207,18 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
                 return@launch
             }
             when (viewMode) {
-                ViewMode.CockpitView -> moveToCockpitView()
-                ViewMode.CenterView -> moveToCenterView()
+                ViewMode.Cockpit -> moveToCockpitView()
+                ViewMode.Center -> moveToCenterView()
             }
         }
     }
 
-    // Shift to Cockpit View
+    /**
+     * Moves the camera into a first-person cockpit view inside the plane.
+     *
+     * Locks [orbitCameraController]'s pitch to look straight ahead, and disables distance interaction so the camera stays
+     * anchored at the cockpit position.
+     */
     private suspend fun moveToCockpitView() {
         orbitCameraController.apply {
             isCameraDistanceInteractive = false
@@ -228,10 +233,16 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
             setTargetOffsets(x = 0.0, y = -200.0, z = 110.0, duration = 1.0F)
                 .onFailure { messageDialogVM.showMessageDialog(it) }
         }
-        _adaptiveUiState.update { it.copy(heading = 0F, allowCameraDistanceInteraction = false) }
+        _orbitCameraUiState.update { it.copy(heading = 0F, allowCameraDistanceInteraction = false) }
     }
 
-    // Shift to center view
+    /**
+     * Moves the camera into an orbiting view centered on the plane.
+     *
+     * Restores [orbitCameraController]'s full pitch range and maximum distance, and sets
+     * distance interaction according to the current [OrbitCameraUiState.allowCameraDistanceInteraction]
+     * setting.
+     */
     private suspend fun moveToCenterView() {
         orbitCameraController.apply {
             minCameraPitchOffset = -90.0
@@ -239,41 +250,41 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
             maxCameraDistance = 10000.0
             minCameraDistance = 0.0
             isAutoPitchEnabled = false
-            isCameraDistanceInteractive = _adaptiveUiState.value.allowCameraDistanceInteraction
+            isCameraDistanceInteractive = _orbitCameraUiState.value.allowCameraDistanceInteraction
             setCameraDistance(1000.0)
             setCameraHeadingOffset(0.0)
             setTargetOffsets(x = 0.0, y = 0.0, z = 20.0, duration = 1.0F)
                 .onFailure { messageDialogVM.showMessageDialog(it) }
         }
-        _adaptiveUiState.update { it.copy(heading = 0F) }
+        _orbitCameraUiState.update { it.copy(heading = 0F) }
     }
 
     // Toggle Interaction mode
-    fun setInteraction(value : Boolean){
+    fun setInteraction(value: Boolean) {
         orbitCameraController.isCameraDistanceInteractive = value
-        _adaptiveUiState.update { it.copy(allowCameraDistanceInteraction = value) }
+        _orbitCameraUiState.update { it.copy(allowCameraDistanceInteraction = value) }
     }
 }
 
 
 // Data Class for Current UI state
-data class AdaptiveUiState(
+data class OrbitCameraUiState(
     val heading : Float,
     val pitch : Float,
     val viewMode : ViewMode,
     val allowCameraDistanceInteraction : Boolean
 ) {
     companion object {
-        val defaultState = AdaptiveUiState(
+        val defaultState = OrbitCameraUiState(
             heading = 0F,
             pitch = 0F,
-            viewMode = ViewMode.CenterView,
+            viewMode = ViewMode.Center,
             allowCameraDistanceInteraction = true
         )
 
     }
 }
 enum class ViewMode{
-    CockpitView, CenterView
+    Cockpit, Center
 }
 

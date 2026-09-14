@@ -34,7 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.AdaptiveUiState
+import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.OrbitCameraUiState
 import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.ViewMode
 
 /**
@@ -42,16 +42,16 @@ import com.esri.arcgismaps.sample.orbitcameraaroundobject.components.ViewMode
  */
 @Composable
 internal fun OrbitCameraAroundObjectSupportingPane(
-    adaptiveUiState: AdaptiveUiState,
+    orbitCameraUiState: OrbitCameraUiState,
     setCameraHeading: (Float) -> Unit,
     setCameraPitch: (Float) -> Unit,
-    switchViewMode: (ViewMode) -> Unit,
+    cameraMode: (ViewMode) -> Unit,
     setInteraction: (Boolean) -> Unit,
 ) {
     ToggleRow(
         title = "Allow Camera distance interaction",
-        description = "checkbox to allow zooming in and out with the mouse/keyboard: when the checkbox is deselected the user will be unable to adjust with the camera distance.",
-        isToggleChecked = adaptiveUiState.allowCameraDistanceInteraction,
+        description = "Enabled when in center mode, disabled when in cockpit mode.",
+        isToggleChecked = orbitCameraUiState.allowCameraDistanceInteraction,
         onCheckedChange = setInteraction
     )
 
@@ -61,27 +61,24 @@ internal fun OrbitCameraAroundObjectSupportingPane(
         SelectionRow(
             title = mode.name,
             description = when (mode) {
-                ViewMode.CenterView -> {
-                    "Default Centered View"
+                ViewMode.Center -> {
+                    "Default centered view of the 3D model."
                 }
 
-                ViewMode.CockpitView -> {
-                    "Cockpit View inside the Model"
+                ViewMode.Cockpit -> {
+                    "Cockpit view from the 3D model."
                 }
             },
-            selected = adaptiveUiState.viewMode == mode,
-            onClick = { switchViewMode(mode) }
+            selected = orbitCameraUiState.viewMode == mode,
+            onClick = { cameraMode(mode) }
         )
     }
-    HeadingSlider(adaptiveUiState.heading, setCameraHeading)
-    PitchSlider(adaptiveUiState.pitch, setCameraPitch)
-
-
+    HeadingSlider(orbitCameraUiState.heading, setCameraHeading)
+    PitchSlider(orbitCameraUiState.pitch, setCameraPitch)
 }
 
-
 @Composable
-fun ViewshedSlider(
+fun CameraSlider(
     title: String,
     sliderValue: Float,
     sliderRangeValue: ClosedFloatingPointRange<Float>,
@@ -105,7 +102,7 @@ fun ViewshedSlider(
 }
 @Composable
 private fun HeadingSlider(heading: Float, onHeadingChanged: (Float) -> Unit) {
-    ViewshedSlider(
+    CameraSlider(
         title = "Camera Heading",
         sliderValue = heading,
         sliderRangeValue = -180f..180f,
@@ -115,7 +112,7 @@ private fun HeadingSlider(heading: Float, onHeadingChanged: (Float) -> Unit) {
 
 @Composable
 private fun PitchSlider(pitch: Float, onPitchChanged: (Float) -> Unit) {
-    ViewshedSlider(
+    CameraSlider(
         title = "Plane Pitch",
         sliderValue = pitch,
         sliderRangeValue = -90f..90f,
@@ -123,10 +120,6 @@ private fun PitchSlider(pitch: Float, onPitchChanged: (Float) -> Unit) {
     )
 }
 
-
-/**
- * TODO: Reusable composable for a row with a title, description, and a toggle switch.
- */
 @Composable
 private fun ToggleRow(
     title: String,
@@ -160,9 +153,6 @@ private fun ToggleRow(
     }
 }
 
-/**
- * TODO: Reusable composable for a row with a title, description, and a radio button to indicate selection.
- */
 @Composable
 private fun SelectionRow(
     title: String,
