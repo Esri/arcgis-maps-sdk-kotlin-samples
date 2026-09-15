@@ -48,7 +48,7 @@ fun OrbitCameraAroundObjectScreen(
 
     MainScreenScaffold(
         orbitCameraUiState = orbitCameraUiState,
-        setCameraHeading =  viewModel::setCameraHeading,
+        setCameraHeading = viewModel::setCameraHeading,
         setCameraPitch = viewModel::setPlanePitch,
         switchViewMode = viewModel::switchViewMode,
         setInteraction = viewModel::setInteraction,
@@ -94,10 +94,10 @@ private fun MainScreenScaffold(
                 supportingPane = { _, _ ->
                     OrbitCameraAroundObjectSupportingPane(
                         orbitCameraUiState = orbitCameraUiState,
-                        setCameraHeading =  setCameraHeading,
+                        setCameraHeading = setCameraHeading,
                         setCameraPitch = setCameraPitch,
                         cameraMode = switchViewMode,
-                        setInteraction = setInteraction,
+                        setInteraction = setInteraction
                     )
                 }
             )

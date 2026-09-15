@@ -46,17 +46,8 @@ internal fun OrbitCameraAroundObjectSupportingPane(
     setCameraHeading: (Float) -> Unit,
     setCameraPitch: (Float) -> Unit,
     cameraMode: (ViewMode) -> Unit,
-    setInteraction: (Boolean) -> Unit,
+    setInteraction: (Boolean) -> Unit
 ) {
-    ToggleRow(
-        title = "Allow Camera distance interaction",
-        description = "Enabled when in center mode, disabled when in cockpit mode.",
-        isToggleChecked = orbitCameraUiState.allowCameraDistanceInteraction,
-        onCheckedChange = setInteraction
-    )
-
-    HorizontalDivider()
-
     ViewMode.entries.forEach { mode ->
         SelectionRow(
             title = mode.name,
@@ -73,6 +64,14 @@ internal fun OrbitCameraAroundObjectSupportingPane(
             onClick = { cameraMode(mode) }
         )
     }
+
+    ToggleRow(
+        title = "Allow Camera distance interaction",
+        description = "Enabled when in center mode, disabled when in cockpit mode.",
+        isToggleChecked = orbitCameraUiState.allowCameraDistanceInteraction,
+        isToggleEnabled = orbitCameraUiState.viewMode == ViewMode.Center,
+        onCheckedChange = setInteraction
+    )
     HeadingSlider(orbitCameraUiState.heading, setCameraHeading)
     PitchSlider(orbitCameraUiState.pitch, setCameraPitch)
 }
@@ -89,8 +88,11 @@ fun CameraSlider(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = title)
-            Text(text = sliderValue.toInt().toString())
+            Text(text = title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = sliderValue.toInt().toString(),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
         Slider(
             modifier = Modifier.fillMaxWidth(),
@@ -100,6 +102,7 @@ fun CameraSlider(
         )
     }
 }
+
 @Composable
 private fun HeadingSlider(heading: Float, onHeadingChanged: (Float) -> Unit) {
     CameraSlider(
@@ -125,6 +128,7 @@ private fun ToggleRow(
     title: String,
     description: String,
     isToggleChecked: Boolean,
+    isToggleEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
@@ -147,6 +151,7 @@ private fun ToggleRow(
             )
         }
         Switch(
+            enabled = isToggleEnabled,
             checked = isToggleChecked,
             onCheckedChange = onCheckedChange
         )
@@ -158,7 +163,7 @@ private fun SelectionRow(
     title: String,
     description: String,
     selected: Boolean,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),

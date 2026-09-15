@@ -174,18 +174,18 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
         orbitCameraController.targetVerticalScreenFactor = 0.66F
 
         // Don't pitch the camera when the plane pitches.
-        orbitCameraController.isAutoPitchEnabled= false
+        orbitCameraController.isAutoPitchEnabled = false
 
     }
 
     // Adjust Camera Heading
-    fun setCameraHeading(sliderValue : Float){
+    fun setCameraHeading(sliderValue: Float) {
         orbitCameraController.setCameraHeadingOffset(sliderValue.toDouble())
         _orbitCameraUiState.update { it.copy(heading = sliderValue) }
     }
 
     // Adjust Plane Pitch
-    fun setPlanePitch(sliderValue : Float){
+    fun setPlanePitch(sliderValue: Float) {
         // Update the plane's PITCH attribute, which rotates the graphic (via the renderer's
         // pitch expression) and, when isAutoPitchEnabled is true, the orbit camera along with it.
         planeGraphic.attributes["PITCH"] = sliderValue.toDouble()
@@ -194,7 +194,7 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
 
 
     // Switch View Mode
-    fun switchViewMode(viewMode: ViewMode){
+    fun switchViewMode(viewMode: ViewMode) {
         _orbitCameraUiState.update { it.copy(viewMode = viewMode) }
         viewModelScope.launch {
             // Wait for both scene and Symbol to load before change view
@@ -286,10 +286,10 @@ class OrbitCameraAroundObjectViewModel(app: Application) : AndroidViewModel(app)
 
 // Data Class for Current UI state
 data class OrbitCameraUiState(
-    val heading : Float,
-    val pitch : Float,
-    val viewMode : ViewMode,
-    val allowCameraDistanceInteraction : Boolean
+    val heading: Float,
+    val pitch: Float,
+    val viewMode: ViewMode,
+    val allowCameraDistanceInteraction: Boolean
 ) {
     companion object {
         val defaultState = OrbitCameraUiState(
@@ -301,7 +301,8 @@ data class OrbitCameraUiState(
 
     }
 }
-enum class ViewMode{
+
+enum class ViewMode {
     Cockpit, Center
 }
 
