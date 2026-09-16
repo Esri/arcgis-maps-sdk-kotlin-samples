@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
@@ -47,12 +48,14 @@ fun MessageDialog(
     title: String,
     description: String = "",
     icon: ImageVector = Icons.Filled.Info,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    visibilityTag: String = SampleDialogVisibilityTag
 ) {
     Log.e("SampleAlertMessage", "$title: $description")
     // display a dialog with a description text
     if (description.isNotEmpty()) {
         AlertDialog(
+            modifier = Modifier.sampleDialogVisibilityTag(visibilityTag),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(imageVector = icon, contentDescription = null) },
             title = { Text(title) },
@@ -66,6 +69,7 @@ fun MessageDialog(
     } else {
         // display a dialog without a description text
         AlertDialog(
+            modifier = Modifier.sampleDialogVisibilityTag(visibilityTag),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },
             title = { Text(title) },

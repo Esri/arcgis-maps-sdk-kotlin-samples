@@ -34,16 +34,18 @@ import androidx.compose.ui.window.Dialog
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 
 /**
- * Composable component to display an indeterminate loading dialog along with a [loadingMessage]
+ * Composable component to display an indeterminate loading dialog along with a [loadingMessage].
  */
 @Composable
 fun LoadingDialog(
     loadingMessage: String,
+    visibilityTag: String = SampleDialogVisibilityTag,
 ) {
     Dialog(
         onDismissRequest = { }
     ) {
         Surface(
+            modifier = Modifier.sampleDialogVisibilityTag(visibilityTag),
             tonalElevation = 4.dp,
             shape = RoundedCornerShape(16.dp)
         ) {
@@ -76,4 +78,3 @@ fun PreviewLoadingDialog() {
         LoadingDialog(loadingMessage = "Dialog loading message here")
     }
 }
-
