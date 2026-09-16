@@ -5,7 +5,6 @@
 
     <application>
         <activity
-            android:exported="true"
             android:name=".MainActivity"
             android:label="@string/orbit_camera_around_object_app_name">
 
