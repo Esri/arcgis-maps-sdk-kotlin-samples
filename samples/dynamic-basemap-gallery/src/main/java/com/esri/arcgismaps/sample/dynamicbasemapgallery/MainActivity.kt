@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.browsebuildingfloors
+package com.esri.arcgismaps.sample.dynamicbasemapgallery
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,10 +22,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.browsebuildingfloors.screens.BrowseBuildingFloorsScreen
-import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import com.esri.arcgismaps.sample.dynamicbasemapgallery.screens.DynamicBasemapGalleryScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -35,7 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SampleAppTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    BrowseBuildingFloorsScreen()
+                    DynamicBasemapGalleryScreen()
                 }
             }
         }

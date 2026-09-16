@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.browsebuildingfloors"
+    namespace = "com.esri.arcgismaps.sample.dynamicbasemapgallery"
 }
 
 dependencies {
     // Only module specific dependencies needed here
-    implementation(libs.arcgis.maps.kotlin.toolkit.indoors)
+    implementation(libs.arcgis.maps.kotlin.toolkit.basemapgallery)
 }
