@@ -18,6 +18,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=8776cfc26eed4485a03de6316826384c"],
     "relevant_apis": [
         "DictionaryRenderer",
         "DictionarySymbolStyle",
@@ -26,7 +27,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/components/ApplyDictionaryRendererToGraphicsOverlayViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertographicsoverlay/screens/ApplyDictionaryRendererToGraphicsOverlayScreen.kt"
     ],
     "title": "Apply dictionary renderer to graphics overlay"

@@ -16,6 +16,10 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": [
+        "https://www.arcgis.com/home/item.html?id=c78b149a1d52414682c86a5feeb13d30",
+        "https://www.arcgis.com/home/item.html?id=e0d41b4b409a49a5a7ba11939d8535dc"
+    ],
     "relevant_apis": [
         "DictionaryRenderer",
         "DictionarySymbolStyle",
@@ -23,8 +27,7 @@
         "Geodatabase"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/DownloadActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/applydictionaryrenderertofeaturelayer/MainActivity.kt"
     ],
     "title": "Apply dictionary renderer to feature layer"
 }

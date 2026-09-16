@@ -28,6 +28,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["https://arcgisruntime.maps.arcgis.com/home/item.html?id=248ea5112c8a46ee97fe3b8603d1e1dd"],
     "relevant_apis": [
         "LocationDataSource",
         "ModelSceneSymbol",
@@ -41,7 +42,6 @@
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/AugmentedRealityViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/RouteViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/components/SharedRepository.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/screens/RouteScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytonavigateroute/screens/AugmentedRealityScreen.kt",

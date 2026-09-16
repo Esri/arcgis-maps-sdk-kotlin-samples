@@ -21,6 +21,10 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": [
+        "https://www.arcgis.com/home/item.html?id=22c3083d4fa74e3e9b25adfc9f8c0496",
+        "https://www.arcgis.com/home/item.html?id=3424d442ebe54f3cbf34462382d3aebe"
+    ],
     "relevant_apis": [
         "GeocodeParameters",
         "GeocodeResult",
@@ -28,8 +32,7 @@
         "ReverseGeocodeParameters"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/geocodeoffline/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/geocodeoffline/DownloadActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/geocodeoffline/MainActivity.kt"
     ],
     "title": "Geocode offline"
 }

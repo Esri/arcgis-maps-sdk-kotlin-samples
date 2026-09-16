@@ -9,10 +9,6 @@
             android:label="@string/style_features_with_custom_dictionary_app_name">
             
         </activity>
-        <activity
-    android:name=".DownloadActivity"
-    android:exported="true"
-    android:label="@string/style_features_with_custom_dictionary_app_name" />
 </application>
 
 </manifest>

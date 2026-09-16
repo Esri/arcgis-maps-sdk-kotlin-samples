@@ -17,11 +17,10 @@
         "RasterLayer"
     ],
     "language": "kotlin",
-    "provision_from": [
-        "https://www.arcgis.com/home/item.html?id=cc68728b5904403ba637e1f1cd2995ae"
-    ],
-    "provision_to": [],
     "redirect_from": "",
+    "provision_from": ["https://www.arcgis.com/home/item.html?id=cc68728b5904403ba637e1f1cd2995ae"],
+    "provision_to": [],
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=cc68728b5904403ba637e1f1cd2995ae"],
     "relevant_apis": [
         "ColormapRenderer",
         "Raster",
@@ -30,7 +29,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/components/ApplyColormapRendererToRasterViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applycolormaprenderertoraster/screens/ApplyColormapRendererToRasterScreen.kt"
     ],
     "title": "Apply colormap renderer to raster"

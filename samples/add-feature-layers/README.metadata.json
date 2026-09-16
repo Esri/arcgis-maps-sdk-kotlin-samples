@@ -24,6 +24,11 @@
   ],
   "language": "kotlin",
   "redirect_from": "",
+    "offline_data": [
+        "https://www.arcgis.com/home/item.html?id=cb1b20748a9f4d128dad8a87244e3e37",
+        "https://www.arcgis.com/home/item.html?id=15a7cbd3af1e47cfa5d2c6b93dc44fc2",
+        "https://www.arcgis.com/home/item.html?id=68ec42517cdd439e81b036210483e8e7"
+    ],
   "relevant_apis": [
     "FeatureLayer",
     "GeoPackageFeatureTable",
@@ -35,7 +40,6 @@
   "snippets": [
     "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/components/AddFeatureLayersViewModel.kt",
     "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/MainActivity.kt",
-    "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/DownloadActivity.kt",
     "src/main/java/com/esri/arcgismaps/sample/addfeaturelayers/screens/AddFeatureLayersScreen.kt"
   ],
   "title": "Add feature layers"

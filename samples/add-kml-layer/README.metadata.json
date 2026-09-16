@@ -15,11 +15,10 @@
         "KmlLayer"
     ],
     "language": "kotlin",
-    "provision_from": [
-        "https://www.arcgis.com/home/item.html?id=324e4742820e46cfbe5029ff2c32cb1f"
-    ],
-    "provision_to": [],
     "redirect_from": "",
+    "provision_from": ["https://www.arcgis.com/home/item.html?id=324e4742820e46cfbe5029ff2c32cb1f"],
+    "provision_to": [],
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=324e4742820e46cfbe5029ff2c32cb1f"],
     "relevant_apis": [
         "KmlDataset",
         "KmlLayer"
@@ -27,7 +26,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addkmllayer/components/AddKMLLayerViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addkmllayer/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addkmllayer/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addkmllayer/screens/AddKMLLayerScreen.kt"
     ],
     "title": "Add KML layer"

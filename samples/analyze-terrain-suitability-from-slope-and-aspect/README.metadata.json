@@ -25,6 +25,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271"],
     "relevant_apis": [
         "AnalysisOverlay",
         "BooleanFieldFunction",
@@ -37,7 +38,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/components/AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/screens/AnalyzeTerrainSuitabilityFromSlopeAndAspectSupportingPane.kt",
         "src/main/java/com/esri/arcgismaps/sample/analyzeterrainsuitabilityfromslopeandaspect/screens/AnalyzeTerrainSuitabilityFromSlopeAndAspectScreen.kt"
     ],

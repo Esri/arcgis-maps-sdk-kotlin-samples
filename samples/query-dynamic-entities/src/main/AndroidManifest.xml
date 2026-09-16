@@ -10,10 +10,6 @@
             android:label="@string/query_dynamic_entities_app_name">
 
         </activity>
-        <activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/query_dynamic_entities_app_name" />
     </application>
 
 </manifest>

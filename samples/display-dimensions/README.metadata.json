@@ -17,13 +17,13 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=f5ff6f5556a945bca87ca513b8729a1e"],
     "relevant_apis": [
         "DimensionLayer",
         "MobileMapPackage"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/displaydimensions/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displaydimensions/DownloadActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/displaydimensions/MainActivity.kt"
     ],
     "title": "Display dimensions"
 }

@@ -3,12 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application><activity
-        android:name=".DownloadActivity"
-        android:exported="true"
-        android:label="@string/animate_images_with_image_overlay_app_name">
-
-    </activity>
+    <application>
         <activity
             android:name=".MainActivity"
             android:exported="true"

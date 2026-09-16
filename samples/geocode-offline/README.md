@@ -25,6 +25,10 @@ Type the address in the Search menu option or select from the list to `Geocode` 
 * LocatorTask
 * ReverseGeocodeParameters
 
+## Offline data
+
+This sample uses [locator data](https://www.arcgis.com/home/item.html?id=22c3083d4fa74e3e9b25adfc9f8c0496) and [supporting geocoding data](https://www.arcgis.com/home/item.html?id=3424d442ebe54f3cbf34462382d3aebe). They are downloaded from ArcGIS Online automatically.
+
 ## Tags
 
 geocode, geocoder, locator, offline, package, query, search
