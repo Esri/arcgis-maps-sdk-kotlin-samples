@@ -33,8 +33,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+
+const val DROP_DOWN_MENU_TAG = "DropDownMenu"
+const val DROP_DOWN_MENU_ITEM_TAG_PREFIX = "DropDownItem"
 
 /**
  * Composable component to simplify the usage of an [ExposedDropdownMenuBox].
@@ -45,6 +51,8 @@ fun DropDownMenuBox(
     textFieldValue: String,
     textFieldLabel: String,
     dropDownItemList: List<String>,
+    dropdownAnchorTag: String = DROP_DOWN_MENU_TAG,
+    dropDownItemTagPrefix: String? = DROP_DOWN_MENU_ITEM_TAG_PREFIX,
     onIndexSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -59,7 +67,9 @@ fun DropDownMenuBox(
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+            modifier = Modifier
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .sampleDropdownTag(dropdownAnchorTag)
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -67,6 +77,9 @@ fun DropDownMenuBox(
         ) {
             dropDownItemList.forEachIndexed { index, itemText ->
                 DropdownMenuItem(
+                    modifier = Modifier.sampleDropdownTag(
+                        dropDownItemTagPrefix?.let { "$it${index + 1}" }
+                    ),
                     text = { Text(itemText) },
                     onClick = {
                         onIndexSelected(index)
@@ -80,6 +93,12 @@ fun DropDownMenuBox(
         }
     }
 }
+
+private fun Modifier.sampleDropdownTag(tag: String?): Modifier =
+    if (tag == null) this else semantics {
+        testTag = tag
+        testTagsAsResourceId = true
+    }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
