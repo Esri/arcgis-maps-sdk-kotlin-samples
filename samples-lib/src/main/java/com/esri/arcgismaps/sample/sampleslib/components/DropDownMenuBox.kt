@@ -51,8 +51,6 @@ fun DropDownMenuBox(
     textFieldValue: String,
     textFieldLabel: String,
     dropDownItemList: List<String>,
-    dropdownAnchorTag: String = DROP_DOWN_MENU_TAG,
-    dropDownItemTagPrefix: String? = DROP_DOWN_MENU_ITEM_TAG_PREFIX,
     onIndexSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -69,7 +67,7 @@ fun DropDownMenuBox(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                .sampleDropdownTag(dropdownAnchorTag)
+                .sampleDropdownTag(DROP_DOWN_MENU_TAG)
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -77,9 +75,7 @@ fun DropDownMenuBox(
         ) {
             dropDownItemList.forEachIndexed { index, itemText ->
                 DropdownMenuItem(
-                    modifier = Modifier.sampleDropdownTag(
-                        dropDownItemTagPrefix?.let { "$it${index + 1}" }
-                    ),
+                    modifier = Modifier.sampleDropdownTag("$DROP_DOWN_MENU_ITEM_TAG_PREFIX${index}"),
                     text = { Text(itemText) },
                     onClick = {
                         onIndexSelected(index)
@@ -94,11 +90,10 @@ fun DropDownMenuBox(
     }
 }
 
-private fun Modifier.sampleDropdownTag(tag: String?): Modifier =
-    if (tag == null) this else semantics {
-        testTag = tag
-        testTagsAsResourceId = true
-    }
+private fun Modifier.sampleDropdownTag(tag: String): Modifier = semantics {
+    testTag = tag
+    testTagsAsResourceId = true
+}
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
