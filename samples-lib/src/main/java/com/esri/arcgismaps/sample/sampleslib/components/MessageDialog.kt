@@ -48,14 +48,13 @@ fun MessageDialog(
     title: String,
     description: String = "",
     icon: ImageVector = Icons.Filled.Info,
-    onDismissRequest: () -> Unit,
-    visibilityTag: String = SampleDialogVisibilityTag
+    onDismissRequest: () -> Unit
 ) {
     Log.e("SampleAlertMessage", "$title: $description")
     // display a dialog with a description text
     if (description.isNotEmpty()) {
         AlertDialog(
-            modifier = Modifier.sampleDialogVisibilityTag(visibilityTag),
+            modifier = Modifier.sampleDialogTestTag(),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(imageVector = icon, contentDescription = null) },
             title = { Text(title) },
@@ -69,7 +68,7 @@ fun MessageDialog(
     } else {
         // display a dialog without a description text
         AlertDialog(
-            modifier = Modifier.sampleDialogVisibilityTag(visibilityTag),
+            modifier = Modifier.sampleDialogTestTag(),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },
             title = { Text(title) },

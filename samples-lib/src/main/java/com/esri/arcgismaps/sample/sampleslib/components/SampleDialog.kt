@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -51,14 +52,13 @@ import androidx.compose.ui.window.DialogProperties
 fun SampleDialog(
     modifier: Modifier = Modifier,
     properties: DialogProperties = DialogProperties(),
-    visibilityTag: String = SampleDialogVisibilityTag,
     onDismissRequest: () -> Unit,
     content: @Composable (ColumnScope) -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest, properties = properties) {
         Column(
             modifier = modifier
-                .sampleDialogVisibilityTag(visibilityTag)
+                .sampleDialogTestTag()
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.background)
                 .padding(12.dp)
@@ -74,19 +74,16 @@ fun SampleDialog(
 }
 
 /**
- * Stable test tag for sample dialogs.
- *
- * UI tests can wait for this marker to appear and disappear instead of depending on dialog copy.
+ * Test tag for sample dialogs.
  */
-@Suppress("unused")
-const val SampleDialogVisibilityTag = "ArcGISSampleDialog:Dialog"
+const val SampleDialogTestTag = "SampleDialog"
 
 /**
- * Exposes a stable accessibility marker for a dialog root.
+ * Exposes the sample dialog test tag.
  */
-fun Modifier.sampleDialogVisibilityTag(tag: String): Modifier = semantics(mergeDescendants = true) {
-    contentDescription = tag
-    testTag = tag
+fun Modifier.sampleDialogTestTag(): Modifier = semantics {
+    testTag = SampleDialogTestTag
+    testTagsAsResourceId = true
 }
 
 @Preview(showBackground = true)

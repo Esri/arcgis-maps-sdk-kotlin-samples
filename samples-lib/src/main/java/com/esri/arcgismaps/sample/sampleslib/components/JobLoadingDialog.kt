@@ -58,10 +58,10 @@ fun JobLoadingDialog(
     isPauseJobEnabled: Boolean = false,
     cancelJobRequest: (Unit) -> Unit = {},
     pauseJobRequest: (Unit) -> Unit = {},
-    resumeJobRequest: (Unit) -> Unit = {},
-    visibilityTag: String = SampleDialogVisibilityTag,
+    resumeJobRequest: (Unit) -> Unit = {}
 ) {
     BasicAlertDialog(
+        modifier = Modifier.sampleDialogTestTag(),
         properties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = false
@@ -69,7 +69,6 @@ fun JobLoadingDialog(
         onDismissRequest = { /* No dismiss allowed, instead use 'Cancel job' button */ }
     ) {
         Surface(
-            modifier = Modifier.sampleDialogVisibilityTag(visibilityTag),
             tonalElevation = 12.dp,
             shape = RoundedCornerShape(16.dp)
         ) {

@@ -39,13 +39,12 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 @Composable
 fun LoadingDialog(
     loadingMessage: String,
-    visibilityTag: String = SampleDialogVisibilityTag,
 ) {
     Dialog(
         onDismissRequest = { }
     ) {
         Surface(
-            modifier = Modifier.sampleDialogVisibilityTag(visibilityTag),
+            modifier = Modifier.sampleDialogTestTag(),
             tonalElevation = 4.dp,
             shape = RoundedCornerShape(16.dp)
         ) {
