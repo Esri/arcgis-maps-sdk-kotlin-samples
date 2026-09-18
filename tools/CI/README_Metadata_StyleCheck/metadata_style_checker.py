@@ -130,6 +130,7 @@ class MetadataCreator:
         self.language = ''           # Populate from metadata.
         self.provision_from = False  # Default to False.
         self.provision_to = False    # Default to False.
+        self.offline_data = False    # Populate from the README Offline data section.
         self.redirect_from = []      # Default to empty list.
         self.relevant_apis = []      # Populate from README.
         self.snippets = []           # Populate from paths.
@@ -217,8 +218,7 @@ class MetadataCreator:
             self.keywords += self.relevant_apis
             if readme_parts.__contains__('Offline data'):
                 offline_data_section_index = readme_parts.index('Offline data') + 1
-                self.provision_from = parse_provision_from(readme_parts[offline_data_section_index])
-                self.provision_to = parse_provision_to(readme_parts[offline_data_section_index])
+                self.offline_data = parse_provision_from(readme_parts[offline_data_section_index])
 
         except Exception as err:
             print(f'Error parsing README - {self.readme_path} - {err}.')
@@ -248,6 +248,8 @@ class MetadataCreator:
         data["ignore"] = self.ignore
         data["images"] = self.images
         data["keywords"] = self.keywords
+        if self.offline_data != False:
+            data["offline_data"] = self.offline_data
         if self.provision_from != False:
             data["provision_from"] = self.provision_from
             data["provision_to"] = self.provision_to
@@ -288,6 +290,9 @@ def compare_one_metadata(folder_path: str):
         json_file.close()
     # The special rule not to compare the redirect_from.
     single_updater.redirect_from = json_data['redirect_from']
+    # Preserve existing provisioning fields while validating README offline_data.
+    single_updater.provision_from = json_data.get('provision_from', False)
+    single_updater.provision_to = json_data.get('provision_to', False)
     # The special rule to check for valid category, but not compare them to anything since the
     # category is only specified in the metadata.
     if (json_data['category'] in categories):

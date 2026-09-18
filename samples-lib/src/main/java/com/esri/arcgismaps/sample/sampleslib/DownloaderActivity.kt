@@ -16,288 +16,100 @@
 
 package com.esri.arcgismaps.sample.sampleslib
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import android.util.Log
-import android.view.View
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.esri.arcgismaps.sample.sampleslib.components.DownloaderScreen
 import androidx.lifecycle.lifecycleScope
-import com.arcgismaps.ArcGISEnvironment
-import com.arcgismaps.LoadStatus
-import com.arcgismaps.mapping.PortalItem
-import com.esri.arcgismaps.sample.sampleslib.databinding.ActivitySamplesBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapMerge
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.apache.commons.io.FileUtils
-import java.io.File
-import java.io.FileOutputStream
-import java.util.zip.ZipFile
-import kotlin.math.roundToInt
 
-@OptIn(ExperimentalCoroutinesApi::class)
-abstract class DownloaderActivity : AppCompatActivity() {
+open class DownloaderActivity : ComponentActivity() {
 
-    /**
-     * Returns the location of the download folder based on the [appName]
-     */
-    private fun getDownloadFolder(appName: String): String {
-        return getExternalFilesDir(null)?.path.toString() + File.separator + appName
-    }
+    private val downloadViewModel: DownloadViewModel by viewModels()
+    private var mainActivity: Intent? = null
 
-    // set up data binding for the activity
-    private val activitySamplesBinding: ActivitySamplesBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.activity_samples)
-    }
 
-    /**
-     * Gets the [provisionURLs] of the portal item to download at
-     * the [sampleName], once download completes it starts the [mainActivity]
-     */
-    fun downloadAndStartSample(
-        mainActivity: Intent,
-        sampleName: String,
-        provisionURLs: List<String>
-    ) {
-        // get the path to download files
-        val samplePath: String = getDownloadFolder(sampleName)
-        // start the download manager to automatically add the .mmpk file to the app
-        // alternatively, you can use ADB/Device File Explorer
-        lifecycleScope.launch {
-            sampleDownloadManager(provisionURLs, samplePath).collect { loadStatus ->
-                if (loadStatus is LoadStatus.Loaded) {
-                    // download complete, resuming sample
-                    startActivity(Intent(mainActivity))
-                    finish()
-                } else if (loadStatus is LoadStatus.FailedToLoad) {
-                    // show error message
-                    val errorMessage = loadStatus.error.message.toString()
-                    Snackbar.make(
-                        activitySamplesBinding.layout,
-                        errorMessage,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                    Log.e(this@DownloaderActivity.packageName, errorMessage)
-                }
-            }
-        }
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val sampleName = requireNotNull(
+            intent.getStringExtra(EXTRA_SAMPLE_NAME)
+        )
 
-    /**
-     * The downloadManager checks for provisioned data.
-     * If no provisioned data exists it performs a download using the [provisionURLs]
-     * at the [destinationPath]. The downloadManager clears the directory if user chooses
-     * to re-download the provisioned data.
-     */
-    private fun sampleDownloadManager(
-        provisionURLs: List<String>,
-        destinationPath: String,
-    ): Flow<LoadStatus> = flow {
+        val provisionUrls = requireNotNull(
+            intent.getStringArrayListExtra(EXTRA_PROVISION_URLS)
+        )
 
-        // the provision folder at the destination
-        val provisionFolder = File(destinationPath)
-        if (!provisionFolder.exists()) {
-            provisionFolder.mkdirs()
-        }
+        val mainActivityClassName = requireNotNull(
+            intent.getStringExtra(EXTRA_MAIN_ACTIVITY)
+        )
 
-        // suspends the coroutine until the dialog is resolved.
-        val downloadRequired: Boolean =
-            suspendCancellableCoroutine { downloadRequiredContinuation ->
-                // set up the alert dialog builder
-                val provisionQuestionDialog = MaterialAlertDialogBuilder(this@DownloaderActivity)
-                    .setTitle("Download data?")
-                    .setCancelable(false)
+        val targetActivity = Class
+            .forName(mainActivityClassName)
+            .asSubclass(Activity::class.java)
 
-                if (provisionFolder.list()?.isNotEmpty() == true) {
-                    // folder is not empty, prompt user to download again
-                    provisionQuestionDialog.setMessage(getString(R.string.already_provisioned))
-                    // if user taps "Re-download" data
-                    provisionQuestionDialog.setNeutralButton("Re-download data") { dialog, _ ->
-                        // dismiss provision dialog question dialog
-                        dialog.dismiss()
-                        // set to should download
-                        downloadRequiredContinuation.resume(true) { _, _, _ -> }
-                    }
-                    // if user taps "Continue" with existing folder
-                    provisionQuestionDialog.setPositiveButton("Continue") { dialog, _ ->
-                        // dismiss the provision question dialog
-                        dialog.dismiss()
-                        // set to should not download
-                        downloadRequiredContinuation.resume(false) { _, _, _ -> }
-                    }
-                }
-                // if folder does not exist, ask for download permission
-                else {
-                    // set require provisioning message
-                    provisionQuestionDialog.setMessage(getString(R.string.requires_provisioning))
-                    // if user taps "Download" button
-                    provisionQuestionDialog.setPositiveButton("Download") { dialog, _ ->
-                        // dismiss provision dialog
-                        dialog.dismiss()
-                        // set to should download
-                        downloadRequiredContinuation.resume(true) { _, _, _ -> }
-                    }
-                    provisionQuestionDialog.setNegativeButton("Exit") { dialog, _ ->
-                        dialog.dismiss()
-                        // close the sample
-                        finish()
-                    }
-                }
+        mainActivity = Intent(this, targetActivity)
 
-                // show the provision question dialog
-                provisionQuestionDialog.show()
-            }
+        downloadViewModel.configure(
+            sampleName = sampleName,
+            provisionUrls = provisionUrls
+        )
+        setContent {
+            MaterialTheme {
+                val uiState by downloadViewModel.uiState.collectAsState()
 
-        // check if the download should happen or not.
-        if (downloadRequired) {
-            // create a list to collect the status of each portal item download
-            val loadStatusResult = mutableListOf<LoadStatus>()
-            // download the portal item for each provisionURL
-            provisionURLs.asFlow().flatMapMerge { downloadPortalItem(it, provisionFolder) }
-                .collect { loadStatus ->
-                    // add the result of each download to the mutable list
-                    loadStatusResult.add(loadStatus)
-                    // check if we have all the results added
-                    if (loadStatusResult.size == provisionURLs.size) {
-                        // loop through to see if download has succeeded
-                        loadStatusResult.forEach {
-                            // emit failed if a download failed
-                            if (it is LoadStatus.FailedToLoad) {
-                                this.emit(it)
-                                return@collect
-                            }
+                LaunchedEffect(Unit) {
+                    downloadViewModel.launchSample.collect {
+                        mainActivity?.let { intent ->
+                            startActivity(Intent(intent))
+                            finish()
                         }
-                        // emit Loaded since download succeeded
-                        this.emit(LoadStatus.Loaded)
-                        return@collect
                     }
                 }
-
-        } else {
-            // using local data, to returns a loaded signal
-            this.emit(LoadStatus.Loaded)
+                DownloaderScreen(
+                    uiState = uiState,
+                    onDownload = downloadViewModel::startDownload,
+                    onCancel = {
+                        lifecycleScope.launch {
+                            downloadViewModel.cancelDownload()
+                            finish()
+                        }
+                    },
+                    onExit = ::finish
+                )
+            }
         }
     }
 
-    /**
-     * Handles the download process using the [provisionURL] at the [provisionLocation].
-     */
-    private fun downloadPortalItem(
-        provisionURL: String,
-        provisionLocation: File
-    ): Flow<LoadStatus> =
-        flow {
-
-            // build another dialog to show the progress of the download
-            val dialogView: View = layoutInflater.inflate(R.layout.download_dialog, null)
-            val loadingBuilder = MaterialAlertDialogBuilder(this@DownloaderActivity).apply {
-                setView(dialogView)
-                setCancelable(false)
-                create()
-            }
-            // download progress indicator layout
-            val downloadProgressLayout = dialogView.findViewById<View>(R.id.downloadLayout)
-            // show progress indicator for determinate downloads
-            val progressIndicator: LinearProgressIndicator =
-                dialogView.findViewById(R.id.downloadProgressIndicator)
-            // show circular spinner for indeterminate downloads
-            val circularSpinner: CircularProgressIndicator =
-                dialogView.findViewById(R.id.downloadCircularIndicator)
-            // display a percentage text of the download progress
-            val progressTV: TextView = dialogView.findViewById(R.id.downloadProgressTV)
-
-            // show the loading dialog
-            val loadingDialog = loadingBuilder.show()
-            // set cancel button for the loading dialog
-            val cancelButton = dialogView.findViewById<View>(R.id.cancelButton)
-            cancelButton.setOnClickListener {
-                loadingDialog.dismiss()
-                //re-start sample to show the dialog again
-                this@DownloaderActivity.recreate()
-            }
-            // delete folder/file prior to downloading data
-            FileUtils.cleanDirectory(provisionLocation)
-            // get the PortalItem using the provision URL
-            val portalItem = PortalItem(provisionURL)
-            // load the PortalItem
-            val loadResult = portalItem.load()
-            loadResult.getOrElse {
-                // close dialog and emit status
-                loadingDialog.dismiss()
-                emit(LoadStatus.FailedToLoad(it))
-                return@flow
-            }
-            // set up the file at the download path
-            val destinationFile = File(provisionLocation.path, portalItem.name)
-            // set up the download URL
-            val downloadURL =
-                "${portalItem.portal.url}/sharing/rest/content/items/${portalItem.itemId}/data"
-            // get the data of the PortalItem
-            ArcGISEnvironment.arcGISHttpClient.download(
-                url = downloadURL,
-                destinationFile = destinationFile
-            ) { totalBytes, bytesRead ->
-                if (totalBytes != null) {
-                    val percentage = ((100.0 * bytesRead) / totalBytes).roundToInt()
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        // show the download progress layout
-                        downloadProgressLayout.visibility = View.VISIBLE
-                        circularSpinner.visibility = View.GONE
-                        progressIndicator.progress = percentage
-                        progressTV.text = "$percentage%"
-                    }
-                } else {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        // show the indeterminate loading spinner
-                        downloadProgressLayout.visibility = View.GONE
-                        circularSpinner.visibility = View.VISIBLE
-                    }
-                }
-            }.onSuccess {
-                // unzip the file if it is a .zip
-                if (portalItem.name.contains(".zip")) {
-                    if (!provisionLocation.exists()) {
-                        provisionLocation.mkdirs()
-                    }
-                    try {
-                        ZipFile(destinationFile).use { zip ->
-                            zip.entries().asSequence().forEach { entry ->
-                                val outputFile = File(provisionLocation, entry.name)
-                                if (entry.isDirectory) {
-                                    outputFile.mkdirs()
-                                } else {
-                                    outputFile.parentFile?.mkdirs()
-                                    zip.getInputStream(entry).use { input ->
-                                        FileOutputStream(outputFile).use { output ->
-                                            input.copyTo(output)
-                                        }
-                                    }
-                                }
-                            }
-                            FileUtils.delete(destinationFile)
-                        }
-                    } catch (e: Exception) {
-                       Log.d("DownloaderActivity", "Error unzipping file: ${e.message}")
-                    }
-                }
-
-                // close dialog and emit status
-                loadingDialog.dismiss()
-                emit(LoadStatus.Loaded)
-            }.onFailure {
-                // close dialog and emit status
-                loadingDialog.dismiss()
-                emit(LoadStatus.FailedToLoad(it))
+    companion object {
+        private const val EXTRA_SAMPLE_ID = "extra_sample_id"
+        private const val EXTRA_SAMPLE_NAME = "extra_sample_name"
+        private const val EXTRA_PROVISION_URLS = "extra_provision_urls"
+        private const val EXTRA_MAIN_ACTIVITY = "extra_main_activity"
+        fun createIntent(
+            context: Context,
+            sampleId: String,
+            sampleName: String,
+            provisionUrls: List<String>,
+            mainActivityClassName: String
+        ): Intent {
+            return Intent(context, DownloaderActivity::class.java).apply {
+                putExtra(EXTRA_SAMPLE_ID, sampleId)
+                putExtra(EXTRA_SAMPLE_NAME, sampleName)
+                putStringArrayListExtra(
+                    EXTRA_PROVISION_URLS,
+                    ArrayList(provisionUrls)
+                )
+                putExtra(EXTRA_MAIN_ACTIVITY, mainActivityClassName)
             }
         }
+    }
 }
+

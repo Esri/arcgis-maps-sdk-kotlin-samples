@@ -18,11 +18,10 @@
         "Geodatabase"
     ],
     "language": "kotlin",
-    "provision_from": [
-        "https://www.arcgis.com/home/item.html?id=74c0c9fa80f4498c9739cc42531e9948"
-    ],
-    "provision_to": [],
     "redirect_from": "",
+    "provision_from": ["https://www.arcgis.com/home/item.html?id=74c0c9fa80f4498c9739cc42531e9948"],
+    "provision_to": [],
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=74c0c9fa80f4498c9739cc42531e9948"],
     "relevant_apis": [
         "AnnotationLayer",
         "Feature",
@@ -32,7 +31,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/components/EditFeaturesWithFeatureLinkedAnnotationViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/editfeatureswithfeaturelinkedannotation/screens/EditFeaturesWithFeatureLinkedAnnotationScreen.kt"
     ],
     "title": "Edit features with feature-linked annotation"

@@ -24,6 +24,7 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
+import com.esri.arcgismaps.sample.sampleslib.DownloaderActivity
 import kotlinx.serialization.Serializable
 
 /**
@@ -31,21 +32,25 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Sample(
+    val id: String,
     val name: String,
     val mainActivity: String,
     val codeFiles: List<CodeFile>,
     val readMe: String,
     val screenshotURL: String,
     val url: String,
+    val offlineDataUrls: List<String>,
     val metadata: SampleMetadata,
     val isFavorite: Boolean = false,
     var score: Double = 0.0
 ) {
     companion object {
         val PREVIEW_INSTANCE = Sample(
+            id = "",
             name = "Analyze hotspots",
             codeFiles = listOf(CodeFile("", "")),
             url = "",
+            offlineDataUrls = emptyList(),
             readMe = "",
             screenshotURL = "",
             metadata = SampleMetadata(
@@ -57,6 +62,7 @@ data class Sample(
                 relevantApis = listOf(""),
                 codePaths = listOf(""),
                 sampleCategory = SampleCategory.ANALYSIS,
+                offlineDataUrls = listOf(""),
                 title = "Analyze hotspots"
             ),
             isFavorite = false,
@@ -100,28 +106,19 @@ data class Sample(
         }
 
         /**
-         * Return's a path to DownloadActivity if one exists, otherwise returns the path to
-         * MainActivity.
+         * Returns the path to the sample's MainActivity.
          */
         fun loadActivityPath(codePaths: List<String>): String {
-            // Return a path to DownloadActivity if one exists
-            codePaths.find { it.contains("DownloadActivity.kt") }?.let { samplePath ->
-                val activityPath = samplePath
-                    .substring(14, samplePath.indexOf("."))
-                    .replace("/".toRegex(), ".")
-                    .replace("\\", "")
-                return activityPath
-            }
+            val mainActivityPath = codePaths.find { it.endsWith("MainActivity.kt") }
+                ?: error("MainActivity.kt not found in sample metadata.")
+            return mainActivityPath.toActivityClassName()
+        }
 
-            // Otherwise return the path the MainActivity
-            codePaths.find { it.contains("MainActivity.kt") }.apply {
-                val samplePath = this.toString()
-                val activityPath = samplePath
-                    .substring(14, samplePath.indexOf("."))
-                    .replace("/".toRegex(), ".")
-                    .replace("\\", "")
-                return activityPath
-            }
+        private fun String.toActivityClassName(): String {
+            return replace('\\', '/')
+                .removePrefix("src/main/java/")
+                .removeSuffix(".kt")
+                .replace('/', '.')
         }
     }
 }
@@ -130,17 +127,31 @@ data class Sample(
  * Starts the sample activity.
  */
 suspend fun Sample.start(context: Context) {
-    // Revoke previously configured ArcGISEnvironment settings OAuth tokens/Credentials
+    // Revoke previously configured OAuth tokens and credentials.
     AuthenticatorState().signOut()
 
-    // Authentication with an API key or named user is
-    // required to access basemaps and other location services
+    // Configure the ArcGIS API key.
     ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
-    // Obtain and launch the sample activity
-    val className = Class.forName(mainActivity) as Class<*>
-    val sampleLauncherActivity = context.getActivityOrNull() ?: return
-    sampleLauncherActivity.startActivity(Intent(sampleLauncherActivity, className))
+    val sampleActivity = context.getActivityOrNull() ?: return
+
+    val mainActivityClass = Class.forName(mainActivity)
+
+    val launchIntent = if (offlineDataUrls.isEmpty()) {
+        // This sample does not require downloaded data.
+        Intent(sampleActivity, mainActivityClass)
+    } else {
+        // This sample requires offline data.
+        DownloaderActivity.createIntent(
+            context = sampleActivity,
+            sampleId = id,
+            sampleName = name,
+            provisionUrls = offlineDataUrls,
+            mainActivityClassName = mainActivity
+        )
+    }
+
+    sampleActivity.startActivity(launchIntent)
 }
 
 /**

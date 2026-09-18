@@ -25,6 +25,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271"],
     "relevant_apis": [
         "ContinuousField",
         "GeometryEngine",
@@ -37,7 +38,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/components/ShowLineOfSightAnalysisInMapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/screens/LineOfSightSupportingContent.kt",
         "src/main/java/com/esri/arcgismaps/sample/showlineofsightanalysisinmap/screens/ShowLineOfSightAnalysisInMapScreen.kt"

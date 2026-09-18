@@ -20,12 +20,16 @@
         "RasterLayer"
     ],
     "language": "kotlin",
+    "redirect_from": "",
     "provision_from": [
         "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd",
         "https://www.arcgis.com/home/item.html?id=b051f5c3e01048f3bf11c59b41507896"
     ],
     "provision_to": [],
-    "redirect_from": "",
+    "offline_data": [
+        "https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd",
+        "https://www.arcgis.com/home/item.html?id=b051f5c3e01048f3bf11c59b41507896"
+    ],
     "relevant_apis": [
         "BlendRenderer",
         "ColorRamp",
@@ -35,7 +39,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/components/ApplyBlendRendererToHillshadeViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applyblendrenderertohillshade/screens/ApplyBlendRendererToHillshadeScreen.kt"
     ],
     "title": "Apply blend renderer to hillshade"

@@ -39,6 +39,10 @@ Tap "Navigate" to simulate traveling and to receive directions from a preset sta
 * Stop
 * VoiceGuidance
 
+## Offline data
+
+This sample uses [transport network data](https://www.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 The [San Diego Geodatabase](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca) route taken in this sample goes from the San Diego Convention Center, site of the annual Esri User Conference, to the Fleet Science Center, San Diego.

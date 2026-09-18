@@ -20,6 +20,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["https://arcgisruntime.maps.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"],
     "relevant_apis": [
         "Raster",
         "RasterLayer"
@@ -27,7 +28,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/components/AddRasterFromFileViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addrasterfromfile/screens/AddRasterFromFileScreen.kt"
     ],
     "title": "Add raster from file"

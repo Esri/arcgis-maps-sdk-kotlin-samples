@@ -19,6 +19,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["https://www.arcgis.com/home/item.html?id=7dd2f97bb007466ea939160d0de96a9d"],
     "relevant_apis": [
         "ArcGISScene",
         "MobileScenePackage",
@@ -26,7 +27,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/components/SceneViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/displayscenefrommobilescenepackage/screens/MainScreen.kt"
     ],
