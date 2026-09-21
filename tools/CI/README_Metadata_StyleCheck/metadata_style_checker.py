@@ -7,6 +7,7 @@ import typing
 import argparse
 
 from pathlib import Path
+from urllib.parse import urlparse, parse_qs
 
 # region Global sets
 # A set of category folder names in current sample viewer.
