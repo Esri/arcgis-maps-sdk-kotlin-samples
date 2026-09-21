@@ -219,7 +219,6 @@ class MetadataCreator:
             if readme_parts.__contains__('Offline data'):
                 offline_data_section_index = readme_parts.index('Offline data') + 1
                 self.offline_data = [parse_qs(urlparse(item_url).query)["id"][0] for item_url in parse_provision_from(readme_parts[offline_data_section_index])]
-
         except Exception as err:
             print(f'Error parsing README - {self.readme_path} - {err}.')
             raise err
