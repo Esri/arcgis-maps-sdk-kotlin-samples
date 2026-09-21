@@ -28,7 +28,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=a8a942c228af4fac96baa78ad60f511f"],
+    "offline_data": ["a8a942c228af4fac96baa78ad60f511f"],
     "relevant_apis": [
         "CustomDynamicEntityDataSource.EntityFeedProvider",
         "DynamicEntity",

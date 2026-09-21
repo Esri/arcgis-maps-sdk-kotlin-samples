@@ -14,7 +14,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://arcgisruntime.maps.arcgis.com/home/item.html?id=34da965ca51d4c68aa9b3a38edb29e00"],
+    "offline_data": ["34da965ca51d4c68aa9b3a38edb29e00"],
     "relevant_apis": [
         "PointCloudLayer"
     ],

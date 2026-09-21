@@ -20,7 +20,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://arcgisruntime.maps.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"],
+    "offline_data": ["7c4c679ab06a4df19dc497f577f111bd"],
     "relevant_apis": [
         "Raster",
         "RasterLayer"

@@ -26,7 +26,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271"],
+    "offline_data": ["aa97788593e34a32bcaae33947fdc271"],
     "relevant_apis": [
         "BooleanFieldFunction",
         "ColorRamp",

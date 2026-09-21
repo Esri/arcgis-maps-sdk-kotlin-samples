@@ -17,7 +17,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=f5ff6f5556a945bca87ca513b8729a1e"],
+    "offline_data": ["f5ff6f5556a945bca87ca513b8729a1e"],
     "relevant_apis": [
         "DimensionLayer",
         "MobileMapPackage"

@@ -33,7 +33,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=0fd3a39660d54c12b05d5f81f207dffd"],
+    "offline_data": ["0fd3a39660d54c12b05d5f81f207dffd"],
     "relevant_apis": [
         "FeatureLayer",
         "Geometry",

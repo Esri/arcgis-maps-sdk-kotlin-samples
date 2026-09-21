@@ -20,7 +20,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=7dd2f97bb007466ea939160d0de96a9d"],
+    "offline_data": ["7dd2f97bb007466ea939160d0de96a9d"],
     "relevant_apis": [
         "ArcGISScene",
         "TableTopSceneView"

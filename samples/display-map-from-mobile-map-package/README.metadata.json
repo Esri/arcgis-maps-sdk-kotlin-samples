@@ -19,7 +19,7 @@
     "redirect_from": [
         "/android/latest/sample-code/open-mobile-map-package.htm"
     ],
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=e1f3a7254cb845b09450f54937c16061"],
+    "offline_data": ["e1f3a7254cb845b09450f54937c16061"],
     "relevant_apis": [
         "MapView",
         "MobileMapPackage"

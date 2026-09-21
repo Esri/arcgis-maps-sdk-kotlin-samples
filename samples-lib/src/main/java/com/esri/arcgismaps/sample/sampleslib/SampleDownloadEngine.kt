@@ -17,9 +17,13 @@
 package com.esri.arcgismaps.sample.sampleslib
 
 import com.arcgismaps.ArcGISEnvironment
+import com.arcgismaps.httpcore.FileDownloadTask
 import com.arcgismaps.mapping.PortalItem
+import com.arcgismaps.portal.Portal
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -30,12 +34,14 @@ import kotlin.math.roundToInt
 
 internal class SampleDownloadEngine {
 
+    private var downLoadTask : FileDownloadTask? = null
+
     suspend fun download(
-        provisionUrls: List<String>,
+        itemIds: List<String>,
         destinationFolder: File,
         onProgress: (Int?) -> Unit
     ) {
-        require(provisionUrls.isNotEmpty()) { "At least one provision URL is required." }
+        require(itemIds.isNotEmpty()) { "At least one provision URL is required." }
 
         val stagingFolder = File(destinationFolder.parentFile, "${destinationFolder.name}.partial")
         if (stagingFolder.exists()) {
@@ -44,13 +50,13 @@ internal class SampleDownloadEngine {
         stagingFolder.mkdirs()
 
         try {
-            provisionUrls.forEachIndexed { index, provisionUrl ->
+            itemIds.forEachIndexed { index, provisionUrl ->
                 coroutineContext.ensureActive()
                 downloadPortalItem(
-                    provisionUrl = provisionUrl,
+                    itemId = provisionUrl,
                     destinationFolder = stagingFolder,
                     itemIndex = index,
-                    itemCount = provisionUrls.size,
+                    itemCount = itemIds.size,
                     onProgress = onProgress
                 )
             }
@@ -63,28 +69,51 @@ internal class SampleDownloadEngine {
     }
 
     private suspend fun downloadPortalItem(
-        provisionUrl: String,
+        itemId: String,
         destinationFolder: File,
         itemIndex: Int,
         itemCount: Int,
         onProgress: (Int?) -> Unit
     ) {
-        val portalItem = PortalItem(provisionUrl)
+        val portalItem = PortalItem(
+            portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
+            itemId = itemId
+        )
         portalItem.load().getOrThrow()
+
+
 
         val destinationFile = File(destinationFolder, portalItem.name)
         val downloadUrl =
             "${portalItem.portal.url}/sharing/rest/content/items/${portalItem.itemId}/data"
 
-        ArcGISEnvironment.arcGISHttpClient.download(
+        downLoadTask = ArcGISEnvironment.arcGISHttpClient.downloadWithTask(
             url = downloadUrl,
             destinationFile = destinationFile
-        ) { totalBytes, bytesRead ->
-            val progress = totalBytes?.let {
-                (((itemIndex + bytesRead.toDouble() / it) / itemCount) * 100).roundToInt()
+        )
+        try {
+            downLoadTask?.start()
+
+            val progressJob = CoroutineScope(Dispatchers.Main).launch {
+                downLoadTask?.progress?.collect { info ->
+                    val overallProgress = if (info.totalBytes == null || info.totalBytes == 0L) {
+                        null
+                    } else {
+                        val currentItemProgress = info.bytesRead.toDouble() / info.totalBytes!!.toDouble()
+                        (((itemIndex + currentItemProgress) / itemCount) * 100.0).roundToInt()
+                    }
+
+                    onProgress(overallProgress)
+                }
             }
-            onProgress(progress)
-        }.getOrThrow()
+
+            downLoadTask?.result()?.getOrThrow()
+            progressJob.cancel()
+
+            downLoadTask?.result()?.getOrThrow()
+        } finally {
+            downLoadTask = null
+        }
 
         if (portalItem.name.endsWith(".zip", ignoreCase = true)) {
             unzip(destinationFile, destinationFolder)
@@ -120,6 +149,11 @@ internal class SampleDownloadEngine {
             FileUtils.copyDirectory(stagingFolder, destinationFolder)
             FileUtils.deleteDirectory(stagingFolder)
         }
+    }
+
+    fun cancelDownLoad(){
+        downLoadTask?.cancel()
+        downLoadTask = null
     }
 
     suspend fun delete(destinationFolder: File) {

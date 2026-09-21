@@ -46,23 +46,19 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
     private val launchEvents = Channel<Unit>(Channel.BUFFERED)
     val launchSample = launchEvents.receiveAsFlow()
 
-    private var provisionUrls: List<String> = emptyList()
+    private var itemIds: List<String> = emptyList()
     private var destinationFolder: File? = null
     private var downloadJob: Job? = null
 
     fun configure(sampleName: String, provisionUrls: List<String>) {
         if (destinationFolder != null) return
 
-        this.provisionUrls = provisionUrls
+        this.itemIds = provisionUrls
         destinationFolder = File(
             getApplication<Application>().getExternalFilesDir(null),
             sampleName
         )
-        if (destinationFolder?.list()?.isNotEmpty() == true) {
-            launchEvents.trySend(Unit)
-        } else {
-            startDownload()
-        }
+        startDownload()
     }
 
     fun startDownload() {
@@ -72,7 +68,7 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
         downloadJob = viewModelScope.launch {
             _uiState.value = DownloadUiState.Downloading(progress = null)
             try {
-                engine.download(provisionUrls, destination) { progress ->
+                engine.download(itemIds, destination) { progress ->
                     _uiState.value = DownloadUiState.Downloading(progress)
                 }
                 launchEvents.send(Unit)
@@ -87,6 +83,7 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
     }
 
     suspend fun cancelDownload() {
+        engine.cancelDownLoad()
         downloadJob?.cancel()
         downloadJob?.join()
 

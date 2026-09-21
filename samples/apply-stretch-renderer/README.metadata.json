@@ -32,7 +32,7 @@
     "redirect_from": "",
     "provision_from": ["https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"],
     "provision_to": [],
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd"],
+    "offline_data": ["7c4c679ab06a4df19dc497f577f111bd"],
     "relevant_apis": [
         "ColorRamp",
         "MinMaxStretchParameters",

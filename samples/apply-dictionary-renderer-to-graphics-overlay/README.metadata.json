@@ -18,7 +18,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=8776cfc26eed4485a03de6316826384c"],
+    "offline_data": ["8776cfc26eed4485a03de6316826384c"],
     "relevant_apis": [
         "DictionaryRenderer",
         "DictionarySymbolStyle",

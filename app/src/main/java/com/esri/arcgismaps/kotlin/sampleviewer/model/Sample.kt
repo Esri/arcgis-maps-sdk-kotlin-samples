@@ -32,25 +32,21 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Sample(
-    val id: String,
     val name: String,
     val mainActivity: String,
     val codeFiles: List<CodeFile>,
     val readMe: String,
     val screenshotURL: String,
     val url: String,
-    val offlineDataUrls: List<String>,
     val metadata: SampleMetadata,
     val isFavorite: Boolean = false,
     var score: Double = 0.0
 ) {
     companion object {
         val PREVIEW_INSTANCE = Sample(
-            id = "",
             name = "Analyze hotspots",
             codeFiles = listOf(CodeFile("", "")),
             url = "",
-            offlineDataUrls = emptyList(),
             readMe = "",
             screenshotURL = "",
             metadata = SampleMetadata(
@@ -136,17 +132,20 @@ suspend fun Sample.start(context: Context) {
     val sampleActivity = context.getActivityOrNull() ?: return
 
     val mainActivityClass = Class.forName(mainActivity)
+    val hasOfflineData = sampleActivity.getExternalFilesDir(null)
+        ?.resolve(name)
+        ?.list()
+        ?.isNotEmpty() == true
 
-    val launchIntent = if (offlineDataUrls.isEmpty()) {
-        // This sample does not require downloaded data.
+    val launchIntent = if (metadata.offlineDataUrls.isEmpty() || hasOfflineData) {
+        // This sample does not require a download.
         Intent(sampleActivity, mainActivityClass)
     } else {
-        // This sample requires offline data.
+        // This sample requires downloaded data.
         DownloaderActivity.createIntent(
             context = sampleActivity,
-            sampleId = id,
             sampleName = name,
-            provisionUrls = offlineDataUrls,
+            provisionUrls = metadata.offlineDataUrls,
             mainActivityClassName = mainActivity
         )
     }

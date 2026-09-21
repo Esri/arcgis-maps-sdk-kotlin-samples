@@ -16,7 +16,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=681d6f7694644709a7c830ec57a2d72b"],
+    "offline_data": ["681d6f7694644709a7c830ec57a2d72b"],
     "relevant_apis": [
         "DistanceCompositeSceneSymbol",
         "DistanceSymbolRange",

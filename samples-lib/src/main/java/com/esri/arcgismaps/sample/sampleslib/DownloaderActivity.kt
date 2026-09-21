@@ -89,19 +89,16 @@ open class DownloaderActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val EXTRA_SAMPLE_ID = "extra_sample_id"
         private const val EXTRA_SAMPLE_NAME = "extra_sample_name"
         private const val EXTRA_PROVISION_URLS = "extra_provision_urls"
         private const val EXTRA_MAIN_ACTIVITY = "extra_main_activity"
         fun createIntent(
             context: Context,
-            sampleId: String,
             sampleName: String,
             provisionUrls: List<String>,
             mainActivityClassName: String
         ): Intent {
             return Intent(context, DownloaderActivity::class.java).apply {
-                putExtra(EXTRA_SAMPLE_ID, sampleId)
                 putExtra(EXTRA_SAMPLE_NAME, sampleName)
                 putStringArrayListExtra(
                     EXTRA_PROVISION_URLS,

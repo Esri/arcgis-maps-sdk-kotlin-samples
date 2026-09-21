@@ -20,7 +20,7 @@
     "redirect_from": "",
     "provision_from": ["https://www.arcgis.com/home/item.html?id=cc68728b5904403ba637e1f1cd2995ae"],
     "provision_to": [],
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=cc68728b5904403ba637e1f1cd2995ae"],
+    "offline_data": ["cc68728b5904403ba637e1f1cd2995ae"],
     "relevant_apis": [
         "ColormapRenderer",
         "Raster",

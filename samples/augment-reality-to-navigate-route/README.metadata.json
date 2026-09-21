@@ -28,7 +28,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://arcgisruntime.maps.arcgis.com/home/item.html?id=248ea5112c8a46ee97fe3b8603d1e1dd"],
+    "offline_data": ["248ea5112c8a46ee97fe3b8603d1e1dd"],
     "relevant_apis": [
         "LocationDataSource",
         "ModelSceneSymbol",

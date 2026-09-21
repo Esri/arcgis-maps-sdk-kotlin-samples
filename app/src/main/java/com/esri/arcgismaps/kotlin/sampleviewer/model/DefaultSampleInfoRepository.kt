@@ -73,12 +73,10 @@ object DefaultSampleInfoRepository : SampleInfoRepository {
 
                     // Create and add a new sample metadata data class object to the list
                     val sample = Sample(
-                        id = sampleFolderName,
                         name = metadata.title,
                         codeFiles = loadCodeFiles(fileMap),
                         url = "https://developers.arcgis.com/kotlin/sample-code/" +
                                 metadata.title.replace(" ", "-").lowercase(),
-                        offlineDataUrls = metadata.offlineDataUrls,
                         readMe = loadReadMe(fileMap),
                         screenshotURL = loadScreenshot(
                             sampleName = metadata.title,

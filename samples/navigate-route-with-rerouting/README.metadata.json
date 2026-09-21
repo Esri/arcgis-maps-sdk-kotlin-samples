@@ -29,7 +29,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "offline_data": ["https://www.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca"],
+    "offline_data": ["df193653ed39449195af0c9725701dca"],
     "relevant_apis": [
         "DestinationStatus",
         "DirectionManeuver",
