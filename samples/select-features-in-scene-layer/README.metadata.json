@@ -1,0 +1,36 @@
+{
+    "category": "Scenes",
+    "description": "Identify features in a scene to select.",
+    "formal_name": "SelectFeaturesInSceneLayer",
+    "ignore": false,
+    "images": [
+        "select-features-in-scene-layer.png"
+    ],
+    "keywords": [
+        "3D",
+        "buildings",
+        "identify",
+        "model",
+        "select",
+        "ArcGISSceneLayer",
+        "ArcGISScene",
+        "Scene",
+        "SceneView",
+        "SceneViewProxy"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "ArcGISSceneLayer",
+        "ArcGISScene",
+        "Scene",
+        "SceneView",
+        "SceneViewProxy"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/selectfeaturesinscenelayer/components/SelectFeaturesInSceneLayerViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/selectfeaturesinscenelayer/screens/SelectFeaturesInSceneLayerScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/selectfeaturesinscenelayer/MainActivity.kt"
+    ],
+    "title": "Select features in scene layer"
+}
