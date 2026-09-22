@@ -21,15 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.data.ArcGISFeature
-import com.arcgismaps.data.Feature
-import com.arcgismaps.geometry.GeometryType
 import com.arcgismaps.mapping.ArcGISScene
 import com.arcgismaps.mapping.ArcGISTiledElevationSource
 import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Surface
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.ArcGISSceneLayer
-import com.arcgismaps.mapping.layers.FeatureLayer
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
 import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
