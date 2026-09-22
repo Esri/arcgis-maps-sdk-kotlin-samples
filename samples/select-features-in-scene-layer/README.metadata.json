@@ -11,21 +11,23 @@
         "buildings",
         "identify",
         "model",
+        "query",
+        "search",
         "select",
         "ArcGISSceneLayer",
-        "ArcGISScene",
         "Scene",
         "SceneView",
-        "SceneViewProxy"
+        "SceneViewProxy",
+        "SceneViewReader"
     ],
     "language": "kotlin",
     "redirect_from": "",
     "relevant_apis": [
         "ArcGISSceneLayer",
-        "ArcGISScene",
         "Scene",
         "SceneView",
-        "SceneViewProxy"
+        "SceneViewProxy",
+        "SceneViewReader"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/selectfeaturesinscenelayer/components/SelectFeaturesInSceneLayerViewModel.kt",
