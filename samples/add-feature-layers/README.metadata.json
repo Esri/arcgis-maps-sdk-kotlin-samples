@@ -28,7 +28,7 @@
       "cb1b20748a9f4d128dad8a87244e3e37",
       "15a7cbd3af1e47cfa5d2c6b93dc44fc2",
       "68ec42517cdd439e81b036210483e8e7"
-    ],
+  ],
   "relevant_apis": [
     "FeatureLayer",
     "GeoPackageFeatureTable",

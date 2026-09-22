@@ -29,7 +29,7 @@ data class SampleMetadata(
     val description: String,
     @SerialName("formal_name") val formalName: String,
     @SerialName("offline_data")
-    val offlineDataUrls: List<String> = emptyList(),
+    val offlineDataIDs: List<String> = emptyList(),
     val ignore: Boolean?,
     @SerialName("images") val imagePaths: List<String>,
     val keywords: List<String>,

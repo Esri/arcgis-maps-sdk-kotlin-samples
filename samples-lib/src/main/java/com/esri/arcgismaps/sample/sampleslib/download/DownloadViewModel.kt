@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.sampleslib
+package com.esri.arcgismaps.sample.sampleslib.download
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -37,7 +37,7 @@ internal sealed interface DownloadUiState {
 
 internal class DownloadViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val engine = SampleDownloadEngine()
+    private val engine = SampleDownloadManager()
     private val _uiState = MutableStateFlow<DownloadUiState>(
         DownloadUiState.WaitingForConfiguration
     )

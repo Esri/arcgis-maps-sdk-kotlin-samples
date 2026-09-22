@@ -24,7 +24,7 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
-import com.esri.arcgismaps.sample.sampleslib.DownloaderActivity
+import com.esri.arcgismaps.sample.sampleslib.download.DownloaderActivity
 import kotlinx.serialization.Serializable
 
 /**
@@ -58,7 +58,7 @@ data class Sample(
                 relevantApis = listOf(""),
                 codePaths = listOf(""),
                 sampleCategory = SampleCategory.ANALYSIS,
-                offlineDataUrls = listOf(""),
+                offlineDataIDs = listOf(""),
                 title = "Analyze hotspots"
             ),
             isFavorite = false,
@@ -110,6 +110,9 @@ data class Sample(
             return mainActivityPath.toActivityClassName()
         }
 
+        /**
+         * Converts a file path to an activity class name
+         */
         private fun String.toActivityClassName(): String {
             return replace('\\', '/')
                 .removePrefix("src/main/java/")
@@ -129,28 +132,28 @@ suspend fun Sample.start(context: Context) {
     // Configure the ArcGIS API key.
     ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
-    val sampleActivity = context.getActivityOrNull() ?: return
+    val sampleViewerActivity = context.getActivityOrNull() ?: return
 
-    val mainActivityClass = Class.forName(mainActivity)
-    val hasOfflineData = sampleActivity.getExternalFilesDir(null)
+    val mainActivityClass = Class.forName(mainActivity) as Class<*>
+    val isProvisioned = sampleViewerActivity.getExternalFilesDir(null)
         ?.resolve(name)
         ?.list()
         ?.isNotEmpty() == true
 
-    val launchIntent = if (metadata.offlineDataUrls.isEmpty() || hasOfflineData) {
+    val launchIntent = if (metadata.offlineDataIDs.isEmpty() || isProvisioned) {
         // This sample does not require a download.
-        Intent(sampleActivity, mainActivityClass)
+        Intent(sampleViewerActivity, mainActivityClass)
     } else {
         // This sample requires downloaded data.
         DownloaderActivity.createIntent(
-            context = sampleActivity,
+            context = sampleViewerActivity,
             sampleName = name,
-            provisionUrls = metadata.offlineDataUrls,
+            provisionUrls = metadata.offlineDataIDs,
             mainActivityClassName = mainActivity
         )
     }
 
-    sampleActivity.startActivity(launchIntent)
+    sampleViewerActivity.startActivity(launchIntent)
 }
 
 /**

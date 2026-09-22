@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.sampleslib.components
+package com.esri.arcgismaps.sample.sampleslib.download
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,9 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.esri.arcgismaps.sample.sampleslib.DownloadUiState
 import com.esri.arcgismaps.sample.sampleslib.R
 
+
+/**
+ * Download screen for samples that require offline data
+ */
 @Composable
 internal fun DownloaderScreen(
     uiState: DownloadUiState,

@@ -290,9 +290,6 @@ def compare_one_metadata(folder_path: str):
         json_file.close()
     # The special rule not to compare the redirect_from.
     single_updater.redirect_from = json_data['redirect_from']
-    # Preserve existing provisioning fields while validating README offline_data.
-    single_updater.provision_from = json_data.get('provision_from', False)
-    single_updater.provision_to = json_data.get('provision_to', False)
     # The special rule to check for valid category, but not compare them to anything since the
     # category is only specified in the metadata.
     if (json_data['category'] in categories):
