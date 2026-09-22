@@ -16,10 +16,10 @@ Pan and zoom to explore the scene. Notice the labels showing installation dates 
 
 1. Create an `ArcGISScene` from a `PortalItem`.
 2. Add the scene to an `SceneView`and load it.
-3. After loading is complete, obtain the `FeatureLayer` from one of the `GroupLayers` in the scene's operationalLayers. 
-4. Set the feature layer's `labelsEnabled` property to `true`. 
-5. Create an `TextSymbol` to use for displaying the label text. 
-6. Create an `LabelDefinition` using an `ArcadeLabelExpression`. 
+3. After loading is complete, obtain the `FeatureLayer` from one of the `GroupLayers` in the scene's operationalLayers.
+4. Set the feature layer's `labelsEnabled` property to `true`.
+5. Create an `TextSymbol` to use for displaying the label text.
+6. Create an `LabelDefinition` using an `ArcadeLabelExpression`.
 7. Add the definition to the feature layer's `labelDefinitions` array.
 
 ## Relevant API
@@ -32,6 +32,7 @@ Pan and zoom to explore the scene. Notice the labels showing installation dates 
 * TextSymbol
 
 ## About the data
+
 This sample shows a [New York City infrastructure](https://www.arcgis.com/home/item.html?id=850dfee7d30f4d9da0ebca34a533c169#overview) scene hosted on ArcGIS Online.
 
 ## Additional information
