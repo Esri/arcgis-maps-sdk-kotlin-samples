@@ -16,6 +16,12 @@ import java.util.zip.ZipFile
 import kotlin.coroutines.coroutineContext
 import kotlin.math.roundToInt
 
+internal data class DownloadProgress(
+    val progress: Int?,
+    val itemIndex: Int,
+    val itemCount: Int
+)
+
 internal class SampleDownloadManager {
 
     private var downLoadTask : FileDownloadTask? = null
@@ -23,7 +29,7 @@ internal class SampleDownloadManager {
     suspend fun download(
         itemIds: List<String>,
         destinationFolder: File,
-        onProgress: (Int?) -> Unit
+        onProgress: (DownloadProgress) -> Unit
     ) {
         val stagingFolder = File(destinationFolder.parentFile, "${destinationFolder.name}.partial")
         if (stagingFolder.exists()) {
@@ -43,7 +49,7 @@ internal class SampleDownloadManager {
                 )
             }
             replaceDestination(stagingFolder, destinationFolder)
-            onProgress(100)
+            onProgress(DownloadProgress(progress = 100, itemIndex = itemIds.lastIndex, itemCount = itemIds.size))
         } catch (exception: Exception) {
             FileUtils.deleteDirectory(stagingFolder)
             throw exception
@@ -55,7 +61,7 @@ internal class SampleDownloadManager {
         destinationFolder: File,
         itemIndex: Int,
         itemCount: Int,
-        onProgress: (Int?) -> Unit
+        onProgress: (DownloadProgress) -> Unit
     ) {
         val portalItem = PortalItem(
             portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
@@ -85,7 +91,13 @@ internal class SampleDownloadManager {
                         (((itemIndex + currentItemProgress) / itemCount) * 100.0).roundToInt()
                     }
 
-                    onProgress(overallProgress)
+                    onProgress(
+                        DownloadProgress(
+                            progress = overallProgress,
+                            itemIndex = itemIndex,
+                            itemCount = itemCount
+                        )
+                    )
                 }
             }
 

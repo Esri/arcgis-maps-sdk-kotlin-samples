@@ -31,7 +31,11 @@ import java.io.File
 
 internal sealed interface DownloadUiState {
     data object WaitingForConfiguration : DownloadUiState
-    data class Downloading(val progress: Int?) : DownloadUiState
+    data class Downloading(
+        val progress: Int?,
+        val itemIndex: Int,
+        val itemCount: Int
+    ) : DownloadUiState
     data class Failed(val message: String) : DownloadUiState
 }
 
@@ -47,6 +51,7 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
     val launchSample = launchEvents.receiveAsFlow()
 
     private var itemIds: List<String> = emptyList()
+
     private var destinationFolder: File? = null
     private var downloadJob: Job? = null
 
@@ -66,10 +71,18 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
         val destination = destinationFolder ?: return
 
         downloadJob = viewModelScope.launch {
-            _uiState.value = DownloadUiState.Downloading(progress = null)
+            _uiState.value = DownloadUiState.Downloading(
+                progress = null,
+                itemIndex = 0,
+                itemCount = itemIds.size
+            )
             try {
-                engine.download(itemIds, destination) { progress ->
-                    _uiState.value = DownloadUiState.Downloading(progress)
+                engine.download(itemIds, destination) { downloadProgress ->
+                    _uiState.value = DownloadUiState.Downloading(
+                        progress = downloadProgress.progress,
+                        itemIndex = downloadProgress.itemIndex,
+                        itemCount = downloadProgress.itemCount
+                    )
                 }
                 launchEvents.send(Unit)
             } catch (cancellation: CancellationException) {

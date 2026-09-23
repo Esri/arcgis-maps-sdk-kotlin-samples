@@ -69,6 +69,8 @@ internal fun DownloaderScreen(
 
                     is DownloadUiState.Downloading -> DownloadingContent(
                         progress = uiState.progress,
+                        itemIndex = uiState.itemIndex,
+                        itemCount = uiState.itemCount,
                         onCancel = onCancel
                     )
 
@@ -84,8 +86,14 @@ internal fun DownloaderScreen(
 }
 
 @Composable
-private fun DownloadingContent(progress: Int?, onCancel: () -> Unit) {
+private fun DownloadingContent(
+    progress: Int?,
+    itemIndex: Int,
+    itemCount: Int,
+    onCancel: () -> Unit
+) {
     ScreenTitle(text = stringResource(R.string.downloading_data))
+    Text(text = "${itemIndex + 1} / $itemCount")
     if (progress == null) {
         CircularProgressIndicator()
     } else {
