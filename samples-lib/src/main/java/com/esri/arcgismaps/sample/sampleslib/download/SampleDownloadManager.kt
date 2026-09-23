@@ -111,6 +111,10 @@ internal class SampleDownloadManager {
                 require(outputFile.toPath().startsWith(destinationPath)) {
                     "Invalid ZIP entry: ${entry.name}"
                 }
+                // Skip the duplicate named file to avoid exception
+                if (outputFile.canonicalFile == zipFile.canonicalFile) {
+                    return@forEach
+                }
                 if (entry.isDirectory) {
                     outputFile.mkdirs()
                 } else {
