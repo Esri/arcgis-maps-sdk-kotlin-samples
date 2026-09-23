@@ -68,9 +68,6 @@ internal class SampleDownloadManager {
             itemId = itemId
         )
         portalItem.load().getOrThrow()
-
-
-
         val destinationFile = File(destinationFolder, portalItem.name)
         val downloadUrl =
             "${portalItem.portal.url}/sharing/rest/content/items/${portalItem.itemId}/data"
@@ -149,7 +146,7 @@ internal class SampleDownloadManager {
         }
     }
 
-    fun cancelDownLoad(){
+    fun cancelDownload(){
         downLoadTask?.cancel()
         downLoadTask = null
     }

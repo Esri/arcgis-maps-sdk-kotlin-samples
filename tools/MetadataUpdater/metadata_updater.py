@@ -62,7 +62,7 @@ def parse_tags(tags_string: str) -> typing.List[str]:
 
 
 def parse_offline_data(offline_data_string: str) -> typing.List[str]:
-    """Extract ordered, unique URLs from the Offline data README section."""
+    """Extract ordered, unique URLs from the Offline data section."""
     urls = re.findall(r"(http[s]?://[^)]+)", offline_data_string)
     return list(dict.fromkeys(urls))
 

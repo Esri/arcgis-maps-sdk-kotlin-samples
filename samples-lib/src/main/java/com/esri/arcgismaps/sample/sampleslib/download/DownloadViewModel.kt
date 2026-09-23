@@ -96,7 +96,7 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
     }
 
     suspend fun cancelDownload() {
-        engine.cancelDownLoad()
+        engine.cancelDownload()
         downloadJob?.cancel()
         downloadJob?.join()
 
