@@ -18,7 +18,6 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "provision_to": [],
     "offline_data": ["cc68728b5904403ba637e1f1cd2995ae"],
     "relevant_apis": [
         "ColormapRenderer",

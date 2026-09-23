@@ -19,8 +19,6 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "provision_from": ["https://www.arcgis.com/home/item.html?id=74c0c9fa80f4498c9739cc42531e9948"],
-    "provision_to": [],
     "offline_data": ["74c0c9fa80f4498c9739cc42531e9948"],
     "relevant_apis": [
         "AnnotationLayer",

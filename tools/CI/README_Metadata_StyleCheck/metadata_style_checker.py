@@ -87,21 +87,13 @@ def parse_tags(tags_string: str) -> typing.List[str]:
         raise Exception('README Tags parse failure!')
     return sorted([tag.strip() for tag in tags])
 
-def parse_provision_from(offline_data_string: str) -> typing.List[str]:
+def parse_offline_data_urls(offline_data_string: str) -> typing.List[str]:
 
     # extract any inline link URLs
     regex = re.compile(r"(http[s]?://[^)]+)")
     from_matches = re.findall(regex, offline_data_string)
 
     return list(dict.fromkeys(from_matches))
-
-def parse_provision_to(offline_data_string: str) -> typing.List[str]:
-
-    to_matches = re.findall("adb push (.*) /Android", offline_data_string)
-    for i, match in enumerate(to_matches):
-        to_matches[i] = "/" + match
-
-    return list(dict.fromkeys(to_matches))
 
 def get_folder_name_from_path(path: str, index: int = -1) -> str:
     """
@@ -129,8 +121,6 @@ class MetadataCreator:
         self.images = []             # Populate from paths.
         self.keywords = []           # Populate from README.
         self.language = ''           # Populate from metadata.
-        self.provision_from = False  # Default to False.
-        self.provision_to = False    # Default to False.
         self.offline_data = False    # Populate from the README Offline data section.
         self.redirect_from = []      # Default to empty list.
         self.relevant_apis = []      # Populate from README.
@@ -219,7 +209,7 @@ class MetadataCreator:
             self.keywords += self.relevant_apis
             if readme_parts.__contains__('Offline data'):
                 offline_data_section_index = readme_parts.index('Offline data') + 1
-                self.offline_data = [parse_qs(urlparse(item_url).query)["id"][0] for item_url in parse_provision_from(readme_parts[offline_data_section_index])]
+                self.offline_data = [parse_qs(urlparse(item_url).query)["id"][0] for item_url in parse_offline_data_urls(readme_parts[offline_data_section_index])]
         except Exception as err:
             print(f'Error parsing README - {self.readme_path} - {err}.')
             raise err
@@ -250,9 +240,6 @@ class MetadataCreator:
         data["keywords"] = self.keywords
         if self.offline_data != False:
             data["offline_data"] = self.offline_data
-        if self.provision_from != False:
-            data["provision_from"] = self.provision_from
-            data["provision_to"] = self.provision_to
         data["language"] = self.language
         data["redirect_from"] = self.redirect_from
         data["relevant_apis"] = self.relevant_apis

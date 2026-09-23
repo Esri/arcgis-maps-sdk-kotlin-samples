@@ -18,8 +18,6 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "provision_from": ["https://www.arcgis.com/home/item.html?id=52ca74b4ba8042b78b3c653696f34a9c"],
-    "provision_to": [],
     "offline_data": ["52ca74b4ba8042b78b3c653696f34a9c"],
     "relevant_apis": [
         "ArcGISTiledElevationSource",

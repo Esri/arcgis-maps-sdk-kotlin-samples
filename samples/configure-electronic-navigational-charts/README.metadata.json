@@ -33,11 +33,6 @@
     "redirect_from": [
         "/kotlin/sample-code/add-enc-exchange-set/"
     ],
-    "provision_from": [
-        "https://www.arcgis.com/home/item.html?id=9d2987a825c646468b3ce7512fb76e2d",
-        "https://developers.arcgis.com/downloads/"
-    ],
-    "provision_to": [],
     "offline_data": [
         "5028bf3513ff4c38b28822d010a4937c",
         "9d2987a825c646468b3ce7512fb76e2d"

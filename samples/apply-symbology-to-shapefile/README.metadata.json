@@ -20,8 +20,6 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
-    "provision_from": ["https://www.arcgis.com/home/item.html?id=d98b3e5293834c5f852f13c569930caa"],
-    "provision_to": [],
     "offline_data": ["d98b3e5293834c5f852f13c569930caa"],
     "relevant_apis": [
         "FeatureLayer",
