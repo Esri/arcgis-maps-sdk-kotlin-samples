@@ -20,7 +20,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
-import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.layers.RasterLayer
 import com.arcgismaps.mapping.symbology.raster.MinMaxStretchParameters
@@ -48,12 +48,6 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
     // Create a MapViewProxy, used to set viewpoint
     val mapViewProxy = MapViewProxy()
 
-    // Initialize and keep track of the ArcGISMap
-    val arcGISMap: ArcGISMap = ArcGISMap(BasemapStyle.ArcGISImageryStandard)
-
-    // Create a message dialog view model for handling error messages
-    val messageDialogVM = MessageDialogViewModel()
-
     // Provision path for local offline resources
     private val provisionPath: String by lazy {
         app.getExternalFilesDir(null)?.path + File.separator + app.getString(
@@ -61,21 +55,27 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
-    // The raster data (raster-file/Shasta.tif) should be downloaded to external storage on launch
+    // Create a Raster from a multispectral raster file (the raster data file is downloaded to
+    // external storage when the app is launched)
     private val raster by lazy {
         val rasterFile = File(provisionPath, "raster-file${File.separator}Shasta.tif")
         Raster.createWithPath(rasterFile.path)
     }
 
-    // The raster layer to which the RGB renderer will be applied
+    // Create a RasterLayer from the raster
     private val rasterLayer = RasterLayer(raster)
+
+    // Create a Basemap from the raster layer and set it to the ArcGISMap
+    val arcGISMap: ArcGISMap = ArcGISMap(Basemap(rasterLayer))
+
+    // Create a message dialog view model for handling error messages
+    val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
             rasterLayer.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
             }.onSuccess {
-                arcGISMap.operationalLayers.add(rasterLayer)
                 arcGISMap.load().onFailure {
                     messageDialogVM.showMessageDialog(it)
                 }.onSuccess {
@@ -92,7 +92,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
      * Construct and apply an RgbRenderer to the raster layer using current UI parameters.
      */
     private fun updateRenderer() {
-        // Construct parameters
+        // Construct StretchParameters
         val parameters: StretchParameters = when (uiState.value.stretchType) {
             StretchType.MinMax -> {
                 // Use MinMaxStretchParameters
@@ -118,7 +118,7 @@ class ApplyRgbRendererViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Construct and apply an RgbRenderer using the parameters
+        // Create an RgbRenderer and set it on the raster layer
         rasterLayer.renderer = RgbRenderer(
             stretchParameters = parameters,
             bandIndexes = emptyList(),
