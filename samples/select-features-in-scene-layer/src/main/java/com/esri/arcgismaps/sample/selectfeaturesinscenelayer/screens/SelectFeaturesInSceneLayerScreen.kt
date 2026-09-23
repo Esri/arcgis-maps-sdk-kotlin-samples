@@ -20,15 +20,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.SceneView
-import com.arcgismaps.toolkit.geoviewcompose.SceneViewProxy
-import com.esri.arcgismaps.sample.selectfeaturesinscenelayer.components.SelectFeaturesInSceneLayerViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
+import com.esri.arcgismaps.sample.selectfeaturesinscenelayer.components.SelectFeaturesInSceneLayerViewModel
 
 /**
  * Main screen layout for the sample app
@@ -49,7 +46,7 @@ fun SelectFeaturesInSceneLayerScreen(
                 // Pass the scene to the SceneView
                 arcGISScene = viewModel.scene,
                 sceneViewProxy = viewModel.sceneViewProxy,
-                // Identify Feature on user SingleTap
+                // Pass the tap event to identify a feature
                 onSingleTapConfirmed = viewModel::identify
             )
         }

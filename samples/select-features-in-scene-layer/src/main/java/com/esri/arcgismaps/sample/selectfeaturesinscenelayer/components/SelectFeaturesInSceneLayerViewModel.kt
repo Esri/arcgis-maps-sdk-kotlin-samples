@@ -38,12 +38,8 @@ class SelectFeaturesInSceneLayerViewModel(app: Application) : AndroidViewModel(a
     // Create a SceneViewProxy which is passed to the composable SceneView
     val sceneViewProxy = SceneViewProxy()
 
-    // The scene layer that is added on top of the scene.
-    private var sceneLayer = ArcGISSceneLayer(BREST_BUILDING_SERVICE)
-
-    // The user's selected feature
-    private var selectedFeature: ArcGISFeature? = null
-
+    // The layer added to the scene's operational layers.
+    private val sceneLayer = ArcGISSceneLayer(BREST_BUILDING_SERVICE)
 
     //Initial Camera object
     val camera = Camera(
@@ -57,12 +53,15 @@ class SelectFeaturesInSceneLayerViewModel(app: Application) : AndroidViewModel(a
     // Create a scene to be present on scene view
     val scene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
         // Add base surface for elevation data
-        val elevationSource =
-            ArcGISTiledElevationSource(uri = WORLD_ELEVATION_SERVICE_URL)
-        val surface = Surface().apply {
-            elevationSources.add(elevationSource)
+
+        baseSurface = Surface().apply {
+            elevationSources.add(ArcGISTiledElevationSource(uri = WORLD_ELEVATION_SERVICE_URL))
         }
-        baseSurface = surface
+
+        // Add the scene layer with features to select
+        operationalLayers.add(sceneLayer)
+
+        // Set the initial viewpoint of the scene
         initialViewpoint = Viewpoint(boundingGeometry = camera.location, camera = camera)
     }
 
@@ -73,52 +72,37 @@ class SelectFeaturesInSceneLayerViewModel(app: Application) : AndroidViewModel(a
         // Load the map and handle any errors by showing a message dialog
         viewModelScope.launch {
             scene.load().onFailure { messageDialogVM.showMessageDialog(it) }
-            scene.operationalLayers.apply { add(sceneLayer) }
         }
     }
 
     /**
-     * Identifies the tapped screen coordinate in the provided [singleTapConfirmedEvent] and gets
-     * the asset at that location.
+     * Identifies the tapped screen coordinate in the provided [tapEvent]
+     * and selects the first identified [ArcGISFeature]
      */
-    fun identify(singleTapConfirmedEvent: SingleTapConfirmedEvent) {
+    fun identify(tapEvent: SingleTapConfirmedEvent) {
+
+        // Clear any previous selection
+
+        sceneLayer.clearSelection()
+
         viewModelScope.launch {
-            sceneViewProxy.identifyLayers(
-                screenCoordinate = singleTapConfirmedEvent.screenCoordinate,
+            sceneViewProxy.identify(
+                layer = sceneLayer,
+                screenCoordinate = tapEvent.screenCoordinate,
                 tolerance = 12.dp,
-                returnPopupsOnly = false,
-                maximumResults = 1
-            ).onSuccess { identifyResultList ->
-                val identifiedFeature = identifyResultList.firstOrNull()?.geoElements?.firstOrNull()
-                if (identifiedFeature !is ArcGISFeature || selectedFeature != null) {
-                    resetSelections()
-                }else{
-                    identifiedFeature.select()
-                }
+            ).onSuccess { identifyResult ->
+                identifyResult
+                    .geoElements
+                    .filterIsInstance<ArcGISFeature>()
+                    .firstOrNull()
+                    ?.let { arcGISFeature ->
+                        // Select the feature on the scene layer
+
+                        sceneLayer.selectFeature(arcGISFeature)
+                    }
+            }.onFailure {
+                messageDialogVM.showMessageDialog(it)
             }
-        }
-    }
-
-    /**
-     * Selects the [ArcGISFeature]. Deselects other selection
-     */
-    private fun ArcGISFeature.select() {
-        val feature = this@select
-        if(selectedFeature != null && selectedFeature != feature) {
-            resetSelections()
-        }else {
-            selectedFeature = feature
-            sceneLayer.selectFeature(feature)
-        }
-    }
-
-    /**
-     * Clears the selection on the layer
-     */
-    private fun resetSelections() {
-        if(selectedFeature != null) {
-            sceneLayer.clearSelection()
-            selectedFeature = null
         }
     }
 

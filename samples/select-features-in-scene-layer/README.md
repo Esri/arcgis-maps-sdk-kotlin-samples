@@ -15,10 +15,10 @@ Tap on a building in the scene layer to select it. Deselect buildings by tapping
 ## How it works
 
 1. Create an instance of `ArcGISSceneLayer`, passing in the URL to a scene layer service.
-2. Use the `onSingleTapGesture` on the `SceneView` to get the screen tapped location.
-3. Use `SceneViewProxy.identify(layer:screenPoint:tolerance:maximumResults:)` to identify features in the scene.
+2. Use the `onSingleTapConfirmed` on the `SceneView` to get the screen tapped location.
+3. Use `SceneViewProxy.identify(layer, screenCoordinate, tolerance)` to identify features in the scene.
 4. From the resulting `IdentifyLayerResult`, get the list of identified `GeoElements`.
-5. Get the first `Feature` in the list and use `ArcGISSceneLayer.selectFeature(features:)`.
+5. Get the first `ArcGISFeature` in the list and use `ArcGISSceneLayer.selectFeature(features)`.
 
 ## Relevant API
 
