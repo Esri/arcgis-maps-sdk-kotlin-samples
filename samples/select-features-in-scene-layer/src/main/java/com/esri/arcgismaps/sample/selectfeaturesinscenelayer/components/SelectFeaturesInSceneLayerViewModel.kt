@@ -41,7 +41,7 @@ class SelectFeaturesInSceneLayerViewModel(app: Application) : AndroidViewModel(a
     // The layer added to the scene's operational layers.
     private val sceneLayer = ArcGISSceneLayer(BREST_BUILDING_SERVICE)
 
-    //Initial Camera object
+    // Initial Camera object
     val camera = Camera(
         latitude = 48.38282,
         longitude = -4.49779,
@@ -53,7 +53,6 @@ class SelectFeaturesInSceneLayerViewModel(app: Application) : AndroidViewModel(a
     // Create a scene to be present on scene view
     val scene = ArcGISScene(BasemapStyle.ArcGISImagery).apply {
         // Add base surface for elevation data
-
         baseSurface = Surface().apply {
             elevationSources.add(ArcGISTiledElevationSource(uri = WORLD_ELEVATION_SERVICE_URL))
         }
@@ -82,7 +81,6 @@ class SelectFeaturesInSceneLayerViewModel(app: Application) : AndroidViewModel(a
     fun identify(tapEvent: SingleTapConfirmedEvent) {
 
         // Clear any previous selection
-
         sceneLayer.clearSelection()
 
         viewModelScope.launch {
@@ -97,7 +95,6 @@ class SelectFeaturesInSceneLayerViewModel(app: Application) : AndroidViewModel(a
                     .firstOrNull()
                     ?.let { arcGISFeature ->
                         // Select the feature on the scene layer
-
                         sceneLayer.selectFeature(arcGISFeature)
                     }
             }.onFailure {
