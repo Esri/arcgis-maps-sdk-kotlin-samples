@@ -149,7 +149,7 @@ internal class SampleDownloadManager {
     fun cancelDownload(){
         try {
             downLoadTask?.cancel()
-        }finally {
+        } finally {
             downLoadTask = null
         }
     }
