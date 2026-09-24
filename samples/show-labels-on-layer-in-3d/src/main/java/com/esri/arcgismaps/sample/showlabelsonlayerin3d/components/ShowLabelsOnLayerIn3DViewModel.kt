@@ -37,12 +37,10 @@ import kotlinx.coroutines.launch
 
 class ShowLabelsOnLayerIn3DViewModel(app: Application) : AndroidViewModel(app) {
 
-    val arcGISScene by mutableStateOf(
-        ArcGISScene(
-            item = PortalItem(
-                portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
-                itemId = "850dfee7d30f4d9da0ebca34a533c169"
-            )
+    val arcGISScene = ArcGISScene(
+        item = PortalItem(
+            portal = Portal.arcGISOnline(Portal.Connection.Anonymous),
+            itemId = "850dfee7d30f4d9da0ebca34a533c169"
         )
     )
 
@@ -51,21 +49,21 @@ class ShowLabelsOnLayerIn3DViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         viewModelScope.launch {
-            //Load the scene
+            // Load the scene
             arcGISScene.load().onFailure { messageDialogVM.showMessageDialog(it) }
-            arcGISScene.apply {
-                // Get the feature layer.
-                val operationalLayers = this.operationalLayers
-                val groupLayer = operationalLayers.find { it.name == "Gas" } as GroupLayer
-                val layer = groupLayer.layers.find { it.name == "Gas Main" } as FeatureLayer
-                layer.apply {
-                    // Enable labels on the feature layer.
-                    this.labelsEnabled = true
-                    this.labelDefinitions.clear()
-                    val labelDefinition = makeLabelDefinition()
-                    // Add the label definition to the layer.
-                    this.labelDefinitions.add(labelDefinition)
-                }
+            // Find the group layer and feature layer
+            val groupLayer = arcGISScene.operationalLayers
+                .filterIsInstance<GroupLayer>()
+                .first { it.name == "Gas" }
+            val featureLayer = groupLayer.layers
+                .filterIsInstance<FeatureLayer>()
+                .first { it.name == "Gas Main" }
+            
+            // Enable labels and add the label definition to the feature layer
+            featureLayer.apply {
+                labelsEnabled = true
+                labelDefinitions.clear()
+                labelDefinitions.add(labelDefinition)
             }
         }
     }
