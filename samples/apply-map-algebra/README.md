@@ -40,6 +40,10 @@ When the sample opens, it displays the source elevation raster. Tap the **Catego
 * RasterLayer
 * StretchRenderer
 
+## Offline data
+
+This sample uses [elevation raster data](https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 The sample uses a [10m resolution digital terrain elevation raster of the Isle of Arran, Scotland](https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271) (Data Copyright Scottish Government and SEPA (2014)).

@@ -35,6 +35,10 @@ Tap the "Query Flights" button and select a query to perform from the menu. Once
 * DynamicEntityQueryParameters
 * DynamicEntityQueryResult
 
+## Offline data
+
+This sample uses [dynamic entity data](https://www.arcgis.com/home/item.html?id=c78e297e99ad4572a48cdcd0b54bed30). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample uses the [PHX Air Traffic JSON](https://www.arcgis.com/home/item.html?id=c78e297e99ad4572a48cdcd0b54bed30) portal item, which is hosted on ArcGIS Online and downloaded automatically. The file contains JSON data for mock air traffic around the Phoenix Sky Harbor International Airport in Phoenix, AZ, USA. The decoded data is used to simulate dynamic entity events through a `CustomDynamicEntityDataSource`, which is displayed on the map with a `DynamicEntityLayer`.

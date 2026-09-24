@@ -6,14 +6,6 @@
     <application>
         <activity
             android:exported="true"
-            android:name=".DownloadActivity"
-            android:label="@string/show_interactive_viewshed_with_analysis_overlay_app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:exported="true"
             android:name=".MainActivity"
             android:label="@string/show_interactive_viewshed_with_analysis_overlay_app_name">
         </activity>

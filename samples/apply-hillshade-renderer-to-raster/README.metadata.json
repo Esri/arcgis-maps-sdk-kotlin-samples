@@ -20,6 +20,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["134d60f50e184e8fa56365f44e5ce3fb"],
     "relevant_apis": [
         "Basemap",
         "HillshadeRenderer",
@@ -29,7 +30,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/components/ApplyHillshadeRendererToRasterViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applyhillshaderenderertoraster/screens/ApplyHillshadeRendererToRasterScreen.kt"
     ],
     "title": "Apply hillshade renderer to raster"

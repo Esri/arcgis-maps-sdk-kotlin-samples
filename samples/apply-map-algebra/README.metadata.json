@@ -26,6 +26,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["aa97788593e34a32bcaae33947fdc271"],
     "relevant_apis": [
         "BooleanFieldFunction",
         "ColorRamp",
@@ -42,7 +43,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/components/ApplyMapAlgebraViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/applymapalgebra/screens/ApplyMapAlgebraScreen.kt"
     ],
     "title": "Apply map algebra"

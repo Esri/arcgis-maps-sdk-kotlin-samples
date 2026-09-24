@@ -17,13 +17,13 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["681d6f7694644709a7c830ec57a2d72b"],
     "relevant_apis": [
         "OrbitGeoElementCameraController"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/components/OrbitCameraAroundObjectViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/screens/OrbitCameraAroundObjectScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/orbitcameraaroundobject/screens/OrbitCameraAroundObjectSupportingPane.kt"
     ],

@@ -24,6 +24,10 @@ The application loads a map of the Southwestern United States. Tap the "Start" o
 * ImageOverlay
 * SceneView
 
+## Offline data
+
+This sample uses [drone imagery](https://www.arcgis.com/home/item.html?id=9465e8c02b294c69bdb42de056a23ab1). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 These radar images were captured by the US National Weather Service (NWS). They highlight the Pacific Southwest sector which is made up of part the western United States and Mexico. For more information visit the [National Weather Service](https://www.weather.gov/jetstream/gis) website.

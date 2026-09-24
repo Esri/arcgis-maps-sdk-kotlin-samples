@@ -8,10 +8,6 @@
 
     <application>
         <activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/augment_reality_to_navigate_route_app_name"/>
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/augment_reality_to_navigate_route_app_name" />

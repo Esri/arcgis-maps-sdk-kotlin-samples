@@ -33,6 +33,10 @@ When the sample opens, the map shows the results of a preconfigured terrain suit
 * ContinuousFieldFunction
 * FieldAnalysis
 
+## Offline data
+
+This sample uses [terrain data](https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 The sample uses a [10m resolution digital terrain elevation raster of the Isle of Arran, Scotland](https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271)

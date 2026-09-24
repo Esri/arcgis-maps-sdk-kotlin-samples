@@ -42,6 +42,10 @@ Toggle on the "Allow Camera Distance Interaction" switch to allow zooming in and
 
 * OrbitGeoElementCameraController
 
+## Offline data
+
+This sample uses [scene data](https://www.arcgis.com/home/item.html?id=681d6f7694644709a7c830ec57a2d72b). It is downloaded from ArcGIS Online automatically.
+
 ## Tags
 
 3D, camera, object, orbit, rotate, scene
