@@ -147,8 +147,11 @@ internal class SampleDownloadManager {
     }
 
     fun cancelDownload(){
-        downLoadTask?.cancel()
-        downLoadTask = null
+        try {
+            downLoadTask?.cancel()
+        }finally {
+            downLoadTask = null
+        }
     }
 
     suspend fun delete(destinationFolder: File) {
