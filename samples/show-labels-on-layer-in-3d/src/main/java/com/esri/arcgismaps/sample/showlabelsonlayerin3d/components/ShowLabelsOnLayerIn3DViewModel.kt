@@ -44,8 +44,6 @@ class ShowLabelsOnLayerIn3DViewModel(app: Application) : AndroidViewModel(app) {
         )
     )
 
-    // Create a message dialog view model for handling error messages
-    val messageDialogVM = MessageDialogViewModel()
 
     init {
         viewModelScope.launch {
@@ -69,28 +67,30 @@ class ShowLabelsOnLayerIn3DViewModel(app: Application) : AndroidViewModel(app) {
     }
 
 
-    fun makeLabelDefinition() : LabelDefinition {
-        // Make and stylize the text symbol.
-        val textSymbol = TextSymbol().apply {
-            this.color = Color.red
-            this.haloColor = Color.white
-            this.haloWidth = 2.0f
-            this.size = 16.0f
-        }
-
-        // Create and return a label definition using the text symbol.
-        val labelDefinition = LabelDefinition(
-            labelExpression = ArcadeLabelExpression(
-                arcadeExpression = ArcadeExpression(
-                    expression = $$"Text($feature.INSTALLATIONDATE, `DD MMM YY`)"
-                )
-            ),
-            textSymbol = textSymbol
-        ).apply {
-            placement = LabelingPlacement.LineAboveAlong
-            useCodedValues = true
-        }
-        return labelDefinition
+    // Create the text symbol for the label definition.
+    private val textSymbol = TextSymbol().apply {
+        color = Color.red
+        haloColor = Color.white
+        haloWidth = 2.0f
+        size = 16.0f
     }
+
+    // Create the label definition to display the installation date of a feature.
+    private val labelDefinition = LabelDefinition(
+        labelExpression = ArcadeLabelExpression(
+            arcadeExpression = ArcadeExpression(
+                expression = $$"Text($feature.INSTALLATIONDATE, `DD MMM YY`)"
+            )
+        ),
+        textSymbol = textSymbol
+    ).apply {
+        placement = LabelingPlacement.LineAboveAlong
+        useCodedValues = true
+    }
+
+
+
+    // Create a message dialog view model for handling error messages
+    val messageDialogVM = MessageDialogViewModel()
 }
 
