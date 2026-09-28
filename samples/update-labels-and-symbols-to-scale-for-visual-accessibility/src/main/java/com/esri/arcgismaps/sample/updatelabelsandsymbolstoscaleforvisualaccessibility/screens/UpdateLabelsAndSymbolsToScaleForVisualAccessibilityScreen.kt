@@ -16,24 +16,21 @@
 
 package com.esri.arcgismaps.sample.updatelabelsandsymbolstoscaleforvisualaccessibility.screens
 
-import androidx.compose.animation.animateContentSize
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.mapping.view.MapView
+import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.updatelabelsandsymbolstoscaleforvisualaccessibility.R
 import com.esri.arcgismaps.sample.updatelabelsandsymbolstoscaleforvisualaccessibility.components.AdaptiveUiState
 import com.esri.arcgismaps.sample.updatelabelsandsymbolstoscaleforvisualaccessibility.components.UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel
@@ -63,35 +60,19 @@ fun UpdateLabelsAndSymbolsToScaleForVisualAccessibilityScreen(
         adaptiveUiState = adaptiveUiState,
         onCheckedChange = viewModel::onSelectSystemTextSize,
         onOpenTextSettings = {
-            context.startActivity(android.content.Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS))
+            context.startActivity(Intent(Settings.ACTION_DISPLAY_SETTINGS))
         },
         mainPaneContent = {
-            val context = LocalContext.current
-            val lifecycleOwner = LocalLifecycleOwner.current
-            val mapView = remember(context) { MapView(context) }
             val restaurantViewpoint = viewModel.restaurantViewpoint.collectAsStateWithLifecycle().value
 
-            DisposableEffect(lifecycleOwner, mapView) {
-                lifecycleOwner.lifecycle.addObserver(mapView)
-                onDispose {
-                    lifecycleOwner.lifecycle.removeObserver(mapView)
-                    mapView.onDestroy(lifecycleOwner)
-                }
-            }
-
-            AndroidView(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .animateContentSize(),
-                factory = { mapView },
-                update = {
-                    it.map = viewModel.arcGISMap
-                    it.useSystemTextScale = adaptiveUiState.isSystemTextScaleEnabled
-                }
+            MapView(
+                arcGISMap = viewModel.arcGISMap,
+                useSystemTextScale = adaptiveUiState.isSystemTextScaleEnabled,
+                mapViewProxy = viewModel.mapViewProxy
             )
 
             LaunchedEffect(restaurantViewpoint) {
-                restaurantViewpoint?.let { mapView.setViewpoint(it) }
+                restaurantViewpoint?.let { viewModel.mapViewProxy.setViewpoint(it) }
             }
         }
     )

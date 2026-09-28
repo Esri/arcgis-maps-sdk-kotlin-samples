@@ -30,12 +30,11 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.labeling.ArcadeLabelExpression
 import com.arcgismaps.mapping.labeling.LabelDefinition
 import com.arcgismaps.mapping.layers.FeatureLayer
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbol
-import com.arcgismaps.mapping.symbology.SimpleMarkerSymbolStyle
-import com.arcgismaps.mapping.symbology.SimpleLineSymbol
-import com.arcgismaps.mapping.symbology.SimpleLineSymbolStyle
+import com.arcgismaps.mapping.symbology.MultilayerPointSymbol
 import com.arcgismaps.mapping.symbology.SimpleRenderer
+import com.arcgismaps.mapping.symbology.SymbolStyle
 import com.arcgismaps.mapping.symbology.TextSymbol
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,6 +47,7 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
         initialViewpoint = Viewpoint(34.05, -117.19, 2e6)
     }
 
+    val mapViewProxy = MapViewProxy()
 
     // Create a state flow to hold the UI state for the supporting pane controls
     private val _adaptiveUiState = MutableStateFlow(AdaptiveUiState.defaultState)
@@ -65,8 +65,12 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 
+    private val foodSymbolStyle = SymbolStyle.createWithStyleNameAndPortal(
+        styleName = "Esri2DPointSymbolsStyle",
+        portal = null
+    )
+
     init {
-        foodFeatureLayer.renderer = createFoodRenderer(BASE_SYMBOL_SIZE)
         foodFeatureLayer.labelDefinitions.add(
             LabelDefinition(
                 ArcadeLabelExpression("\$feature.name"),
@@ -93,7 +97,7 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
                     foodFeatureLayer.load()
                         .onFailure { messageDialogVM.showMessageDialog(it) }
                         .onSuccess {
-                            foodFeatureLayer.renderer = createFoodRenderer(_adaptiveUiState.value.symbolSize)
+                            updateFoodRenderer()
                             foodFeatureLayer.fullExtent?.let { extent ->
                                 _restaurantViewpoint.value = Viewpoint(extent)
                             }
@@ -127,13 +131,24 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
                 }
             )
         }
-        foodFeatureLayer.renderer = createFoodRenderer(
-            if (_adaptiveUiState.value.isSystemTextScaleEnabled) {
-                BASE_SYMBOL_SIZE * fontScale
-            } else {
-                BASE_SYMBOL_SIZE
+        viewModelScope.launch { updateFoodRenderer() }
+    }
+
+    // Update the size of food Symbol
+    private suspend fun updateFoodRenderer() {
+        foodSymbolStyle.getSymbol(listOf("restaurant"))
+            .onFailure { messageDialogVM.showMessageDialog(it) }
+            .onSuccess { symbol ->
+                val restaurantSymbol = symbol as? MultilayerPointSymbol
+                if (restaurantSymbol == null) {
+                    messageDialogVM.showMessageDialog(
+                        IllegalStateException("The restaurant web-style symbol is not a multilayer point symbol.")
+                    )
+                    return@onSuccess
+                }
+                restaurantSymbol.size = _adaptiveUiState.value.symbolSize
+                foodFeatureLayer.renderer = SimpleRenderer(restaurantSymbol)
             }
-        )
     }
 
     fun updateBasemap(selectedBasemap: BasemapOptions) {
@@ -171,15 +186,6 @@ data class AdaptiveUiState(
         )
 
     }
-}
-
-// Symbol needs to be scaled separately
-private fun createFoodRenderer(symbolSize: Float): SimpleRenderer {
-    return SimpleRenderer(
-        SimpleMarkerSymbol(SimpleMarkerSymbolStyle.Circle, Color(0xFF1769AA.toInt()), symbolSize).apply {
-            outline = SimpleLineSymbol(SimpleLineSymbolStyle.Solid, Color.white, 2f)
-        }
-    )
 }
 
 enum class BasemapOptions {
