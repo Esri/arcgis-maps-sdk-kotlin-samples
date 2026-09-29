@@ -27,6 +27,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["aa97788593e34a32bcaae33947fdc271"],
     "relevant_apis": [
         "AnalysisOverlay",
         "Colormap",
@@ -39,7 +40,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/components/ShowInteractiveViewshedWithAnalysisOverlayViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ShowInteractiveViewshedWithAnalysisOverlayScreen.kt",
         "src/main/java/com/esri/arcgismaps/sample/showinteractiveviewshedwithanalysisoverlay/screens/ViewshedSupportingContent.kt"

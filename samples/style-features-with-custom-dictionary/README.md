@@ -29,6 +29,10 @@ Use the radio buttons to toggle between the dictionary symbols from the web styl
 * Portal
 * PortalItem
 
+## Offline data
+
+This sample uses [dictionary style data](https://www.arcgis.com/home/item.html?id=751138a2e0844e06853522d54103222a). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 The data used in this sample is from a feature layer showing a subset of [restaurants in Redlands, CA](https://www.arcgis.com/home/item.html?id=3daf83e1ec0941428526a07f2d2ae414) hosted as a feature service with attributes for rating, style, health score, and open hours.

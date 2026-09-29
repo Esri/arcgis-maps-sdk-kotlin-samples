@@ -26,6 +26,10 @@ The sample will load the KMZ file from ArcGIS Online. When a tour is found, the 
 * KmlTourController.play()
 * KmlTourController.reset()
 
+## Offline data
+
+This sample uses [a KML tour](https://arcgisruntime.maps.arcgis.com/home/item.html?id=f10b1d37fdd645c9bc9b189fb546307c). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample uses a custom tour from [ArcGIS Online](https://arcgisruntime.maps.arcgis.com/home/item.html?id=f10b1d37fdd645c9bc9b189fb546307c). When you play the tour, you'll go through an audio journey through some of Esri's offices.

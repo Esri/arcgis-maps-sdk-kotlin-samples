@@ -51,6 +51,10 @@ To save your edits, press the save button.
 * SnapSourceSettings
 * UtilityNetwork
 
+## Offline data
+
+This sample uses [utility network data](https://www.arcgis.com/home/item.html?id=0fd3a39660d54c12b05d5f81f207dffd). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 The [Naperville gas network](https://www.arcgis.com/home/item.html?id=0fd3a39660d54c12b05d5f81f207dffd) mobile geodatabase contains a utility network with a set of connectivity rules that can be used to perform geometry edits with rules based snapping.

@@ -25,6 +25,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["f10b1d37fdd645c9bc9b189fb546307c"],
     "relevant_apis": [
         "KmlTour",
         "KmlTourController",
@@ -34,7 +35,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/playkmltour/components/PlayKmlTourViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/playkmltour/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/playkmltour/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/playkmltour/screens/PlayKmlTourScreen.kt"
     ],

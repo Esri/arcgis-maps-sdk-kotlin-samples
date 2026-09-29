@@ -24,6 +24,7 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
+import com.esri.arcgismaps.sample.sampleslib.download.DownloaderActivity
 import kotlinx.serialization.Serializable
 
 /**
@@ -57,6 +58,7 @@ data class Sample(
                 relevantApis = listOf(""),
                 codePaths = listOf(""),
                 sampleCategory = SampleCategory.ANALYSIS,
+                offlineDataIDs = listOf(""),
                 title = "Analyze hotspots"
             ),
             isFavorite = false,
@@ -100,28 +102,22 @@ data class Sample(
         }
 
         /**
-         * Return's a path to DownloadActivity if one exists, otherwise returns the path to
-         * MainActivity.
+         * Returns the path to the sample's MainActivity.
          */
         fun loadActivityPath(codePaths: List<String>): String {
-            // Return a path to DownloadActivity if one exists
-            codePaths.find { it.contains("DownloadActivity.kt") }?.let { samplePath ->
-                val activityPath = samplePath
-                    .substring(14, samplePath.indexOf("."))
-                    .replace("/".toRegex(), ".")
-                    .replace("\\", "")
-                return activityPath
-            }
+            val mainActivityPath = codePaths.find { it.endsWith("MainActivity.kt") }
+                ?: error("MainActivity.kt not found in sample metadata.")
+            return mainActivityPath.toActivityClassName()
+        }
 
-            // Otherwise return the path the MainActivity
-            codePaths.find { it.contains("MainActivity.kt") }.apply {
-                val samplePath = this.toString()
-                val activityPath = samplePath
-                    .substring(14, samplePath.indexOf("."))
-                    .replace("/".toRegex(), ".")
-                    .replace("\\", "")
-                return activityPath
-            }
+        /**
+         * Converts a file path to an activity class name
+         */
+        private fun String.toActivityClassName(): String {
+            return replace('\\', '/')
+                .removePrefix("src/main/java/")
+                .removeSuffix(".kt")
+                .replace('/', '.')
         }
     }
 }
@@ -130,17 +126,34 @@ data class Sample(
  * Starts the sample activity.
  */
 suspend fun Sample.start(context: Context) {
-    // Revoke previously configured ArcGISEnvironment settings OAuth tokens/Credentials
+    // Revoke previously configured OAuth tokens and credentials.
     AuthenticatorState().signOut()
 
-    // Authentication with an API key or named user is
-    // required to access basemaps and other location services
+    // Configure the ArcGIS API key.
     ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.ACCESS_TOKEN)
 
-    // Obtain and launch the sample activity
-    val className = Class.forName(mainActivity) as Class<*>
-    val sampleLauncherActivity = context.getActivityOrNull() ?: return
-    sampleLauncherActivity.startActivity(Intent(sampleLauncherActivity, className))
+    val sampleViewerActivity = context.getActivityOrNull() ?: return
+
+    val mainActivityClass = Class.forName(mainActivity) as Class<*>
+    val isProvisioned = sampleViewerActivity.getExternalFilesDir(null)
+        ?.resolve(name)
+        ?.list()
+        ?.isNotEmpty() == true
+
+    val launchIntent = if (metadata.offlineDataIDs.isEmpty() || isProvisioned) {
+        // This sample does not require a download.
+        Intent(sampleViewerActivity, mainActivityClass)
+    } else {
+        // This sample requires downloaded data.
+        DownloaderActivity.createIntent(
+            context = sampleViewerActivity,
+            sampleName = name,
+            provisionUrls = metadata.offlineDataIDs,
+            mainActivityClassName = mainActivity
+        )
+    }
+
+    sampleViewerActivity.startActivity(launchIntent)
 }
 
 /**

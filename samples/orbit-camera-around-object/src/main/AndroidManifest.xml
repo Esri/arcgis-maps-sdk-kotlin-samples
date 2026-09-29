@@ -9,10 +9,6 @@
             android:label="@string/orbit_camera_around_object_app_name">
 
         </activity>
-        <activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/orbit_camera_around_object_app_name" />
     </application>
 
 </manifest>

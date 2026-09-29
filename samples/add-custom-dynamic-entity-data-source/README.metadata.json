@@ -28,6 +28,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["a8a942c228af4fac96baa78ad60f511f"],
     "relevant_apis": [
         "CustomDynamicEntityDataSource.EntityFeedProvider",
         "DynamicEntity",
@@ -38,7 +39,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/components/MapViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/components/CustomEntityFeedProvider.kt",
         "src/main/java/com/esri/arcgismaps/sample/addcustomdynamicentitydatasource/screens/MainScreen.kt"

@@ -3,12 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application><activity
-        android:name=".DownloadActivity"
-        android:exported="true"
-        android:label="@string/edit_features_with_feature_linked_annotation_app_name">
-
-    </activity>
+    <application>
         <activity
             android:name=".MainActivity"
             android:exported="true"

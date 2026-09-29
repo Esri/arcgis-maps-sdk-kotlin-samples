@@ -42,6 +42,10 @@ Tap on the map to add a feature symbolizing a bird's nest. Then choose values de
 * ContingentValuesDefinition
 * ContingentValuesResult
 
+## Offline data
+
+This sample uses [contingent value data](https://www.arcgis.com/home/item.html?id=e12b54ea799f4606a2712157cf9f6e41) and [its supporting data](https://www.arcgis.com/home/item.html?id=b5106355f1634b8996e634c04b6a930a). They are downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample uses the [Contingent values birds nests](https://arcgis.com/home/item.html?id=e12b54ea799f4606a2712157cf9f6e41) mobile geodatabase and the [Fillmore topographic map](https://arcgis.com/home/item.html?id=b5106355f1634b8996e634c04b6a930a) vector tile package for the basemap.

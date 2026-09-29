@@ -27,6 +27,10 @@ This sample takes a mobile scene package that was created in ArcGIS Pro, and dis
 * MobileScenePackage
 * SceneView
 
+## Offline data
+
+This sample uses [a mobile scene package](https://www.arcgis.com/home/item.html?id=7dd2f97bb007466ea939160d0de96a9d). It is downloaded from ArcGIS Online automatically.
+
 ## Additional information
 
 This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.

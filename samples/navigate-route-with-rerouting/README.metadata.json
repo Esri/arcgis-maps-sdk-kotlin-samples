@@ -29,6 +29,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["df193653ed39449195af0c9725701dca"],
     "relevant_apis": [
         "DestinationStatus",
         "DirectionManeuver",
@@ -47,7 +48,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/components/NavigateRouteWithReroutingViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/navigateroutewithrerouting/screens/NavigateRouteWithReroutingScreen.kt"
     ],
     "title": "Navigate route with rerouting"

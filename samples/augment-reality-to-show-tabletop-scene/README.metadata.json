@@ -20,6 +20,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["7dd2f97bb007466ea939160d0de96a9d"],
     "relevant_apis": [
         "ArcGISScene",
         "TableTopSceneView"
@@ -27,7 +28,6 @@
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/components/AugmentRealityToShowTabletopSceneViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/augmentrealitytoshowtabletopscene/screens/AugmentRealityToShowTabletopSceneScreen.kt"
     ],
     "title": "Augment reality to show tabletop scene"

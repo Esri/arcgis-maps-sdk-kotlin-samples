@@ -5,12 +5,6 @@
 
     <application>
         <activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/navigate_route_with_rerouting_app_name">
-
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/navigate_route_with_rerouting_app_name">

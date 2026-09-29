@@ -25,6 +25,7 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["df193653ed39449195af0c9725701dca"],
     "relevant_apis": [
         "RouteParameters",
         "RouteResult",
@@ -33,8 +34,7 @@
         "TravelMode"
     ],
     "snippets": [
-        "src/main/java/com/esri/arcgismaps/sample/findrouteintransportnetwork/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/findrouteintransportnetwork/DownloadActivity.kt"
+        "src/main/java/com/esri/arcgismaps/sample/findrouteintransportnetwork/MainActivity.kt"
     ],
     "title": "Find route in transport network"
 }
