@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arcgismaps.internal.jni.CoreMapView
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.addrastersandfeaturetablesfromgeopackage.R
 import com.esri.arcgismaps.sample.addrastersandfeaturetablesfromgeopackage.components.AddRastersAndFeatureTablesFromGeopackageViewModel
