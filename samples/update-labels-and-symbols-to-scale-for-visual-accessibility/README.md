@@ -16,6 +16,8 @@ Clear Apply system text size to labels to stop labels from following the system 
 
 Select a restaurant to show its name and WGS 84 coordinates in a callout. Select elsewhere to clear the callout.
 
+See [official doc](https://support.google.com/accessibility/android) for specific device instructions.
+
 ## How it works
 
 1. Create a `Map` and add a `FeatureLayer`.

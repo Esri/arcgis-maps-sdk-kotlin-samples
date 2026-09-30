@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -61,7 +62,7 @@ internal fun UpdateLabelsAndSymbolsToScaleForVisualAccessibilitySupportingPane(
                 checked = adaptiveUiState.isSystemTextScaleEnabled,
                 onCheckedChange = null
             )
-            Text("Apply OS text size to labels")
+            Text("Apply OS text size to labels", modifier = Modifier.padding(6.dp))
         }
 
         Button(
