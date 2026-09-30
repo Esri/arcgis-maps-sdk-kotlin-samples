@@ -25,7 +25,6 @@ import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
-import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.labeling.ArcadeLabelExpression
 import com.arcgismaps.mapping.labeling.LabelDefinition
@@ -88,7 +87,7 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
         arcGISMap.operationalLayers.add(foodFeatureLayer)
 
         // Set the initial basemap based on the default state
-        updateBasemap(selectedBasemap = _adaptiveUiState.value.basemapOptions)
+        updateBasemap()
         // Load the map and handle any errors by showing a message dialog
         viewModelScope.launch {
             arcGISMap.load()
@@ -97,7 +96,7 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
                     foodFeatureLayer.load()
                         .onFailure { messageDialogVM.showMessageDialog(it) }
                         .onSuccess {
-                            updateFoodRenderer()
+                            updateFoodSymbolRenderer()
                             foodFeatureLayer.fullExtent?.let { extent ->
                                 _restaurantViewpoint.value = Viewpoint(extent)
                             }
@@ -131,11 +130,11 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
                 }
             )
         }
-        viewModelScope.launch { updateFoodRenderer() }
+        viewModelScope.launch { updateFoodSymbolRenderer() }
     }
 
     // Update the size of food Symbol
-    private suspend fun updateFoodRenderer() {
+    private suspend fun updateFoodSymbolRenderer() {
         foodSymbolStyle.getSymbol(listOf("restaurant"))
             .onFailure { messageDialogVM.showMessageDialog(it) }
             .onSuccess { symbol ->
@@ -151,13 +150,13 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
             }
     }
 
-    fun updateBasemap(selectedBasemap: BasemapOptions) {
+    fun updateBasemap() {
         // Update the UI state:
         _adaptiveUiState.update { currentState ->
-            currentState.copy(basemapOptions = selectedBasemap)
+            currentState.copy()
         }
         // Apply the state change for the viewmodel objects:
-        val basemap = Basemap(basemapStyle = selectedBasemap.getBasemapStyle())
+        val basemap = Basemap()
         arcGISMap.setBasemap(basemap = basemap)
         viewModelScope.launch {
             basemap.load()
@@ -172,14 +171,14 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
 }
 
 data class AdaptiveUiState(
-    val basemapOptions: BasemapOptions,
+    val basemapOptions: BasemapThemeOptions,
     val isSystemTextScaleEnabled: Boolean,
     val fontScale: Float,
     val symbolSize: Float
 ) {
     companion object {
         val defaultState = AdaptiveUiState(
-            basemapOptions = BasemapOptions.Light,
+            basemapOptions = BasemapThemeOptions.Light,
             isSystemTextScaleEnabled = true,
             fontScale = 1f,
             symbolSize = 10f
@@ -188,13 +187,7 @@ data class AdaptiveUiState(
     }
 }
 
-enum class BasemapOptions {
+enum class BasemapThemeOptions {
     Light, Dark
 }
 
-fun BasemapOptions.getBasemapStyle(): BasemapStyle {
-    return when (this) {
-        BasemapOptions.Light -> BasemapStyle.ArcGISLightGray
-        BasemapOptions.Dark -> BasemapStyle.ArcGISDarkGray
-    }
-}
