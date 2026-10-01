@@ -16,18 +16,28 @@
 
 package com.esri.arcgismaps.sample.updatelabelsandsymbolstoscaleforvisualaccessibility.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -40,13 +50,9 @@ internal fun UpdateLabelsAndSymbolsToScaleForVisualAccessibilitySupportingPane(
     onCheckedChange: (Boolean) -> Unit,
     onOpenTextSettings: () -> Unit
 ) {
+    var detailsExpanded by rememberSaveable { mutableStateOf(false) }
+
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Scaling source", style = MaterialTheme.typography.titleMedium)
-        Text("Aa  Labels: GeoView API", style = MaterialTheme.typography.bodyMedium)
-        Text("●  Symbols: OS text size", style = MaterialTheme.typography.bodyMedium)
-
-        HorizontalDivider()
-
         Text("Toggles", style = MaterialTheme.typography.titleMedium)
         Row(
             modifier = Modifier
@@ -72,18 +78,34 @@ internal fun UpdateLabelsAndSymbolsToScaleForVisualAccessibilitySupportingPane(
             Text("Open OS text-size settings")
         }
 
-        HorizontalDivider()
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { detailsExpanded = !detailsExpanded }
+        ) {
+            Text(if (detailsExpanded) "Hide scaling details" else "Show scaling details")
+            Icon(
+                imageVector = if (detailsExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription = null
+            )
+        }
 
-        Text("Current controls", style = MaterialTheme.typography.titleMedium)
-        Text("OS text size: ${adaptiveUiState.fontScale * 100}%")
-        Text(
-            "Labels: ${if (adaptiveUiState.isSystemTextScaleEnabled) "scaled by GeoView.useSystemTextScale" else "fixed size"}"
-        )
-        Text(
-            "Symbols: 10 DIPs × ${adaptiveUiState.fontScale} = " +
-                "${adaptiveUiState.symbolSize} DIPs"
-        )
+        AnimatedVisibility(visible = detailsExpanded) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("Scaling source", style = MaterialTheme.typography.titleMedium)
+                Text("Aa  Labels: GeoView API", style = MaterialTheme.typography.bodyMedium)
+                Text("●  Symbols: OS text size", style = MaterialTheme.typography.bodyMedium)
+                HorizontalDivider()
 
-        HorizontalDivider()
+                Text("Current controls", style = MaterialTheme.typography.titleMedium)
+                Text("OS text size: ${adaptiveUiState.fontScale * 100}%")
+                Text(
+                    "Labels: ${if (adaptiveUiState.isSystemTextScaleEnabled) "scaled by GeoView.useSystemTextScale" else "fixed size"}"
+                )
+                Text(
+                    "Symbols: 10 DIPs × ${adaptiveUiState.fontScale} = " +
+                        "${adaptiveUiState.symbolSize} DIPs"
+                )
+            }
+        }
     }
 }
