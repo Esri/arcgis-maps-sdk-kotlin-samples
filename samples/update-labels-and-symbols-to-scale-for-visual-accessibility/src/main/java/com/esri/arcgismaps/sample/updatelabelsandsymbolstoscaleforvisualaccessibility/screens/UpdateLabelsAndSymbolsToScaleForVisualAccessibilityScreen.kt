@@ -28,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -56,7 +58,9 @@ fun UpdateLabelsAndSymbolsToScaleForVisualAccessibilityScreen(
     LaunchedEffect(fontScale) {
         viewModel.updateFontScale(fontScale)
     }
-
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        viewModel.onSelectSystemTextSize(true)
+    }
     MainScreenScaffold(
         adaptiveUiState = adaptiveUiState,
         onCheckedChange = viewModel::onSelectSystemTextSize,
