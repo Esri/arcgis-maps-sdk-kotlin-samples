@@ -27,10 +27,10 @@ Note: There are several types of KML features. This sample only identifies featu
 
 ## Relevant API
 
-* MapViewProxy
 * IdentifyLayerResult
 * KMLLayer
 * KMLPlacemark
+* MapViewProxy
 
 ## About the data
 
