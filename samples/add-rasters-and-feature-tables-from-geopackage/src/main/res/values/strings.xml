@@ -1,0 +1,5 @@
+<resources>
+    <string name="add_rasters_and_feature_tables_from_geopackage_app_name">Add rasters and feature tables from geopackage</string>
+    <string name="add_rasters_and_feature_tables_from_geopackage_failed_to_load_map">Failed to load map</string>
+    <string name="add_rasters_and_feature_tables_from_geopackage_failed_to_load_geopackage">Failed to load geopackage</string>
+</resources>

@@ -1,0 +1,43 @@
+{
+    "category": "Layers",
+    "description": "Add rasters and feature tables from a geopackage to a map.",
+    "ignore": false,
+    "images": [
+        "add-rasters-and-feature-tables-from-geopackage.png"
+    ],
+    "keywords": [
+        "OGC",
+        "container",
+        "geopackage",
+        "layer",
+        "map",
+        "package",
+        "raster",
+        "table",
+        "FeatureLayer",
+        "GeoPackage",
+        "GeoPackageFeatureTable",
+        "GeoPackageRaster",
+        "RasterLayer"
+    ],
+    "language": "kotlin",
+    "offline_data": [
+        "68ec42517cdd439e81b036210483e8e7"
+    ],
+    "redirect_from": [],
+    "relevant_apis": [
+        "FeatureLayer",
+        "GeoPackage",
+        "GeoPackageFeatureTable",
+        "GeoPackageRaster",
+        "RasterLayer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/addrastersandfeaturetablesfromgeopackage/components/AddRastersAndFeatureTablesFromGeopackageViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrastersandfeaturetablesfromgeopackage/screens/AddRastersAndFeatureTablesFromGeopackageScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/addrastersandfeaturetablesfromgeopackage/MainActivity.kt"
+    ],
+    "formal_name": "AddRastersAndFeatureTablesFromGeopackage",
+    "title": "Add rasters and feature tables from geopackage"
+
+}
