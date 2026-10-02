@@ -39,6 +39,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPre
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
+import com.esri.arcgismaps.sample.sampleslib.components.adaptive.ThreePaneConfig
 
 /**
  * Main composable screen for the sample.
@@ -102,6 +103,7 @@ private fun MainScreenScaffold(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
+                config = ThreePaneConfig(compactSupportingPaneHeightRatio = 0.4f),
                 supportingPaneTitle = "Change the OS text size to scale feature labels and symbols",
                 mainPane = { _, _ -> mainPaneContent() },
                 supportingPane = { _, _ ->
