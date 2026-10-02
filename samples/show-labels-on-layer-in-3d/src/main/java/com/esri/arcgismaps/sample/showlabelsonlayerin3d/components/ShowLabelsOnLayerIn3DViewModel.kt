@@ -44,6 +44,26 @@ class ShowLabelsOnLayerIn3DViewModel(app: Application) : AndroidViewModel(app) {
         )
     )
 
+    // Create the text symbol for the label definition.
+    private val textSymbol = TextSymbol().apply {
+        color = Color.red
+        haloColor = Color.white
+        haloWidth = 2.0f
+        size = 16.0f
+    }
+
+    // Create the label definition to display the installation date of a feature.
+    private val labelDefinition = LabelDefinition(
+        labelExpression = ArcadeLabelExpression(
+            arcadeExpression = ArcadeExpression(
+                expression = $$"Text($feature.INSTALLATIONDATE, `DD MMM YY`)"
+            )
+        ),
+        textSymbol = textSymbol
+    ).apply {
+        placement = LabelingPlacement.LineAboveAlong
+        useCodedValues = true
+    }
 
     init {
         viewModelScope.launch {
@@ -66,31 +86,6 @@ class ShowLabelsOnLayerIn3DViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-
-    // Create the text symbol for the label definition.
-    private val textSymbol = TextSymbol().apply {
-        color = Color.red
-        haloColor = Color.white
-        haloWidth = 2.0f
-        size = 16.0f
-    }
-
-    // Create the label definition to display the installation date of a feature.
-    private val labelDefinition = LabelDefinition(
-        labelExpression = ArcadeLabelExpression(
-            arcadeExpression = ArcadeExpression(
-                expression = $$"Text($feature.INSTALLATIONDATE, `DD MMM YY`)"
-            )
-        ),
-        textSymbol = textSymbol
-    ).apply {
-        placement = LabelingPlacement.LineAboveAlong
-        useCodedValues = true
-    }
-
-
-
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
 }
-
