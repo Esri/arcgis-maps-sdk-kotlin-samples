@@ -68,17 +68,11 @@ fun UpdateLabelsAndSymbolsToScaleForVisualAccessibilityScreen(
             context.startActivity(Intent(Settings.ACTION_DISPLAY_SETTINGS))
         },
         mainPaneContent = {
-            val restaurantViewpoint = viewModel.restaurantViewpoint.collectAsStateWithLifecycle().value
-
             MapView(
                 arcGISMap = viewModel.arcGISMap,
                 useSystemTextScale = adaptiveUiState.isSystemTextScaleEnabled,
                 mapViewProxy = viewModel.mapViewProxy
             )
-
-            LaunchedEffect(restaurantViewpoint) {
-                restaurantViewpoint?.let { viewModel.mapViewProxy.setViewpoint(it) }
-            }
         }
     )
 

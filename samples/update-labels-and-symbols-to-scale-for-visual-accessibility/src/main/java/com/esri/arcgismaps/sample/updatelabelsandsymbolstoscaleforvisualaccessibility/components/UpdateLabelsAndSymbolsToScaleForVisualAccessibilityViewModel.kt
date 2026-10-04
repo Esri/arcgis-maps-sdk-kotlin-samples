@@ -25,6 +25,7 @@ import com.arcgismaps.data.ServiceFeatureTable
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Basemap
+import com.arcgismaps.mapping.BasemapStyle
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.labeling.ArcadeLabelExpression
 import com.arcgismaps.mapping.labeling.LabelDefinition
@@ -53,9 +54,6 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
 
     // Expose the state flow as read-only for the UI
     val adaptiveUiState = _adaptiveUiState.asStateFlow()
-
-    private val _restaurantViewpoint = MutableStateFlow<Viewpoint?>(null)
-    val restaurantViewpoint = _restaurantViewpoint.asStateFlow()
 
     private val foodFeatureLayer: FeatureLayer = FeatureLayer.createWithFeatureTable(
         ServiceFeatureTable(FOOD_LAYER_URL)
@@ -98,7 +96,7 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
                         .onSuccess {
                             updateFoodSymbolRenderer()
                             foodFeatureLayer.fullExtent?.let { extent ->
-                                _restaurantViewpoint.value = Viewpoint(extent)
+                                mapViewProxy.setViewpoint(Viewpoint(extent))
                             }
                         }
                 }
@@ -156,7 +154,7 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
             currentState.copy()
         }
         // Apply the state change for the viewmodel objects:
-        val basemap = Basemap()
+        val basemap = Basemap(BasemapStyle.ArcGISTopographic)
         arcGISMap.setBasemap(basemap = basemap)
         viewModelScope.launch {
             basemap.load()
@@ -171,23 +169,17 @@ class UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel(app: Applicat
 }
 
 data class AdaptiveUiState(
-    val basemapOptions: BasemapThemeOptions,
     val isSystemTextScaleEnabled: Boolean,
     val fontScale: Float,
     val symbolSize: Float
 ) {
     companion object {
         val defaultState = AdaptiveUiState(
-            basemapOptions = BasemapThemeOptions.Light,
             isSystemTextScaleEnabled = true,
             fontScale = 1f,
             symbolSize = 10f
         )
 
     }
-}
-
-enum class BasemapThemeOptions {
-    Light, Dark
 }
 
