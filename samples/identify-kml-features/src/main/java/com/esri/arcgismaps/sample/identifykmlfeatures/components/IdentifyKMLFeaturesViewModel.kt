@@ -41,24 +41,27 @@ class IdentifyKMLFeaturesViewModel(app: Application) : AndroidViewModel(app) {
 
     val mapViewProxy = MapViewProxy()
 
-
+    // The KML dataset is created from a URL that points to a KML file containing weather forecast data. The KML layer is then created using this dataset.
     val kmlDataset = KmlDataset(uri = "https://www.arcgis.com/sharing/rest/content/items/f5e0e5cd088846a5b97b7ed66a8bad5c/data")
 
+    // The KML layer is created using the KML dataset. This layer will be added to the map's operational layers.
     val forecastLayer = KmlLayer(kmlDataset = kmlDataset)
 
+    // A MutableStateFlow to track the loading state of the KML layer. This can be used to show a loading indicator in the UI while the layer is being loaded.
     private val _isLoading = MutableStateFlow(false)
 
+    // A MutableStateFlow to track the currently selected point and its associated HTML content.
     private val _pointAndHtml = MutableStateFlow<Pair<Point, String>?>(null)
     val pointAndHtml: StateFlow<Pair<Point, String>?> = _pointAndHtml.asStateFlow()
 
+    // A MutableStateFlow to track the offset of the callout. This can be used to adjust the position of the callout in the UI.
     private val _offset = MutableStateFlow(Offset.Zero)
     val offset: StateFlow<Offset> = _offset
 
+    // A MutableStateFlow to track the graphics overlay used for displaying the tap location. This can be used to show a marker at the location where the user tapped on the map.
     private val _tapLocationGraphicsOverlay = MutableStateFlow(GraphicsOverlay())
     val tapLocationGraphicsOverlay: StateFlow<GraphicsOverlay> =
         _tapLocationGraphicsOverlay.asStateFlow()
-
-
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -93,16 +96,24 @@ class IdentifyKMLFeaturesViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val identifyResult = mapViewProxy.identify(layer = forecastLayer, screenCoordinate = event.screenCoordinate, tolerance = 10.0.dp)
             val feature = identifyResult.getOrNull()
+            // Check if the identified feature is not null and has geoElements.
             if (feature != null && feature.geoElements.isNotEmpty()) {
-                val firstKMLPlacemark : KmlPlacemark = feature.geoElements.first() as KmlPlacemark
-                // Google Earth only displays the placemarks with description or extended data.
-                // To match its behavior, add a description placeholder if it is empty.
-                if(firstKMLPlacemark.description.isEmpty()){
-                    firstKMLPlacemark.description = "Weather Condition"
+                // Get the first KML placemark from the identified feature's geoElements.
+                val firstKMLPlacemark : KmlPlacemark? = feature.geoElements.filterIsInstance<KmlPlacemark>().firstOrNull()
+                if(firstKMLPlacemark != null){
+                    // Google Earth only displays the placemarks with description or extended data.
+                    // To match its behavior, add a description placeholder if it is empty.
+                    if(firstKMLPlacemark.description.isEmpty()){
+                        firstKMLPlacemark.description = "Weather Condition"
+                    }
+                    val kmlText = firstKMLPlacemark.balloonContent
+                    //Update the state with the identified point and HTML content to be displayed in the callout.
+                    event.mapPoint?.let { mapPoint ->
+                        _pointAndHtml.value = Pair(mapPoint, kmlText)
+                    }
+                }else{
+                    _pointAndHtml.value = null
                 }
-                val kmlText = firstKMLPlacemark.balloonContent
-                //Update the state with the identified point and HTML content to be displayed in the callout.
-                _pointAndHtml.value = Pair(event.mapPoint!!, kmlText)
             } else {
                 _pointAndHtml.value = null
             }
