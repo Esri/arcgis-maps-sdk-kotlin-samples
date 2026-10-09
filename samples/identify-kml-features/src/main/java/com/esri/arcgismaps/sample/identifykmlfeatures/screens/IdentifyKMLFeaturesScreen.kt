@@ -62,7 +62,7 @@ fun IdentifyKMLFeaturesScreen(
     val pointAndHtml = mapViewModel.pointAndHtml.collectAsState().value
     val point = pointAndHtml?.first
     val htmlText = pointAndHtml?.second
-    val offset = mapViewModel.offset.collectAsState().value
+    val offset = Offset.Zero
     val tapLocationGraphicsOverlay = mapViewModel.tapLocationGraphicsOverlay.collectAsState().value
     var rotateOffsetWithGeoView by rememberSaveable { mutableStateOf(false) }
     var calloutVisibility by rememberSaveable { mutableStateOf(true) }

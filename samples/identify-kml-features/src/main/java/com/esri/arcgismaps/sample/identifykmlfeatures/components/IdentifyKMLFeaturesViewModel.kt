@@ -54,10 +54,6 @@ class IdentifyKMLFeaturesViewModel(app: Application) : AndroidViewModel(app) {
     private val _pointAndHtml = MutableStateFlow<Pair<Point, String>?>(null)
     val pointAndHtml: StateFlow<Pair<Point, String>?> = _pointAndHtml.asStateFlow()
 
-    // A MutableStateFlow to track the offset of the callout. This can be used to adjust the position of the callout in the UI.
-    private val _offset = MutableStateFlow(Offset.Zero)
-    val offset: StateFlow<Offset> = _offset
-
     // A MutableStateFlow to track the graphics overlay used for displaying the tap location. This can be used to show a marker at the location where the user tapped on the map.
     private val _tapLocationGraphicsOverlay = MutableStateFlow(GraphicsOverlay())
     val tapLocationGraphicsOverlay: StateFlow<GraphicsOverlay> =
