@@ -59,7 +59,6 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 fun IdentifyKMLFeaturesScreen(
     mapViewModel: IdentifyKMLFeaturesViewModel = viewModel()
 ) {
-    val mapViewModel: IdentifyKMLFeaturesViewModel = viewModel()
     val pointAndHtml = mapViewModel.pointAndHtml.collectAsState().value
     val point = pointAndHtml?.first
     val htmlText = pointAndHtml?.second

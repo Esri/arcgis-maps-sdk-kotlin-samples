@@ -70,7 +70,6 @@ class IdentifyKMLFeaturesViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             _isLoading.value = true
             arcGISMap.operationalLayers.apply {
-                clear()
                 add(forecastLayer)
             }
             forecastLayer.load().onSuccess {
@@ -94,11 +93,10 @@ class IdentifyKMLFeaturesViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onSingleTapConfirmed(event: SingleTapConfirmedEvent) {
         viewModelScope.launch {
-            val identifyResult = mapViewProxy.identify(layer = forecastLayer, screenCoordinate = event.screenCoordinate, tolerance = 10.0.dp)
-            val feature = identifyResult.getOrNull()
+            val feature = mapViewProxy.identify(layer = forecastLayer, screenCoordinate = event.screenCoordinate, tolerance = 10.0.dp).getOrNull()
             // Check if the identified feature is not null and has geoElements.
             if (feature != null && feature.geoElements.isNotEmpty()) {
-                // Get the first KML placemark from the identified feature's geoElements.
+                // Get the first KML placemark from the identify layer result's geoElements.
                 val firstKMLPlacemark : KmlPlacemark? = feature.geoElements.filterIsInstance<KmlPlacemark>().firstOrNull()
                 if(firstKMLPlacemark != null){
                     // Google Earth only displays the placemarks with description or extended data.
