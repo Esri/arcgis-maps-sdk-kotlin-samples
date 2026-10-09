@@ -169,4 +169,3 @@ fun HtmlText(modifier: Modifier = Modifier, html: String, htmlFlag: Int, textCol
         }
     )
 }
-

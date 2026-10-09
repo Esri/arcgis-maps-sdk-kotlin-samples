@@ -17,7 +17,6 @@
 package com.esri.arcgismaps.sample.identifykmlfeatures.components
 
 import android.app.Application
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -89,11 +88,11 @@ class IdentifyKMLFeaturesViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onSingleTapConfirmed(event: SingleTapConfirmedEvent) {
         viewModelScope.launch {
-            val feature = mapViewProxy.identify(layer = forecastLayer, screenCoordinate = event.screenCoordinate, tolerance = 10.0.dp).getOrNull()
-            // Check if the identified feature is not null and has geoElements.
-            if (feature != null && feature.geoElements.isNotEmpty()) {
+            val identifyLayerResult = mapViewProxy.identify(layer = forecastLayer, screenCoordinate = event.screenCoordinate, tolerance = 10.0.dp).getOrNull()
+            // Check if the identified result is not null and has geoElements.
+            if (identifyLayerResult != null && identifyLayerResult.geoElements.isNotEmpty()) {
                 // Get the first KML placemark from the identify layer result's geoElements.
-                val firstKMLPlacemark : KmlPlacemark? = feature.geoElements.filterIsInstance<KmlPlacemark>().firstOrNull()
+                val firstKMLPlacemark : KmlPlacemark? = identifyLayerResult.geoElements.filterIsInstance<KmlPlacemark>().firstOrNull()
                 if(firstKMLPlacemark != null){
                     // Google Earth only displays the placemarks with description or extended data.
                     // To match its behavior, add a description placeholder if it is empty.
