@@ -57,21 +57,31 @@ Once you have set up your developer environment you can run any sample from with
 
 ### Build/Run sample from Gradle
 
-You can execute all the build tasks using the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) command line tool. It's available as a batch file for Windows (gradlew.bat) and a shell script for Linux/Mac (gradlew.sh) and it is accessible from the root of the project.  
+You can execute all the build tasks using the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) command line tool. It's available as a batch file for Windows (`gradlew.bat`) and a shell script for Linux/macOS (`gradlew`) and it is accessible from the root of the repository. Run the commands below from that directory.
+
+The individual samples are library modules, so the `app` module is the one that builds an installable APK containing all of them.
 
 * Build a debug APK
 
+macOS/Linux:
 ```
-$ ./gradlew assembleDebug
-```
-
-* Install the app on the device
-
-```adb
-adb -d install path/to/sample.apk
+$ ./gradlew :app:assembleDebug
 ```
 
-Built APK's are saved to **arcgis-maps-sdk-kotlin-samples/app/build/outputs/**. More information about running apps on devices can be found [here](https://developer.android.com/studio/run/device.html).
+Windows:
+```
+> gradlew.bat :app:assembleDebug
+```
+
+* Install the app on a connected device or running emulator
+
+```
+adb install app/build/outputs/apk/debug/app-debug.apk
+```
+
+Alternatively, build and install in one step with `./gradlew :app:installDebug` (`gradlew.bat :app:installDebug` on Windows).
+
+Built APKs are saved to **app/build/outputs/apk/debug/** in the repository. More information about running apps on devices can be found [here](https://developer.android.com/studio/run/device.html).
 
 ## Issues
 
