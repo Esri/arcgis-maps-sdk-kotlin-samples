@@ -15,9 +15,11 @@ ArcGIS Maps SDK for Kotlin v300.1.0 samples.  The `main` branch of this reposito
 
 ## Prerequisites
 
-* The samples are building with `targetSdk 37`
-* [Android Studio](http://developer.android.com/sdk/index.html)
-* [An ArcGIS Developers API key](https://developers.arcgis.com/kotlin/get-started/#3-get-an-api-key)
+* The samples are building with `targetSdk 37` and support devices running Android 9 (`minSdk 28`) or later
+* [Android Studio](http://developer.android.com/sdk/index.html) Panda 4 (2025.3.4) or later, which is the first version that supports the Android Gradle Plugin version this project uses
+* JDK 17 (bundled with Android Studio; only needed separately if you build from the command line)
+* An Android device or emulator to run the samples on
+* [An ArcGIS Developers API key](https://developers.arcgis.com/kotlin/get-started/#3-get-an-api-key), which you add to `local.properties` as described in [Accessing Esri location services](#accessing-esri-location-services)
 
 ## Developer Instructions
 
