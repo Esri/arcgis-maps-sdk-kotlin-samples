@@ -26,7 +26,7 @@ Please read our [developer instructions wiki page](https://github.com/Esri/arcgi
 Once the project is cloned to disk you can import into Android Studio:
 
 * From the Welcome to Android Studio screen, click the **Open** button. (If you're already inside a project, click **File > Open** in the menu bar instead.)
-* Navigate to the **arcgis-maps-sdk-kotlin-samples/** folder and click **OK**.
+* Navigate to the **arcgis-maps-sdk-kotlin-samples/** directory and click **OK**.
 
 ## Accessing Esri location services
 
@@ -41,11 +41,35 @@ A long-lived access token that gives your application access to ArcGIS location 
   * **Location services** > **Routing**
 
 The Kotlin samples in this repository have been structured to use an access token, set once, which will run in all samples.
-Set your access token in the `local.properties` in the same folder as the `secrets.defaults.properties`.
-The ACCESS_TOKEN property should contain quotes around the key itself:
-```gradle
-ACCESS_TOKEN=YOUR_ACCESS_TOKEN
+Set your access token in a `local.properties` file in the root of the repository (the same directory as `secrets.defaults.properties` and `settings.gradle.kts`):
+
+* macOS/Linux: `/path/to/arcgis-maps-sdk-kotlin-samples/local.properties`
+* Windows: `C:\path\to\arcgis-maps-sdk-kotlin-samples\local.properties`
+
+`local.properties` is listed in `.gitignore`, so it is not part of the repository and your token will never be committed. Android Studio usually creates this file for you (it contains the `sdk.dir` line) the first time you open the project. If the file doesn't exist, create it yourself. If it already exists, keep its existing lines and add the new one.
+
+Add this line, replacing `YOUR_ACCESS_TOKEN` with your API key and **keeping the double quotes**:
+```properties
+ACCESS_TOKEN="YOUR_ACCESS_TOKEN"
 ```
+
+For example, a complete `local.properties` might look like this (the `sdk.dir` path will differ on your machine).
+
+macOS/Linux:
+```properties
+sdk.dir=/Users/yourname/Library/Android/sdk
+ACCESS_TOKEN="AAPK1234567890abcdef..."
+```
+
+Windows (backslashes and the drive colon must be escaped in `.properties` files):
+```properties
+sdk.dir=C\:\\Users\\yourname\\AppData\\Local\\Android\\Sdk
+ACCESS_TOKEN="AAPK1234567890abcdef..."
+```
+
+If you don't set `ACCESS_TOKEN`, the placeholder value from `secrets.defaults.properties` is used and samples that need location services will fail to load. Don't put your real token in `secrets.defaults.properties`, since that file is tracked by git.
+
+Samples that use Google's Geospatial API (AR samples) also need a `GOOGLE_API_KEY` in `local.properties`, set the same way.
 
 ### ArcGIS identity
 
