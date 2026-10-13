@@ -50,7 +50,8 @@ android {
             ndk {
                 abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
             }
-            isMinifyEnabled = false
+            isMinifyEnabled = providers.gradleProperty("minifyEnabled").get().toBoolean()
+            isShrinkResources = providers.gradleProperty("shrinkResources").get().toBoolean()
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // If signing.properties file not found, gradle will build an unsigned APK.
             // For release builds, provide the required "signingPropsFilePath" for a signed APK, using:
