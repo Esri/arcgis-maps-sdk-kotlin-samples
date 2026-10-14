@@ -280,7 +280,7 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                 )
             }
 
-            UtilityNetworkSourceType.Circuit -> {
+            else -> {
                 // Ignore, Circuit source type.
             }
         }
