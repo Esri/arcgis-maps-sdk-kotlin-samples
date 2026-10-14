@@ -279,6 +279,10 @@ class TraceUtilityNetworkViewModel(application: Application) : AndroidViewModel(
                     mapPoint = mapPoint
                 )
             }
+
+            else -> {
+                // Ignore, Circuit source type.
+            }
         }
     }
 
