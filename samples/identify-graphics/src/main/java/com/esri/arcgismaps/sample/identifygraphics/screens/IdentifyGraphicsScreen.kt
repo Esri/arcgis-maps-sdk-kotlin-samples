@@ -19,9 +19,19 @@ package com.esri.arcgismaps.sample.identifygraphics.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.esri.arcgismaps.sample.identifygraphics.components.IdentifyGraphicsViewModel
@@ -52,16 +62,58 @@ fun IdentifyGraphicsScreen(sampleName: String) {
                 )
             }
 
-            // Show a dialog if the sample encounters an error.
-            viewModel.messageDialogVM.apply {
-                if (dialogStatus) {
-                    MessageDialog(
-                        title = messageTitle,
-                        description = messageDescription,
-                        onDismissRequest = ::dismissDialog
-                    )
-                }
-            }
+            // Show a dialog if the sample needs to show a message or error.
+            MessageDialog(
+                viewModel.messageDialogState,
+                onDismiss = viewModel.messageDialogState::hide
+            )
         }
     )
+}
+
+
+@Composable
+fun MessageDialog(
+    state: MessageDialogState,
+    icon: ImageVector = Icons.Filled.Info,
+    onDismiss: (() -> Unit)? = null,
+) {
+    if (!state.dialogStatus) {
+        return
+    }
+    AlertDialog(
+        onDismissRequest = { onDismiss?.invoke() },
+        icon = { Icon(imageVector = icon, contentDescription = null) },
+        title = { Text(state.title) },
+        text = { Text(state.description) },
+        confirmButton = {
+            TextButton(onClick = { onDismiss?.invoke() }) {
+                Text("Dismiss")
+            }
+        },
+    )
+}
+
+class MessageDialogState() {
+    var dialogStatus by mutableStateOf(false)
+
+    var title by mutableStateOf("")
+
+    var description by mutableStateOf("")
+
+    fun showError(error: Throwable) {
+        title = error.message ?: "Unknown error"
+        description = error.cause.toString()
+        dialogStatus = true
+    }
+
+    fun showMessage(title: String, description: String = "") {
+        this@MessageDialogState.title = title
+        this@MessageDialogState.description = description
+        dialogStatus = true
+    }
+
+    fun hide() {
+        dialogStatus = false
+    }
 }
