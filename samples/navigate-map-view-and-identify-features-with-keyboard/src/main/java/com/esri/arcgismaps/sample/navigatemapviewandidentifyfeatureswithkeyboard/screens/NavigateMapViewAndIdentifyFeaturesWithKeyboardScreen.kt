@@ -47,6 +47,8 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -139,8 +141,12 @@ fun NavigateMapViewAndIdentifyFeaturesWithKeyboardScreen(
                             selectedOrderedFeature?.let { orderedFeature ->
                                 Callout(location = orderedFeature.point) {
                                     Column {
+                                        val title = orderedFeature.name ?: "Restaurant"
                                         Text(
-                                            text = orderedFeature.name ?: "Restaurant",
+                                            modifier = Modifier
+                                                .preferredContentFocusTarget()
+                                                .semantics { contentDescription = title },
+                                            text = title,
                                             style = MaterialTheme.typography.titleSmall
                                         )
                                         Spacer(modifier = Modifier.size(4.dp))
