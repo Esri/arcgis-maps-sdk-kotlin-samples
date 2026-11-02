@@ -58,6 +58,7 @@ class DownloaderActivity : ComponentActivity() {
         mainActivity = Intent(this, targetActivity)
 
         downloadViewModel.configure(
+            sampleId = mainActivityClassName,
             sampleName = sampleName,
             provisionUrls = provisionIDs
         )
