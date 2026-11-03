@@ -26,6 +26,7 @@ import com.arcgismaps.Color
 import com.arcgismaps.analysis.BooleanFieldFunction
 import com.arcgismaps.analysis.ContinuousField
 import com.arcgismaps.analysis.ContinuousFieldFunction
+import com.arcgismaps.analysis.ContinuousFieldSupplier
 import com.arcgismaps.analysis.interactive.FieldAnalysis
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
@@ -95,8 +96,7 @@ class AnalyzeTerrainSuitabilityFromSlopeAndAspectViewModel(app: Application) :
                 )
 
                 // Create the continuous field function for the elevation data
-                val elevationFieldFunction =
-                    ContinuousFieldFunction.create(result = continuousField)
+                val elevationFieldFunction = ContinuousFieldSupplier(continuousField)
 
                 // Derive slope and aspect from the elevation field
                 val slopeFunction = elevationFieldFunction.slope()
