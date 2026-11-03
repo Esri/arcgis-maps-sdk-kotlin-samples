@@ -32,6 +32,7 @@ The sample loads with a viewshed analysis initialized from an elevation raster c
 * ColormapRenderer
 * ContinuousField
 * ContinuousFieldFunction
+* ContinuousFieldSupplier
 * FieldAnalysis
 * ViewshedFunction
 * ViewshedParameters
