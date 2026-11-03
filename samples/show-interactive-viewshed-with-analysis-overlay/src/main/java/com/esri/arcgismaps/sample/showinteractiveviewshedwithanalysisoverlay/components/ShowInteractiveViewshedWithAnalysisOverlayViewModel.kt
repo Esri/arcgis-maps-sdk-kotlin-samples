@@ -24,7 +24,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.analysis.ContinuousField
-import com.arcgismaps.analysis.ContinuousFieldFunction
+import com.arcgismaps.analysis.ContinuousFieldSupplier
 import com.arcgismaps.analysis.interactive.FieldAnalysis
 import com.arcgismaps.analysis.visibility.ViewshedFunction
 import com.arcgismaps.analysis.visibility.ViewshedParameters
@@ -133,8 +133,9 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
                 .onFailure {
                     messageDialogVM.showMessageDialog(it)
                 }.onSuccess { continuousField ->
-                    // Create a ContinuousFieldFunction from the ContinuousField
-                    val continuousFieldFunction = ContinuousFieldFunction.create(continuousField)
+                    // Create a ContinuousFieldFunction from the ContinuousField, using
+                    // ContinuousFieldSupplier
+                    val continuousFieldFunction = ContinuousFieldSupplier(continuousField)
 
                     // Create a ViewshedFunction using the ContinuousFieldFunction and
                     // ViewshedParameters, then convert it to a DiscreteFieldFunction
