@@ -124,43 +124,48 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
 
         viewModelScope.launch {
-            // Display a symbol to mark the observer position
-            graphicsOverlay.graphics.add(observerGraphic)
+            arcGISMap.load().onSuccess {
+                // Display a symbol to mark the observer position
+                graphicsOverlay.graphics.add(observerGraphic)
 
-            // Create a ContinuousField from a raster file containing elevation data
-            val filePaths = listOf(filePath.toString())
-            ContinuousField.createFromFiles(filePaths = filePaths, band = 0)
-                .onFailure {
-                    messageDialogVM.showMessageDialog(it)
-                }.onSuccess { continuousField ->
-                    // Create a ContinuousFieldFunction from the ContinuousField, using
-                    // ContinuousFieldSupplier
-                    val continuousFieldFunction = ContinuousFieldSupplier(continuousField)
+                // Create a ContinuousField from a raster file containing elevation data
+                val filePaths = listOf(filePath.toString())
+                ContinuousField.createFromFiles(filePaths = filePaths, band = 0)
+                    .onFailure {
+                        messageDialogVM.showMessageDialog(it)
+                    }.onSuccess { continuousField ->
+                        // Create a ContinuousFieldFunction from the ContinuousField, using
+                        // ContinuousFieldSupplier
+                        val continuousFieldFunction = ContinuousFieldSupplier(continuousField)
 
-                    // Create a ViewshedFunction using the ContinuousFieldFunction and
-                    // ViewshedParameters, then convert it to a DiscreteFieldFunction
-                    val viewshedFunction =
-                        ViewshedFunction(
-                            elevation = continuousFieldFunction,
-                            parameters = viewshedParameters
-                        )
-                    val discreteViewshed = viewshedFunction.toDiscreteFieldFunction()
+                        // Create a ViewshedFunction using the ContinuousFieldFunction and
+                        // ViewshedParameters, then convert it to a DiscreteFieldFunction
+                        val viewshedFunction =
+                            ViewshedFunction(
+                                elevation = continuousFieldFunction,
+                                parameters = viewshedParameters
+                            )
+                        val discreteViewshed = viewshedFunction.toDiscreteFieldFunction()
 
-                    // Create a ColormapRenderer from a Colormap with colors that represent visible
-                    // and non-visible results
-                    val areaNotVisibleColor = Color.gray
-                    val areaVisibleColor = Color.fromRgba(r = 136, g = 204, b = 132, a = 100)
-                    val colors = listOf(areaNotVisibleColor, areaVisibleColor)
-                    val colormap = Colormap.create(colors)
-                    val colormapRenderer = ColormapRenderer(colormap)
+                        // Create a ColormapRenderer from a Colormap with colors that represent visible
+                        // and non-visible results
+                        val areaNotVisibleColor = Color.gray
+                        val areaVisibleColor = Color.fromRgba(r = 136, g = 204, b = 132, a = 100)
+                        val colors = listOf(areaNotVisibleColor, areaVisibleColor)
+                        val colormap = Colormap.create(colors)
+                        val colormapRenderer = ColormapRenderer(colormap)
 
-                    // Create a FieldAnalysis from the DiscreteFieldFunction and ColormapRenderer,
-                    // then add it to the AnalysisOverlay's collection of analysis objects to
-                    // display the results
-                    val analysis =
-                        FieldAnalysis(discreteFieldFunction = discreteViewshed, colormapRenderer)
-                    analysisOverlay.analyses.add(analysis)
-                }
+                        // Create a FieldAnalysis from the DiscreteFieldFunction and ColormapRenderer,
+                        // then add it to the AnalysisOverlay's collection of analysis objects to
+                        // display the results
+                        val analysis =
+                            FieldAnalysis(
+                                discreteFieldFunction = discreteViewshed,
+                                colormapRenderer
+                            )
+                        analysisOverlay.analyses.add(analysis)
+                    }
+            }
         }
     }
 
