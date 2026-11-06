@@ -124,7 +124,10 @@ class ShowInteractiveViewshedWithAnalysisOverlayViewModel(app: Application) : An
         }
 
         viewModelScope.launch {
-            arcGISMap.load().onSuccess {
+            // Load the map, to ensure it has a spatial reference before starting analysis below
+            arcGISMap.load().onFailure {
+                messageDialogVM.showMessageDialog(it)
+            }.onSuccess {
                 // Display a symbol to mark the observer position
                 graphicsOverlay.graphics.add(observerGraphic)
 
