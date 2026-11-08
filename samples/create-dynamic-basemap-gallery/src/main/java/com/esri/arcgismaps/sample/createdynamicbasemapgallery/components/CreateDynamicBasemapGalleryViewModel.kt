@@ -81,7 +81,6 @@ class CreateDynamicBasemapGalleryViewModel(app: Application) : AndroidViewModel(
 
             // Load available basemap styles from the BasemapStyles service and create gallery items
             val service = BasemapStylesService()
-
             service.load().onSuccess {
                 val stylesInfo = service.info?.stylesInfo
                 if (!stylesInfo.isNullOrEmpty()) {
