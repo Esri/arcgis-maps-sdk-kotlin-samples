@@ -1,4 +1,4 @@
-# Create Dynamic base map gallery
+# Create dynamic base map gallery
 
 Create Dynamic base map gallery
 
