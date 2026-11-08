@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.dynamicbasemapgallery.components
+package com.esri.arcgismaps.sample.createdynamicbasemapgallery.components
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -40,7 +40,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class DynamicBasemapGalleryViewModel(app: Application) : AndroidViewModel(app) {
+class CreateDynamicBasemapGalleryViewModel(app: Application) : AndroidViewModel(app) {
 
     // Map initialized with an imagery basemap to match the Swift sample
     val arcGISMap by mutableStateOf(

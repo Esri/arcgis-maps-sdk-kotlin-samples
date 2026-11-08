@@ -1,8 +1,8 @@
-# Dynamic base map gallery
+# Create Dynamic base map gallery
 
-Dynamic base map gallery
+Create Dynamic base map gallery
 
-![Image of dynamic basemap gallery](dynamic-basemap-gallery.png)
+![Image of dynamic basemap gallery](create-dynamic-basemap-gallery.png)
 
 ## Use case
 

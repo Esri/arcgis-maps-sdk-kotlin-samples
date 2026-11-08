@@ -1,0 +1,26 @@
+{
+    "category": "Maps",
+    "description": "Create Dynamic base map gallery",
+    "formal_name": "CreateDynamicBasemapGallery",
+    "ignore": false,
+    "images": [
+        "create-dynamic-basemap-gallery.png"
+    ],
+    "keywords": [
+        "basemapgallery map",
+        "basemapgallery"
+    ],
+    "language": "kotlin",
+    "redirect_from": [
+        "TODO"
+    ],
+    "relevant_apis": [
+        "basemapgallery"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/createdynamicbasemapgallery/components/CreateDynamicBasemapGalleryViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createdynamicbasemapgallery/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/createdynamicbasemapgallery/screens/CreateDynamicBasemapGalleryScreen.kt"
+    ],
+    "title": "Create Dynamic base map gallery"
+}
