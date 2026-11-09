@@ -6,7 +6,7 @@
     <application><activity
             android:exported="true"
             android:name=".MainActivity"
-            android:label="@string/dynamic_basemap_gallery_app_name">
+            android:label="@string/create_dynamic_basemap_gallery_app_name">
             
         </activity>
     </application>
