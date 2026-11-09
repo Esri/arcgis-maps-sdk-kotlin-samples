@@ -24,7 +24,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.Color
 import com.arcgismaps.analysis.ContinuousField
-import com.arcgismaps.analysis.ContinuousFieldFunction
+import com.arcgismaps.analysis.ContinuousFieldSupplier
 import com.arcgismaps.analysis.floor
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
@@ -163,7 +163,7 @@ class ApplyMapAlgebraViewModel(app: Application) : AndroidViewModel(app) {
                 ).getOrThrow()
 
                 // Mask out values below sea level before classifying the terrain.
-                val continuousFieldFunction = ContinuousFieldFunction.create(elevationField)
+                val continuousFieldFunction = ContinuousFieldSupplier(elevationField)
                 val elevationFieldFunction = continuousFieldFunction.mask(
                     selection = continuousFieldFunction.isGreaterThanOrEqualTo(0.0f)
                 )
