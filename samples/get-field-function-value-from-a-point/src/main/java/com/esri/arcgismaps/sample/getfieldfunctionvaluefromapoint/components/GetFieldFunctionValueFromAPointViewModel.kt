@@ -1,0 +1,383 @@
+/* Copyright 2026 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.esri.arcgismaps.sample.getfieldfunctionvaluefromapoint.components
+
+import android.app.Application
+import android.graphics.drawable.BitmapDrawable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.arcgismaps.Color
+import com.arcgismaps.analysis.BooleanFieldSampleFunction
+import com.arcgismaps.analysis.ContinuousField
+import com.arcgismaps.analysis.ContinuousFieldSampleFunction
+import com.arcgismaps.analysis.ContinuousFieldSupplier
+import com.arcgismaps.analysis.FloatSupplier
+import com.arcgismaps.analysis.interactive.FieldAnalysis
+import com.arcgismaps.geometry.Point
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.BasemapStyle
+import com.arcgismaps.mapping.symbology.PictureMarkerSymbol
+import com.arcgismaps.mapping.symbology.raster.ColorRamp
+import com.arcgismaps.mapping.symbology.raster.Colormap
+import com.arcgismaps.mapping.symbology.raster.ColormapRenderer
+import com.arcgismaps.mapping.symbology.raster.MinMaxStretchParameters
+import com.arcgismaps.mapping.symbology.raster.StretchRenderer
+import com.arcgismaps.mapping.view.AnalysisOverlay
+import com.arcgismaps.mapping.view.AnalysisViewStatus
+import com.arcgismaps.mapping.view.GeoView
+import com.arcgismaps.mapping.view.Graphic
+import com.arcgismaps.mapping.view.GraphicsOverlay
+import com.arcgismaps.mapping.view.LongPressEvent
+import com.arcgismaps.mapping.view.PanChangeEvent
+import com.arcgismaps.mapping.view.PanChangeEvent.PanStatus
+import com.arcgismaps.mapping.view.SingleTapConfirmedEvent
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
+import com.esri.arcgismaps.sample.getfieldfunctionvaluefromapoint.R
+import com.esri.arcgismaps.sample.getfieldfunctionvaluefromapoint.components.FieldSampleUiState.Companion.initialFieldSampleUiState
+import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.io.File
+
+class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewModel(app) {
+    // Create a state flow to hold the UI state for the supporting pane controls
+    private val _fieldSampleUiState = MutableStateFlow(initialFieldSampleUiState)
+
+    // Expose the state flow as read-only for the UI
+    val uiState = _fieldSampleUiState.asStateFlow()
+
+    // Create a MapViewProxy, used to set viewpoint
+    val mapViewProxy = MapViewProxy()
+
+    // Initialize and keep track of the ArcGISMap & the overlays it uses
+    val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISHillshadeDark))
+    var analysisOverlay by mutableStateOf(AnalysisOverlay())
+    var graphicsOverlay by mutableStateOf(GraphicsOverlay())
+
+    // Indicates when the progress indicator should be displayed
+    var displayProgressIndicator by mutableStateOf(false)
+        private set
+
+    // Create a message dialog view model for handling error messages
+    val messageDialogVM = MessageDialogViewModel()
+
+    // Indicates if aircraft location is currently being dragged across the map
+    var isDragging by mutableStateOf(false)
+
+    // Keep track of haptic feedback events, used when dragging the aircraft location
+    private val _dragHapticEvents = MutableSharedFlow<DragHapticEvent>(extraBufferCapacity = 1)
+    val dragHapticEvents = _dragHapticEvents.asSharedFlow()
+
+    // Keep track of location of Callout (if any)
+    var calloutGraphic: Graphic? by mutableStateOf(null)
+    var sampleElevation: Float? by mutableStateOf(null)
+    var groundClearance: Float? by mutableStateOf(null)
+    var groundClearanceStatus: String by mutableStateOf("")
+
+    // Location of file containing elevation data
+    private val provisionPath: String by lazy {
+        app.getExternalFilesDir(null)?.path + File.separator + app.getString(
+            R.string.get_field_function_value_from_a_point_app_name
+        ) + File.separator
+    }
+    private val filePath = provisionPath + "Meribel.tif"
+
+    private val aircraftGraphic = Graphic()
+    private val aircraftAltitudeFloatSupplier = FloatSupplier(initialFieldSampleUiState.aircraftAltitude)
+    private var aircraftLocation: Point? = null
+
+    // Create a stretch renderer for visualizing the continuous field
+    private val stretchRenderer = StretchRenderer(
+        parameters = MinMaxStretchParameters(
+            minValues = listOf(1199.0),
+            maxValues = listOf(2740.0)
+        ),
+        gammas = listOf(1.0),
+        estimateStatistics = false,
+        colorRamp = ColorRamp.createFromColors(
+            colors = listOf(Color.fromRgba(r = 96, g = 98, b = 148, a = 255), Color.white),
+            size = 256
+        )
+    )
+
+    // Create a colormap renderer for visualizing the boolean field
+    val colormapRenderer = ColormapRenderer(
+        colormap = Colormap.create(
+            colors = listOf(
+                Color.fromRgba(r = 210, g = 60, b = 60, a = 255), // red
+                Color.fromRgba(r = 50, g = 170, b = 90, a = 0), // transparent
+            )
+        )
+    )
+
+    private lateinit var continuousFieldSampleFunction: ContinuousFieldSampleFunction
+    private lateinit var booleanFieldSampleFunction: BooleanFieldSampleFunction
+
+    init {
+        // Create a graphic to mark the aircraft position and add it to a graphics overlay
+        val aircraftDrawable =
+            ContextCompat.getDrawable(app, R.drawable.helicopter) as BitmapDrawable
+        val aircraftSymbol = PictureMarkerSymbol.createWithImage(aircraftDrawable)
+        aircraftSymbol.apply {
+            width = 28f
+            height = 28f
+        }
+        aircraftGraphic.symbol = aircraftSymbol
+        graphicsOverlay.graphics.add(aircraftGraphic)
+
+        viewModelScope.launch {
+            // Load the map and handle any errors by showing a message dialog
+            arcGISMap.load().onFailure {
+                messageDialogVM.showMessageDialog(it)
+            }.onSuccess {
+                // Create a ContinuousField from a raster file containing elevation data
+                ContinuousField.createFromFiles(filePaths = listOf(filePath), band = 0)
+                    .onFailure {
+                        messageDialogVM.showMessageDialog(it)
+                    }.onSuccess { continuousField ->
+                        // Create the continuous field function to sample elevation data from; this
+                        // function represents the elevation data from the continuous field
+                        val continuousFieldFunction = ContinuousFieldSupplier(continuousField)
+
+                        // Create the continuous field sample function to sample elevation data from the
+                        // continuous field function
+                        continuousFieldSampleFunction =
+                            ContinuousFieldSampleFunction(continuousFieldFunction, position = null)
+
+                        // Create an initial point to analyze at the center of the continuous field's extent
+                        val fieldCenter = continuousField.extent.center
+                        aircraftLocation = Point(
+                            x = fieldCenter.x,
+                            y = fieldCenter.y,
+                            z = _fieldSampleUiState.value.aircraftAltitude.toDouble(),
+                            spatialReference = fieldCenter.spatialReference
+                        )
+                        aircraftAltitudeFloatSupplier.value =
+                            _fieldSampleUiState.value.aircraftAltitude
+
+                        // Create a boolean field function representing clearance between ground-level
+                        // and value of the aircraft altitude slider. This boolean field function will
+                        // return true where ground-level is below the supplied altitude value. The
+                        // value is supplied by the aircraft altitude float supplier.
+                        val booleanFieldFunction = continuousFieldFunction.isLessThan(
+                            aircraftAltitudeFloatSupplier
+                        )
+
+                        // Create the boolean field sample function to sample aircraft clearance status
+                        // from the boolean field function
+                        booleanFieldSampleFunction =
+                            BooleanFieldSampleFunction(booleanFieldFunction, position = null)
+
+                        // Set the initial viewpoint of the map to the center of the continuous field's extent
+                        mapViewProxy.setViewpointCenter(
+                            center = continuousField.extent.center,
+                            scale = 50000.0
+                        )
+
+                        // Create the field analysis for the continuous field function.
+                        // This displays the elevation of the terrain using a black-to-white color ramp in a stretch renderer.
+                        val continuousFieldAnalysis =
+                            FieldAnalysis(continuousFieldFunction, stretchRenderer)
+                        continuousFieldAnalysis.opacity = 0.5f
+
+                        // Add the continuous field analysis to the analysis overlay.
+                        analysisOverlay.analyses.add(continuousFieldAnalysis)
+
+                        // Create the field analysis for the boolean field function.
+                        // This displays whether the aircraft meets the clearance criteria using a colormap renderer.
+                        val booleanFieldAnalysis =
+                            FieldAnalysis(booleanFieldFunction, colormapRenderer)
+                        booleanFieldAnalysis.opacity = 0.5f
+
+                        // Add the boolean field analysis to the analysis overlay.
+                        analysisOverlay.analyses.add(booleanFieldAnalysis)
+
+                        //TODO: review use of aircraftLocation & tappedPoint
+                        sampleFieldFunctionsAndDisplayCallout(aircraftLocation!!)//TODO
+                    }
+            }
+        }
+    }
+
+    /**
+     * TODO
+     */
+    private suspend fun sampleFieldFunctionsAndDisplayCallout(tappedPoint: Point) {
+        // Set the position of the sample functions to the tapped point.
+        continuousFieldSampleFunction.position = tappedPoint
+        booleanFieldSampleFunction.position = tappedPoint
+
+        // Evaluate the sample functions at the tapped point.
+        continuousFieldSampleFunction.evaluate()
+            .onFailure {
+                messageDialogVM.showMessageDialog(it) //TODO: test error display
+            }.onSuccess { continuousFieldSample ->
+//                if (!tappedPoint.equals(aircraftLocation)) {
+//                    return //TODO: this seems to make do sense
+//                }
+                // Get the value of the continuous field sample, which represents the terrain elevation.
+                val continuousFieldSampleValue = continuousFieldSample.value
+
+                // Evaluate the aircraft clearance boolean sample function at the tapped point.
+                booleanFieldSampleFunction.evaluate()
+                    .onFailure {
+                        messageDialogVM.showMessageDialog(it) //TODO: test error display
+                    }.onSuccess { groundClearanceBooleanSample ->
+                        // Calculate the clearance of the aircraft above the terrain elevation.
+                        groundClearance = when (continuousFieldSampleValue) {
+                            null -> null
+                            else -> _fieldSampleUiState.value.aircraftAltitude - continuousFieldSampleValue
+                        }
+
+//                        if (!tappedPoint.equals(aircraftLocation)) {
+//                            return //TODO: is this necessary?
+//                        }
+
+                        // Update the tapped location graphic with the new tapped point.
+                        aircraftGraphic.geometry = tappedPoint
+
+                        // Display the callout with the sample values at the tapped point.
+                        sampleElevation = continuousFieldSampleValue
+                        groundClearanceStatus = when (groundClearanceBooleanSample.value) {
+                            null -> ""
+                            true -> "Clear"
+                            false -> "Not Clear"
+                        }
+                        calloutGraphic = aircraftGraphic
+
+                        // TODO: do I need to...
+                        // Check if the tapped point has changed while sampling.
+                    }
+            }
+    }
+
+    /**
+     * An AnalysisViewStatus listener that displays the progress indicator when the status of the
+     * current scenario analysis is Updating and hides it when not Updating.
+     * Also displays details of any error that occurs when the analysis is displayed.
+     */
+    fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
+        displayProgressIndicator = when (event.analysisViewStatus){
+            is AnalysisViewStatus.Error -> { //TODO: test error display
+                messageDialogVM.showMessageDialog(
+                    throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
+                )
+                false
+            }
+            AnalysisViewStatus.UpToDate -> {
+                false
+            }
+            AnalysisViewStatus.Updating -> {
+                true
+            }
+        }
+    }
+
+    /**
+     * Sets a new aircraft altitude.
+     */
+    fun setAircraftAltitude(aircraftAltitude: Float) {
+        aircraftAltitudeFloatSupplier.value = aircraftAltitude
+        _fieldSampleUiState.update { it.copy(aircraftAltitude = aircraftAltitude) }
+
+        //TODO: review use of aircraftLocation & tappedPoint
+        viewModelScope.launch {
+            sampleFieldFunctionsAndDisplayCallout(aircraftLocation!!)//TODO
+        }
+    }
+
+    /**
+     * Sets the aircraft location to the location of the given tap [event].
+     */
+    fun onTap(event: SingleTapConfirmedEvent) {
+        setNewAircraftLocation(event.mapPoint)
+    }
+
+    /**
+     * Acts on a long press [event] by setting the aircraft location to the location of the long
+     * press and allowing it to be dragged across the map.
+     */
+    fun onLongPress(event: LongPressEvent) {
+        aircraftGraphic.isSelected = true
+        isDragging = true
+        _dragHapticEvents.tryEmit(DragHapticEvent.Start)
+        setNewAircraftLocation(event.mapPoint)
+    }
+
+    /**
+     * Acts on a pan [event]. If the aircraft location is currently being dragged, the new position
+     * is set to match the current screen coordinate. Dragging is terminated when panning ends.
+     */
+    fun onPan(event: PanChangeEvent) {
+        if (isDragging) {
+            setNewAircraftLocation(mapViewProxy.screenToLocationOrNull(event.screenCoordinate))
+            if (event.status == PanStatus.End) {
+                aircraftGraphic.isSelected = false
+                isDragging = false
+                _dragHapticEvents.tryEmit(DragHapticEvent.End)
+            }
+        }
+    }
+
+    /**
+     * Sets the aircraft location to the given [mapPoint].
+     */
+    private fun setNewAircraftLocation(mapPoint: Point?) {
+        // Dismiss any existing callout
+        calloutGraphic = null
+
+        if (mapPoint != null) {
+            aircraftLocation = Point(
+                x = mapPoint.x,
+                y = mapPoint.y,
+                z = _fieldSampleUiState.value.aircraftAltitude.toDouble(),
+                mapPoint.spatialReference
+            )
+            // Update the aircraft graphic geometry to the new aircraft location
+            aircraftGraphic.geometry = aircraftLocation
+
+            //TODO: review use of aircraftLocation & tappedPoint
+            viewModelScope.launch {
+                sampleFieldFunctionsAndDisplayCallout(aircraftLocation!!)//TODO
+            }
+        }
+    }
+}
+
+data class FieldSampleUiState(
+    val aircraftAltitude: Float
+) {
+    companion object {
+        // Initial parameters to drive the UI on launch
+        val initialFieldSampleUiState = FieldSampleUiState(
+            aircraftAltitude = 2000.0f
+        )
+    }
+}
+
+enum class DragHapticEvent {
+    Start,
+    End,
+}
