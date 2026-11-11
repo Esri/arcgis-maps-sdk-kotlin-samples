@@ -21,8 +21,10 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.view.MapViewInteractionOptions
 import com.arcgismaps.toolkit.geoviewcompose.MapView
 import com.arcgismaps.toolkit.geoviewcompose.theme.CalloutDefaults
@@ -47,6 +50,7 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleDeviceLightDarkPre
 import com.esri.arcgismaps.sample.sampleslib.components.SamplePreviewSurface
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
 import com.esri.arcgismaps.sample.sampleslib.components.adaptive.AdaptiveThreePane
+import com.esri.arcgismaps.sample.sampleslib.components.adaptive.ThreePaneConfig
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -65,6 +69,7 @@ fun GetFieldFunctionValueFromAPointScreen(
 
     MainScreenScaffold(
         uiState = uiState,
+        displayProgressIndicator = viewModel.displayProgressIndicator,
         onAircraftAltitudeChange = viewModel::setAircraftAltitude,
         mainPaneContent = {
             MapView(
@@ -85,7 +90,7 @@ fun GetFieldFunctionValueFromAPointScreen(
                     // Show a callout only when the calloutGraphic is set
                     viewModel.calloutGraphic?.let { graphic ->
                         Callout(
-                            geoElement = graphic,
+                            location = graphic.geometry as Point,
                             shapes = CalloutDefaults.shapes(
                                 calloutContentPadding = PaddingValues(all = 8.dp)
                             ),
@@ -96,18 +101,45 @@ fun GetFieldFunctionValueFromAPointScreen(
                         ) {
                             // Callout content:
                             Column {
-                                Text(
-                                    text = "Elevation (m): %.2f".format(viewModel.sampleElevation),
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                                Text(
-                                    text = "Clearance above the ground (m): %.2f".format(viewModel.groundClearance),
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                                Text(
-                                    text = "Ground clearance status: ${viewModel.groundClearanceStatus}",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
+                                Row {
+                                    val elevation = when (viewModel.sampleElevation) {
+                                        null -> "No Data"
+                                        else -> "%.2f".format(viewModel.sampleElevation)
+                                    }
+                                    Text(
+                                        text = "Elevation (m): ",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    Text(
+                                        text = elevation,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                                Row {
+                                    val clearance = when (viewModel.groundClearance) {
+                                        null -> "No Data"
+                                        else -> "%.2f".format(viewModel.groundClearance)
+                                    }
+                                    Text(
+                                        text = "Clearance above the ground (m): ",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    Text(
+                                        modifier = Modifier.width(55.dp),
+                                        text = clearance,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                                Row {
+                                    Text(
+                                        text = "Ground clearance status: ",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    Text(
+                                        text = viewModel.groundClearanceStatus,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
                             }
                         }
                     }
@@ -130,6 +162,7 @@ fun GetFieldFunctionValueFromAPointScreen(
 @Composable
 private fun MainScreenScaffold(
     uiState: FieldSampleUiState,
+    displayProgressIndicator: Boolean,
     onAircraftAltitudeChange: (Float) -> Unit = {},
     mainPaneContent: @Composable BoxScope.() -> Unit
 ) {
@@ -141,10 +174,12 @@ private fun MainScreenScaffold(
                     .fillMaxSize()
                     .padding(paddingValues),
                 supportingPaneTitle = "Settings",
+                config = ThreePaneConfig(compactSupportingPaneHeightRatio = 0.3f),
                 mainPane = { _, _ -> mainPaneContent() },
                 supportingPane = { _, _ ->
                     GetFieldFunctionValueFromAPointSupportingPane(
                         uiState = uiState,
+                        displayProgressIndicator = displayProgressIndicator,
                         onAircraftAltitudeChange = onAircraftAltitudeChange
                     )
                 }
@@ -174,6 +209,7 @@ fun MainScreenPreview() {
     SamplePreviewSurface {
         MainScreenScaffold(
             uiState = initialFieldSampleUiState,
+            displayProgressIndicator = true,
             mainPaneContent = {}
         )
     }

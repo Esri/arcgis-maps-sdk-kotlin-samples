@@ -19,10 +19,13 @@ package com.esri.arcgismaps.sample.getfieldfunctionvaluefromapoint.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.getfieldfunctionvaluefromapoint.components.FieldSampleUiState
 
 /**
@@ -31,12 +34,22 @@ import com.esri.arcgismaps.sample.getfieldfunctionvaluefromapoint.components.Fie
 @Composable
 internal fun GetFieldFunctionValueFromAPointSupportingPane(
     uiState: FieldSampleUiState,
+    displayProgressIndicator: Boolean,
     onAircraftAltitudeChange: (Float) -> Unit
 ) {
-    // TODO:
-    //  This content is in a scrollable ColumnScope, so Composables can be added without the Column wrapper.
-    //  Update below composables to reflect sample design UI state and invoke lambda callbacks for screen.
-
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        val message = when (displayProgressIndicator) {
+            false -> "Analysis up to date"
+            true -> "Analysis updating..."
+        }
+        Text(text = message)
+        if (displayProgressIndicator) {
+            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+        }
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween

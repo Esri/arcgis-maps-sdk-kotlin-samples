@@ -30,6 +30,7 @@ import com.arcgismaps.analysis.ContinuousField
 import com.arcgismaps.analysis.ContinuousFieldSampleFunction
 import com.arcgismaps.analysis.ContinuousFieldSupplier
 import com.arcgismaps.analysis.FloatSupplier
+import com.arcgismaps.analysis.interactive.Analysis
 import com.arcgismaps.analysis.interactive.FieldAnalysis
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
@@ -76,6 +77,8 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
     var analysisOverlay by mutableStateOf(AnalysisOverlay())
     var graphicsOverlay by mutableStateOf(GraphicsOverlay())
 
+    val updatingAnalyses = mutableSetOf<Analysis>()
+
     // Indicates when the progress indicator should be displayed
     var displayProgressIndicator by mutableStateOf(false)
         private set
@@ -85,6 +88,8 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
 
     // Indicates if aircraft location is currently being dragged across the map
     var isDragging by mutableStateOf(false)
+    // Indicates if sampling of filed functions is current in progress
+    var isSampling = false
 
     // Keep track of haptic feedback events, used when dragging the aircraft location
     private val _dragHapticEvents = MutableSharedFlow<DragHapticEvent>(extraBufferCapacity = 1)
@@ -106,7 +111,7 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
 
     private val aircraftGraphic = Graphic()
     private val aircraftAltitudeFloatSupplier = FloatSupplier(initialFieldSampleUiState.aircraftAltitude)
-    private var aircraftLocation: Point? = null
+    private var aircraftLocationPoint: Point? = null
 
     // Create a stretch renderer for visualizing the continuous field
     private val stretchRenderer = StretchRenderer(
@@ -168,7 +173,7 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
 
                         // Create an initial point to analyze at the center of the continuous field's extent
                         val fieldCenter = continuousField.extent.center
-                        aircraftLocation = Point(
+                        aircraftLocationPoint = Point(
                             x = fieldCenter.x,
                             y = fieldCenter.y,
                             z = _fieldSampleUiState.value.aircraftAltitude.toDouble(),
@@ -176,6 +181,9 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
                         )
                         aircraftAltitudeFloatSupplier.value =
                             _fieldSampleUiState.value.aircraftAltitude
+
+                        // Position the aircraft graphic at the initial point
+                        aircraftGraphic.geometry = aircraftLocationPoint
 
                         // Create a boolean field function representing clearance between ground-level
                         // and value of the aircraft altitude slider. This boolean field function will
@@ -214,8 +222,8 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
                         // Add the boolean field analysis to the analysis overlay.
                         analysisOverlay.analyses.add(booleanFieldAnalysis)
 
-                        //TODO: review use of aircraftLocation & tappedPoint
-                        sampleFieldFunctionsAndDisplayCallout(aircraftLocation!!)//TODO
+                        // TODO to match fun description below
+                        sampleFieldFunctionsAndDisplayCallout(aircraftLocationPoint!!)
                     }
             }
         }
@@ -224,19 +232,22 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
     /**
      * TODO
      */
-    private suspend fun sampleFieldFunctionsAndDisplayCallout(tappedPoint: Point) {
-        // Set the position of the sample functions to the tapped point.
-        continuousFieldSampleFunction.position = tappedPoint
-        booleanFieldSampleFunction.position = tappedPoint
+    private suspend fun sampleFieldFunctionsAndDisplayCallout(samplePoint: Point) {
+        // Just return if sampling at a previous point is still in progress
+        if (isSampling) {
+            return
+        }
+        isSampling = true
+
+        // Set the position of the sample functions to the sample point
+        continuousFieldSampleFunction.position = samplePoint
+        booleanFieldSampleFunction.position = samplePoint
 
         // Evaluate the sample functions at the tapped point.
         continuousFieldSampleFunction.evaluate()
             .onFailure {
                 messageDialogVM.showMessageDialog(it) //TODO: test error display
             }.onSuccess { continuousFieldSample ->
-//                if (!tappedPoint.equals(aircraftLocation)) {
-//                    return //TODO: this seems to make do sense
-//                }
                 // Get the value of the continuous field sample, which represents the terrain elevation.
                 val continuousFieldSampleValue = continuousFieldSample.value
 
@@ -251,13 +262,6 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
                             else -> _fieldSampleUiState.value.aircraftAltitude - continuousFieldSampleValue
                         }
 
-//                        if (!tappedPoint.equals(aircraftLocation)) {
-//                            return //TODO: is this necessary?
-//                        }
-
-                        // Update the tapped location graphic with the new tapped point.
-                        aircraftGraphic.geometry = tappedPoint
-
                         // Display the callout with the sample values at the tapped point.
                         sampleElevation = continuousFieldSampleValue
                         groundClearanceStatus = when (groundClearanceBooleanSample.value) {
@@ -267,32 +271,40 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
                         }
                         calloutGraphic = aircraftGraphic
 
-                        // TODO: do I need to...
-                        // Check if the tapped point has changed while sampling.
+                        // Reset the sampling flag to indicate that sampling has completed.
+                        isSampling = false
+
+                        // Check if the aircraft location has moved on while we sampled at the
+                        // given sample point
+                        if (!samplePoint.equals(aircraftLocationPoint)) {
+                            // Aircraft location has changed - re-sample at the new location
+                            sampleFieldFunctionsAndDisplayCallout(aircraftLocationPoint!!)
+                        }
                     }
             }
     }
 
     /**
-     * An AnalysisViewStatus listener that displays the progress indicator when the status of the
-     * current scenario analysis is Updating and hides it when not Updating.
-     * Also displays details of any error that occurs when the analysis is displayed.
+     * An AnalysisViewStatus listener that displays the progress indicator when the status of any
+     * analysis is Updating and hides it when no analysis is Updating. Also displays details of any
+     * error that occurs when an analysis is displayed.
      */
     fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
-        displayProgressIndicator = when (event.analysisViewStatus){
+        when (event.analysisViewStatus) {
             is AnalysisViewStatus.Error -> { //TODO: test error display
                 messageDialogVM.showMessageDialog(
                     throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
                 )
-                false
+                updatingAnalyses.remove(event.analysis)
             }
             AnalysisViewStatus.UpToDate -> {
-                false
+                updatingAnalyses.remove(event.analysis)
             }
             AnalysisViewStatus.Updating -> {
-                true
+                updatingAnalyses.add(event.analysis)
             }
         }
+        displayProgressIndicator = updatingAnalyses.isNotEmpty()
     }
 
     /**
@@ -304,7 +316,7 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
 
         //TODO: review use of aircraftLocation & tappedPoint
         viewModelScope.launch {
-            sampleFieldFunctionsAndDisplayCallout(aircraftLocation!!)//TODO
+            sampleFieldFunctionsAndDisplayCallout(aircraftLocationPoint!!)//TODO
         }
     }
 
@@ -332,12 +344,12 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
      */
     fun onPan(event: PanChangeEvent) {
         if (isDragging) {
-            setNewAircraftLocation(mapViewProxy.screenToLocationOrNull(event.screenCoordinate))
             if (event.status == PanStatus.End) {
                 aircraftGraphic.isSelected = false
                 isDragging = false
                 _dragHapticEvents.tryEmit(DragHapticEvent.End)
             }
+            setNewAircraftLocation(mapViewProxy.screenToLocationOrNull(event.screenCoordinate))
         }
     }
 
@@ -345,22 +357,22 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
      * Sets the aircraft location to the given [mapPoint].
      */
     private fun setNewAircraftLocation(mapPoint: Point?) {
-        // Dismiss any existing callout
-        calloutGraphic = null
-
         if (mapPoint != null) {
-            aircraftLocation = Point(
+            aircraftLocationPoint = Point(
                 x = mapPoint.x,
                 y = mapPoint.y,
                 z = _fieldSampleUiState.value.aircraftAltitude.toDouble(),
                 mapPoint.spatialReference
             )
             // Update the aircraft graphic geometry to the new aircraft location
-            aircraftGraphic.geometry = aircraftLocation
+            aircraftGraphic.geometry = aircraftLocationPoint
+
+            // Dismiss any existing callout
+            calloutGraphic = null
 
             //TODO: review use of aircraftLocation & tappedPoint
             viewModelScope.launch {
-                sampleFieldFunctionsAndDisplayCallout(aircraftLocation!!)//TODO
+                sampleFieldFunctionsAndDisplayCallout(aircraftLocationPoint!!)//TODO
             }
         }
     }
