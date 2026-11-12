@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.esri.arcgismaps.sample.dynamicbasemapgallery"
+    namespace = "com.esri.arcgismaps.sample.createdynamicbasemapgallery"
 }
 
 dependencies {

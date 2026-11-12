@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.dynamicbasemapgallery
+package com.esri.arcgismaps.sample.createdynamicbasemapgallery
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,7 +23,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
-import com.esri.arcgismaps.sample.dynamicbasemapgallery.screens.DynamicBasemapGalleryScreen
+import com.esri.arcgismaps.sample.createdynamicbasemapgallery.screens.CreateDynamicBasemapGalleryScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SampleAppTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    DynamicBasemapGalleryScreen()
+                    CreateDynamicBasemapGalleryScreen()
                 }
             }
         }

@@ -14,7 +14,7 @@
  *
  */
 
-package com.esri.arcgismaps.sample.dynamicbasemapgallery.screens
+package com.esri.arcgismaps.sample.createdynamicbasemapgallery.screens
 
 import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.Image
@@ -63,8 +63,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.mapping.BasemapStyleInfo
 import com.arcgismaps.toolkit.basemapgallery.BasemapGalleryItem
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.esri.arcgismaps.sample.dynamicbasemapgallery.R
-import com.esri.arcgismaps.sample.dynamicbasemapgallery.components.DynamicBasemapGalleryViewModel
+import com.esri.arcgismaps.sample.createdynamicbasemapgallery.R
+import com.esri.arcgismaps.sample.createdynamicbasemapgallery.components.CreateDynamicBasemapGalleryViewModel
 import com.esri.arcgismaps.sample.sampleslib.components.DropDownMenuBox
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialog
 import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
@@ -73,15 +73,15 @@ import com.esri.arcgismaps.sample.sampleslib.components.SampleTopAppBar
  * Main screen layout for the sample app
  */
 @Composable
-fun DynamicBasemapGalleryScreen() {
-    val mapViewModel: DynamicBasemapGalleryViewModel = viewModel()
+fun CreateDynamicBasemapGalleryScreen() {
+    val mapViewModel: CreateDynamicBasemapGalleryViewModel = viewModel()
 
     // Controls whether the basemap gallery popup is shown
     var showBasemapGallery by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            SampleTopAppBar(title = stringResource(R.string.dynamic_basemap_gallery_app_name))
+            SampleTopAppBar(title = stringResource(R.string.create_dynamic_basemap_gallery_app_name))
         }
     ) { padding ->
         Box(
