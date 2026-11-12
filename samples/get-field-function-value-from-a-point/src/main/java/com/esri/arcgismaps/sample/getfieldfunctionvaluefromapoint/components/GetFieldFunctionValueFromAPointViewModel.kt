@@ -253,6 +253,7 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
         // Evaluate the sample functions
         continuousFieldSampleFunction.evaluate()
             .onFailure {
+                isSampling = false
                 messageDialogVM.showMessageDialog(it)
             }.onSuccess { continuousFieldSample ->
                 // Get the value of the continuous field sample, which represents the terrain elevation
@@ -261,6 +262,7 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
                 // Evaluate the aircraft clearance boolean sample function at the sample point
                 booleanFieldSampleFunction.evaluate()
                     .onFailure {
+                        isSampling = false
                         messageDialogVM.showMessageDialog(it)
                     }.onSuccess { groundClearanceBooleanSample ->
                         // Calculate the clearance of the aircraft above the terrain elevation
@@ -318,10 +320,13 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
      * Sets a new aircraft altitude.
      */
     fun setAircraftAltitude(aircraftAltitude: Float) {
+        // Guard against aircraftLocationPoint not being assigned yet
+        val oldAircraftLocationPoint = aircraftLocationPoint ?: return
+
         // Update variables that are dependent on the aircraft altitude
         aircraftAltitudeFloatSupplier.value = aircraftAltitude
         aircraftLocationPoint = GeometryEngine.createWithZ(
-            geometry = aircraftLocationPoint!!,
+            geometry = oldAircraftLocationPoint,
             z = aircraftAltitude.toDouble()
         )
         _fieldSampleUiState.update { it.copy(aircraftAltitude = aircraftAltitude) }
@@ -369,6 +374,12 @@ class GetFieldFunctionValueFromAPointViewModel(app: Application) : AndroidViewMo
      * Sets the aircraft location to the given [mapPoint].
      */
     private fun setNewAircraftLocation(mapPoint: Point?) {
+        // Guard against field sample functions not being initialized yet
+        if (!::continuousFieldSampleFunction.isInitialized ||
+            !::booleanFieldSampleFunction.isInitialized
+        ) {
+            return
+        }
         if (mapPoint != null) {
             // Create a new aircraft location Point
             aircraftLocationPoint = Point(
