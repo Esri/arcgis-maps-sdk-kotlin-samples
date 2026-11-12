@@ -1,0 +1,49 @@
+{
+    "category": "Analysis",
+    "description": "Use float suppliers to dynamically update numeric inputs to a map algebra expression and automatically refresh analysis results as input values change.",
+    "formal_name": "ControlMapAlgebraInputsWithFloatSuppliers",
+    "ignore": false,
+    "images": [
+        "control-map-algebra-inputs-with-float-suppliers.png"
+    ],
+    "keywords": [
+        "elevation",
+        "map algebra",
+        "raster",
+        "slope",
+        "spatial analysis",
+        "terrain",
+        "AnalysisOverlay",
+        "BooleanFieldFunction",
+        "ColorRamp",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "ContinuousFieldSupplier",
+        "FieldAnalysis",
+        "FloatSupplier",
+        "StretchRenderer"
+    ],
+    "language": "kotlin",
+    "offline_data": [
+        "e8fe90cd623b48dfa683f448bef65e70"
+    ],
+    "redirect_from": "",
+    "relevant_apis": [
+        "AnalysisOverlay",
+        "BooleanFieldFunction",
+        "ColorRamp",
+        "ContinuousField",
+        "ContinuousFieldFunction",
+        "ContinuousFieldSupplier",
+        "FieldAnalysis",
+        "FloatSupplier",
+        "StretchRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/controlmapalgebrainputswithfloatsuppliers/components/ControlMapAlgebraInputsWithFloatSuppliersViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/controlmapalgebrainputswithfloatsuppliers/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/controlmapalgebrainputswithfloatsuppliers/screens/ControlMapAlgebraInputsWithFloatSuppliersScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/controlmapalgebrainputswithfloatsuppliers/screens/ControlMapAlgebraInputsWithFloatSuppliersSupportingPane.kt"
+    ],
+    "title": "Control map algebra inputs with float suppliers"
+}
