@@ -33,6 +33,7 @@ import androidx.navigation.navArgument
 import com.esri.arcgismaps.kotlin.sampleviewer.model.DefaultSampleInfoRepository
 import com.esri.arcgismaps.kotlin.sampleviewer.model.SampleCategory
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.about.AboutScreen
+import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.centerDownloading.CenterDownloadingScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.codePager.SampleInfoScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.home.HomeCategoryScreen
 import com.esri.arcgismaps.kotlin.sampleviewer.ui.screens.sampleList.SampleListScreen
@@ -55,8 +56,13 @@ internal fun NavGraph() {
             HomeCategoryScreen(
                 onNavigateToSearch = { navController.navigate(Routes.SEARCH_SCREEN) },
                 onNavigateToAbout = { navController.navigate(Routes.ABOUT_SCREEN) },
+                onNavigateToDownloads = { navController.navigate(Routes.DOWNLOAD_CENTER_SCREEN) },
                 onNavigateToCategory = { navController.navigate(Routes.createCategoryRoute(it)) }
             )
+        }
+
+        composable(Routes.DOWNLOAD_CENTER_SCREEN) {
+            CenterDownloadingScreen(onBackPressed = { navController.pop() })
         }
 
         composable(Routes.ABOUT_SCREEN) {
@@ -186,6 +192,7 @@ private object Routes {
     const val HOME_SCREEN = "Sample Categories"
     const val ABOUT_SCREEN = "About"
     const val SEARCH_SCREEN = "Search"
+    const val DOWNLOAD_CENTER_SCREEN = "Downloads"
     const val CATEGORY_SAMPLE_LIST_ROUTE = "$SAMPLE_LIST/{category}"
     const val SAMPLE_INFO_ROUTE = "$SAMPLE_INFO/{optionPosition}/{sampleName}"
     const val SEARCH_RESULTS_ROUTE = "$SEARCH_RESULTS/{query}"
