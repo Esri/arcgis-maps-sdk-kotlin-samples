@@ -81,8 +81,8 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
 
     // Create slope range suppliers, initialized with values of 0 to 10 degrees; this will highlight
     // gentle hills and flatter areas such as roads and man-made structures
-    val minimumSlopeFloatSupplier = FloatSupplier(0.0f)
-    val maximumSlopeFloatSupplier = FloatSupplier(10.0f)
+    val minimumSlopeFloatSupplier = FloatSupplier(initialFloatSuppliersUiState.minimumSlope)
+    val maximumSlopeFloatSupplier = FloatSupplier(initialFloatSuppliersUiState.maximumSlope)
 
     // Stretch renderer for visualizing the slope, using a fixed degree scale as the selected slope
     // range changes
@@ -207,7 +207,7 @@ data class FloatSuppliersUiState(
         // Initial parameters to drive the UI on launch
         val initialFloatSuppliersUiState = FloatSuppliersUiState(
             minimumSlope = 0.0f,
-            maximumSlope = 85.0f
+            maximumSlope = 10.0f
         )
     }
 }
