@@ -33,6 +33,8 @@ import com.arcgismaps.mapping.symbology.raster.MinMaxStretchParameters
 import com.arcgismaps.mapping.symbology.raster.PresetColorRampType
 import com.arcgismaps.mapping.symbology.raster.StretchRenderer
 import com.arcgismaps.mapping.view.AnalysisOverlay
+import com.arcgismaps.mapping.view.AnalysisViewStatus
+import com.arcgismaps.mapping.view.GeoView
 import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.esri.arcgismaps.sample.controlmapalgebrainputswithfloatsuppliers.R
 import com.esri.arcgismaps.sample.controlmapalgebrainputswithfloatsuppliers.components.FloatSuppliersUiState.Companion.initialFloatSuppliersUiState
@@ -159,6 +161,28 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
                     // Add the slope field analysis to the analysis overlay
                     analysisOverlay.analyses.add(slopeFieldAnalysis)
                 }
+            }
+        }
+    }
+
+    /**
+     * An AnalysisViewStatus listener that displays the progress indicator when the status of the
+     * analysis is Updating and hides it otherwise. Also displays details of any error that occurs
+     * when the analysis is displayed.
+     */
+    fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
+        when (event.analysisViewStatus) {
+            is AnalysisViewStatus.Error -> {
+                messageDialogVM.showMessageDialog(
+                    throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
+                )
+                displayProgressIndicator = false
+            }
+            AnalysisViewStatus.UpToDate -> {
+                displayProgressIndicator = false
+            }
+            AnalysisViewStatus.Updating -> {
+                displayProgressIndicator = true
             }
         }
     }

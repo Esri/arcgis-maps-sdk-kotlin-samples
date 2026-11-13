@@ -56,7 +56,10 @@ fun ControlMapAlgebraInputsWithFloatSuppliersScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .animateContentSize(),
-                arcGISMap = viewModel.arcGISMap
+                arcGISMap = viewModel.arcGISMap,
+                mapViewProxy = viewModel.mapViewProxy,
+                analysisOverlays = listOf(viewModel.analysisOverlay),
+                onAnalysisViewStatusChanged = viewModel::analysisViewStatusListener
             )
         }
     )

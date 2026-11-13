@@ -55,7 +55,7 @@ internal fun ControlMapAlgebraInputsWithFloatSuppliersSupportingPane(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween //TODO Center?
     ) {
-        Text(text = "Slope range: ${uiState.minimumSlope} to ${uiState.maximumSlope} degrees")
+        Text(text = "Slope range: ${uiState.minimumSlope.toInt()} to ${uiState.maximumSlope.toInt()} degrees")
     }
     //TODO: change to fancy custom slider, if time?
     RangeSlider(
