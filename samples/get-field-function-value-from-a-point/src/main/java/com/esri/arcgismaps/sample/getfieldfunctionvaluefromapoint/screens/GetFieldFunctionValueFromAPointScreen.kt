@@ -85,8 +85,7 @@ fun GetFieldFunctionValueFromAPointScreen(
                 onSingleTapConfirmed = viewModel::onTap,
                 onLongPress = viewModel::onLongPress,
                 onPan = viewModel::onPan,
-                onAnalysisViewStatusChanged = viewModel::analysisViewStatusListener,
-                content = {
+                onAnalysisViewStatusChanged = viewModel::analysisViewStatusListener) {
                     // Show a callout only when the calloutGraphic is set
                     viewModel.calloutGraphic?.let { graphic ->
                         Callout(
@@ -144,7 +143,6 @@ fun GetFieldFunctionValueFromAPointScreen(
                         }
                     }
                 }
-            )
         }
     )
 
