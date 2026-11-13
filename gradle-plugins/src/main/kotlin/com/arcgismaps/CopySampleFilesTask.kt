@@ -1,105 +1,96 @@
 package com.arcgismaps
 
 import kotlinx.serialization.json.Json
+import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.DuplicatesStrategy
-import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.Copy
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileTree
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.register
 import java.io.File
 
 /**
- * Copy md, kt, and json files to a directory (with the name of the associated sample)
+ * Packages md, kt, and json files (with the name of the associated sample)
  * into the app's build assets directory.
  */
 class CopySampleFilesTask : Plugin<Project> {
 
-    private val json = Json { prettyPrint = true }
-
     override fun apply(project: Project) {
-        project.tasks.register<Copy>("copyCodeFiles") {
-            description = """
-                        Copies sample files for the given sample directory if a code file doesn't
-                        already exist or a newer version is present.
-                        """.trimIndent()
+        project.tasks.register<GenerateSampleAssetsTask>("copyCodeFiles") {
+            description = "Generates the sample source, README and metadata JSON asset."
+            samplesDirectory.set(project.rootProject.layout.projectDirectory.dir("samples"))
+            outputFile.set(project.layout.buildDirectory.file("sampleAssets/samples/samples.json"))
+        }
+    }
 
-            // Define the input files
-            val inputFiles: FileCollection = project.fileTree("${project.rootDir.path}/samples/") {
+    @CacheableTask
+    abstract class GenerateSampleAssetsTask : DefaultTask() {
+        private val json = Json { prettyPrint = true }
+
+        @get:Internal
+        abstract val samplesDirectory: DirectoryProperty
+
+        @get:InputFiles
+        @get:PathSensitive(PathSensitivity.RELATIVE)
+        val sampleFiles: FileTree
+            get() = samplesDirectory.asFileTree.matching {
                 exclude("**/build/")
                 include("**/*.md", "**/*.kt", "**/*.metadata.json")
             }
 
-            // Set input files
-            inputs.files(inputFiles)
+        @get:OutputFile
+        abstract val outputFile: RegularFileProperty
 
-            // Define the output directory
-            val outputDir = project.file("${project.rootDir.path}/app/build/sampleAssets/samples/")
-            outputs.dir(outputDir)
-
-            from(inputFiles) {
-                eachFile {
-                    path = path.substringBefore("/") + "/" + name
-                    includeEmptyDirs = false
-                    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-                }
-            }
-
-            // Place in the assets codeFiles folder of the app.
-            into(outputDir)
-
-            // After the copy finishes, run JSON generation + cleanup
-            doLast {
-                // Create a JSON file that maps each sample folder’s files to their contents
-                createJsonAssetFile(outputDir)
-
-                // Delete everything but the JSON file itself
-                outputDir.listFiles()?.forEach { file ->
-                    if (file.isDirectory || file.name != "samples.json") {
-                        file.deleteRecursively()
-                    }
-                }
-            }
+        @TaskAction
+        fun generate() {
+            val outputDir = outputFile.get().asFile.parentFile
+            java.nio.file.Files.createDirectories(outputDir.toPath())
+            createJsonAssetFile(outputDir)
         }
-    }
 
-    /**
-     * Creates the main list of all samples as "samples.json" file in [outputDir] with structure:
-     *
-     * {
-     *   "sampleA": {
-     *     "MainActivity.kt": "...content...",
-     *     "README.md": "...content...",
-     *     ...
-     *   },
-     *   "sampleB": {
-     *      ...
-     *   }
-     * }
-     */
-    private fun createJsonAssetFile(outputDir: File) {
-        // This map will hold the structure: sampleDirName -> { filename -> fileContent }
-        val samplesMap = mutableMapOf<String, MutableMap<String, String>>()
-
-        // List subdirectories in outputDir (i.e., each sample folder)
-        outputDir.listFiles()
-            ?.filter { it.isDirectory }
-            ?.sortedBy { it.name }
-            ?.forEach { sampleDir ->
-                val filesMap = mutableMapOf<String, String>()
-                sampleDir.listFiles()?.forEach { file ->
-                    if (file.isFile) {
+        /**
+         * Creates the main list of all samples as "samples.json" file in [outputDir] with structure:
+         *
+         * {
+         *   "sampleA": {
+         *     "MainActivity.kt": "...content...",
+         *     "README.md": "...content...",
+         *     ...
+         *   },
+         *   "sampleB": {
+         *      ...
+         *   }
+         * }
+         */
+        private fun createJsonAssetFile(outputDir: File) {
+            // This map will hold the structure: sampleDirName -> { filename -> fileContent }
+            val samplesMap: MutableMap<String, MutableMap<String, String>> = sortedMapOf()
+            val samplesRoot = samplesDirectory.get().asFile
+            sampleFiles.files
+                .sortedBy { it.relativeTo(samplesRoot).invariantSeparatorsPath }
+                .forEach { file ->
+                    val sampleName = file.relativeTo(samplesRoot).invariantSeparatorsPath.substringBefore("/")
+                    val filesMap = samplesMap.getOrPut(sampleName) { sortedMapOf() }
+                    // Preserve flat filenames with deterministic first-match handling of duplicates.
+                    if (file.name !in filesMap) {
                         filesMap[file.name] = file.readText()
                     }
                 }
-                samplesMap[sampleDir.name] = filesMap
-            }
 
-        // Serialize using Kotlin Serialization with pretty printing
-        val jsonString = json.encodeToString(samplesMap)
+            // Serialize using Kotlin Serialization with pretty printing
+            val jsonString = json.encodeToString(samplesMap)
 
-        // Write the JSON to a file named "samples.json" in outputDir
-        val jsonFile = File(outputDir, "samples.json")
-        jsonFile.writeText(jsonString)
+            // Write the JSON to a file named "samples.json" in outputDir
+            val jsonFile = File(outputDir, outputFile.get().asFile.name)
+            jsonFile.writeText(jsonString)
+        }
     }
 }
