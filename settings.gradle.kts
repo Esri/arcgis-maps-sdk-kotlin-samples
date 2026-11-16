@@ -45,15 +45,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://esri.jfrog.io/artifactory/arcgis") }
-        if (!artifactoryUrl.isBlank()) {
-            maven {
-                url = java.net.URI(artifactoryUrl)
-                credentials {
-                    username = artifactoryUsername
-                    password = artifactoryPassword
-                }
-            }
-        }
         maven(url = "https://jitpack.io")
     }
 }
