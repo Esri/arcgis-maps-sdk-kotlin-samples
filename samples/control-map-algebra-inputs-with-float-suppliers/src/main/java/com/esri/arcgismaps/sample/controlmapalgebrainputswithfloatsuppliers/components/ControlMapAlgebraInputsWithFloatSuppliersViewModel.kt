@@ -57,7 +57,7 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
     // Create the spatial reference for the map and the elevation file (UTM zone 32N).
     val spatialReference = SpatialReference(wkid = 32632)
 
-    // Create a MapViewProxy, used to set viewpoint & convert screen point to location
+    // Create a MapViewProxy, used to set viewpoint
     val mapViewProxy = MapViewProxy()
 
     // Initialize and keep track of the ArcGISMap & the analysis overlay it uses
@@ -81,8 +81,8 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
 
     // Create slope range suppliers, initialized with values of 0 to 10 degrees; this will highlight
     // gentle hills and flatter areas such as roads and man-made structures
-    val minimumSlopeFloatSupplier = FloatSupplier(initialFloatSuppliersUiState.minimumSlope)
-    val maximumSlopeFloatSupplier = FloatSupplier(initialFloatSuppliersUiState.maximumSlope)
+    private val minimumSlopeFloatSupplier = FloatSupplier(initialFloatSuppliersUiState.minimumSlope)
+    private val maximumSlopeFloatSupplier = FloatSupplier(initialFloatSuppliersUiState.maximumSlope)
 
     // Stretch renderer for visualizing the slope, using a fixed degree scale as the selected slope
     // range changes
@@ -115,6 +115,7 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
 
     init {
         viewModelScope.launch {
+            // // Load the map and handle any errors by showing a message dialog
             arcGISMap.load().onFailure {
                 messageDialogVM.showMessageDialog(it)
             }.onSuccess {
@@ -141,7 +142,8 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
                     // field function
                     val maskedSlope = slopeFunction.mask(slopeSelection)
 
-                    // Set the initial viewpoint of the map to the center of the continuous field's extent
+                    // Set the initial viewpoint of the map to the center of the continuous field's
+                    // extent
                     mapViewProxy.setViewpointCenter(
                         center = continuousField.extent.center,
                         scale = 10000.0

@@ -118,7 +118,10 @@ private fun SlopeRangeSlider(
                 Modifier
                     .size(20.dp)
                     .background(
-                        color = colorAtFraction(viridis, uiState.minimumSlope / maxSlope),
+                        color = colorAtFraction(
+                            colors = viridis,
+                            fraction = uiState.minimumSlope / maxSlope
+                        ),
                         shape = CircleShape
                     )
                     .border(width = 1.dp, color = Color.Black, shape = CircleShape)
@@ -130,7 +133,10 @@ private fun SlopeRangeSlider(
                 Modifier
                     .size(20.dp)
                     .background(
-                        color = colorAtFraction(viridis, uiState.maximumSlope / maxSlope),
+                        color = colorAtFraction(
+                            colors = viridis,
+                            fraction = uiState.maximumSlope / maxSlope
+                        ),
                         shape = CircleShape
                     )
                     .border(width = 1.dp, color = Color.Black, shape = CircleShape)
