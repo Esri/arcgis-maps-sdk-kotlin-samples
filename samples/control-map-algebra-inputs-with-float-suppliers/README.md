@@ -12,15 +12,15 @@ Many spatial analysis workflows rely on numeric parameters that control how data
 
 When the sample opens, the map shows the result of a slope analysis which displays slopes between 0 to 10 degrees. This range shows gentle hills and flatter areas such as roads and man-made structures in dark purple. Open the **Settings** pane and drag the range slider handles to adjust the minimum and maximum slope values between 0 and 85 degrees (the maximum slope value of the data). The analysis updates automatically to show only slopes within the selected range. An indicator in the settings pane shows when the analysis is updating. The slope results are drawn on top of an elevation field which is rendered with a surface color ramp to provide context for the data. Green areas represent lower lying terrain, and brown to white reflects higher elevations.
 
-## How it works TODO
+## How it works
 
 1. Create a `ContinuousField` from an elevation raster file using `ContinuousField.createFromFiles`.
 2. Create a `ContinuousFieldFunction` from the continuous field using `ContinuousFieldSupplier`.
 3. Derive a `slope` function from the continuous field function.
 4. Create two `FloatSupplier` instances and set their `value` properties to the initial minimum and maximum slope values.
-5. Create a `BooleanFieldFunction` for the slope range using the map algebra operations `isGreaterThanOrEqualToFloatFunction`, `isLessThanOrEqualToFloatFunction`, and `logicalAnd`, with the float suppliers as inputs.
+5. Create a `BooleanFieldFunction` based on the minimum and maximum slope suppliers. Use the map algebra functions `isGreaterThanOrEqualTo` and `isLessThanOrEqualTo` with the `FloatSupplier` instances as inputs, and combine them using the infix function `and`.
 6. Apply the boolean selection to the slope function using `mask` to retain only slopes within the selected range.
-7. Create a `FieldAnalysis` for the masked slope function using `FieldAnalysis.withContinuousFieldFunction` and a `StretchRenderer`.
+7. Create a `FieldAnalysis` for the masked slope function using the `FieldAnalysis` constructor that takes a `ContinuousFieldFunction` and a `StretchRenderer`.
 8. Add the field analysis to an `AnalysisOverlay` and add the overlay to the map view.
 9. Update the float suppliers' `value` properties to update the analysis result dynamically.
 
