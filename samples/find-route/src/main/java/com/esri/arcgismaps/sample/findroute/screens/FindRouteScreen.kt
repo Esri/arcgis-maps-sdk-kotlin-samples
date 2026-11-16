@@ -14,8 +14,6 @@
  *
  */
 
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.esri.arcgismaps.sample.findroute.screens
 
 import androidx.compose.foundation.background

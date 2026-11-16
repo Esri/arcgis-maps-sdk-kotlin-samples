@@ -70,7 +70,6 @@ import kotlinx.coroutines.launch
 /**
  * Main screen layout for the sample app
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(sampleName: String) {
     // create a ViewModel to handle MapView interactions

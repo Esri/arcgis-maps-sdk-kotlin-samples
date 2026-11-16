@@ -106,21 +106,6 @@ class TakeScreenshotViewModel(app: Application) : AndroidViewModel(app) {
     fun saveBitmapToGallery(context: Context, bitmap: Bitmap): Uri? {
         val resolver = context.contentResolver
         val filename = "screenshot-${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.jpg"
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val imageFile = File(imagesDir, filename)
-            FileOutputStream(imageFile).use { stream ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            }
-            // Notify the media scanner about the new file.
-            MediaScannerConnection.scanFile(
-                context,
-                arrayOf(imageFile.toString()),
-                arrayOf("image/jpeg"),
-                null
-            )
-            return Uri.fromFile(imageFile)
-        }
 
         // Use MediaStore API for Android 10 (API 29) and above
         val contentValues = ContentValues().apply {
