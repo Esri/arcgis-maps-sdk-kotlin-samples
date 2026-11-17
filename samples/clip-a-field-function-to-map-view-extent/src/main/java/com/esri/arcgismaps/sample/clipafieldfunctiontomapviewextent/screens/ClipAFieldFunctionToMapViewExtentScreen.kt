@@ -61,7 +61,8 @@ fun ClipAFieldFunctionToMapViewExtentScreen(
                 analysisOverlays = listOf(viewModel.analysisOverlay),
                 graphicsOverlays = listOf(viewModel.graphicsOverlay),
                 onVisibleAreaChanged = viewModel::onVisibleAreaChanged,
-                onAnalysisViewStatusChanged = viewModel::analysisViewStatusListener            )
+                onAnalysisViewStatusChanged = viewModel::analysisViewStatusListener
+            )
         }
     )
 

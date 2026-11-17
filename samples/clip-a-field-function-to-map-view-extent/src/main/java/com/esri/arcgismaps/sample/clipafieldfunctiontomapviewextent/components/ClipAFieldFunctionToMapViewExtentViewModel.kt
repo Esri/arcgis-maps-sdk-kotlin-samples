@@ -90,16 +90,16 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
     }
     private val filePath = provisionPath + "arran.tif"
 
-    // TODO
+    // Elevation range suppliers
     private val minimumElevationSupplier = FloatSupplier(MINIMUM_ELEVATION_METERS)
     private val maximumElevationSupplier = FloatSupplier(MAXIMUM_ELEVATION_METERS)
 
-    // Field clip functions used in the analysis TODO
+    // Variables that are initialized in the init block and referenced in event listener(s)
     private lateinit var elevationField: ContinuousField
     private lateinit var continuousFieldClipFunction: ContinuousFieldClipFunction
     private lateinit var fieldAnalysis: FieldAnalysis
 
-        // Stretch renderer for visualizing the elevation
+    // Stretch renderer for visualizing the elevation
     private val stretchRenderer = StretchRenderer(
         parameters = MinMaxStretchParameters(
             minValues = listOf(MINIMUM_ELEVATION_METERS.toDouble()),
@@ -146,9 +146,7 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
                         // Create a boolean field function for the elevation range with map algebra
                         val elevationSelection =
                             continuousFieldFunction.isGreaterThanOrEqualTo(minimumElevationSupplier) and
-                                    continuousFieldFunction.isLessThanOrEqualTo(
-                                        maximumElevationSupplier
-                                    )
+                                    continuousFieldFunction.isLessThanOrEqualTo(maximumElevationSupplier)
 
                         // Mask the elevation field using the boolean field function to create the
                         // masked elevation function
@@ -168,7 +166,7 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
                         fieldAnalysis =
                             FieldAnalysis(continuousFieldClipFunction, stretchRenderer)
                         fieldAnalysis.opacity = 0.7f
-                        fieldAnalysis.isVisible = false // made visible in onViewpointChange()
+                        fieldAnalysis.isVisible = false // made visible in onVisibleAreaChanged()
                         analysisOverlay.analyses.add(fieldAnalysis)
 
                         // Set the viewpoint of the map to the center of the elevation field's extent
@@ -215,7 +213,9 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
     }
 
     /**
-     * TODO
+     * Listener called when the visible area of the MapView has changed. Calculates a clip geometry
+     * based on the new [visibleArea], and uses it to update continuousFieldClipFunction's extent
+     * and the graphic that's used to show the current clip extent.
      */
     fun onVisibleAreaChanged(visibleArea: Polygon) {
         // Just return if initialization not complete yet
@@ -223,12 +223,12 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
             return
         }
 
-        // Build the clip geometry based on the current visible area extent
+        // Build the clip geometry based on the new visible area extent
         val clipGeometry = buildClipGeometry(visibleArea.extent)
 
         // If no overlap between the visible area and the elevation field, hide the analysis and the
         // clip extent graphic, so stale results are not displayed
-        if (clipGeometry == null) { // TODO test this
+        if (clipGeometry == null) {
             clipExtentGraphic.isVisible = false
             fieldAnalysis.isVisible = false
             return
@@ -244,7 +244,8 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
     }
 
     /**
-     * TODO
+     * Calculates a clip geometry based on the given [visibleExtent]. Returns the intersection
+     * between that and the extent of the elevation field, or null if there is no intersection.
      */
     private fun buildClipGeometry(visibleExtent: Envelope) : Geometry? {
         // Get the extent of the elevation field
