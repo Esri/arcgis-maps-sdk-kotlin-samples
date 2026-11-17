@@ -28,12 +28,12 @@ When the sample opens, the map shows the result of a slope analysis which displa
 
 * AnalysisOverlay
 * BooleanFieldFunction
-* ColorRamp 
-* ContinuousField 
-* ContinuousFieldFunction 
-* ContinuousFieldSupplier 
-* FieldAnalysis 
-* FloatSupplier 
+* ColorRamp
+* ContinuousField
+* ContinuousFieldFunction
+* ContinuousFieldSupplier
+* FieldAnalysis
+* FloatSupplier
 * StretchRenderer
 
 ## Offline data
