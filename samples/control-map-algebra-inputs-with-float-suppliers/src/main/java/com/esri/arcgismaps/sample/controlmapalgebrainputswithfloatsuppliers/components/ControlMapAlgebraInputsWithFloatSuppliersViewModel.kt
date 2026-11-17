@@ -25,6 +25,7 @@ import androidx.lifecycle.viewModelScope
 import com.arcgismaps.analysis.ContinuousField
 import com.arcgismaps.analysis.ContinuousFieldSupplier
 import com.arcgismaps.analysis.FloatSupplier
+import com.arcgismaps.analysis.interactive.Analysis
 import com.arcgismaps.analysis.interactive.FieldAnalysis
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.ArcGISMap
@@ -67,6 +68,9 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
     // Indicates when the ProgressIndicator should be displayed
     var displayProgressIndicator by mutableStateOf(false)
         private set
+
+    // Collection of Analysis instances currently updating, ProgressIndicator displayed when non-empty
+    val updatingAnalyses = mutableSetOf<Analysis>()
 
     // Create a message dialog view model for handling error messages
     val messageDialogVM = MessageDialogViewModel()
@@ -168,9 +172,9 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
     }
 
     /**
-     * An AnalysisViewStatus listener that displays the progress indicator when the status of the
-     * analysis is Updating and hides it otherwise. Also displays details of any error that occurs
-     * when the analysis is displayed.
+     * An AnalysisViewStatus listener that displays the progress indicator when the status of any
+     * analysis is Updating and hides it when no analysis is Updating. Also displays details of any
+     * error that occurs when an analysis is displayed.
      */
     fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
         when (event.analysisViewStatus) {
@@ -178,15 +182,16 @@ class ControlMapAlgebraInputsWithFloatSuppliersViewModel(app: Application) : And
                 messageDialogVM.showMessageDialog(
                     throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
                 )
-                displayProgressIndicator = false
+                updatingAnalyses.remove(event.analysis)
             }
             AnalysisViewStatus.UpToDate -> {
-                displayProgressIndicator = false
+                updatingAnalyses.remove(event.analysis)
             }
             AnalysisViewStatus.Updating -> {
-                displayProgressIndicator = true
+                updatingAnalyses.add(event.analysis)
             }
         }
+        displayProgressIndicator = updatingAnalyses.isNotEmpty()
     }
 
     /**
