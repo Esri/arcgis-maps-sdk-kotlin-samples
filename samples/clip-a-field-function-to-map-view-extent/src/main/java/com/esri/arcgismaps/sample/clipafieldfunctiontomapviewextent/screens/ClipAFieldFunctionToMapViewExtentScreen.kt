@@ -50,7 +50,7 @@ fun ClipAFieldFunctionToMapViewExtentScreen(
     MainScreenScaffold(
         uiState = uiState,
         displayProgressIndicator = viewModel.displayProgressIndicator,
-        onMinMaxElevationChange = viewModel::onMinMaxSlopeChange,
+        onMinMaxElevationChange = viewModel::onMinMaxElevationChange,
         mainPaneContent = {
             MapView(
                 modifier = Modifier

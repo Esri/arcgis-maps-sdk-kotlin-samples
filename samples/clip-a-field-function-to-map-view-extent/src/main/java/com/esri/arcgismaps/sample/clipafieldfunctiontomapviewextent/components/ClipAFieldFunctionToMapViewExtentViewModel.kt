@@ -202,9 +202,9 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
     }
 
     /**
-     * Updates the minimum slope and maximum slope values.
+     * Updates the minimum elevation and maximum elevation values.
      */
-    fun onMinMaxSlopeChange(minimumElevation: Float, maximumElevation: Float) {
+    fun onMinMaxElevationChange(minimumElevation: Float, maximumElevation: Float) {
         _clipFunctionUiState.update {
             it.copy(minimumElevation = minimumElevation, maximumElevation = maximumElevation)
         }
