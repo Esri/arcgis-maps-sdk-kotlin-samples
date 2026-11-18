@@ -92,7 +92,7 @@ private fun MainScreenScaffold(
                     .fillMaxSize()
                     .padding(paddingValues),
                 supportingPaneTitle = "Settings",
-                config = ThreePaneConfig(compactSupportingPaneHeightRatio = 0.3f),
+                config = ThreePaneConfig(compactSupportingPaneHeightRatio = 0.31f),
                 mainPane = { _, _ -> mainPaneContent() },
                 supportingPane = { _, _ ->
                     ClipAFieldFunctionToMapViewExtentSupportingPane(
