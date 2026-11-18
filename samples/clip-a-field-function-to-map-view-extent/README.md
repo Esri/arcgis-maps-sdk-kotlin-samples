@@ -14,23 +14,23 @@ resources. Note that analysis is performed at the full resolution of the source 
 
 ## How to use the sample
 
-When the sample opens, the map displays elevation within a clipped extent centred on the map view. The clipped analysis area covers 60 percent of the visible extent and is outlined on the map. Pan or zoom the map to explore different parts of the elevation dataset. As the viewpoint changes, the analysis area moves with the map view and the field function is clipped to the new extent. Select **Settings** to adjust the minimum and maximum elevation values displayed by the analysis. The analysis updates automatically to display elevation values within the selected range and clips them to the current analysis area.
+When the sample opens, the map displays elevation within a clipped extent centred on the map view. The clipped analysis area covers 60 percent of the visible extent and is outlined on the map. Pan or zoom the map to explore different parts of the elevation dataset. As the viewpoint changes, the analysis area moves with the map view and the field function is clipped to the new extent. Use the **Settings** pane to adjust the minimum and maximum elevation values displayed by the analysis. The analysis updates automatically to display elevation values within the selected range and clips them to the current analysis area.
 
-## How it worksTODO
+## How it works
 
 1. Create an `AnalysisOverlay` and a `GraphicsOverlay`, then add both overlays to the map view.
 2. Create a `ContinuousField` from an elevation raster file using `ContinuousField.createFromFiles`.
 3. Create a `ContinuousFieldFunction` from the continuous field using `ContinuousFieldSupplier`.
 4. Create two `FloatSupplier` instances to provide the minimum and maximum elevation values.
-5. Create a `BooleanFieldFunction` that identifies elevation values within the supplied range using `isGreaterThanOrEqualToFunction`, `isLessThanOrEqualToFunction`, and `logicalAnd`.
+5. Create a `BooleanFieldFunction` that identifies elevation values within the supplied range using `isGreaterThanOrEqualTo`, `isLessThanOrEqualTo`, and the infix function `and`.
 6. Apply the boolean selection to the continuous field function using `mask` to retain only elevation values within the selected range.
 7. Create a `ContinuousFieldClipFunction` from the masked elevation function.
-8. Create a `FieldAnalysis` from the clip function using `FieldAnalysis.withContinuousFieldFunction` and a `StretchRenderer`.
+8. Create a `FieldAnalysis` from the clip function using the `FieldAnalysis` constructor that takes a `ContinuousFieldFunction` and a `StretchRenderer`.
 9. Add the field analysis to the analysis overlay.
-10. Listen for map viewpoint changes using `onViewpointChanged`.
-11. Get the current visible area from `ArcGISMapViewController.visibleArea`. Use `Envelope.fromCenter` to create an inset `Envelope`, centred on the visible extent.
+10. Listen for changes to the visible area of the `MapView` using `onVisibleAreaChanged`.
+11. Create an `Envelope` that's centered in the current visible area, but with edges inset to cover just 60 percent of the visible extent.
 12. Update the clip extent graphic and set the `ContinuousFieldClipFunction.extent` property to the resulting envelope.
-13. Update the float suppliers' `value` properties to update the analysis result dynamically.
+13. Update the float suppliers' `value` properties whenever minimum and maximum elevation settings are changed, to update the analysis result dynamically.
 
 ## Relevant API
 
