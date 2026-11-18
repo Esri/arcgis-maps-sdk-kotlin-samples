@@ -231,6 +231,7 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
         if (clipGeometry == null) {
             clipExtentGraphic.isVisible = false
             fieldAnalysis.isVisible = false
+            displayProgressIndicator = false
             return
         }
 
