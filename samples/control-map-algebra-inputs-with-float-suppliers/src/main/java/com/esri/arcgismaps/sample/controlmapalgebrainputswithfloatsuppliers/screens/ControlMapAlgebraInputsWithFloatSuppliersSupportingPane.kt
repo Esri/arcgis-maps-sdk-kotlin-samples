@@ -36,11 +36,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.esri.arcgismaps.sample.controlmapalgebrainputswithfloatsuppliers.components.FloatSuppliersUiState
 import com.esri.arcgismaps.sample.controlmapalgebrainputswithfloatsuppliers.components.MAXIMUM_SLOPE_DEGREES
+
+// A list of colors used to approximate the color gradient of the Viridis color scheme
+private val viridis = listOf(
+    Color(0xFF440154),
+    Color(0xFF3B528B),
+    Color(0xFF21918C),
+    Color(0xFF5EC962),
+    Color(0xFFFDE725)
+)
 
 /**
  * Supporting pane content for the sample.
@@ -83,14 +93,6 @@ private fun SlopeRangeSlider(
     uiState: FloatSuppliersUiState,
     onMinMaxSlopeChange: (Float, Float) -> Unit
 ) {
-    // A list of colors used to approximate the color gradient of the Viridis color scheme
-    val viridis = listOf(
-        Color(0xFF440154),
-        Color(0xFF3B528B),
-        Color(0xFF21918C),
-        Color(0xFF5EC962),
-        Color(0xFFFDE725)
-    )
     val colors = if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
         viridis.reversed()
     } else {
@@ -167,10 +169,5 @@ private fun colorAtFraction(colors: List<Color>, fraction: Float): Color {
 
     val start = colors[index]
     val end = colors[index + 1]
-    return Color(
-        red = start.red + (end.red - start.red) * t,
-        green = start.green + (end.green - start.green) * t,
-        blue = start.blue + (end.blue - start.blue) * t,
-        alpha = start.alpha + (end.alpha - start.alpha) * t
-    )
+    return lerp(start, end, t)
 }
