@@ -10,10 +10,6 @@
             android:label="@string/style_point_with_distance_composite_scene_symbol_app_name">
 
         </activity>
-        <activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/style_point_with_distance_composite_scene_symbol_app_name" />
     </application>
 
 </manifest>

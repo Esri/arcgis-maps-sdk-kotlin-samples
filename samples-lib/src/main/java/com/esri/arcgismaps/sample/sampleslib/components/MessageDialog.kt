@@ -28,12 +28,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import com.arcgismaps.exceptions.ArcGISException
 import com.arcgismaps.exceptions.CriticalRenderingException
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * Composable component to display a dialog with a message
@@ -49,6 +54,7 @@ fun MessageDialog(
     // display a dialog with a description text
     if (description.isNotEmpty()) {
         AlertDialog(
+            modifier = Modifier.sampleDialogTestTag(),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(imageVector = icon, contentDescription = null) },
             title = { Text(title) },
@@ -62,6 +68,7 @@ fun MessageDialog(
     } else {
         // display a dialog without a description text
         AlertDialog(
+            modifier = Modifier.sampleDialogTestTag(),
             onDismissRequest = { onDismissRequest() },
             icon = { Icon(Icons.Filled.Info, contentDescription = null) },
             title = { Text(title) },
@@ -109,6 +116,7 @@ class MessageDialogViewModel : ViewModel() {
 
     fun showMessageDialog(throwable: Throwable?) {
         throwable ?: return
+        SampleDialogExceptionRelay.publish(throwable)
         when (throwable) {
             is CriticalRenderingException -> showMessageDialog(throwable)
             is ArcGISException -> showMessageDialog(throwable)
@@ -144,4 +152,18 @@ class MessageDialogViewModel : ViewModel() {
     fun dismissDialog() {
         dialogStatus = false
     }
+}
+
+/**
+ * Emits dialog exceptions so instrumentation can fail with the original exception.
+ */
+object SampleDialogExceptionRelay {
+    private val exceptionEvents = MutableSharedFlow<Throwable>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
+    val exceptions: SharedFlow<Throwable> = exceptionEvents.asSharedFlow()
+
+    fun publish(throwable: Throwable) = exceptionEvents.tryEmit(throwable)
 }

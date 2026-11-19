@@ -26,6 +26,10 @@
     ],
     "language": "kotlin",
     "redirect_from": [],
+    "offline_data": [
+        "e12b54ea799f4606a2712157cf9f6e41",
+        "b5106355f1634b8996e634c04b6a930a"
+    ],
     "relevant_apis": [
         "ArcGISFeatureTable",
         "CodedValue",
@@ -38,7 +42,6 @@
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/components/AddFeaturesWithContingentValuesViewModel.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/MainActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addfeatureswithcontingentvalues/screens/AddFeaturesWithContingentValuesScreen.kt"
     ],

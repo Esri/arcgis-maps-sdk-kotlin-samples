@@ -27,8 +27,6 @@ python3 tools/MetadataUpdater/metadata_updater.py -s ../arcgis-maps-sdk-kotlin-s
 
 When recreating single metadata files, if any of the following entries are not present or empty, they will be created and given the value "TODO". This is because they cannot be filled in by the script. Please remove the "TODO" and update with the correct info or remove the entry altogether before merging.
 * category
-* provision_from
-* provision_to
 * redirect_from
 
 ### How it works
@@ -39,7 +37,7 @@ To update all sample metadata files in a directory:
 2. A `MetadataUpdater` is created, passing in the subfolder's path, with class fields for each key of the output json.
 3. Populate fields from the existing `README.metadata.json`:
   * Check for a `category` key and write it to the updater's `self.category` field.
-  * For each of `provision_from`, `provision_to`, and `redirect_from`, check if the key exists, and if it does, write it to the corresponding field of the updater.
+  * For `redirect_from`, check if the key exists, and if it does, write it to the corresponding field of the updater.
 4. Populate fields from the sample's `README.md`:
   * Split the readme by two hash symbols `##` to find the headings of each section.
   * Get the title and description by parsing the head (first section) of the readme.
@@ -49,5 +47,5 @@ To update all sample metadata files in a directory:
   * To get the screenshot, traverse the immediate files inside the sample directory, looking for a file with the `.png` extension.
   * To get the language and snippets, search recursively through the directory for files with the extension `.java` or `.kt`, ignoring the `/build/` directory.
 6. Create a dictionary. For each of the required metadata keys, create a key with a string title and a corresponding class field as its value.
-  * For the `category`, `provision_from`, `provision_to`, and `redirect_from` keys, check if that they are not empty in the updater's fields before adding them to the dictionary. If they are empty, set them to "TODO"
+  * For the `category` and `redirect_from` keys, check if they are not empty in the updater's fields before adding them to the dictionary. If they are empty, set them to "TODO"
 7. Dump the dictionary to a json file.

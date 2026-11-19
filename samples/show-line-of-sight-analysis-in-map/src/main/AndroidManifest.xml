@@ -6,14 +6,6 @@
     <application>
         <activity
             android:exported="true"
-            android:name=".DownloadActivity"
-            android:label="@string/show_line_of_sight_analysis_in_map_app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:exported="true"
             android:name=".MainActivity"
             android:label="@string/show_line_of_sight_analysis_in_map_app_name">
         </activity>

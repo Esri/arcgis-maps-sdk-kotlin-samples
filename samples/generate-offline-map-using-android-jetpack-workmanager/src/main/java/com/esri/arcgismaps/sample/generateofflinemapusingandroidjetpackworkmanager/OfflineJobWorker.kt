@@ -61,18 +61,11 @@ class OfflineJobWorker(private val context: Context, params: WorkerParameters) :
      */
     private fun createForegroundInfo(progress: Int): ForegroundInfo {
         // create a ForegroundInfo using the notificationId and a new progress notification
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ForegroundInfo(
-                notificationId,
-                workerNotification.createProgressNotification(progress),
-                FOREGROUND_SERVICE_TYPE_DATA_SYNC
-            )
-        } else {
-            ForegroundInfo(
-                notificationId,
-                workerNotification.createProgressNotification(progress)
-            )
-        }
+        return ForegroundInfo(
+            notificationId,
+            workerNotification.createProgressNotification(progress),
+            FOREGROUND_SERVICE_TYPE_DATA_SYNC
+        )
     }
 
     override suspend fun doWork(): Result {

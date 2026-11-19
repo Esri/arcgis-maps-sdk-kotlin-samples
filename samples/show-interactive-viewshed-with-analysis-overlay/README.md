@@ -19,7 +19,7 @@ The sample loads with a viewshed analysis initialized from an elevation raster c
 1. Create an `ArcGISMap` and set it on a `MapView`.
 2. Add a `GraphicsOverlay` to draw the observer point and an `AnalysisOverlay` to the map view.
 3. Create a `ContinuousField` from a raster file containing elevation data.
-4. Create a `ContinuousFieldFunction` from the `ContinuousField`.
+4. Create a `ContinuousFieldFunction` from the `ContinuousField`, using `ContinuousFieldSupplier`.
 5. Create and configure `ViewshedParameters`, passing in a `Point` as the observer position for the viewshed.
 6. Create a `ViewshedFunction` using the `ContinuousFieldFunction` and `ViewshedParameters`, then convert it to a `DiscreteFieldFunction`.
 7. Create a `ColormapRenderer` from a `Colormap` with colors that represent visible and non-visible results.
@@ -32,9 +32,14 @@ The sample loads with a viewshed analysis initialized from an elevation raster c
 * ColormapRenderer
 * ContinuousField
 * ContinuousFieldFunction
+* ContinuousFieldSupplier
 * FieldAnalysis
 * ViewshedFunction
 * ViewshedParameters
+
+## Offline data
+
+This sample uses [a digital terrain elevation raster](https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271). It is downloaded from ArcGIS Online automatically.
 
 ## About the data
 

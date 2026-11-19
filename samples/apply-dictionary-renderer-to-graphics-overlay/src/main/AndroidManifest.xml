@@ -9,10 +9,6 @@
             android:label="@string/apply_dictionary_renderer_to_graphics_overlay_app_name">
             
         </activity>
-        <activity
-    android:name=".DownloadActivity"
-    android:exported="true"
-    android:label="@string/apply_dictionary_renderer_to_graphics_overlay_app_name" />
 </application>
 
 </manifest>

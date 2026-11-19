@@ -25,6 +25,10 @@ When the sample loads, it will automatically display the map containing dimensio
 * DimensionLayer
 * MobileMapPackage
 
+## Offline data
+
+This sample uses [dimension data](https://www.arcgis.com/home/item.html?id=f5ff6f5556a945bca87ca513b8729a1e). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample shows a subset of the Edinburgh, Scotland network of pylons, substations, and powerlines within an [Edinburgh Pylon Dimensions mobile map package](https://arcgis.com/home/item.html?id=f5ff6f5556a945bca87ca513b8729a1e), digitized from satellite imagery. Note the data is intended as illustrative of the network only.

@@ -29,6 +29,10 @@ Pan and zoom around the map. Observe the displayed military symbology on the map
 * FeatureLayer
 * Geodatabase
 
+## Offline data
+
+This sample uses [feature data](https://www.arcgis.com/home/item.html?id=c78b149a1d52414682c86a5feeb13d30) and [dictionary style data](https://www.arcgis.com/home/item.html?id=e0d41b4b409a49a5a7ba11939d8535dc). They are downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 The sample uses a [mil2525d stylx file](https://www.arcgis.com/home/item.html?id=c78b149a1d52414682c86a5feeb13d30) and a [mobile geodatabase](https://www.arcgis.com/home/item.html?id=e0d41b4b409a49a5a7ba11939d8535dc) from ArcGIS Online.

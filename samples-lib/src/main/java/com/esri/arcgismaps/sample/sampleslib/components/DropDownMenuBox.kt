@@ -33,8 +33,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
+
+const val DROP_DOWN_MENU_TAG = "DropDownMenu"
+const val DROP_DOWN_MENU_ITEM_TAG_PREFIX = "DropDownItem"
 
 /**
  * Composable component to simplify the usage of an [ExposedDropdownMenuBox].
@@ -59,7 +65,9 @@ fun DropDownMenuBox(
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+            modifier = Modifier
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .sampleDropdownTag(DROP_DOWN_MENU_TAG)
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -67,6 +75,7 @@ fun DropDownMenuBox(
         ) {
             dropDownItemList.forEachIndexed { index, itemText ->
                 DropdownMenuItem(
+                    modifier = Modifier.sampleDropdownTag("$DROP_DOWN_MENU_ITEM_TAG_PREFIX${index}"),
                     text = { Text(itemText) },
                     onClick = {
                         onIndexSelected(index)
@@ -79,6 +88,11 @@ fun DropDownMenuBox(
             }
         }
     }
+}
+
+private fun Modifier.sampleDropdownTag(tag: String): Modifier = semantics {
+    testTag = tag
+    testTagsAsResourceId = true
 }
 
 @Preview

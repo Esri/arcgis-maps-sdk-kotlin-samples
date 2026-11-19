@@ -35,6 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -54,6 +57,7 @@ fun SampleDialog(
     Dialog(onDismissRequest = onDismissRequest, properties = properties) {
         Column(
             modifier = modifier
+                .sampleDialogTestTag()
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.background)
                 .padding(12.dp)
@@ -66,6 +70,19 @@ fun SampleDialog(
             content(this)
         }
     }
+}
+
+/**
+ * Test tag for sample dialogs.
+ */
+const val SampleDialogTestTag = "SampleDialog"
+
+/**
+ * Exposes the sample dialog test tag.
+ */
+fun Modifier.sampleDialogTestTag(): Modifier = semantics {
+    testTag = SampleDialogTestTag
+    testTagsAsResourceId = true
 }
 
 @Preview(showBackground = true)

@@ -23,6 +23,10 @@ When the sample starts, a raster will be loaded from a file and displayed in the
 * Raster
 * RasterLayer
 
+## Offline data
+
+This sample uses [raster data](https://arcgisruntime.maps.arcgis.com/home/item.html?id=7c4c679ab06a4df19dc497f577f111bd). It is downloaded from ArcGIS Online automatically.
+
 ## Additional information
 
 See the topic [Introduction to image and raster data](https://pro.arcgis.com/en/pro-app/latest/help/data/imagery/introduction-to-raster-data.htm) in the *ArcGIS Pro* documentation for more information about raster images.

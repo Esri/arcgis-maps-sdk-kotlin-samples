@@ -23,6 +23,10 @@ The sample starts with a point cloud layer loaded and draped on top of a scene. 
 
 * PointCloudLayer
 
+## Offline data
+
+This sample uses [point cloud data](https://arcgisruntime.maps.arcgis.com/home/item.html?id=34da965ca51d4c68aa9b3a38edb29e00). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample uses a [Scene Layer Package file](https://arcgisruntime.maps.arcgis.com/home/item.html?id=34da965ca51d4c68aa9b3a38edb29e00) (SLPK) containing point cloud data for Balboa Park in San Diego, California.  Created and provided by USGS.

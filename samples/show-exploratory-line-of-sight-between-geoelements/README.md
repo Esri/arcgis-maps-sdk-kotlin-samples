@@ -30,6 +30,10 @@ The taxi will be highlighted and blinking when it is visible. A red segment on t
 * ExploratoryGeoElementLineOfSight
 * ExploratoryLineOfSightTargetVisibility
 
+## Offline data
+
+This sample uses [elevation data](https://www.arcgis.com/home/item.html?id=3af5cfec0fd24dac8d88aea679027cb9). It is downloaded from ArcGIS Online automatically.
+
 ## Additional information
 
 This sample uses the GeoView-Compose Toolkit module to be able to implement a composable SceneView.

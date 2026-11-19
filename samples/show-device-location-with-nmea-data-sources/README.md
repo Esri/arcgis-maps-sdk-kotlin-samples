@@ -28,6 +28,10 @@ Click floating button "Play" to parse the provided NMEA sentences into a locatio
 * NmeaLocationDataSource
 * NmeaSatelliteInfo
 
+## Offline data
+
+This sample uses [GNSS data](https://www.arcgis.com/home/item.html?id=d5bad9f4fee9483791e405880fb466da). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample reads lines from a local file to simulate the feed of data into the `NmeaLocationDataSource`. This simulated data source provides NMEA data periodically and allows the sample to be used without a GNSS accessory.

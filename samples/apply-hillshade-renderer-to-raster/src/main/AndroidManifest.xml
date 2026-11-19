@@ -5,10 +5,6 @@
 
     <application>
         <activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/apply_hillshade_renderer_to_raster_app_name" />
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/apply_hillshade_renderer_to_raster_app_name">

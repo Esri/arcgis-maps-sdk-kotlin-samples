@@ -27,6 +27,10 @@ Choose and adjust the settings to update the hillshade renderer on the raster la
 * Raster
 * RasterLayer
 
+## Offline data
+
+This sample uses [elevation raster data](https://www.arcgis.com/home/item.html?id=134d60f50e184e8fa56365f44e5ce3fb). It is downloaded from ArcGIS Online automatically.
+
 ## Tags
 
 altitude, angle, azimuth, raster, slope, visualization

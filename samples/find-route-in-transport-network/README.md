@@ -29,6 +29,10 @@ Tap once near a road to add a stop to the map. A number graphic will show its or
 * Stop
 * TravelMode
 
+## Offline data
+
+This sample uses [transport network data](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample uses a pre-packaged [sample dataset](https://arcgisruntime.maps.arcgis.com/home/item.html?id=df193653ed39449195af0c9725701dca) consisting of a geodatabase with a San Diego road routing network and a tile package with a streets basemap.

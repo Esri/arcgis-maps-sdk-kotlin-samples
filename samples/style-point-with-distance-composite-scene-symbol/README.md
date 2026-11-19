@@ -26,6 +26,10 @@ The sample starts looking at a plane. Zoom out from the plane to see it turn int
 * DistanceSymbolRange
 * OrbitGeoElementCameraController
 
+## Offline data
+
+This sample uses [scene data](https://www.arcgis.com/home/item.html?id=681d6f7694644709a7c830ec57a2d72b). It is downloaded from ArcGIS Online automatically.
+
 ## Tags
 
 3D, data, graphic

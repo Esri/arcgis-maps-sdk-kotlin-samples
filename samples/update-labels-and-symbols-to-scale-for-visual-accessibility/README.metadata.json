@@ -1,0 +1,31 @@
+{
+    "category": "Accessibility",
+    "description": "Scale feature labels and symbols according to the system text-size setting.",
+    "formal_name": "UpdateLabelsAndSymbolsToScaleForVisualAccessibility",
+    "ignore": false,
+    "images": [
+        "update-labels-and-symbols-to-scale-for-visual-accessibility.png"
+    ],
+    "keywords": [
+        "accessibility",
+        "label",
+        "readability",
+        "scale",
+        "symbol",
+        "text",
+        "visual impairment",
+        "GeoView.UseSystemTextScale"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "GeoView.UseSystemTextScale"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/updatelabelsandsymbolstoscaleforvisualaccessibility/components/UpdateLabelsAndSymbolsToScaleForVisualAccessibilityViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatelabelsandsymbolstoscaleforvisualaccessibility/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatelabelsandsymbolstoscaleforvisualaccessibility/screens/UpdateLabelsAndSymbolsToScaleForVisualAccessibilityScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/updatelabelsandsymbolstoscaleforvisualaccessibility/screens/UpdateLabelsAndSymbolsToScaleForVisualAccessibilitySupportingPane.kt"
+    ],
+    "title": "Update labels and symbols to scale for visual accessibility"
+}

@@ -3,11 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application><activity
-            android:name=".DownloadActivity"
-            android:exported="true"
-            android:label="@string/show_device_location_with_nmea_data_sources_app_name">
-        </activity>
+    <application>
         <activity
             android:name=".MainActivity"
             android:exported="true"

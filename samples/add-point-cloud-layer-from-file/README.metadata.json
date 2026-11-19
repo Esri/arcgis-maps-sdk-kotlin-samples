@@ -14,13 +14,13 @@
     ],
     "language": "kotlin",
     "redirect_from": "",
+    "offline_data": ["34da965ca51d4c68aa9b3a38edb29e00"],
     "relevant_apis": [
         "PointCloudLayer"
     ],
     "snippets": [
         "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/components/AddPointCloudLayerFromFileViewModel.kt",
         "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/MainActivity.kt",
-        "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/DownloadActivity.kt",
         "src/main/java/com/esri/arcgismaps/sample/addpointcloudlayerfromfile/screens/AddPointCloudLayerFromFileScreen.kt"
     ],
     "title": "Add point cloud layer from file"

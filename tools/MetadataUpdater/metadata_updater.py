@@ -61,6 +61,12 @@ def parse_tags(tags_string: str) -> typing.List[str]:
     return sorted([tag.strip() for tag in tags])
 
 
+def parse_offline_data(offline_data_string: str) -> typing.List[str]:
+    """Extract ordered, unique URLs from the Offline data section."""
+    urls = re.findall(r"(http[s]?://[^)]+)", offline_data_string)
+    return list(dict.fromkeys(urls))
+
+
 def get_folder_name_from_path(path: str) -> str:
     """
     Get the folder name from a full path.
@@ -85,6 +91,7 @@ class MetadataUpdater:
         self.images = []            # Populate from folder paths.
         self.keywords = []          # Populate from README.
         self.language = ''          # Populate from folder paths.
+        self.offline_data = []      # Populate from the README Offline data section.
         self.redirect_from = []     # Populate from json.
         self.relevant_apis = []     # Populate from README.
         self.snippets = []          # Populate from folder paths.
@@ -206,6 +213,11 @@ class MetadataUpdater:
             # "It combines the Tags and the Relevant APIs in the README."
             # See /runtime/common-samples/wiki/README.metadata.json#keywords
             self.keywords += self.relevant_apis
+            if 'Offline data' in readme_parts:
+                offline_data_section_index = readme_parts.index('Offline data') + 1
+                self.offline_data = parse_offline_data(
+                    readme_parts[offline_data_section_index]
+                )
         except Exception as err:
             print(f'Error parsing README - {self.readme_path} - {err}.')
             raise err
@@ -239,6 +251,8 @@ class MetadataUpdater:
         data["ignore"] = self.ignore
         data["images"] = self.images
         data["keywords"] = self.keywords
+        if self.offline_data:
+            data["offline_data"] = self.offline_data
         data["language"] = self.language
 
         if self.redirect_from and self.redirect_from[0] is not '':

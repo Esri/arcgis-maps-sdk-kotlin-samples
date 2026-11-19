@@ -1,0 +1,36 @@
+{
+    "category": "Layers",
+    "description": "Show a callout with formatted content for a KML feature.",
+    "formal_name": "IdentifyKmlFeatures",
+    "ignore": false,
+    "images": [
+        "identify-kml-features.png"
+    ],
+    "keywords": [
+        "KML",
+        "KMZ",
+        "Keyhole",
+        "NOAA",
+        "NWS",
+        "OGC",
+        "weather",
+        "IdentifyLayerResult",
+        "KMLLayer",
+        "KMLPlacemark",
+        "MapViewProxy"
+    ],
+    "language": "kotlin",
+    "redirect_from": "",
+    "relevant_apis": [
+        "IdentifyLayerResult",
+        "KMLLayer",
+        "KMLPlacemark",
+        "MapViewProxy"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/identifykmlfeatures/components/IdentifyKMLFeaturesViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifykmlfeatures/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/identifykmlfeatures/screens/IdentifyKMLFeaturesScreen.kt"
+    ],
+    "title": "Identify KML features"
+}

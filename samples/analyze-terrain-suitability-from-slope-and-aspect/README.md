@@ -15,7 +15,7 @@ When the sample opens, the map shows the results of a preconfigured terrain suit
 ## How it works
 
 1. Create a `ContinuousField` from a raster file.
-2. Create a `ContinuousFieldFunction` from the continuous field.
+2. Create a `ContinuousFieldFunction` from the continuous field, using `ContinuousFieldSupplier`.
 3. Derive a `slope` function and an `aspect` function from the continuous field function.
 4. Create `BooleanFieldFunction` masks for slope, aspect, and elevation using range checks with map algebra.
 5. Combine the masks using the infix `and` function and apply a land-only mask to exclude areas below sea level.
@@ -31,7 +31,12 @@ When the sample opens, the map shows the results of a preconfigured terrain suit
 * ColormapRenderer
 * ContinuousField
 * ContinuousFieldFunction
+* ContinuousFieldSupplier
 * FieldAnalysis
+
+## Offline data
+
+This sample uses [terrain data](https://www.arcgis.com/home/item.html?id=aa97788593e34a32bcaae33947fdc271). It is downloaded from ArcGIS Online automatically.
 
 ## About the data
 

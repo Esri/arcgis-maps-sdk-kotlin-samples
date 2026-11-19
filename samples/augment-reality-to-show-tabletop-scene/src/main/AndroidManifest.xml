@@ -10,9 +10,6 @@
 
     <application>
         <activity
-            android:name=".DownloadActivity"
-            android:label="@string/augment_reality_to_show_tabletop_scene_app_name" />
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/augment_reality_to_show_tabletop_scene_app_name">

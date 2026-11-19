@@ -36,6 +36,10 @@ The app opens with a map centered on your current location. Tap the map or use y
 * Surface
 * WorldScaleSceneView
 
+## Offline data
+
+This sample uses [route data](https://arcgisruntime.maps.arcgis.com/home/item.html?id=248ea5112c8a46ee97fe3b8603d1e1dd). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample uses Esri's [world elevation service](https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer) to ensure that route lines are placed appropriately in 3D space. It uses Esri's [world routing service](https://www.arcgis.com/home/item.html?id=1feb41652c5c4bd2ba5c60df2b4ea2c4) to calculate routes. The world routing service requires an API key and does consume ArcGIS Online credits.

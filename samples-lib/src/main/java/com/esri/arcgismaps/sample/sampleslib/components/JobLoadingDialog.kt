@@ -58,9 +58,10 @@ fun JobLoadingDialog(
     isPauseJobEnabled: Boolean = false,
     cancelJobRequest: (Unit) -> Unit = {},
     pauseJobRequest: (Unit) -> Unit = {},
-    resumeJobRequest: (Unit) -> Unit = {},
+    resumeJobRequest: (Unit) -> Unit = {}
 ) {
     BasicAlertDialog(
+        modifier = Modifier.sampleDialogTestTag(),
         properties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = false

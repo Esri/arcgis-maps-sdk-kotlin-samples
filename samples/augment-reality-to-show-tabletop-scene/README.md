@@ -27,6 +27,10 @@ NOTE: [Google Play Services for AR](https://play.google.com/store/apps/details?i
 * ArcGISScene
 * TableTopSceneView
 
+## Offline data
+
+This sample uses [scene data](https://www.arcgis.com/home/item.html?id=7dd2f97bb007466ea939160d0de96a9d). It is downloaded from ArcGIS Online automatically.
+
 ## About the data
 
 This sample uses the [Philadelphia Mobile Scene Package](https://www.arcgis.com/home/item.html?id=7dd2f97bb007466ea939160d0de96a9d). It was chosen because it is a compact scene ideal for tabletop use. Note that tabletop mapping experiences work best with small, focused scenes. The small, focused area with basemap tiles defines a clear boundary for the scene.
