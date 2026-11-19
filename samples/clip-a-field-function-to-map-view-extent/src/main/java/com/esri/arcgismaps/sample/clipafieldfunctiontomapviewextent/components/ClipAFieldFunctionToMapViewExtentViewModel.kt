@@ -72,8 +72,8 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
 
     // Initialize and keep track of the ArcGISMap & the overlays it uses
     val arcGISMap by mutableStateOf(ArcGISMap(BasemapStyle.ArcGISTopographic))
-    var analysisOverlay by mutableStateOf(AnalysisOverlay())
-    var graphicsOverlay by mutableStateOf(GraphicsOverlay())
+    val analysisOverlay by mutableStateOf(AnalysisOverlay())
+    val graphicsOverlay by mutableStateOf(GraphicsOverlay())
 
     // Indicates when the ProgressIndicator should be displayed
     var displayProgressIndicator by mutableStateOf(false)
