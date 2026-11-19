@@ -1,0 +1,52 @@
+{
+    "category": "Analysis",
+    "description": "Clip a field function to a changing area of interest within the map view and automatically update the analysis as the map is navigated.",
+    "formal_name": "ClipAFieldFunctionToMapViewExtent",
+    "ignore": false,
+    "images": [
+        "clip-a-field-function-to-map-view-extent.png"
+    ],
+    "keywords": [
+        "clip",
+        "elevation",
+        "extent",
+        "map algebra",
+        "raster",
+        "spatial analysis",
+        "terrain",
+        "AnalysisOverlay",
+        "BooleanFieldFunction",
+        "ColorRamp",
+        "ContinuousField",
+        "ContinuousFieldClipFunction",
+        "ContinuousFieldFunction",
+        "ContinuousFieldSupplier",
+        "FieldAnalysis",
+        "FloatSupplier",
+        "StretchRenderer"
+    ],
+    "language": "kotlin",
+    "offline_data": [
+        "aa97788593e34a32bcaae33947fdc271"
+    ],
+    "redirect_from": "",
+    "relevant_apis": [
+        "AnalysisOverlay",
+        "BooleanFieldFunction",
+        "ColorRamp",
+        "ContinuousField",
+        "ContinuousFieldClipFunction",
+        "ContinuousFieldFunction",
+        "ContinuousFieldSupplier",
+        "FieldAnalysis",
+        "FloatSupplier",
+        "StretchRenderer"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/arcgismaps/sample/clipafieldfunctiontomapviewextent/components/ClipAFieldFunctionToMapViewExtentViewModel.kt",
+        "src/main/java/com/esri/arcgismaps/sample/clipafieldfunctiontomapviewextent/MainActivity.kt",
+        "src/main/java/com/esri/arcgismaps/sample/clipafieldfunctiontomapviewextent/screens/ClipAFieldFunctionToMapViewExtentScreen.kt",
+        "src/main/java/com/esri/arcgismaps/sample/clipafieldfunctiontomapviewextent/screens/ClipAFieldFunctionToMapViewExtentSupportingPane.kt"
+    ],
+    "title": "Clip a field function to map view extent"
+}
