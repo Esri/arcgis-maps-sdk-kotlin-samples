@@ -17,16 +17,12 @@
 package com.esri.arcgismaps.sample.browsebuildingfloors.components
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.PortalItem
 import com.arcgismaps.portal.Portal
-import com.arcgismaps.toolkit.indoors.ButtonPosition
 import com.arcgismaps.toolkit.indoors.FloorFilterState
-import com.arcgismaps.toolkit.indoors.UIProperties
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 

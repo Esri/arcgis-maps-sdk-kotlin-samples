@@ -189,30 +189,9 @@ fun shareImage(context: Context, imageUri: Uri) {
 
 @Composable
 fun SaveImageButton(context: Context, bitmap: Bitmap, saveBitmapToGallery: (Context, Bitmap) -> Uri?) {
-
-    val permission = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    } else null
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            saveBitmapToGallery(context, bitmap)
-            showToast(context, "Image saved to Photos gallery!")
-        } else {
-            showToast(context, "Permission denied")
-        }
-    }
-
     TextButton(onClick = {
-        // If permission is null (i.e., running on API > 28), or if permission is already granted
-        if (permission == null || ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-            saveBitmapToGallery(context, bitmap)
-            showToast(context, "Image saved to Photos gallery!")
-        } else {
-            permissionLauncher.launch(permission)
-        }
+        saveBitmapToGallery(context, bitmap)
+        showToast(context, "Image saved to Photos gallery!")
     }) {
         Icon(painter = painterResource(R.drawable.arrow_circle_down), "Share icon", Modifier.padding(horizontal = 4.dp))
         Text("Save", style = MaterialTheme.typography.labelLarge)

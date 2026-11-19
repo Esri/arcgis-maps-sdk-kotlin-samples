@@ -59,7 +59,6 @@ import java.time.format.DateTimeFormatter
 /**
  * Main screen layout for the sample app.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     val mapViewModel: ShowRealisticLightAndShadowsViewModel = viewModel()
@@ -124,7 +123,6 @@ fun ShowRealisticLightAndShadowsScreen(sampleName: String) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LightingOptionsPanel(
     lightingModes: List<LightingMode>,

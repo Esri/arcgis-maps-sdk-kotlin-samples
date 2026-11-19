@@ -32,7 +32,7 @@ import com.esri.arcgismaps.sample.displayscene.R
 import com.esri.arcgismaps.sample.sampleslib.components.MessageDialogViewModel
 import kotlinx.coroutines.launch
 
-class DisplaySceneViewModel(private val app: Application) : AndroidViewModel(app) {
+class DisplaySceneViewModel(app: Application) : AndroidViewModel(app) {
     //Initial Camera Location
     val cameraLocation = Point(
         x = -118.794,
