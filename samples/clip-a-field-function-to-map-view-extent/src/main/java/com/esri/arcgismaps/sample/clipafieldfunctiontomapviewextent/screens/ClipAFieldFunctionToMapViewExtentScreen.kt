@@ -108,7 +108,7 @@ private fun MainScreenScaffold(
 
 @SampleDeviceLightDarkPreview
 @Composable
-fun MainScreenPreview() {
+private fun MainScreenPreview() {
     SamplePreviewSurface {
         MainScreenScaffold(
             uiState = ClipFunctionUiState.initialClipFunctionUiState,
