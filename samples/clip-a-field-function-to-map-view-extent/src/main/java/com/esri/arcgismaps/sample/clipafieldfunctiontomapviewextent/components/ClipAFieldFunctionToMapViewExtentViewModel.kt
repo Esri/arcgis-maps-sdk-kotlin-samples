@@ -130,52 +130,52 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
 
         viewModelScope.launch {
             // Load the map and handle any errors by showing a message dialog
-            arcGISMap.load().onFailure {
-                messageDialogVM.showMessageDialog(it)
-            }.onSuccess {
-                // Create a ContinuousField from a raster file containing elevation data
-                ContinuousField.createFromFiles(filePaths = listOf(filePath), band = 0)
-                    .onFailure {
-                        messageDialogVM.showMessageDialog(it)
-                    }.onSuccess { field ->
-                        elevationField = field
-
-                        // Create a continuous field function from the elevation field
-                        val continuousFieldFunction = ContinuousFieldSupplier(elevationField)
-
-                        // Create a boolean field function for the elevation range with map algebra
-                        val elevationSelection =
-                            continuousFieldFunction.isGreaterThanOrEqualTo(minimumElevationSupplier) and
-                                    continuousFieldFunction.isLessThanOrEqualTo(maximumElevationSupplier)
-
-                        // Mask the elevation field using the boolean field function to create the
-                        // masked elevation function
-                        val maskedElevationFunction =
-                            continuousFieldFunction.mask(elevationSelection)
-
-                        // Create the continuous field clip function using the masked elevation
-                        // function. Use null initially for the extent, which will be updated later
-                        // based on the map view visible area.
-                        continuousFieldClipFunction = ContinuousFieldClipFunction(
-                            field = maskedElevationFunction,
-                            extent = null
-                        )
-
-                        // Create the field analysis using the continuous field clip function and
-                        // add it to the analysis overlay
-                        fieldAnalysis =
-                            FieldAnalysis(continuousFieldClipFunction, stretchRenderer)
-                        fieldAnalysis.opacity = 0.7f
-                        fieldAnalysis.isVisible = false // made visible in onVisibleAreaChanged()
-                        analysisOverlay.analyses.add(fieldAnalysis)
-
-                        // Set the viewpoint of the map to the center of the elevation field's extent
-                        mapViewProxy.setViewpointCenter(
-                            center = elevationField.extent.center,
-                            scale = 150000.0
-                        )
-                    }
+            arcGISMap.load().getOrElse { error ->
+                messageDialogVM.showMessageDialog(error)
+                return@launch
             }
+
+            // Create a ContinuousField from a raster file containing elevation data
+            elevationField = ContinuousField.createFromFiles(filePaths = listOf(filePath), band = 0)
+                .getOrElse { error ->
+                    messageDialogVM.showMessageDialog(error)
+                    return@launch
+                }
+
+            // Create a continuous field function from the elevation field
+            val continuousFieldFunction = ContinuousFieldSupplier(elevationField)
+
+            // Create a boolean field function for the elevation range with map algebra
+            val elevationSelection =
+                continuousFieldFunction.isGreaterThanOrEqualTo(minimumElevationSupplier) and
+                        continuousFieldFunction.isLessThanOrEqualTo(maximumElevationSupplier)
+
+            // Mask the elevation field using the boolean field function to create the masked
+            // elevation function
+            val maskedElevationFunction =
+                continuousFieldFunction.mask(elevationSelection)
+
+            // Create the continuous field clip function using the masked elevation function. Use
+            // null initially for the extent, which will be updated later based on the map view
+            // visible area.
+            continuousFieldClipFunction = ContinuousFieldClipFunction(
+                field = maskedElevationFunction,
+                extent = null
+            )
+
+            // Create the field analysis using the continuous field clip function and add it to the
+            // analysis overlay
+            fieldAnalysis =
+                FieldAnalysis(continuousFieldClipFunction, stretchRenderer)
+            fieldAnalysis.opacity = 0.7f
+            fieldAnalysis.isVisible = false // made visible in onVisibleAreaChanged()
+            analysisOverlay.analyses.add(fieldAnalysis)
+
+            // Set the viewpoint of the map to the center of the elevation field's extent
+            mapViewProxy.setViewpointCenter(
+                center = elevationField.extent.center,
+                scale = 150000.0
+            )
         }
     }
 
