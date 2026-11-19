@@ -19,11 +19,15 @@ package com.esri.arcgismaps.sample.clipafieldfunctiontomapviewextent.screens
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arcgismaps.toolkit.geoviewcompose.MapView
@@ -63,6 +67,7 @@ fun ClipAFieldFunctionToMapViewExtentScreen(
                 onVisibleAreaChanged = viewModel::onVisibleAreaChanged,
                 onAnalysisViewStatusChanged = viewModel::analysisViewStatusListener
             )
+            RasterDataCopyrightText() // displays on top of the MapView
         }
     )
 
@@ -103,6 +108,19 @@ private fun MainScreenScaffold(
                 }
             )
         }
+    )
+}
+
+/**
+ * Displays copyright text for the sample's source raster.
+ */
+@Composable
+private fun RasterDataCopyrightText() {
+    Text(
+        text = "Raster data copyright Scottish Government and SEPA (2014)",
+        style = MaterialTheme.typography.labelSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
