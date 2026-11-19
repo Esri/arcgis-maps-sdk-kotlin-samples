@@ -185,10 +185,10 @@ class ClipAFieldFunctionToMapViewExtentViewModel(app: Application) : AndroidView
      * when the analysis is displayed.
      */
     fun analysisViewStatusListener(event: GeoView.GeoViewAnalysisViewStatusChanged) {
-        when (event.analysisViewStatus) {
+        when (val status = event.analysisViewStatus) {
             is AnalysisViewStatus.Error -> {
                 messageDialogVM.showMessageDialog(
-                    throwable = (event.analysisViewStatus as AnalysisViewStatus.Error).details
+                    throwable = status.details
                 )
                 displayProgressIndicator = false
             }
