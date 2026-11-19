@@ -54,14 +54,12 @@ internal fun ClipAFieldFunctionToMapViewExtentSupportingPane(
             CircularProgressIndicator(modifier = Modifier.size(20.dp))
         }
     }
-    Row(
+    Text(
+        text =
+            "Elevation range: ${uiState.minimumElevation.toInt()} to ${uiState.maximumElevation.toInt()} m",
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(text =
-            "Elevation range: ${uiState.minimumElevation.toInt()} to ${uiState.maximumElevation.toInt()} m"
-        )
-    }
+        textAlign = TextAlign.Center
+    )
     RangeSlider(
         modifier = Modifier.fillMaxWidth(),
         value = uiState.minimumElevation..uiState.maximumElevation,
