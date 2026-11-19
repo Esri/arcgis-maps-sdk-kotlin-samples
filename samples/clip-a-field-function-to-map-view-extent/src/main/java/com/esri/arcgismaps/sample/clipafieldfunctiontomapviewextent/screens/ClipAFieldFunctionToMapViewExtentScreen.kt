@@ -81,7 +81,7 @@ fun ClipAFieldFunctionToMapViewExtentScreen(
 private fun MainScreenScaffold(
     uiState: ClipFunctionUiState,
     displayProgressIndicator: Boolean,
-    onMinMaxElevationChange: (Float, Float) -> Unit = {_, _ ->},
+    onMinMaxElevationChange: (Float, Float) -> Unit,
     mainPaneContent: @Composable BoxScope.() -> Unit
 ) {
     Scaffold(
@@ -113,6 +113,7 @@ fun MainScreenPreview() {
         MainScreenScaffold(
             uiState = ClipFunctionUiState.initialClipFunctionUiState,
             displayProgressIndicator = true,
+            onMinMaxElevationChange = { _, _ -> },
             mainPaneContent = {}
         )
     }
