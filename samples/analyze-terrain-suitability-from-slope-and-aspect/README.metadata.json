@@ -21,6 +21,7 @@
         "ColormapRenderer",
         "ContinuousField",
         "ContinuousFieldFunction",
+        "ContinuousFieldSupplier",
         "FieldAnalysis"
     ],
     "language": "kotlin",
@@ -33,6 +34,7 @@
         "ColormapRenderer",
         "ContinuousField",
         "ContinuousFieldFunction",
+        "ContinuousFieldSupplier",
         "FieldAnalysis"
     ],
     "snippets": [
