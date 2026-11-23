@@ -24,7 +24,9 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.toolkit.authentication.AuthenticatorState
 import com.esri.arcgismaps.kotlin.sampleviewer.BuildConfig
+import com.esri.arcgismaps.sample.sampleslib.download.DownloadUiState
 import com.esri.arcgismaps.sample.sampleslib.download.DownloaderActivity
+import com.esri.arcgismaps.sample.sampleslib.download.SampleDownloadManager
 import kotlinx.serialization.Serializable
 
 /**
@@ -135,10 +137,13 @@ suspend fun Sample.start(context: Context) {
     val sampleViewerActivity = context.getActivityOrNull() ?: return
 
     val mainActivityClass = Class.forName(mainActivity) as Class<*>
-    val isProvisioned = sampleViewerActivity.getExternalFilesDir(null)
-        ?.resolve(name)
-        ?.list()
-        ?.isNotEmpty() == true
+    val isProvisioned = if (metadata.offlineDataIDs.isEmpty()) {
+        true
+    } else {
+        val downloadManager = SampleDownloadManager.getInstance(sampleViewerActivity)
+        downloadManager.refreshStatus(mainActivity, name, metadata.offlineDataIDs)
+        downloadManager.statuses.value[mainActivity] == DownloadUiState.Downloaded
+    }
 
     val launchIntent = if (metadata.offlineDataIDs.isEmpty() || isProvisioned) {
         // This sample does not require a download.

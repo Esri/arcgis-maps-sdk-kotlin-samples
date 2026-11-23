@@ -66,6 +66,15 @@ internal fun DownloaderScreen(
             ) {
                 when (uiState) {
                     DownloadUiState.WaitingForConfiguration -> CircularProgressIndicator()
+                    DownloadUiState.NotDownloaded -> CircularProgressIndicator()
+                    DownloadUiState.Downloaded -> CircularProgressIndicator()
+                    DownloadUiState.Queued -> {
+                        ScreenTitle(text = "Download queued")
+                        CircularProgressIndicator()
+                        TextButton(onClick = onCancel) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                    }
 
                     is DownloadUiState.Downloading -> DownloadingContent(
                         progress = uiState.progress,

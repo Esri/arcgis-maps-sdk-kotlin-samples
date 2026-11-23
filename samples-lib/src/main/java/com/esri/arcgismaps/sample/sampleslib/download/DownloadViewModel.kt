@@ -29,8 +29,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
-internal sealed interface DownloadUiState {
+sealed interface DownloadUiState {
+    data object NotDownloaded : DownloadUiState
+    data object Queued : DownloadUiState
     data object WaitingForConfiguration : DownloadUiState
+    data object Downloaded : DownloadUiState
     data class Downloading(
         val progress: Int?,
         val itemIndex: Int,
@@ -41,7 +44,7 @@ internal sealed interface DownloadUiState {
 
 internal class DownloadViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val engine = SampleDownloadManager()
+    private val downloadManager = SampleDownloadManager.getInstance(application)
     private val _uiState = MutableStateFlow<DownloadUiState>(
         DownloadUiState.WaitingForConfiguration
     )
@@ -50,40 +53,34 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
     private val launchEvents = Channel<Unit>(Channel.BUFFERED)
     val launchSample = launchEvents.receiveAsFlow()
 
+    private var sampleId: String? = null
+    private var sampleName: String? = null
     private var itemIds: List<String> = emptyList()
-
-    private var destinationFolder: File? = null
     private var downloadJob: Job? = null
 
-    fun configure(sampleName: String, provisionUrls: List<String>) {
-        if (destinationFolder != null) return
+    fun configure(sampleId: String, sampleName: String, provisionUrls: List<String>) {
+        if (this.sampleId != null) return
 
+        this.sampleId = sampleId
+        this.sampleName = sampleName
         this.itemIds = provisionUrls
-        destinationFolder = File(
-            getApplication<Application>().getExternalFilesDir(null),
-            sampleName
-        )
+        viewModelScope.launch {
+            downloadManager.refreshStatus(sampleId, sampleName, provisionUrls)
+            downloadManager.statuses.collect { statuses ->
+                _uiState.value = statuses[sampleId] ?: DownloadUiState.NotDownloaded
+            }
+        }
         startDownload()
     }
 
     fun startDownload() {
         if (downloadJob?.isActive == true) return
-        val destination = destinationFolder ?: return
+        val id = sampleId ?: return
+        val name = sampleName ?: return
 
         downloadJob = viewModelScope.launch {
-            _uiState.value = DownloadUiState.Downloading(
-                progress = null,
-                itemIndex = 0,
-                itemCount = itemIds.size
-            )
             try {
-                engine.download(itemIds, destination) { downloadProgress ->
-                    _uiState.value = DownloadUiState.Downloading(
-                        progress = downloadProgress.progress,
-                        itemIndex = downloadProgress.itemIndex,
-                        itemCount = downloadProgress.itemCount
-                    )
-                }
+                downloadManager.requestDownload(id, name, itemIds).await()
                 launchEvents.send(Unit)
             } catch (cancellation: CancellationException) {
                 throw cancellation
@@ -96,12 +93,8 @@ internal class DownloadViewModel(application: Application) : AndroidViewModel(ap
     }
 
     suspend fun cancelDownload() {
-        engine.cancelDownload()
         downloadJob?.cancel()
         downloadJob?.join()
-
-        destinationFolder?.let { destination ->
-            engine.delete(destination)
-        }
+        sampleId?.let { downloadManager.cancelDownload(it) }
     }
 }

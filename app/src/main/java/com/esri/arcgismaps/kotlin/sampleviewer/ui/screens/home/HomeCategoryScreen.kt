@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -73,6 +74,7 @@ import com.esri.arcgismaps.sample.sampleslib.theme.SampleAppTheme
 fun HomeCategoryScreen(
     onNavigateToAbout: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    onNavigateToDownloads: () -> Unit,
     onNavigateToCategory: (SampleCategory) -> Unit,
 ) {
     val window = LocalWindowInfo.current
@@ -95,7 +97,7 @@ fun HomeCategoryScreen(
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { HomeCategoryTopAppBar(onNavigateToAbout) },
+        topBar = { HomeCategoryTopAppBar(onNavigateToAbout, onNavigateToDownloads) },
         floatingActionButton = { SearchFloatingActionButton(isVisible, onNavigateToSearch) },
         floatingActionButtonPosition = FabPosition.End,
         containerColor = MaterialTheme.colorScheme.background,
@@ -172,7 +174,10 @@ private fun SearchFloatingActionButton(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun HomeCategoryTopAppBar(navigateToAboutScreen: () -> Unit) {
+private fun HomeCategoryTopAppBar(
+    navigateToAboutScreen: () -> Unit,
+    navigateToDownloads: () -> Unit
+) {
     TopAppBar(
         title = {
             Text(text = stringResource(R.string.home_screen_title))
@@ -183,6 +188,12 @@ private fun HomeCategoryTopAppBar(navigateToAboutScreen: () -> Unit) {
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         actions = {
+            IconButton(onClick = navigateToDownloads) {
+                Icon(
+                    imageVector = Icons.Outlined.CloudDownload,
+                    contentDescription = "Downloads"
+                )
+            }
             IconButton(onClick = navigateToAboutScreen) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
@@ -201,6 +212,7 @@ fun PreviewHomeCategoryScreen() {
         HomeCategoryScreen(
             onNavigateToCategory = {},
             onNavigateToSearch = {},
+            onNavigateToDownloads = {},
             onNavigateToAbout = {}
         )
     }
