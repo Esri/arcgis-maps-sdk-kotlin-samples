@@ -75,4 +75,37 @@ internal class CenterDownloadingViewModel(application: Application) : AndroidVie
             downloadManager.cancelDownload(sample.mainActivity)
         }
     }
+
+    fun downloadAll() {
+        val samplesToDownload = entries.value.filter { it.status != DownloadUiState.Downloaded }
+        viewModelScope.launch {
+            samplesToDownload.map { entry ->
+                downloadManager.requestDownload(
+                    sampleId = entry.sample.mainActivity,
+                    sampleName = entry.sample.name,
+                    itemIds = entry.sample.metadata.offlineDataIDs
+                )
+            }.forEach { it.join() }
+        }
+    }
+
+    fun cancelAll() {
+        val activeSampleIds = entries.value
+            .filter { it.status == DownloadUiState.Queued || it.status is DownloadUiState.Downloading }
+            .map { it.sample.mainActivity }
+        viewModelScope.launch {
+            downloadManager.cancelDownloads(activeSampleIds)
+        }
+    }
+
+    fun deleteAllDownloadedData() {
+        val downloadedSamples = entries.value
+            .filter { it.status == DownloadUiState.Downloaded }
+            .map { it.sample }
+        viewModelScope.launch {
+            for (sample in downloadedSamples) {
+                downloadManager.deleteDownloadedData(sample.mainActivity, sample.name)
+            }
+        }
+    }
 }

@@ -124,12 +124,39 @@ class SampleDownloadManager private constructor(context: Context) {
     }
 
     suspend fun cancelDownload(sampleId: String) {
-        val job = synchronized(lock) {
-            jobs[sampleId]?.takeIf { it.isActive }?.also {
-                if (activeSampleId == sampleId) downLoadTask?.cancel()
+        cancelDownloads(listOf(sampleId))
+    }
+
+    suspend fun cancelDownloads(sampleIds: Collection<String>) {
+        val selectedIds = sampleIds.toSet()
+        if (selectedIds.isEmpty()) return
+
+        val activeJobs = synchronized(lock) {
+            if (activeSampleId in selectedIds) downLoadTask?.cancel()
+            selectedIds.mapNotNull { sampleId -> jobs[sampleId]?.takeIf { it.isActive } }
+        }
+        activeJobs.forEach { it.cancel() }
+        activeJobs.forEach { it.join() }
+    }
+
+    suspend fun deleteDownloadedData(sampleId: String, sampleName: String) {
+        queue.withPermit {
+            synchronized(lock) {
+                check(jobs[sampleId]?.isActive != true) {
+                    "Cannot delete sample data while its download is active."
+                }
+                if (_statuses.value[sampleId] != DownloadUiState.Downloaded) return@withPermit
+                _statuses.update { it + (sampleId to DownloadUiState.NotDownloaded) }
+            }
+
+            withContext(Dispatchers.IO) {
+                clearCompletion(sampleId)
+                FileUtils.deleteDirectory(destinationFor(sampleName))
+                FileUtils.deleteDirectory(
+                    File(destinationFor(sampleName).parentFile, "${sampleName}.partial")
+                )
             }
         }
-        job?.cancelAndJoin()
     }
 
     private fun destinationFor(sampleName: String) =
